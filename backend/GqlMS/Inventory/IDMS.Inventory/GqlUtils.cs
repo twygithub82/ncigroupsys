@@ -2,6 +2,7 @@
 using CommonUtil.Core.Service;
 using HotChocolate;
 using IDMS.Inventory.GqlTypes.LocalModel;
+using IDMS.Models.DB;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Notification;
@@ -12,6 +13,8 @@ using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
@@ -23,6 +26,69 @@ namespace IDMS.Inventory.GqlTypes
 {
     public class GqlUtils
     {
+        public static async void PingThread(IServiceScope scope, int duration)
+        {
+            Thread t = new Thread(async () =>
+            {
+                using (scope)
+                {
+                    var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationInventoryDBContext>>();
+
+                    // Create a new instance of ApplicationPackageDBContext
+                    using (var dbContext = await contextFactory.CreateDbContextAsync())
+                    {
+                        while (true)
+                        {
+                            await dbContext.Database.OpenConnectionAsync();
+                            await dbContext.code_values.Where(c => c.guid == "1").Select(c => c.code_val).FirstOrDefaultAsync();
+                            await dbContext.Database.CloseConnectionAsync();
+                            Thread.Sleep(1000 * 60 * duration);
+                        }
+                    }
+                }
+            });
+            t.Start();
+        }
+
+        public static async Task<string> GetJWTKey(string connectionString)
+        {
+            string secretkey = "JWTAuthenticationHIGHSeCureDWMScNiproject_2024";
+            try
+            {
+                var query = "select * from param_values where param_val_type='JWT_SECRET_KEY'";
+
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var cmd = new MySqlCommand(query, connection))
+                    {
+                        using (var reader = await cmd.ExecuteReaderAsync())
+                        {
+                            var result = new List<JToken>();
+                            while (await reader.ReadAsync())
+                            {
+                                var row = new JObject();
+                                for (var i = 0; i < reader.FieldCount; i++)
+                                {
+                                    row[reader.GetName(i)] = JToken.FromObject(reader.GetValue(i));
+                                }
+                                result.Add(row);
+                            }
+                            return $"{result[0]["param_val"]}";
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw;
+            }
+
+            return secretkey;
+
+
+        }
+
         public static long GetNowEpochInSec()
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -148,7 +214,6 @@ namespace IDMS.Inventory.GqlTypes
                 {
                     throw new GraphQLException(new Error("Unauthorized", "401"));
                 }
-
             }
             catch
             {
@@ -339,7 +404,7 @@ namespace IDMS.Inventory.GqlTypes
                     curTankStatus = sot.tank_status_cv;
 
                 retval = await context.SaveChangesAsync();
-                                await NotificationHandling(config, PurposeType.CLEAN, sot.guid, curTankStatus);
+                await NotificationHandling(config, PurposeType.CLEAN, sot.guid, curTankStatus);
             }
             catch (Exception ex)
             {
@@ -368,7 +433,7 @@ namespace IDMS.Inventory.GqlTypes
                     //First check whether have exclusive package cost
                     var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
                                 .Join(context.Set<steaming_exclusive>(), p => p.steaming_exclusive_guid, t => t.guid, (p, t) => new { p, t })
-                                .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
+                                .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp && joined.t.tariff_cleaning_guid == last_cargo_guid)
                                 .Select(joined => new SteamingPackageResult
                                 {
                                     cost = joined.p.cost,  // Selecting cost
@@ -760,9 +825,8 @@ namespace IDMS.Inventory.GqlTypes
                     }
                 }
 
-                if (tank.purpose_storage ?? false)
+                if (true) //(tank.purpose_storage ?? false)
                 {
-                    //tank.status_cv = TankMovementStatus.STORAGE;
                     currentTankStatus = TankMovementStatus.STORAGE;
                 }
 

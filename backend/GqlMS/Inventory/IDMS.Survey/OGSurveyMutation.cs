@@ -119,6 +119,9 @@ namespace IDMS.Survey.GqlTypes
 
             try
             {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
                 out_gate_survey? outgateSurvey = await context.out_gate_survey.Where(i => i.guid == outGateSurveyRequest.guid &&
                                                                                  (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
                 if (outgateSurvey == null)
@@ -127,9 +130,7 @@ namespace IDMS.Survey.GqlTypes
                 if (outgateSurvey.out_gate_guid == null)
                     throw new GraphQLException(new Error("Outgate guid cant be null.", "Error"));
 
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //string user = "admin";
-                long currentDateTime = DateTime.Now.ToEpochTime();
+               
                 mapper.Map(outGateSurveyRequest, outgateSurvey);
 
                 if (string.IsNullOrEmpty(outGateSurveyRequest.guid))
@@ -204,7 +205,6 @@ namespace IDMS.Survey.GqlTypes
             {
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var query = context.out_gate_survey.Where(i => i.guid == $"{OGSurvey_guid}");
@@ -235,7 +235,6 @@ namespace IDMS.Survey.GqlTypes
             {
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var outgate = new out_gate() { guid = OutGate_guid };

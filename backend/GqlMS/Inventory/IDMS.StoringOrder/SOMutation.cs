@@ -12,6 +12,7 @@ using HotChocolate.Types;
 using IDMS.Inventory.GqlTypes;
 using IDMS.StoringOrder.GqlTypes.LocalModel;
 using System.Data;
+using Microsoft.AspNetCore.Http;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
@@ -20,11 +21,11 @@ namespace IDMS.StoringOrder.GqlTypes
     {
         public async Task<int> AddStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
             [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
-            ApplicationInventoryDBContext context)
+            [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
         {
             try
             {
-                string user = "admin";
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 storing_order soDomain = new();
@@ -49,6 +50,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         newTank.status_cv = SOTankStatus.PREORDER;
                     else
                         newTank.status_cv = SOTankStatus.WAITING;
+
                     newTank.preinspect_job_no = tnk.job_no;
                     newTank.liftoff_job_no = tnk.job_no;
                     newTank.lifton_job_no = tnk.job_no;
@@ -79,12 +81,16 @@ namespace IDMS.StoringOrder.GqlTypes
 
         public async Task<int> UpdateStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
             [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
-            ApplicationInventoryDBContext context)
+             [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
         {
             bool isSendNotification = false;
 
             try
             {
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
                 //if updateSO have guid then i need call update command
                 storing_order soDomain = await context.storing_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
                                         .Include(s => s.storing_order_tank).FirstOrDefaultAsync(s => s.guid == so.guid);
@@ -98,8 +104,6 @@ namespace IDMS.StoringOrder.GqlTypes
                     throw new GraphQLException(new Error("customer_company_guid cant be null", "Error"));
                 }
 
-                string user = "admin";
-                long currentDateTime = DateTime.Now.ToEpochTime();
                 List<string> rollbackSOTGuids = new List<string>();
 
                 // Update child entities (StoringOrderTanks)
@@ -230,11 +234,11 @@ namespace IDMS.StoringOrder.GqlTypes
 
         public async Task<int> CancelStoringOrder(List<StoringOrderRequest> so, [Service] ITopicEventSender sender,
           [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
-          ApplicationInventoryDBContext context)
+           [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
         {
             try
             {
-                string user = "admin";
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 foreach (StoringOrderRequest soRequest in so)
@@ -303,12 +307,12 @@ namespace IDMS.StoringOrder.GqlTypes
 
         public async Task<int> DeleteStoringOrder(string[] soGuids, [Service] ITopicEventSender sender,
         [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
-        ApplicationInventoryDBContext context)
+         [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
         {
 
             try
             {
-                string user = "admin";
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var storingOrders = context.storing_order.Where(s => soGuids.Contains(s.guid) && s.delete_dt == null)

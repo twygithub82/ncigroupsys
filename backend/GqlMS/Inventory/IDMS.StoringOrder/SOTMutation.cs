@@ -23,12 +23,12 @@ namespace IDMS.StoringOrder.GqlTypes
     public class SOTMutation
     {
         private async Task<int> CancelStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
-            [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper,
-            ApplicationInventoryDBContext context)
+            [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
         {
             try
             {
-                return await StoringOrderTankChanges(context, sot, true);
+                return await StoringOrderTankChanges(config, httpContextAccessor, context, sot, true);
             }
             catch (Exception ex)
             {
@@ -66,10 +66,10 @@ namespace IDMS.StoringOrder.GqlTypes
             }
         }
 
-        private async Task<int> StoringOrderTankChanges(ApplicationInventoryDBContext context, List<StoringOrderTankRequest> sot, bool forCancel)
+        private async Task<int> StoringOrderTankChanges([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context, List<StoringOrderTankRequest> sot, bool forCancel)
         {
             int res = 0;
-            string user = "admin";
+            string user = GqlUtils.IsAuthorize(config, httpContextAccessor);
             long currentDateTime = DateTime.Now.ToEpochTime();
 
             string[] soGuids = sot.Select(s => s.so_guid).ToArray();

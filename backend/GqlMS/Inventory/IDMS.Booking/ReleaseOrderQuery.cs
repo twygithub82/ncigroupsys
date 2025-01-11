@@ -6,6 +6,7 @@ using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models.Inventory;
+using Microsoft.Extensions.Configuration;
 
 namespace IDMS.Booking.GqlTypes
 {
@@ -16,10 +17,11 @@ namespace IDMS.Booking.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<release_order> QueryReleaseOrder(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<release_order> QueryReleaseOrder(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var roDetails = context.release_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     //.Include(d => d.scheduling.Where(s => s.delete_dt == null || s.delete_dt == 0))
                     .Include(d => d.customer_company);
@@ -37,10 +39,11 @@ namespace IDMS.Booking.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<release_order_sot> QueryReleaseOrderSOT(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<release_order_sot> QueryReleaseOrderSOT(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var roDetails = context.release_order_sot.Where(d => d.delete_dt == null || d.delete_dt == 0);
 
                 return roDetails;
