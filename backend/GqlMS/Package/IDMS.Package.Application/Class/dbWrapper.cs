@@ -81,6 +81,7 @@ namespace IDMS.Parameter.CleaningProcedure.Class
 
                             await dbContext.Database.OpenConnectionAsync();
                             //    // You can perform other operations here if needed
+                            //await dbContext.currency.Where(c => c.currency_code == "SGD").Select(c => c.guid).FirstOrDefaultAsync();
                             await dbContext.Database.CloseConnectionAsync();
 
                             //});

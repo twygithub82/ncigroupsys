@@ -36,7 +36,6 @@ namespace IDMS.Models.Package.GqlTypes
                 foreach (var cc in dbPackageCleans)
                 {
                     cc.adjusted_price = adjusted_price;
-
                     cc.remarks = remarks;
                     cc.update_by = uid;
                     cc.update_dt = GqlUtils.GetNowEpochInSec();
