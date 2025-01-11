@@ -403,9 +403,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'RESIDUE',
     'CLEANING',
     'REPAIR',
-    'STORAGE'
+    'STORAGE',
+    'RO_GENERATED'
   ];
-  allowRemovePurposeStatuses: string[] = ['PENDING', 'CANCELED', 'COMPLETED', 'QC_COMPLETED'];
+  allowRemovePurposeStatuses: string[] = ['PENDING', 'CANCELED'];
 
   surveyForm?: UntypedFormGroup;
 
