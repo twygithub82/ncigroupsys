@@ -426,6 +426,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
             if (data.length > 0) {
               this.tiItem = data[0];
               this.last_test_desc = this.getLastTest();
+              this.next_test_desc = this.getNextTest();
             }
           });
           this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
@@ -855,6 +856,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     const yearCount = parseFloat(match?.[0] ?? "0");
     const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
     const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    console.log("use IGS next test")
     return output;
   }
 
@@ -867,6 +869,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     const yearCount = parseFloat(match?.[0] ?? "0");
     const resultDt = Utility.addYearsToEpoch(this.tiItem?.test_dt as number, yearCount) as number;
     const output = this.getTestTypeDescription(this.tiItem?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    console.log("use TI next test")
     return output;
   }
 

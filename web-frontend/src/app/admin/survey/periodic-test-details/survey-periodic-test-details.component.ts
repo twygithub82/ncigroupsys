@@ -393,7 +393,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
         ccDS: this.ccDS,
         surveyDS: this.surveyDS,
         tiDS: this.tiDS,
-        next_test_desc: this.getNextTestIGS(),
+        next_test_desc: this.getNextTest(),
         next_test_cv: this.getNextTestCv()
       },
       direction: tempDirection
