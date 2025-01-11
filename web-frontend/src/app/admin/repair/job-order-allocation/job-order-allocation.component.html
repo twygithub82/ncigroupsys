@@ -421,8 +421,8 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label">{{repairItem?.allocate_by}}</div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <div class="table-label"></div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 text-center border">
+                          <div class="table-label">{{joDS.getQCJobOrder(repairItem?.repair_part)?.qc_by}}</div>
                         </div>
                       </div>
                     </div>
@@ -447,7 +447,9 @@
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 text-center border">
-                          <div class="table-label"></div>
+                          <div class="table-label">
+                            {{displayDate(joDS.getQCJobOrder(repairItem?.repair_part)?.qc_dt)}}
+                          </div>
                         </div>
                       </div>
                     </div>
