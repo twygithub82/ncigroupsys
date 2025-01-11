@@ -1,4 +1,6 @@
-﻿using MySqlConnector;
+﻿using IDMS.Models.Master.GqlTypes.DB;
+using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using Newtonsoft.Json.Linq;
 using System.Security.Claims;
 
@@ -65,6 +67,37 @@ namespace IDMS.Master.Application
                 throw;
             }
             return uid;
+        }
+
+        public static async void PingThread(IServiceScope scope, int duration)
+        {
+            Thread t = new Thread(async () =>
+            {
+                using (scope)
+                {
+                    var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationMasterDBContext>>();
+
+                    // Create a new instance of ApplicationPackageDBContext
+                    using (var dbContext = await contextFactory.CreateDbContextAsync())
+                    {
+                        while (true)
+                        {
+
+                            //Task.Run(async() =>
+                            //{
+
+                            await dbContext.Database.OpenConnectionAsync();
+                            await dbContext.currency.Where(c => c.currency_code == "SGD").Select(c => c.guid).FirstOrDefaultAsync();
+                            await dbContext.Database.CloseConnectionAsync();
+
+                            //});
+                            Thread.Sleep(1000 * 60 * duration);
+                        }
+
+                    }
+                }
+            });
+            t.Start();
         }
     }
 }

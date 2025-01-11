@@ -26,6 +26,7 @@ namespace IDMS.Master.Application
             var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
             var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
             var JWT_secretKey = await GqlUtils.GetJWTKey(connectionString);
+            string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Value ?? "5";
 
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddPooledDbContextFactory<ApplicationMasterDBContext>(o =>
@@ -89,7 +90,7 @@ namespace IDMS.Master.Application
             });
 
             var app = builder.Build();
-
+            GqlUtils.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
             app.UseHttpsRedirection();
             app.UseAuthentication();
             //app.UseWebSockets();//Subscription using websockets, must add this middleware
