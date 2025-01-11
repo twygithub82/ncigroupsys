@@ -127,6 +127,14 @@ namespace IDMS.Steaming.GqlTypes
                             newPart.approve_part = true;
                             await context.steaming_part.AddAsync(newPart);
                         }
+                        else if (ObjectAction.CANCEL.EqualsIgnore(item.action))
+                        {
+                            var part = new steaming_part() { guid = item.guid };
+                            context.steaming_part.Attach(part);
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                            part.delete_dt = currentDateTime;
+                        }
                     }
                 }
 
