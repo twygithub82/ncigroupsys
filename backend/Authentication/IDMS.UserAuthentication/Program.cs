@@ -24,8 +24,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
 builder.Services.Configure<IdentityOptions>(
     opts => opts.SignIn.RequireConfirmedEmail = true
-
-
 );
 
 //Generate the link for reseting password
@@ -132,13 +130,13 @@ app.Use(async (context, next) =>
     Console.WriteLine("Response Headers: " + string.Join(", ", context.Response.Headers.Select(h => h.Key + "=" + h.Value)));
 });
 
-app.UseCors(builder =>
-{
-    builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader();
-});
+//app.UseCors(builder =>
+//{
+//    builder
+//    .AllowAnyOrigin()
+//    .AllowAnyMethod()
+//    .AllowAnyHeader();
+//});
 
 app.UseHttpsRedirection();
 
@@ -146,7 +144,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+//app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();
