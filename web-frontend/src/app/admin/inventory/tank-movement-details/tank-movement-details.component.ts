@@ -1209,10 +1209,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           }
         }
         console.log(tankPurposeRequest)
-        // this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
-        //   console.log(result)
-        //   this.handleSaveSuccess(result?.data?.updateTankPurpose);
-        // });
+        this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateTankPurpose);
+        });
       }
     });
   }
