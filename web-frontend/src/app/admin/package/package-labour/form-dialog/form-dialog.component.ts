@@ -295,7 +295,7 @@ export class FormDialogComponent {
     if(this.selectedItems.length==1)
     {
       var packLabour = new PackageLabourItem(this.selectedItems[0]);
-      packLabour.cost= this.pcForm!.value["adjusted_cost"];
+      packLabour.cost= Number(this.pcForm!.value["adjusted_cost"]);
       packLabour.remarks=this.pcForm!.value["remarks"];
       packLabour.tariff_labour=undefined;
       packLabour.customer_company=undefined;

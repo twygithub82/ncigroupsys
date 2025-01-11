@@ -1209,10 +1209,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           }
         }
         console.log(tankPurposeRequest)
-        // this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
-        //   console.log(result)
-        //   this.handleSaveSuccess(result?.data?.updateTankPurpose);
-        // });
+        this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateTankPurpose);
+        });
       }
     });
   }
@@ -1241,6 +1241,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   repairDialog(event: Event, repair: RepairItem) {
     this.preventDefault(event);
+    return; // TODO :: wait repair dialog done first
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';

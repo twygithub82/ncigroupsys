@@ -158,7 +158,7 @@ export interface StoringOrderResult {
 
 const GET_STORING_ORDER_TANKS_COUNT = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
-    sotList: queryStoringOrderTank(where: $where) {
+    sotList: queryStoringOrderTankCount(where: $where) {
       totalCount
     }
   }

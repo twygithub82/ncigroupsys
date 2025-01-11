@@ -211,6 +211,7 @@ export class FormDialogComponent {
     this.selectedItems = data.selectedItems;
     
     this.pcForm = this.createPackageCleaning();
+    this.PackageCleaningPatchValue();
     //this.tcDS = new TariffCleaningDS(this.apollo);
     //this.sotDS = new StoringOrderTankDS(this.apollo);
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
@@ -233,6 +234,16 @@ export class FormDialogComponent {
     // }
   }
 
+  PackageCleaningPatchValue()
+  {
+    if(this.selectedItems.length==1)
+    {
+      this.pcForm.patchValue({
+        adjusted_cost: this.selectedItems[0].adjusted_price,
+        remarks: this.selectedItems[0].remarks
+      })
+    }
+  }
   createPackageCleaning(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,

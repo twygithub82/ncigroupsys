@@ -79,7 +79,7 @@ export interface InGateResult {
 
 export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
  query queryInGateCount($where: in_gateFilterInput) {
-    inGates: queryInGates(where: $where) {
+    inGates: queryInGatesCount(where: $where) {
       totalCount
   }
 }
