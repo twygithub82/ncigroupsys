@@ -5,14 +5,12 @@ using IDMS.Models.Service;
 using IDMS.Models.Service.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Data.SqlTypes;
+
 using System.Security.Claims;
 using System.Text;
 
@@ -20,6 +18,31 @@ namespace IDMS.Service.GqlTypes
 {
     public static class GqlUtils
     {
+        public static async void PingThread(IServiceScope scope, int duration)
+        {
+            Thread t = new Thread(async () =>
+            {
+                using (scope)
+                {
+                    var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationServiceDBContext>>();
+
+                    // Create a new instance of ApplicationPackageDBContext
+                    using (var dbContext = await contextFactory.CreateDbContextAsync())
+                    {
+                        while (true)
+                        {
+                            await dbContext.Database.OpenConnectionAsync();
+                            //await dbContext.currency.Where(c => c.guid == "1").Select(c => c.code_val).FirstOrDefaultAsync();
+                            await dbContext.currency.Where(c => c.currency_code == "SGD").Select(c => c.guid).FirstOrDefaultAsync();
+                            await dbContext.Database.CloseConnectionAsync();
+                            Thread.Sleep(1000 * 60 * duration);
+                        }
+                    }
+                }
+            });
+            t.Start();
+        }
+
         public static async Task<string> GetJWTKey(string connectionString)
         {
             string secretkey = "JWTAuthenticationHIGHSeCureDWMScNiproject_2024";
@@ -327,25 +350,20 @@ namespace IDMS.Service.GqlTypes
                 //check if tank have any steaming purpose
                 if (tank.purpose_steam ?? false)
                 {
-
                     var res = await context.steaming.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     if (res.Any())
                     {
-                        //if (res.Any(t =>
-                        //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                        //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                        //            )
                         if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                         {
                             tank.tank_status_cv = TankMovementStatus.STEAM;
                             goto ProceesUpdate;
                         }
                     }
-                    else
-                    {
-                        tank.tank_status_cv = TankMovementStatus.STEAM;
-                        goto ProceesUpdate;
-                    }
+                    //else
+                    //{
+                    //    tank.tank_status_cv = TankMovementStatus.STEAM;
+                    //    goto ProceesUpdate;
+                    //}
                 }
 
                 //check if tank have any cleaning purpose
@@ -355,10 +373,6 @@ namespace IDMS.Service.GqlTypes
                     var res = await context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     if (res.Any())
                     {
-                        //if (res.Any(t =>
-                        //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                        //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                        //            )
                         if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                         {
                             tank.tank_status_cv = TankMovementStatus.CLEANING;
@@ -371,27 +385,30 @@ namespace IDMS.Service.GqlTypes
                             var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                             if (resd.Any())
                             {
-                                //if (resd.Any(t =>
-                                //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                //            )
-                                if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
+                                if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
                                 {
                                     tank.tank_status_cv = TankMovementStatus.CLEANING;
                                     goto ProceesUpdate;
                                 }
                             }
-                            else
+                            //else
+                            //{
+                            //    tank.tank_status_cv = TankMovementStatus.CLEANING;
+                            //    goto ProceesUpdate;
+                            //}
+                        }
+                    }
+                    else
+                    {
+                        var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                        if (resd.Any())
+                        {
+                            if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
                             {
                                 tank.tank_status_cv = TankMovementStatus.CLEANING;
                                 goto ProceesUpdate;
                             }
                         }
-                    }
-                    else
-                    {
-                        tank.tank_status_cv = TankMovementStatus.CLEANING;
-                        goto ProceesUpdate;
                     }
                 }
 

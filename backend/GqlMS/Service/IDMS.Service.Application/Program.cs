@@ -27,6 +27,7 @@ namespace IDMS.ServiceMS
             var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
             var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
             var JWT_secretKey = await GqlUtils.GetJWTKey(connectionString);
+            string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Value ?? "3";
 
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddPooledDbContextFactory<ApplicationServiceDBContext>(o =>
@@ -101,6 +102,8 @@ namespace IDMS.ServiceMS
             //    app.UseSwaggerUI();
             //}
             var app = builder.Build();
+            //Specially created to solve slow after idle for sometime
+            GqlUtils.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
