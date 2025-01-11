@@ -406,7 +406,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'STORAGE',
     'RO_GENERATED'
   ];
-  allowRemovePurposeStatuses: string[] = ['PENDING', 'CANCELED'];
+  allowRemovePurposeStatuses: string[] = ['PENDING', 'CANCELED', 'APPROVED'];
 
   surveyForm?: UntypedFormGroup;
 
@@ -1700,11 +1700,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   canRemovePurpose(purpose: string) {
     if (this.sot) {
       if (purpose === 'steaming') {
-        return !this.steamItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return this.steamItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       } else if (purpose === 'cleaning') {
-        return !this.cleaningItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return this.cleaningItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && this.residueItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       } else if (purpose === 'repair') {
-        return !this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       }
     }
     return true;
