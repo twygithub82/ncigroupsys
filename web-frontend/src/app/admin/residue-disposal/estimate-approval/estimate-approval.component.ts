@@ -969,6 +969,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
           // re.job_no=this.residueEstForm?.get("job_no")?.value
          //  re.remarks=this.residueEstForm?.get("remarks")?.value
           re.residue_part?.forEach((rep: any) => {
+            rep.action='EDIT';
             rep.approve_qty = (this.IsApproved(row)?rep.approve_qty : rep.quantity) ;
            // rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
             rep.approve_cost = (this.IsApproved(row)?rep.approve_cost : rep.cost);
