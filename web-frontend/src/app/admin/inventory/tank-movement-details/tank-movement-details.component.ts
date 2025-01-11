@@ -1241,6 +1241,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   repairDialog(event: Event, repair: RepairItem) {
     this.preventDefault(event);
+    return; // TODO :: wait repair dialog done first
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
