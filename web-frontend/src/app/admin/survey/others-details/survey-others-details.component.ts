@@ -315,7 +315,8 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   refreshSurveyDetail() {
     const where = {
-      sot_guid: { eq: this.sot_guid }
+      sot_guid: { eq: this.sot_guid },
+      survey_type_cv: { neq: 'PERIODIC_TEST' }
     }
     this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "ASC" }).subscribe(data => {
       if (data.length > 0) {
