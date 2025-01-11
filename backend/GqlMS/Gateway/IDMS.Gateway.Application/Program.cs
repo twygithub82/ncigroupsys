@@ -2,6 +2,7 @@ using gateway_graphql_ms;
 using gateway_graphql_ms.GqlTypes;
 using HotChocolate.AspNetCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using static HotChocolate.ErrorCodes;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,37 +16,11 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
-// Add CORS policy
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAngularClient", policy =>
-//    {
-//        policy.WithOrigins("http://localhost:4200")
-//              .AllowAnyHeader()
-//              .AllowAnyMethod();
-//    });
-//});
-
-//// Add CORS policy
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAngularApp", policy =>
-//    {
-//        policy.WithOrigins("http://localhost:4200")
-//              .AllowAnyHeader()
-//              .AllowAnyMethod()
-//              .AllowCredentials(); // Include if you use cookies/auth
-//    });
-//});
-
-
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
-
 ConfigureServices(builder.Services, builder.Configuration);
 //var server = builder.Services.AddGraphQLServer("local");
 //server.AddQueryType<QueryType>();
@@ -63,13 +38,12 @@ ConfigureServices(builder.Services, builder.Configuration);
 
 
 var app = builder.Build();
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 //app.MapControllers();
 //app.UseWebSockets();
+
 app.UseCors("AllowAll");
 app.UseRouting()
           //.UseWebSockets()
@@ -84,7 +58,11 @@ app.Run();
 void ConfigureServices(IServiceCollection services, ConfigurationManager configuration)
 {
     // Bind configuration to strongly typed class
-    var graphqlServiceSettings = configuration.GetSection("GraphQL_Service")
+    bool allowIntrospection = bool.Parse(configuration.GetSection("AllowIntrospection").Value);
+    var env = configuration.GetSection("Environment").Value ?? "DEV";
+    var graphqlService = $"GraphQL_Service_{env}";
+
+    var graphqlServiceSettings = configuration.GetSection(graphqlService)
             .Get<Dictionary<string, string>>();
 
     // Iterate over properties and register HTTP clients dynamically
@@ -105,7 +83,7 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
         // services.AddHttpClient(service.Key.ToLower(), client => client.BaseAddress = new Uri(service.Value));
     }
 
-    var server = services.AddGraphQLServer();
+    var server = services.AddGraphQLServer().AllowIntrospection(allowIntrospection);
     foreach (var service in graphqlServiceSettings)
     {
         try
