@@ -212,6 +212,14 @@ namespace IDMS.Residue.GqlTypes
                                 newPart.qty_unit_type_cv = item.qty_unit_type_cv;
                                 await context.residue_part.AddAsync(newPart);
                             }
+                            else if (item.action.EqualsIgnore(ObjectAction.CANCEL))
+                            {
+                                var part = new residue_part() { guid = item.guid };
+                                context.residue_part.Attach(part);
+                                part.update_by = user;
+                                part.update_dt = currentDateTime;
+                                part.delete_dt = currentDateTime;
+                            }
                         }
                     }
 

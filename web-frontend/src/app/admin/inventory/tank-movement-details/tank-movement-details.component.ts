@@ -403,9 +403,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'RESIDUE',
     'CLEANING',
     'REPAIR',
-    'STORAGE'
+    'STORAGE',
+    'RO_GENERATED'
   ];
-  allowRemovePurposeStatuses: string[] = ['PENDING', 'CANCELED', 'COMPLETED', 'QC_COMPLETED'];
+  allowRemovePurposeStatuses: string[] = ['PENDING', 'CANCELED', 'APPROVED'];
 
   surveyForm?: UntypedFormGroup;
 
@@ -1208,10 +1209,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           }
         }
         console.log(tankPurposeRequest)
-        // this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
-        //   console.log(result)
-        //   this.handleSaveSuccess(result?.data?.updateTankPurpose);
-        // });
+        this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateTankPurpose);
+        });
       }
     });
   }
@@ -1699,11 +1700,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   canRemovePurpose(purpose: string) {
     if (this.sot) {
       if (purpose === 'steaming') {
-        return !this.steamItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return this.steamItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       } else if (purpose === 'cleaning') {
-        return !this.cleaningItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return this.cleaningItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && this.residueItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       } else if (purpose === 'repair') {
-        return !this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       }
     }
     return true;

@@ -397,8 +397,8 @@
                               </tr>
                               <tr>
                                 <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.UPDATE_DATE}}</th>
-                                <td>{{displayDateTime(igs?.update_dt) || "-"}}</td>
-                                <td>{{displayDateTime(ogs?.update_dt) || "-"}}</td>
+                                <td>{{displayDateTime(igs?.update_dt) || displayDateTime(igs?.create_dt) || "-"}}</td>
+                                <td>{{displayDateTime(ogs?.update_dt) || displayDateTime(ogs?.create_dt) || "-"}}</td>
                               </tr>
                             </tbody>
                           </table>
