@@ -7,6 +7,7 @@ import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { Kind, OperationTypeNode } from 'graphql';
 import { environment } from 'environments/environment';
+import { setContext } from '@apollo/client/link/context';
 
 @NgModule({
   exports: [ApolloModule],
@@ -14,32 +15,47 @@ import { environment } from 'environments/environment';
     {
       provide: APOLLO_OPTIONS,
       useFactory: (httpLink: HttpLink) => {
+        // HTTP Link
         const http = httpLink.create({ uri: environment.graphQLUrl });
-        // const http = httpLink.create({ uri: 'http://localhost:5225/graphql/'});
+        
+        // Auth Middleware
+        // const auth = setContext((_, { headers }) => {
+        //   const token = localStorage.getItem('currentToken'); // Retrieve the token from storage
+        //   console.log('Authorization Token:', token);
+        //   return {
+        //     headers: {
+        //       ...headers,
+        //       Authorization: token ? `Bearer ${token}` : '',
+        //     },
+        //   };
+        // });
+
+        // Combine Auth Middleware with HTTP Link
+        // const authHttpLink = auth.concat(http);
+
         // Create a WebSocket link:
         const ws = new GraphQLWsLink(
           createClient({
             url: environment.graphqlWsUrl,
           }),
         );
+
+        // Split Link: Direct subscriptions to WebSocket, others to HTTP
+        const link = split(
+          ({ query }) => {
+            const definition = getMainDefinition(query);
+            return (
+              definition.kind === Kind.OPERATION_DEFINITION &&
+              definition.operation === OperationTypeNode.SUBSCRIPTION
+            );
+          },
+          ws,
+          http
+        );
+        
         return {
           cache: new InMemoryCache(),
-          //link: httpLink.create({ uri: 'https://tlx-idms-gateway.azurewebsites.net/graphql/' })
-          link: split( // Split based on operation type
-            ({ query }) => {
-              const definition = getMainDefinition(query);
-              return (
-                definition.kind === Kind.OPERATION_DEFINITION &&
-                definition.operation === OperationTypeNode.SUBSCRIPTION
-              );
-            },
-            ws,
-            http,)
-          //link: httpLink.create({ uri: 'http://207.46.137.171/graphql/' }),
-          //link: httpLink.create({ uri: 'https://tlx-idms-app.azurewebsites.net/graphql/' }),
-          //link: httpLink.create({ uri: 'https://tlx-idms-parameter-v1.azurewebsites.net/graphql/' }),
-          //link: httpLink.create({ uri: 'https://tlx-idms-tariff-cleaning.azurewebsites.net/graphql/' }),
-          //link: httpLink.create({ uri: 'https://tlx-idms-inventory-ingate.azurewebsites.net/graphql/' }),
+          link,
         };
       },
       deps: [HttpLink],

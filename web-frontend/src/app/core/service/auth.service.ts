@@ -57,6 +57,7 @@ export class AuthService {
           usr.refreshToken = user.refreshToken;
           
           localStorage.setItem('currentUser', JSON.stringify(usr));
+          localStorage.setItem('currentToken', user.token);
           this.currentUserSubject.next(usr);
         }
         return user;
@@ -80,6 +81,7 @@ export class AuthService {
   logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('currentToken');
     this.currentUserSubject.next(new User);
     return of({ success: false });
   }
@@ -91,6 +93,10 @@ export class AuthService {
   getDecodedToken(): any {
     // const token = this.currentUserValue?.token;
     // return token ? decodeToken(token) : null;
+  }
+
+  getToken(): any {
+    return localStorage.getItem('currentToken');
   }
 
   hasRole(expectedRoles: string[] | undefined): boolean {

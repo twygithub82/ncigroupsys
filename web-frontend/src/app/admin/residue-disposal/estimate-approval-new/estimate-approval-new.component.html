@@ -573,6 +573,20 @@
                       {{translatedLangText.CANCEL}}
                     </button>
                     }
+                    @if (residueDS.canNoAction(residueItem!)) {
+
+                      <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                      (click)="onNoAction($event,residueItem!)">
+                      <mat-icon>
+                        @if (!(residueDS.loading$ | async)) {
+                        close
+                        } @else if ((residueDS.loading$ | async)) {
+                        <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                        }
+                      </mat-icon>
+                      {{translatedLangText.ABORT}}
+                    </button>
+                      }
               </div>
             </div>
           </div>

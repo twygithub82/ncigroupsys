@@ -62,7 +62,7 @@ import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-r
 import { ResidueDS, ResidueItem,ResidueGO,ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
-import { SteamDS,SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
+import { SteamDS,SteamItem, SteamPartRequest, SteamStatusRequest } from 'app/data-sources/steam';
 import { PackageSteamingDS,PackageSteamingItem } from 'app/data-sources/package-steam';
 import { SteamPartGO, SteamPartItem } from 'app/data-sources/steam-part';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
@@ -239,7 +239,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     APPROVE: 'COMMON-FORM.APPROVE',
-    
+    ABORT: 'COMMON-FORM.ABORT',
 
   }
 
@@ -1607,6 +1607,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/steam/estimate-approval'], {
+        state: this.historyState
+
+      }
+      );
      
      
     }
@@ -1721,7 +1726,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   isAllowToSaveSubmit()
   {
      var NoDel=this.deList.filter(d=>d.action!='cancel');
-     return (NoDel.length);
+     return (NoDel.length && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid);
   }
   isDisabled(): boolean {
     const validStatus = [ 'COMPLETED','QC_COMPLETED','JOB_IN_PROGRESS']
@@ -1826,4 +1831,52 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       
       return this.checkApprovePart() && this.steamDS.canApprove(this.steamItem!) && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
     }
+
+     onNoAction(event: Event) {
+        this.preventDefault(event);
+        console.log(this.sotItem)
+    
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+          width: '1000px',
+          data: {
+            action: 'cancel',
+            dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+            item: [this.steamItem],
+            translatedLangText: this.translatedLangText
+          },
+          direction: tempDirection
+        });
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result?.action === 'confirmed') {
+            const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
+            console.log(reList);
+    
+            let steamStatus : SteamStatusRequest = new SteamStatusRequest();
+            steamStatus.action="NA";
+            steamStatus.guid = this.steamItem?.guid;
+            steamStatus.sot_guid= this.steamItem?.sot_guid;
+            steamStatus.remarks = reList[0].remarks;
+            steamStatus.steamingPartRequests=[];
+            this.deList.forEach(d=>{
+              var stmPart :SteamPartRequest = new SteamPartRequest();
+              stmPart.guid=d.guid;
+              stmPart.approve_part=false;
+              steamStatus.steamingPartRequests?.push(stmPart);
+            });
+            this.steamDS.updateSteamStatus(steamStatus).subscribe(result=>{
+    
+              this.handleCancelSuccess(result?.data?.updateSteamingStatus);
+             });
+            // this.residueDS.cancelResidue(reList).subscribe(result => {
+            //   this.handleCancelSuccess(result?.data?.cancelResidue)
+            // });
+          }
+        });
+      }
 }

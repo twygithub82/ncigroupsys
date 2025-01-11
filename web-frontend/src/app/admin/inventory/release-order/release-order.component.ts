@@ -181,7 +181,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.lastCargoControl = new UntypedFormControl('', [AutocompleteSelectionValidator(this.last_cargoList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
@@ -484,37 +484,37 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   search() {
     const where: any = {};
 
-    if (this.searchForm!.value['so_no']) {
-      where.so_no = { contains: this.searchForm!.value['so_no'] };
+    if (this.searchForm!.get('ro_no')?.value) {
+      where.ro_no = { contains: this.searchForm!.get('ro_no')?.value?.trim() };
     }
 
-    if (this.searchForm!.value['so_status']) {
-      where.status_cv = { contains: this.searchForm!.value['so_status'] };
+    if (this.searchForm!.get('ro_status')?.value) {
+      where.status_cv = { contains: this.searchForm!.get('ro_status')?.value?.trim() };
     }
 
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end'])) {
+    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('job_no')?.value || (this.searchForm!.get('eta_dt_start')?.value && this.searchForm!.get('eta_dt_end')?.value) || this.lastCargoControl?.value) {
       const sotSome: any = {};
 
-      if (this.searchForm!.value['last_cargo']) {
-        where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
+      if (this.lastCargoControl?.value) {
+        sotSome.last_cargo_guid = { contains: this.lastCargoControl?.value.guid };
       }
 
-      if (this.searchForm!.value['tank_no']) {
-        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
+      if (this.searchForm!.get('tank_no')?.value) {
+        sotSome.tank_no = { contains: this.searchForm!.get('tank_no')?.value?.trim() };
       }
 
-      if (this.searchForm!.value['job_no']) {
-        sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
+      if (this.searchForm!.get('job_no')?.value) {
+        sotSome.job_no = { contains: this.searchForm!.get('job_no')?.value?.trim() };
       }
 
-      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
+      if (this.searchForm!.get('eta_dt_start')?.value && this.searchForm!.get('eta_dt_end')?.value) {
+        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.get('eta_dt_start')?.value?.trim()), lte: Utility.convertDate(this.searchForm!.get('eta_dt_end')?.value?.trim()) };
       }
-      where.storing_order_tank = { some: sotSome };
+      where.release_order_sot = { some: { storing_order_tank: sotSome } };
     }
 
-    if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+    if (this.searchForm!.get('customer_code')?.value) {
+      where.customer_company = { code: { contains: this.searchForm!.get('customer_code')?.value.code } };
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);

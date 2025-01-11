@@ -85,9 +85,153 @@ export const CHECK_ANY_ACTIVE_RELEASE_ORDER_SOT = gql`
 
 `;
 
+export const GET_RELEASE_ORDER_SOT_FOR_OUT_GATE = gql`
+  query queryReleaseOrderSOT($where: release_order_sotFilterInput){
+    resultList: queryReleaseOrderSOT(where: $where) {
+      nodes {
+        create_by
+        create_dt
+        delete_dt
+        guid
+        remarks
+        ro_guid
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        release_order {
+          create_by
+          create_dt
+          customer_company_guid
+          delete_dt
+          guid
+          haulier
+          release_dt
+          remarks
+          ro_generated
+          ro_no
+          ro_notes
+          status_cv
+          update_by
+          update_dt
+          customer_company {
+            address_line1
+            address_line2
+            agreement_due_dt
+            city
+            code
+            country
+            create_by
+            create_dt
+            currency_guid
+            def_tank_guid
+            def_template_guid
+            delete_dt
+            effective_dt
+            email
+            guid
+            main_customer_guid
+            name
+            phone
+            postal
+            remarks
+            type_cv
+            update_by
+            update_dt
+            website
+          }
+        }
+        storing_order_tank {
+          certificate_cv
+          clean_status_cv
+          cleaning_remarks
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          last_test_guid
+          liftoff_job_no
+          lifton_job_no
+          owner_guid
+          preinspect_job_no
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          release_job_no
+          release_note
+          remarks
+          repair_remarks
+          required_temp
+          so_guid
+          status_cv
+          steaming_remarks
+          storage_remarks
+          takein_job_no
+          tank_no
+          tank_note
+          tank_status_cv
+          unit_type_guid
+          update_by
+          update_dt
+          out_gate {
+            create_by
+            create_dt
+            delete_dt
+            driver_name
+            eir_dt
+            eir_no
+            eir_status_cv
+            guid
+            haulier
+            remarks
+            so_tank_guid
+            update_by
+            update_dt
+            vehicle_no
+          }
+        }
+      }
+    }
+  }
+
+`;
+
 export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem> {
   constructor(private apollo: Apollo) {
     super();
+  }
+
+  getReleaseOrderSotForOutGate(sot_guid: string): Observable<ReleaseOrderSotItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = {
+      and: [
+        { sot_guid: { in: sot_guid } }
+      ]
+    }
+    return this.apollo
+      .query<any>({
+        query: GET_RELEASE_ORDER_SOT_FOR_OUT_GATE,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
   }
 
   ValidateSotInReleaseOrder(guid: string, sot_guid: string[]): Observable<ReleaseOrderSotItem[]> {

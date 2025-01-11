@@ -1047,9 +1047,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       ig.tank = sot;
 
       const periodicTestFormGroup = this.getBottomFormGroup();
-      let igs: InGateSurveyGO = new InGateSurveyGO();
-      igs.guid = this.in_gate?.in_gate_survey?.guid;
-      igs.in_gate_guid = this.in_gate?.guid;
+      let igs: InGateSurveyGO = new InGateSurveyGO(this.in_gate?.in_gate_survey);
       igs.last_test_cv = this.surveyForm.get('periodic_test.last_test_cv')?.value;
       igs.next_test_cv = this.surveyForm.get('periodic_test.next_test_cv')?.value;
       igs.test_dt = Utility.convertDate(this.surveyForm.get('periodic_test.test_dt')?.value);

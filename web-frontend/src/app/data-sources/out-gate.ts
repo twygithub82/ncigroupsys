@@ -138,6 +138,9 @@ export const SEARCH_OUT_GATE_FOR_SURVEY_QUERY = gql`
               guid
             }
           }
+          release_order_sot(where: { status_cv: { eq: "ACCEPTED" } }) {
+            guid
+          }
         }
       }
     }
@@ -145,7 +148,7 @@ export const SEARCH_OUT_GATE_FOR_SURVEY_QUERY = gql`
 `;
 
 export const GET_OUT_GATE_BY_ID = gql`
-  query queryOutGates($where: out_gateFilterInput) {
+  query queryOutGates($where: out_gateFilterInput, $roSotGuid: String) {
     resultList: queryOutGates(where: $where) {
       totalCount
       nodes {
@@ -231,6 +234,60 @@ export const GET_OUT_GATE_BY_ID = gql`
               code
               name
               guid
+            }
+          }
+          release_order_sot(where: { guid: { eq: $roSotGuid } }) {
+            create_by
+            create_dt
+            delete_dt
+            guid
+            remarks
+            ro_guid
+            sot_guid
+            status_cv
+            update_by
+            update_dt
+            release_order {
+              create_by
+              create_dt
+              customer_company_guid
+              delete_dt
+              guid
+              haulier
+              release_dt
+              remarks
+              ro_generated
+              ro_no
+              ro_notes
+              status_cv
+              update_by
+              update_dt
+              customer_company {
+                address_line1
+                address_line2
+                agreement_due_dt
+                city
+                code
+                country
+                create_by
+                create_dt
+                currency_guid
+                def_tank_guid
+                def_template_guid
+                delete_dt
+                effective_dt
+                email
+                guid
+                main_customer_guid
+                name
+                phone
+                postal
+                remarks
+                type_cv
+                update_by
+                update_dt
+                website
+              }
             }
           }
         }
@@ -381,41 +438,41 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
         finalize(() => this.loadingSubject.next(false))
       );
   }
-  
-    getOutGateByID(id: string): Observable<OutGateItem[]> {
-      this.loadingSubject.next(true);
-      let where = this.addDeleteDtCriteria({ guid: { eq: id } });
-      return this.apollo
-        .query<any>({
-          query: GET_OUT_GATE_BY_ID,
-          variables: { where },
-          fetchPolicy: 'no-cache' // Disable caching for this query
-        })
-        .pipe(
-          // Handle the response and errors
-          map((result) => {
-            const data = result.data;
-            if (!data) {
-              throw new Error('No data returned from query');
-            }
-    
-            // Extract the nodes and totalCount
-            const retResult = data.resultList || { nodes: [], totalCount: 0 };
-    
-            // Update internal state
-            this.dataSubject.next(retResult.nodes);
-            this.totalCount = retResult.totalCount;
-    
-            // Return the nodes
-            return retResult.nodes;
-          }),
-          catchError((error: ApolloError) => {
-            console.error('GraphQL Error:', error);
-            return of([] as OutGateItem[]); // Return an empty array on error
-          }),
-          finalize(() => this.loadingSubject.next(false))
-        );
-    }
+
+  getOutGateByID(id: string, roSotGuid: string): Observable<OutGateItem[]> {
+    this.loadingSubject.next(true);
+    let where = this.addDeleteDtCriteria({ guid: { eq: id } });
+    return this.apollo
+      .query<any>({
+        query: GET_OUT_GATE_BY_ID,
+        variables: { where, roSotGuid },
+        fetchPolicy: 'no-cache' // Disable caching for this query
+      })
+      .pipe(
+        // Handle the response and errors
+        map((result) => {
+          const data = result.data;
+          if (!data) {
+            throw new Error('No data returned from query');
+          }
+
+          // Extract the nodes and totalCount
+          const retResult = data.resultList || { nodes: [], totalCount: 0 };
+
+          // Update internal state
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+
+          // Return the nodes
+          return retResult.nodes;
+        }),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as OutGateItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
 
   getOutGateByIDForMovement(sot_guid: string): Observable<OutGateItem[]> {
     this.loadingSubject.next(true);
@@ -443,23 +500,33 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
   }
 
   addOutGate(outGate: any, releaseOrder: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_OUT_GATE,
       variables: {
         outGate,
         releaseOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateOutGate(outGate: any, releaseOrder: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_OUT_GATE,
       variables: {
         outGate,
         releaseOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   // getOutGateCountForYetToSurvey(): Observable<number> {

@@ -574,6 +574,19 @@
                       {{translatedLangText.CANCEL}}
                     </button>
                     }
+                    @if (steamDS.canNoAction(steamItem!)) {
+                      <button mat-flat-button color="warn" [disabled]="(steamDS.loading$ | async)" class="m-r-5"
+                        (click)="onNoAction($event)">
+                        <mat-icon>
+                          @if (!(steamDS.loading$ | async)) {
+                          close
+                          } @else if ((steamDS.loading$ | async)) {
+                          <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                          }
+                        </mat-icon>
+                        {{translatedLangText.ABORT}}
+                      </button>
+                      }
               </div>
             </div>
           </div>

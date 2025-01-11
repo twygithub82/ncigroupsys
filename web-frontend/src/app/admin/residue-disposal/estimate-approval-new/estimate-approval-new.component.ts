@@ -59,7 +59,7 @@ import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { ResidueDS, ResidueItem,ResidueGO,ResidueStatusRequest } from 'app/data-sources/residue';
+import { ResidueDS, ResidueItem,ResidueGO,ResidueStatusRequest, ResiduePartRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
@@ -223,7 +223,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     APPROVE: 'COMMON-FORM.APPROVE',
-    
+    ABORT: 'COMMON-FORM.ABORT',
 
   }
 
@@ -1733,7 +1733,11 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
      
-     
+      this.router.navigate(['/admin/residue-disposal/estimate-approval'], {
+        state: this.historyState
+
+      }
+      );
     }
   }
 
@@ -1864,4 +1868,78 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     canApprove() {
       return this.checkApprovePart() && this.residueDS.canApprove(this.residueItem!)
     }
+
+    onNoAction(event: Event,row: ResidueItem) {
+      this.preventDefault(event);
+      console.log(this.sotItem)
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+        width: '1000px',
+        data: {
+          action: 'cancel',
+          dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+          item: [this.residueItem],
+          translatedLangText: this.translatedLangText
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'confirmed') {
+          const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
+          console.log(reList);
+  
+          let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+          residueStatus.action="NA";
+          residueStatus.guid = this.residueItem?.guid;
+          residueStatus.sot_guid= this.residueItem?.sot_guid;
+          residueStatus.remarks=reList[0].remarks;
+          residueStatus.residuePartRequests=[];
+          row.residue_part?.forEach(d=>{
+            var resPart :ResiduePartRequest = new ResiduePartRequest();
+            resPart.guid=d.guid;
+            resPart.approve_part=false;
+            residueStatus.residuePartRequests?.push(resPart);
+          });
+           this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+  
+            this.handleCancelSuccess(result?.data?.updateResidueStatus);
+            if(result?.data?.updateResidueStatus>0)
+              {
+                this.GoBackPrevious(event);
+              }
+           });
+          // this.residueDS.cancelResidue(reList).subscribe(result => {
+          //   this.handleCancelSuccess(result?.data?.cancelResidue)
+          // });
+        }
+      });
+              
+         
+              // let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+              // residueStatus.action="NA";
+              // residueStatus.guid = row?.guid;
+              // residueStatus.sot_guid= row?.sot_guid;
+              // residueStatus.remarks='';
+              // residueStatus.residuePartRequests=[];
+              // row.residue_part?.forEach(d=>{
+              //   var resPart :ResiduePartRequest = new ResiduePartRequest();
+              //   resPart.guid=d.guid;
+              //   resPart.approve_part=false;
+              //   residueStatus.residuePartRequests?.push(resPart);
+              // });
+              //  this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+      
+              //   console.log(result)
+              //   this.handleCancelSuccess(result?.data?.updateResidueStatus);
+              //  });
+              // this.residueDS.cancelResidue(reList).subscribe(result => {
+              //   this.handleCancelSuccess(result?.data?.cancelResidue)
+              // });
+            }
 }
