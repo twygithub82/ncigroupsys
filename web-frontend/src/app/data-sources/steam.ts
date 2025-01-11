@@ -259,6 +259,7 @@ export const GET_STEAM_EST = gql`
             quantity
             steaming_guid
             tariff_steaming_guid
+            steaming_exclusive_guid
             update_by
             update_dt
           job_order {

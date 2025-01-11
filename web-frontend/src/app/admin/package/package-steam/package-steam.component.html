@@ -39,7 +39,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <form class="ms-0" [formGroup]="pcForm!"  #formDirective="ngForm">
                   <div class="row">
-                      <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                           <input matInput formControlName="customer_code" 
@@ -53,28 +53,28 @@
                           </mat-autocomplete>
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-1 col-lg-1 col-md-1 col-sm2 mb-1">
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                           <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.PACKAGE_MIN_LABOUR}}</mat-label>
                               <input matInput formControlName="min_labour" type="number">
                              
                             </mat-form-field>
                       </div>
-                      <div class="col-xl-1 col-lg-1 col-md-1 col-sm2 mb-1">
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                           <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.PACKAGE_MAX_LABOUR }}</mat-label>
                               <input matInput formControlName="max_labour" type="number">
                              
                             </mat-form-field>
                       </div>
-                      <div class="col-xl-1 col-lg-1 col-md-1 col-sm2 mb-1">
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.PACKAGE_MIN_COST}}</mat-label>
                             <input matInput formControlName="min_cost" type="number">
                            
                           </mat-form-field>
                     </div>
-                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm2 mb-1">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.PACKAGE_MAX_COST }}</mat-label>
                             <input matInput formControlName="max_cost" type="number">
@@ -129,7 +129,7 @@
                   <ng-container matColumnDef="maxTemp">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.MAX_TEMP }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.MAX_TEMP }}:</span>{{row.tariff_steaming?.temp_max}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.MAX_TEMP }}:</span>{{displayTempMax(row.tariff_steaming?.temp_max)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="cost">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST}}</mat-header-cell>

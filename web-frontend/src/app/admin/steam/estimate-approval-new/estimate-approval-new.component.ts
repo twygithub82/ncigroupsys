@@ -240,6 +240,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     APPROVE: 'COMMON-FORM.APPROVE',
     ABORT: 'COMMON-FORM.ABORT',
+    TANK_STATUS:'COMMON-FORM.TANK-STATUS'
 
   }
 

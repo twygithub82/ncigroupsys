@@ -491,6 +491,7 @@ implements OnInit {
       and:[]
     };
 
+    where.and.push({steaming_exclusive_guid:{eq:null}});
     if (this.pcForm!.get('customer_code')?.value) {
       const soSome: any = {};
 
@@ -757,6 +758,13 @@ implements OnInit {
     
     //this.customerCodeControl.reset('');
    
+  }
+  displayTempMax(tempMax:any):String
+  {
+     var retval:String ='';
+
+     retval = (!tempMax||tempMax===9999?'-':tempMax);
+     return retval;
   }
 }
 

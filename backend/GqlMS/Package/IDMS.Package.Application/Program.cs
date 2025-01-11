@@ -92,19 +92,33 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+Thread t = new Thread(async() =>
 {
-    var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationPackageDBContext>>();
-
-    // Create a new instance of ApplicationPackageDBContext
-    using (var dbContext = await contextFactory.CreateDbContextAsync())
+    using (var scope = app.Services.CreateScope())
     {
-        // Perform a simple query to initialize the connection
-        await dbContext.Database.OpenConnectionAsync();
-        // You can perform other operations here if needed
-        await dbContext.Database.CloseConnectionAsync();
+        var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationPackageDBContext>>();
+
+        // Create a new instance of ApplicationPackageDBContext
+        using (var dbContext = await contextFactory.CreateDbContextAsync())
+        {
+            while (true)
+            {
+
+                //Task.Run(async() =>
+                //{
+
+                await dbContext.Database.OpenConnectionAsync();
+                //    // You can perform other operations here if needed
+                await dbContext.Database.CloseConnectionAsync();
+
+                //});
+                System.Threading.Thread.Sleep(1000 * 10);
+            }
+
+        }
     }
-}
+});
+t.Start();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

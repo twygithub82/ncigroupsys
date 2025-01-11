@@ -260,6 +260,7 @@ const GET_JOB_ORDER = gql`
             status_cv
           }
           tariff_steaming_guid
+          steaming_exclusive_guid
           steaming_guid
         }
         team {

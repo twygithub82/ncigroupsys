@@ -168,10 +168,15 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     RESIDUE_JOB_NO: 'COMMON-FORM.RESIDUE-JOB-NO',
     APPROVE: 'COMMON-FORM.APPROVE',
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
+    TANK_STATUS:'COMMON-FORM.TANK-STATUS'
     
   }
 
-  
+  availableTankStatus: string[] = [
+    'RESIDUE',
+    'STORAGE'
+  ]
+
   availableProcessStatus: string[] = [
     'ASSIGNED',
     'PARTIAL_ASSIGNED',
@@ -295,7 +300,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       approval_dt_start: [''],
       approval_dt_end: [''],
       est_status_cv: [''],
-      current_status_cv: ['']
+      current_status_cv: [''],
+      tank_status:[['RESIDUE']],
     });
   }
 
@@ -508,8 +514,16 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
+     // tank_status_cv: { in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
     };
+
+    if (this.searchForm!.value['tank_status']) {
+      where.tank_status_cv = {  in: this.searchForm!.value['tank_status'] };
+    }
+    else
+    {
+     where.tank_status_cv={ in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
+    }
 
     if (this.searchForm!.value['tank_no']) {
       where.tank_no = { contains: this.searchForm!.value['tank_no'] };
@@ -802,7 +816,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       approval_dt_start: '',
       approval_dt_end: '',
       est_status_cv: '',
-      current_status_cv: ''
+      current_status_cv: '',
+      tank_status:[['RESIDUE']],
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

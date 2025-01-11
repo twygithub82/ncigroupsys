@@ -167,11 +167,16 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     COPY: 'COMMON-FORM.COPY',
     NO_OF_PARTS: 'COMMON-FORM.NO-OF-PARTS',
     REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
-    APPROVE:'COMMON-FORM.APPROVE'
+    APPROVE:'COMMON-FORM.APPROVE',
+    TANK_STATUS:'COMMON-FORM.TANK-STATUS'
     
   }
 
-  
+  availableTankStatus: string[] = [
+    'STEAM',
+    'STORAGE'
+  ]
+
   availableProcessStatus: string[] = [
     'ASSIGNED',
     'PARTIAL_ASSIGNED',
@@ -299,7 +304,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       approval_dt_start: [''],
       approval_dt_end: [''],
       est_status_cv: [''],
-      current_status_cv: ['']
+      current_status_cv: [''],
+      tank_status:[['STEAM']]
     });
   }
 
@@ -511,9 +517,16 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
+      //tank_status_cv: { in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
     };
 
+    if (this.searchForm!.value['tank_status']) {
+      where.tank_status_cv = {  in: this.searchForm!.value['tank_status'] };
+    }
+    else
+    {
+     where.tank_status_cv={ in: ['STEAM','STORAGE'] }
+    }
     if (this.searchForm!.value['tank_no']) {
       where.tank_no = { contains: this.searchForm!.value['tank_no'] };
     }
@@ -815,7 +828,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       approval_dt_start: '',
       approval_dt_end: '',
       est_status_cv: '',
-      current_status_cv: ''
+      current_status_cv: '',
+      tank_status:[['STEAM']]
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
