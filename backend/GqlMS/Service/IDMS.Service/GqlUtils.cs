@@ -377,7 +377,7 @@ namespace IDMS.Service.GqlTypes
 
                 if (tank.purpose_storage ?? false)
                 {
-                    tank.status_cv = TankMovementStatus.STORAGE;
+                    tank.tank_status_cv = TankMovementStatus.STORAGE;
                 }
 
             ProceesUpdate:
