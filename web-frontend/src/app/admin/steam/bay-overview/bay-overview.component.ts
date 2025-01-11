@@ -53,7 +53,9 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { TeamDS } from 'app/data-sources/teams';
-import {TankInfoFormDialogComponent} from './dialogs/tank-form-dialog/tank-info-form-dialog.component'
+import { TankInfoFormDialogComponent } from './dialogs/tank-form-dialog/tank-info-form-dialog.component'
+import { NgxGaugeModule } from 'ngx-gauge';
+
 @Component({
   selector: 'app-bay-overview',
   standalone: true,
@@ -71,7 +73,6 @@ import {TankInfoFormDialogComponent} from './dialogs/tank-form-dialog/tank-info-
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -87,6 +88,7 @@ import {TankInfoFormDialogComponent} from './dialogs/tank-form-dialog/tank-info-
     MatTabsModule,
     MatButtonToggleModule,
     MatCardModule,
+    NgxGaugeModule,
   ]
 })
 export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -128,11 +130,11 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
-    YET_START:"COMMON-FORM.YET-START",
-    STARTED:"COMMON-FORM.STARTED",
-    YET_COMPLETE:"COMMON-FORM.YET-COMPLETE",
-    BAY_OVERVIEW:"COMMON-FORM.BAY-OVERVIEW",
-    CLEANING_METHOD:"COMMON-FORM.CLEANING-METHOD",
+    YET_START: "COMMON-FORM.YET-START",
+    STARTED: "COMMON-FORM.STARTED",
+    YET_COMPLETE: "COMMON-FORM.YET-COMPLETE",
+    BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
+    CLEANING_METHOD: "COMMON-FORM.CLEANING-METHOD",
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     OWNER: 'COMMON-FORM.OWNER',
@@ -141,8 +143,9 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     LAST_TEST: 'COMMON-FORM.LAST-TEST',
     NEXT_TEST: 'COMMON-FORM.NEXT-TEST',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
-    ARE_SURE_ROLLBACK:'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
-    ARE_SURE_COMPLETE:'COMMON-FORM.ARE-YOU-SURE-COMPLETE'
+    ARE_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    ARE_SURE_COMPLETE: 'COMMON-FORM.ARE-YOU-SURE-COMPLETE',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
   }
 
   availableProcessStatus: string[] = [
@@ -167,7 +170,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   clnDS: InGateCleaningDS;
   teamDS: TeamDS;
 
-  teamList:any[]=[];
+  teamList: any[] = [];
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
@@ -189,6 +192,18 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   hasPreviousPageJobOrder = false;
   previous_endCursorJobOrder: string | undefined = undefined;
 
+  markerConfig = {
+    '0': { color: '#555', size: 8, label: '0', type: 'line' },
+    '15': { color: '#555', size: 4, type: 'line' },
+    '30': { color: '#555', size: 8, label: '30', type: 'line' },
+    '40': { color: '#555', size: 4, type: 'line' },
+    '50': { color: '#555', size: 8, label: '50', type: 'line' },
+    '60': { color: '#555', size: 4, type: 'line' },
+    '70': { color: '#555', size: 8, label: '70', type: 'line' },
+    '85': { color: '#555', size: 4, type: 'line' },
+    '100': { color: '#555', size: 8, label: '100', type: 'line' },
+  };
+
   private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
@@ -198,7 +213,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private router:Router
+    private router: Router
   ) {
     super();
     this.translateLangText();
@@ -213,7 +228,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
     this.clnDS = new InGateCleaningDS(this.apollo);
-    this.teamDS= new TeamDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -238,7 +253,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       filterJobOrder: [''],
       jobStatusCv: [['PENDING', 'JOB_IN_PROGRESS']],
       customer: this.customerCodeControl,
-       team_allocation:['']
+      team_allocation: ['']
     });
   }
 
@@ -464,9 +479,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         const param = [newParam];
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {
-          if(result.data.stopJobTimer>0)
-          {
-             this.completeJob(event,jobOrderItem);
+          if (result.data.stopJobTimer > 0) {
+            this.completeJob(event, jobOrderItem);
           }
 
         });
@@ -514,7 +528,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         } else if (data?.onJobCompleted) {
           jobData = data.onJobCompleted;
           eventType = 'onJobCompleted';
-        }else if (data?.onJobStartStop) {
+        } else if (data?.onJobStartStop) {
           jobData = data.onJobStartStop;
           eventType = 'onJobStartStop';
         }
@@ -614,8 +628,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
           delete rep.customer_company;
           this.clnDS.updateInGateCleaning(rep).subscribe(result => {
 
-            if(result.data.updateCleaning>0)
-            {
+            if (result.data.updateCleaning > 0) {
               this.clearTeamButton(clean_guid);
             }
 
@@ -624,209 +637,197 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         }
       });
   }
-  clearAllTeamButton()
-  {
+  clearAllTeamButton() {
     this.teamList?.forEach(team => {
       if (team.jobOrderItem) {
-          team.jobOrderItem=undefined;
-          team.isSelected= false;
-          team.isOccupied= false;
-          team.isEditable= false;
-          team.isViewOnly= false;
+        team.jobOrderItem = undefined;
+        team.isSelected = false;
+        team.isOccupied = false;
+        team.isEditable = false;
+        team.isViewOnly = false;
       }
     });
   }
 
-  
 
-  clearTeamButton(cleanGuid:string)
-  {
+
+  clearTeamButton(cleanGuid: string) {
     this.teamList?.forEach(team => {
       if (team.jobOrderItem) {
-        if(team.jobOrderItem.cleaning![0]!.guid==cleanGuid)
-        {
-          team.jobOrderItem=undefined;
-          team.isSelected= false;
-          team.isOccupied= false;
-          team.isEditable= false;
-          team.isViewOnly= false;
+        if (team.jobOrderItem.cleaning![0]!.guid == cleanGuid) {
+          team.jobOrderItem = undefined;
+          team.isSelected = false;
+          team.isOccupied = false;
+          team.isEditable = false;
+          team.isViewOnly = false;
         }
       }
     });
   }
-  QueryBays()
-  {
+  QueryBays() {
 
     this.subs.sink = this.teamDS.getTeamListByDepartment(["STEAM"]).subscribe(data => {
       if (data?.length) {
-        
+
         this.teamList = data.map((row, index) => ({
           ...row,
-          index:index,
+          index: index,
           isSelected: false,
-          isOccupied:false,
-          isEditable:false,
-          isViewOnly:true
+          isOccupied: false,
+          isEditable: false,
+          isViewOnly: true
         }));
         this.sortBayList(this.teamList);
         this.subscribeTeamEvent();
         this.queryOccupiedTeam();
       }
     });
-  
- }
 
- sortBayList( bayList:any[]) {
-  bayList.sort((a:any, b:any) => {
-    const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
-    const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
-    return numA - numB;
-  });
-}
+  }
+
+  sortBayList(bayList: any[]) {
+    bayList.sort((a: any, b: any) => {
+      const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
+      const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
+      return numA - numB;
+    });
+  }
 
 
-subscribeTeamEvent()
-{
+  subscribeTeamEvent() {
     this.teamList.forEach(t => {
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), t.guid!);
-        })
-}
+      this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), t.guid!);
+    })
+  }
 
-queryOccupiedTeam()
-{
-  const teamGuids = this.teamList?.map(team => team.guid);
-  
-  const where: any = {
-    and:[]
-  }; 
-  where.and.push({team: { guid:{in: teamGuids }}});
-  where.and.push({job_type_cv: { eq:'STEAM'}});
-  where.and.push({status_cv: { in:['JOB_IN_PROGRESS','PENDING','ASSIGNED']}});
-  where.and.push({delete_dt: { eq:null}});
+  queryOccupiedTeam() {
+    const teamGuids = this.teamList?.map(team => team.guid);
 
-  this.joDS?.searchStartedJobOrder(where).subscribe(data=>{
-    if (data?.length) {
-      data.forEach(d=>{
-        this.teamList?.forEach(team => {
-          if (team.guid === d.team?.guid && d.steaming_part?.length!>0) {
-            // If the team GUID matches, update isOccupied to true
-            team.jobOrderItem=d;
-            team.isOccupied = true;
-            team.isEditable=false;
-           
-            // team.isEditable=team.tank_no===this.selectedItems[0].storing_order_tank?.tank_no;
-            // if(team.isEditable)
-            // {
-            //   this.toggleTeam(team);
-            //   team.isOccupied=false;
-            // }
-          }
+    const where: any = {
+      and: []
+    };
+    where.and.push({ team: { guid: { in: teamGuids } } });
+    where.and.push({ job_type_cv: { eq: 'STEAM' } });
+    where.and.push({ status_cv: { in: ['JOB_IN_PROGRESS', 'PENDING', 'ASSIGNED'] } });
+    where.and.push({ delete_dt: { eq: null } });
+
+    this.joDS?.searchStartedJobOrder(where).subscribe(data => {
+      if (data?.length) {
+        data.forEach(d => {
+          this.teamList?.forEach(team => {
+            if (team.guid === d.team?.guid && d.steaming_part?.length! > 0) {
+              // If the team GUID matches, update isOccupied to true
+              team.jobOrderItem = d;
+              team.isOccupied = true;
+              team.isEditable = false;
+
+              // team.isEditable=team.tank_no===this.selectedItems[0].storing_order_tank?.tank_no;
+              // if(team.isEditable)
+              // {
+              //   this.toggleTeam(team);
+              //   team.isOccupied=false;
+              // }
+            }
+          });
         });
-      });
-    }
-  });
+      }
+    });
 
-}
+  }
 
   toggleTeam(team: any) {
-    let selected:boolean =!team.isSelected;
-    if(team.isViewOnly) return;
-    if(selected)
-    {
+    let selected: boolean = !team.isSelected;
+    if (team.isViewOnly) return;
+    if (selected) {
       this.teamList!.forEach(team => team.isSelected = false);
       this.filterJobOrderForm?.patchValue({
-        team_allocation:team
+        team_allocation: team
       });
     }
-    else
-    {
+    else {
       this.filterJobOrderForm?.patchValue({
-        team_allocation:''
+        team_allocation: ''
       });
     }
     team.isSelected = !team.isSelected;
   }
 
-  rollBackSteamingJob(event: Event,team:any)
-  {
+  rollBackSteamingJob(event: Event, team: any) {
     this.preventDefault(event);  // Prevents the form submission
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          width: '800px',
-          height: '250px',
-          data: {
-            action: "EDIT",
-            item: team.jobOrderItem,
-            langText: this.translatedLangText,
-            confirmStatement:this.translatedLangText.ARE_SURE_ROLLBACK,
-            index:-1
-          
-          },
-          direction: tempDirection
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
-          if (result.action==='confirmed') {
-                const stmJobOrder = new SteamJobOrderRequest({
-                  guid: team.jobOrderItem?.steaming_part[0]?.steaming_guid,
-                  sot_guid: team.jobOrderItem?.sot_guid,
-                  job_order: [new JobOrderGO({...team.jobOrderItem, remarks: result.remarks})],
-                  sot_status: team.jobOrderItem.storing_order_tank?.tank_status_cv,
-                  remarks:result.remarks
-                });
-        
-                console.log(stmJobOrder)
-                this.joDS.rollbackJobInProgressSteaming([stmJobOrder]).subscribe(result => {
-                  console.log(result)
-                  if ((result?.data?.rollbackJobInProgressSteaming ?? 0) > 0) {
-                    if(team.jobOrderItem)
-                    {
-                      team.jobOrderItem=undefined;
-                      team.isSelected= false;
-                      team.isOccupied= false;
-                      team.isEditable= false;
-                      team.isViewOnly= false;
-                    }
-                    this.triggerRefresh();
-                    //this.handleSaveSuccess(result?.data?.rollbackJobInProgressRepair);
-                  }
-                });
-              }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '800px',
+      height: '250px',
+      data: {
+        action: "EDIT",
+        item: team.jobOrderItem,
+        langText: this.translatedLangText,
+        confirmStatement: this.translatedLangText.ARE_SURE_ROLLBACK,
+        index: -1
 
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        const stmJobOrder = new SteamJobOrderRequest({
+          guid: team.jobOrderItem?.steaming_part[0]?.steaming_guid,
+          sot_guid: team.jobOrderItem?.sot_guid,
+          job_order: [new JobOrderGO({ ...team.jobOrderItem, remarks: result.remarks })],
+          sot_status: team.jobOrderItem.storing_order_tank?.tank_status_cv,
+          remarks: result.remarks
         });
+
+        console.log(stmJobOrder)
+        this.joDS.rollbackJobInProgressSteaming([stmJobOrder]).subscribe(result => {
+          console.log(result)
+          if ((result?.data?.rollbackJobInProgressSteaming ?? 0) > 0) {
+            if (team.jobOrderItem) {
+              team.jobOrderItem = undefined;
+              team.isSelected = false;
+              team.isOccupied = false;
+              team.isEditable = false;
+              team.isViewOnly = false;
+            }
+            this.triggerRefresh();
+            //this.handleSaveSuccess(result?.data?.rollbackJobInProgressRepair);
+          }
+        });
+      }
+
+    });
 
   }
-  showTankInfo(event: Event,team:any)
-  {
-      this.preventDefault(event);  // Prevents the form submission
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(TankInfoFormDialogComponent, {
-          width: '1000px',
-          data: {
-            selectedItem: team.jobOrderItem?.storing_order_tank!,
-            action: 'new',
-            translatedLangText: this.translatedLangText,
-            dialogTitle: team.description,
-          
-          },
-          direction: tempDirection
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => { });
+  showTankInfo(event: Event, team: any) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(TankInfoFormDialogComponent, {
+      width: '1000px',
+      data: {
+        selectedItem: team.jobOrderItem?.storing_order_tank!,
+        action: 'new',
+        translatedLangText: this.translatedLangText,
+        dialogTitle: team.description,
+
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => { });
   }
-  steamJob(event: Event,team:any)
-  {
+  steamJob(event: Event, team: any) {
 
     this.preventDefault(event);  // Prevents the form submission
-    var jobOrderItem =team.jobOrderItem;
+    var jobOrderItem = team.jobOrderItem;
     this.router.navigate(['/admin/steam/job-order/monitor', jobOrderItem.guid, jobOrderItem.steaming_part?.[0]?.steaming_guid]);
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
@@ -843,7 +844,7 @@ queryOccupiedTeam()
     //     langText: this.translatedLangText,
     //     confirmStatement:this.translatedLangText.ARE_SURE_COMPLETE,
     //     index:-1
-      
+
     //   },
     //   direction: tempDirection
     // });
@@ -851,28 +852,28 @@ queryOccupiedTeam()
 
 
     //   if (result?.action=="confirmed") {
-       
+
     //     //this.toggleJobState(event,true,team.jobOrderItem)
-        
+
     //   }
 
     // });
 
   }
 
-// buttonViewOnly():boolean
-// {
-//   let bView:boolean=false;
-//   let viewOnlyStatus:string[]=['JOB_IN_PROGRESS','COMPLETED','NO_ACTION','CANCELED'];
-//   if(this.selectedItems?.length>0)
-//   {
-//      bView = viewOnlyStatus.includes(this.selectedItems[0]?.status_cv!);
-//     //  if(bView && this.selectedItems[0]?.status_cv==="APPROVED" )
-//     //  {
-//     //   var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
-//     //   bView=this.isTeamContainTheTank(tankNo);
-//     //  }
-//   }
-//   return bView;
-// }
+  // buttonViewOnly():boolean
+  // {
+  //   let bView:boolean=false;
+  //   let viewOnlyStatus:string[]=['JOB_IN_PROGRESS','COMPLETED','NO_ACTION','CANCELED'];
+  //   if(this.selectedItems?.length>0)
+  //   {
+  //      bView = viewOnlyStatus.includes(this.selectedItems[0]?.status_cv!);
+  //     //  if(bView && this.selectedItems[0]?.status_cv==="APPROVED" )
+  //     //  {
+  //     //   var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
+  //     //   bView=this.isTeamContainTheTank(tankNo);
+  //     //  }
+  //   }
+  //   return bView;
+  // }
 }

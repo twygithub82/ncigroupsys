@@ -69,14 +69,24 @@ $custom-accent: mat.define-palette((50: lighten($gold, 40%),
 // Fallback for undefined colors in the theme
 $custom-warn: mat.define-palette(mat.$red-palette);
 $custom-success: mat.define-palette(mat.$green-palette);
+$custom-secondary: mat.define-palette(mat.$gray-palette);
 
 // Create the theme object
 $custom-theme: mat.define-light-theme((color: (primary: $custom-primary,
         accent: $custom-accent,
-        warn: $custom-warn
-      ),
+        warn: $custom-warn ),
       typography: mat.define-typography-config(),
     ));
+
+button.success {
+  background-color: mat.get-color-from-palette($custom-success);
+  color: mat.get-color-from-palette($custom-success, default-contrast);
+}
+
+button.secondary {
+  background-color: mat.get-color-from-palette($custom-secondary);
+  color: mat.get-color-from-palette($custom-secondary, default-contrast);
+}
 
 // Include the theme styles
 @include mat.all-component-themes($custom-theme);

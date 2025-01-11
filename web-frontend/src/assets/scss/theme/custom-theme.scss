@@ -15,16 +15,19 @@
 
   .navbar.active {
     background-color: $theme-gold-purple !important;
+
     .nav {
-      > li {
-        > a {
+      >li {
+        >a {
           color: $theme-gold-purple-nav-anchor;
         }
       }
     }
+
     .collapse-menu-icon .mat-icon {
       color: $theme-gold-purple-nav-anchor;
     }
+
     .nav-notification-icons .mat-icon {
       color: $theme-gold-purple-nav-anchor;
     }
@@ -47,8 +50,8 @@
   }
 
   .nav {
-    > li {
-      > a {
+    >li {
+      >a {
         &:hover {
           background-color: $theme-gold-purple-nav-anchor_hover;
           text-decoration: none;
@@ -62,7 +65,7 @@
     }
 
     .open {
-      > a {
+      >a {
         background-color: $theme-gold-purple-nav-anchor-opened;
 
         &:hover {
@@ -87,8 +90,10 @@
           &.active {
             background-color: $theme-gold-purple-menu-list-active;
           }
+
           a {
             transition: all 0.3s;
+
             i,
             span {
               transition: all 0.3s;
@@ -135,18 +140,22 @@
     background-color: $theme-gold-purple-active-color !important;
     color: #fff !important;
     border-color: $theme-gold-purple-active-color !important;
+
     &:hover {
       background-color: $theme-gold-purple-active-color !important;
       color: #fff !important;
     }
+
     &:active {
       background-color: $theme-gold-purple-active-color !important;
       color: #fff !important;
     }
+
     &:focus {
       background-color: $theme-gold-purple-active-color !important;
       color: #fff !important;
     }
+
     &:disabled {
       background-color: $theme-gold-purple-active-color !important;
       color: #fff !important;
@@ -157,6 +166,7 @@
     background: 0 0 !important;
     color: $theme-gold-purple-bar !important;
     border: 1px solid $theme-gold-purple-active-color !important;
+
     &:hover {
       background: $theme-gold-purple-active-color !important;
       color: #fff !important;
@@ -172,12 +182,14 @@
     .horizontal-menu {
       li {
         &.active {
-          > a {
+          >a {
             color: $theme-gold-purple-active-color;
           }
         }
+
         a {
           transition: all 0.3s;
+
           &:hover {
             color: $theme-gold-purple-active-color;
           }
@@ -190,7 +202,7 @@
     color: #000;
   }
 
-  .nav-tabs > li > a:before {
+  .nav-tabs>li>a:before {
     border-bottom: 2px solid $theme-gold-purple-active-color;
   }
 
