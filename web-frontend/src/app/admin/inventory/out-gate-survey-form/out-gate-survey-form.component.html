@@ -2030,9 +2030,9 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
-                            [disabled]="(ogsDS.actionLoading$| async)" (click)="onFormSubmit()">
+                            [disabled]="(ogsDS.actionLoading$| async) || (isFileActionLoading$| async)" (click)="onFormSubmit()">
                             <mat-icon>
-                              @if (!(ogsDS.actionLoading$ | async)) {
+                              @if (!(ogsDS.actionLoading$ | async) && !(isFileActionLoading$| async)) {
                               save
                               } @else {
                               <mat-spinner color="primary" [diameter]="18"></mat-spinner>

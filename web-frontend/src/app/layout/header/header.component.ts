@@ -172,7 +172,6 @@ export class HeaderComponent
 
   private searchNotificationRecords() {
     this.subs.sink = this.graphqlNotificationService!.SearchNotificationData({}, { date: 'DESC' }).subscribe(data => {
-
       let rec = data;
       rec.forEach(item => {
         let notifyCls: Notifications = {
