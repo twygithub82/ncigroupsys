@@ -2971,7 +2971,11 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
   canRollbackStatus(sot: StoringOrderTankItem): boolean {
-    const status_cv = ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE", "OUT_SURVEY", "OUT_GATE"];
-    return sot && (sot.status_cv === 'CANCELED' || sot.status_cv === 'ACCEPTED') && !status_cv.includes(sot.tank_status_cv || '');
+    const status_cv = [
+      "SO_GENERATED",
+      "IN_GATE",
+      "IN_SURVEY"
+    ];
+    return sot && (sot.status_cv === 'CANCELED' || sot.status_cv === 'ACCEPTED') && status_cv.includes(sot.tank_status_cv || '');
   }
 }
