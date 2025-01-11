@@ -8,6 +8,7 @@ import { testTypeMapping } from 'environments/environment.development';
 import { CustomerCompanyItem } from './customer-company';
 import { TankItem } from './tank';
 import { TariffBufferItem } from './tariff-buffer';
+import { CodeValuesItem } from './code-values';
 
 export class TankInfoGO {
   public guid?: string;
@@ -258,9 +259,9 @@ export class TankInfoDS extends BaseDataSource<TankInfoItem> {
   }
 
   getNextTestCv(last_test_cv: string): string | undefined {
-      if (!last_test_cv) return "";
-      const test_type = last_test_cv;
-      const mappedVal = testTypeMapping[test_type!];
-      return mappedVal;
-    }
+    if (!last_test_cv) return "";
+    const test_type = last_test_cv;
+    const mappedVal = testTypeMapping[test_type!];
+    return mappedVal;
+  }
 }
