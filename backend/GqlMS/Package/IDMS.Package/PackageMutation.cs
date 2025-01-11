@@ -1010,6 +1010,7 @@ namespace IDMS.Models.Package.GqlTypes
         #endregion Package Steaming methods
 
 
+        #region Package Steaming methods
         public async Task<int> AddSteamingExclusive(ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, steaming_exclusive NewSteamingExclusive)
         {
@@ -1017,6 +1018,8 @@ namespace IDMS.Models.Package.GqlTypes
             try
             {
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
                 NewSteamingExclusive.guid = (string.IsNullOrEmpty(NewSteamingExclusive.guid) ? Util.GenerateGUID() : NewSteamingExclusive.guid);
                 var newSE = new steaming_exclusive();
                 newSE.guid = NewSteamingExclusive.guid;
@@ -1024,20 +1027,32 @@ namespace IDMS.Models.Package.GqlTypes
                 newSE.temp_max = NewSteamingExclusive.temp_max;
                 newSE.temp_min = NewSteamingExclusive.temp_min;
                 newSE.labour = NewSteamingExclusive.labour;
-                //newSE.cost = NewSteamingExclusive.cost;
                 newSE.remarks = NewSteamingExclusive.remarks;
                 newSE.create_by = uid;
-                newSE.create_dt = DateTime.Now.ToEpochTime();
+                newSE.create_dt = currentDateTime;
                 await context.steaming_exclusive.AddAsync(newSE);
+
+
+                if (NewSteamingExclusive.package_steaming == null)
+                    throw new GraphQLException(new Error("The package steaming object cannot be null", "500"));
+
+                var newPackageSteam = new package_steaming();
+                newPackageSteam.guid = Util.GenerateGUID();
+                newPackageSteam.customer_company_guid = NewSteamingExclusive.package_steaming.customer_company_guid;
+                newPackageSteam.steaming_exclusive_guid = newSE.guid;
+                newPackageSteam.cost = NewSteamingExclusive.package_steaming.cost;
+                newPackageSteam.labour = NewSteamingExclusive.package_steaming.labour;
+                newPackageSteam.remarks = NewSteamingExclusive.package_steaming.remarks;
+                newPackageSteam.create_by = uid;
+                newPackageSteam.create_dt = currentDateTime;
+                await context.package_steaming.AddAsync(newPackageSteam);
 
                 retval = await context.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
-
-
             return retval;
         }
 
@@ -1049,6 +1064,8 @@ namespace IDMS.Models.Package.GqlTypes
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
                 var guid = UpdateSteamingExclusive.guid;
                 var dbTSteamingExclusive = await context.steaming_exclusive.Where(t => t.guid == guid).FirstOrDefaultAsync();
 
@@ -1061,10 +1078,22 @@ namespace IDMS.Models.Package.GqlTypes
                 dbTSteamingExclusive.temp_max = UpdateSteamingExclusive.temp_max;
                 dbTSteamingExclusive.temp_min = UpdateSteamingExclusive.temp_min;
                 dbTSteamingExclusive.labour = UpdateSteamingExclusive.labour;
-                //dbTariffSteaming.cost = UpdateSteamingExclusive.cost;
                 dbTSteamingExclusive.remarks = UpdateSteamingExclusive.remarks;
                 dbTSteamingExclusive.update_by = uid;
-                dbTSteamingExclusive.update_dt = GqlUtils.GetNowEpochInSec();
+                dbTSteamingExclusive.update_dt = currentDateTime;
+
+                if(string.IsNullOrEmpty(UpdateSteamingExclusive.package_steaming.guid))
+                    throw new GraphQLException(new Error("The package steaming guid cannot be null", "Error"));
+
+                var updatePackageSteam = new package_steaming() { guid = UpdateSteamingExclusive.package_steaming.guid };
+                context.package_steaming.Attach(updatePackageSteam);
+                updatePackageSteam.customer_company_guid = UpdateSteamingExclusive.package_steaming.customer_company_guid;
+                updatePackageSteam.cost = UpdateSteamingExclusive.package_steaming.cost;
+                updatePackageSteam.labour = UpdateSteamingExclusive.package_steaming.labour;
+                updatePackageSteam.remarks = UpdateSteamingExclusive.remarks;
+                updatePackageSteam.update_by = uid;
+                updatePackageSteam.remarks = UpdateSteamingExclusive.remarks;
+
 
                 retval = await context.SaveChangesAsync();
 
@@ -1084,14 +1113,14 @@ namespace IDMS.Models.Package.GqlTypes
             try
             {
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delTariffSteaming = context.steaming_exclusive.Where(s => DeleteSteamExclusive_guids.Contains(s.guid) && s.delete_dt == null).ToList();
+                var steamsExclusive = context.steaming_exclusive.Where(s => DeleteSteamExclusive_guids.Contains(s.guid) && s.delete_dt == null).ToList();
                 var currentDateTime = GqlUtils.GetNowEpochInSec();
 
-                foreach (var delTariffClean in delTariffSteaming)
+                foreach (var sE in steamsExclusive)
                 {
-                    delTariffClean.delete_dt = currentDateTime;
-                    delTariffClean.update_by = uid;
-                    delTariffClean.update_dt = currentDateTime;
+                    sE.delete_dt = currentDateTime;
+                    sE.update_by = uid;
+                    sE.update_dt = currentDateTime;
                 }
                 retval = await context.SaveChangesAsync();
 
@@ -1099,10 +1128,12 @@ namespace IDMS.Models.Package.GqlTypes
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
+        #endregion
+
     }
 }
 

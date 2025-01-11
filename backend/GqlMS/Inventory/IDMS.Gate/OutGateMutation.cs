@@ -16,7 +16,7 @@ namespace IDMS.Gate.GqlTypes
     public class OutGateMutation
     {
         //[Authorize]
-        public async Task<Record> AddOutGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, 
+        public async Task<Record> AddOutGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,
             out_gate OutGate, release_order ReleaseOrder)
         {
             int retval = 0;
@@ -57,16 +57,30 @@ namespace IDMS.Gate.GqlTypes
                 soTank.update_by = user;
                 soTank.update_dt = currentDate;
 
+
+                if (ReleaseOrder?.release_order_sot != null)
+                {
+                    foreach(var item in ReleaseOrder?.release_order_sot)
+                    {
+                        var roSOT = new release_order_sot() { guid = item.guid };
+                        context.release_order_sot.Attach(roSOT);
+                        roSOT.status_cv = SOTankStatus.ACCEPTED;
+                        roSOT.update_by = user;
+                        roSOT.update_dt = currentDate; 
+                    }
+                }
+                //save change before check RO status based on roSOT
+                retval = await context.SaveChangesAsync();
+
                 var RO = new release_order() { guid = ReleaseOrder.guid };
                 context.Attach(RO);
-                RO.status_cv = ROStatus.PROCESSING;
+                RO.status_cv = await CheckAndUpdateROStatus(context, ReleaseOrder.guid);
                 RO.update_by = user;
                 RO.update_dt = currentDate;
-
-                if (OutGate.haulier != ReleaseOrder.haulier)
+                if (!string.IsNullOrEmpty(OutGate.haulier))
                     RO.haulier = OutGate.haulier;
+                _ = await context.SaveChangesAsync();
 
-                retval = await context.SaveChangesAsync();
                 record = new Record() { affected = retval, guid = new List<string>() { newGuid } };
 
                 if (config != null)
@@ -81,7 +95,7 @@ namespace IDMS.Gate.GqlTypes
                     GqlUtils.AddAndTriggerStaffNotification(config, 3, "out-gate", "new out-gate was check-out", notification_uid);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
@@ -94,12 +108,10 @@ namespace IDMS.Gate.GqlTypes
             out_gate OutGate, release_order ReleaseOrder)
         {
             int retval = 0;
-            //string so_guid = "";
             try
             {
                 if (OutGate != null)
                 {
-
                     if (string.IsNullOrEmpty(OutGate.so_tank_guid))
                     {
                         throw new GraphQLException(new Error("Tank guid is empty", "Error"));
@@ -115,8 +127,8 @@ namespace IDMS.Gate.GqlTypes
                     updatedOutgate.vehicle_no = OutGate.vehicle_no;
                     updatedOutgate.driver_name = OutGate.driver_name;
                     updatedOutgate.remarks = OutGate.remarks;
-                    //updatedOutgate.haulier = OutGate.haulier;
-
+                    if (!string.IsNullOrEmpty(OutGate.haulier))
+                        updatedOutgate.haulier = OutGate.haulier;
 
                     if (OutGate.tank == null)
                     {
@@ -128,23 +140,73 @@ namespace IDMS.Gate.GqlTypes
                     so_tank.update_by = user;
                     so_tank.update_dt = currentDate;
 
-                   // if (OutGate.haulier != ReleaseOrder.haulier)
-                    //{
                     var RO = new release_order() { guid = ReleaseOrder.guid };
                     context.Attach(RO);
-                    RO.haulier = ReleaseOrder.haulier;
+                    if (!string.IsNullOrEmpty(OutGate.haulier))
+                        RO.haulier = OutGate.haulier;
+
                     RO.update_by = user;
                     RO.update_dt = currentDate;
-                    //}
-
+        
                     retval = await context.SaveChangesAsync();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
             return retval;
+        }
+
+
+        private async Task<string> CheckAndUpdateROStatus(ApplicationInventoryDBContext context, string guid)
+        {
+            try
+            {
+                var tanks = await context.release_order_sot.Where(t => t.ro_guid == guid).ToListAsync();
+                var Status = "PROCESSING";
+                int nCountCancel = 0;
+                int nCountWait = 0;
+                int nCountAccept = 0;
+                foreach (var tank in tanks)
+                {
+                    switch (tank.status_cv.Trim())
+                    {
+                        case "WATING":
+                            nCountWait++;
+                            break;
+                        case "ACCEPTED":
+                            nCountAccept++;
+                            break;
+                        case "CANCELED":
+                            nCountCancel++;
+                            break;
+                    }
+                }
+
+                if (nCountWait == 0)
+                {
+                    if ((nCountAccept + nCountCancel) == tanks.Count())
+                    {
+                        if (nCountAccept > 0)
+                        {
+                            Status = "COMPLETED";
+                        }
+                        else
+                        {
+                            Status = "CANCELED";
+                        }
+                    }
+
+                }
+
+                return Status;
+            }
+            catch
+            {
+                throw;
+
+            }
         }
     }
 }

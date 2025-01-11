@@ -65,11 +65,9 @@ namespace IDMS.Gate.GqlTypes
                 }
 
                 if (so.haulier != InGate.haulier)
-                {
                     so.haulier = InGate.haulier;
-                    so.update_by = uid;
-                    so.update_dt = currentDate;
-                }
+                so.update_by = uid;
+                so.update_dt = currentDate;
 
                 if (InGate.tank != null)
                 {
@@ -159,18 +157,15 @@ namespace IDMS.Gate.GqlTypes
                     }
 
                     var so = so_tank.storing_order;
-
                     if (so == null)
                     {
                         throw new GraphQLException(new Error("Storing Order not found", "404"));
                     }
 
-                    if (so.haulier != InGate.haulier)
-                    {
+                    if (!string.IsNullOrEmpty(InGate.haulier) & so.haulier != InGate.haulier)
                         so.haulier = InGate.haulier;
-                        so.update_by = uid;
-                        so.update_dt = epochNow;
-                    }
+                    so.update_by = uid;
+                    so.update_dt = epochNow;
 
                     if (InGate.tank != null)
                     {
@@ -182,8 +177,7 @@ namespace IDMS.Gate.GqlTypes
                         so_tank.owner_guid = InGate.tank.owner_guid;
                         so_tank.update_by = uid;
                         so_tank.update_dt = epochNow;
-                        so_guid = so_tank.so_guid;
-                        
+                        so_guid = so_tank.so_guid;   
                     }
 
                     if (!string.IsNullOrEmpty(so_guid))

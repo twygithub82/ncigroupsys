@@ -9,7 +9,10 @@ using IDMS.Models;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics.Metrics;
+using System;
 
 namespace IDMS.Booking.GqlTypes
 {
@@ -54,7 +57,7 @@ namespace IDMS.Booking.GqlTypes
 
                     newROSOT.sot_guid = roSOT.sot_guid;
                     newROSOT.ro_guid = newRO.guid;
-                    newROSOT.status_cv = ROStatus.PENDING;
+                    newROSOT.status_cv = SOTankStatus.WAITING;
                     newROSotList.Add(newROSOT);
 
                     storing_order_tank sot = new() { guid = roSOT.storing_order_tank.guid }; //sotLists.Find(s => s.guid == sot.sot_guid);
@@ -89,12 +92,10 @@ namespace IDMS.Booking.GqlTypes
                 var res = 0;
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                IList<release_order_sot> newRoSotList = new List<release_order_sot>();
-                //string[] sotGuids = ro_SotList.Select(s => s.sot_guid).ToArray();
-                //string[] schGuids = ro_SotList.Select(s => s.guid).ToArray();
-                //List<storing_order_tank> sotLists = context.storing_order_tank.Where(s => sotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
-                //List<scheduling> existingSchList = context.scheduling.Where(s => schGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
+                if(string.IsNullOrEmpty(releaseOrder.guid))
+                    throw new GraphQLException(new Error($"release_order_guid is compulsory field", "ERROR"));
 
+                IList<release_order_sot> newRoSotList = new List<release_order_sot>();
                 foreach (var roSOT in ro_SotList)
                 {
                     if (string.IsNullOrEmpty(roSOT?.action))
@@ -102,7 +103,7 @@ namespace IDMS.Booking.GqlTypes
 
                     storing_order_tank sot = new() { guid = roSOT.storing_order_tank.guid };
                     //Start add the entity into EF for tracking
-                    context.Attach(sot);
+                    context.storing_order_tank.Attach(sot);
 
                     if (SOTankAction.NEW.EqualsIgnore(roSOT?.action))
                     {
@@ -134,7 +135,7 @@ namespace IDMS.Booking.GqlTypes
                         //extSch.update_dt = currentDateTime;
 
                         var extROSot = new release_order_sot() { guid = roSOT.guid };
-                        context.Attach(extROSot);
+                        context.release_order_sot.Attach(extROSot);
                         extROSot.update_by = user;
                         extROSot.update_dt = currentDateTime;
                         extROSot.status_cv = roSOT.status_cv;
@@ -154,7 +155,7 @@ namespace IDMS.Booking.GqlTypes
                         //extSch.update_dt = currentDateTime;
                         
                         var extROSot = new release_order_sot() { guid = roSOT.guid };
-                        context.Attach(extROSot);
+                        context.release_order_sot.Attach(extROSot);
                         extROSot.status_cv = ROStatus.CANCELED;
                         extROSot.remarks = roSOT.remarks;
                         extROSot.update_by = user;
@@ -170,22 +171,44 @@ namespace IDMS.Booking.GqlTypes
                     }
                 }
 
+                //TODO
+                context.release_order_sot.AddRange(newRoSotList);
+                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                res = await context.SaveChangesAsync();
+
                 //Update Release Order details here
                 release_order existingRO = new release_order() { guid = releaseOrder.guid };
-                context.Attach(existingRO);
-
-                context.AddRange(newRoSotList);
-
+                context.release_order.Attach(existingRO);
                 existingRO.update_by = user;
                 existingRO.update_dt = currentDateTime;
                 existingRO.ro_notes = releaseOrder.ro_notes;
                 existingRO.haulier = releaseOrder.haulier;
                 existingRO.remarks = releaseOrder.remarks;
                 existingRO.release_dt = releaseOrder.release_dt;
-                
-                //TODO
-                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
-                res = await context.SaveChangesAsync();
+
+                //This function will check and update the RO status
+                var unCancelTanks = await context.release_order_sot.Where(r => r.guid == releaseOrder.guid & r.status_cv != ROStatus.CANCELED
+                                                                              & (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+
+                string finalStatus = "";
+                if (unCancelTanks != null && unCancelTanks.Any())
+                {
+                    int tnkAlreadyAcceptedCount = unCancelTanks.Count(t => SOTankStatus.ACCEPTED.EqualsIgnore(t.status_cv));
+
+                    if (tnkAlreadyAcceptedCount == 0)
+                        finalStatus = ROStatus.PENDING;
+                    else if (tnkAlreadyAcceptedCount == unCancelTanks.Count)
+                        finalStatus = ROStatus.COMPLETED;
+                    else
+                        finalStatus = ROStatus.PROCESSING;
+                }
+                else
+                    // All tanks have been cancelled
+                    finalStatus = ROStatus.CANCELED;
+
+                existingRO.status_cv = finalStatus;
+                await context.SaveChangesAsync();
+
                 return res;
             }
             catch (Exception ex)
@@ -247,6 +270,44 @@ namespace IDMS.Booking.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
+
+
+        //private async Task<bool> StatusConditionCheck(ApplicationInventoryDBContext contex, string ROGuid)
+        //{
+        //    try
+        //    {
+        //        //This function will check and update the RO status
+        //        var unCancelTanks = await contex.release_order_sot.Where(r => r.guid == ROGuid & r.status_cv != ROStatus.CANCELED
+        //                                                         & (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+
+        //        string finalStatus = "";
+        //        if (unCancelTanks != null && unCancelTanks.Any())
+        //        {
+        //            int tnkAlreadyAcceptedCount = unCancelTanks.Count(t => SOTankStatus.ACCEPTED.EqualsIgnore(t.status_cv));
+
+        //            if (tnkAlreadyAcceptedCount == 0)
+        //                finalStatus = ROStatus.PENDING;
+        //            else if (tnkAlreadyAcceptedCount == unCancelTanks.Count)
+        //                finalStatus = ROStatus.COMPLETED;
+        //            else
+        //                finalStatus = ROStatus.PROCESSING;
+        //        }
+        //        else
+        //            // All tanks have been cancelled
+        //            finalStatus = ROStatus.CANCELED;
+
+        //        var RO = new release_order() { guid = ROGuid };
+        //        contex.release_order.Attach(RO);
+        //        RO.status_cv = finalStatus;
+        //        await contex.SaveChangesAsync();
+
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
         //public async Task<int> DeleteReleaseOrder(List<string> roGuids, [Service] IHttpContextAccessor httpContextAccessor,
         //    ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender)

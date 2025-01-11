@@ -25,5 +25,6 @@ namespace IDMS.Survey.GqlTypes.LocalModel
         public string? remarks { get; set; }
         public storing_order_tank? tank { get; set; }
         public out_gate_survey? out_gate_survey { get; set; }
+        public release_order? release_order { get; set; }
     }
 }
