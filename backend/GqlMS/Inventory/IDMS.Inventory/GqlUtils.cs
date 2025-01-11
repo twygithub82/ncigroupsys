@@ -40,7 +40,8 @@ namespace IDMS.Inventory.GqlTypes
                         while (true)
                         {
                             await dbContext.Database.OpenConnectionAsync();
-                            await dbContext.code_values.Where(c => c.guid == "1").Select(c => c.code_val).FirstOrDefaultAsync();
+                            //await dbContext.code_values.Where(c => c.guid == "1").Select(c => c.code_val).FirstOrDefaultAsync();
+                            await dbContext.currency.Where(c => c.currency_code == "SGD").Select(c => c.guid).FirstOrDefaultAsync();
                             await dbContext.Database.CloseConnectionAsync();
                             Thread.Sleep(1000 * 60 * duration);
                         }
@@ -735,10 +736,6 @@ namespace IDMS.Inventory.GqlTypes
                     var res = await context.steaming.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     if (res.Any())
                     {
-                        //if (res.Any(t =>
-                        //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                        //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                        //            )
                         if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                         {
                             //tank.tank_status_cv = TankMovementStatus.STEAM;
@@ -746,12 +743,12 @@ namespace IDMS.Inventory.GqlTypes
                             goto ProceesUpdate;
                         }
                     }
-                    else
-                    {
-                        //tank.tank_status_cv = TankMovementStatus.STEAM;
-                        currentTankStatus = TankMovementStatus.STEAM;
-                        goto ProceesUpdate;
-                    }
+                    //else
+                    //{
+                    //    //tank.tank_status_cv = TankMovementStatus.STEAM;
+                    //    currentTankStatus = TankMovementStatus.STEAM;
+                    //    goto ProceesUpdate;
+                    //}
                 }
 
                 //check if tank have any cleaning purpose
@@ -760,13 +757,8 @@ namespace IDMS.Inventory.GqlTypes
                     var res = await context.cleaning.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     if (res.Any())
                     {
-                        //if (res.Any(t =>
-                        //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                        //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                        //            )
                         if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                         {
-                            //tank.tank_status_cv = TankMovementStatus.CLEANING;
                             currentTankStatus = TankMovementStatus.CLEANING;
                             goto ProceesUpdate;
                         }
@@ -777,30 +769,35 @@ namespace IDMS.Inventory.GqlTypes
                             var resd = await context.residue.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                             if (resd.Any())
                             {
-                                //if (resd.Any(t =>
-                                //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                //            )
-                                if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
+                                if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
                                 {
                                     //tank.tank_status_cv = TankMovementStatus.CLEANING;
                                     currentTankStatus = TankMovementStatus.CLEANING;
                                     goto ProceesUpdate;
                                 }
                             }
-                            else
+                            //else
+                            //{
+                            //    //tank.tank_status_cv = TankMovementStatus.CLEANING;
+                            //    currentTankStatus = TankMovementStatus.CLEANING;
+                            //    goto ProceesUpdate;
+                            //}
+                        }
+                    }
+                    else
+                    {
+                        //currentTankStatus = TankMovementStatus.CLEANING;
+                        //goto ProceesUpdate;
+                        var resd = await context.residue.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                        if (resd.Any())
+                        {
+                            if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
                             {
                                 //tank.tank_status_cv = TankMovementStatus.CLEANING;
                                 currentTankStatus = TankMovementStatus.CLEANING;
                                 goto ProceesUpdate;
                             }
                         }
-                    }
-                    else
-                    {
-                        //tank.tank_status_cv = TankMovementStatus.CLEANING;
-                        currentTankStatus = TankMovementStatus.CLEANING;
-                        goto ProceesUpdate;
                     }
                 }
 

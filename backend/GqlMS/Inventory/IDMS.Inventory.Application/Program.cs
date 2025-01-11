@@ -127,6 +127,7 @@ namespace IDMS.Inventory
             //});
 
             var app = builder.Build();
+            //Specially created to solve slow after idle for sometime
             GqlUtils.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
 
             app.UseHttpsRedirection();
