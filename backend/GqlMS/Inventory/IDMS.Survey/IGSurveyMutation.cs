@@ -390,6 +390,7 @@ namespace IDMS.Survey.GqlTypes
                 steamingPart.labour = result?.labour;
                 steamingPart.cost = result?.cost;
                 steamingPart.approve_part = true;
+                steamingPart.approve_qty = defQty;
                 steamingPart.approve_cost = result?.cost;
                 steamingPart.approve_labour = result?.labour;
                 await context.AddAsync(steamingPart);
