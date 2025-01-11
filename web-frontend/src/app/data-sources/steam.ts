@@ -515,7 +515,11 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
             guid
             status_cv
             steaming_temp {
+              report_dt
+              top_temp
+              bottom_temp
               meter_temp
+              remarks
               delete_dt
             }
           }

@@ -12,10 +12,10 @@ export const AUTH_ROUTE: Route[] = [
     redirectTo: "signin-staff",
     pathMatch: "full",
   },
-  {
-    path: "signin",
-    component: SigninComponent,
-  },
+  // {
+  //   path: "signin",
+  //   component: SigninComponent,
+  // },
   {
     path: "signin-staff",
     component: SigninStaffComponent,

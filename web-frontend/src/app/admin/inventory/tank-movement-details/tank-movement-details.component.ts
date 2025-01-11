@@ -70,6 +70,7 @@ import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-survey';
+import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -116,7 +117,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'approve_dt',
     'begin_dt',
     'complete_dt',
-    'status_cv'
+    'status_cv',
+    'bill'
   ];
 
   displayedColumnsResidue = [
@@ -372,7 +374,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     UPDATE_BY: 'COMMON-FORM.UPDATE-BY',
     REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
     FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    EXCEEDED: 'COMMON-FORM.EXCEEDED'
+    EXCEEDED: 'COMMON-FORM.EXCEEDED',
+    STEAM_MONITOR: 'COMMON-FORM.STEAM-MONITOR',
+    TIME: 'COMMON-FORM.TIME',
   }
 
   sot_guid: string | null | undefined;
@@ -1209,6 +1213,28 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         //   this.handleSaveSuccess(result?.data?.updateTankPurpose);
         // });
       }
+    });
+  }
+
+  steamTempDialog(event: Event, steam: SteamItem) {
+    this.preventDefault(event);
+    if (steam?.create_by !== "system") { return; } // only auto approved have steam temperature
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(SteamTempFormDialogComponent, {
+      width: '1000px',
+      data: {
+        steamItem: steam,
+        translatedLangText: this.translatedLangText,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
 

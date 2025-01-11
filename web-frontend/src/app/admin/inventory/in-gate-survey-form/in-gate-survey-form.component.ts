@@ -300,6 +300,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   toggleState = true; // State to track whether to highlight or unhighlight
   currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
+  isFileActionLoading$: Observable<boolean> = this.fileManagerService.actionLoading$;
   
   stepperOrientation: Observable<StepperOrientation>;
   compTypeStepperOrientation: Observable<StepperOrientation>;
