@@ -15,6 +15,7 @@ string connectionString = builder.Configuration.GetConnectionString("default");
 var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
 var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
 var JWT_secretKey = await dbWrapper.GetJWTKey(connectionString);
+string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Value ?? "3";
 
 //builder.Services.AddPooledDbContextFactory<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
 
@@ -88,6 +89,7 @@ builder.Services.AddAuthentication(options =>
 //});
 
 var app = builder.Build();
+dbWrapper.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
