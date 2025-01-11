@@ -211,7 +211,8 @@
                               <span>{{translatedLangText.BOTTOM_DIS_TYPE}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{getDisCompDescription(igs?.btm_dis_comp_cv) || "-"}}
+                              <div class="contact-detail-info font-bold">{{getDisCompDescription(igs?.btm_dis_comp_cv)
+                                || "-"}}
                               </div>
                             </div>
                           </div>
@@ -757,6 +758,7 @@
                               <div class="empty-purpose">
                                 <mat-icon class="icon-large">error_outline</mat-icon>
                                 <span class="mb-3">{{translatedLangText.NO_STORAGE_PURPOSE}}</span>
+                                @if (canAddPurpose('repair')) {
                                 <button mat-flat-button color="primary"
                                   (click)="updatePurposeDialog($event, 'storage', 'add')">
                                   <mat-icon>
@@ -764,6 +766,7 @@
                                   </mat-icon>
                                   {{translatedLangText.ADD_STORAGE_PURPOSE}}
                                 </button>
+                                }
                               </div>
                               }
                               }
@@ -784,7 +787,7 @@
                               @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async)) {
                               @if (sot?.purpose_steam) {
                               <div class="position-relative">
-                                @if (!isNoPurpose(sot!, 'steaming')) {
+                                @if (!isNoPurpose(sot!, 'steaming') && canRemovePurpose('steaming')) {
                                 <button color="warn" [matTooltip]="translatedLangText.REMOVE_STEAM_PURPOSE"
                                   (click)="updatePurposeDialog($event, 'steaming', 'remove')"
                                   class="link-button text-danger position-absolute top-0 end-0 p-0">
@@ -942,6 +945,7 @@
                               <div class="empty-purpose">
                                 <mat-icon class="icon-large">error_outline</mat-icon>
                                 <span class="mb-3">{{translatedLangText.NO_STEAM_PURPOSE}}</span>
+                                @if (canAddPurpose('repair')) {
                                 <button mat-flat-button color="primary"
                                   (click)="updatePurposeDialog($event, 'steaming', 'add')">
                                   <mat-icon>
@@ -949,6 +953,7 @@
                                   </mat-icon>
                                   {{translatedLangText.ADD_STEAM_PURPOSE}}
                                 </button>
+                                }
                               </div>
                               }
                               }
@@ -1204,7 +1209,7 @@
                               @if (!(cleaningDS.loading$ | async) && !(sotDS.loading$ | async)) {
                               @if (sot?.purpose_cleaning) {
                               <div class="position-relative">
-                                @if (!isNoPurpose(sot!, 'cleaning')) {
+                                @if (!isNoPurpose(sot!, 'cleaning') && canRemovePurpose('cleaning')) {
                                 <button color="warn" [matTooltip]="translatedLangText.REMOVE_CLEANING_PURPOSE"
                                   (click)="updatePurposeDialog($event, 'cleaning', 'remove')"
                                   class="link-button text-danger position-absolute top-0 end-0 p-0">
@@ -1286,8 +1291,9 @@
                                             class="material-icons-two-tone col-green font-bold m-l-0">check</mat-icon>
                                           }
                                           @else {
-                                          <mat-icon
-                                            class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
+                                          <!-- <mat-icon
+                                            class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon> -->
+                                          -
                                           }
                                         </div>
                                       </div>
@@ -1346,6 +1352,7 @@
                               <div class="empty-purpose">
                                 <mat-icon class="icon-large">error_outline</mat-icon>
                                 <span class="mb-3">{{translatedLangText.NO_CLEANING_PURPOSE}}</span>
+                                @if (canAddPurpose('repair')) {
                                 <button mat-flat-button color="primary"
                                   (click)="updatePurposeDialog($event, 'cleaning', 'add')">
                                   <mat-icon>
@@ -1353,6 +1360,7 @@
                                   </mat-icon>
                                   {{translatedLangText.ADD_CLEANING_PURPOSE}}
                                 </button>
+                                }
                               </div>
                               }
                               }
@@ -1366,7 +1374,7 @@
                               @if (!(repairDS.loading$ | async) && !(sotDS.loading$ | async)) {
                               @if (sot?.purpose_repair_cv) {
                               <div class="position-relative">
-                                @if (!isNoPurpose(sot!, 'repair')) {
+                                @if (!isNoPurpose(sot!, 'repair') && canRemovePurpose('repair')) {
                                 <button color="warn" [matTooltip]="translatedLangText.REMOVE_REPAIR_PURPOSE"
                                   (click)="updatePurposeDialog($event, 'repair', 'remove')"
                                   class="link-button text-danger position-absolute top-0 end-0 p-0">
@@ -1524,6 +1532,7 @@
                               <div class="empty-purpose">
                                 <mat-icon class="icon-large">error_outline</mat-icon>
                                 <span class="mb-3">{{translatedLangText.NO_REPAIR_PURPOSE}}</span>
+                                @if (canAddPurpose('repair')) {
                                 <button mat-flat-button color="primary"
                                   (click)="updatePurposeDialog($event, 'repair', 'add')">
                                   <mat-icon>
@@ -1531,6 +1540,7 @@
                                   </mat-icon>
                                   {{translatedLangText.ADD_REPAIR_PURPOSE}}
                                 </button>
+                                }
                               </div>
                               }
                               }
@@ -2131,7 +2141,7 @@
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{ccDS.displayName(row.customer_company)}}
+                                    class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{row.test_class_cv}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="survey_dt">

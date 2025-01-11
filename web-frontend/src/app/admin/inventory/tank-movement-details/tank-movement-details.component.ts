@@ -391,6 +391,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   schedulingList: SchedulingItem[] = [];
   surveyList: SurveyDetailItem[] = [];
   transferList: any[] = [];
+  allowAddPurposeTankStatuses: string[] = [
+    'SO_GENERATED',
+    'IN_GATE',
+    'IN_SURVEY',
+    'STEAM',
+    'RESIDUE',
+    'CLEANING',
+    'REPAIR',
+    'STORAGE'
+  ];
+  allowRemovePurposeStatuses: string[] = ['PENDING', 'CANCELED', 'COMPLETED', 'QC_COMPLETED'];
 
   surveyForm?: UntypedFormGroup;
 
@@ -1193,10 +1204,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           }
         }
         console.log(tankPurposeRequest)
-        this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
-          console.log(result)
-          this.handleSaveSuccess(result?.data?.updateTankPurpose);
-        });
+        // this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
+        //   console.log(result)
+        //   this.handleSaveSuccess(result?.data?.updateTankPurpose);
+        // });
       }
     });
   }
@@ -1422,7 +1433,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
       const test_type = igs.last_test_cv;
       const test_class = igs.test_class_cv;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
     }
     return "";
   }
@@ -1433,7 +1444,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
       const test_type = this.tiItem.last_test_cv;
       const test_class = this.tiItem.test_class_cv;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
     }
     return "";
   }
@@ -1656,6 +1667,26 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     // If all other purposes are invalid or absent
+    return true;
+  }
+
+  canRemovePurpose(purpose: string) {
+    if (this.sot) {
+      if (purpose === 'steaming') {
+        return !this.steamItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+      } else if (purpose === 'cleaning') {
+        return !this.cleaningItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+      } else if (purpose === 'repair') {
+        return !this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+      }
+    }
+    return true;
+  }
+
+  canAddPurpose(purpose: string) {
+    if (this.sot) {
+      return this.allowAddPurposeTankStatuses.includes(this.sot.tank_status_cv || '');
+    }
     return true;
   }
 }
