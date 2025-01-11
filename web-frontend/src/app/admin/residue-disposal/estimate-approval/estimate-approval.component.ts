@@ -173,7 +173,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   }
 
   availableTankStatus: string[] = [
-    'RESIDUE',
+    'CLEANING',
     'STORAGE'
   ]
 
@@ -301,7 +301,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       approval_dt_end: [''],
       est_status_cv: [''],
       current_status_cv: [''],
-      tank_status:[['RESIDUE']],
+      tank_status:[['CLEANING']],
     });
   }
 
@@ -522,7 +522,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     }
     else
     {
-     where.tank_status_cv={ in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
+     where.tank_status_cv={ in: ['CLEANING','STORAGE'] }
     }
 
     if (this.searchForm!.value['tank_no']) {
@@ -817,7 +817,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       approval_dt_end: '',
       est_status_cv: '',
       current_status_cv: '',
-      tank_status:[['RESIDUE']],
+      tank_status:[['CLEANING']],
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
