@@ -59,7 +59,7 @@ namespace IDMS.Survey.GqlTypes
 
                 var tnk = outGateRequest.tank;
                 storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
-                context.Attach(sot);
+                context.storing_order_tank.Attach(sot);
                 sot.unit_type_guid = tnk.unit_type_guid;
                 sot.owner_guid = tnk.owner_guid;
                 sot.tank_no = string.IsNullOrEmpty(tnk.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tnk.tank_no;
@@ -69,6 +69,27 @@ namespace IDMS.Survey.GqlTypes
 
                 //Add the newly created guid into list for return
                 retGuids.Add(outgateSurvey.guid);
+
+                if (!string.IsNullOrEmpty(outGateRequest.release_order?.guid))
+                {
+                    var RO = new release_order() { guid = outGateRequest.release_order.guid };
+                    context.Attach(RO);
+                    if (!string.IsNullOrEmpty(outGateRequest.haulier))
+                    {
+                        RO.haulier = outGateRequest.haulier;
+                        RO.update_by = user;
+                        RO.update_dt = currentDateTime;
+                    }
+                }
+
+                var preOrderTank = await context.storing_order_tank.Where(s => s.tank_no == tnk.tank_no &
+                                                                            s.status_cv == SOTankStatus.PREORDER).FirstOrDefaultAsync();
+                if (preOrderTank != null)
+                {
+                    preOrderTank.status_cv = SOTankStatus.WAITING;
+                    preOrderTank.update_by = user;
+                    preOrderTank.update_dt = currentDateTime;
+                }
 
                 retval = await context.SaveChangesAsync();
                 //TODO
@@ -80,7 +101,7 @@ namespace IDMS.Survey.GqlTypes
                 await AddTankInfo(context, mapper, user, currentDateTime, sot, outgateSurvey, null);
 
                 //Bundle the retVal and retGuid return as record object
-                record = new Record() { affected = retval, guid = retGuids }; 
+                record = new Record() { affected = retval, guid = retGuids };
             }
             catch (Exception ex)
             {
@@ -133,9 +154,21 @@ namespace IDMS.Survey.GqlTypes
                     outgate.driver_name = outGateRequest.driver_name;
                     outgate.haulier = outGateRequest.haulier;
                     //yet to survey --> pending
-                    outgate.eir_status_cv = EirStatus.PENDING;
+                    //outgate.eir_status_cv = EirStatus.PENDING;
                     outgate.update_by = user;
                     outgate.update_dt = currentDateTime;
+                }
+
+                if (!string.IsNullOrEmpty(outGateRequest.release_order?.guid))
+                {
+                    var RO = new release_order() { guid = outGateRequest.release_order.guid };
+                    context.Attach(RO);
+                    if (!string.IsNullOrEmpty(outGateRequest.haulier))
+                    {
+                        RO.haulier = outGateRequest.haulier;
+                        RO.update_by = user;
+                        RO.update_dt = currentDateTime;
+                    }
                 }
 
                 var tnk = outGateRequest.tank;
