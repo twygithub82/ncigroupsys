@@ -14,6 +14,7 @@ var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALI
 var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
 //var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
 var JWT_secretKey = await dbWrapper.GetJWTKey(connectionString);
+string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Value ?? "3";
 
 
 //builder.Services.AddPooledDbContextFactory<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
@@ -88,41 +89,43 @@ builder.Services.AddAuthentication(options =>
 //});
 
 var app = builder.Build();
+dbWrapper.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
 
-Thread t = new Thread(async() =>
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationPackageDBContext>>();
 
-        // Create a new instance of ApplicationPackageDBContext
-        using (var dbContext = await contextFactory.CreateDbContextAsync())
-        {
-            while (true)
-            {
+//Thread t = new Thread(async() =>
+//{
+//    using (var scope = app.Services.CreateScope())
+//    {
+//        var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationPackageDBContext>>();
 
-                //Task.Run(async() =>
-                //{
+//        // Create a new instance of ApplicationPackageDBContext
+//        using (var dbContext = await contextFactory.CreateDbContextAsync())
+//        {
+//            while (true)
+//            {
 
-                await dbContext.Database.OpenConnectionAsync();
-                //    // You can perform other operations here if needed
-                await dbContext.Database.CloseConnectionAsync();
+//                //Task.Run(async() =>
+//                //{
 
-                //});
-                System.Threading.Thread.Sleep(1000 * 10);
-            }
+//                await dbContext.Database.OpenConnectionAsync();
+//                //    // You can perform other operations here if needed
+//                await dbContext.Database.CloseConnectionAsync();
 
-        }
-    }
-});
-t.Start();
+//                //});
+//                System.Threading.Thread.Sleep(1000 * 10);
+//            }
+
+//        }
+//    }
+//});
+//t.Start();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
 
 app.UseWebSockets();
 app.UseHttpsRedirection();

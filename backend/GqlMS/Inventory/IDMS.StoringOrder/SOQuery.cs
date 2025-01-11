@@ -7,6 +7,7 @@ using IDMS.StoringOrder.GqlTypes.CustomSorter;
 //using IDMS.StoringOrder.Model.Domain.StoringOrder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
@@ -18,10 +19,11 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseFiltering]
         [UseSorting(typeof(SOSorter))]
         public IQueryable<storing_order> QueryStoringOrder([Service] IHttpContextAccessor httpContextAccessor,
-            ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context, [Service] IConfiguration config)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 return context.storing_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
                      .Include(so => so.storing_order_tank.Where(d => d.delete_dt == null || d.delete_dt == 0))
                      .Include(so => so.customer_company);
@@ -34,10 +36,11 @@ namespace IDMS.StoringOrder.GqlTypes
 
         [UseProjection]
         public IQueryable<storing_order> QueryStoringOrderById(string id, [Service] IHttpContextAccessor httpContextAccessor,
-            ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context, [Service] IConfiguration config)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 return context.storing_order.Where(c => c.guid.Equals(id))
                     .Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(so => so.storing_order_tank)//.ThenInclude(sot=> sot.tariff_cleaning)
@@ -54,10 +57,11 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseFiltering]
         [UseSorting]
         public IQueryable<storing_order_tank> QueryStoringOrderTank([Service] IHttpContextAccessor httpContextAccessor,
-            ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context, [Service] IConfiguration config)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 return context.storing_order_tank.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(so => so.storing_order)
                     .Include(tf => tf.tariff_cleaning)
@@ -70,6 +74,25 @@ namespace IDMS.StoringOrder.GqlTypes
                 //    .Include(so => so.storing_order)
                 //    .Include(tf => tf.tariff_cleaning)
                 //    .Include(bk => bk.booking);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<storing_order_tank> QueryStoringOrderTankCount([Service] IHttpContextAccessor httpContextAccessor,
+         ApplicationInventoryDBContext context, [Service] IConfiguration config)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                return context.storing_order_tank.Where(d => d.delete_dt == null || d.delete_dt == 0);
+
             }
             catch (Exception ex)
             {

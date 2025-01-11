@@ -2206,7 +2206,7 @@
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>
-                                  <span>{{row.update_by ?? "-"}}</span>
+                                  <span>{{row.update_by || row.create_by || "-"}}</span>
                                 </mat-cell>
                               </ng-container>
                               <mat-header-row *matHeaderRowDef="displayedColumnsSurveyDetail"></mat-header-row>

@@ -91,11 +91,11 @@ namespace IDMS.Survey.GqlTypes
 
                 //Add steaming by auto
                 if (tank.purpose_steam ?? false)
-                    await AddSteaming(context, config, httpContextAccessor, sot, ingate.create_dt);
+                    await AddSteaming(context, sot, ingate.create_dt);
 
                 //Add cleaning by auto
                 if (tank.purpose_cleaning ?? false)
-                    await AddCleaning(context, config, httpContextAccessor, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
+                    await AddCleaning(context, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
 
                 retval = await context.SaveChangesAsync();
                 //TODO
@@ -126,6 +126,9 @@ namespace IDMS.Survey.GqlTypes
 
             try
             {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
                 in_gate_survey? ingateSurvey = await context.in_gate_survey.Where(i => i.guid == inGateSurveyRequest.guid &&
                                                                                  (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
                 if (ingateSurvey == null)
@@ -134,9 +137,7 @@ namespace IDMS.Survey.GqlTypes
                 if (ingateSurvey.in_gate_guid == null)
                     throw new GraphQLException(new Error("Ingate guid cant be null.", "Error"));
 
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //string user = "admin";
-                long currentDateTime = DateTime.Now.ToEpochTime();
+
                 mapper.Map(inGateSurveyRequest, ingateSurvey);
 
                 if (string.IsNullOrEmpty(inGateSurveyRequest.guid))
@@ -262,13 +263,12 @@ namespace IDMS.Survey.GqlTypes
             return retval;
         }
 
-        private async Task<int> AddCleaning(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-        [Service] IHttpContextAccessor httpContextAccessor, storing_order_tank sot, long? ingate_date, string tariffBufferGuid)
+        private async Task<int> AddCleaning(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date, string tariffBufferGuid)
         {
             int retval = 0;
             try
             {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                string user = "system";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 //var sot = context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
@@ -276,11 +276,11 @@ namespace IDMS.Survey.GqlTypes
 
                 var ingateCleaning = new cleaning();
                 ingateCleaning.guid = Util.GenerateGUID();
-                ingateCleaning.create_by = "system";
+                ingateCleaning.create_by = user;
                 ingateCleaning.create_dt = currentDateTime;
                 ingateCleaning.sot_guid = sot.guid;
                 ingateCleaning.approve_dt = ingate_date;
-                ingateCleaning.approve_by = "system";
+                ingateCleaning.approve_by = user;
                 ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
                 ingateCleaning.job_no = sot?.job_no;
                 var customerGuid = sot?.storing_order?.customer_company_guid;
@@ -308,13 +308,12 @@ namespace IDMS.Survey.GqlTypes
             return retval;
         }
 
-        private async Task<int> AddSteaming(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, storing_order_tank sot, long? ingate_date)
+        private async Task<int> AddSteaming(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date)
         {
             int retval = 0;
             try
             {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                string user = "system";//GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var customerGuid = sot?.storing_order?.customer_company_guid;
@@ -327,7 +326,7 @@ namespace IDMS.Survey.GqlTypes
                 //First check whether have exclusive package cost
                 var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
                             .Join(context.Set<steaming_exclusive>(), p => p.steaming_exclusive_guid, t => t.guid, (p, t) => new { p, t })
-                            .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
+                            .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp && joined.t.tariff_cleaning_guid == last_cargo_guid)
                             .Select(joined => new SteamingPackageResult
                             {
                                 cost = joined.p.cost,  // Selecting cost
@@ -363,22 +362,22 @@ namespace IDMS.Survey.GqlTypes
                 //steaming handling
                 var newSteam = new steaming();
                 newSteam.guid = Util.GenerateGUID();
-                newSteam.create_by = "system";
+                newSteam.create_by = user;
                 newSteam.create_dt = currentDateTime;
                 newSteam.sot_guid = sot.guid;
                 newSteam.status_cv = CurrentServiceStatus.APPROVED;
                 newSteam.job_no = sot?.job_no;
                 newSteam.total_cost = totalCost;
                 newSteam.approve_dt = ingate_date;
-                newSteam.approve_by = "system";
-                newSteam.estimate_by = "system";
+                newSteam.approve_by = user;
+                newSteam.estimate_by = user;
                 newSteam.estimate_dt = ingate_date;
                 await context.AddAsync(newSteam);
 
                 //steaming_part handling
                 var steamingPart = new steaming_part();
                 steamingPart.guid = Util.GenerateGUID();
-                steamingPart.create_by = "system";
+                steamingPart.create_by = user;
                 steamingPart.create_dt = currentDateTime;
                 steamingPart.steaming_guid = newSteam.guid;
                 if (isExclusive)

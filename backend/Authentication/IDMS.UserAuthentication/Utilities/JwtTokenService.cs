@@ -76,7 +76,8 @@ namespace IDMS.User.Authentication.API.Utilities
             JArray functionNamesArray = JArray.FromObject(functionNames);
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
-            var exp = DateTime.Now.AddHours(_duration);
+            //var exp = DateTime.Now.AddHours(_duration);
+            var exp = DateTime.Now.AddYears(1);
             List<Claim> authClaims = GetClaims(userType, loginId, email, roles, functionNamesArray, teamsArray);
             var token = new JwtSecurityToken(
                   issuer: _issuer,

@@ -12,23 +12,26 @@ using IDMS.StoringOrder.GqlTypes;
 using IDMS.StoringOrder.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Shared;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace IDMS.Inventory
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpContextAccessor();
 
             // Add services to the container.
-            var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
-            var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
-            var JWT_secretKey = "";//await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
-
-
             string connectionString = builder.Configuration.GetConnectionString("default");
+            var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
+            var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
+            var JWT_secretKey = await GqlUtils.GetJWTKey(connectionString);
+            string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Value ?? "3";
+
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddPooledDbContextFactory<ApplicationInventoryDBContext>(o =>
             {
@@ -85,28 +88,52 @@ namespace IDMS.Inventory
                        .AddFiltering()
                        .AddSorting()
                        .AddProjections()
+                       .AddAuthorization()
                        .SetPagingOptions(new PagingOptions
                        {
                            MaxPageSize = 100
                        })
                        .AddInMemorySubscriptions();// Must add this as well for websocket
 
-            var app = builder.Build();
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            //// Configure the HTTP request pipeline.
-            //if (app.Environment.IsDevelopment())
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidAudience = JWT_validAudience,
+                    ValidIssuer = JWT_validIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_secretKey))
+                };
+            });
+
+            //builder.Services.AddCors(options =>
             //{
-            //    app.UseSwagger();
-            //    app.UseSwaggerUI();
-            //}
+            //    options.AddPolicy("AllowAll",
+            //        builder => builder
+            //            .AllowAnyOrigin()
+            //            .AllowAnyMethod()
+            //            .AllowAnyHeader());
+            //});
 
-            //app.UseHttpsRedirection();
-            //app.UseAuthorization();
-            //app.MapControllers();
+            var app = builder.Build();
+            GqlUtils.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
 
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            //app.UseCors("AllowAll");
             app.UseWebSockets();//Subscription using websockets, must add this middleware
             app.MapGraphQL();
-
             app.Run();
         }
     }

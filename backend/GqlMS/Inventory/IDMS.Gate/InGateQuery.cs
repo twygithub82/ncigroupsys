@@ -15,7 +15,7 @@ namespace IDMS.Gate.GqlTypes
     [ExtendObjectType(typeof(InventoryQuery))]
     public class InGateQuery
     {
-        private void Ping(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        private async void Ping(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             if (context != null)
             {
@@ -31,9 +31,9 @@ namespace IDMS.Gate.GqlTypes
         public IQueryable<in_gate> QueryInGates(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             IQueryable<in_gate> query = null;
+
             try
             {
-
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
                     .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0)
@@ -57,6 +57,28 @@ namespace IDMS.Gate.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
 
+            return query;
+        }
+
+        // [Authorize]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<in_gate> QueryInGatesCount(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            IQueryable<in_gate> query = null;
+
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
             return query;
         }
     }

@@ -1,4 +1,6 @@
 ﻿using CommonUtil.Core.Service;
+using IDMS.Models.DB;
+using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -58,8 +60,38 @@ namespace IDMS.Parameter.CleaningProcedure.Class
             }
 
             return secretkey;
-
-
         }
+
+        public static async void PingThread(IServiceScope scope, int duration)
+        {
+            Thread t = new Thread(async () =>
+            {
+                using (scope)
+                {
+                    var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationPackageDBContext>>();
+
+                    // Create a new instance of ApplicationPackageDBContext
+                    using (var dbContext = await contextFactory.CreateDbContextAsync())
+                    {
+                        while (true)
+                        {
+
+                            //Task.Run(async() =>
+                            //{
+
+                            await dbContext.Database.OpenConnectionAsync();
+                            //    // You can perform other operations here if needed
+                            await dbContext.Database.CloseConnectionAsync();
+
+                            //});
+                            Thread.Sleep(1000 * 60 * duration);
+                        }
+
+                    }
+                }
+            });
+            t.Start();
+        }
+
     }
 }

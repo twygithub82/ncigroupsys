@@ -369,7 +369,6 @@ namespace IDMS.Inventory.GqlTypes
                 throw;
             }
         }
-
         private async Task<int> RemoveRepair(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
         {
             try
@@ -444,7 +443,6 @@ namespace IDMS.Inventory.GqlTypes
                 throw;
             }
         }
-
         private async Task<int> RemoveStorage(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
         {
             try
@@ -485,8 +483,6 @@ namespace IDMS.Inventory.GqlTypes
                 throw;
             }
         }
-
-
         private async Task<bool> StatusChangeConditionCheck(List<job_order> jobOrders)
         {
             bool allValid = false;
@@ -499,7 +495,6 @@ namespace IDMS.Inventory.GqlTypes
 
             return allValid;
         }
-
         public async Task<int> AddSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail, PeriodicTestRequest? periodicTest)
         {
