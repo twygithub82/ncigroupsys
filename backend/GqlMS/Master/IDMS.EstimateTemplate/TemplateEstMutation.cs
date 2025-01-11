@@ -4,7 +4,6 @@ using IDMS.Models.Master;
 using IDMS.Models.Master.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
 using static IDMS.EstimateTemplate.GqlTypes.LocalModel.StatusConstant;
 
@@ -78,12 +77,6 @@ namespace IDMS.EstimateTemplate.GqlTypes
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
-
-                //if (string.IsNullOrEmpty(templateEstimate.guid))
-                //throw new GraphQLException(new Error($"Template_estimate guid used for update cannot be null or empty", "ERROR"));
-
-                //var template = templateEstimate; //new template_est() { guid = templateEstimate.guid };
-                //context.Attach(template);
 
                 var template = await context.template_est.Where(t => t.guid == editTemplateEsimate.guid && (t.delete_dt == null || t.delete_dt == 0))
                                                         .Include(t => t.template_est_customer)
@@ -352,91 +345,5 @@ namespace IDMS.EstimateTemplate.GqlTypes
             }
         }
         #endregion
-
-        //private async void UpdateRepairDamageCodeOld(ApplicationMasterDBContext context, string user, long currentDateTime, template_est_part estPart)
-        //{
-        //    try
-        //    {
-        //        if (estPart != null)
-        //        {
-        //            IList<tep_damage_repair> tepDamageRepairList = new List<tep_damage_repair>();
-        //            if (ObjectAction.NEW.EqualsIgnore(estPart.action))
-        //            {
-        //                foreach (var dmg in estPart.damage_code)
-        //                {
-        //                    var tepDamage = new tep_damage_repair();
-        //                    tepDamage.guid = Util.GenerateGUID();
-        //                    tepDamage.create_by = user;
-        //                    tepDamage.create_dt = currentDateTime;
-
-        //                    tepDamage.tep_guid = estPart.guid;
-        //                    tepDamage.code_type = (int)CodeTyp.damage;
-        //                    tepDamage.code_cv = dmg;
-        //                    tepDamageRepairList.Add(tepDamage);
-        //                }
-
-        //                foreach (var rep in estPart.repair_code)
-        //                {
-        //                    var tepRepair = new tep_damage_repair();
-        //                    tepRepair.guid = Util.GenerateGUID();
-        //                    tepRepair.create_by = user;
-        //                    tepRepair.create_dt = currentDateTime;
-
-        //                    tepRepair.tep_guid = estPart.guid;
-        //                    tepRepair.code_type = (int)CodeTyp.repair;
-        //                    tepRepair.code_cv = rep;
-        //                    tepDamageRepairList.Add(tepRepair);
-        //                }
-        //                await context.AddRangeAsync(tepDamageRepairList);
-        //            }
-
-        //            if (ObjectAction.EDIT.EqualsIgnore(estPart.action))
-        //            {
-        //                foreach (var dmg in estPart.damage_code)
-        //                {
-        //                    var tepDamage = new tep_damage_repair();
-        //                    context.Attach(tepDamage);
-        //                    tepDamage.code_cv = dmg;
-        //                    tepDamage.update_by = user;
-        //                    tepDamage.update_dt = currentDateTime;
-        //                }
-        //                foreach (var rep in estPart.repair_code)
-        //                {
-        //                    var tepDamage = new tep_damage_repair();
-        //                    context.Attach(tepDamage);
-        //                    tepDamage.code_cv = rep;
-        //                    tepDamage.update_by = user;
-        //                    tepDamage.update_dt = currentDateTime;
-        //                }
-        //            }
-
-        //            if (ObjectAction.CANCEL.EqualsIgnore(estPart.action))
-        //            {
-        //                foreach (var dmg in estPart.damage_code)
-        //                {
-        //                    var tepDamage = new tep_damage_repair();
-        //                    context.Attach(tepDamage);
-        //                    tepDamage.delete_dt = currentDateTime;
-        //                    tepDamage.update_by = user;
-        //                    tepDamage.update_dt = currentDateTime;
-        //                }
-        //                foreach (var rep in estPart.repair_code)
-        //                {
-        //                    var tepDamage = new tep_damage_repair();
-        //                    context.Attach(tepDamage);
-        //                    tepDamage.delete_dt = currentDateTime;
-        //                    tepDamage.update_by = user;
-        //                    tepDamage.update_dt = currentDateTime;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-
-        //   
-        //}
     }
 }

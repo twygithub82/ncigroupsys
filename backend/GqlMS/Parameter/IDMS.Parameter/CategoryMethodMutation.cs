@@ -84,7 +84,6 @@ namespace IDMS.Models.Parameter.GqlTypes
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //  var context = _contextFactory.CreateDbContext();
                 var delCleanMethods = context.cleaning_method.Where(s => DeleteCleanMethod_guids.Contains(s.guid) && s.delete_dt == null);
 
 

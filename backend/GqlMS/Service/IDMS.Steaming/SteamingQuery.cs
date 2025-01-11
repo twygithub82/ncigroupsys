@@ -5,6 +5,7 @@ using IDMS.Service.GqlTypes;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 
 namespace IDMS.Steaming.GqlTypes
@@ -16,10 +17,11 @@ namespace IDMS.Steaming.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<steaming> QuerySteaming(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<steaming> QuerySteaming(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var steaming = context.steaming.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(d => d.steaming_part)
                     .Include(d => d.storing_order_tank)
@@ -38,10 +40,11 @@ namespace IDMS.Steaming.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<steaming_temp> QuerySteamingTemp(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<steaming_temp> QuerySteamingTemp(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var steamingTemp = context.steaming_temp.Where(d => d.delete_dt == null || d.delete_dt == 0);
                 return steamingTemp;
             }

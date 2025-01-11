@@ -5,6 +5,7 @@ using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Service;
+using Microsoft.Extensions.Configuration;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -14,10 +15,11 @@ namespace IDMS.Service.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<job_order> QueryJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<job_order> QueryJobOrder(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var jobOrders = context.job_order
                                 .Include(j => j.storing_order_tank)
                                 .Include(j => j.team)
@@ -37,10 +39,11 @@ namespace IDMS.Service.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<team> QueryTeams(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<team> QueryTeams(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var teamDetails = context.team.Where(d => d.delete_dt == null || d.delete_dt == 0);
                 return teamDetails;
             }
@@ -54,10 +57,11 @@ namespace IDMS.Service.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<aspnetusers> QueryUsers(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<aspnetusers> QueryUsers(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var user = context.aspnetusers.Include(a => a.aspnetuserroles);
                 return user;
             }

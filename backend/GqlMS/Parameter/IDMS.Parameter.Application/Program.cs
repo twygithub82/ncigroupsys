@@ -9,9 +9,8 @@ using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration.GetConnectionString("default");
 
-var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
-var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
-//var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
+var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
+var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
 var JWT_secretKey = await dbWrapper.GetJWTKey(connectionString);
 
 
@@ -33,7 +32,6 @@ builder.Services.AddGraphQLServer()
     .AddAuthorization()
     .InitializeOnStartup()
     .RegisterDbContext<ApplicationParameterDBContext>(DbContextKind.Pooled)
-    //.RegisterDbContext<ApplicationParameterDBContext>(DbContextKind.Synchronized)
     .AddQueryType<CleaningMethodQuery>()
     .AddMutationType<CleanningMethodMutation>()
     .AddFiltering()
@@ -98,10 +96,5 @@ app.UseWebSockets();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
-
-
-//app.MapGet("/hello", () => "Hello World!");
 app.MapGraphQL();
-//app.MapControllers();
-
 app.Run();
