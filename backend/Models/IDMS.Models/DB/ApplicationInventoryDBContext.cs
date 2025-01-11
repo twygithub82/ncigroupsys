@@ -44,6 +44,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<code_values> code_values { get; set; }
         public DbSet<survey_detail> survey_detail { get; set; }
         public DbSet<job_order> job_order { get; set; }
+        public DbSet<currency> currency { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

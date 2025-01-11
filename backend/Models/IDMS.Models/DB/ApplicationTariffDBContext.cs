@@ -31,32 +31,10 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
                 .ToTable("tariff_cleaning")
                 .HasMany(e => e.sot).WithOne(e => e.tariff_cleaning)
                 .HasForeignKey(e=>e.last_cargo_guid) ;
-
-            //modelBuilder.Entity<tariff_repair>()
-            //    .HasKey(t => t.guid);
-
-            //modelBuilder.Entity<tariff_repair>()
-            //    .HasOne(t => t.package_repair)
-            //    .WithOne(e => e.tariff_repair)
-            //    .HasForeignKey<package_repair>(p => p.tariff_repair_guid);
-
-            //modelBuilder.Entity<package_repair>()
-            //    .HasKey(p => new { p.tariff_repair_guid, p.customer_company_guid });
-
-            //modelBuilder.Entity<tariff_cleaning>()
-            //    .ToTable("tariff_cleaning")
-            //    .HasOne(t => t.cleaning_method).WithMany(m => m.tariff_cleanings)
-            //    .HasForeignKey(f => f.cleaning_method_guid);
-
-            //modelBuilder.Entity<tariff_cleaning>()
-            //    .ToTable("tariff_cleaning")
-            //    .HasOne(t => t.cleaning_category).WithMany(m => m.tariff_cleanings)
-            //    .HasForeignKey(f => f.cleaning_category_guid);
-
         }
 
         
-
+        public DbSet<currency> currency { get; set; }
         public DbSet<IDMS.Models.Parameter.cleaning_method> cleaning_method { get; set; }
         public DbSet<IDMS.Models.Parameter.cleaning_category> cleaning_category { get; set; }
         

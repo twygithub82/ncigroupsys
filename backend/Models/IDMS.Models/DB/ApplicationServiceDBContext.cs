@@ -33,6 +33,7 @@ namespace IDMS.Models.Service.GqlTypes.DB
                 .HasForeignKey(sc => sc.roleID);
         }
 
+        public DbSet<currency> currency { get; set; } 
         public DbSet<team> team { get; set; }
         public DbSet<job_order> job_order { get; set; }
         public DbSet<time_table> time_table { get; set; }
