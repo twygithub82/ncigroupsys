@@ -594,6 +594,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       if(dimension!="") dimension+=" x ";
       dimension +=`${thicknessDimension}${this.RetrieveCodeDesc(this.thicknessUnitControl.value)||''}`;
     }
+    else
     { 
       this.unitTypeChangedEventUnsub=true;
       this.thicknessUnitControl.reset();

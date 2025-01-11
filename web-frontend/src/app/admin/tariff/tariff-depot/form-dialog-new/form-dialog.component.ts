@@ -335,7 +335,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
   canEdit()
   {
-    return this.pcForm!.value['action']=="new";
+    return this.pcForm!.value['action']=="new" && this.tnkItems?.length;
   }
 
   handleSaveSuccess(count: any) {
