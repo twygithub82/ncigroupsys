@@ -29,6 +29,6 @@ namespace IDMS.Models
         public customer_company? customer_company { get; set; }
 
         [UseFiltering]
-        public IEnumerable<release_order_sot>? release_order_sot { get; set; }    
+        public IEnumerable<release_order_sot?>? release_order_sot { get; set; }    
     }
 }

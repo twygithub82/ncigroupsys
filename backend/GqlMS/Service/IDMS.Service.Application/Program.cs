@@ -9,42 +9,36 @@ using IDMS.Cleaning.GqlTypes;
 using IDMS.Service.GqlTypes;
 using IDMS.Repair;
 using IDMS.Steaming.GqlTypes;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace IDMS.ServiceMS
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpContextAccessor();
 
-            // Add services to the container.
-            var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
-            var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
-            var JWT_secretKey = "";//await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
-
-
             string connectionString = builder.Configuration.GetConnectionString("default");
+            // Add services to the container.
+            var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
+            var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
+            var JWT_secretKey = await GqlUtils.GetJWTKey(connectionString);
+
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddPooledDbContextFactory<ApplicationServiceDBContext>(o =>
             {
                 o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
-                //o.EnableSensitiveDataLogging(false);
             });
 
 
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-
                 //cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
                 //    .ForMember(dest => dest.guid, opt => opt.Ignore());
-
-                //cfg.CreateMap<OutGateSurveyRequest, out_gate_survey>()
-                //    .ForMember(dest => dest.guid, opt => opt.Ignore());
-
-                //cfg.CreateMap<CustomerRequest, customer_company>();
-                //cfg.CreateMap<StoringOrderRequest, storing_order>();
             });
 
             IMapper mapper = mappingConfig.CreateMapper();
@@ -68,17 +62,37 @@ namespace IDMS.ServiceMS
                        .AddTypeExtension<CleaningMutation>()
                        .AddTypeExtension<SteamingQuery>()
                        .AddTypeExtension<SteamingMutation>()
-                       //.AddTypeExtension<SchedulingMutation>()
                        .AddFiltering()
                        .AddSorting()
                        .AddProjections()
+                       .AddAuthorization()
                        .SetPagingOptions(new PagingOptions
                        {
                            MaxPageSize = 100
                        })
                        .AddInMemorySubscriptions();// Must add this as well for websocket
 
-            var app = builder.Build();
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidAudience = JWT_validAudience,
+                    ValidIssuer = JWT_validIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_secretKey))
+                };
+            });
 
             //// Configure the HTTP request pipeline.
             //if (app.Environment.IsDevelopment())
@@ -86,14 +100,12 @@ namespace IDMS.ServiceMS
             //    app.UseSwagger();
             //    app.UseSwaggerUI();
             //}
+            var app = builder.Build();
 
-            //app.UseHttpsRedirection();
-            //app.UseAuthorization();
-            //app.MapControllers();
-
-            app.UseWebSockets();//Subscription using websockets, must add this middleware
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            //app.UseWebSockets();//Subscription using websockets, must add this middleware
             app.MapGraphQL();
-
             app.Run();
         }
     }

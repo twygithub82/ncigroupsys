@@ -44,7 +44,7 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
   REMEMBER = 'LANDING-SIGNIN.REMEMBER'
   FORGOTPASSWORD = 'LANDING-SIGNIN.FORGOTPASSWORD'
   LOGIN = 'LANDING-SIGNIN.LOGIN'
-  
+
   PROCEDURE_REQUIRED = 'COMMON-FORM.IS-REQUIRED'
 
   rememberMe = false;

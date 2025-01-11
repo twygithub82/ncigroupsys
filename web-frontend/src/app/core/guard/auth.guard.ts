@@ -19,7 +19,7 @@ export class AuthGuard {
       }
       return true;
     } else {
-      this.router.navigate(['/authentication/signin']);
+      this.router.navigate(['/authentication/signin-staff']);
       return false;
     }
   }

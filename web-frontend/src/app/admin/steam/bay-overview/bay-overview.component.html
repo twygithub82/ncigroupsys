@@ -56,6 +56,9 @@
                       </mat-icon>
                      
                     </button>
+                    <!-- <button mat-fab color="accent" class="action-button" type="button" [disabled]="!team.isOccupied" (click)="rollBackSteamingJob($event,team)">
+                    <mat-icon class="col-white">undo</mat-icon>{{translatedLangText.ORDER_DETAILS}}
+                  </button> -->
                   </div>
                   <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-0">
                     <button  mat-button class="action-button"  [disabled]="!team.isOccupied" (click)="showTankInfo($event,team)">

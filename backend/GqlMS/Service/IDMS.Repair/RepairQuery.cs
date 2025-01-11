@@ -5,6 +5,7 @@ using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Service.GqlTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace IDMS.Repair
 {
@@ -15,10 +16,11 @@ namespace IDMS.Repair
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<repair> QueryRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<repair> QueryRepair(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var repair = context.repair.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(d => d.repair_part)
                         .ThenInclude(p => p.rp_damage_repair)

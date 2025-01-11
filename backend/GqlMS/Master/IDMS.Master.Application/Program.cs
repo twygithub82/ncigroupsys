@@ -6,25 +6,27 @@ using IDMS.Customer.GqlTypes.LocalModel;
 using IDMS.EstimateTemplate.GqlTypes;
 using IDMS.Models.Master;
 using IDMS.Models.Master.GqlTypes.DB;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 namespace IDMS.Master.Application
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpContextAccessor();
 
-            // Add services to the container.
-            var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
-            var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
-            var JWT_secretKey = "";//await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
-
-
             string connectionString = builder.Configuration.GetConnectionString("default");
+            // Add services to the container.
+            var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
+            var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
+            var JWT_secretKey = await GqlUtils.GetJWTKey(connectionString);
+
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddPooledDbContextFactory<ApplicationMasterDBContext>(o =>
             {
@@ -35,12 +37,6 @@ namespace IDMS.Master.Application
 
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-                //cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
-                //    .ForMember(dest => dest.guid, opt => opt.Ignore());
-
-                //cfg.CreateMap<CustomerRequest, customer_company>()
-                //    .ForMember(dest => dest.guid, opt => opt.Ignore());
-
                 cfg.CreateMap<CustomerRequest, customer_company>();
                 //cfg.CreateMap<ContactPersonRequest, customer_company_contact_person>();
             });
@@ -58,37 +54,46 @@ namespace IDMS.Master.Application
                        .RegisterDbContext<ApplicationMasterDBContext>(DbContextKind.Pooled)
                        .AddQueryType<TemplateEstQuery>()
                        .AddTypeExtension<CustomerQuery>()
-                       //.AddTypeExtension<SchedulingQuery>()
-                       //.AddTypeExtension<ReleaseOrderQuery>()
-                       //.AddSubscriptionType<BookingSubscription>()
                        .AddMutationType<TemplateEstMutation>()
                        .AddTypeExtension<CustomerMutation>()
-                       //.AddTypeExtension<SchedulingMutation>()
                        .AddFiltering()
                        .AddSorting()
                        .AddProjections()
+                       .AddAuthorization()
                        .SetPagingOptions(new PagingOptions
                        {
                            MaxPageSize = 100
                        })
                        .AddInMemorySubscriptions();// Must add this as well for websocket
 
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidAudience = JWT_validAudience,
+                    ValidIssuer = JWT_validIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_secretKey))
+                };
+            });
+
             var app = builder.Build();
 
-            //// Configure the HTTP request pipeline.
-            //if (app.Environment.IsDevelopment())
-            //{
-            //    app.UseSwagger();
-            //    app.UseSwaggerUI();
-            //}
-
-            //app.UseHttpsRedirection();
-            //app.UseAuthorization();
-            //app.MapControllers();
-
-            app.UseWebSockets();//Subscription using websockets, must add this middleware
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            //app.UseWebSockets();//Subscription using websockets, must add this middleware
             app.MapGraphQL();
-
             app.Run();
         }
     }

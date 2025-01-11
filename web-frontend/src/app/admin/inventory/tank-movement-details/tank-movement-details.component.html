@@ -831,32 +831,32 @@
                                         </ng-container>
                                         <ng-container matColumnDef="estimate_no">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.ESTIMATE_NO}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span
                                               class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
                                           </mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="actions">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <mat-icon>more_horiz</mat-icon>
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label"><mat-icon>more_horiz</mat-icon>:</span>
                                           </mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="degree_celsius">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span
                                               class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>{{steamDS.getSteamHighestTemp(row)}}
                                           </mat-cell>
@@ -874,11 +874,11 @@
                                         </ng-container>
                                         <ng-container matColumnDef="approve_dt">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.APPROVED_NO_ACTION}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span
                                               class="mobile-tab-label">{{translatedLangText.APPROVED_NO_ACTION}}:</span>
                                             <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
@@ -917,9 +917,21 @@
                                               class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
                                           </mat-cell>
                                         </ng-container>
+                                        <ng-container matColumnDef="bill">
+                                          <mat-header-cell mat-header-cell *matHeaderCellDef
+                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            {{translatedLangText.BILL}}
+                                          </mat-header-cell>
+                                          <mat-cell mat-cell *matCellDef="let row"
+                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            <span class="mobile-tab-label">{{translatedLangText.BILL}}:</span>
+                                            <mat-icon
+                                              class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
+                                          </mat-cell>
+                                        </ng-container>
                                         <mat-header-row *matHeaderRowDef="displayedColumnsSteaming"></mat-header-row>
                                         <mat-row *matRowDef="let row; columns: displayedColumnsSteaming;"
-                                          [style.cursor]="'pointer'" matRipple>
+                                          (click)="steamTempDialog($event, row)" [style.cursor]="'pointer'" matRipple>
                                         </mat-row>
                                       </table>
                                     </div>

@@ -19,7 +19,6 @@ namespace IDMS.Steaming.GqlTypes
         public async Task<int> AddSteaming(ApplicationServiceDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, steaming steaming)
         {
-
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);

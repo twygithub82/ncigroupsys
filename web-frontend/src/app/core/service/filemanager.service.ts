@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, throwError } from 'rxjs';
 import { User } from '../models/user';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { environment } from 'environments/environment';
@@ -13,11 +13,14 @@ import { jwt_mapping } from 'app/api-endpoints';
 export class FileManagerService {
   public loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
+  public actionLoadingSubject = new BehaviorSubject<boolean>(false);
+  public actionLoading$ = this.actionLoadingSubject.asObservable();
 
   constructor(private http: HttpClient) {
   }
 
   uploadFiles(filesWithMetadata: { file: File, metadata: any }[]): Observable<any> {
+    this.actionLoadingSubject.next(true);
     const formData = new FormData();
 
     filesWithMetadata.forEach((item) => {
@@ -28,7 +31,12 @@ export class FileManagerService {
     return this.http.post<any>(`${environment.fileManagerURL}${uploadEndpoints.uploadFiles}`, formData)
       .pipe(
         map(response => {
+          this.actionLoadingSubject.next(false); // Stop loading on error
           return response;
+        }),
+        catchError(error => {
+          this.actionLoadingSubject.next(false); // Stop loading on error
+          throw error;
         })
       );
   }

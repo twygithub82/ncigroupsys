@@ -5,6 +5,7 @@ using IDMS.Models.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Service.GqlTypes;
+using Microsoft.Extensions.Configuration;
 
 namespace IDMS.Residue.GqlTypes
 {
@@ -15,10 +16,11 @@ namespace IDMS.Residue.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<residue> QueryResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<residue> QueryResidue(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var residue = context.residue.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(r => r.residue_part)
                     .Include(r => r.storing_order_tank)

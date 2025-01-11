@@ -2,19 +2,16 @@ using IDMS.Parameter.CleaningProcedure.Class;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using IDMS.Models.Tariff.Cleaning.GqlTypes;
 using Microsoft.EntityFrameworkCore;
-using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
-using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
-using HotChocolate.Data;
 using IDMS.Models.DB;
 using IDMS.Models.Package.GqlTypes;
 
 var builder = WebApplication.CreateBuilder(args);
 
 string connectionString = builder.Configuration.GetConnectionString("default");
-var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
-var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
+
+var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
+var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
 //var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
 var JWT_secretKey = await dbWrapper.GetJWTKey(connectionString);
 
@@ -79,16 +76,16 @@ builder.Services.AddAuthentication(options =>
 
 //builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        builder => builder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader());
-});
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll",
+//        builder => builder
+//            .AllowAnyOrigin()
+//            .AllowAnyMethod()
+//            .AllowAnyHeader());
+//});
 
 var app = builder.Build();
 
@@ -135,6 +132,5 @@ app.UseAuthentication();
 //app.MapGet("/", () => "Hello World!");
 app.MapGraphQL();
 //app.MapControllers();
-
-app.UseCors("AllowAll");
+//app.UseCors("AllowAll");
 app.Run();
