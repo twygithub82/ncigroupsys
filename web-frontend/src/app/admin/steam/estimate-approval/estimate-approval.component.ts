@@ -943,12 +943,15 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
             return new SteamPartItem({
               ...rep,
              // tariff_residue: undefined,
-              action:'',
+              action:'EDIT',
               tariff_steaming_guid:(rep.tariff_steaming_guid?rep.tariff_steaming_guid:''),
               approve_part: (rep.approve_part==null?true:rep.approve_part),
-              approve_qty:rep.quantity,
-              approve_cost:rep.cost,
-              approve_labour:rep.labour,
+              approve_qty:Number(this.IsApproved(row)?rep.approve_qty : rep.quantity) ,
+              approve_cost:Number(this.IsApproved(row)?rep.approve_cost : rep.cost) ,
+              approve_labour:Number(this.IsApproved(row)?rep.approve_labour : rep.labour),
+              // approve_qty: row rep.quantity,
+              // approve_cost:rep.cost,
+              // approve_labour:rep.labour,
               job_order:undefined
             })
           });
@@ -991,5 +994,12 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       
           return this.steamDS.canApprove(steamItem!) && !steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
         }
+
+        // IsApproved(steamItem:SteamItem):boolean
+        // {
+        //   const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
+        //   return validStatus.includes(steamItem?.status_cv!);
+          
+        // }
       
 }

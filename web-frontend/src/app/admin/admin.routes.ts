@@ -81,6 +81,13 @@ import { SteamEstimateApprovalComponent } from './steam/estimate-approval/estima
 import { OutGateSurveyComponent } from './inventory/out-gate-survey/out-gate-survey.component';
 import { ExclusiveSteamComponent } from './package/exclusive-steam/exclusive-steam.component';
 import { OutGateSurveyFormComponent } from './inventory/out-gate-survey-form/out-gate-survey-form.component';
+import { LOLOBillingComponent } from './billing/depot-cost/LOLO/lolo-billing.component';
+import { PreinspectionBillingComponent } from './billing/depot-cost/pre-inspection/preinspection-billing.component';
+import { StorageBillingComponent } from './billing/depot-cost/storage/storage-billing.component';
+import { CleanBillingComponent } from './billing/cleaning/clean-billing.component';
+import { RepairBillingComponent } from './billing/repair/repair-billing.component';
+import { ResidueBillingComponent } from './billing/residue-disposal/residue-billing.component';
+import { SteamBillingComponent } from './billing/steam/steam-billing.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -144,7 +151,7 @@ export const ADMIN_ROUTE: Routes = [
     component: OutGateSurveyComponent,
   },
   {
-    path: "inventory/out-gate-survey/survey-form/:id/:roSotId",
+    path: "inventory/out-gate-survey/survey-form/:id",
     component: OutGateSurveyFormComponent,
   },
   {
@@ -437,6 +444,34 @@ export const ADMIN_ROUTE: Routes = [
     path: "survey/periodic-test/details/:id",
     component: SurveyPeriodicTestDetailsComponent,
   },
+  {
+    path: "billing/depot/lolo",
+    component: LOLOBillingComponent,
+  },
+  {
+    path: "billing/depot/preinspection",
+    component: PreinspectionBillingComponent,
+  },
+  {
+    path: "billing/depot/storage",
+    component: StorageBillingComponent,
+  },
+  {
+    path: "billing/clean",
+    component: CleanBillingComponent,
+  },
+  {
+    path: "billing/repair",
+    component: RepairBillingComponent,
+  },
+  {
+    path: "billing/residue",
+    component: ResidueBillingComponent,
+  },
+  {
+    path: "billing/steam",
+    component: SteamBillingComponent,
+  }
 ];
 
 // @NgModule({

@@ -48,8 +48,8 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 @Component({
   selector: 'app-tank-movement',
   standalone: true,
-  templateUrl: './preinspection-billing.component.html',
-  styleUrl: './preinspection-billing.component.scss',
+  templateUrl: './steam-billing.component.html',
+  styleUrl: './steam-billing.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -77,7 +77,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
     MatDividerModule,
   ]
 })
-export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
     'customer',
@@ -88,7 +88,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     'tank_status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.BILLING.LIST.PRE-INSPECTION'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
