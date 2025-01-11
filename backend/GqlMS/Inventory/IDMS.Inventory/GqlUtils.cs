@@ -430,6 +430,7 @@ namespace IDMS.Inventory.GqlTypes
                     steamingPart.quantity = defQty;
                     steamingPart.labour = result?.labour;
                     steamingPart.cost = result?.cost;
+                    steamingPart.approve_qty = defQty;
                     steamingPart.approve_part = true;
                     steamingPart.approve_cost = result?.cost;
                     steamingPart.approve_labour = result?.labour;
