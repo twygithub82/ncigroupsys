@@ -103,6 +103,7 @@ implements OnInit {
     // // 'img',
        'customerCode',
        'companyName',
+       'lastCargo',
       'minTemp',
       'maxTemp',
       'cost',
@@ -792,6 +793,13 @@ implements OnInit {
         this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
       }
     })
+  }
+  displayTempMax(tempMax:any):String
+  {
+     var retval:String ='';
+
+     retval = (!tempMax||tempMax===9999?'-':tempMax);
+     return retval;
   }
 }
 

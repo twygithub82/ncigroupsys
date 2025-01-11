@@ -396,8 +396,15 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   onFilterSteam() {
+    // const where: any = {
+    //  and:[]
+    // };
+
     const where: any = {
-     and:[]
+      and:[
+        //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
+        {storing_order_tank:{tank_status_cv:{in:["STEAM"]}}}
+      ]
     };
 
     where.and.push({status_cv : {
@@ -770,7 +777,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
    
    canToggleJob(steam:SteamItem | undefined) {
     var retval
-    retval= (steam?.steaming_part?.[0]?.tariff_steaming_guid===null);
+    retval= (steam?.steaming_part?.[0]?.tariff_steaming_guid===null && steam?.steaming_part?.[0]?.steaming_exclusive_guid===null);
     return retval;
   }
 }

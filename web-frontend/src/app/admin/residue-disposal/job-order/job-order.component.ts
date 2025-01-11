@@ -388,8 +388,14 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   onFilterResidue() {
+    // const where: any = {
+    //  and:[]
+    // };
     const where: any = {
-     and:[]
+      and:[
+        //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
+        {storing_order_tank:{tank_status_cv:{in:["CLEANING"]}}}
+      ]
     };
 
     where.and.push({status_cv : {

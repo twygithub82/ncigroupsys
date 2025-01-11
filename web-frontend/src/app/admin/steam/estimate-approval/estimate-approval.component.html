@@ -135,7 +135,36 @@
                             }
                         }
                       </mat-select>
+                      
                     </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm3 mb-1">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.TANK_STATUS }}</mat-label>
+                        <mat-select formControlName="tank_status" multiple>
+
+                          @for (ts of tankStatusCvList; track ts) {
+                            @if (availableTankStatus.includes(ts.code_val ?? '')) {
+                              <mat-option [value]="ts.code_val">
+                                {{ts.description}}
+                              </mat-option>
+                              }
+                          }
+                            <!-- <mat-option *ngFor="let ts of tankStatusCvList" [value]="ts">
+                             
+                              @if (availableTankStatus.includes(ts.code_val ?? '')) {
+                              <ng-container *ngIf="ts !== null">
+                               
+                                {{ ts.description }}
+                                
+                              </ng-container>
+                              }
+                             
+                            </mat-option> -->
+                          </mat-select>
+                       
+                    </mat-form-field>
+                    
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 d-flex align-items-center">
                     <button mat-mini-fab color="primary" (click)="search()">
