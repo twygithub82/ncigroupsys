@@ -151,7 +151,7 @@ export const ADMIN_ROUTE: Routes = [
     component: OutGateSurveyComponent,
   },
   {
-    path: "inventory/out-gate-survey/survey-form/:id",
+    path: "inventory/out-gate-survey/survey-form/:id/:roSotId",
     component: OutGateSurveyFormComponent,
   },
   {
