@@ -30,23 +30,23 @@ export class InGate {
   public delete_dt?: number;
 
   constructor(item: Partial<InGate> = {}) {
-    this.guid = item.guid || '';
-    this.driver_name = item.driver_name;
-    this.eir_dt = item.eir_dt;
-    this.eir_no = item.eir_no;
-    this.eir_status_cv = item.eir_status_cv;
-    this.lolo_cv = item.lolo_cv;
-    this.preinspection_cv = item.preinspection_cv;
-    this.so_tank_guid = item.so_tank_guid;
-    this.vehicle_no = item.vehicle_no;
-    this.yard_cv = item.yard_cv;
-    this.remarks = item.remarks;
-    this.haulier = item.haulier;
-    this.create_dt = item.create_dt;
-    this.create_by = item.create_by;
-    this.update_dt = item.update_dt;
-    this.update_by = item.update_by;
-    this.delete_dt = item.delete_dt;
+    this.guid = item?.guid || '';
+    this.driver_name = item?.driver_name;
+    this.eir_dt = item?.eir_dt;
+    this.eir_no = item?.eir_no;
+    this.eir_status_cv = item?.eir_status_cv;
+    this.lolo_cv = item?.lolo_cv;
+    this.preinspection_cv = item?.preinspection_cv;
+    this.so_tank_guid = item?.so_tank_guid;
+    this.vehicle_no = item?.vehicle_no;
+    this.yard_cv = item?.yard_cv;
+    this.remarks = item?.remarks;
+    this.haulier = item?.haulier;
+    this.create_dt = item?.create_dt;
+    this.create_by = item?.create_by;
+    this.update_dt = item?.update_dt;
+    this.update_by = item?.update_by;
+    this.delete_dt = item?.delete_dt;
   }
 }
 
@@ -56,8 +56,8 @@ export class InGateGO extends InGate {
 
   constructor(item: Partial<InGateGO> = {}) {
     super(item)
-    this.tank = item.tank;
-    this.in_gate_survey = item.in_gate_survey ? new InGateSurveyItem(item.in_gate_survey) : undefined;
+    this.tank = item?.tank;
+    this.in_gate_survey = item?.in_gate_survey ? new InGateSurveyItem(item?.in_gate_survey) : undefined;
   }
 }
 

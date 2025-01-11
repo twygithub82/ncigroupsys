@@ -27,20 +27,20 @@ export class OutGate {
   public delete_dt?: number;
 
   constructor(item: Partial<OutGate> = {}) {
-    this.guid = item.guid || '';
-    this.driver_name = item.driver_name;
-    this.eir_dt = item.eir_dt;
-    this.eir_no = item.eir_no;
-    this.eir_status_cv = item.eir_status_cv;
-    this.so_tank_guid = item.so_tank_guid;
-    this.vehicle_no = item.vehicle_no;
-    this.remarks = item.remarks;
-    this.haulier = item.haulier;
-    this.create_dt = item.create_dt;
-    this.create_by = item.create_by;
-    this.update_dt = item.update_dt;
-    this.update_by = item.update_by;
-    this.delete_dt = item.delete_dt;
+    this.guid = item?.guid || '';
+    this.driver_name = item?.driver_name;
+    this.eir_dt = item?.eir_dt;
+    this.eir_no = item?.eir_no;
+    this.eir_status_cv = item?.eir_status_cv;
+    this.so_tank_guid = item?.so_tank_guid;
+    this.vehicle_no = item?.vehicle_no;
+    this.remarks = item?.remarks;
+    this.haulier = item?.haulier;
+    this.create_dt = item?.create_dt;
+    this.create_by = item?.create_by;
+    this.update_dt = item?.update_dt;
+    this.update_by = item?.update_by;
+    this.delete_dt = item?.delete_dt;
   }
 }
 
@@ -50,8 +50,8 @@ export class OutGateGO extends OutGate {
 
   constructor(item: Partial<OutGateGO> = {}) {
     super(item);
-    this.tank = item.tank;
-    this.out_gate_survey = item.out_gate_survey;
+    this.tank = item?.tank;
+    this.out_gate_survey = item?.out_gate_survey;
   }
 }
 
