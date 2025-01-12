@@ -199,7 +199,6 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       },
-    
       {
         path: "admin/package/package-buffer",
         title: "MENUITEMS.PACKAGE.LIST.PACKAGE-BUFFER",
@@ -736,52 +735,52 @@ export const ROUTES: RouteInfo[] = [
       }
     ].filter(item => item.visible !== false),
   },
-  {
-    path: "admin/management",
-    title: "MENUITEMS.MANAGEMENT.TEXT",
-    iconType: "material",
-    icon: "business_center",
-    class: "menu-toggle",
-    groupTitle: false,
-    badge: "",
-    badgeClass: "",
-    submenu: [
-      {
-        path: "admin/management/user",
-        title: "MENUITEMS.MANAGEMENT.LIST.USER",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
-      },
-      {
-        path: "admin/management/group",
-        title: "MENUITEMS.MANAGEMENT.LIST.GROUP",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: []
-      },
-      {
-        path: "admin/cleaning-groups",
-        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-GROUPS",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
-        visible: false
-      }
-    ].filter(item => item.visible !== false),
-  },
+  // {
+  //   path: "admin/management",
+  //   title: "MENUITEMS.MANAGEMENT.TEXT",
+  //   iconType: "material",
+  //   icon: "business_center",
+  //   class: "menu-toggle",
+  //   groupTitle: false,
+  //   badge: "",
+  //   badgeClass: "",
+  //   submenu: [
+  //     {
+  //       path: "admin/management/user",
+  //       title: "MENUITEMS.MANAGEMENT.LIST.USER",
+  //       iconType: "",
+  //       icon: "",
+  //       class: "ml-menu",
+  //       groupTitle: false,
+  //       badge: "",
+  //       badgeClass: "",
+  //       submenu: [],
+  //     },
+  //     {
+  //       path: "admin/management/group",
+  //       title: "MENUITEMS.MANAGEMENT.LIST.GROUP",
+  //       iconType: "",
+  //       icon: "",
+  //       class: "ml-menu",
+  //       groupTitle: false,
+  //       badge: "",
+  //       badgeClass: "",
+  //       submenu: []
+  //     },
+  //     {
+  //       path: "admin/cleaning-groups",
+  //       title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-GROUPS",
+  //       iconType: "",
+  //       icon: "",
+  //       class: "ml-menu",
+  //       groupTitle: false,
+  //       badge: "",
+  //       badgeClass: "",
+  //       submenu: [],
+  //       visible: false
+  //     }
+  //   ].filter(item => item.visible !== false),
+  // },
   // {
   //   path: "admin/billing",
   //   title: "MENUITEMS.BILLING.TEXT",
@@ -883,7 +882,7 @@ export const ROUTES: RouteInfo[] = [
   //       badge: "",
   //       badgeClass: "",
   //       submenu: [],
-        
+
   //     },
   //     {
   //       path: "admin/billing/clean",
@@ -895,7 +894,7 @@ export const ROUTES: RouteInfo[] = [
   //       badge: "",
   //       badgeClass: "",
   //       submenu: [],
-        
+
   //     },
   //     {
   //       path: "admin/billing/repair",
@@ -965,52 +964,6 @@ export const ROUTES: RouteInfo[] = [
   //     }
   //   ].filter(item => item.visible !== false),
   // },
-  {
-    path: "admin/management",
-    title: "MENUITEMS.MANAGEMENT.TEXT",
-    iconType: "material",
-    icon: "business_center",
-    class: "menu-toggle",
-    groupTitle: false,
-    badge: "",
-    badgeClass: "",
-    submenu: [
-      {
-        path: "admin/management/user",
-        title: "MENUITEMS.MANAGEMENT.LIST.USER",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
-      },
-      {
-        path: "admin/management/group",
-        title: "MENUITEMS.MANAGEMENT.LIST.GROUP",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: []
-      },
-      {
-        path: "admin/cleaning-groups",
-        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-GROUPS",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
-        visible: false
-      }
-    ].filter(item => item.visible !== false),
-  },
   {
     path: "admin/survey",
     title: "MENUITEMS.SURVEY.TEXT",
