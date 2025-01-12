@@ -25,15 +25,14 @@ builder.Services.AddPooledDbContextFactory<ApplicationPackageDBContext>(o =>
     o.EnableSensitiveDataLogging(false);
 });
 
-
 //builder.Services.AddDbContextPool<ApplicationPackageDBContext>(options =>
 //    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
 // new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
-
 //);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
+                .InitializeOnStartup()
                 .RegisterDbContext<ApplicationPackageDBContext>(DbContextKind.Pooled)
                 .AddAuthorization()
                 .AddQueryType<PackageQuery>()
@@ -47,10 +46,8 @@ builder.Services.AddGraphQLServer()
                .AddSorting();
 
 
-
 builder.Services.AddAuthentication(options =>
 {
-
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;

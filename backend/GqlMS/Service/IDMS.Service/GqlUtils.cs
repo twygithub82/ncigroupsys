@@ -359,56 +359,58 @@ namespace IDMS.Service.GqlTypes
                             goto ProceesUpdate;
                         }
                     }
-                    //else
-                    //{
-                    //    tank.tank_status_cv = TankMovementStatus.STEAM;
-                    //    goto ProceesUpdate;
-                    //}
                 }
 
                 //check if tank have any cleaning purpose
                 if (tank.purpose_cleaning ?? false)
                 {
 
-                    var res = await context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                    if (res.Any())
+                    //var res = await context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    //if (res.Any())
+                    //{
+                    //    if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
+                    //    {
+                    //        tank.tank_status_cv = TankMovementStatus.CLEANING;
+                    //        goto ProceesUpdate;
+                    //    }
+                    //    else
+                    //    {
+                    //        //Else, check if tank have any residue estimate already created but pending
+                    //        //res.Clear();
+                    //        var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    //        if (resd.Any())
+                    //        {
+                    //            if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
+                    //            {
+                    //                tank.tank_status_cv = TankMovementStatus.CLEANING;
+                    //                goto ProceesUpdate;
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    //    if (resd.Any())
+                    //    {
+                    //        if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
+                    //        {
+                    //            tank.tank_status_cv = TankMovementStatus.CLEANING;
+                    //            goto ProceesUpdate;
+                    //        }
+                    //    }
+                    //}
+
+                    var cleaningTasks = await context.cleaning.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    var residueTasks = await context.residue.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+
+                    // Check if any cleaning or residue tasks exist and have pending statuses
+                    bool hasPendingTasks = cleaningTasks.Any(t => !completedStatuses.Contains(t.status_cv))
+                                            || residueTasks.Any(t => !completedStatuses.Contains(t.status_cv));
+                    if (hasPendingTasks)
                     {
-                        if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
-                        {
-                            tank.tank_status_cv = TankMovementStatus.CLEANING;
-                            goto ProceesUpdate;
-                        }
-                        else
-                        {
-                            //Else, check if tank have any residue estimate already created but pending
-                            //res.Clear();
-                            var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                            if (resd.Any())
-                            {
-                                if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
-                                {
-                                    tank.tank_status_cv = TankMovementStatus.CLEANING;
-                                    goto ProceesUpdate;
-                                }
-                            }
-                            //else
-                            //{
-                            //    tank.tank_status_cv = TankMovementStatus.CLEANING;
-                            //    goto ProceesUpdate;
-                            //}
-                        }
-                    }
-                    else
-                    {
-                        var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                        if (resd.Any())
-                        {
-                            if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
-                            {
-                                tank.tank_status_cv = TankMovementStatus.CLEANING;
-                                goto ProceesUpdate;
-                            }
-                        }
+                        tank.tank_status_cv = TankMovementStatus.CLEANING;
+                        goto ProceesUpdate;
                     }
                 }
 

@@ -171,33 +171,29 @@ export class HeaderComponent
   }
 
   private searchNotificationRecords() {
-    this.subs.sink = this.graphqlNotificationService!.SearchNotificationData({}, { date: 'DESC' }).subscribe(data => {
-      let rec = data;
-      rec.forEach(item => {
-        let notifyCls: Notifications = {
-          message: item.message!,
-          color: this.getNotificationColor(item.id!),
-          //color: 'nfc-orange',
-          icon: this.getNotificationIcon(item.id!),
-          // icon :"mail",
-          status: 'msg-read',
-          time: this.getTimeAgo(item.date!),
-          module: item.module_cv!,
-          id: item.id!,
-          notification_date: item.date!
-        }
-        this.notifications.push(notifyCls);
-      });
-    });
-
-
+    // this.subs.sink = this.graphqlNotificationService!.SearchNotificationData({}, { date: 'DESC' }).subscribe(data => {
+    //   let rec = data;
+    //   rec.forEach(item => {
+    //     let notifyCls: Notifications = {
+    //       message: item.message!,
+    //       color: this.getNotificationColor(item.id!),
+    //       //color: 'nfc-orange',
+    //       icon: this.getNotificationIcon(item.id!),
+    //       // icon :"mail",
+    //       status: 'msg-read',
+    //       time: this.getTimeAgo(item.date!),
+    //       module: item.module_cv!,
+    //       id: item.id!,
+    //       notification_date: item.date!
+    //     }
+    //     this.notifications.push(notifyCls);
+    //   });
+    // });
   }
 
   private NotificationSubscribe() {
-
     this.notificationSubscription = this.graphqlNotificationService!.notificationTriggered.subscribe(
       (notification) => {
-        //alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
         if (notification.notificationTriggered.id > 0) {
           const notify: any = notification.notificationTriggered;
           const notifyCls: Notifications = {

@@ -86,58 +86,144 @@ namespace IDMS.Inventory.GqlTypes
             return 1;
         }
 
-        [Obsolete]
-        private async Task<int> RemoveCleaning2(ApplicationInventoryDBContext context, [Service] IConfiguration config, string cleaningGuid, string sotGuid, List<job_order?>? job_orders)
+        public async Task<int> AddSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail, PeriodicTestRequest? periodicTest)
         {
             try
             {
-                var jobOrders = await context.job_order.Where(j => j.cleaning.Any(c => c.guid == cleaningGuid)).ToListAsync();
+                //long epochNow = GqlUtils.GetNowEpochInSec();
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
 
-                string httpURL = $"{config["GatewayURL"]}";
-                if (!string.IsNullOrEmpty(httpURL))
+                var newSuyDetail = new survey_detail();
+                newSuyDetail.guid = Util.GenerateGUID();
+                newSuyDetail.create_by = user;
+                newSuyDetail.create_dt = currentDateTime;
+                newSuyDetail.sot_guid = surveyDetail.sot_guid;
+                newSuyDetail.status_cv = surveyDetail.status_cv;
+                newSuyDetail.remarks = surveyDetail.remarks;
+                newSuyDetail.survey_dt = surveyDetail.survey_dt;
+                newSuyDetail.test_class_cv = surveyDetail.test_class_cv;
+                newSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
+
+                if (surveyDetail.survey_type_cv.EqualsIgnore("PERIODIC_TEST"))
                 {
-                    var mutation = @"
-                    mutation($cleaningJobOrder: CleaningJobOrderInput!) {
-                        abortCleaning(cleaningJobOrder: $cleaningJobOrder) {
-                        }
-                    }";
+                    if (periodicTest == null)
+                        throw new GraphQLException(new Error($"Periodic test object cannot be null", "ERROR"));
 
-                    // Define the variables for the query
-                    var variables = new
+                    newSuyDetail.test_class_cv = surveyDetail.test_class_cv;
+                    newSuyDetail.test_type_cv = surveyDetail.test_type_cv;
+                    if (surveyDetail.status_cv.EqualsIgnore(SurveyStatus.ACCEPT))
                     {
-                        cleaningJobOrder = new
-                        {
-                            guid = cleaningGuid,
-                            sot_guid = sotGuid,
-                            remarks = "message",
-                            job_order = jobOrders
-                        }
-                    };
+                        //Update Tank Info
+                        var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                        if (tankInfo == null)
+                            throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
 
-                    // Create the GraphQL request payload
-                    var requestPayload = new
-                    {
-                        query = mutation,
-                        variables = variables
-                    };
-
-                    // Serialize the payload to JSON
-                    var jsonPayload = JsonConvert.SerializeObject(requestPayload);
-
-                    HttpClient _httpClient = new();
-                    //string queryStatement = JsonConvert.SerializeObject(query);
-                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-                    var data = await _httpClient.PostAsync(httpURL, content);
-                    Console.WriteLine(data);
+                        tankInfo.last_test_cv = periodicTest.last_test_cv;
+                        tankInfo.next_test_cv = periodicTest.next_test_cv;
+                        tankInfo.test_class_cv = surveyDetail.test_class_cv;
+                        tankInfo.test_dt = newSuyDetail.survey_dt;
+                        tankInfo.update_by = user;
+                        tankInfo.update_dt = currentDateTime;
+                    }
                 }
 
-                return 1;
+                await context.AddAsync(newSuyDetail);
+                var res = await context.SaveChangesAsync();
+                return res;
             }
             catch (Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
+        public async Task<int> UpdateSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail)
+        {
+            try
+            {
+                //long epochNow = GqlUtils.GetNowEpochInSec();
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var updateSuyDetail = new survey_detail() { guid = surveyDetail.guid };
+                context.Attach(updateSuyDetail);
+                updateSuyDetail.update_by = user;
+                updateSuyDetail.update_dt = currentDateTime;
+
+                //updateSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
+                updateSuyDetail.sot_guid = surveyDetail.sot_guid;
+                updateSuyDetail.status_cv = surveyDetail.status_cv;
+                updateSuyDetail.remarks = surveyDetail.remarks;
+                updateSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
+                updateSuyDetail.test_class_cv = surveyDetail.test_class_cv;
+                updateSuyDetail.survey_dt = surveyDetail.survey_dt;
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateTransfer(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, transfer transfer)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if(string.IsNullOrEmpty(transfer.sot_guid))
+                    throw new GraphQLException(new Error($"SOT guid cannot be null", "ERROR"));
+
+                if (string.IsNullOrEmpty(transfer.guid))
+                {
+                    //need to add new transfer record
+                    transfer newTransfer = transfer;
+                    newTransfer.guid = Util.GenerateGUID();
+                    newTransfer.create_by = user;
+                    newTransfer.create_dt = currentDateTime;
+                    newTransfer.transfer_out_dt = currentDateTime;
+                    await context.AddAsync(newTransfer);
+                }
+                else
+                {
+                    transfer updateTransfer = new transfer() 
+                    {
+                        guid = transfer.guid
+                    };
+                    context.Attach(updateTransfer);
+                    updateTransfer.sot_guid = transfer.sot_guid;
+                    updateTransfer.update_by = user;
+                    updateTransfer.update_dt = currentDateTime;
+                    updateTransfer.haulier = transfer.haulier;
+                    updateTransfer.driver_name = transfer.driver_name;
+                    updateTransfer.location_from_cv = transfer.location_from_cv;
+                    updateTransfer.location_to_cv = transfer.location_to_cv;
+                    updateTransfer.transfer_out_dt = transfer.transfer_out_dt;
+                    updateTransfer.transfer_in_dt = currentDateTime;
+                    updateTransfer.remarks = transfer.remarks;
+
+                    if (transfer.delete_dt != null)
+                        transfer.delete_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+
+        #region Private Local Functions
 
         private async Task<int> RemoveCleaning(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
         {
@@ -239,60 +325,6 @@ namespace IDMS.Inventory.GqlTypes
                 throw;
             }
         }
-
-        [Obsolete]
-        private async Task<int> RemoveSteaming1(ApplicationInventoryDBContext context, [Service] IConfiguration config, string steamingGuid, string sotGuid, List<job_order?>? job_orders)
-        {
-            try
-            {
-                var jobOrders = await context.job_order.Where(j => j.steaming_part.Any(c => c.guid == steamingGuid)).ToListAsync();
-
-                string httpURL = $"{config["GatewayURL"]}";
-                if (!string.IsNullOrEmpty(httpURL))
-                {
-                    var mutation = @"
-                    mutation($cleaningJobOrder: CleaningJobOrderInput!) {
-                        abortCleaning(cleaningJobOrder: $cleaningJobOrder) {
-                        }
-                    }";
-
-                    // Define the variables for the query
-                    var variables = new
-                    {
-                        cleaningJobOrder = new
-                        {
-                            guid = steamingGuid,
-                            sot_guid = sotGuid,
-                            remarks = "message",
-                            job_order = jobOrders
-                        }
-                    };
-
-                    // Create the GraphQL request payload
-                    var requestPayload = new
-                    {
-                        query = mutation,
-                        variables = variables
-                    };
-
-                    // Serialize the payload to JSON
-                    var jsonPayload = JsonConvert.SerializeObject(requestPayload);
-
-                    HttpClient _httpClient = new();
-                    //string queryStatement = JsonConvert.SerializeObject(query);
-                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-                    var data = await _httpClient.PostAsync(httpURL, content);
-                    Console.WriteLine(data);
-                }
-
-                return 1;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
         private async Task<int> RemoveSteaming(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
         {
             try
@@ -495,135 +527,113 @@ namespace IDMS.Inventory.GqlTypes
 
             return allValid;
         }
-        public async Task<int> AddSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail, PeriodicTestRequest? periodicTest)
+
+        #endregion
+
+        [Obsolete]
+        private async Task<int> RemoveSteaming1(ApplicationInventoryDBContext context, [Service] IConfiguration config, string steamingGuid, string sotGuid, List<job_order?>? job_orders)
         {
             try
             {
-                //long epochNow = GqlUtils.GetNowEpochInSec();
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
+                var jobOrders = await context.job_order.Where(j => j.steaming_part.Any(c => c.guid == steamingGuid)).ToListAsync();
 
-                var newSuyDetail = new survey_detail();
-                newSuyDetail.guid = Util.GenerateGUID();
-                newSuyDetail.create_by = user;
-                newSuyDetail.create_dt = currentDateTime;
-                newSuyDetail.sot_guid = surveyDetail.sot_guid;
-                newSuyDetail.status_cv = surveyDetail.status_cv;
-                newSuyDetail.remarks = surveyDetail.remarks;
-                newSuyDetail.survey_dt = surveyDetail.survey_dt;
-                newSuyDetail.test_class_cv = surveyDetail.test_class_cv;
-                newSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
-
-                if (surveyDetail.survey_type_cv.EqualsIgnore("PERIODIC_TEST"))
+                string httpURL = $"{config["GatewayURL"]}";
+                if (!string.IsNullOrEmpty(httpURL))
                 {
-                    if (periodicTest == null)
-                        throw new GraphQLException(new Error($"Periodic test object cannot be null", "ERROR"));
+                    var mutation = @"
+                    mutation($cleaningJobOrder: CleaningJobOrderInput!) {
+                        abortCleaning(cleaningJobOrder: $cleaningJobOrder) {
+                        }
+                    }";
 
-                    newSuyDetail.test_class_cv = surveyDetail.test_class_cv;
-                    newSuyDetail.test_type_cv = surveyDetail.test_type_cv;
-                    if (surveyDetail.status_cv.EqualsIgnore(SurveyStatus.ACCEPT))
+                    // Define the variables for the query
+                    var variables = new
                     {
-                        //Update Tank Info
-                        var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
-                        if (tankInfo == null)
-                            throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+                        cleaningJobOrder = new
+                        {
+                            guid = steamingGuid,
+                            sot_guid = sotGuid,
+                            remarks = "message",
+                            job_order = jobOrders
+                        }
+                    };
 
-                        tankInfo.last_test_cv = periodicTest.last_test_cv;
-                        tankInfo.next_test_cv = periodicTest.next_test_cv;
-                        tankInfo.test_class_cv = surveyDetail.test_class_cv;
-                        tankInfo.test_dt = newSuyDetail.survey_dt;
-                        tankInfo.update_by = user;
-                        tankInfo.update_dt = currentDateTime;
-                    }
+                    // Create the GraphQL request payload
+                    var requestPayload = new
+                    {
+                        query = mutation,
+                        variables = variables
+                    };
+
+                    // Serialize the payload to JSON
+                    var jsonPayload = JsonConvert.SerializeObject(requestPayload);
+
+                    HttpClient _httpClient = new();
+                    //string queryStatement = JsonConvert.SerializeObject(query);
+                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                    var data = await _httpClient.PostAsync(httpURL, content);
+                    Console.WriteLine(data);
                 }
 
-                await context.AddAsync(newSuyDetail);
-                var res = await context.SaveChangesAsync();
-                return res;
+                return 1;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw;
             }
         }
-        public async Task<int> UpdateSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail)
+
+        [Obsolete]
+        private async Task<int> RemoveCleaning2(ApplicationInventoryDBContext context, [Service] IConfiguration config, string cleaningGuid, string sotGuid, List<job_order?>? job_orders)
         {
             try
             {
-                //long epochNow = GqlUtils.GetNowEpochInSec();
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
+                var jobOrders = await context.job_order.Where(j => j.cleaning.Any(c => c.guid == cleaningGuid)).ToListAsync();
 
-                var updateSuyDetail = new survey_detail() { guid = surveyDetail.guid };
-                context.Attach(updateSuyDetail);
-                updateSuyDetail.update_by = user;
-                updateSuyDetail.update_dt = currentDateTime;
+                string httpURL = $"{config["GatewayURL"]}";
+                if (!string.IsNullOrEmpty(httpURL))
+                {
+                    var mutation = @"
+                    mutation($cleaningJobOrder: CleaningJobOrderInput!) {
+                        abortCleaning(cleaningJobOrder: $cleaningJobOrder) {
+                        }
+                    }";
 
-                //updateSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
-                updateSuyDetail.sot_guid = surveyDetail.sot_guid;
-                updateSuyDetail.status_cv = surveyDetail.status_cv;
-                updateSuyDetail.remarks = surveyDetail.remarks;
-                updateSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
-                updateSuyDetail.test_class_cv = surveyDetail.test_class_cv;
-                updateSuyDetail.survey_dt = surveyDetail.survey_dt;
+                    // Define the variables for the query
+                    var variables = new
+                    {
+                        cleaningJobOrder = new
+                        {
+                            guid = cleaningGuid,
+                            sot_guid = sotGuid,
+                            remarks = "message",
+                            job_order = jobOrders
+                        }
+                    };
 
-                var res = await context.SaveChangesAsync();
-                return res;
+                    // Create the GraphQL request payload
+                    var requestPayload = new
+                    {
+                        query = mutation,
+                        variables = variables
+                    };
+
+                    // Serialize the payload to JSON
+                    var jsonPayload = JsonConvert.SerializeObject(requestPayload);
+
+                    HttpClient _httpClient = new();
+                    //string queryStatement = JsonConvert.SerializeObject(query);
+                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                    var data = await _httpClient.PostAsync(httpURL, content);
+                    Console.WriteLine(data);
+                }
+
+                return 1;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw;
             }
         }
-
-        //public async Task<int> UpdatePeriodicTest(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-        //    [Service] IHttpContextAccessor httpContextAccessor, PeriodicTestRequest periodicTest)
-        //{
-        //    try
-        //    {
-        //        //long epochNow = GqlUtils.GetNowEpochInSec();
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-
-        //        if(periodicTest.survey_detail == null)
-        //            throw new GraphQLException(new Error($"survey_detail object cannot be null or empty.", "ERROR"));
-
-        //        var newSuyDetail = new survey_detail();
-        //        newSuyDetail.guid = Util.GenerateGUID();
-        //        newSuyDetail.create_by = user;
-        //        newSuyDetail.create_dt = currentDateTime;
-
-        //        newSuyDetail.customer_company_guid = periodicTest.survey_detail.customer_company_guid;
-        //        newSuyDetail.sot_guid = periodicTest.survey_detail.sot_guid;
-        //        newSuyDetail.status_cv = periodicTest.survey_detail.status_cv;
-        //        newSuyDetail.remarks = periodicTest.survey_detail.remarks;
-        //        newSuyDetail.survey_type_cv = periodicTest.survey_detail.survey_type_cv;
-        //        newSuyDetail.survey_dt = currentDateTime;
-        //        await context.survey_detail.AddAsync(newSuyDetail);
-
-
-        //        if (SurveyStatus.ACCEPT.EqualsIgnore(periodicTest.survey_detail.status_cv))
-        //        {
-        //            var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
-        //            if (tankInfo == null)
-        //                throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
-
-        //            tankInfo.last_test_cv = periodicTest.last_test_cv;
-        //            tankInfo.next_test_cv = periodicTest.next_test_cv;
-        //            tankInfo.test_dt = newSuyDetail.survey_dt;
-        //            tankInfo.update_by = user;
-        //            tankInfo.update_dt = currentDateTime;
-        //        }
-
-        //        var res = await context.SaveChangesAsync();
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-        //    }
-        //}
     }
 }
