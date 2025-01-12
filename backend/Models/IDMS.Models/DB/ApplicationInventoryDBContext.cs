@@ -17,7 +17,6 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
 
         public DbSet<storing_order> storing_order { get; set; }
         public DbSet<storing_order_tank> storing_order_tank { get; set; }
-
         public DbSet<customer_company> customer_company { get; set; }
         public DbSet<customer_company_contact_person> customer_company_contact_person { get; set; }
 
@@ -45,6 +44,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<survey_detail> survey_detail { get; set; }
         public DbSet<job_order> job_order { get; set; }
         public DbSet<currency> currency { get; set; }
+        public DbSet<transfer> transfer { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
