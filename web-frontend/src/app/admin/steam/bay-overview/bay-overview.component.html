@@ -9,7 +9,14 @@
       <div class="">
         <div class="team-buttons">
           @for (team of teamList; track team) {
-          <mat-card [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-green': team.isOccupied, 'bg-lightest-blue': !team.isOccupied}" matRipple>
+          <mat-card
+            [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-green': team.isOccupied, 'bg-lightest-blue': !team.isOccupied}"
+            matRipple>
+            <!-- <div class="gauge-container">
+              <ngx-gauge [size]="80" type="arch" [thick]="4" [value]="68.2" cap="butt" label="" append="%"
+                [markers]="markerConfig" class="">
+              </ngx-gauge>
+            </div> -->
             <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
               <mat-card-title [ngClass]="{'pt-1': true}">
                 {{team.description}}
