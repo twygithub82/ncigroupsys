@@ -14,7 +14,7 @@ namespace IDMS.Models.Inventory
         public string? guid { get; set; }
 
         [ForeignKey("storing_order_tank")]
-        public string? sot_guid { get; set; }
+        public string sot_guid { get; set; }
         public string? location_from_cv { get; set; }
         public string? location_to_cv { get; set; }
         public long? transfer_out_dt { get; set; }
@@ -23,6 +23,7 @@ namespace IDMS.Models.Inventory
         public string? vehicle_no { get; set; }
         public string? driver_name { get; set; }
         public string? remarks { get; set; }
+        [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; } 
     }
 }

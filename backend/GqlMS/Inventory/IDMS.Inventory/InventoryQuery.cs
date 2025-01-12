@@ -5,6 +5,7 @@ using IDMS.Models.Master;
 using IDMS.Models.Shared;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Inventory.GqlTypes.LocalModel;
+using IDMS.Models.Inventory;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -75,16 +76,6 @@ namespace IDMS.Inventory.GqlTypes
             {
                 var result = context.code_values.Where(c => c.delete_dt == null || c.delete_dt == 0);
                 return result;
-
-                //return context.code_values.Where(c => c.delete_dt == null || c.delete_dt == 0);
-                //return context.code_values.Select(c => new CodeValuesRequest()
-                //{
-                //    Guid = c.guid,
-                //    CodeValue = c.code_val,
-                //    CodeValType = c.code_val_type,
-                //    Description = c.description,
-                //    ChildCode = c.child_code,
-                //});
             }
             catch (Exception ex)
             {
@@ -101,6 +92,22 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 return context.survey_detail.Where(t => t.delete_dt == null || t.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<transfer> QueryTransfer(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                return context.transfer.Where(t => t.delete_dt == null || t.delete_dt == 0);
             }
             catch (Exception ex)
             {
