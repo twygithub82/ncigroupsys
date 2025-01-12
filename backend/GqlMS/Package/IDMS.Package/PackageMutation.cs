@@ -1011,7 +1011,7 @@ namespace IDMS.Models.Package.GqlTypes
 
         #region Package Steaming methods
         public async Task<int> AddSteamingExclusive(ApplicationPackageDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, steaming_exclusive NewSteamingExclusive)
+            [Service] IHttpContextAccessor httpContextAccessor, List<steaming_exclusive> NewSteamingExclusive)
         {
             int retval = 0;
             try
@@ -1019,32 +1019,42 @@ namespace IDMS.Models.Package.GqlTypes
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                NewSteamingExclusive.guid = (string.IsNullOrEmpty(NewSteamingExclusive.guid) ? Util.GenerateGUID() : NewSteamingExclusive.guid);
-                var newSE = new steaming_exclusive();
-                newSE.guid = NewSteamingExclusive.guid;
-                newSE.tariff_cleaning_guid = NewSteamingExclusive.tariff_cleaning_guid;
-                newSE.temp_max = NewSteamingExclusive.temp_max;
-                newSE.temp_min = NewSteamingExclusive.temp_min;
-                newSE.labour = NewSteamingExclusive.labour;
-                newSE.remarks = NewSteamingExclusive.remarks;
-                newSE.create_by = uid;
-                newSE.create_dt = currentDateTime;
-                await context.steaming_exclusive.AddAsync(newSE);
+                IList<steaming_exclusive> newSteamingExclusiveList = new List<steaming_exclusive>();
+                IList<package_steaming> newPackageSteamingList = new List<package_steaming>();
 
+                foreach (var item in NewSteamingExclusive)
+                {
+                    item.guid = (string.IsNullOrEmpty(item.guid) ? Util.GenerateGUID() : item.guid);
+                    var newSE = new steaming_exclusive();
+                    newSE.guid = item.guid;
+                    newSE.tariff_cleaning_guid = item.tariff_cleaning_guid;
+                    newSE.temp_max = item.temp_max;
+                    newSE.temp_min = item.temp_min;
+                    newSE.labour = item.labour;
+                    newSE.remarks = item.remarks;
+                    newSE.create_by = uid;
+                    newSE.create_dt = currentDateTime;
+                    //await context.steaming_exclusive.AddAsync(newSE);
+                    newSteamingExclusiveList.Add(newSE);
 
-                if (NewSteamingExclusive.package_steaming == null)
-                    throw new GraphQLException(new Error("The package steaming object cannot be null", "500"));
+                    if (item.package_steaming == null)
+                        throw new GraphQLException(new Error("The package steaming object cannot be null", "500"));
 
-                var newPackageSteam = new package_steaming();
-                newPackageSteam.guid = Util.GenerateGUID();
-                newPackageSteam.customer_company_guid = NewSteamingExclusive.package_steaming.customer_company_guid;
-                newPackageSteam.steaming_exclusive_guid = newSE.guid;
-                newPackageSteam.cost = NewSteamingExclusive.package_steaming.cost;
-                newPackageSteam.labour = NewSteamingExclusive.package_steaming.labour;
-                newPackageSteam.remarks = NewSteamingExclusive.package_steaming.remarks;
-                newPackageSteam.create_by = uid;
-                newPackageSteam.create_dt = currentDateTime;
-                await context.package_steaming.AddAsync(newPackageSteam);
+                    var newPackageSteam = new package_steaming();
+                    newPackageSteam.guid = Util.GenerateGUID();
+                    newPackageSteam.customer_company_guid = item.package_steaming.customer_company_guid;
+                    newPackageSteam.steaming_exclusive_guid = newSE.guid;
+                    newPackageSteam.cost = item.package_steaming.cost;
+                    newPackageSteam.labour = item.package_steaming.labour;
+                    newPackageSteam.remarks = item.package_steaming.remarks;
+                    newPackageSteam.create_by = uid;
+                    newPackageSteam.create_dt = currentDateTime;
+                    //await context.package_steaming.AddAsync(newPackageSteam);
+                    newPackageSteamingList.Add(newPackageSteam);
+                }
+
+                await context.steaming_exclusive.AddRangeAsync(newSteamingExclusiveList);
+                await context.package_steaming.AddRangeAsync(newPackageSteamingList);
 
                 retval = await context.SaveChangesAsync();
             }
