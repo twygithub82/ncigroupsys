@@ -31,7 +31,14 @@
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.LAST_CARGO }}</mat-label>
-              <input matInput formControlName="last_cargo" 
+              <mat-select formControlName="last_cargo" multiple>
+                @for (lc of last_cargoList; track lc) {
+                    <mat-option [value]="lc">
+                      {{lc.cargo}}
+                    </mat-option>
+                    }
+              </mat-select>
+              <!-- <input matInput formControlName="last_cargo" 
               [matAutocomplete]="lastCargo">
             <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
               @for (lc of last_cargoList; track lc) {
@@ -39,7 +46,7 @@
                 {{lc.cargo}}
               </mat-option>
               }
-            </mat-autocomplete>
+            </mat-autocomplete> -->
             </mat-form-field> 
           </div>
           </div>

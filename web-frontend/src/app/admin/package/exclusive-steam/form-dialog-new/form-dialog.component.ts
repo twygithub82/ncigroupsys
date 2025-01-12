@@ -339,21 +339,26 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       })
     ).subscribe();
 
-    this.pcForm!.get('last_cargo')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-        }
-        this.subs.sink = this.trfCleanDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-        });
-      })
-    ).subscribe();
+    var searchCriteria = '';
+    this.subs.sink = this.trfCleanDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+            this.last_cargoList = data
+          });
+
+    // this.pcForm!.get('last_cargo')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     if (typeof value === 'string') {
+    //       searchCriteria = value;
+    //     } else {
+    //       searchCriteria = value.cargo;
+    //     }
+    //     this.subs.sink = this.trfCleanDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+    //       this.last_cargoList = data
+    //     });
+    //   })
+    // ).subscribe();
     // this.pcForm.get("cost")?.valueChanges.subscribe(data=>{
     //   this.pcForm.patchValue({
     //     cost: this.pcForm.get("cost")?.value.toFixed(2)
@@ -438,7 +443,11 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
      where.and.push({package_steaming:{customer_company_guid:{eq:custGuid}}});
      where.and.push({or:[{package_steaming:{delete_dt:{eq:null}}},{package_steaming:{delete_dt:{eq:0}}}]});
-     where.and.push({tariff_cleaning_guid:{eq:lastCargoGuid}});
+     if(this.pcForm?.value['last_cargo'].length>0)
+     {
+        var lastCargoGuids :string[] =this.pcForm.value['last_cargo'].map((cargo: { guid: string }) => cargo.guid);
+      where.and.push({tariff_cleaning_guid:{in:lastCargoGuids}});
+     }
 
      let tempCond:any={or:[]};
      tempCond.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
@@ -449,20 +458,29 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.subs.sink= this.pckSteamExclusiveDS.SearchExclusiveSteam(where).subscribe(data=>{
         if(data.length==0)
         {
-            let newSteam = new ExclusiveSteamingItem();
+            let newSteams:ExclusiveSteamingItem[]=[];
 
-           // newSteam.cost= Number(this.pcForm!.value['cost']);
-            newSteam.remarks= String(this.pcForm.value['remarks']);
-            newSteam.temp_max= Number(maxTemp);
-            newSteam.temp_min= Number(minTemp);
-            newSteam.labour= Number(this.pcForm.value['labour']);
-            newSteam.package_steaming= new PackageSteamingItem();
-            newSteam.package_steaming.cost=Number(this.pcForm!.value['cost']);
-            newSteam.package_steaming.labour=newSteam.labour;
-            newSteam.package_steaming.remarks=newSteam.remarks;
-            newSteam.package_steaming.customer_company_guid=custGuid;
-            newSteam.tariff_cleaning_guid=lastCargoGuid;
-            this.pckSteamExclusiveDS.AddExclusiveSteam(newSteam).subscribe(result=>{
+            var lastCargoGuids :string[] =this.pcForm.value['last_cargo'].map((cargo: { guid: string }) => cargo.guid);
+            lastCargoGuids.map(cargoGuid=>{
+
+
+            
+                let newSteam = new ExclusiveSteamingItem();
+
+              // newSteam.cost= Number(this.pcForm!.value['cost']);
+                newSteam.remarks= String(this.pcForm.value['remarks']);
+                newSteam.temp_max= Number(maxTemp);
+                newSteam.temp_min= Number(minTemp);
+                newSteam.labour= Number(this.pcForm.value['labour']);
+                newSteam.package_steaming= new PackageSteamingItem();
+                newSteam.package_steaming.cost=Number(this.pcForm!.value['cost']);
+                newSteam.package_steaming.labour=newSteam.labour;
+                newSteam.package_steaming.remarks=newSteam.remarks;
+                newSteam.package_steaming.customer_company_guid=custGuid;
+                newSteam.tariff_cleaning_guid=cargoGuid;
+                newSteams.push(newSteam);
+          });
+            this.pckSteamExclusiveDS.AddExclusiveSteams(newSteams).subscribe(result=>{
 
               this.handleSaveSuccess(result?.data?.addSteamingExclusive);
             });
