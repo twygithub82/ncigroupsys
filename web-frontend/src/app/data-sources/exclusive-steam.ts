@@ -143,6 +143,14 @@ export const GET_EXCLUSIVE_STEAM_QUERY = gql`
   }
 `;
 
+
+
+export const ADD_EXCLUSIVE_STEAMINGS = gql`
+  mutation addSteamingExclusive($newSteamingExclusive: [steaming_exclusiveInput!]!) {
+    addSteamingExclusive(newSteamingExclusive: $newSteamingExclusive)
+  }
+`;
+
 export const ADD_EXCLUSIVE_STEAMING = gql`
   mutation addSteamingExclusive($newSteamingExclusive: steaming_exclusiveInput!) {
     addSteamingExclusive(newSteamingExclusive: $newSteamingExclusive)
@@ -195,11 +203,9 @@ export class PackageSteamingExclusiveDS extends BaseDataSource<PackageSteamingIt
       );
   }
 
-
- 
-  AddExclusiveSteam(newSteamingExclusive: any): Observable<any> {
+  AddExclusiveSteams(newSteamingExclusive: any[]): Observable<any> {
     return this.apollo.mutate({
-      mutation: ADD_EXCLUSIVE_STEAMING,
+      mutation: ADD_EXCLUSIVE_STEAMINGS,
       variables: {
         newSteamingExclusive
       }
@@ -210,6 +216,20 @@ export class PackageSteamingExclusiveDS extends BaseDataSource<PackageSteamingIt
       }),
     );
   }
+ 
+  // AddExclusiveSteam(newSteamingExclusive: any): Observable<any> {
+  //   return this.apollo.mutate({
+  //     mutation: ADD_EXCLUSIVE_STEAMING,
+  //     variables: {
+  //       newSteamingExclusive
+  //     }
+  //   }).pipe(
+  //     catchError((error: ApolloError) => {
+  //       console.error('GraphQL Error:', error);
+  //       return of(0); // Return an empty array on error
+  //     }),
+  //   );
+  // }
 
     updateExclusiveSteam(updateSteamingExclusive: any): Observable<any> {
       return this.apollo.mutate({
