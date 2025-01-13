@@ -6,4 +6,31 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+
+
+	<ItemGroup>
+		<PackageReference Include="HotChocolate" Version="14.3.0" />
+		<PackageReference Include="HotChocolate.Types" Version="14.3.0" />
+		<PackageReference Include="HotChocolate.Data.EntityFramework" Version="14.3.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+		<PackageReference Include="MySqlConnector" Version="2.4.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.Text.Encodings.Web" Version="9.0.0" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <Reference Include="CommonUtil.Core.Service">
+	    <HintPath>..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
 </Project>

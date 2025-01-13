@@ -12,16 +12,17 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Billing
 {
-    public class billing_sot: Dates
+    public class billing_sot : Dates
     {
         [Key]
-        public string? guid {  get; set; }
+        public string? guid { get; set; }
 
         [ForeignKey("storing_order_tank")]
         public string sot_guid { get; set; }
 
         [ForeignKey("tariff_depot")]
         public string tariff_depot_guid { get; set; }
+
         public string? lolo_billing_guid { get; set; }
         public string? preinsp_billing_guid { get; set; }
         public string? storage_billing_guid { get; set; }
@@ -40,8 +41,20 @@ namespace IDMS.Models.Billing
         public string? remarks { get; set; }
         [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; }
-
         [UseFiltering]
         public tariff_depot? tariff_depot { get; set; }
+        //[UseFiltering]
+        //public billing? billing { get; set; }
+        //[UseFiltering]
+        //public billing? preinsp_billing { get; set; }
+        //[UseFiltering]
+        [ForeignKey("lolo_billing_guid")]
+        public billing? lolo_billing { get; set; }
+        [ForeignKey("preinsp_billing_guid")]
+        public billing? preinsp_billing { get; set; }
+        [ForeignKey("storage_billing_guid")]
+        public billing? storage_billing { get; set; }
+        [ForeignKey("gateio_billing_guid")]
+        public billing? gateio_billing { get; set; }
     }
 }

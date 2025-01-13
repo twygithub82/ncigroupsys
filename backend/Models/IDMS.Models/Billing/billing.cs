@@ -20,13 +20,16 @@ namespace IDMS.Models.Billing
 
         [ForeignKey("customer_company")]
         public string bill_to_guid { get; set; }
-        public string? invoice_no { get; set; }
-        public long? invoice_dt { get; set; }
+        public string invoice_no { get; set; }
+        public long invoice_dt { get; set; }
         public long? invoice_due { get; set; }
-        public string? status_cv { get; set; }
+        public string status_cv { get; set; }
         public string? remarks { get; set; }
         public currency? currency { get; set; }
         [UseFiltering]
         public customer_company? customer_company { get; set; }
+        
+        //[UseFiltering]
+        //public billing_sot? billing_sot { get; set; }
     }
 }
