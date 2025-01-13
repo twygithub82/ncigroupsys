@@ -426,7 +426,9 @@ namespace IDMS.Survey.GqlTypes
                 next_test_cv = ingateSurvey.next_test_cv,
                 test_dt = ingateSurvey.test_dt,
                 test_class_cv = ingateSurvey.test_class_cv,
-                yard_cv = yard
+                yard_cv = yard,
+                //last_notify_dt = null,
+                //last_release_dt = null,
             };
 
             await GqlUtils.UpdateTankInfo(mapper, context, user, currentDateTime, tankInfo);

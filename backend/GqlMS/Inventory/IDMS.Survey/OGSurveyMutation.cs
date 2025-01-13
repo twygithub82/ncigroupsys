@@ -277,7 +277,9 @@ namespace IDMS.Survey.GqlTypes
                 next_test_cv = outgateSurvey.next_test_cv,
                 test_dt = outgateSurvey.test_dt,
                 test_class_cv = outgateSurvey.test_class_cv,
-                yard_cv = yard
+                yard_cv = yard,
+                //last_notify_dt = null,
+                //last_release_dt = null,
             };
 
             await GqlUtils.UpdateTankInfo(mapper, context, user, currentDateTime, tankInfo);
