@@ -51,7 +51,7 @@ namespace IDMS.ServiceMS
             //builder.Services.AddSwaggerGen();
 
             builder.Services.AddGraphQLServer()
-                       .InitializeOnStartup()
+                       .InitializeOnStartup(keepWarm: true)
                        .RegisterDbContext<ApplicationServiceDBContext>(DbContextKind.Pooled)
                        .AddQueryType<ServiceQuery>()
                        .AddMutationType<ServiceMutation>()

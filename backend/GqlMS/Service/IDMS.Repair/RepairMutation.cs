@@ -93,7 +93,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> ApproveRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, repair repair)
         {
@@ -151,7 +150,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> UpdateRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, repair repair, customer_company? customerCompany)
         {
@@ -262,7 +260,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> RollbackRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<RepairRequest> repair)
         {
@@ -324,7 +321,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> AbortRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, RepJobOrderRequest repJobOrder)
         {
@@ -367,7 +363,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> UpdateRepairStatus(ApplicationServiceDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, RepairStatusRequest repair)
         {
@@ -446,7 +441,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> CompleteQCRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<RepJobOrderRequest> repJobOrder)
         {
@@ -493,7 +487,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> RollbackQCRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<RepJobOrderRequest> repJobOrder)
         {
@@ -545,7 +538,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> OverwriteQCRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<RepJobOrderRequest> repJobOrder)
         {
@@ -588,7 +580,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> RollbackCompletedRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<RepJobOrderRequest> repJobOrder)
         {
@@ -669,7 +660,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> RollbackJobInProgressRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<RepJobOrderRequest> repJobOrder)
         {
@@ -732,7 +722,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         private async Task UpdateRepairDamageCode(ApplicationServiceDBContext context, string user, long currentDateTime,
                                           repair_part repairPart, IEnumerable<rp_damage_repair>? rpDamageRepair = null)
         {
@@ -823,7 +812,6 @@ namespace IDMS.Repair.GqlTypes
                 throw;
             }
         }
-
 
         //public async Task<int> CancelRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
         //    [Service] IConfiguration config, List<repair> repair)
