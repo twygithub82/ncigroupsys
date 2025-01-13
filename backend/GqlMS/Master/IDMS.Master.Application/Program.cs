@@ -51,7 +51,7 @@ namespace IDMS.Master.Application
             //builder.Services.AddSwaggerGen();
 
             builder.Services.AddGraphQLServer()
-                       .InitializeOnStartup()
+                       .InitializeOnStartup(keepWarm: true)
                        .RegisterDbContext<ApplicationMasterDBContext>(DbContextKind.Pooled)
                        .AddQueryType<TemplateEstQuery>()
                        .AddTypeExtension<CustomerQuery>()
