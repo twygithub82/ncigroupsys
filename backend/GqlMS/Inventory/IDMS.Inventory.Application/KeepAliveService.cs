@@ -14,8 +14,8 @@ namespace IDMS.Inventory.Application
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
-            {
+            //while (!stoppingToken.IsCancellationRequested)
+            //{
                 using var scope = _serviceProvider.CreateScope();
                 var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationInventoryDBContext>>();
                 var dbContext = await contextFactory.CreateDbContextAsync();
@@ -23,7 +23,8 @@ namespace IDMS.Inventory.Application
                 try
                 {
                     // Execute a lightweight query
-                    await dbContext.Database.ExecuteSqlRawAsync("SELECT 1", stoppingToken);
+                    //await dbContext.Database.ExecuteSqlRawAsync("SELECT 1", stoppingToken);
+                    await dbContext.currency.Where(c => c.currency_code == "SGD").Select(c => c.guid).FirstOrDefaultAsync();
                 }
                 catch (Exception ex)
                 {
@@ -32,8 +33,8 @@ namespace IDMS.Inventory.Application
                 }
 
                 // Wait before the next execution
-                await Task.Delay(TimeSpan.FromMinutes(3), stoppingToken); // Adjust the interval as needed
-            }
+                //await Task.Delay(TimeSpan.FromMinutes(3), stoppingToken); // Adjust the interval as needed
+            //}
         }
     }
 }

@@ -67,7 +67,7 @@ namespace IDMS.Inventory
             //builder.Services.AddSwaggerGen();
 
             builder.Services.AddGraphQLServer()
-                       .InitializeOnStartup()
+                       .InitializeOnStartup(keepWarm: true)
                        .RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Pooled)
                        .AddQueryType<InventoryQuery>()
                        .AddMutationType<InventoryMutation>()
@@ -130,7 +130,7 @@ namespace IDMS.Inventory
 
             var app = builder.Build();
             //Specially created to solve slow after idle for sometime
-            GqlUtils.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
+            //GqlUtils.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
