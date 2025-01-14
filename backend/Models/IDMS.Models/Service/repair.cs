@@ -40,6 +40,8 @@ namespace IDMS.Models.Service
 
         [ForeignKey("customer_company")]
         public string? bill_to_guid { get; set; }
+        public string? customer_billing_guid { get; set; }
+        public string? owner_billing_guid { get; set; }
 
         [UseFiltering]
         public customer_company? customer_company { get; set; }

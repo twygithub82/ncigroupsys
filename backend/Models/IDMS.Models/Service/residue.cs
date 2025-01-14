@@ -27,7 +27,9 @@ namespace IDMS.Models.Service
         public long? complete_dt { get; set; }
         public long? na_dt { get; set; }
         public string? estimate_no { get; set; }
-      
+        public string? customer_billing_guid { get; set; }
+        public string? owner_billing_guid { get; set; }
+
         [UseFiltering]
         public customer_company? customer_company { get; set; }
 
