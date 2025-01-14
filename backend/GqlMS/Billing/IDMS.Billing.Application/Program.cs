@@ -1,3 +1,4 @@
+using HotChocolate.Data;
 using IDMS.Billing.Application;
 using IDMS.Billing.GqlTypes;
 using IDMS.Models.DB;
@@ -28,14 +29,18 @@ namespace IDMS.Billing.Applicaton
 
             // Add services to the container.
             builder.Services.AddGraphQLServer()
+                            .AddAuthorization()
                             .InitializeOnStartup(keepWarm: true)
-                            .RegisterDbContextFactory<ApplicationBillingDBContext>()
+                            .RegisterDbContext<ApplicationBillingDBContext>(DbContextKind.Pooled)
                             .AddFiltering()
                             .AddSorting()
                             .AddProjections()
-                            .AddAuthorizationCore()
-                            .ModifyPagingOptions(opt => opt.MaxPageSize = 100)
-                            .AddQueryType<BillingQuery>();
+                            .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
+                            {
+                                MaxPageSize = 100
+                            })
+                            .AddQueryType<BillingQuery>()
+                            .AddMutationType<BillingMutation>();
 
 
 
