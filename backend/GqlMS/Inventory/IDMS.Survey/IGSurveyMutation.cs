@@ -74,6 +74,7 @@ namespace IDMS.Survey.GqlTypes
 
                 sot.unit_type_guid = tank.unit_type_guid;
                 sot.owner_guid = tank.owner_guid;
+                sot.last_release_dt = tank.last_release_dt;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
 
@@ -413,6 +414,7 @@ namespace IDMS.Survey.GqlTypes
                 tank_no = sot.tank_no,
                 owner_guid = sot.owner_guid,
                 unit_type_guid = sot.unit_type_guid,
+                last_release_dt = sot.last_release_dt,
                 tank_comp_guid = ingateSurvey.tank_comp_guid,
                 manufacturer_cv = ingateSurvey.manufacturer_cv,
                 dom_dt = ingateSurvey.dom_dt,
@@ -428,7 +430,6 @@ namespace IDMS.Survey.GqlTypes
                 test_class_cv = ingateSurvey.test_class_cv,
                 yard_cv = yard,
                 //last_notify_dt = null,
-                //last_release_dt = null,
             };
 
             await GqlUtils.UpdateTankInfo(mapper, context, user, currentDateTime, tankInfo);
