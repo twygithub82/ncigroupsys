@@ -99,7 +99,7 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
         
     }
     //server.AddLocalSchema("local");
-    server.InitializeOnStartup();
+    server.InitializeOnStartup(keepWarm: true);
 
     // Add other services and configurations as needed
 
