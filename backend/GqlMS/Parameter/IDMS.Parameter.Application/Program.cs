@@ -13,13 +13,6 @@ var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALI
 var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
 var JWT_secretKey = await dbWrapper.GetJWTKey(connectionString);
 
-
-
-//builder.Services.AddDbContext<ApplicationParameterDBContext>(options =>
-//    options.UseMySql(connectionString,
-//  ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine)
-
-//);
 builder.Services.AddPooledDbContextFactory<ApplicationParameterDBContext>(o =>
 {
     o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
@@ -30,21 +23,23 @@ builder.Services.AddPooledDbContextFactory<ApplicationParameterDBContext>(o =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
     .AddAuthorization()
-    .InitializeOnStartup()
+    .InitializeOnStartup(keepWarm: true)
     .RegisterDbContext<ApplicationParameterDBContext>(DbContextKind.Pooled)
+     //.RegisterDbContextFactory<ApplicationParameterDBContext>()
     .AddQueryType<CleaningMethodQuery>()
     .AddMutationType<CleanningMethodMutation>()
     .AddFiltering()
     .AddProjections()
-     .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
-     {
-         MaxPageSize = 100
-     })
+    .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
+    {
+        MaxPageSize = 100
+    })
     .AddSorting();
 
 
 
-builder.Services.AddAuthentication(options => {
+builder.Services.AddAuthentication(options =>
+{
 
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -72,17 +67,17 @@ builder.Services.AddAuthentication(options => {
 
 //builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
 
 app.UseWebSockets();
 

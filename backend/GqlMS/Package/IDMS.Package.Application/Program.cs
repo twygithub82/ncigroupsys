@@ -32,7 +32,7 @@ builder.Services.AddPooledDbContextFactory<ApplicationPackageDBContext>(o =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
-                .InitializeOnStartup()
+                .InitializeOnStartup(keepWarm: true)
                 .RegisterDbContext<ApplicationPackageDBContext>(DbContextKind.Pooled)
                 .AddAuthorization()
                 .AddQueryType<PackageQuery>()

@@ -34,6 +34,7 @@ builder.Services.AddPooledDbContextFactory<ApplicationTariffDBContext>(o =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
+                .InitializeOnStartup(keepWarm: true)
                 .RegisterDbContext<ApplicationTariffDBContext>(DbContextKind.Pooled)
                 .AddAuthorization()
                 .AddQueryType<TariffQuery>()
