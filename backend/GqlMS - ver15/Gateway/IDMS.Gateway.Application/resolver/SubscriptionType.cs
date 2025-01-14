@@ -1,0 +1,16 @@
+﻿using IDMS.Models;
+
+namespace gateway_graphql_ms.resolver
+{
+    //public class SubscriptionType
+    //{
+    //    [Subscribe]
+    //    public Message MessageReceived([EventMessage] Message message) => message;
+    //}
+
+    //public class Message
+    //{
+    //    public string event_id { get; set; } = "";
+    //    public string event_name { get; set; } = "";
+    //}
+}

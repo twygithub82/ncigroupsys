@@ -1,0 +1,6 @@
+@GlobalMQ_HostAddress = http://localhost:5114
+
+GET {{GlobalMQ_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

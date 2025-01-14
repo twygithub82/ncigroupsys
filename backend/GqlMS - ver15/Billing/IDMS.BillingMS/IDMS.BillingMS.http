@@ -1,0 +1,6 @@
+@IDMS.BillingMS_HostAddress = http://localhost:5007
+
+GET {{IDMS.BillingMS_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
