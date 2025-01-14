@@ -56,6 +56,7 @@ namespace IDMS.Models.Inventory
         public string? steaming_remarks { get; set; }
         public string? repair_remarks { get; set; }
         public string? storage_remarks { get; set; }
+        public long? last_release_dt { get; set; }
 
         public storing_order? storing_order { get; set; }
         public tariff_cleaning? tariff_cleaning { get; set; }
