@@ -245,6 +245,7 @@
         "INVOICES":"Invoices",
         "PENDING-SUMMARY":"Pending Summary",
         "PENDING-DETAIL":"Pending Detail",
+        "PENDING":"Pending",
         "CUSTOMER-INVOICE":"Customer Invoice"
         }
       }
@@ -822,7 +823,10 @@
     "PERIODIC-TEST-SURVEY": "Periodic Test Survey",
     "PHOTOS": "Photos",
     "OVER-REQUIRED-TEMP": "The current temperature is higher than the required temperate",
-    "PUBLISH": "Publish"
+    "PUBLISH": "Publish",
+    "INVOICE-DATE":"Invoice Date",
+    "INVOICE-NO":"Invoice No",
+    "DEPOT":"Depot"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -792,48 +792,48 @@ export const ROUTES: RouteInfo[] = [
     badgeClass: "",
     submenu: [
       {
-        path: "/",
+        path: "admin/billing/depot",
         title: "MENUITEMS.BILLING.LIST.DEPOT-COST-BILL",
         iconType: "",
         icon: "",
-        class: "ml-sub-menu",
+        class: "ml-menu",
         groupTitle: false,
         badge: "",
         badgeClass: "",
         submenu: [
-          {
-            path: "admin/billing/depot/lolo",
-            title: "MENUITEMS.BILLING.LIST.LOLO",
-            iconType: "",
-            icon: "",
-            class: "ml-menu2",
-            groupTitle: false,
-            badge: "",
-            badgeClass: "",
-            submenu: [],
-          },
-          {
-            path: "admin/billing/depot/preinspection",
-            title: "MENUITEMS.BILLING.LIST.PRE-INSPECTION",
-            iconType: "",
-            icon: "",
-            class: "ml-menu2",
-            groupTitle: false,
-            badge: "",
-            badgeClass: "",
-            submenu: [],
-          },
-          {
-            path: "admin/billing/depot/storage",
-            title: "MENUITEMS.BILLING.LIST.STORAGE",
-            iconType: "",
-            icon: "",
-            class: "ml-menu2",
-            groupTitle: false,
-            badge: "",
-            badgeClass: "",
-            submenu: [],
-          }
+          // {
+          //   path: "admin/billing/depot/lolo",
+          //   title: "MENUITEMS.BILLING.LIST.LOLO",
+          //   iconType: "",
+          //   icon: "",
+          //   class: "ml-menu2",
+          //   groupTitle: false,
+          //   badge: "",
+          //   badgeClass: "",
+          //   submenu: [],
+          // },
+          // {
+          //   path: "admin/billing/depot/preinspection",
+          //   title: "MENUITEMS.BILLING.LIST.PRE-INSPECTION",
+          //   iconType: "",
+          //   icon: "",
+          //   class: "ml-menu2",
+          //   groupTitle: false,
+          //   badge: "",
+          //   badgeClass: "",
+          //   submenu: [],
+          // },
+          // {
+          //   path: "admin/billing/depot/storage",
+          //   title: "MENUITEMS.BILLING.LIST.STORAGE",
+          //   iconType: "",
+          //   icon: "",
+          //   class: "ml-menu2",
+          //   groupTitle: false,
+          //   badge: "",
+          //   badgeClass: "",
+          //   submenu: [],
+          // }
         ]
       },
       {
@@ -882,7 +882,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-
+        visible: false
       },
       {
         path: "admin/billing/clean",
@@ -930,6 +930,17 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },  
       {
+        path: "admin/billing/pending",
+        title: "MENUITEMS.BILLING.LIST.PENDING",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
         path: "admin/billing/pending-summary",
         title: "MENUITEMS.BILLING.LIST.PENDING-SUMMARY",
         iconType: "",
@@ -939,6 +950,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/billing/pending-detail",
@@ -950,6 +962,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/billing/customer-invoice",
@@ -961,6 +974,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       }
     ].filter(item => item.visible !== false),
   },

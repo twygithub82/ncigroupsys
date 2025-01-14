@@ -84,10 +84,14 @@ import { OutGateSurveyFormComponent } from './inventory/out-gate-survey-form/out
 import { LOLOBillingComponent } from './billing/depot-cost/LOLO/lolo-billing.component';
 import { PreinspectionBillingComponent } from './billing/depot-cost/pre-inspection/preinspection-billing.component';
 import { StorageBillingComponent } from './billing/depot-cost/storage/storage-billing.component';
-import { CleanBillingComponent } from './billing/cleaning/clean-billing.component';
+import { MainCleaningComponent } from './billing/cleaning/main-clean.component';
 import { RepairBillingComponent } from './billing/repair/repair-billing.component';
 import { ResidueBillingComponent } from './billing/residue-disposal/residue-billing.component';
 import { SteamBillingComponent } from './billing/steam/steam-billing.component';
+import { MainDepotComponent } from './billing/depot-cost/main-depot.component';
+import { MainInvoiceComponent } from './billing/invoice/main-invoice.component';
+import { MainPendingComponent } from './billing/pending/main-pending.component';
+import { BilledTankComponent } from './billing/billed-tank/billed-tank.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -445,6 +449,10 @@ export const ADMIN_ROUTE: Routes = [
     component: SurveyPeriodicTestDetailsComponent,
   },
   {
+    path: "billing/depot",
+    component: MainDepotComponent,
+  },
+  {
     path: "billing/depot/lolo",
     component: LOLOBillingComponent,
   },
@@ -458,7 +466,7 @@ export const ADMIN_ROUTE: Routes = [
   },
   {
     path: "billing/clean",
-    component: CleanBillingComponent,
+    component: MainCleaningComponent,
   },
   {
     path: "billing/repair",
@@ -471,7 +479,19 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "billing/steam",
     component: SteamBillingComponent,
-  }
+  },
+  {
+    path: "billing/invoices",
+    component: MainInvoiceComponent,
+  },
+  {
+    path: "billing/pending",
+    component: MainPendingComponent,
+  },
+  {
+    path: "billing/billed-tank",
+    component: BilledTankComponent,
+  },
 ];
 
 // @NgModule({
