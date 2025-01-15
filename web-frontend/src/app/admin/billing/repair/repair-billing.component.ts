@@ -88,7 +88,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     'tank_status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.BILING.LIST.REPAIR-BILL'
+  pageTitle = 'MENUITEMS.BILLING.LIST.REPAIR-BILL'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]

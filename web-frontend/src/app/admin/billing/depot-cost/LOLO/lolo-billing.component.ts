@@ -46,7 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
-  selector: 'app-tank-movement',
+  selector: 'app-lolo-billing',
   standalone: true,
   templateUrl: './lolo-billing.component.html',
   styleUrl: './lolo-billing.component.scss',

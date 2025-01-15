@@ -46,10 +46,10 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
-  selector: 'app-tank-movement',
+  selector: 'app-billed-tank-movement',
   standalone: true,
-  templateUrl: './steam-billing.component.html',
-  styleUrl: './steam-billing.component.scss',
+  templateUrl: './billed-tank.component.html',
+  styleUrl: './billed-tank.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -77,7 +77,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
     MatDividerModule,
   ]
 })
-export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class BilledTankComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
     'customer',
@@ -88,9 +88,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'tank_status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
+  pageTitle = 'MENUITEMS.BILLING.LIST.BILLED-TANK'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.BILLING.TEXT'
   ]
 
   translatedLangText: any = {};

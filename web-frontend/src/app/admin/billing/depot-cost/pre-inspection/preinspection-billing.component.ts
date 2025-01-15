@@ -46,7 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
-  selector: 'app-tank-movement',
+  selector: 'app-preinspection-billing',
   standalone: true,
   templateUrl: './preinspection-billing.component.html',
   styleUrl: './preinspection-billing.component.scss',

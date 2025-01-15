@@ -44,12 +44,13 @@ import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 
 @Component({
-  selector: 'app-tank-movement',
+  selector: 'app-residue-billing',
   standalone: true,
-  templateUrl: './clean-billing.component.html',
-  styleUrl: './clean-billing.component.scss',
+  templateUrl: './residue-billing.component.html',
+  styleUrl: './residue-billing.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -77,7 +78,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
     MatDividerModule,
   ]
 })
-export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
     'customer',
@@ -121,7 +122,10 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    RO_NO: 'COMMON-FORM.RO-NO'
+    RO_NO: 'COMMON-FORM.RO-NO',
+    RELEASE_DATE:'COMMON-FORM.RELEASE-DATE',
+    INVOICE_DATE:'COMMON-FORM.INVOICE-DATE',
+    INVOICE_NO:'COMMON-FORM.INVOICE-NO',
   }
 
   searchForm?: UntypedFormGroup;
@@ -133,6 +137,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  clnDS:InGateCleaningDS;
 
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
@@ -168,6 +173,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
+    this.clnDS= new InGateCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -188,9 +194,14 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       last_cargo: this.lastCargoControl,
       eir_no: [''],
       ro_no: [''],
+      eir_dt:[''],
+      release_dt:[''],
+      inv_dt_start: [''],
+      inv_dt_end: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
       tank_no: [''],
+      inv_no:[''],
       job_no: [''],
       purpose: [''],
       tank_status_cv: [''],
