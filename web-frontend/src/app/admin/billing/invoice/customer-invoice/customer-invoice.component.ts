@@ -46,7 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
-  selector: 'app-clean-billing',
+  selector: 'app-customer-invoice',
   standalone: true,
   templateUrl: './customer-invoice.component.html',
   styleUrl: './customer-invoice.component.scss',

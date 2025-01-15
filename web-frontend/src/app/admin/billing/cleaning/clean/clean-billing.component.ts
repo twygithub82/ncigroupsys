@@ -44,6 +44,7 @@ import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 
 @Component({
   selector: 'app-clean-billing',
@@ -136,6 +137,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  clnDS:InGateCleaningDS;
 
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
@@ -171,6 +173,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
+    this.clnDS= new InGateCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;

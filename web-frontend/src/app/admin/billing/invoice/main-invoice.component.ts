@@ -57,6 +57,7 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 //import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InvoicesComponent } from './invoices/invoices.component';
+import { CustomerInvoiceComponent } from './customer-invoice/customer-invoice.component';
 @Component({
   selector: 'app-main-invoice',
   standalone: true,
@@ -93,7 +94,8 @@ import { InvoicesComponent } from './invoices/invoices.component';
     MatTabsModule,
     JobOrderQCComponent,
     JobOrderTaskComponent,
-    InvoicesComponent
+    InvoicesComponent,
+    CustomerInvoiceComponent
    
 ]
 })

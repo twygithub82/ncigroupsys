@@ -57,6 +57,9 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 //import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CleanBillingComponent } from './clean/clean-billing.component';
+import { LOLOBillingComponent } from './LOLO/lolo-billing.component';
+import { PreinspectionBillingComponent } from './pre-inspection/preinspection-billing.component';
+import { StorageBillingComponent } from './storage/storage-billing.component';
 @Component({
   selector: 'app-main-depot',
   standalone: true,
@@ -93,7 +96,9 @@ import { CleanBillingComponent } from './clean/clean-billing.component';
     MatTabsModule,
     JobOrderQCComponent,
     JobOrderTaskComponent,
-    CleanBillingComponent
+    LOLOBillingComponent,
+    PreinspectionBillingComponent,
+    StorageBillingComponent
    
 ]
 })

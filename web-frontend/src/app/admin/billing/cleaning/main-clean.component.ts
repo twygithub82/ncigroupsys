@@ -57,6 +57,8 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 //import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CleanBillingComponent } from './clean/clean-billing.component';
+import { ResidueBillingComponent } from './residue/residue-billing.component';
+import { SteamBillingComponent } from './steam/steam-billing.component';
 @Component({
   selector: 'app-main-clean',
   standalone: true,
@@ -93,7 +95,9 @@ import { CleanBillingComponent } from './clean/clean-billing.component';
     MatTabsModule,
     JobOrderQCComponent,
     JobOrderTaskComponent,
-    CleanBillingComponent
+    CleanBillingComponent,
+    SteamBillingComponent,
+    ResidueBillingComponent
    
 ]
 })
