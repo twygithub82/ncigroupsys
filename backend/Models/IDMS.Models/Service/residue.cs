@@ -1,4 +1,5 @@
 ﻿
+using IDMS.Models.Billing;
 using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using System.ComponentModel.DataAnnotations;
@@ -27,7 +28,10 @@ namespace IDMS.Models.Service
         public long? complete_dt { get; set; }
         public long? na_dt { get; set; }
         public string? estimate_no { get; set; }
+
+        [ForeignKey("customer_billing")]
         public string? customer_billing_guid { get; set; }
+        [ForeignKey("owner_billing")]
         public string? owner_billing_guid { get; set; }
 
         [UseFiltering]
@@ -38,5 +42,11 @@ namespace IDMS.Models.Service
 
         [UseFiltering]
         public IEnumerable<residue_part?>? residue_part { get; set; }
+
+        [UseFiltering]
+        public billing? customer_billing { get; set; }
+
+        [UseFiltering]
+        public billing? owner_billing { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using IDMS.Models.Master;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using IDMS.Models.Billing;
 
 namespace IDMS.Models.Service
 {
@@ -31,7 +32,9 @@ namespace IDMS.Models.Service
         public string? allocate_by { get; set; }
         public long? allocate_dt { get; set; }
         public string? bill_to_guid { get; set; }
+        [ForeignKey("customer_billing")]
         public string? customer_billing_guid { get; set; }
+        [ForeignKey("owner_billing")]
         public string? owner_billing_guid { get; set; }
 
         [NotMapped]
@@ -42,5 +45,10 @@ namespace IDMS.Models.Service
 
         [UseFiltering]
         public IEnumerable<steaming_part?>? steaming_part { get; set; }
+        [UseFiltering]
+        public billing? customer_billing { get; set; }
+
+        [UseFiltering]
+        public billing? owner_billing { get; set; }
     }
 }
