@@ -11,6 +11,7 @@ import { AnyObject } from 'chart.js/dist/types/basic';
 import { InGateSurveyItem } from './in-gate-survey';
 import { CustomerCompanyItem } from './customer-company';
 import { JobOrderGO, JobOrderItem } from './job-order';
+import { BillingItem } from './billing';
 
 export class InGateCleaningGO {
   public action?: string = '';
@@ -35,6 +36,9 @@ export class InGateCleaningGO {
   public update_by?: string;
   public delete_dt?: number;
 
+  public customer_billing_guid?:string;
+  public owner_billing_guid?:string;
+
   constructor(item: Partial<InGateCleaningGO> = {}) {
     this.action = item.action || '';
     this.guid = item.guid || '';
@@ -57,6 +61,8 @@ export class InGateCleaningGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+    this.customer_billing_guid= item.customer_billing_guid;
+    this.owner_billing_guid= item.owner_billing_guid;
   }
 }
 
@@ -64,11 +70,16 @@ export class InGateCleaningItem extends InGateCleaningGO {
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?: CustomerCompanyItem;
   public job_order?: JobOrderItem;
+  public customer_billing?:BillingItem;
+  public owner_billing?:BillingItem;
+
   constructor(item: Partial<InGateCleaningItem> = {}) {
     super(item)
     this.storing_order_tank = item.storing_order_tank;
     this.customer_company = item.customer_company;
     this.job_order = item.job_order;
+    this.customer_billing= item.customer_billing;
+    this.owner_billing=item.owner_billing;
   }
 }
 
@@ -92,7 +103,142 @@ export interface InGateCleaningResult {
 //   }
 // }
 
-
+const SEARCH_CLEANING_BILLING_QUERY = gql`
+  query queryInGateCleaning($where: cleaningFilterInput, $order: [cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    inGates: queryCleaning(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+       nodes {
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        bill_to_guid
+        buffer_cost
+        cleaning_cost
+        complete_by
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        guid
+        job_no
+        na_dt
+        remarks
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        customer_billing_guid
+        customer_billing
+        {
+          bill_to_guid
+          delete_dt
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          currency{
+            currency_code
+            currency_name
+            rate
+            delete_dt
+          }
+          customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+          }
+        }
+        owner_billing_guid
+        owner_billing{
+          bill_to_guid
+          delete_dt
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          currency{
+            currency_code
+            currency_name
+            rate
+            delete_dt
+          }
+          customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+          }
+        }
+        storing_order_tank {
+          tank_no
+          tank_status_cv
+          customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+              
+          }
+          tariff_cleaning {
+            alias
+            ban_type_cv
+            in_gate_alert
+            nature_cv
+            cargo
+            class_cv
+            remarks
+          }
+          in_gate {
+            eir_dt
+            eir_no
+            eir_status_cv
+            delete_dt
+            guid
+          }
+          out_gate{
+            guid
+            out_gate_survey{
+              guid
+              create_dt
+              delete_dt
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 const SEARCH_IN_GATE_CLEANING_QUERY = gql`
   query queryInGateCleaning($where: cleaningFilterInput, $order: [cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
@@ -378,6 +524,33 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
   constructor(private apollo: Apollo) {
     super();
   }
+
+
+  searchWithBilling(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<InGateCleaningItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: SEARCH_CLEANING_BILLING_QUERY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.inGates || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          this.pageInfo = retResult.pageInfo;
+          return retResult.nodes;
+        })
+      );
+  }
+
 
   search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<InGateCleaningItem[]> {
     this.loadingSubject.next(true);

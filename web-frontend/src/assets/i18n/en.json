@@ -826,6 +826,7 @@
     "PUBLISH": "Publish",
     "INVOICE-DATE":"Invoice Date",
     "INVOICE-NO":"Invoice No",
+    "INVOICE-DETAILS":"Invoice Details",
     "DEPOT":"Depot"
   },
   "CLEAN-PROCEDURES": {

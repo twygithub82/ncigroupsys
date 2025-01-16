@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -44,7 +44,7 @@ import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
+import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 
 @Component({
   selector: 'app-clean-billing',
@@ -80,6 +80,7 @@ import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 })
 export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
+    'select',
     'tank_no',
     'customer',
     'eir_no',
@@ -126,8 +127,13 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     RELEASE_DATE:'COMMON-FORM.RELEASE-DATE',
     INVOICE_DATE:'COMMON-FORM.INVOICE-DATE',
     INVOICE_NO:'COMMON-FORM.INVOICE-NO',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    INVOICE_DETAILS:'COMMON-FORM.INVOICE-DETAILS',
+    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
+    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
   }
 
+  invForm?: UntypedFormGroup;
   searchForm?: UntypedFormGroup;
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -139,6 +145,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   tcDS: TariffCleaningDS;
   clnDS:InGateCleaningDS;
 
+  clnEstList:InGateCleaningItem[]=[];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -156,6 +163,10 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  selection = new SelectionModel<InGateCleaningItem>(true, []);
+  invoiceNoControl= new FormControl('', [Validators.required]);
+  invoiceDateControl= new FormControl('', [Validators.required]);
+  invoiceTotalCostControl= new FormControl('0.00');
 
   constructor(
     public httpClient: HttpClient,
@@ -168,6 +179,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     super();
     this.translateLangText();
     this.initSearchForm();
+    this.initInvoiceForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
@@ -187,7 +199,14 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.loadData();
   }
 
+  initInvoiceForm(){
+    this.invForm=this.fb.group({
+      inv_no:[''],
+      inv_dt:['']
+    })
+  }
   initSearchForm() {
+
     this.searchForm = this.fb.group({
       so_no: [''],
       customer_code: this.customerCodeControl,
@@ -195,6 +214,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       eir_no: [''],
       ro_no: [''],
       eir_dt:[''],
+      cutoff_dt:[''],
       release_dt:[''],
       inv_dt_start: [''],
       inv_dt_end: [''],
@@ -316,25 +336,66 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   search() {
     const where: any = {};
 
+    where.status_cv={in:['COMPLETED','APPROVED']};
+
     if (this.searchForm!.get('tank_no')?.value) {
-      where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-    }
-
-    if (this.searchForm!.get('eir_status_cv')?.value) {
-      where.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
-    }
-
-    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+      where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
-      const soSearch: any = {};
-      if (this.searchForm!.get('customer_code')?.value) {
-        soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
-      }
-      where.storing_order = soSearch;
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      where.storing_order_tank.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
     }
+
+    if (this.searchForm!.get('eir_dt')?.value) {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      where.storing_order_tank.in_gate = { some:{
+        and:[
+          {eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
+          {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}
+        ]}
+      };
+    }
+    if (this.searchForm!.get('eir_no')?.value) {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
+    }
+
+    if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+      if(!where.customer_billing) where.customer_billing={};
+      where.customer_billing.invoice_dt={gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'],true) };
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+    if (this.searchForm!.get('cutoff_dt')?.value) {
+      
+      where.approve_dt={lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) };
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+    if (this.searchForm!.get('release_dt')?.value) {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      where.storing_order_tank.out_gate={some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
+      {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}};
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+    if (this.searchForm!.get('last_cargo')?.value) {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      
+      where.storing_order_tank.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+   
+
+    // if (this.searchForm!.get('customer_code')?.value) {
+    //   const soSearch: any = {};
+    //   if (this.searchForm!.get('customer_code')?.value) {
+    //     soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
+    //   }
+    //   where.storing_order = soSearch;
+    // }
 
     // if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
     //   const sotSearch: any = {};
@@ -386,18 +447,19 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     //   where.tank = sotSearch;
     // }
 
-    this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+    this.lastSearchCriteria = this.clnDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.subs.sink = this.sotDS.searchStoringOrderTankForMovement(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.selection.clear();
+    this.subs.sink = this.clnDS.searchWithBilling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.sotList = data;
-        this.endCursor = this.sotDS.pageInfo?.endCursor;
-        this.startCursor = this.sotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+        this.clnEstList = data;
+        this.endCursor = this.clnDS.pageInfo?.endCursor;
+        this.startCursor = this.clnDS.pageInfo?.startCursor;
+        this.hasNextPage = this.clnDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.clnDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSize = pageSize;
@@ -442,6 +504,28 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
+  displayReleaseDate(sot: StoringOrderTankItem) {
+    let retval:string="-";
+    if(sot.out_gate?.length)
+    {
+      if(sot.out_gate[0]?.out_gate_survey)
+      {
+        const date = new Date(sot.out_gate[0]?.out_gate_survey?.create_dt! * 1000);
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        const year = date.getFullYear();
+    
+        // Replace the '/' with '-' to get the required format
+    
+    
+        return `${day}/${month}/${year}`;
+      }
+
+    }
+    return retval;
+  }
+
   displayTankPurpose(sot: StoringOrderTankItem) {
     let purposes: any[] = [];
     if (sot?.purpose_storage) {
@@ -468,6 +552,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   displayDate(input: number | undefined): string | undefined {
+    if(input===null) return "-";
     return Utility.convertEpochToDateStr(input);
   }
 
@@ -516,8 +601,73 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       job_no: '',
       purpose: '',
       tank_status_cv: '',
-      eir_status_cv: ''
+      eir_status_cv: '',
+      ro_no: '',
+      eir_dt:'',
+      cutoff_dt:'',
+      release_dt:'',
+      inv_dt_start: '',
+      inv_dt_end: '',
+      inv_no:'',
+      yard_cv: ['']
     });
+
     this.customerCodeControl.reset('');
+    this.lastCargoControl.reset('');
   }
+
+  isAllSelected() {
+   // this.calculateTotalCost();
+    const numSelected = this.selection.selected.length;
+    const numRows = this.clnEstList.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+     this.isAllSelected()
+       ? this.selection.clear()
+       : this.clnEstList.forEach((row) =>
+           this.selection.select(row)
+         );
+    this.calculateTotalCost();
+  }
+
+  AllowToSave():boolean{
+    let retval:boolean=false;
+    if(this.selection.selected.length>0)
+    {
+        if(this.invoiceDateControl.valid && this.invoiceNoControl.valid)
+        {
+          return true;
+        }
+    }
+
+    return retval;
+  }
+
+  save(event:Event){
+    event.stopPropagation();
+  }
+
+  onCancel(event:Event){
+    event.stopPropagation();
+    this.invoiceNoControl.reset('');
+    this.invoiceDateControl.reset('');
+  }
+
+  calculateTotalCost()
+    {
+    this.invoiceTotalCostControl.setValue('0.00');
+    const totalCost = this.selection.selected.reduce((accumulator, s) => {
+      // Add buffer_cost and cleaning_cost of the current item to the accumulator
+      return accumulator + (s.buffer_cost || 0) + (s.cleaning_cost || 0);
+    }, 0); // Initialize accumulator to 0
+    this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
+  }
+   toggleRow(row:InGateCleaningItem)
+   {
+     this.selection.toggle(row);
+     this.calculateTotalCost();
+   }
 }
