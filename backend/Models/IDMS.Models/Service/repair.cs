@@ -1,4 +1,5 @@
-﻿using IDMS.Models.Inventory;
+﻿using IDMS.Models.Billing;
+using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using IDMS.Models.Shared;
 using System;
@@ -40,6 +41,10 @@ namespace IDMS.Models.Service
 
         [ForeignKey("customer_company")]
         public string? bill_to_guid { get; set; }
+        [ForeignKey("customer_billing")]
+        public string? customer_billing_guid { get; set; }
+        [ForeignKey("owner_billing")]
+        public string? owner_billing_guid { get; set; }
 
         [UseFiltering]
         public customer_company? customer_company { get; set; }
@@ -50,5 +55,11 @@ namespace IDMS.Models.Service
 
         [UseFiltering]
         public IEnumerable<repair_part>? repair_part { get; set; }
+
+        [UseFiltering]
+        public billing? customer_billing { get; set; }
+
+        [UseFiltering]
+        public billing? owner_billing { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using IDMS.Models.Inventory;
+﻿using IDMS.Models.Billing;
+using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -31,7 +32,12 @@ namespace IDMS.Models.Service
         public string? complete_by { get; set; }    
         public long? complete_dt { get; set; }
         public long? na_dt { get; set; }
-        //public string? cleaning_bay_cv { get; set; }
+
+        [ForeignKey("customer_billing")]
+        public string? customer_billing_guid { get; set; }
+
+        [ForeignKey("owner_billing")]
+        public string? owner_billing_guid { get; set; }
 
         [NotMapped]
         public string action { get; set; } 
@@ -44,5 +50,11 @@ namespace IDMS.Models.Service
 
         [UseFiltering]
         public job_order? job_order { get; set; }
+
+        [UseFiltering]
+        public billing? customer_billing { get; set; }
+        
+        [UseFiltering]
+        public billing? owner_billing { get; set; }
     }
 }
