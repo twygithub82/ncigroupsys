@@ -1006,11 +1006,8 @@ $breakpoints: (
 
 .menu-button:hover {
   background-color: #ffffff;
-  /* Make the background fully opaque */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  /* Add a shadow for emphasis */
   transform: scale(1.1);
-  /* Slightly enlarge the button */
 }
 
 .preview-img {
@@ -1327,4 +1324,128 @@ $breakpoints: (
 
 .to-mark {
   z-index: 5;
+}
+
+.td-col {
+    width: 0;
+}
+
+.td-col-12 {
+    width: 100%;
+}
+
+.td-col-11-5 {
+    width: 95.83333333%;
+}
+
+.td-col-11 {
+    width: 91.66666667%;
+}
+
+.td-col-10-5 {
+    width: 87.5%;
+}
+
+.td-col-10 {
+    width: 83.33333333%;
+}
+
+.td-col-9-5 {
+    width: 79.16666667%;
+}
+
+.td-col-9 {
+    width: 75%;
+}
+
+.td-col-8-5 {
+    width: 70.83333333%;
+}
+
+.td-col-8 {
+    width: 66.66666667%;
+}
+
+.td-col-7-5 {
+    width: 62.5%;
+}
+
+.td-col-7 {
+    width: 58.33333333%;
+}
+
+.td-col-6-5 {
+    width: 54.16666667%;
+}
+
+.td-col-6 {
+    width: 50%;
+}
+
+.td-col-5-5 {
+    width: 45.83333333%;
+}
+
+.td-col-5 {
+    width: 41.66666667%;
+}
+
+.td-col-4-5 {
+    width: 37.5%;
+}
+
+.td-col-4 {
+    width: 33.33333333%;
+}
+
+.td-col-3-5 {
+    width: 29.16666667%;
+}
+
+.td-col-3 {
+    width: 25%;
+}
+
+.td-col-2-75 {
+    width: 22.91666667%;
+}
+
+.td-col-2-5 {
+    width: 20.83333333%;
+}
+
+.td-col-2-25 {
+    width: 18.75%;
+}
+
+.td-col-2 {
+    width: 16.66666667%;
+}
+
+.td-col-1-75 {
+    width: 14.58333333%;
+}
+
+.td-col-1-5 {
+    width: 12.5%;
+}
+
+.td-col-1-25 {
+    width: 10.41666667%;
+}
+
+.td-col-1 {
+    width: 8.33333333%;
+}
+
+.td-col-0-75 {
+    width: 6.25%;
+}
+
+.td-col-0-5 {
+    width: 4.16666667%;
+}
+
+.td-col-0-25 {
+    width: 2.08333334%;
 }

@@ -23,6 +23,8 @@ export class InGate {
   public yard_cv?: string;
   public remarks?: string;
   public haulier?: string;
+  public publish_dt?: number;
+  public publish_by?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -42,6 +44,8 @@ export class InGate {
     this.yard_cv = item?.yard_cv;
     this.remarks = item?.remarks;
     this.haulier = item?.haulier;
+    this.publish_dt = item?.publish_dt;
+    this.publish_by = item?.publish_by;
     this.create_dt = item?.create_dt;
     this.create_by = item?.create_by;
     this.update_dt = item?.update_dt;
@@ -74,8 +78,6 @@ export interface InGateResult {
   items: InGateItem[];
   totalCount: number;
 }
-
-
 
 export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
  query queryInGateCount($where: in_gateFilterInput) {
@@ -217,6 +219,7 @@ export const GET_IN_GATE_BY_ID = gql`
           unit_type_guid
           update_by
           update_dt
+          last_release_dt
           customer_company {
             code
             guid
@@ -369,6 +372,12 @@ export const UPDATE_IN_GATE = gql`
   }
 `;
 
+export const PUBLISH_IN_GATE_SURVEY = gql`
+  mutation publishIngateSurvey($inGate_guid: String!) {
+    publishIngateSurvey(inGate_guid: $inGate_guid)
+  }
+`;
+
 export class InGateDS extends BaseDataSource<InGateItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -503,6 +512,20 @@ export class InGateDS extends BaseDataSource<InGateItem> {
       mutation: UPDATE_IN_GATE,
       variables: {
         inGate
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
+
+  publishInGateSurvey(inGate_guid: string): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: PUBLISH_IN_GATE_SURVEY,
+      variables: {
+        inGate_guid
       }
     }).pipe(
       finalize(() => {

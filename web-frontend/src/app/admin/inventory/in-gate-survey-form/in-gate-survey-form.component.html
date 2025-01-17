@@ -190,8 +190,10 @@
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
                                 <mat-select formControlName="unit_type_guid" required>
+                                  @if (unit_typeList && unit_typeList.length) {
                                   @for (option of unit_typeList; track option) {
                                   <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
+                                  }
                                   }
                                 </mat-select>
                                 @if (surveyForm?.get('tank_details.unit_type_guid')?.hasError('required')) {
@@ -2026,6 +2028,7 @@
                           </button>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                          <!-- <ng-container #dynamicContainer></ng-container> -->
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
                             [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
                             (click)="onPublish()">
@@ -2039,7 +2042,8 @@
                             {{translatedLangText.PUBLISH}}
                           </button>
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
-                            [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)" (click)="onFormSubmit()">
+                            [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
+                            (click)="onFormSubmit()">
                             <mat-icon>
                               @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async)) {
                               save

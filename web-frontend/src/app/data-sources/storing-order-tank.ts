@@ -54,6 +54,7 @@ export class StoringOrderTank {
   public repair_remarks?: string;
   public steaming_remarks?: string;
   public storage_remarks?: string;
+  public last_release_dt?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -91,6 +92,7 @@ export class StoringOrderTank {
     this.repair_remarks = item.repair_remarks || '';
     this.steaming_remarks = item.steaming_remarks || '';
     this.storage_remarks = item.storage_remarks || '';
+    this.last_release_dt = item.last_release_dt;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;

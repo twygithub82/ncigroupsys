@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, UntypedFormArray, FormBuilder } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -56,6 +56,8 @@ import { PreviewImageDialogComponent } from '@shared/components/preview-image-di
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { MatTabsModule } from '@angular/material/tabs';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
+import { PreviewPdfDialogComponent } from 'app/document-template/pdf/preview-pdf/preview-pdf-dialog.component';
 
 @Component({
   selector: 'app-in-gate',
@@ -301,9 +303,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
   isFileActionLoading$: Observable<boolean> = this.fileManagerService.actionLoading$;
-  
+  eirPdf: any;
+
   stepperOrientation: Observable<StepperOrientation>;
   compTypeStepperOrientation: Observable<StepperOrientation>;
+
+  @ViewChild('dynamicContainer', { read: ViewContainerRef, static: true }) container!: ViewContainerRef;
 
   constructor(
     public httpClient: HttpClient,
@@ -315,7 +320,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     private router: Router,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
-    private fileManagerService: FileManagerService
+    private fileManagerService: FileManagerService,
   ) {
     super();
     this.translateLangText();
@@ -660,7 +665,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
+      this.purposeOptionCvList = data || [];
     });
     this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
       this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
@@ -701,19 +706,19 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.airlineConnCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('disCompCv').subscribe(data => {
-      this.disCompCvList = data;
+      this.disCompCvList = data || [];
     });
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
-      this.disValveCvList = data;
+      this.disValveCvList = data || [];
     });
     this.cvDS.connectAlias('disValveSpecCv').subscribe(data => {
-      this.disValveSpecCvList = data;
+      this.disValveSpecCvList = data || [];
     });
     this.cvDS.connectAlias('disTypeCv').subscribe(data => {
       this.disTypeCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('footValveCv').subscribe(data => {
-      this.footValveCvList = data;
+      this.footValveCvList = data || [];
     });
     this.cvDS.connectAlias('manlidCoverCv').subscribe(data => {
       this.manlidCoverCvList = addDefaultSelectOption(data, "--Select--");
@@ -731,16 +736,16 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.thermometerCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
-      this.valveBrandCvList = data;
+      this.valveBrandCvList = data || [];
     });
     this.cvDS.connectAlias('tankSideCv').subscribe(data => {
-      this.tankSideCvList = data;
+      this.tankSideCvList = data || [];
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-      this.tankStatusCvList = data;
+      this.tankStatusCvList = data || [];
     });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
-      this.unit_typeList = data
+      this.unit_typeList = data || [];
     });
 
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
@@ -749,6 +754,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
+          this.dateOfInspection = Utility.convertDate(this.in_gate?.in_gate_survey?.create_dt) as Date;
           this.populateInGateForm(this.in_gate);
           // this.ccDS.getOwnerList().subscribe(data => {
           //   this.ownerList = data;
@@ -759,7 +765,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             this.fileManagerService.getFileUrlByGroupGuid([this.in_gate!.in_gate_survey?.guid]).subscribe({
               next: (response) => {
                 console.log('Files retrieved successfully:', response);
-                this.populateImages(response)
+                if (response?.length) {
+                  this.eirPdf = response.filter((f : any) => f.description === 'IN_GATE_EIR');
+                  this.populateImages(response)
+                }
               },
               error: (error) => {
                 console.error('Error retrieving files:', error);
@@ -1031,7 +1040,128 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onPublish() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
 
+    // this.container.clear();
+
+    // const componentRef = this.container.createComponent(EirFormComponent);
+
+    // const instance = componentRef.instance;
+    // instance.type = "in";
+    // instance.in_gate_survey_guid = this.in_gate?.in_gate_survey?.guid;
+    // instance.igsDS = this.igsDS;
+    // instance.cvDS = this.cvDS;
+
+    // instance.populateCodeValues = {
+    //   purposeOptionCvList: this.purposeOptionCvList,
+    //   cleanStatusCvList: this.cleanStatusCvList,
+    //   testTypeCvList: this.testTypeCvList,
+    //   testClassCvList: this.testClassCvList,
+    //   manufacturerCvList: this.manufacturerCvList,
+    //   claddingCvList: this.claddingCvList,
+    //   maxGrossWeightCvList: this.maxGrossWeightCvList,
+    //   tankHeightCvList: this.tankHeightCvList,
+    //   walkwayCvList: this.walkwayCvList,
+    //   airlineCvList: this.airlineCvList,
+    //   airlineConnCvList: this.airlineConnCvList,
+    //   disCompCvList: this.disCompCvList,
+    //   disValveCvList: this.disValveCvList,
+    //   disValveSpecCvList: this.disValveSpecCvList,
+    //   disTypeCvList: this.disTypeCvList,
+    //   footValveCvList: this.footValveCvList,
+    //   manlidCoverCvList: this.manlidCoverCvList,
+    //   manlidSealCvList: this.manlidSealCvList,
+    //   pvSpecCvList: this.pvSpecCvList,
+    //   pvTypeCvList: this.pvTypeCvList,
+    //   thermometerCvList: this.thermometerCvList,
+    //   tankCompTypeCvList: this.tankCompTypeCvList,
+    //   valveBrandCvList: this.valveBrandCvList,
+    //   tankSideCvList: this.tankSideCvList,
+    //   tankStatusCvList: this.tankStatusCvList,
+    //   packageBufferList: this.packageBufferList,
+    // }
+
+    // instance.generatePDF().then((data) => {
+    //   console.log(data)
+    //   componentRef.destroy();
+
+    // });
+    const dialogRef = this.dialog.open(EirFormComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        type: "in",
+        in_gate_survey_guid: this.in_gate?.in_gate_survey?.guid,
+        eir_no: this.in_gate?.eir_no,
+        igsDS: this.igsDS,
+        cvDS: this.cvDS,
+        eirPdf: this.eirPdf
+      },
+      panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+
+    // this.container.clear();
+
+    // const componentRef = this.container.createComponent(EirFormComponent);
+
+    // const instance = componentRef.instance;
+    // instance.type = "in";
+    // instance.in_gate_survey_guid = this.in_gate?.in_gate_survey?.guid;
+    // instance.igsDS = this.igsDS;
+    // instance.cvDS = this.cvDS;
+
+    // instance.populateCodeValues = {
+    //   purposeOptionCvList: this.purposeOptionCvList,
+    //   cleanStatusCvList: this.cleanStatusCvList,
+    //   testTypeCvList: this.testTypeCvList,
+    //   testClassCvList: this.testClassCvList,
+    //   manufacturerCvList: this.manufacturerCvList,
+    //   claddingCvList: this.claddingCvList,
+    //   maxGrossWeightCvList: this.maxGrossWeightCvList,
+    //   tankHeightCvList: this.tankHeightCvList,
+    //   walkwayCvList: this.walkwayCvList,
+    //   airlineCvList: this.airlineCvList,
+    //   airlineConnCvList: this.airlineConnCvList,
+    //   disCompCvList: this.disCompCvList,
+    //   disValveCvList: this.disValveCvList,
+    //   disValveSpecCvList: this.disValveSpecCvList,
+    //   disTypeCvList: this.disTypeCvList,
+    //   footValveCvList: this.footValveCvList,
+    //   manlidCoverCvList: this.manlidCoverCvList,
+    //   manlidSealCvList: this.manlidSealCvList,
+    //   pvSpecCvList: this.pvSpecCvList,
+    //   pvTypeCvList: this.pvTypeCvList,
+    //   thermometerCvList: this.thermometerCvList,
+    //   tankCompTypeCvList: this.tankCompTypeCvList,
+    //   valveBrandCvList: this.valveBrandCvList,
+    //   tankSideCvList: this.tankSideCvList,
+    //   tankStatusCvList: this.tankStatusCvList,
+    //   packageBufferList: this.packageBufferList,
+    // }
+
+    // instance.generatePDF().then((data) => {
+    //   console.log(data)
+    //   componentRef.destroy();
+
+    //   const dialogRef = this.dialog.open(PreviewPdfDialogComponent, {
+    //     width: '80vw',
+    //     height: '80vh',
+    //     data: {
+    //       pdfBlob: data,
+    //     },
+    //     direction: tempDirection
+    //   });
+    //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   });
+    // });
   }
 
   onFormSubmit() {

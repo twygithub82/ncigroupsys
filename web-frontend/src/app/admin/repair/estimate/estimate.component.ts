@@ -489,7 +489,6 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       let reSome: any = {};
 
       if (this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value) {
-        // reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value) };
         const estDtStart = this.searchForm?.get('est_dt_start')?.value;
         const estDtEnd = this.searchForm?.get('est_dt_end')?.value;
         const today = new Date();
