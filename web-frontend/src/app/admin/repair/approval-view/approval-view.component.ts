@@ -677,12 +677,12 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         })
       });
       console.log(re)
-      // this.repairDS.approveRepair(re).subscribe(result => {
-      //   console.log(result)
-      //   if ((result?.data?.approveRepair ?? 0) > 0) {
-      //     this.handleSaveSuccess(result?.data?.approveRepair);
-      //   }
-      // });
+      this.repairDS.approveRepair(re).subscribe(result => {
+        console.log(result)
+        if ((result?.data?.approveRepair ?? 0) > 0) {
+          this.handleSaveSuccess(result?.data?.approveRepair);
+        }
+      });
     } else {
       bill_to?.setErrors({ required: true })
       bill_to?.markAsTouched();
