@@ -110,6 +110,7 @@ namespace IDMS.Repair.GqlTypes
                     appvRepair.update_by = user;
                     appvRepair.update_dt = currentDateTime;
 
+                    appvRepair.owner_enable = repair.owner_enable;
                     appvRepair.total_cost = repair.total_cost;
                     appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.remarks = repair.remarks;
@@ -128,6 +129,7 @@ namespace IDMS.Repair.GqlTypes
                             var part = new repair_part() { guid = item.guid };
                             context.repair_part.Attach(part);
 
+                            part.owner = item.owner;
                             part.approve_qty = item.approve_qty;
                             part.approve_hour = item.approve_hour;
                             part.approve_part = item.approve_part;
