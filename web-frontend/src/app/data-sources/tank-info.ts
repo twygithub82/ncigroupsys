@@ -30,6 +30,7 @@ export class TankInfoGO {
   public walkway_cv?: string;
   public yard_cv?: string;
   public last_notify_dt?: number;
+  public last_release_dt?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -143,6 +144,7 @@ export const GET_TANK_INFO_FOR_LAST_TEST = gql`
         update_dt
         walkway_cv
         yard_cv
+        last_release_dt
       }
     }
   }
