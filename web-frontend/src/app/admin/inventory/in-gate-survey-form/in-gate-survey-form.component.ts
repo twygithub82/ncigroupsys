@@ -1760,6 +1760,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
+  canPublish() {
+    return this.in_gate?.in_gate_survey?.guid;
+  }
+
   chosenYearHandler(normalizedYear: Moment) {
     const ctrlValue = this.surveyForm!.get('periodic_test.test_dt')!.value ? moment(this.surveyForm!.get('periodic_test.test_dt')!.value) : moment();
     ctrlValue.year(normalizedYear.year()).date(1);

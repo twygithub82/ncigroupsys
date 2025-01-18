@@ -2980,4 +2980,8 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     ];
     return sot && (sot.status_cv === 'CANCELED' || sot.status_cv === 'ACCEPTED') && status_cv.includes(sot.tank_status_cv || '');
   }
+
+  isCustomerSameAsOwner(sot?: StoringOrderTankItem): boolean {
+    return !!(sot && sot.owner_guid === sot.storing_order?.customer_company_guid);
+  }
 }

@@ -8,7 +8,7 @@ import { NgScrollbar } from 'ngx-scrollbar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -677,17 +677,22 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         })
       });
       console.log(re)
-      this.repairDS.approveRepair(re).subscribe(result => {
-        console.log(result)
-        if ((result?.data?.approveRepair ?? 0) > 0) {
-          this.handleSaveSuccess(result?.data?.approveRepair);
-        }
-      });
+      // this.repairDS.approveRepair(re).subscribe(result => {
+      //   console.log(result)
+      //   if ((result?.data?.approveRepair ?? 0) > 0) {
+      //     this.handleSaveSuccess(result?.data?.approveRepair);
+      //   }
+      // });
     } else {
       bill_to?.setErrors({ required: true })
       bill_to?.markAsTouched();
       bill_to?.updateValueAndValidity();
     }
+  }
+
+  onOwnerToggle(event: MatCheckboxChange): void {
+    this.isOwner = event.checked;
+    this.isOwnerChanged();
   }
 
   onFormSubmit() {
@@ -1008,6 +1013,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   canExport(): boolean {
     return !!this.repair_guid;
+  }
+
+  canToggleOwner() {
+    return !this.sotDS.isCustomerSameAsOwner(this.sotItem) && this.repairDS.canAmend(this.repairItem);
   }
 
   isDisabled(repairPart: RepairPartItem): boolean {
