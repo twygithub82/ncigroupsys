@@ -87,9 +87,9 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
       acc[`${query.alias}Type`] = { code_val_type: query.codeValType };
       return acc;
     }, {} as any);
-      
+
     const dynamicQuery: DocumentNode = getCodeValuesByTypeQueries(aliases);
-    
+
     this.apollo
       .query<any>({
         query: dynamicQuery,
@@ -111,6 +111,49 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
           this.totalCounts.set(alias, result[alias].length);
         });
       });
+  }
+
+  getCodeValuesByTypeAsync(queries: { alias: string, codeValType: string }[]): Promise<void> {
+    this.loadingSubject.next(true);
+
+    return new Promise((resolve, reject) => {
+      const aliases = queries.map(query => query.alias);
+      const variables = queries.reduce((acc, query) => {
+        acc[`${query.alias}Type`] = { code_val_type: query.codeValType };
+        return acc;
+      }, {} as any);
+
+      const dynamicQuery: DocumentNode = getCodeValuesByTypeQueries(aliases);
+
+      this.apollo
+        .query<any>({
+          query: dynamicQuery,
+          variables: variables
+        })
+        .pipe(
+          map((result) => result.data),
+          catchError(() => {
+            const fallbackData = aliases.reduce((acc: any, alias) => {
+              acc[alias] = [];
+              return acc;
+            }, {});
+            return of(fallbackData);
+          }),
+          finalize(() => this.loadingSubject.next(false))
+        )
+        .subscribe({
+          next: (result) => {
+            aliases.forEach(alias => {
+              const subject = this.itemsSubjects.get(alias) || new BehaviorSubject<CodeValuesItem[]>([]);
+              subject.next(result[alias]);
+              this.itemsSubjects.set(alias, subject);
+              this.totalCounts.set(alias, result[alias].length);
+            });
+            resolve();
+          },
+          error: (err) => reject(err),
+        });
+    });
   }
 
   override disconnect(): void {

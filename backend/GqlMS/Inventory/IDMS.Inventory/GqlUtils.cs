@@ -428,7 +428,6 @@ namespace IDMS.Inventory.GqlTypes
                     var last_cargo = await context.Set<tariff_cleaning>().Where(x => x.guid == last_cargo_guid).Select(x => x.cargo).FirstOrDefaultAsync();
                     var description = $"Steaming/Heating cost of ({last_cargo})";
 
-
                     var repTemp = sot?.required_temp;
                     bool isExclusive = false;
                     //First check whether have exclusive package cost
@@ -475,6 +474,7 @@ namespace IDMS.Inventory.GqlTypes
                     newSteam.sot_guid = sot.guid;
                     newSteam.status_cv = CurrentServiceStatus.APPROVED;
                     newSteam.job_no = newJob_no; //sot?.job_no;
+                    newSteam.bill_to_guid = customerGuid;
                     newSteam.total_cost = totalCost;
                     newSteam.approve_dt = ingate_date;
                     newSteam.approve_by = "system";

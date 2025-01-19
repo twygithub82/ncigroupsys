@@ -23,6 +23,8 @@ namespace IDMS.Models.Inventory
         public string? vehicle_no { get; set; } = "";
         public string? driver_name { get; set; } = "";
         public string? remarks { get; set; }
+        public string? publish_by { get; set; }
+        public long? publish_dt { get; set; }
         public storing_order_tank? tank { get; set; } = null;
         public out_gate_survey? out_gate_survey { get; set; }
     }

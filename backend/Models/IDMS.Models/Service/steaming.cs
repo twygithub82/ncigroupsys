@@ -31,7 +31,10 @@ namespace IDMS.Models.Service
         public long? invoice_dt { get; set; }
         public string? allocate_by { get; set; }
         public long? allocate_dt { get; set; }
+
+        [ForeignKey("customer_company")]
         public string? bill_to_guid { get; set; }
+
         [ForeignKey("customer_billing")]
         public string? customer_billing_guid { get; set; }
         [ForeignKey("owner_billing")]
@@ -39,6 +42,9 @@ namespace IDMS.Models.Service
 
         [NotMapped]
         public string action { get; set; }
+
+        [UseFiltering]
+        public customer_company? customer_company { get; set; }
 
         [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; } = null;

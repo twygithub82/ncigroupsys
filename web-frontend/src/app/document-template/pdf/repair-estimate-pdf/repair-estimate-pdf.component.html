@@ -1,0 +1,410 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} ({{estimate_no}})</h4>
+</div>
+<div mat-dialog-content>
+  <div id="pdf-form-header" class="pdf-container pdf-header">
+    <div class="header-content">
+      <table>
+        <tbody>
+          <tr>
+            <td class="td-col-2-25">
+              <b>{{translatedLangText.TANK_NO}}</b>
+            </td>
+            <td class="td-col-4-5">
+              {{repairItem?.storing_order_tank?.tank_no}}
+            </td>
+            <td class="td-col-2-25">
+              <b>{{translatedLangText.ESTIMATE_NO}}</b>
+            </td>
+            <td class="td-col-3">
+              {{estimate_no}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>{{translatedLangText.CUSTOMER}}</b>
+            </td>
+            <td>
+              {{repairItem?.storing_order_tank?.storing_order?.customer_company?.name}}
+            </td>
+            <td>
+              <b>{{translatedLangText.EIR_DATE}}</b>
+            </td>
+            <td>
+              {{displayDate(repairItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>{{translatedLangText.LAST_CARGO}}</b>
+            </td>
+            <td>
+              {{repairItem?.storing_order_tank?.tariff_cleaning?.cargo}}
+            </td>
+            <td>
+              <b>{{translatedLangText.ESTIMATE_DATE}}</b>
+            </td>
+            <td>
+              {{displayDate(repairItem?.create_dt)}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>{{translatedLangText.MANUFACTURER}}</b>
+            </td>
+            <td>
+              {{repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey?.manufacturer_cv}}
+            </td>
+            <td>
+              <b>{{translatedLangText.UNIT_TYPE}}</b>
+            </td>
+            <td>
+              {{repairItem?.storing_order_tank?.tank?.unit_type}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>{{translatedLangText.LAST_TEST}}</b>
+            </td>
+            <td>
+              {{last_test_desc}}
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="estimate-title">
+        <span class="mt-1 mb-0">
+          <b class="text-decoration-underline">
+            {{pdfTitle}}
+          </b>
+        </span>
+      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td class="td-col-6">
+              <span class="mb-0">
+                <b>
+                  {{translatedLangText.DAMAGE_CODE}}
+                </b>
+              </span>
+              <div class="list-container">
+                @for (chunkedDamageCodeCv of chunkedDamageCodeCvList; track chunkedDamageCodeCv){
+                <div class="list-column">
+                  <ul>
+                    @for (codeValue of chunkedDamageCodeCv; track codeValue){
+                    <li>{{codeValue.code_val}}: {{ codeValue.description }}</li>
+                    }
+                  </ul>
+                </div>
+                }
+              </div>
+            </td>
+            <td class="td-col-6">
+              <span class="mb-0">
+                <b>
+                  {{translatedLangText.REPAIR_CODE}}
+                </b>
+              </span>
+              <div class="list-container">
+                @for (chunkedRepairCodeCv of chunkedRepairCodeCvList; track chunkedRepairCodeCv){
+                <div class="list-column">
+                  <ul>
+                    @for (codeValue of chunkedRepairCodeCv; track codeValue){
+                    <li>{{codeValue.code_val}}: {{ codeValue.description }}</li>
+                    }
+                  </ul>
+                </div>
+                }
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-1">
+      <table class="repair-part-table header-table">
+        <tbody>
+          <tr>
+            <td class="th td-col-0-5" rowspan="2">
+              <b>{{translatedLangText.NO_DOT}}</b>
+            </td>
+            <td class="th td-col-2" rowspan="2">
+              <b>{{translatedLangText.ITEM}}</b>
+            </td>
+            <td class="th td-col-1" rowspan="2">
+              <b>{{translatedLangText.DAMAGE_CODE}}</b>
+            </td>
+            <td class="th td-col-1" rowspan="2">
+              <b>{{translatedLangText.REPAIR_CODE}}</b>
+            </td>
+            <td class="th td-col-3" rowspan="2">
+              <b>{{translatedLangText.DESCRIPTION}}</b>
+            </td>
+            <td class="th td-col-2" colspan="3">
+              <b>{{translatedLangText.DEPOT_ESTIMATE}}</b>
+            </td>
+            <td class="th td-col-2-5" colspan="4">
+              <b>{{translatedLangText.CUSTOMER_APPROVAL}}</b>
+            </td>
+          </tr>
+          <tr>
+            <td class="th td-col-0-5 sub-header-table">
+              <b>{{translatedLangText.QTY}}</b>
+            </td>
+            <td class="th td-col-0-75 sub-header-table">
+              <b>{{translatedLangText.LABOUR}}</b>
+            </td>
+            <td class="th td-col-0-75 sub-header-table">
+              <b>{{translatedLangText.MATERIAL}}</b>
+            </td>
+            <td class="th td-col-0-5 sub-header-table">
+              <b>{{translatedLangText.QTY}}</b>
+            </td>
+            <td class="th td-col-0-75 sub-header-table">
+              <b>{{translatedLangText.LABOUR}}</b>
+            </td>
+            <td class="th td-col-0-75 sub-header-table">
+              <b>{{translatedLangText.MATERIAL}}</b>
+            </td>
+            <td class="th td-col-0-5 sub-header-table">
+              <b>{{translatedLangText.LESSEE_OWNER__ABB}}</b>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="pdf-form-body" class="pdf-container pdf-body">
+    <table id="repair-part-table" class="repair-part-table">
+      <tbody>
+        @for (rep of repList; track rep) {
+        @if (rep.isGroupHeader) {
+        <tr class="group-header">
+          <td colspan="12">
+            <b>{{rep.group_name_cv}}</b>
+          </td>
+        </tr>
+        }
+        <tr>
+          <td class="td-col-0-5">
+            <b>{{rep.index + 1}}</b>
+          </td>
+          <td class="td-col-2">
+            {{getSubgroupNameCodeDescription(rep.tariff_repair?.subgroup_name_cv)}}
+          </td>
+          <td class="td-col-1">
+            {{displayDamageRepairCode(rep.rp_damage_repair, 0)}}
+          </td>
+          <td class="td-col-1">
+            {{displayDamageRepairCode(rep.rp_damage_repair, 1)}}
+          </td>
+          <td class="td-col-3">
+            {{rep.description}}
+          </td>
+          <td class="td-col-0-5">
+            {{rep.quantity}}
+          </td>
+          <td class="td-col-0-75">
+            {{rep.hour}}
+          </td>
+          <td class="td-col-0-75 text-right">
+            {{parse2Decimal(rep.material_cost)}}
+          </td>
+          <td class="td-col-0-5">
+            {{rep.approve_qty}}
+          </td>
+          <td class="td-col-0-75">
+            {{rep.approve_hour}}
+          </td>
+          <td class="td-col-0-75 text-right">
+            {{parse2Decimal(rep.approve_cost)}}
+          </td>
+          <td class="td-col-0-5">
+            @if (rep.owner) {
+            <mat-icon>
+              checked
+            </mat-icon>
+            }
+            @else {
+            <mat-icon>
+              close
+            </mat-icon>
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    <div id="repair-remarks" class="repair-remarks">
+      <div>
+        <span class="repair-remarks-title text-decoration-underline">
+          {{translatedLangText.REMARKS}}:
+        </span>
+      </div>
+      <div>
+        <b>{{repairItem?.remarks}}</b>
+      </div>
+    </div>
+  </div>
+
+  <div id="summary-content" class="pdf-container pdf-body summary-content">
+    <table>
+      <tbody>
+        <tr>
+          <td class="td-col-3" rowspan="3">
+            <b>{{translatedLangText.APPROVED_COST}}:</b>
+          </td>
+          <td class="td-col-2 text-center">
+            <b>{{translatedLangText.ITEM}}</b>
+          </td>
+          <td class="td-col-1 text-center">
+            <b>{{translatedLangText.RATE_PERC}}</b>
+          </td>
+          <td class="td-col-3 text-center" colspan="2">
+            <b>{{translatedLangText.ESTIMATE_COST}}</b>
+          </td>
+          <td class="td-col-3 text-center" colspan="2">
+            <b>{{translatedLangText.APPROVED_COST}}</b>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-col-2">
+            <b>{{translatedLangText.LABOUR}}</b>
+          </td>
+          <td class="td-col-1 text-right">
+            {{repairItem?.labour_cost}}
+          </td>
+          <td class="td-col-1-5 text-right">
+            {{repairCost?.total_hour_table}}
+          </td>
+          <td class="td-col-1-5 text-right">
+            {{repairCost?.total_labour_cost}}
+          </td>
+          <td class="td-col-1-5 text-right">
+
+          </td>
+          <td class="td-col-1-5 text-right">
+
+          </td>
+        </tr>
+        <tr>
+          <td class="td-col-2">
+            <b>{{translatedLangText.MATERIAL}}</b>
+          </td>
+          <td class="td-col-1 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+            {{repairCost?.total_mat_cost}}
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+        </tr>
+        <tr>
+          <td class="td-col-3" rowspan="3">
+            <b>{{translatedLangText.FOR}} {{repairItem?.storing_order_tank?.storing_order?.customer_company?.name}}</b>
+          </td>
+          <td class="td-col-2">
+            <b>{{translatedLangText.LABOUR_DISCOUNT}}</b>
+          </td>
+          <td class="td-col-1 text-right">
+            {{repairCost?.labour_cost_discount}}
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+            - {{repairCost?.discount_labour_cost}}
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+        </tr>
+        <tr>
+          <td class="td-col-2">
+            <b>{{translatedLangText.MATERIAL_DISCOUNT}}</b>
+          </td>
+          <td class="td-col-1 text-right">
+            {{repairCost?.material_cost_discount}}
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+            - {{repairCost?.discount_mat_cost}}
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+        </tr>
+        <tr>
+          <td class="td-col-2">
+            <b>{{translatedLangText.NET_COST}}</b>
+          </td>
+          <td class="td-col-1 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+            {{repairCost?.net_cost}}
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+          <td class="td-col-1-5 text-right">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="pdf-form-footer" class="pdf-container pdf-footer">
+    <hr class="mt-0 mb-1" />
+    <div class="disclaimer">
+      <span class="font-bold text-decoration-underline">{{translatedLangText.DISCLAIMER}}: </span>
+      <span>{{disclaimerNote}}</span>
+    </div>
+    <div class="footer-info-content">
+      <span>
+        {{customerInfo.eirDisclaimerVer}}
+      </span>
+      <span>
+        {{translatedLangText.COMPUTER_GENERATED_NOTE}}
+      </span>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions class="mb-2 mt-2 me-2 align-right">
+  @if (this.eirPdf?.length) {
+  <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(repairDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(repairDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  }
+  <button mat-flat-button color="primary" (click)="onRepublshClick()" tabindex="-1"
+    [disabled]="(repairDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(repairDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      publish
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.EXPORT_NEW}}
+  </button>
+</div>

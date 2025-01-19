@@ -59,6 +59,7 @@ import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -334,7 +335,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
           }
           // estimate
           this.repairForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
-          this.repairForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
+          this.repairForm?.get('material_cost_discount')?.setValue(value.material_cost_discount);
           this.repairForm?.get('remarks')?.setValue(value.remarks);
 
           const existingList: any[] = [];
@@ -514,7 +515,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
           if (this.sotDS.totalCount > 0) {
             this.sotItem = data[0];
             this.populateRepair(this.sotItem.repair, this.isDuplicate);
-            console.log("Customer company: " + this.sotItem.storing_order?.customer_company_guid);
             this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
             this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
           }
@@ -899,7 +899,28 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   onExport(event: Event) {
     this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
 
+    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        type: this.sotItem?.purpose_repair_cv,
+        repair_guid: this.repairItem?.guid,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
+        estimate_no: this.repairItem?.estimate_no,
+        //eirPdf: this.eirPdf
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
   }
 
   onFormSubmit() {
@@ -922,7 +943,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
             });
           });
 
-          console.log(item)
           return new RepairPartItem({
             ...item,
             tariff_repair: undefined,
