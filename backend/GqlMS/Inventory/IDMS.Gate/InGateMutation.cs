@@ -2,8 +2,11 @@
 using HotChocolate.Authorization;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models;
+using IDMS.Models.Billing;
+using IDMS.Models.DB;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.Models.Package;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +49,7 @@ namespace IDMS.Gate.GqlTypes
                     yard_cv = InGate.yard_cv,
 
                 };
-                if(string.IsNullOrEmpty(InGate.so_tank_guid))
+                if (string.IsNullOrEmpty(InGate.so_tank_guid))
                 {
                     throw new GraphQLException(new Error("Tank guid is empty", "404"));
                 }
@@ -75,7 +78,7 @@ namespace IDMS.Gate.GqlTypes
 
                     if (SOTankStatus.WAITING != so_tank.status_cv)
                         throw new GraphQLException(new Error("Tank status is not waiting", "404"));
-                    
+
                     so_tank.job_no = InGate.tank.job_no;
                     so_tank.status_cv = SOTankStatus.ACCEPTED;
                     so_tank.tank_status_cv = TankMovementStatus.INGATE_SURVEY;
@@ -95,6 +98,9 @@ namespace IDMS.Gate.GqlTypes
                 }
 
                 retval = context.SaveChanges();
+                //added this after ingate done
+                await AddBillingSOT(context, uid, currentDate, InGate);
+
                 if (config != null)
                 {
                     string evtId = EventId.NEW_INGATE;
@@ -102,19 +108,13 @@ namespace IDMS.Gate.GqlTypes
                     int count = await context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
                    .Include(s => s.tank).Where(i => i.tank != null)
                    .Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0).CountAsync();
-                   //.Include(s => s.tank.tariff_cleaning)
-                   //.Include(s => s.tank.storing_order)
-                   //.Include(s => s.tank.storing_order.customer_company)
-                   //.Include(s => s.tank.tariff_cleaning.cleaning_method)
-                   //.Include(s => s.tank.tariff_cleaning.cleaning_category).Count();
-
 
                     GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
                     string notification_uid = $"in-gate-{newInGate.eir_no}";
                     GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in", notification_uid);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
@@ -122,7 +122,7 @@ namespace IDMS.Gate.GqlTypes
         }
 
         //[Authorize]
-        public async Task<int> UpdateInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, 
+        public async Task<int> UpdateInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config,
                                             [Service] IHttpContextAccessor httpContextAccessor, in_gate InGate)
         {
             int retval = 0;
@@ -177,7 +177,7 @@ namespace IDMS.Gate.GqlTypes
                         so_tank.owner_guid = InGate.tank.owner_guid;
                         so_tank.update_by = uid;
                         so_tank.update_dt = epochNow;
-                        so_guid = so_tank.so_guid;   
+                        so_guid = so_tank.so_guid;
                     }
 
                     if (!string.IsNullOrEmpty(so_guid))
@@ -190,7 +190,7 @@ namespace IDMS.Gate.GqlTypes
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
@@ -206,8 +206,8 @@ namespace IDMS.Gate.GqlTypes
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var query = context.in_gate.Where(i => i.guid == $"{InGate_guid}").FirstOrDefault();
-                var querySurvey = context.in_gate_survey.Where(s=>s.in_gate_guid == $"{InGate_guid}").FirstOrDefault();
-                if (query!=null)
+                var querySurvey = context.in_gate_survey.Where(s => s.in_gate_guid == $"{InGate_guid}").FirstOrDefault();
+                if (query != null)
                 {
                     long epochNow = GqlUtils.GetNowEpochInSec();
                     var delInGate = query;
@@ -215,7 +215,7 @@ namespace IDMS.Gate.GqlTypes
                     delInGate.update_by = uid;
                     delInGate.update_dt = epochNow;
 
-                    if(querySurvey!=null)
+                    if (querySurvey != null)
                     {
                         epochNow = GqlUtils.GetNowEpochInSec();
                         var delInGateSurvey = querySurvey;
@@ -223,10 +223,10 @@ namespace IDMS.Gate.GqlTypes
                         delInGateSurvey.update_by = uid;
                         delInGateSurvey.update_dt = epochNow;
                     }
-                   retval = context.SaveChanges(true);
+                    retval = context.SaveChanges(true);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
@@ -286,6 +286,66 @@ namespace IDMS.Gate.GqlTypes
             {
                 throw;
 
+            }
+        }
+
+
+        private async Task<int> AddBillingSOT(ApplicationInventoryDBContext context, string user, long currentDateTime, in_gate inGate)
+        {
+            try
+            {
+                var newBS = new billing_sot();
+                newBS.guid = Util.GenerateGUID();
+                newBS.create_by = user;
+                newBS.create_dt = currentDateTime;
+                newBS.sot_guid = inGate?.so_tank_guid;
+
+                var customerGuid = inGate?.tank?.storing_order?.customer_company_guid;
+                var tariffDepotGuid = await context.tank.Where(t => t.guid == inGate.tank.unit_type_guid)
+                                            .Select(t => t.tariff_depot.guid).FirstOrDefaultAsync();
+
+                if (string.IsNullOrEmpty(tariffDepotGuid))
+                    throw new GraphQLException(new Error($"Tariff depot guid not found", "ERROR"));
+
+                var packageDepot = await context.Set<package_depot>().Where(b => b.customer_company_guid == customerGuid && b.tariff_depot_guid == tariffDepotGuid).FirstOrDefaultAsync();
+                if (packageDepot == null)
+                    throw new GraphQLException(new Error($"Package depot object not found", "ERROR"));
+
+                newBS.tariff_depot_guid = tariffDepotGuid;
+                newBS.lift_on_cost = packageDepot.lolo_cost;
+                newBS.lift_off_cost = packageDepot.lolo_cost;
+                newBS.storage_cost = packageDepot.storage_cost;
+                newBS.gate_in_cost = packageDepot.gate_in_cost;
+                newBS.gate_out_cost = packageDepot.gate_out_cost;
+                newBS.free_storage = packageDepot.free_storage;
+                newBS.preinspection_cost = packageDepot.preinspection_cost;
+                newBS.storage_cal_cv = packageDepot.storage_cal_cv;
+
+                newBS.preinspection = inGate.preinspection_cv.EqualsIgnore("Y") ? true : false;
+                if (inGate.lolo_cv.EqualsIgnore("BOTH"))
+                {
+                    newBS.lift_on = true;
+                    newBS.lift_off = true;
+                }
+                else if (inGate.lolo_cv.EqualsIgnore("LIFT_ON"))
+                {
+                    newBS.lift_on = true;
+                    newBS.lift_off = false;
+                }
+                else if (inGate.lolo_cv.EqualsIgnore("LIFT_OFF"))
+                {
+                    newBS.lift_on = false;
+                    newBS.lift_off = true;
+                }
+
+                await context.billing_sot.AddAsync(newBS);
+                var res = await context.SaveChangesAsync();
+                return res;
+
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
     }
