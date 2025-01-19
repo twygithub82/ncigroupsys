@@ -422,7 +422,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     this.tempForm?.get('labour_discount')!.valueChanges.subscribe(value => {
       var discCostAmt: number = 0;
       if (this.tempForm?.get('labour_discount')?.value > 0) {
-        discCostAmt = Number(this.tempForm?.get('labour_rate')!.value) * Number(Number(this.tempForm?.get('labour_discount')?.value / 100));
+        discCostAmt = Number(this.tempForm?.get('labour_total')!.value) * Number(Number(this.tempForm?.get('labour_discount')?.value / 100));
       }
       this.tempForm?.patchValue({
         labour_discount_amount: discCostAmt.toFixed(2),

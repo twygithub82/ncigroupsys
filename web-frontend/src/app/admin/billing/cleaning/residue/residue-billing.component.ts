@@ -861,8 +861,50 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         });
   }
 
-  handleDelete(event:Event, row:InGateCleaningItem)
+  handleDelete(event:Event, row:ResidueItem)
   {
+
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        action: 'delete',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.RmoveEstimateFromInvoice(event,row.guid!);
+      }
+    });
+  }
+
+  RmoveEstimateFromInvoice(event:Event, processGuid:string)
+  {
+    var updateBilling: any=null;
+    var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+    billingEstReq.action="CANCEL";
+    billingEstReq.billing_party="CUSTOMER";
+    billingEstReq.process_guid=processGuid;
+    billingEstReq.process_type="CLEANING";
+    let billingEstimateRequests:BillingEstimateRequest[]=[];
+    billingEstimateRequests.push(billingEstReq);
+   
+    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+      if(result.data.updateBilling)
+      {
+        this.handleSaveSuccess(result.data.updateBilling);
+        this.onCancel(event);
+        this.search();
+      }
+    })
 
   }
    

@@ -48,6 +48,7 @@ import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-c
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
+import { BillingDS, BillingEstimateRequest,BillingItem,BillingInputRequest } from 'app/data-sources/billing';
 
 @Component({
   selector: 'app-steam-billing',
@@ -90,7 +91,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'eir_dt',
     'last_cargo',
     'purpose',
-    'tank_status_cv'
+    'tank_status_cv',
+    'invoiced',
+    'action'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
@@ -135,7 +138,11 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     TOTAL_COST:'COMMON-FORM.TOTAL-COST',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE'
+    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE',
+    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    INVOICED:'COMMON-FORM.INVOICED',
+    CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
+    CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
   }
 
   invForm?: UntypedFormGroup;
@@ -153,6 +160,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   //clnDS:InGateCleaningDS;
   stmDS:SteamDS;
   plDS:PackageLabourDS;
+  billDS:BillingDS;
 
   distinctCustomerCodes:any;
   selectedEstimateItem?:SteamItem;
@@ -200,6 +208,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.stmDS= new SteamDS(this.apollo);
     this.plDS=new PackageLabourDS(this.apollo);
+    this.billDS= new BillingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -631,9 +640,163 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     return retval;
   }
 
-  save(event:Event){
-    event.stopPropagation();
-  }
+ save(event:Event){
+       event.stopPropagation();
+       if(this.invoiceDateControl.invalid || this.invoiceNoControl.invalid) return;
+   
+       let invNo:string =`${this.invoiceNoControl.value}`;
+       const where:any={};
+       where.invoice_no={eq:invNo};
+       this.billDS.searchResidueBilling(where).subscribe(b=>{
+         if(b.length)
+         {
+           if(b[0].bill_to_guid===this.selectedEstimateItem?.customer_company?.guid)
+           {
+              this.ConfirmUpdateBilling(event,b[0]);
+           }
+           else
+           {
+               this.ConfirmInvalidEstimate(event);
+           }
+         }
+         else
+         {
+           this.SaveNewBilling(event);
+         }
+       });
+       
+       
+       
+   
+     }
+   
+     ConfirmInvalidEstimate(event:Event)
+     {
+       event.preventDefault(); // Prevents the form submission
+   
+       let tempDirection: Direction;
+       if (localStorage.getItem('isRtl') === 'true') {
+         tempDirection = 'rtl';
+       } else {
+         tempDirection = 'ltr';
+       }
+       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+         data: {
+           headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
+           action: 'new',
+         },
+         direction: tempDirection
+       });
+       dialogRef.afterClosed();
+     }
+     ConfirmUpdateBilling(event:Event, billingItem:BillingItem)
+     {
+       event.preventDefault(); // Prevents the form submission
+   
+       let tempDirection: Direction;
+       if (localStorage.getItem('isRtl') === 'true') {
+         tempDirection = 'rtl';
+       } else {
+         tempDirection = 'ltr';
+       }
+       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+         data: {
+           headerText: this.translatedLangText.CONFIRM_UPDATE_INVOICE,
+           action: 'new',
+         },
+         direction: tempDirection
+       });
+       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         if (result.action === 'confirmed') {
+           this.UpdateBilling(event,billingItem);
+         }
+       });
+     }
+   
+     UpdateBilling(event:Event, billingItem:BillingItem)
+     {
+       var updateBilling : BillingInputRequest=new BillingInputRequest();
+       updateBilling.bill_to_guid=billingItem.bill_to_guid;
+       updateBilling.guid=billingItem.guid;
+       updateBilling.currency_guid=billingItem.currency_guid;
+       updateBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+       updateBilling.status_cv=billingItem.status_cv;
+       updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
+       
+       let billingEstimateRequests:any= billingItem.cleaning?.map(cln => {
+         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+         billingEstReq.action="";
+         billingEstReq.billing_party="CUSTOMER";
+         billingEstReq.process_guid=cln.guid;
+         billingEstReq.process_type="RESIDUE";
+         return billingEstReq;
+         //return { ...cln, action:'' };
+         });
+       const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
+       this.selection.selected.forEach(cln=>{
+         if(!existingGuids.has(cln.guid))
+         {
+           var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+           billingEstReq.action="NEW";
+           billingEstReq.billing_party="CUSTOMER";
+           billingEstReq.process_guid=cln.guid;
+           billingEstReq.process_type="RESIDUE";
+           billingEstimateRequests.push(billingEstReq);
+         }
+       })
+       this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(data=>{
+         if(data.updateBilling)
+         {
+           this.handleSaveSuccess(data.updateBilling);
+           this.onCancel(event);
+           this.search();
+         }
+       })
+   
+     }
+   
+     SaveNewBilling(event:Event)
+     {
+       var newBilling : BillingInputRequest=new BillingInputRequest();
+       newBilling.bill_to_guid=this.selectedEstimateItem?.customer_company?.guid;
+       newBilling.currency_guid=this.selectedEstimateItem?.customer_company?.currency_guid;
+       newBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+       newBilling.invoice_no=`${this.invoiceNoControl.value}`;
+       newBilling.status_cv='PENDING';
+       var billingEstimateRequests:BillingEstimateRequest[]=[];
+       this.selection.selected.map(c=>{
+         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+   
+         billingEstReq.action="NEW";
+         billingEstReq.billing_party="CUSTOMER";
+         billingEstReq.process_guid=c.guid;
+         billingEstReq.process_type="RESIDUE";
+         billingEstimateRequests.push(billingEstReq);
+       });
+       this.billDS.addBilling(newBilling,billingEstimateRequests).subscribe(result=>{
+         if(result.data.addBilling)
+         {
+           this.handleSaveSuccess(result.data.addBilling);
+           this.onCancel(event);
+           this.search();
+         }
+       })
+     }
+ 
+     handleSaveSuccess(count: any) {
+       if ((count ?? 0) > 0) {
+         let successMsg = this.langText.SAVE_SUCCESS;
+         this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+           successMsg = res;
+           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+           //this.router.navigate(['/admin/master/estimate-template']);
+   
+           // Navigate to the route and pass the JSON object
+           
+         });
+       }
+     }
+ 
 
   onCancel(event:Event){
     event.stopPropagation();
@@ -736,4 +899,62 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     return validStatus.includes(steam!.status_cv!);
     
   }
+
+  checkInvoiced()
+  {
+    this.stmEstList = this.stmEstList?.map(stm => {
+            
+              return { ...stm, invoiced: (stm.customer_billing_guid?true:false) };
+        });
+  }
+
+  handleDelete(event:Event, row:SteamItem)
+  {
+
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        action: 'delete',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.RmoveEstimateFromInvoice(event,row.guid!);
+      }
+    });
+  }
+
+  RmoveEstimateFromInvoice(event:Event, processGuid:string)
+  {
+    var updateBilling: any=null;
+    var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+    billingEstReq.action="CANCEL";
+    billingEstReq.billing_party="CUSTOMER";
+    billingEstReq.process_guid=processGuid;
+    billingEstReq.process_type="CLEANING";
+    let billingEstimateRequests:BillingEstimateRequest[]=[];
+    billingEstimateRequests.push(billingEstReq);
+   
+    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+      if(result.data.updateBilling)
+      {
+        this.handleSaveSuccess(result.data.updateBilling);
+        this.onCancel(event);
+        this.search();
+      }
+    })
+
+  }
+   
+  
+ 
 }
