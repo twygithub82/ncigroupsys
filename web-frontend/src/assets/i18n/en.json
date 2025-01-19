@@ -830,7 +830,6 @@
     "INVOICE-DATE":"Invoice Date",
     "INVOICE-NO":"Invoice No",
     "INVOICE-DETAILS":"Invoice Details",
-    "DEPOT":"Depot",
     "FAX": "Fax",
     "EQUIPMENT-INTERCHANGE-RECEIPT": "Equipment Interchange Receipt",
     "TAKE-IN-DATE": "Take-in Date",
@@ -854,7 +853,7 @@
     "DOWNLOAD": "Download",
     "REPUBLISH": "Republish",
     "PREVIEW-PDF": "Preview PDF",
-    "PUBLISH-SUCCESS": "Publish Successfully"
+    "PUBLISH-SUCCESS": "Publish Successfully",
     "INVOICED":"Invoiced",
     "DEPOT":"Depot",
     "CUTOFF-DATE":"Cutoff Date"
