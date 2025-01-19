@@ -141,6 +141,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     INVOICED:'COMMON-FORM.INVOICED',
     CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
     CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
+    CONFIRM_REMOVE_ESITMATE:'COMMON-FORM.CONFIRM-REMOVE-ESITMATE'
   }
 
   invForm?: UntypedFormGroup;
@@ -864,6 +865,69 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
   handleDelete(event:Event, row:InGateCleaningItem)
   {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        action: 'delete',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.RmoveEstimateFromInvoice(event,row.guid!);
+      }
+    });
+  }
+
+  RmoveEstimateFromInvoice(event:Event, processGuid:string)
+  {
+    var updateBilling: any=null;
+    var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+    billingEstReq.action="CANCEL";
+    billingEstReq.billing_party="CUSTOMER";
+    billingEstReq.process_guid=processGuid;
+    billingEstReq.process_type="CLEANING";
+    let billingEstimateRequests:BillingEstimateRequest[]=[];
+    billingEstimateRequests.push(billingEstReq);
+    // let billingEstimateRequests:any= billingItem.cleaning?.map(cln => {
+    //   var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+    //   billingEstReq.action="CANCEL";
+    //   billingEstReq.billing_party="CUSTOMER";
+    //   billingEstReq.process_guid=cln.guid;
+    //   billingEstReq.process_type="CLEANING";
+    //   return billingEstReq;
+    //   //return { ...cln, action:'' };
+    //   });
+    //   const existingGuids = new Set<string>(
+    //     billingEstimateRequests?.map((item: BillingEstimateRequest) => item.process_guid) || []
+    //   );
+    // this.selection.selected.forEach(cln=>{
+    //   if(!existingGuids.has(cln?.guid!))
+    //   {
+    //     var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+    //     billingEstReq.action="NEW";
+    //     billingEstReq.billing_party="CUSTOMER";
+    //     billingEstReq.process_guid=cln.guid;
+    //     billingEstReq.process_type="CLEANING";
+    //     billingEstimateRequests.push(billingEstReq);
+    //   }
+    // })
+    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+      if(result.data.updateBilling)
+      {
+        this.handleSaveSuccess(result.data.updateBilling);
+        this.onCancel(event);
+        this.search();
+      }
+    })
 
   }
 }

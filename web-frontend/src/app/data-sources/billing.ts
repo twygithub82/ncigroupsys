@@ -101,7 +101,6 @@ export class BillingInputRequest {
 
 export class BillingEstimateRequest{
   public action?:string;
-  public guid?:string;
   public billing_party?:string;
   public process_guid?:string;
   public process_type?:string;
@@ -388,7 +387,7 @@ export const ADD_BILLING = gql`
 `;
 
 export const UPDATE_BILLING = gql`
-  mutation updateBilling($updateBilling: billingInput!,$billingEstimateRequests:[BillingEstimateRequestInput!]!) {
+  mutation updateBilling($updateBilling: billingInput,$billingEstimateRequests:[BillingEstimateRequestInput!]!) {
     updateBilling(updateBilling: $updateBilling,billingEstimateRequests:$billingEstimateRequests)
   }
 `;
