@@ -242,7 +242,9 @@ namespace IDMS.Survey.GqlTypes
 
                 outgate.eir_status_cv = EirStatus.PUBLISHED;
                 outgate.update_by = user;
+                outgate.publish_by = user;
                 outgate.update_dt = currentDateTime;
+                outgate.publish_dt = currentDateTime;   
 
                 retval = await context.SaveChangesAsync(true);
 

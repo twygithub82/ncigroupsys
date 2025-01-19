@@ -251,7 +251,9 @@ namespace IDMS.Survey.GqlTypes
 
                 ingate.eir_status_cv = EirStatus.PUBLISHED;
                 ingate.update_by = user;
+                ingate.publish_by = user;
                 ingate.update_dt = currentDateTime;
+                ingate.publish_dt = currentDateTime;
 
                 retval = await context.SaveChangesAsync(true);
 
@@ -367,6 +369,7 @@ namespace IDMS.Survey.GqlTypes
                 newSteam.create_dt = currentDateTime;
                 newSteam.sot_guid = sot.guid;
                 newSteam.status_cv = CurrentServiceStatus.APPROVED;
+                newSteam.bill_to_guid = customerGuid;
                 newSteam.job_no = sot?.job_no;
                 newSteam.total_cost = totalCost;
                 newSteam.approve_dt = ingate_date;
