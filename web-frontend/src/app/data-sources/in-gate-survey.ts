@@ -485,6 +485,168 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_MOVEMENT = gql`
   }
 `
 
+export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
+  query queryInGateSurveyByID($where: in_gate_surveyFilterInput){
+    resultList: queryInGateSurvey(where: $where) {
+      totalCount
+      nodes {
+        airline_valve_conn_cv
+        airline_valve_conn_spec_cv
+        airline_valve_cv
+        airline_valve_dim
+        airline_valve_pcs
+        btm_dis_comp_cv
+        btm_dis_valve_cv
+        btm_dis_valve_spec_cv
+        buffer_plate
+        capacity
+        cladding_cv
+        comments
+        create_by
+        create_dt
+        data_csc_transportplate
+        delete_dt
+        dipstick
+        dom_dt
+        foot_valve_cv
+        guid
+        height_cv
+        in_gate_guid
+        inspection_dt
+        ladder
+        last_release_dt
+        last_test_cv
+        test_class_cv
+        test_dt
+        manlid_comp_cv
+        manlid_cover_cv
+        manlid_cover_pcs
+        manlid_cover_pts
+        manlid_seal_cv
+        manufacturer_cv
+        max_weight_cv
+        pv_spec_cv
+        pv_spec_pcs
+        pv_type_cv
+        pv_type_pcs
+        residue
+        safety_handrail
+        take_in_reference
+        tank_comp_guid
+        tare_weight
+        thermometer
+        thermometer_cv
+        top_dis_comp_cv
+        top_dis_valve_cv
+        top_dis_valve_spec_cv
+        update_by
+        update_dt
+        walkway_cv
+        top_coord
+        bottom_coord
+        front_coord
+        rear_coord
+        left_coord
+        right_coord
+        btm_valve_brand_cv
+        top_valve_brand_cv
+        in_gate {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          eir_dt
+          eir_no
+          eir_status_cv
+          guid
+          haulier
+          lolo_cv
+          preinspection_cv
+          remarks
+          so_tank_guid
+          update_by
+          update_dt
+          vehicle_no
+          yard_cv
+          publish_by
+          publish_dt
+          tank {
+            certificate_cv
+            clean_status_cv
+            cleaning_remarks
+            create_by
+            create_dt
+            delete_dt
+            estimate_cv
+            eta_dt
+            etr_dt
+            guid
+            job_no
+            last_cargo_guid
+            last_test_guid
+            liftoff_job_no
+            lifton_job_no
+            owner_guid
+            preinspect_job_no
+            purpose_cleaning
+            purpose_repair_cv
+            purpose_steam
+            purpose_storage
+            release_job_no
+            release_note
+            remarks
+            repair_remarks
+            required_temp
+            so_guid
+            status_cv
+            steaming_remarks
+            storage_remarks
+            takein_job_no
+            tank_no
+            tank_note
+            tank_status_cv
+            unit_type_guid
+            update_by
+            update_dt
+            last_release_dt
+            customer_company {
+              name
+            }
+            tariff_cleaning {
+              cargo
+            }
+            tank {
+              unit_type
+            }
+            storing_order {
+              create_by
+              create_dt
+              customer_company_guid
+              delete_dt
+              guid
+              haulier
+              remarks
+              so_no
+              so_notes
+              status_cv
+              update_by
+              update_dt
+              customer_company {
+                code
+                name
+              }
+            }
+          }
+        }
+        tariff_buffer {
+          guid
+          buffer_type
+        }
+      }
+    }
+  }
+`
+
 export const ADD_IN_GATE_SURVEY = gql`
   mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: in_gateInput!) {
     record: addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateRequest: $inGate) {
@@ -572,6 +734,31 @@ export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const retResult = result.inGatesSurvey || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          return retResult.nodes;
+        })
+      );
+  }
+
+  getInGateSurveyByIDForEirPdf(guid: string): Observable<InGateSurveyItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = { guid: { eq: guid }, delete_dt: { eq: null } }
+    return this.apollo
+      .query<any>({
+        query: QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateSurveyItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.resultList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
           return retResult.nodes;

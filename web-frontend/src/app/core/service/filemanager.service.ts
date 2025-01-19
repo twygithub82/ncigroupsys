@@ -59,6 +59,7 @@ export class FileManagerService {
   }
 
   deleteFile(imageUrls: string[]): Observable<any> {
+    this.actionLoadingSubject.next(true);
     // Create a new FormData object
     const filenames = imageUrls.map(url => {
       const filenameWithExtension = url.split('/').pop(); // Extract the filename with extension
@@ -74,7 +75,12 @@ export class FileManagerService {
     }).pipe(
       map(response => {
         // Process the response if necessary
+        this.actionLoadingSubject.next(false); // Stop loading on error
         return response;
+      }),
+      catchError(error => {
+        this.actionLoadingSubject.next(false); // Stop loading on error
+        throw error;
       })
     );
   }

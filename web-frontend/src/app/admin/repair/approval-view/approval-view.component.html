@@ -60,7 +60,8 @@
                       <div class="contact-detail-info font-bold pt-2">
                         {{ccDS.displayName(sotItem?.customer_company)}}
                       </div>
-                      <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner" disabled>
+                      <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner" [disabled]="!canToggleOwner()"
+                        (change)="onOwnerToggle($event)">
                       </mat-checkbox>
                     </div>
                   </div>
@@ -354,10 +355,13 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="approve_part">
-                      <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-auto-md tbl-col-width-auto-sm tbl-col-width-auto-xs'" mat-sort-header>
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-auto-md tbl-col-width-auto-sm tbl-col-width-auto-xs'"
+                        mat-sort-header>
                         <mat-icon>more_vert</mat-icon>
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-auto-md tbl-col-width-auto-sm tbl-col-width-auto-xs'">
+                      <mat-cell mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-auto-md tbl-col-width-auto-sm tbl-col-width-auto-xs'">
                         <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
                         @if (repairPartDS.is4X(row.rp_damage_repair)){
                         <mat-icon class="font-bold">close</mat-icon>
@@ -384,8 +388,9 @@
                         <span class="mobile-label">{{translatedLangText.QTY}}:</span>
                         <tlx-form-field customClass="mat-table-form-txt-40px">
                           <mat-form-field>
-                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty" (change)="calculateCost();" [disabled]="isDisabled(row)"
-                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
+                              (change)="calculateCost();" [disabled]="isDisabled(row)" (wheel)="preventDefault($event)"
+                              (focus)="selectText($event)" type="number" min="0">
                           </mat-form-field>
                         </tlx-form-field>
                       </mat-cell>
@@ -401,8 +406,9 @@
                         <span class="mobile-label">{{translatedLangText.HOUR}}:</span>
                         <tlx-form-field customClass="mat-table-form-txt-40px">
                           <mat-form-field>
-                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_hour" (change)="calculateCost();" [disabled]="isDisabled(row)"
-                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_hour"
+                              (change)="calculateCost();" [disabled]="isDisabled(row)" (wheel)="preventDefault($event)"
+                              (focus)="selectText($event)" type="number" min="0">
                           </mat-form-field>
                         </tlx-form-field>
                       </mat-cell>
@@ -420,7 +426,8 @@
                           <span>$</span>
                           <tlx-form-field customClass="mat-table-form-txt-70px">
                             <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost" (change)="calculateCost();" [disabled]="isDisabled(row)"
+                              <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost"
+                                (change)="calculateCost();" [disabled]="isDisabled(row)"
                                 (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
                             </mat-form-field>
                           </tlx-form-field>
@@ -436,7 +443,7 @@
                       <mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
-                        <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner" disabled
+                        <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner"
                           [ngClass]="'tbl-checkbox'">
                         </mat-checkbox>
                       </mat-cell>
@@ -892,8 +899,8 @@
                   </button>
                   }
                   @if (canApprove()) {
-                  <button mat-flat-button color="basic" [disabled]="(repairDS.actionLoading$ | async)" class="m-l-5 bg-green"
-                    (click)="onApprove($event)">
+                  <button mat-flat-button color="basic" [disabled]="(repairDS.actionLoading$ | async)"
+                    class="m-l-5 bg-green" (click)="onApprove($event)">
                     <mat-icon>
                       @if (!(repairDS.actionLoading$ | async)) {
                       done

@@ -130,7 +130,7 @@ export class Utility {
     const formattedHours = hours % 12 || 12; // convert 0 to 12 for midnight
     const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
 
-    return `${month}/${day}/${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
+    return `${day}/${month}/${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
   }
 
   static getEarlierDate(date1: Date, date2: Date): Date {
@@ -372,5 +372,22 @@ export class Utility {
   static selectText(event: FocusEvent) {
     const inputElement = event.target as HTMLInputElement;
     inputElement.select();
+  }
+
+  static blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve((reader.result as string).split(',')[1]); // Remove the Data URL prefix
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  static async urlToBlob(pdfUrl: string): Promise<Blob> {
+    const response = await fetch(pdfUrl);
+    if (!response.ok) {
+      throw new Error('Failed to fetch PDF content');
+    }
+    return await response.blob();
   }
 }

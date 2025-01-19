@@ -893,8 +893,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   onEnterKey(event: Event) {
-    event.preventDefault();
+    this.preventDefault(event);
     // Add any additional logic if needed
+  }
+
+  onExport(event: Event) {
+    this.preventDefault(event);
+
   }
 
   onFormSubmit() {
@@ -1031,6 +1036,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+  canToggleOwner() {
+    return !this.sotDS.isCustomerSameAsOwner(this.sotItem) && this.repairDS.canAmend(this.repairItem);
   }
 
   onOwnerToggle(event: MatCheckboxChange): void {

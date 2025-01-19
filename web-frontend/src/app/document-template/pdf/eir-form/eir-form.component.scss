@@ -1,0 +1,265 @@
+.pdf-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.pdf-header {
+    display: flex;
+    padding: 10px 10px 4px 10px;
+    height: 83px;
+}
+
+.pdf-body {
+    display: flex;
+    padding: 0px 10px 0px 10px;
+}
+
+.pdf-footer {
+    display: flex;
+    padding: 4px 10px 10px 10px;
+    text-align: left;
+
+    .disclaimer {
+        width: 100%;
+        font-size: 0.5rem;
+        margin-top: 1px;
+    }
+
+    .footer-info-content {
+        width: 100%;
+        font-size: 0.6rem;
+        margin-top: 1px;
+    }
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    width: 180px;
+    object-fit: contain;
+}
+
+.company-container {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+
+    .header-company-name {
+        font-weight: 500;
+    }
+
+    .company-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        font-size: 10px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+.eir-title {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.eir-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table,
+th,
+td {
+    border: 1px solid black;
+}
+
+th,
+td {
+    padding: 1px 4px;
+    text-align: left;
+
+    b {
+        font-weight: 900;
+    }
+}
+
+tr.th {
+    background-color: #bdbdbd;
+    text-align: center;
+}
+
+.tank-info {
+    font-size: 0.6rem;
+}
+
+.tank-info td {
+    vertical-align: top !important;
+}
+
+.frame-info-content {
+    display: flex;
+    font-size: 7px;
+    justify-content: center;
+
+    .frame-type-info {
+        max-width: 80%;
+
+        .frame-line {
+            display: flex;
+
+            .frame-title {
+                display: flex;
+                justify-content: center;
+            }
+
+            .frame-type {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+
+                .frame-rect {
+                    max-width: 144px;
+                }
+
+                .frame-square {
+                    max-width: 78px;
+                    margin: 0 20px 0 20px;
+                }
+            }
+        }
+    }
+}
+
+.frame-walkway-legend .walkway-img {
+    width: 20px;
+    height: 20px;
+}
+
+.manlid-info-content {
+    display: flex;
+    align-items: flex-start;
+    font-size: 0.6rem;
+
+    .mat-icon {
+        width: 20px;
+        font-size: 14px;
+        height: 13px;
+        font-weight: 700;
+    }
+}
+
+.manlid-info {
+    border-collapse: collapse;
+}
+
+.comment-info-content {
+    width: 100%;
+    border: 1px double rgb(172, 172, 172);
+    padding: 4px;
+    font-size: 0.6rem;
+    display: flex;
+    justify-content: left;
+    text-align: left;
+}
+
+.purpose-info-content {
+    width: 100%;
+    border: 1px double rgb(172, 172, 172);
+    padding: 4px;
+    font-size: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.purpose-info-content span {
+    display: block;
+}
+
+.grid-overlay div.highlighted::before,
+.grid-overlay-square div.highlighted::before,
+.grid-overlay div.highlighted::after,
+.grid-overlay-square div.highlighted::after {
+    height: 1px;
+}
+
+.receiver-haulier-info-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 0.6rem;
+    height: 100px;
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        height: 100%;
+    }
+
+    table,
+    th,
+    td {
+        border: 1px solid rgb(172, 172, 172);
+        vertical-align: top;
+        position: relative;
+    }
+
+    td {
+        height: 100%;
+    }
+}
+
+.receiver-info-content,
+.haulier-info-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.haulier-info-bottom {
+    display: flex;
+    flex-direction: column;
+}
+
+.receiver-parties-info {
+    margin-top: auto;
+    display: flex;
+
+    .parties-info {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        width: 50%;
+    }
+}
+
+.footer-info-content {
+    display: flex;
+    justify-content: space-between;
+}
