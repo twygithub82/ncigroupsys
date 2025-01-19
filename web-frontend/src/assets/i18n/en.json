@@ -857,7 +857,20 @@
     "PUBLISH-SUCCESS": "Publish Successfully",
     "INVOICED":"Invoiced",
     "DEPOT":"Depot",
-    "CUTOFF-DATE":"Cutoff Date"
+    "CUTOFF-DATE":"Cutoff Date",
+    "EXPORT-NEW": "Export New",
+    "EXPORT-SUCCESS": "Export Successfully",
+    "IN-SERVICE-ESTIMATE": "IN-SERVICE ESTIMATE",
+    "OFFHIRE-ESTIMATE": "OFFHIRE ESTIMATE",
+    "MANUFACTURER": "Manufacturer",
+    "DAMAGE-CODE": "Damage Code",
+    "REPAIR-CODE": "Repair Code",
+    "ITEM": "Item",
+    "LESSEE-OWNER--ABB": "L/O",
+    "RATE-PERC": "RATE / %",
+    "APPROVED-COST": "Approved Cost",
+    "ESTIMATE-COST": "Estimate Cost",
+    "FOR": "For"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

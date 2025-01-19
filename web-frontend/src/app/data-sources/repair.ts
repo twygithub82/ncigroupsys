@@ -359,7 +359,7 @@ export const GET_REPAIR_BY_ID = gql`
             name
             delete_dt
           }
-          in_gate {
+          in_gate(where: { delete_dt: { eq: null } }) {
             eir_no
             eir_dt
             delete_dt
@@ -1135,6 +1135,169 @@ const GET_REPAIR_FOR_MOVEMENT = gql`
   }
 `
 
+export const GET_REPAIR_BY_ID_FOR_PDF = gql`
+  query queryRepair($where: repairFilterInput, $customer_company_guid: String) {
+    resultList: queryRepair(where: $where) {
+      nodes {
+        aspnetusers_guid
+        create_by
+        create_dt
+        delete_dt
+        estimate_no
+        guid
+        labour_cost
+        labour_cost_discount
+        material_cost_discount
+        owner_enable
+        remarks
+        sot_guid
+        status_cv
+        total_cost
+        update_by
+        update_dt
+        repair_part {
+          action
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          hour
+          location_cv
+          comment
+          material_cost
+          owner
+          quantity
+          remarks
+          repair_guid
+          tariff_repair_guid
+          update_by
+          update_dt
+          rp_damage_repair {
+            action
+            code_cv
+            code_type
+            create_by
+            create_dt
+            delete_dt
+            guid
+            rp_guid
+            update_by
+            update_dt
+          }
+          tariff_repair {
+            alias
+            create_by
+            create_dt
+            delete_dt
+            dimension
+            group_name_cv
+            guid
+            height_diameter
+            height_diameter_unit_cv
+            labour_hour
+            length
+            length_unit_cv
+            material_cost
+            part_name
+            remarks
+            subgroup_name_cv
+            thickness
+            thickness_unit_cv
+            update_by
+            update_dt
+            width_diameter
+            width_diameter_unit_cv
+            package_repair(where: { customer_company_guid: { eq: $customer_company_guid } }) {
+              material_cost
+            }
+          }
+        }
+        aspnetsuser {
+          id
+          userName
+        }
+        storing_order_tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          etr_dt
+          guid
+          job_no
+          owner_guid
+          preinspect_job_no
+          liftoff_job_no
+          lifton_job_no
+          takein_job_no
+          release_job_no
+          last_cargo_guid
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          so_guid
+          status_cv
+          tank_no
+          tank_status_cv
+          update_by
+          update_dt
+          storing_order {
+            customer_company {
+              code
+              name
+              guid
+            }
+          }
+          tariff_cleaning {
+            alias
+            cargo
+            class_cv
+            create_by
+            create_dt
+            delete_dt
+            guid
+            update_by
+            update_dt
+          }
+          customer_company {
+            code
+            guid
+            name
+            delete_dt
+          }
+          in_gate(where: { delete_dt: { eq: null } }) {
+            eir_no
+            eir_dt
+            delete_dt
+            in_gate_survey {
+              manufacturer_cv
+              dom_dt
+              last_test_cv
+              next_test_cv
+              test_dt
+              test_class_cv
+            }
+          }
+          tank {
+            description
+            unit_type
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const ADD_REPAIR = gql`
   mutation AddRepair($repair: repairInput!, $customerCompany: customer_companyInput) {
     addRepair(repair: $repair, customerCompany: $customerCompany)
@@ -1356,6 +1519,29 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       .query<any>({
         query: GET_REPAIR_FOR_MOVEMENT,
         variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  getRepairByIDForPdf(id: string, customer_company_guid: string): Observable<RepairItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { guid: { eq: id } }
+    return this.apollo
+      .query<any>({
+        query: GET_REPAIR_BY_ID_FOR_PDF,
+        variables: { where, customer_company_guid },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -1670,6 +1856,8 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     let discount_labour_cost = 0;
     let discount_mat_cost = 0;
     let net_cost = 0;
+    costResult.labour_cost_discount = labourDiscount;
+    costResult.material_cost_discount = matDiscount;
 
     const totalOwner = this.getTotal(ownerList);
     const total_owner_hour = totalOwner.hour;
@@ -1756,15 +1944,15 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     if (!re?.repair_part || re.repair_part.length === 0) {
       return undefined; // Return undefined if no parts exist
     }
-  
+
     // Extract all qc_dt values, filter valid ones, and find the max
     const qcDates = re.repair_part
       .map(part => part.job_order?.qc_dt)
       .filter((qcDt): qcDt is number => qcDt !== undefined); // Filter valid numbers
-  
+
     // Find the maximum qc_dt if qcDates array is not empty
     const latestQcDt = qcDates.length > 0 ? Math.max(...qcDates) : undefined;
-  
+
     // Convert the epoch time to a readable date string
     return latestQcDt;
   }
