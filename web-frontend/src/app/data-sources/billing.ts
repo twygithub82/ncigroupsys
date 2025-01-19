@@ -86,6 +86,7 @@ export class BillingSOTGo{
   public lift_on?:boolean;
   public lift_on_cost?:number;
   public lolo_billing_guid?:string;
+  public preinsp_billing_guid?:string;
   public preinspection?:boolean;
   public preinspection_cost?:number;
   public remarks?:string;
@@ -115,6 +116,7 @@ export class BillingSOTGo{
     this.lift_on=item.lift_on;
     this.lift_on_cost=item.lift_on_cost;
     this.lolo_billing_guid= item.lolo_billing_guid;
+    this.preinsp_billing_guid=item.preinsp_billing_guid;
     this.preinspection=item.preinspection;
     this.preinspection_cost=item.preinspection_cost;
     this.sot_guid=item.sot_guid;
