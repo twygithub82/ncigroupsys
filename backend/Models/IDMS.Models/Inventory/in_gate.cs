@@ -23,9 +23,10 @@ namespace IDMS.Models.Inventory
         public string? preinspection_cv { get; set; } = "";
         public long? eir_dt { get; set; }
         public string? remarks { get; set; }
+        public string? publish_by { get; set; }
+        public long? publish_dt { get; set; }
 
         public in_gate_survey? in_gate_survey { get; set; }
-
         public storing_order_tank? tank { get; set; } = null;
     }
 }
