@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Master;
+using IDMS.Models.Service;
 using IDMS.Models.Shared;
 using System;
 using System.Collections.Generic;
@@ -26,9 +27,19 @@ namespace IDMS.Models.Billing
         public string status_cv { get; set; }
         public string? remarks { get; set; }
         public currency? currency { get; set; }
+
         [UseFiltering]
         public customer_company? customer_company { get; set; }
-        
+        [UseFiltering]
+        public IEnumerable<cleaning?>? cleaning { get; set; }
+        [UseFiltering]
+        public IEnumerable<steaming?>? steaming { get; set; }
+        [UseFiltering]
+        public IEnumerable<residue?>? residue { get; set; }
+        [UseFiltering]
+        public IEnumerable<repair?>? repair_customer { get; set; }
+        public IEnumerable<repair?>? repair_owner { get; set; }
+
         //[UseFiltering]
         //public billing_sot? billing_sot { get; set; }
     }
