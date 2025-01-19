@@ -1,4 +1,5 @@
-﻿using IDMS.Models.Master;
+﻿using IDMS.Models.Billing;
+using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Parameter;
 using IDMS.Models.Service;
@@ -28,6 +29,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<repair> repair { get; set; }
         public DbSet<out_gate> out_gate { get; set; }
         public DbSet<out_gate_survey> out_gate_survey { get; set; }
+        public DbSet<tariff_cleaning> tariff_depot { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
         public DbSet<cleaning_method> cleaning_method { get; set; }
         public DbSet<cleaning_category> cleaning_category { get; set; }
@@ -45,6 +47,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<job_order> job_order { get; set; }
         public DbSet<currency> currency { get; set; }
         public DbSet<transfer> transfer { get; set; }
+        public DbSet<billing_sot> billing_sot { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
