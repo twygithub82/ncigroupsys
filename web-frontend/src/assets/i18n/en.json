@@ -586,6 +586,8 @@
     "ARE-YOU-SURE": "Are you sure?",
     "PACKAGE-LABOUR": "Package Labour",
     "CONFIRM-RESET": "Confirm Reset?",
+    "CONFIRM-UPDATE-INVOICE": "Would like to update the existing Invoice?",
+    "CONFIRM-INVALID-ESTIMATE":"Fail to update the existing invoice due to invalid estimate added",
     "MARK-DAMAGE": "Mark Damaged",
     "FILL-IN-REMARKS": "Fill in Remarks",
     "LEFT-REMARKS": "Left Remarks",
@@ -823,11 +825,14 @@
     "PERIODIC-TEST-SURVEY": "Periodic Test Survey",
     "PHOTOS": "Photos",
     "OVER-REQUIRED-TEMP": "The current temperature is higher than the required temperate",
+    "LOWER-REQUIRED-TEMP": "The current temperature is lower than the required temperate",
     "PUBLISH": "Publish",
     "INVOICE-DATE":"Invoice Date",
     "INVOICE-NO":"Invoice No",
     "INVOICE-DETAILS":"Invoice Details",
-    "DEPOT":"Depot"
+    "INVOICED":"Invoiced",
+    "DEPOT":"Depot",
+    "CUTOFF-DATE":"Cutoff Date"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

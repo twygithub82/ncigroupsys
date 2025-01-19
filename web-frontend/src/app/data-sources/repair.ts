@@ -9,6 +9,7 @@ import { TariffRepairItem } from './tariff-repair';
 import { RepairPartItem } from './repair-part';
 import { UserItem } from './user';
 import { ApolloError } from '@apollo/client/errors';
+import { BillingItem } from './billing';
 
 export class RepairGO {
   public guid?: string;
@@ -71,12 +72,16 @@ export class RepairItem extends RepairGO {
   public storing_order_tank?: StoringOrderTankItem;
   public aspnetsuser?: UserItem;
   public actions?: string[]
+  public customer_billing?:BillingItem;
+  public owner_billing?:BillingItem;
   constructor(item: Partial<RepairItem> = {}) {
     super(item)
     this.repair_part = item.repair_part;
     this.storing_order_tank = item.storing_order_tank;
     this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
+    this.customer_billing=item.customer_billing;
+    this.owner_billing=item.owner_billing;
   }
 }
 
@@ -713,7 +718,7 @@ export const GET_REPAIR_FOR_QC_DETAILS = gql`
 `;
 
 export const GET_REPAIR_FOR_JOB_ORDER = gql`
-  query QueryRepair($where: repairFilterInput, $repair_part_where: repair_partFilterInput) {
+  query QueryRepair($where: repairFilterInput, $repair_part_where: inventory_repair_partFilterInput) {
     resultList: queryRepair(where: $where) {
       nodes {
         aspnetusers_guid

@@ -7,11 +7,18 @@
                     {{rep.steaming_part?.[0]?.description}} 
                 </span>
             </li>
-            @if(data.overTemp!)
+            @if(data.tempStatus==2)
             {
             <li>&nbsp;</li>
             <li class="font-bold  col-red ">
                <span> {{data.langText.OVER_REQUIRED_TEMP}}</span>
+            </li>
+            }
+            @else if(data.tempStatus==1)
+            {
+            <li>&nbsp;</li>
+            <li class="font-bold  col-red ">
+               <span> {{data.langText.LOWER_REQUIRED_TEMP}}</span>
             </li>
             }
         </ul>

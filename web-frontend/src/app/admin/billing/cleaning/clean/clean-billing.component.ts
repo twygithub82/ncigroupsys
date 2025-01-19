@@ -45,6 +45,8 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { GuidSelectionModel } from '@shared/GuidSelectionModel';
+import {BillingDS,BillingInputRequest,BillingEstimateRequest,BillingItem} from 'app/data-sources/billing';
 
 @Component({
   selector: 'app-clean-billing',
@@ -87,7 +89,9 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'eir_dt',
     'last_cargo',
     'purpose',
-    'tank_status_cv'
+    'tank_status_cv',
+    'invoiced',
+    'action'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
@@ -131,12 +135,20 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     INVOICE_DETAILS:'COMMON-FORM.INVOICE-DETAILS',
     TOTAL_COST:'COMMON-FORM.TOTAL-COST',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
+    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE',
+    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    INVOICED:'COMMON-FORM.INVOICED',
+    CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
+    CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
   }
 
   invForm?: UntypedFormGroup;
   searchForm?: UntypedFormGroup;
   customerCodeControl = new UntypedFormControl();
+  branchCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
+
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
@@ -144,10 +156,15 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   clnDS:InGateCleaningDS;
+  billDS:BillingDS;
 
+
+  distinctCustomerCodes:any;
+  selectedEstimateItem?:InGateCleaningItem;
   clnEstList:InGateCleaningItem[]=[];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
+  branch_companyList?:CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
@@ -163,7 +180,8 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  selection = new SelectionModel<InGateCleaningItem>(true, []);
+  selection = new GuidSelectionModel<InGateCleaningItem>(true, []);
+  //selection = new SelectionModel<InGateCleaningItem>(true, []);
   invoiceNoControl= new FormControl('', [Validators.required]);
   invoiceDateControl= new FormControl('', [Validators.required]);
   invoiceTotalCostControl= new FormControl('0.00');
@@ -186,6 +204,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.clnDS= new InGateCleaningDS(this.apollo);
+    this.billDS=new BillingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -210,6 +229,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.searchForm = this.fb.group({
       so_no: [''],
       customer_code: this.customerCodeControl,
+      branch_code:this.branchCodeControl,
       last_cargo: this.lastCargoControl,
       eir_no: [''],
       ro_no: [''],
@@ -236,6 +256,8 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
+        this.branch_companyList=[];
+        this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -244,6 +266,17 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
+          if(!this.customerCodeControl.invalid)
+          {
+            if(this.customerCodeControl.value?.guid)
+            {
+              let mainCustomerGuid = this.customerCodeControl.value.guid;
+              this.ccDS.loadItems({main_customer_guid:{eq:mainCustomerGuid}}).subscribe(data=>{
+                this.branch_companyList=data;
+                this.updateValidators(this.branchCodeControl, this.branch_companyList);
+              });
+            }
+          }
         });
       })
     ).subscribe();
@@ -261,6 +294,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
           this.updateValidators(this.lastCargoControl, this.last_cargoList);
+          
         });
       })
     ).subscribe();
@@ -335,16 +369,26 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
   search() {
     const where: any = {};
+    this.selectedEstimateItem=undefined;
+    this.clnEstList =[];
+    this.selection.clear();
+    this.calculateTotalCost();
 
     where.status_cv={in:['COMPLETED','APPROVED']};
-
+    where.bill_to_guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
       where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
+      where.storing_order_tank={storing_order:{customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}}};
+      where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
+    }
+
+    if(this.searchForm!.get('branch_code')?.value)
+    {
+      where.customer_company={code:{eq: this.searchForm!.get('branch_code')?.value.code }}
     }
 
     if (this.searchForm!.get('eir_dt')?.value) {
@@ -388,71 +432,12 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
    
-
-    // if (this.searchForm!.get('customer_code')?.value) {
-    //   const soSearch: any = {};
-    //   if (this.searchForm!.get('customer_code')?.value) {
-    //     soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
-    //   }
-    //   where.storing_order = soSearch;
-    // }
-
-    // if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
-    //   const sotSearch: any = {};
-
-    //   if (this.searchForm!.get('tank_no')?.value) {
-    //     sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-    //   }
-
-    //   if (this.searchForm!.get('tank_status_cv')?.value) {
-    //     sotSearch.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
-    //   }
-
-    //   if (this.searchForm!.get('purpose')?.value) {
-    //     const purposes = this.searchForm!.get('purpose')?.value;
-    //     if (purposes.includes('STORAGE')) {
-    //       sotSearch.purpose_storage = { eq: true }
-    //     }
-    //     if (purposes.includes('CLEANING')) {
-    //       sotSearch.purpose_cleaning = { eq: true }
-    //     }
-    //     if (purposes.includes('STEAM')) {
-    //       sotSearch.purpose_steam = { eq: true }
-    //     }
-
-    //     const repairPurposes = [];
-    //     if (purposes.includes('REPAIR')) {
-    //       repairPurposes.push('REPAIR');
-    //     }
-    //     if (purposes.includes('OFFHIRE')) {
-    //       repairPurposes.push('OFFHIRE');
-    //     }
-    //     if (repairPurposes.length > 0) {
-    //       sotSearch.purpose_repair_cv = { in: repairPurposes };
-    //     }
-    //   }
-
-    //   if (this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value) {
-    //     const soSearch: any = {};
-
-    //     if (this.searchForm!.get('so_no')?.value) {
-    //       soSearch.so_no = { contains: this.searchForm!.get('so_no')?.value };
-    //     }
-
-    //     if (this.searchForm!.get('customer_code')?.value) {
-    //       soSearch.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-    //     }
-    //     sotSearch.storing_order = soSearch;
-    //   }
-    //   where.tank = sotSearch;
-    // }
-
     this.lastSearchCriteria = this.clnDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.selection.clear();
+   // this.selection.clear();
     this.subs.sink = this.clnDS.searchWithBilling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.clnEstList = data;
@@ -460,6 +445,9 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
         this.startCursor = this.clnDS.pageInfo?.startCursor;
         this.hasNextPage = this.clnDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.clnDS.pageInfo?.hasPreviousPage ?? false;
+        this.checkInvoiced();
+
+        this.distinctCustomerCodes= [... new Set(this.clnEstList.map(item=>item.customer_company?.code))];
       });
 
     this.pageSize = pageSize;
@@ -612,6 +600,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       yard_cv: ['']
     });
 
+    this.branchCodeControl.reset('');
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
   }
@@ -648,8 +637,148 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
   save(event:Event){
     event.stopPropagation();
+    if(this.invoiceDateControl.invalid || this.invoiceNoControl.invalid) return;
+
+    let invNo:string =`${this.invoiceNoControl.value}`;
+    const where:any={};
+    where.invoice_no={eq:invNo};
+    this.billDS.searchCleaningBilling(where).subscribe(b=>{
+      if(b.length)
+      {
+        if(b[0].bill_to_guid===this.selectedEstimateItem?.customer_company?.guid)
+        {
+           this.ConfirmUpdateBilling(event,b[0]);
+        }
+        else
+        {
+            this.ConfirmInvalidEstimate(event);
+        }
+      }
+      else
+      {
+        this.SaveNewBilling(event);
+      }
+    });
+    
+    
+    
+
   }
 
+  ConfirmInvalidEstimate(event:Event)
+  {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed();
+  }
+  ConfirmUpdateBilling(event:Event, billingItem:BillingItem)
+  {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_UPDATE_INVOICE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.UpdateBilling(event,billingItem);
+      }
+    });
+  }
+
+  UpdateBilling(event:Event, billingItem:BillingItem)
+  {
+    var updateBilling : BillingInputRequest=new BillingInputRequest();
+    updateBilling.bill_to_guid=billingItem.bill_to_guid;
+    updateBilling.guid=billingItem.guid;
+    updateBilling.currency_guid=billingItem.currency_guid;
+    updateBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+    updateBilling.status_cv=billingItem.status_cv;
+    updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
+    
+    let billingEstimateRequests:any= billingItem.cleaning?.map(cln => {
+      var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+      billingEstReq.action="";
+      billingEstReq.billing_party="CUSTOMER";
+      billingEstReq.process_guid=cln.guid;
+      billingEstReq.process_type="CLEANING";
+      return billingEstReq;
+      //return { ...cln, action:'' };
+      });
+      const existingGuids = new Set<string>(
+        billingEstimateRequests?.map((item: BillingEstimateRequest) => item.process_guid) || []
+      );
+    this.selection.selected.forEach(cln=>{
+      if(!existingGuids.has(cln?.guid!))
+      {
+        var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+        billingEstReq.action="NEW";
+        billingEstReq.billing_party="CUSTOMER";
+        billingEstReq.process_guid=cln.guid;
+        billingEstReq.process_type="CLEANING";
+        billingEstimateRequests.push(billingEstReq);
+      }
+    })
+    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+      if(result.data.updateBilling)
+      {
+        this.handleSaveSuccess(result.data.updateBilling);
+        this.onCancel(event);
+        this.search();
+      }
+    })
+
+  }
+
+  SaveNewBilling(event:Event)
+  {
+    var newBilling : BillingInputRequest=new BillingInputRequest();
+    newBilling.bill_to_guid=this.selectedEstimateItem?.customer_company?.guid;
+    newBilling.currency_guid=this.selectedEstimateItem?.customer_company?.currency_guid;
+    newBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+    newBilling.invoice_no=`${this.invoiceNoControl.value}`;
+    newBilling.status_cv='PENDING';
+    var billingEstimateRequests:BillingEstimateRequest[]=[];
+    this.selection.selected.map(c=>{
+      var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+
+      billingEstReq.action="NEW";
+      billingEstReq.billing_party="CUSTOMER";
+      billingEstReq.process_guid=c.guid;
+      billingEstReq.process_type="CLEANING";
+      billingEstimateRequests.push(billingEstReq);
+    });
+    this.billDS.addBilling(newBilling,billingEstimateRequests).subscribe(result=>{
+      if(result.data.addBilling)
+      {
+        this.handleSaveSuccess(result.data.addBilling);
+        this.onCancel(event);
+        this.search();
+      }
+    })
+  }
   onCancel(event:Event){
     event.stopPropagation();
     this.invoiceNoControl.reset('');
@@ -667,7 +796,74 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   }
    toggleRow(row:InGateCleaningItem)
    {
+    
      this.selection.toggle(row);
+     this.SelectFirstItem();
      this.calculateTotalCost();
    }
+
+   SelectFirstItem()
+   {
+    if(!this.selection.selected.length)
+    {
+      this.selectedEstimateItem=undefined;
+    }
+    else if(this.selection.selected.length===1)
+    {
+      this.selectedEstimateItem=this.selection.selected[0];
+    }
+   }
+   CheckBoxDisable(row:InGateCleaningItem)
+   {
+     if(this.selectedEstimateItem?.customer_company)
+     {
+     if(row.customer_company?.code!=this.selectedEstimateItem.customer_company?.code)
+     {
+      return true;
+     }
+    }
+     return false;
+   }
+
+   MasterCheckBoxDisable()
+   {
+     if(this.distinctCustomerCodes?.length)
+     {
+        return this.distinctCustomerCodes.length>1;
+     }
+
+     return false;
+   }
+
+   isItemSelected(row:InGateCleaningItem)
+   {
+    return this.selection.selected.some(s => s.guid === row.guid);
+   }
+
+   handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.langText.SAVE_SUCCESS;
+      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+        successMsg = res;
+        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        //this.router.navigate(['/admin/master/estimate-template']);
+
+        // Navigate to the route and pass the JSON object
+        
+      });
+    }
+  }
+
+  checkInvoiced()
+  {
+    this.clnEstList = this.clnEstList?.map(cln => {
+            
+              return { ...cln, invoiced: (cln.customer_billing_guid?true:false) };
+        });
+  }
+
+  handleDelete(event:Event, row:InGateCleaningItem)
+  {
+
+  }
 }

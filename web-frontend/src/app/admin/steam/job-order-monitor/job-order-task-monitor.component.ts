@@ -260,7 +260,8 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     TIME:'COMMON-FORM.TIME',
     SELECTED_RECORD:"COMMON-FORM.SELECTED-RECORD",
     COMPLETE_STEAM:'COMMON-FORM.COMPLETE-STEAM',
-    OVER_REQUIRED_TEMP:'COMMON-FORM.OVER-REQUIRED-TEMP'
+    OVER_REQUIRED_TEMP:'COMMON-FORM.OVER-REQUIRED-TEMP',
+    LOWER_REQUIRED_TEMP:'COMMON-FORM.LOWER-REQUIRED-TEMP'
     
   }
 
@@ -1245,7 +1246,8 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
           if(ReqTemp<=steamTemp.meter_temp!)
           {
              let overTemp:boolean = ReqTemp<steamTemp.meter_temp!
-             this.completeSteamJob(event!,overTemp);
+             let tempStatus:number = (ReqTemp<steamTemp.meter_temp!)?1:0;
+             this.completeSteamJob(event!,false,tempStatus);
           }
           else
           {
@@ -1303,9 +1305,14 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
   }
 
 
-  completeSteamJob(event:Event, overTemp:boolean)
+  
+  completeSteamJob(event:Event, checkTemp:boolean,tempStatus:number)
   {
     this.preventDefault(event);
+    if(checkTemp)
+    {
+      tempStatus=this.CheckAndGetTempStatus();
+    }
     if(this.steamItem?.steaming_part?.length)
     {
       let tempDirection: Direction;
@@ -1320,7 +1327,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
           action: 'confirm',
           item: this.steamItem,
           langText: this.translatedLangText,
-          overTemp:overTemp,
+          tempStatus:tempStatus,
         },
         direction: tempDirection
       });
@@ -1382,5 +1389,24 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
       hour: '2-digit',
       minute: '2-digit',
     });
+  }
+
+  CheckAndGetTempStatus():number
+  {
+    var ReqTemp:number= this.reqTemp!;
+    let allGreater = this.deList.some(a => a.meter_temp > ReqTemp);
+    let allLess = this.deList.every(a => a.meter_temp < ReqTemp);
+    let anyEqual = this.deList.some(a => a.meter_temp === ReqTemp);
+    
+    if (allGreater) {
+        return 2;
+    } else if (allLess) {
+        return 1;
+    } else if (anyEqual) {
+        return 0;
+    } else {
+        return 0; // Mixed cases (some greater, some less, none equal)
+    }
+
   }
 }

@@ -9,6 +9,7 @@ import { TariffRepairItem } from './tariff-repair';
 import { UserItem } from './user';
 import { CustomerCompanyItem } from './customer-company';
 import { ResiduePartItem } from './residue-part';
+import { BillingItem } from './billing';
 
 export class ResidueGO {
   public estimate_no?: string;
@@ -40,7 +41,8 @@ export class ResidueGO {
   // public total_cost?: number;
   // public owner_enable?: boolean;
   // public total_hour?: number;
-
+  public customer_billing_guid?:string;
+  public owner_billing_guid?:string;
 
 
   constructor(item: Partial<ResidueGO> = {}) {
@@ -69,6 +71,8 @@ export class ResidueItem extends ResidueGO {
   public residue_part?: ResiduePartItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?: CustomerCompanyItem;
+  public customer_billing?:BillingItem;
+    public owner_billing?:BillingItem;
   //public aspnetsuser?: UserItem;
   public actions?: string[]
   constructor(item: Partial<ResidueItem> = {}) {
@@ -77,6 +81,8 @@ export class ResidueItem extends ResidueGO {
     this.storing_order_tank = item.storing_order_tank;
     // this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
+    this.customer_billing=item.customer_billing;
+    this.owner_billing=item.owner_billing;
   }
 }
 
@@ -108,6 +114,175 @@ export class ResidueStatusRequest {
     this.action = item.action;
   }
 }
+
+const SEARCH_RESIDUE_BILLING_QUERY = gql`
+   query QueryResidue($where: residueFilterInput, $order: [residueSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryResidue(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        bill_to_guid
+        customer_company {
+            code
+            currency_guid
+            def_tank_guid
+            def_template_guid
+            delete_dt
+            effective_dt
+            guid
+            main_customer_guid
+            name
+            remarks
+            type_cv
+        }
+        complete_by
+        complete_dt
+        delete_dt
+        estimate_no
+        guid
+        job_no
+        remarks
+        sot_guid
+        status_cv
+        customer_billing_guid
+        customer_billing
+        {
+          bill_to_guid
+          delete_dt
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          currency{
+            currency_code
+            currency_name
+            rate
+            delete_dt
+          }
+          customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+          }
+        }
+        owner_billing_guid
+        owner_billing{
+          bill_to_guid
+          delete_dt
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          currency{
+            currency_code
+            currency_name
+            rate
+            delete_dt
+          }
+          customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+          }
+        }
+        storing_order_tank {
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          last_test_guid
+          liftoff_job_no
+          lifton_job_no
+          owner_guid
+          release_job_no
+          remarks
+          required_temp
+          so_guid
+          status_cv
+          tank_no
+          tank_status_cv
+          unit_type_guid
+          tariff_cleaning {
+            guid
+            open_on_gate_cv
+            cargo
+          }
+          storing_order {
+            customer_company {
+              guid
+              code
+              name
+            }
+          }
+          in_gate {
+            eir_no
+            eir_dt
+            delete_dt
+          }
+          out_gate{
+            guid
+            out_gate_survey{
+              guid
+              create_dt
+              delete_dt
+            }
+          }
+        }
+        residue_part {
+            action
+            approve_part
+            cost
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            job_order_guid
+            approve_qty
+            approve_cost
+            quantity
+            residue_guid
+            tariff_residue_guid
+            update_by
+            update_dt
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
+    }
+  }
+`;
 
 export const GET_RESIDUE_EST = gql`
   query QueryResidue($where: residueFilterInput, $order: [residueSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
@@ -249,7 +424,7 @@ export const GET_RESIDUE_EST = gql`
 `;
 
 export const GET_RESIDUE_EST_JOB_ORDER = gql`
-  query queryResidue($where: residueFilterInput,$residue_part_where:residue_partFilterInput) {
+  query queryResidue($where: residueFilterInput,$residue_part_where:inventory_residue_partFilterInput) {
     resultList: queryResidue(where: $where) {
       nodes {
        allocate_by
@@ -535,6 +710,30 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   constructor(private apollo: Apollo) {
     super();
   }
+
+  searchWithBilling(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ResidueItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: SEARCH_RESIDUE_BILLING_QUERY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
   search(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ResidueItem[]> {
     this.loadingSubject.next(true);
 

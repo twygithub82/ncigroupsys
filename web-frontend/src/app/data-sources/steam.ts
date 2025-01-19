@@ -11,6 +11,7 @@ import { CustomerCompanyItem } from './customer-company';
 import { ResiduePartItem } from './residue-part';
 import { SteamPartItem } from './steam-part';
 import { JobOrderItem } from './job-order';
+import { BillingItem } from './billing';
 
 export class SteamGO {
   public estimate_no?: string;
@@ -54,6 +55,8 @@ export class SteamGO {
   // public total_cost?: number;
   // public owner_enable?: boolean;
   // public total_hour?: number;
+  public customer_billing_guid?:string;
+  public owner_billing_guid?:string;
 
   constructor(item: Partial<SteamGO> = {}) {
     this.guid = item.guid;
@@ -87,6 +90,9 @@ export class SteamGO {
 export class SteamItem extends SteamGO {
   public steaming_part?: SteamPartItem[];
   public storing_order_tank?: StoringOrderTankItem;
+  public customer_company?: CustomerCompanyItem;
+  public customer_billing?:BillingItem;
+  public owner_billing?:BillingItem;
 
   //public aspnetsuser?: UserItem;
   public actions?: string[]
@@ -94,6 +100,9 @@ export class SteamItem extends SteamGO {
     super(item)
     this.steaming_part = item.steaming_part;
     this.storing_order_tank = item.storing_order_tank;
+    this.customer_company=item.customer_company;
+    this.customer_billing= item.customer_billing;
+    this.owner_billing=item.owner_billing;
     // this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
   }
@@ -161,6 +170,221 @@ export class SteamStatusRequest {
     this.remarks = item.remarks;
   }
 }
+
+export const GET_STEAM_BILLING_EST = gql`
+  query querySteaming($where: steamingFilterInput, $order: [steamingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: querySteaming(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        na_dt
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        bill_to_guid
+        customer_company {
+          code
+          currency_guid
+          def_tank_guid
+          def_template_guid
+          delete_dt
+          effective_dt
+          guid
+          main_customer_guid
+          name
+          remarks
+          type_cv
+        }
+        complete_by
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        estimate_no
+        guid
+        job_no
+        remarks
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        customer_billing_guid
+        customer_billing
+        {
+          bill_to_guid
+          delete_dt
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          currency{
+            currency_code
+            currency_name
+            rate
+            delete_dt
+          }
+          customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+          }
+        }
+        owner_billing_guid
+        owner_billing{
+          bill_to_guid
+          delete_dt
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          currency{
+            currency_code
+            currency_name
+            rate
+            delete_dt
+          }
+          customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+          }
+        }
+        storing_order_tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          last_test_guid
+          liftoff_job_no
+          lifton_job_no
+          owner_guid
+          preinspect_job_no
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          release_job_no
+          remarks
+          required_temp
+          so_guid
+          status_cv
+          takein_job_no
+          tank_no
+          tank_status_cv
+          unit_type_guid
+          update_by
+          update_dt
+          tariff_cleaning {
+            guid
+            open_on_gate_cv
+            cargo
+          }
+          storing_order {
+            customer_company {
+              guid
+              code
+              name
+            }
+          }
+          in_gate {
+            eir_no
+            eir_dt
+            delete_dt
+          }
+           out_gate{
+            guid
+            out_gate_survey{
+              guid
+              create_dt
+              delete_dt
+            }
+          }
+        }
+        steaming_part {
+            approve_cost
+            approve_labour
+            approve_part
+            approve_qty
+            complete_dt
+            cost
+            delete_dt
+            description
+            guid
+            job_order_guid
+            labour
+            quantity
+            steaming_guid
+            tariff_steaming_guid
+            steaming_exclusive_guid
+            update_by
+            update_dt
+          job_order {
+              team {
+                create_by
+                create_dt
+                delete_dt
+                department_cv
+                description
+                guid
+                update_by
+                update_dt
+              }
+              complete_dt
+              create_by
+              create_dt
+              delete_dt
+              guid
+              job_order_no
+              job_type_cv
+              remarks
+              sot_guid
+              start_dt
+              status_cv
+              team_guid
+              total_hour
+              update_by
+              update_dt
+              working_hour
+              storing_order_tank  {
+                guid
+                tank_no}
+            }
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
+    }
+  }
+`;
 
 export const GET_STEAM_EST = gql`
   query querySteaming($where: steamingFilterInput, $order: [steamingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
@@ -306,8 +530,10 @@ export const GET_STEAM_EST = gql`
   }
 `;
 
+//query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
 export const GET_STEAM_EST_JOB_ORDER = gql`
-  query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
+
+  query querySteaming($where: steamingFilterInput,$steam_part_where:inventory_steaming_partFilterInput) {
     resultList: querySteaming(where: $where) {
       nodes {
        allocate_by
@@ -624,6 +850,30 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   constructor(private apollo: Apollo) {
     super();
   }
+
+  searchWithBilling(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<SteamItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STEAM_BILLING_EST,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
   search(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<SteamItem[]> {
     this.loadingSubject.next(true);
 
@@ -678,6 +928,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     const steam_part_where: any = {}
     if (job_order_guid) {
       steam_part_where.job_order_guid = { eq: job_order_guid };
+      //steam_part_where.some={job_order_guid:{eq:job_order_guid}};
     }
     return this.apollo
       .query<any>({

@@ -119,6 +119,18 @@ const SEARCH_CLEANING_BILLING_QUERY = gql`
         approve_by
         approve_dt
         bill_to_guid
+        customer_company {
+            code
+            currency_guid
+            def_tank_guid
+            delete_dt
+            effective_dt
+            guid
+            main_customer_guid
+            name
+            remarks
+            type_cv
+        }
         buffer_cost
         cleaning_cost
         complete_by
