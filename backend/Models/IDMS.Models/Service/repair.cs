@@ -28,7 +28,7 @@ namespace IDMS.Models.Service
         public double? labour_cost { get; set; }
         public double? total_cost { get; set; }
         public string? remarks { get; set; }
-        public bool? owner_enable { get; set; } = false;
+        public bool? owner_enable { get; set; }
         public string? status_cv { get; set; }
         public string? job_no { get; set; }
         public double? total_hour { get; set; }
