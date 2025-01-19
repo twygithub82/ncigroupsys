@@ -58,6 +58,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { PreviewPdfDialogComponent } from 'app/document-template/pdf/preview-pdf/preview-pdf-dialog.component';
+import { TankInfoDS } from 'app/data-sources/tank-info';
 
 @Component({
   selector: 'app-in-gate',
@@ -226,6 +227,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   igsDS: InGateSurveyDS;
   cvDS: CodeValuesDS;
   tDS: TankDS;
+  tiDS: TankInfoDS;
   pbDS: PackageBufferDS;
 
   customerCodeControl = new UntypedFormControl();
@@ -330,6 +332,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.igsDS = new InGateSurveyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
+    this.tiDS = new TankInfoDS(this.apollo);
     this.pbDS = new PackageBufferDS(this.apollo);
 
     const breakpointObserver = inject(BreakpointObserver);
@@ -375,6 +378,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         walkway_cv: [''],
         tank_comp_guid: [''],
         comments: [''],
+        last_release_dt: ['']
       }),
       periodic_test: this.fb.group({
         last_test_cv: [''],
@@ -756,6 +760,17 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           this.in_gate = data[0];
           this.dateOfInspection = Utility.convertDate(this.in_gate?.in_gate_survey?.create_dt) as Date;
           this.populateInGateForm(this.in_gate);
+          if (!this.in_gate?.tank?.last_release_dt) {
+            this.tiDS.getTankInfoForLastTest(this.in_gate!.tank!.tank_no!).subscribe(data => {
+              if (data.length > 0) {
+                this.surveyForm?.patchValue({
+                  tank_details: {
+                    last_release_dt: data[0]?.last_release_dt,
+                  },
+                })
+              }
+            });
+          }
           // this.ccDS.getOwnerList().subscribe(data => {
           //   this.ownerList = data;
           // });
@@ -766,7 +781,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
               next: (response) => {
                 console.log('Files retrieved successfully:', response);
                 if (response?.length) {
-                  this.eirPdf = response.filter((f : any) => f.description === 'IN_GATE_EIR');
+                  this.eirPdf = response.filter((f: any) => f.description === 'IN_GATE_EIR');
                   this.populateImages(response)
                 }
               },
@@ -813,6 +828,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         walkway_cv: ig.in_gate_survey?.walkway_cv,
         tank_comp_guid: ig.in_gate_survey?.tank_comp_guid,
         comments: ig.in_gate_survey?.comments,
+        last_release_dt: ig.tank?.last_release_dt,
       },
       periodic_test: {
         last_test_cv: ig.in_gate_survey?.last_test_cv,
@@ -1169,6 +1185,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
       sot.unit_type_guid = this.surveyForm.get('tank_details.unit_type_guid')?.value;
       sot.owner_guid = this.surveyForm.get('tank_details.owner_guid')?.value;
+      sot.last_release_dt = this.surveyForm.get('tank_details.last_release_dt')?.value;
 
       let ig: InGateGO = new InGateGO(this.in_gate!);
       ig.vehicle_no = this.surveyForm.get('in_gate_details.vehicle_no')?.value?.toUpperCase();
@@ -1758,6 +1775,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.handleSaveSuccess(1);
       this.router.navigate(['/admin/inventory/in-gate-survey']);
     }
+  }
+
+  canPublish() {
+    return this.in_gate?.in_gate_survey?.guid;
   }
 
   chosenYearHandler(normalizedYear: Moment) {

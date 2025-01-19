@@ -61,7 +61,7 @@
                         {{ccDS.displayName(sotItem?.customer_company)}}
                       </div>
                       <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner"
-                        [disabled]="!this.repairDS.canAmend(this.repairItem)" (change)="onOwnerToggle($event)">
+                        [disabled]="!canToggleOwner()" (change)="onOwnerToggle($event)">
                       </mat-checkbox>
                     </div>
                   </div>
@@ -795,7 +795,7 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (canExport()) {
-                  <button mat-flat-button color="accent" [disabled]="(repairDS.loading$ | async)" class="m-r-5">
+                  <button mat-flat-button color="accent" [disabled]="(repairDS.loading$ | async)" class="m-r-5" (click)="onExport($event)">
                     @if (!(repairDS.loading$ | async)) {
                     <i class="fas fa-file-export"></i>
                     } @else if ((repairDS.loading$ | async)) {

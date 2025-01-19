@@ -2029,18 +2029,20 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
                           <!-- <ng-container #dynamicContainer></ng-container> -->
-                          <button mat-raised-button matStepperNext color="primary" class="msr-2"
-                            [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
-                            (click)="onPublish()">
-                            <mat-icon>
-                              @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async)) {
-                              publish
-                              } @else {
-                              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                              }
-                            </mat-icon>
-                            {{translatedLangText.PUBLISH}}
-                          </button>
+                           @if (canPublish()) {
+                            <button mat-raised-button matStepperNext color="primary" class="msr-2"
+                              [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
+                              (click)="onPublish()">
+                              <mat-icon>
+                                @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async)) {
+                                publish
+                                } @else {
+                                <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                                }
+                              </mat-icon>
+                              {{translatedLangText.PUBLISH}}
+                            </button>
+                           }
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
                             [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
                             (click)="onFormSubmit()">
