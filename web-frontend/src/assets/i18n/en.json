@@ -857,7 +857,8 @@
     "PUBLISH-SUCCESS": "Publish Successfully",
     "INVOICED":"Invoiced",
     "DEPOT":"Depot",
-    "CUTOFF-DATE":"Cutoff Date"
+    "CUTOFF-DATE":"Cutoff Date",
+    "IN-GATE-OUT-GATE":"In-Gate / Out-Gate"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

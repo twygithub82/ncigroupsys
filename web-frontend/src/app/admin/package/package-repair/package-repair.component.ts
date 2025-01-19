@@ -935,17 +935,13 @@ if (this.pcForm!.value["len"]) {
     if (updatedt === null) {
       updatedt = r.create_dt;
     }
-    const date = new Date(updatedt! * 1000);
+    return this.displayDate(updatedt);
 
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();
-
-    // Replace the '/' with '-' to get the required format
+  }
 
 
-    return `${day}/${month}/${year}`;
-
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
   }
 
   resetDialog(event: Event) {

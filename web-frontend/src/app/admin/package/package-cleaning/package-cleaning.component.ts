@@ -601,7 +601,7 @@ implements OnInit {
   public loadData() {
 
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-     // this.customer_companyList1 = data
+      this.customer_companyList1 = data
     });
 
     this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
@@ -725,15 +725,12 @@ implements OnInit {
     {
       updatedt= r.create_dt;
     }
-    const date = new Date(updatedt! * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();   
+    return this.displayDate(updatedt);
 
-   // Replace the '/' with '-' to get the required format
- 
+  }
 
-    return `${day}/${month}/${year}`;
 
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
   }
 }

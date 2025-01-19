@@ -969,6 +969,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
             temp.labour_cost_discount = this.tempForm?.get("labour_discount")?.value;
             temp.material_cost_discount = this.tempForm?.get("material_discount")?.value;
             temp.template_name = this.tempForm?.get("template_name")?.value;
+            temp.remarks=this.tempForm?.get("remarks")?.value;
             delete temp.totalMaterialCost;
             temp.type_cv = "GENERAL";
             if (this.tempForm?.get("customer_code")?.value?.length > 0) {

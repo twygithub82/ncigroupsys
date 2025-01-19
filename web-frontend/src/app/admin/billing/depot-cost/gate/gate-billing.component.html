@@ -1,10 +1,4 @@
-<section class="content">
-  <div class="content-block">
-    <div class="block-header">
-      <!-- breadcrumb -->
-      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
-    </div>
-   
+
 <div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div class="card">
@@ -175,72 +169,70 @@
       <div class="row">
         &nbsp;
       </div>
-      <div class="row ms-0">
+      <div class="row">
         <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
           <mat-label>{{translatedLangText.INVOICE_DETAILS}}</mat-label>
         </div>
       </div>
-      <div  class="row ms-0">
-        <div class="card">
-          <!-- <div class="row">
-            <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
-              <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
-            </div>
-          </div> -->
-          <div class="row">
-            <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
-                <input matInput [formControl]="invoiceNoControl">
-                @if (this.invoiceNoControl.hasError('required')) {
-                  <mat-error>
-                    {{this.translatedLangText.INVOICE_NO}} {{this.translatedLangText.SO_REQUIRED}}
-                  </mat-error>
-                  }
-              </mat-form-field>
-            </div>
-            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
-                <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date" [formControl]="invoiceDateControl">
-                <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
-                <mat-datepicker #invoice_date_picker></mat-datepicker>
-                @if (this.invoiceDateControl.hasError('required')) {
-                  <mat-error>
-                    {{this.translatedLangText.INVOICE_DATE}} {{this.translatedLangText.SO_REQUIRED}}
-                  </mat-error>
-                  }
-              </mat-form-field>
-            </div>
-            <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>{{translatedLangText.TOTAL_COST}}</mat-label>
-                <input matInput [formControl]="invoiceTotalCostControl" readonly>
-              
-              </mat-form-field>
-            </div>
-            <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
-            <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5" (click)="save($event)">
-              <mat-icon>
-                save
-              </mat-icon>
-              {{translatedLangText.SAVE_AND_SUBMIT}}
-            </button>
-            <button mat-flat-button color="warn"  class="m-r-5"
-              (click)="onCancel($event)">
-              <mat-icon>
-                close
-              </mat-icon>
-              {{translatedLangText.CANCEL}}
-            </button>
-            </div>
-          
+      <div class="card">
+        <!-- <div class="row">
+          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+            <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
           </div>
+        </div> -->
+        <div class="row">
+          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
+              <input matInput [formControl]="invoiceNoControl">
+              @if (this.invoiceNoControl.hasError('required')) {
+                <mat-error>
+                  {{this.translatedLangText.INVOICE_NO}} {{this.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+            </mat-form-field>
+          </div>
+          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
+              <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date" [formControl]="invoiceDateControl">
+              <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
+              <mat-datepicker #invoice_date_picker></mat-datepicker>
+              @if (this.invoiceDateControl.hasError('required')) {
+                <mat-error>
+                  {{this.translatedLangText.INVOICE_DATE}} {{this.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+            </mat-form-field>
+          </div>
+          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.TOTAL_COST}}</mat-label>
+              <input matInput [formControl]="invoiceTotalCostControl" readonly>
+             
+            </mat-form-field>
+          </div>
+          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+          <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5" (click)="save($event)">
+            <mat-icon>
+              save
+            </mat-icon>
+            {{translatedLangText.SAVE_AND_SUBMIT}}
+          </button>
+          <button mat-flat-button color="warn"  class="m-r-5"
+            (click)="onCancel($event)">
+            <mat-icon>
+              close
+            </mat-icon>
+            {{translatedLangText.CANCEL}}
+          </button>
+          </div>
+        
         </div>
       </div>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="resEstList" matSort
+          <table mat-table [dataSource]="billSotList" matSort
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_5'">
@@ -274,7 +266,7 @@
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
                 <span
-                  class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
+                  class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
               </mat-cell>
             </ng-container>
           
@@ -377,26 +369,23 @@
           </table>
         </div>
         <!-- No result -->
-        @if (!(repDS.loading$ | async) && !resEstList.length) {
+        @if (!(billDS.loading$ | async) && !billSotList.length) {
         <mat-divider></mat-divider>
-        <div class="no-results m-l-20 pt-3" [style.display]="resEstList.length === 0 ? '' : 'none'">
+        <div class="no-results m-l-20 pt-3" [style.display]="billSotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
         <!-- Loading spinner -->
-        @if (repDS.loading$ | async) {
+        @if (billDS.loading$ | async) {
         <div class="tbl-spinner">
           <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
           </mat-progress-spinner>
         </div>
         }
-        <mat-paginator #paginator [length]="repDS.totalCount" [pageIndex]="0" [pageSize]="10"
+        <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="0" [pageSize]="10"
           [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
       </div>
     </div>
   </div>
 </div>
-
-  </div>
-</section>

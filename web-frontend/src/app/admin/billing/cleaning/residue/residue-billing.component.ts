@@ -91,6 +91,8 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     'last_cargo',
     'purpose',
     'tank_status_cv',
+    'cost',
+    'invoice_no',
      'invoiced',
     'action'
   ];
@@ -142,6 +144,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     INVOICED:'COMMON-FORM.INVOICED',
     CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
     CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
+    COST:'COMMON-FORM.COST'
   }
 
   invForm?: UntypedFormGroup;
@@ -158,8 +161,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   tcDS: TariffCleaningDS;
   //clnDS:InGateCleaningDS;
   resDS:ResidueDS;
-   billDS:BillingDS;
-
+  billDS:BillingDS;
+  processType:string="RESIDUE";
+  billingParty:string="CUSTOMER";
 
   distinctCustomerCodes:any;
   selectedEstimateItem?:ResidueItem;
@@ -449,7 +453,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         this.hasNextPage = this.resDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.resDS.pageInfo?.hasPreviousPage ?? false;
         // this.calculateResidueTotalCost();
-        this.checkInvoiced();
+        this.checkInvoicedAndTotalCost();
         this.distinctCustomerCodes= [... new Set(this.resEstList.map(item=>item.customer_company?.code))];
       });
 
@@ -720,12 +724,12 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       updateBilling.status_cv=billingItem.status_cv;
       updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
       
-      let billingEstimateRequests:any= billingItem.cleaning?.map(cln => {
+      let billingEstimateRequests:any= billingItem.residue?.map(cln => {
         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
         billingEstReq.action="";
-        billingEstReq.billing_party="CUSTOMER";
+        billingEstReq.billing_party=this.billingParty;
         billingEstReq.process_guid=cln.guid;
-        billingEstReq.process_type="RESIDUE";
+        billingEstReq.process_type=this.processType;
         return billingEstReq;
         //return { ...cln, action:'' };
         });
@@ -735,16 +739,16 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         {
           var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
           billingEstReq.action="NEW";
-          billingEstReq.billing_party="CUSTOMER";
+          billingEstReq.billing_party=this.billingParty;
           billingEstReq.process_guid=cln.guid;
-          billingEstReq.process_type="RESIDUE";
+          billingEstReq.process_type=this.processType;
           billingEstimateRequests.push(billingEstReq);
         }
       })
-      this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(data=>{
-        if(data.updateBilling)
+      this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+        if(result.data.updateBilling)
         {
-          this.handleSaveSuccess(data.updateBilling);
+          this.handleSaveSuccess(result.data.updateBilling);
           this.onCancel(event);
           this.search();
         }
@@ -765,9 +769,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
   
         billingEstReq.action="NEW";
-        billingEstReq.billing_party="CUSTOMER";
+        billingEstReq.billing_party=this.billingParty;
         billingEstReq.process_guid=c.guid;
-        billingEstReq.process_type="RESIDUE";
+        billingEstReq.process_type=this.processType;
         billingEstimateRequests.push(billingEstReq);
       });
       this.billDS.addBilling(newBilling,billingEstimateRequests).subscribe(result=>{
@@ -806,12 +810,14 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     this.invoiceTotalCostControl.setValue('0.00');
     const totalCost = this.selection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
-
-      return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
+      var itm:any = s;
+      return accumulator + itm.total_cost;
+     //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
     }, 0); // Initialize accumulator to 0
     this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
   }
-   toggleRow(row:InGateCleaningItem)
+
+   toggleRow(row:ResidueItem)
    {
     
      this.selection.toggle(row);
@@ -852,7 +858,14 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
      return false;
    }
 
-   
+   checkInvoicedAndTotalCost()
+  {
+    this.resEstList = this.resEstList?.map(res => {
+            
+              return { ...res, invoiced: (res.customer_billing_guid?true:false), total_cost:(this.resDS.getApproveTotal(res.residue_part)?.total_mat_cost||0)  };
+        });
+  }
+
    checkInvoiced()
   {
     this.resEstList = this.resEstList?.map(cln => {
@@ -891,9 +904,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     var updateBilling: any=null;
     var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
     billingEstReq.action="CANCEL";
-    billingEstReq.billing_party="CUSTOMER";
+    billingEstReq.billing_party=this.billingParty;
     billingEstReq.process_guid=processGuid;
-    billingEstReq.process_type="CLEANING";
+    billingEstReq.process_type=this.processType;
     let billingEstimateRequests:BillingEstimateRequest[]=[];
     billingEstimateRequests.push(billingEstReq);
    

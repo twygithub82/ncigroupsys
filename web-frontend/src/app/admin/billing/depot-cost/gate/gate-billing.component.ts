@@ -46,15 +46,14 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
-import { SteamDS, SteamItem } from 'app/data-sources/steam';
-import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { BillingDS, BillingEstimateRequest,BillingItem,BillingInputRequest } from 'app/data-sources/billing';
+import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, BillingSOTItem } from 'app/data-sources/billing';
 
 @Component({
-  selector: 'app-steam-billing',
+  selector: 'app-gate-billing',
   standalone: true,
-  templateUrl: './steam-billing.component.html',
-  styleUrl: './steam-billing.component.scss',
+  templateUrl: './gate-billing.component.html',
+  styleUrl: './gate-billing.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -82,7 +81,7 @@ import { BillingDS, BillingEstimateRequest,BillingItem,BillingInputRequest } fro
     MatDividerModule,
   ]
 })
-export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'tank_no',
@@ -94,7 +93,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'tank_status_cv',
     'cost',
     'invoice_no',
-    'invoiced',
+     'invoiced',
     'action'
   ];
 
@@ -161,14 +160,14 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   //clnDS:InGateCleaningDS;
-  stmDS:SteamDS;
-  plDS:PackageLabourDS;
+  resDS:ResidueDS;
   billDS:BillingDS;
+  processType:string="GATE";
+  billingParty:string="CUSTOMER";
 
   distinctCustomerCodes:any;
-  selectedEstimateItem?:SteamItem;
-  selectedEstimateLabourCost?:number;
-  stmEstList:SteamItem[]=[];
+  selectedEstimateItem?:BillingSOTItem;
+  billSotList:BillingSOTItem[]=[];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?:CustomerCompanyItem[];
@@ -179,9 +178,6 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
 
-  processType:string="STEAMING";
-  billingParty:string="CUSTOMER";
-
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -190,7 +186,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  selection = new GuidSelectionModel<SteamItem>(true, []);
+  selection = new GuidSelectionModel<ResidueItem>(true, []);
   //selection = new SelectionModel<InGateCleaningItem>(true, []);
   invoiceNoControl= new FormControl('', [Validators.required]);
   invoiceDateControl= new FormControl('', [Validators.required]);
@@ -213,9 +209,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
-    this.stmDS= new SteamDS(this.apollo);
-    this.plDS=new PackageLabourDS(this.apollo);
-    this.billDS= new BillingDS(this.apollo);
+    //this.clnDS= new InGateCleaningDS(this.apollo);
+    this.resDS= new ResidueDS(this.apollo);
+    this.billDS=new BillingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -379,15 +375,14 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   search() {
-    const where: any = {};
+    const where: any ={};
     this.selectedEstimateItem=undefined;
-    this.selectedEstimateLabourCost=0;
-    this.stmEstList =[];
+    this.billSotList =[];
     this.selection.clear();
     this.calculateTotalCost();
 
-    where.status_cv={in:['COMPLETED','APPROVED']};
-    where.bill_to_guid={neq:null};
+    //where.status_cv={in:['COMPLETED','APPROVED']};
+    where.guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
       where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
     }
@@ -395,15 +390,16 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.searchForm!.get('customer_code')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
       where.storing_order_tank={storing_order:{customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}}};
-      where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
+      // where.storing_order_tank={customer_company:{code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
     }
 
     if(this.searchForm!.get('branch_code')?.value)
     {
-      where.customer_company={code:{eq: this.searchForm!.get('branch_code')?.value.code }}
+      where.storing_order_tank={storing_order:{customer_company:{main_customer_guid:{eq: this.searchForm!.get('customer_code')?.value.guid }}}};
+      where.storing_order_tank={storing_order:{customer_company : { code:{eq: this.searchForm!.get('branch_code')?.value.code }}}};
+      //where.customer_company={code:{eq: this.searchForm!.get('branch_code')?.value.code }}
     }
 
-    
     if (this.searchForm!.get('eir_dt')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
       where.storing_order_tank.in_gate = { some:{
@@ -419,14 +415,14 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if(!where.customer_billing) where.customer_billing={};
-      where.customer_billing.invoice_dt={gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'],true) };
+      if(!where.gateio_billing) where.gateio_billing={};
+      where.gateio_billing.invoice_dt={gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'],true) };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
     if (this.searchForm!.get('cutoff_dt')?.value) {
       
-      where.approve_dt={lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) };
+      where.create_dt={lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
@@ -445,23 +441,22 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
    
-    this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
+    this.lastSearchCriteria = this.resDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
    // this.selection.clear();
-    this.subs.sink = this.stmDS.searchWithBilling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.billDS.searchBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.stmEstList = data;
-        this.endCursor = this.stmDS.pageInfo?.endCursor;
-        this.startCursor = this.stmDS.pageInfo?.startCursor;
-        this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-
-        this.checkInvoicedAndGetTotalCost();
-        //this.checkInvoiced();
-        this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
+        this.billSotList = data;
+        this.endCursor = this.resDS.pageInfo?.endCursor;
+        this.startCursor = this.resDS.pageInfo?.startCursor;
+        this.hasNextPage = this.resDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.resDS.pageInfo?.hasPreviousPage ?? false;
+        // this.calculateResidueTotalCost();
+        this.checkInvoicedAndTotalCost();
+        this.distinctCustomerCodes= [... new Set(this.billSotList.map(item=>item.storing_order_tank?.storing_order?.customer_company?.code))];
       });
 
     this.pageSize = pageSize;
@@ -614,7 +609,6 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       yard_cv: ['']
     });
 
-    this.branchCodeControl.reset('');
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
   }
@@ -622,7 +616,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   isAllSelected() {
    // this.calculateTotalCost();
     const numSelected = this.selection.selected.length;
-    const numRows = this.stmEstList.length;
+    const numRows = this.billSotList.length;
     return numSelected === numRows;
   }
 
@@ -630,7 +624,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.stmEstList.forEach((row) =>
+       : this.billSotList.forEach((row) =>
            this.selection.select(row)
          );
     this.calculateTotalCost();
@@ -649,164 +643,164 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     return retval;
   }
 
- save(event:Event){
-       event.stopPropagation();
-       if(this.invoiceDateControl.invalid || this.invoiceNoControl.invalid) return;
-   
-       let invNo:string =`${this.invoiceNoControl.value}`;
-       const where:any={};
-       where.invoice_no={eq:invNo};
-       this.billDS.searchSteamingBilling(where).subscribe(b=>{
-         if(b.length)
-         {
-           if(b[0].bill_to_guid===this.selectedEstimateItem?.customer_company?.guid)
-           {
-              this.ConfirmUpdateBilling(event,b[0]);
-           }
-           else
-           {
-               this.ConfirmInvalidEstimate(event);
-           }
-         }
-         else
-         {
-           this.SaveNewBilling(event);
-         }
-       });
-       
-       
-       
-   
-     }
-   
-     ConfirmInvalidEstimate(event:Event)
-     {
-       event.preventDefault(); // Prevents the form submission
-   
-       let tempDirection: Direction;
-       if (localStorage.getItem('isRtl') === 'true') {
-         tempDirection = 'rtl';
-       } else {
-         tempDirection = 'ltr';
-       }
-       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-         data: {
-           headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
-           action: 'new',
-         },
-         direction: tempDirection
-       });
-       dialogRef.afterClosed();
-     }
-     ConfirmUpdateBilling(event:Event, billingItem:BillingItem)
-     {
-       event.preventDefault(); // Prevents the form submission
-   
-       let tempDirection: Direction;
-       if (localStorage.getItem('isRtl') === 'true') {
-         tempDirection = 'rtl';
-       } else {
-         tempDirection = 'ltr';
-       }
-       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-         data: {
-           headerText: this.translatedLangText.CONFIRM_UPDATE_INVOICE,
-           action: 'new',
-         },
-         direction: tempDirection
-       });
-       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result.action === 'confirmed') {
-           this.UpdateBilling(event,billingItem);
-         }
-       });
-     }
-   
-     UpdateBilling(event:Event, billingItem:BillingItem)
-     {
-       var updateBilling : BillingInputRequest=new BillingInputRequest();
-       updateBilling.bill_to_guid=billingItem.bill_to_guid;
-       updateBilling.guid=billingItem.guid;
-       updateBilling.currency_guid=billingItem.currency_guid;
-       updateBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
-       updateBilling.status_cv=billingItem.status_cv;
-       updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
-       
-       let billingEstimateRequests:any= billingItem.steaming?.map(cln => {
-         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-         billingEstReq.action="";
-         billingEstReq.billing_party=this.billingParty;
-         billingEstReq.process_guid=cln.guid;
-         billingEstReq.process_type=this.processType;
-         return billingEstReq;
-         //return { ...cln, action:'' };
-         });
-       const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
-       this.selection.selected.forEach(cln=>{
-         if(!existingGuids.has(cln.guid))
-         {
-           var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-           billingEstReq.action="NEW";
-           billingEstReq.billing_party=this.billingParty;
-           billingEstReq.process_guid=cln.guid;
-           billingEstReq.process_type=this.processType;
-           billingEstimateRequests.push(billingEstReq);
-         }
-       })
-       this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-         if(result.data.updateBilling)
-         {
-           this.handleSaveSuccess(result.data.updateBilling);
-           this.onCancel(event);
-           this.search();
-         }
-       })
-   
-     }
-   
-     SaveNewBilling(event:Event)
-     {
-       var newBilling : BillingInputRequest=new BillingInputRequest();
-       newBilling.bill_to_guid=this.selectedEstimateItem?.customer_company?.guid;
-       newBilling.currency_guid=this.selectedEstimateItem?.customer_company?.currency_guid;
-       newBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
-       newBilling.invoice_no=`${this.invoiceNoControl.value}`;
-       newBilling.status_cv='PENDING';
-       var billingEstimateRequests:BillingEstimateRequest[]=[];
-       this.selection.selected.map(c=>{
-         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-   
-         billingEstReq.action="NEW";
-         billingEstReq.billing_party=this.billingParty;
-         billingEstReq.process_guid=c.guid;
-         billingEstReq.process_type=this.processType;
-         billingEstimateRequests.push(billingEstReq);
-       });
-       this.billDS.addBilling(newBilling,billingEstimateRequests).subscribe(result=>{
-         if(result.data.addBilling)
-         {
-           this.handleSaveSuccess(result.data.addBilling);
-           this.onCancel(event);
-           this.search();
-         }
-       })
-     }
- 
-     handleSaveSuccess(count: any) {
-       if ((count ?? 0) > 0) {
-         let successMsg = this.langText.SAVE_SUCCESS;
-         this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-           successMsg = res;
-           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-           //this.router.navigate(['/admin/master/estimate-template']);
-   
-           // Navigate to the route and pass the JSON object
-           
-         });
-       }
-     }
- 
+  save(event:Event){
+      event.stopPropagation();
+      if(this.invoiceDateControl.invalid || this.invoiceNoControl.invalid) return;
+  
+      let invNo:string =`${this.invoiceNoControl.value}`;
+      const where:any={};
+      where.invoice_no={eq:invNo};
+      this.billDS.searchResidueBilling(where).subscribe(b=>{
+        if(b.length)
+        {
+          if(b[0].bill_to_guid===this.selectedEstimateItem?.gateio_billing?.customer_company?.guid)
+          {
+             this.ConfirmUpdateBilling(event,b[0]);
+          }
+          else
+          {
+              this.ConfirmInvalidEstimate(event);
+          }
+        }
+        else
+        {
+          this.SaveNewBilling(event);
+        }
+      });
+      
+      
+      
+  
+    }
+  
+    ConfirmInvalidEstimate(event:Event)
+    {
+      event.preventDefault(); // Prevents the form submission
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
+          action: 'new',
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed();
+    }
+    ConfirmUpdateBilling(event:Event, billingItem:BillingItem)
+    {
+      event.preventDefault(); // Prevents the form submission
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          headerText: this.translatedLangText.CONFIRM_UPDATE_INVOICE,
+          action: 'new',
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result.action === 'confirmed') {
+          this.UpdateBilling(event,billingItem);
+        }
+      });
+    }
+  
+    UpdateBilling(event:Event, billingItem:BillingItem)
+    {
+      var updateBilling : BillingInputRequest=new BillingInputRequest();
+      updateBilling.bill_to_guid=billingItem.bill_to_guid;
+      updateBilling.guid=billingItem.guid;
+      updateBilling.currency_guid=billingItem.currency_guid;
+      updateBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+      updateBilling.status_cv=billingItem.status_cv;
+      updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
+      
+      let billingEstimateRequests:any= billingItem.residue?.map(cln => {
+        var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+        billingEstReq.action="";
+        billingEstReq.billing_party=this.billingParty;
+        billingEstReq.process_guid=cln.guid;
+        billingEstReq.process_type=this.processType;
+        return billingEstReq;
+        //return { ...cln, action:'' };
+        });
+      const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
+      this.selection.selected.forEach(cln=>{
+        if(!existingGuids.has(cln.guid))
+        {
+          var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+          billingEstReq.action="NEW";
+          billingEstReq.billing_party=this.billingParty;
+          billingEstReq.process_guid=cln.guid;
+          billingEstReq.process_type=this.processType;
+          billingEstimateRequests.push(billingEstReq);
+        }
+      })
+      this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+        if(result.data.updateBilling)
+        {
+          this.handleSaveSuccess(result.data.updateBilling);
+          this.onCancel(event);
+          this.search();
+        }
+      })
+  
+    }
+  
+    SaveNewBilling(event:Event)
+    {
+      var newBilling : BillingInputRequest=new BillingInputRequest();
+      newBilling.bill_to_guid=this.selectedEstimateItem?.gateio_billing?.customer_company?.guid;
+      newBilling.currency_guid=this.selectedEstimateItem?.gateio_billing?.customer_company?.currency_guid;
+      newBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+      newBilling.invoice_no=`${this.invoiceNoControl.value}`;
+      newBilling.status_cv='PENDING';
+      var billingEstimateRequests:BillingEstimateRequest[]=[];
+      this.selection.selected.map(c=>{
+        var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+  
+        billingEstReq.action="NEW";
+        billingEstReq.billing_party=this.billingParty;
+        billingEstReq.process_guid=c.guid;
+        billingEstReq.process_type=this.processType;
+        billingEstimateRequests.push(billingEstReq);
+      });
+      this.billDS.addBilling(newBilling,billingEstimateRequests).subscribe(result=>{
+        if(result.data.addBilling)
+        {
+          this.handleSaveSuccess(result.data.addBilling);
+          this.onCancel(event);
+          this.search();
+        }
+      })
+    }
 
+    handleSaveSuccess(count: any) {
+      if ((count ?? 0) > 0) {
+        let successMsg = this.langText.SAVE_SUCCESS;
+        this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+          successMsg = res;
+          ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+          //this.router.navigate(['/admin/master/estimate-template']);
+  
+          // Navigate to the route and pass the JSON object
+          
+        });
+      }
+    }
+
+    
   onCancel(event:Event){
     event.stopPropagation();
     this.invoiceNoControl.reset('');
@@ -818,14 +812,14 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.invoiceTotalCostControl.setValue('0.00');
     const totalCost = this.selection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
-      //var cost:number = this.selectedEstimateLabourCost||0;
       var itm:any = s;
       return accumulator + itm.total_cost;
-      //return accumulator+ Number(stmItm.net_cost||0);
+     //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
     }, 0); // Initialize accumulator to 0
     this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
   }
-   toggleRow(row:SteamItem)
+
+   toggleRow(row:ResidueItem)
    {
     
      this.selection.toggle(row);
@@ -842,18 +836,13 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     else if(this.selection.selected.length===1)
     {
       this.selectedEstimateItem=this.selection.selected[0];
-      if(this.selectedEstimateItem?.bill_to_guid)
-      {
-      this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
-      
-      }
     }
    }
-   CheckBoxDisable(row:InGateCleaningItem)
+   CheckBoxDisable(row:BillingSOTItem)
    {
-     if(this.selectedEstimateItem?.customer_company)
+     if(this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company)
      {
-     if(row.customer_company?.code!=this.selectedEstimateItem.customer_company?.code)
+     if(row.storing_order_tank?.storing_order?.customer_company?.code!=this.selectedEstimateItem.storing_order_tank?.storing_order?.customer_company?.code)
      {
       return true;
      }
@@ -871,83 +860,23 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
      return false;
    }
 
-   
-   getTotalCost(row:any)
-   {
-     
-    const customer_company_guid= row.storing_order_tank?.storing_order?.customer_company?.guid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-      if(data.length>0)
-      {
-        var cost:number =data[0].cost;
-        row.total_cost=(this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part,cost).total_mat_cost||0);
-        //this.calculateTotalCost();
-      }
-    });
-
-   }
-   
-   getCustomerLabourPackage(custGuid: string){
-
-    const customer_company_guid= custGuid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-      if(data.length>0)
-      {
-        this.selectedEstimateLabourCost =data[0].cost;
-        // this.stmEstList = this.stmEstList?.map(stm => {
-        //       var stm_part=[...stm.steaming_part!];
-        //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
-        //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
-        // });
-        this.calculateTotalCost();
-      }
-    });
-   
-  }
-
-  calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): number {
-    
-    const total = this.IsApproved(steam)?this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.stmDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
-      return total.total_mat_cost;
-
-  }
-
-  IsApproved(steam:SteamItem)
+   checkInvoicedAndTotalCost()
   {
-    const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
-    return validStatus.includes(steam!.status_cv!);
-    
-  }
-
-  checkInvoicedAndGetTotalCost()
-  {
-    this.stmEstList = this.stmEstList?.map(stm => {
-              return { ...stm, invoiced: (stm.customer_billing_guid?true:false), total_cost:0 };
-        });
-    this.stmEstList?.forEach(stm => {
-         this.getTotalCost(stm);
-        });    
-  }
-
-  checkInvoiced()
-  {
-    this.stmEstList = this.stmEstList?.map(stm => {
+    this.billSotList = this.billSotList?.map(res => {
             
-              return { ...stm, invoiced: (stm.customer_billing_guid?true:false) };
+              return { ...res, invoiced: (res.gateio_billing_guid?true:false), total_cost:(res.gate_in_cost||0)+(res.gate_out_cost||0)  };
         });
   }
 
-  handleDelete(event:Event, row:SteamItem)
+  //  checkInvoiced()
+  // {
+  //   this.billSotList = this.billSotList?.map(cln => {
+            
+  //             return { ...cln, invoiced: (cln.customer_billing_guid?true:false) };
+  //       });
+  // }
+
+  handleDelete(event:Event, row:ResidueItem)
   {
 
     event.preventDefault(); // Prevents the form submission
@@ -994,6 +923,10 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
   }
    
-  
- 
+     IsApproved(residue:ResidueItem)
+     {
+       const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
+       return validStatus.includes(residue!.status_cv!);
+       
+     }
 }

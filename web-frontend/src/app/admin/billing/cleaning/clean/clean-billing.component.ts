@@ -90,6 +90,8 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'last_cargo',
     'purpose',
     'tank_status_cv',
+    'cost',
+    'invoice_no',
     'invoiced',
     'action'
   ];
@@ -141,7 +143,8 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     INVOICED:'COMMON-FORM.INVOICED',
     CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
     CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
-    CONFIRM_REMOVE_ESITMATE:'COMMON-FORM.CONFIRM-REMOVE-ESITMATE'
+    CONFIRM_REMOVE_ESITMATE:'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
+     COST:'COMMON-FORM.COST'
   }
 
   invForm?: UntypedFormGroup;
@@ -158,7 +161,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   tcDS: TariffCleaningDS;
   clnDS:InGateCleaningDS;
   billDS:BillingDS;
-
+  processType:string="CLEANING";
 
   distinctCustomerCodes:any;
   selectedEstimateItem?:InGateCleaningItem;
@@ -446,7 +449,8 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
         this.startCursor = this.clnDS.pageInfo?.startCursor;
         this.hasNextPage = this.clnDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.clnDS.pageInfo?.hasPreviousPage ?? false;
-        this.checkInvoiced();
+       // this.checkInvoiced();
+       this.checkInvoicedAndTotalCost();
 
         this.distinctCustomerCodes= [... new Set(this.clnEstList.map(item=>item.customer_company?.code))];
       });
@@ -724,7 +728,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       billingEstReq.action="";
       billingEstReq.billing_party="CUSTOMER";
       billingEstReq.process_guid=cln.guid;
-      billingEstReq.process_type="CLEANING";
+      billingEstReq.process_type=this.processType;
       return billingEstReq;
       //return { ...cln, action:'' };
       });
@@ -738,7 +742,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
         billingEstReq.action="NEW";
         billingEstReq.billing_party="CUSTOMER";
         billingEstReq.process_guid=cln.guid;
-        billingEstReq.process_type="CLEANING";
+        billingEstReq.process_type=this.processType;
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -768,7 +772,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       billingEstReq.action="NEW";
       billingEstReq.billing_party="CUSTOMER";
       billingEstReq.process_guid=c.guid;
-      billingEstReq.process_type="CLEANING";
+      billingEstReq.process_type=this.processType;
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling,billingEstimateRequests).subscribe(result=>{
@@ -791,7 +795,9 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.invoiceTotalCostControl.setValue('0.00');
     const totalCost = this.selection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
-      return accumulator + (s.buffer_cost || 0) + (s.cleaning_cost || 0);
+      var itm:any = s;
+      return accumulator + itm.total_cost;
+     // return accumulator + (s.buffer_cost || 0) + (s.cleaning_cost || 0);
     }, 0); // Initialize accumulator to 0
     this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
   }
@@ -855,6 +861,14 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
+  checkInvoicedAndTotalCost()
+  {
+    this.clnEstList = this.clnEstList?.map(cln => {
+            
+              return { ...cln, invoiced: (cln.customer_billing_guid?true:false), total_cost:(cln.buffer_cost || 0) + (cln.cleaning_cost || 0)  };
+        });
+  }
+
   checkInvoiced()
   {
     this.clnEstList = this.clnEstList?.map(cln => {
@@ -894,32 +908,10 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     billingEstReq.action="CANCEL";
     billingEstReq.billing_party="CUSTOMER";
     billingEstReq.process_guid=processGuid;
-    billingEstReq.process_type="CLEANING";
+    billingEstReq.process_type=this.processType;
     let billingEstimateRequests:BillingEstimateRequest[]=[];
     billingEstimateRequests.push(billingEstReq);
-    // let billingEstimateRequests:any= billingItem.cleaning?.map(cln => {
-    //   var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-    //   billingEstReq.action="CANCEL";
-    //   billingEstReq.billing_party="CUSTOMER";
-    //   billingEstReq.process_guid=cln.guid;
-    //   billingEstReq.process_type="CLEANING";
-    //   return billingEstReq;
-    //   //return { ...cln, action:'' };
-    //   });
-    //   const existingGuids = new Set<string>(
-    //     billingEstimateRequests?.map((item: BillingEstimateRequest) => item.process_guid) || []
-    //   );
-    // this.selection.selected.forEach(cln=>{
-    //   if(!existingGuids.has(cln?.guid!))
-    //   {
-    //     var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-    //     billingEstReq.action="NEW";
-    //     billingEstReq.billing_party="CUSTOMER";
-    //     billingEstReq.process_guid=cln.guid;
-    //     billingEstReq.process_type="CLEANING";
-    //     billingEstimateRequests.push(billingEstReq);
-    //   }
-    // })
+   
     this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
       if(result.data.updateBilling)
       {

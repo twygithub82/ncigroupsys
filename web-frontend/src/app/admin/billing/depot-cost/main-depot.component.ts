@@ -60,6 +60,7 @@ import { CleanBillingComponent } from './clean/clean-billing.component';
 import { LOLOBillingComponent } from './LOLO/lolo-billing.component';
 import { PreinspectionBillingComponent } from './pre-inspection/preinspection-billing.component';
 import { StorageBillingComponent } from './storage/storage-billing.component';
+import { GateBillingComponent } from './gate/gate-billing.component';
 @Component({
   selector: 'app-main-depot',
   standalone: true,
@@ -98,7 +99,8 @@ import { StorageBillingComponent } from './storage/storage-billing.component';
     JobOrderTaskComponent,
     LOLOBillingComponent,
     PreinspectionBillingComponent,
-    StorageBillingComponent
+    StorageBillingComponent,
+    GateBillingComponent
    
 ]
 })
@@ -190,6 +192,7 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     PRE_INSPECTION:"MENUITEMS.BILLING.LIST.PRE-INSPECTION",
     LOLO:"MENUITEMS.BILLING.LIST.LOLO",
     STORAGE:"MENUITEMS.BILLING.LIST.STORAGE",
+    IN_GATE_OUT_GATE:'COMMON-FORM.IN-GATE-OUT-GATE'
    
   }
 
