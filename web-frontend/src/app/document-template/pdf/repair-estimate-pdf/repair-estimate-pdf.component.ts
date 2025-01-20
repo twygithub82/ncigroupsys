@@ -31,6 +31,7 @@ import { RepairCostTableItem, RepairDS } from 'app/data-sources/repair';
 import { RepairPartDS } from 'app/data-sources/repair-part';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairPartItem } from 'app/data-sources/repair-part';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 export interface DialogData {
   repair_guid: string;
@@ -39,7 +40,7 @@ export interface DialogData {
   repairDS: RepairDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
-  eirPdf?: any;
+  repairEstimatePdf?: any;
   estimate_no?: string;
 }
 
@@ -55,6 +56,7 @@ export interface DialogData {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
+    MatProgressBarModule
   ],
 })
 export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -222,7 +224,9 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     FOR: 'COMMON-FORM.FOR',
     NET_COST: 'COMMON-FORM.NET-COST',
     LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
-    MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT'
+    MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
+    PAGE: 'COMMON-FORM.PAGE',
+    OF: 'COMMON-FORM.OF'
   }
 
   type?: string | null;
@@ -261,13 +265,14 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   scale = 1.1;
 
   generatedPDF: any;
-  eirPdf?: any;
-  eirPdfSafeUrl?: any;
+  repairEstimatePdf?: any;
+  repairEstimatePdfSafeUrl?: any;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
   isFileActionLoading$: Observable<boolean> = this.fileManagerService.actionLoading$;
 
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
+  generatingPdfProgress = 0;
 
   constructor(
     public dialogRef: MatDialogRef<RepairEstimatePdfComponent>,
@@ -288,7 +293,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.repair_guid = data.repair_guid;
     this.customer_company_guid = data.customer_company_guid;
     this.estimate_no = data.estimate_no;
-    this.eirPdf = data.eirPdf;
+    this.repairEstimatePdf = data.repairEstimatePdf;
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -309,15 +314,15 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       this.cdr.detectChanges();
     }
 
-    console.log(this.eirPdf)
-    if (!this.eirPdf?.length) {
+    console.log(this.repairEstimatePdf)
+    if (!this.repairEstimatePdf?.length) {
       this.generatePDF();
     }
-    //  else {
-    //   const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
-    //   const pdfUrl = URL.createObjectURL(eirBlob);
-    //   this.eirPdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
-    // }
+     else {
+      const eirBlob = await Utility.urlToBlob(this.repairEstimatePdf?.[0]?.url);
+      const pdfUrl = URL.createObjectURL(eirBlob);
+      this.repairEstimatePdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
+    }
   }
 
   // async generatePDF(): Promise<void> {
@@ -409,6 +414,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     try {
       console.log('Start generate', new Date());
       this.generatingPdfLoadingSubject.next(true);
+      this.generatingPdfProgress = 0;
 
       const rows = Array.from(repTableElement.querySelectorAll('tr'));
       const pdf = new jsPDF('p', 'mm', 'a4');
@@ -430,13 +436,40 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
       let yOffset = topMargin + headerHeight; // Tracks vertical position on the page
       let currentPage = 1; // Current page number
-      const totalPages = Math.ceil(rows.length * 20 / usableHeight); // Estimate total pages based on row count
+      // Pre-render remarks and summary to get their heights
+      const remarksCanvas = await html2canvas(remarksElement, { scale: this.scale });
+      const remarksHeight = (remarksCanvas.height * (pageWidth - leftRightMarginBody * 2)) / remarksCanvas.width;
+      this.generatingPdfProgress += 10;
 
+      const summaryCanvas = await html2canvas(summaryElement, { scale: this.scale });
+      const summaryHeight = (summaryCanvas.height * (pageWidth - leftRightMarginBody * 2)) / summaryCanvas.width;
+      this.generatingPdfProgress += 10;
+
+      // Calculate total height of rows
+      const totalRowHeight = rows.reduce((total, row) => {
+        const rowCanvas = document.createElement('canvas');
+        rowCanvas.width = row.offsetWidth;
+        rowCanvas.height = row.offsetHeight;
+        const rowHeight = (row.offsetHeight * (pageWidth - leftRightMarginBody * 2)) / row.offsetWidth;
+        return total + rowHeight;
+      }, 0);
+
+      // Calculate the total required height
+      const totalContentHeight = totalRowHeight + remarksHeight + summaryHeight;
+
+      // Calculate total pages
+      const totalPages = Math.ceil(totalContentHeight / (usableHeight));
+      console.log('Total Pages:', totalPages);
+
+      let rowsCount = rows.length;
+      let currentRowCount = 0;
+      const rowProgressWeight = 0.7;
       for (const row of rows) {
         // Render each row to canvas
         const rowCanvas = await html2canvas(row as HTMLElement, { scale: this.scale });
         const rowImg = rowCanvas.toDataURL('image/png');
         const rowHeight = (rowCanvas.height * (pageWidth - leftRightMarginBody * 2)) / rowCanvas.width;
+        currentRowCount++;
 
         // Check if row fits on the current page
         if (yOffset + rowHeight > usableHeight) {
@@ -457,12 +490,13 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         // Add row to the current page
         pdf.addImage(rowImg, 'PNG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, rowHeight);
         yOffset += rowHeight;
+        const rowProgress = (rowProgressWeight / rowsCount) * 100;
+        this.generatingPdfProgress += rowProgress;
+        console.log('generatingPdfProgress', this.generatingPdfProgress);
       }
 
       // Add remarks section
-      const remarksCanvas = await html2canvas(remarksElement, { scale: this.scale });
       const remarksImg = remarksCanvas.toDataURL('image/png');
-      const remarksHeight = (remarksCanvas.height * (pageWidth - leftRightMarginBody * 2)) / remarksCanvas.width;
 
       console.log('Remarks Height:', remarksHeight);
 
@@ -487,9 +521,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       yOffset += remarksHeight;
 
       // Add summary content
-      const summaryCanvas = await html2canvas(summaryElement, { scale: this.scale });
       const summaryImg = summaryCanvas.toDataURL('image/png');
-      const summaryHeight = (summaryCanvas.height * (pageWidth - leftRightMarginBody * 2)) / summaryCanvas.width;
 
       // Calculate remaining space for summary content
       const remainingSpace = pageHeight - yOffset - footerHeight - bottomMargin;
@@ -523,9 +555,12 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
       // Add Footer to the last page
       await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+      this.generatingPdfProgress = 100;
 
       // Save PDF
-      pdf.save(`ESTIMATE-${this.estimate_no}.pdf`);
+      // pdf.save(`ESTIMATE-${this.estimate_no}.pdf`);
+      this.generatedPDF = pdf.output('blob');
+      this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
       this.generatingPdfLoadingSubject.next(false);
       console.log('End generate', new Date());
     } catch (error) {
@@ -826,50 +861,42 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   async onDownloadClick() {
-    // if (this.generatedPDF) {
-    //   const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
-    //   saveAs(this.generatedPDF, fileName);
-    // } else if (this.eirPdf?.[0]?.url) {
-    //   const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
-    //   const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
-    //   saveAs(eirBlob, fileName);
-    // }
+    if (this.generatedPDF) {
+      const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
+      saveAs(this.generatedPDF, fileName);
+    } else if (this.repairEstimatePdf?.[0]?.url) {
+      const eirBlob = await Utility.urlToBlob(this.repairEstimatePdf?.[0]?.url);
+      const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
+      saveAs(eirBlob, fileName);
+    }
   }
 
   onRepublshClick() {
     this.deleteFile();
   }
 
-  async uploadEir(group_guid: string, pdfBlob: Blob) {
-    const eirPdfUploadRequest: any = {
+  async uploadPdf(group_guid: string, pdfBlob: Blob) {
+    const pdfDescription = 'REPAIR_ESTIMATE';
+    const uploadRequest: any = {
       file: pdfBlob,
       metadata: {
-        TableName: 'in_gate_survey',
+        TableName: 'repair',
         FileType: 'pdf',
         GroupGuid: group_guid,
-        Description: 'IN_GATE_EIR'
+        Description: pdfDescription
       }
     }
 
-    this.fileManagerService.uploadFiles([eirPdfUploadRequest]).subscribe({
+    this.fileManagerService.uploadFiles([uploadRequest]).subscribe({
       next: (response) => {
         console.log('Files uploaded successfully:', response);
         if (response?.affected) {
-          this.eirPdf = [
+          this.repairEstimatePdf = [
             {
-              description: 'IN_GATE_EIR',
+              description: pdfDescription,
               url: response?.url?.[0]
             }
           ];
-
-          // console.log(this.eirDetails?.in_gate_guid)
-          // this.igDS.publishInGateSurvey(this.eirDetails?.in_gate_guid!).subscribe(result => {
-          //   console.log(result)
-          //   if (result.data?.publishIngateSurvey) {
-          //     let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
-          //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-          //   }
-          // });
         }
       },
       error: (error) => {
@@ -882,8 +909,8 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   deleteFile() {
-    if (this.eirPdf?.[0]?.url) {
-      this.fileManagerService.deleteFile([this.eirPdf?.[0]?.url]).subscribe({
+    if (this.repairEstimatePdf?.[0]?.url) {
+      this.fileManagerService.deleteFile([this.repairEstimatePdf?.[0]?.url]).subscribe({
         next: (response) => {
           console.log('Files delete successfully:', response);
           this.generatePDF();

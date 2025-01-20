@@ -60,6 +60,7 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
+import { FileManagerService } from '@core/service/filemanager.service';
 
 @Component({
   selector: 'app-estimate-new',
@@ -250,7 +251,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   userDS: UserDS;
   isOwner = false;
 
+  repairEstimatePdf: any;
   isDuplicate = false;
+  isFileActionLoading$: Observable<boolean> = this.fileManagerService.actionLoading$;
 
   constructor(
     public httpClient: HttpClient,
@@ -260,7 +263,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private fileManagerService: FileManagerService,
   ) {
     super();
     this.translateLangText();
@@ -540,6 +544,21 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         const found = repair.filter(x => x.guid === this.repair_guid);
         if (found?.length) {
           this.populateFoundRepair(found[0]!, isDuplicate);
+
+          this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
+            next: (response) => {
+              console.log('Files retrieved successfully:', response);
+              if (response?.length) {
+                this.repairEstimatePdf = response.filter((f: any) => f.description === 'REPAIR_ESTIMATE');
+              }
+            },
+            error: (error) => {
+              console.error('Error retrieving files:', error);
+            },
+            complete: () => {
+              console.log('File retrieval process completed.');
+            }
+          });
         }
       }
     }
@@ -914,7 +933,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         repair_guid: this.repairItem?.guid,
         customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
         estimate_no: this.repairItem?.estimate_no,
-        //eirPdf: this.eirPdf
+        repairEstimatePdf: this.repairEstimatePdf
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

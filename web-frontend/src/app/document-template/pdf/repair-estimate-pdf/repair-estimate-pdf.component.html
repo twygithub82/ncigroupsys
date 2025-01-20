@@ -377,13 +377,14 @@
         {{customerInfo.eirDisclaimerVer}}
       </span>
       <span>
-        {{translatedLangText.COMPUTER_GENERATED_NOTE}}
+        {{translatedLangText.PAGE}} <span id="current-page"></span> {{translatedLangText.OF}} <span
+          id="total-pages"></span>
       </span>
     </div>
   </div>
 </div>
-<div mat-dialog-actions class="mb-2 mt-2 me-2 align-right">
-  @if (this.eirPdf?.length) {
+<div mat-dialog-actions class="m-2 align-right">
+  @if (this.repairEstimatePdf?.length) {
   <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
     [disabled]="(repairDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
@@ -407,4 +408,7 @@
     </mat-icon>
     {{translatedLangText.EXPORT_NEW}}
   </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
 </div>

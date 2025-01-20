@@ -795,10 +795,10 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (canExport()) {
-                  <button mat-flat-button color="accent" [disabled]="(repairDS.loading$ | async)" class="m-r-5" (click)="onExport($event)">
-                    @if (!(repairDS.loading$ | async)) {
+                  <button mat-flat-button color="accent" [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async)" class="m-r-5" (click)="onExport($event)">
+                    @if (!(repairDS.loading$ | async) && !(isFileActionLoading$ | async)) {
                     <i class="fas fa-file-export"></i>
-                    } @else if ((repairDS.loading$ | async)) {
+                    } @else if ((repairDS.loading$ | async) || (isFileActionLoading$ | async)) {
                     <mat-icon>
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                     </mat-icon>

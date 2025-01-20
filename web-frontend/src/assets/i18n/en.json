@@ -871,8 +871,9 @@
     "APPROVED-COST": "Approved Cost",
     "ESTIMATE-COST": "Estimate Cost",
     "FOR": "For",
-    "CUTOFF-DATE":"Cutoff Date",
-    "IN-GATE-OUT-GATE":"In-Gate / Out-Gate"
+    "IN-GATE-OUT-GATE":"In-Gate / Out-Gate",
+    "PAGE": "Page",
+    "OF": "Of"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

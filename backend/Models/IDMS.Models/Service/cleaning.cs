@@ -51,6 +51,7 @@ namespace IDMS.Models.Service
         [UseFiltering]
         public job_order? job_order { get; set; }
 
+
         [UseFiltering]
         public billing? customer_billing { get; set; }
         
