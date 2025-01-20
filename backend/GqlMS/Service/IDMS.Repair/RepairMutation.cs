@@ -183,6 +183,7 @@ namespace IDMS.Repair.GqlTypes
                 updateRepair.remarks = repair.remarks;
                 updateRepair.total_hour = repair.total_hour;
                 updateRepair.job_no = repair.job_no;
+                updateRepair.owner_enable = repair.owner_enable;    
 
                 if (repair.repair_part != null)
                 {
