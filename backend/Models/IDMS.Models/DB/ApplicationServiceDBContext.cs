@@ -1,4 +1,5 @@
-﻿using IDMS.Models.Inventory;
+﻿using IDMS.Models.Billing;
+using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Service;
@@ -31,9 +32,45 @@ namespace IDMS.Models.Service.GqlTypes.DB
                 .HasOne(sc => sc.aspnetroles)
                 .WithMany(c => c.aspnetuserroles)
                 .HasForeignKey(sc => sc.roleID);
+
+            // Relationship with customer_billing
+            modelBuilder.Entity<cleaning>()
+                .HasOne(c => c.customer_billing)
+                .WithMany(b => b.cleaning) // Assuming billing has no navigation property back to cleaning
+                .HasForeignKey(c => c.customer_billing_guid);
+
+            // Relationship with customer_billing
+            modelBuilder.Entity<steaming>()
+                .HasOne(c => c.customer_billing)
+                .WithMany(b => b.steaming) // Assuming billing has no navigation property back to cleaning
+                .HasForeignKey(c => c.customer_billing_guid);
+
+            // Relationship with customer_billing
+            modelBuilder.Entity<residue>()
+                .HasOne(c => c.customer_billing)
+                .WithMany(b => b.residue) // Assuming billing has no navigation property back to cleaning
+                .HasForeignKey(c => c.customer_billing_guid);
+
+            // Relationship with customer_billing
+            modelBuilder.Entity<repair>()
+                .HasOne(c => c.customer_billing)
+                .WithMany(b => b.repair_customer) // Assuming billing has no navigation property back to cleaning
+                .HasForeignKey(c => c.customer_billing_guid);
+
+            // Relationship with customer_billing
+            modelBuilder.Entity<repair>()
+                .HasOne(c => c.owner_billing)
+                .WithMany(b => b.repair_owner) // Assuming billing has no navigation property back to cleaning
+                .HasForeignKey(c => c.owner_billing_guid);
+
+            //// Relationship with customer_billing
+            //modelBuilder.Entity<cleaning>()
+            //    .HasOne(c => c.owner_billing)
+            //    .WithMany(b => b.cleaning) // Assuming billing has no navigation property back to cleaning
+            //    .HasForeignKey(c => c.owner_billing_guid);
         }
 
-        public DbSet<currency> currency { get; set; } 
+        public DbSet<currency> currency { get; set; }
         public DbSet<team> team { get; set; }
         public DbSet<job_order> job_order { get; set; }
         public DbSet<time_table> time_table { get; set; }
@@ -42,7 +79,7 @@ namespace IDMS.Models.Service.GqlTypes.DB
         public DbSet<aspnetuserroles> aspnetuserroles { get; set; }
         public DbSet<package_repair> package_repair { get; set; }
         public DbSet<package_residue> package_residue { get; set; }
-        public DbSet<package_steaming> package_steaming {  get; set; }   
+        public DbSet<package_steaming> package_steaming { get; set; }
         public DbSet<storing_order_tank> storing_order_tank { get; set; }
         public DbSet<repair> repair { get; set; }
         public DbSet<repair_part> repair_part { get; set; }
