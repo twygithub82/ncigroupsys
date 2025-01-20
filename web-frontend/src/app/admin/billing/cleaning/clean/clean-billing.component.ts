@@ -379,7 +379,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.selection.clear();
     this.calculateTotalCost();
 
-    where.status_cv={in:['COMPLETED','APPROVED']};
+    where.status_cv={in:['COMPLETED','APPROVED','JOB-IN_PROGRESS']};
     where.bill_to_guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
       where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};

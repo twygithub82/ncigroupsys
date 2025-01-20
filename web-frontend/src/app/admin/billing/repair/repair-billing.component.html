@@ -274,7 +274,7 @@
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
                 <span
-                  class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
+                  class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
               </mat-cell>
             </ng-container>
           
@@ -335,7 +335,7 @@
               <mat-cell mat-cell *matCellDef="let row" class="">
                 @if(row.invoiced)
                 {
-                  <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span> {{row.customer_billing?.invoice_no}}
+                  <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span> {{row.repair_billing?.invoice_no}}
                 }
                 @else
                 {

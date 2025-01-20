@@ -262,6 +262,11 @@ export const GET_REPAIR_BILLING = gql`
           guid
           job_no
           tank_no
+          tank_status_cv
+          tariff_cleaning
+          {
+            cargo
+          }
           storing_order {
             customer_company {
               guid
