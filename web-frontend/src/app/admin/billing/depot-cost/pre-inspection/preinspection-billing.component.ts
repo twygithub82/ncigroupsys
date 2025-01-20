@@ -653,7 +653,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
       this.billDS.searchResidueBilling(where).subscribe(b=>{
         if(b.length)
         {
-          if(b[0].bill_to_guid===this.selectedEstimateItem?.gateio_billing?.customer_company?.guid)
+          if(b[0].bill_to_guid===this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid)
           {
              this.ConfirmUpdateBilling(event,b[0]);
           }
@@ -718,11 +718,15 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
   
     UpdateBilling(event:Event, billingItem:BillingItem)
     {
+      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+      let invoiceDue:Date =new Date(invoiceDate);
+      invoiceDue.setDate(invoiceDate.getDate()+30);
       var updateBilling : BillingInputRequest=new BillingInputRequest();
       updateBilling.bill_to_guid=billingItem.bill_to_guid;
       updateBilling.guid=billingItem.guid;
       updateBilling.currency_guid=billingItem.currency_guid;
-      updateBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+      updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
+      updateBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
       updateBilling.status_cv=billingItem.status_cv;
       updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
       
@@ -760,10 +764,14 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
   
     SaveNewBilling(event:Event)
     {
+      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+      let invoiceDue:Date =new Date(invoiceDate);
+      invoiceDue.setDate(invoiceDate.getDate()+30);
       var newBilling : BillingInputRequest=new BillingInputRequest();
-      newBilling.bill_to_guid=this.selectedEstimateItem?.gateio_billing?.customer_company?.guid;
-      newBilling.currency_guid=this.selectedEstimateItem?.gateio_billing?.customer_company?.currency_guid;
-      newBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+      newBilling.bill_to_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid;
+      newBilling.currency_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.currency_guid;
+      newBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
+      newBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
       newBilling.invoice_no=`${this.invoiceNoControl.value}`;
       newBilling.status_cv='PENDING';
       var billingEstimateRequests:BillingEstimateRequest[]=[];
@@ -864,7 +872,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
   {
     this.billSotList = this.billSotList?.map(res => {
             
-              return { ...res, invoiced: (res.gateio_billing_guid?true:false), total_cost:(res.preinspection_cost||0)  };
+              return { ...res, invoiced: (res.preinsp_billing_guid?true:false), total_cost:(res.preinspection?(res.preinspection_cost||0):0)  };
         });
   }
 

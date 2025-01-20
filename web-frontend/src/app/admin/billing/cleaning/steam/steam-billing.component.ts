@@ -724,11 +724,15 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
    
      UpdateBilling(event:Event, billingItem:BillingItem)
      {
+      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+      let invoiceDue:Date =new Date(invoiceDate);
+      invoiceDue.setDate(invoiceDate.getDate()+30);
        var updateBilling : BillingInputRequest=new BillingInputRequest();
        updateBilling.bill_to_guid=billingItem.bill_to_guid;
        updateBilling.guid=billingItem.guid;
        updateBilling.currency_guid=billingItem.currency_guid;
-       updateBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+       updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
+       updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDue));
        updateBilling.status_cv=billingItem.status_cv;
        updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
        
@@ -766,10 +770,14 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
    
      SaveNewBilling(event:Event)
      {
+      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+      let invoiceDue:Date =new Date(invoiceDate);
+      invoiceDue.setDate(invoiceDate.getDate()+30);
        var newBilling : BillingInputRequest=new BillingInputRequest();
        newBilling.bill_to_guid=this.selectedEstimateItem?.customer_company?.guid;
        newBilling.currency_guid=this.selectedEstimateItem?.customer_company?.currency_guid;
-       newBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+       newBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
+       newBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
        newBilling.invoice_no=`${this.invoiceNoControl.value}`;
        newBilling.status_cv='PENDING';
        var billingEstimateRequests:BillingEstimateRequest[]=[];

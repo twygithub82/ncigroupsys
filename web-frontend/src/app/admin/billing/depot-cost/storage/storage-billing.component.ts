@@ -48,6 +48,7 @@ import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-c
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, BillingSOTItem } from 'app/data-sources/billing';
+import { PackageDepotDS,PackageDepotItem } from 'app/data-sources/package-depot';
 
 @Component({
   selector: 'app-storage-billing',
@@ -159,6 +160,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  pdDS:PackageDepotDS;
   //clnDS:InGateCleaningDS;
   resDS:ResidueDS;
   billDS:BillingDS;
@@ -212,6 +214,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     //this.clnDS= new InGateCleaningDS(this.apollo);
     this.resDS= new ResidueDS(this.apollo);
     this.billDS=new BillingDS(this.apollo);
+    this.pdDS=new PackageDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -653,7 +656,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       this.billDS.searchResidueBilling(where).subscribe(b=>{
         if(b.length)
         {
-          if(b[0].bill_to_guid===this.selectedEstimateItem?.gateio_billing?.customer_company?.guid)
+          if(b[0].bill_to_guid===this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid)
           {
              this.ConfirmUpdateBilling(event,b[0]);
           }
@@ -718,11 +721,15 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   
     UpdateBilling(event:Event, billingItem:BillingItem)
     {
+      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+      let invoiceDue:Date =new Date(invoiceDate);
+      invoiceDue.setDate(invoiceDate.getDate()+30);
       var updateBilling : BillingInputRequest=new BillingInputRequest();
       updateBilling.bill_to_guid=billingItem.bill_to_guid;
       updateBilling.guid=billingItem.guid;
       updateBilling.currency_guid=billingItem.currency_guid;
-      updateBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+      updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
+      updateBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
       updateBilling.status_cv=billingItem.status_cv;
       updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
       
@@ -760,10 +767,14 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   
     SaveNewBilling(event:Event)
     {
+      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+      let invoiceDue:Date =new Date(invoiceDate);
+      invoiceDue.setDate(invoiceDate.getDate()+30);
       var newBilling : BillingInputRequest=new BillingInputRequest();
-      newBilling.bill_to_guid=this.selectedEstimateItem?.gateio_billing?.customer_company?.guid;
-      newBilling.currency_guid=this.selectedEstimateItem?.gateio_billing?.customer_company?.currency_guid;
-      newBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+      newBilling.bill_to_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid;
+      newBilling.currency_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.currency_guid;
+      newBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
+      newBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
       newBilling.invoice_no=`${this.invoiceNoControl.value}`;
       newBilling.status_cv='PENDING';
       var billingEstimateRequests:BillingEstimateRequest[]=[];
@@ -864,7 +875,13 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   {
     this.billSotList = this.billSotList?.map(res => {
             
-              return { ...res, invoiced: (res.storage_biling_guid?true:false), total_cost:(res.gate_in_cost||0)+(res.gate_out_cost||0)  };
+            
+              let packDepotItm :PackageDepotItem=new PackageDepotItem();
+              packDepotItm.storage_cal_cv=res.storage_cal_cv;
+              let daysDifference:number =Number(this.pdDS.getStorageDays(res.storing_order_tank!,packDepotItm));
+              
+
+              return { ...res, invoiced: (res.storage_billing_guid?true:false), total_cost:(daysDifference||0)*(res.storage_cost||0)  };
         });
   }
 

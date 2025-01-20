@@ -162,6 +162,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   clnDS:InGateCleaningDS;
   billDS:BillingDS;
   processType:string="CLEANING";
+  billingParty:string="CUSTOMER";
 
   distinctCustomerCodes:any;
   selectedEstimateItem?:InGateCleaningItem;
@@ -715,18 +716,22 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
   UpdateBilling(event:Event, billingItem:BillingItem)
   {
+    let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+    let invoiceDue:Date =new Date(invoiceDate);
+    invoiceDue.setDate(invoiceDate.getDate()+30);
     var updateBilling : BillingInputRequest=new BillingInputRequest();
     updateBilling.bill_to_guid=billingItem.bill_to_guid;
     updateBilling.guid=billingItem.guid;
     updateBilling.currency_guid=billingItem.currency_guid;
-    updateBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+    updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
+    updateBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
     updateBilling.status_cv=billingItem.status_cv;
     updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
     
     let billingEstimateRequests:any= billingItem.cleaning?.map(cln => {
       var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
       billingEstReq.action="";
-      billingEstReq.billing_party="CUSTOMER";
+      billingEstReq.billing_party=this.billingParty;
       billingEstReq.process_guid=cln.guid;
       billingEstReq.process_type=this.processType;
       return billingEstReq;
@@ -740,7 +745,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       {
         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
         billingEstReq.action="NEW";
-        billingEstReq.billing_party="CUSTOMER";
+        billingEstReq.billing_party=this.billingParty;
         billingEstReq.process_guid=cln.guid;
         billingEstReq.process_type=this.processType;
         billingEstimateRequests.push(billingEstReq);
@@ -759,10 +764,14 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
   SaveNewBilling(event:Event)
   {
+    let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+    let invoiceDue:Date =new Date(invoiceDate);
+    invoiceDue.setDate(invoiceDate.getDate()+30);
     var newBilling : BillingInputRequest=new BillingInputRequest();
     newBilling.bill_to_guid=this.selectedEstimateItem?.customer_company?.guid;
     newBilling.currency_guid=this.selectedEstimateItem?.customer_company?.currency_guid;
-    newBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+    newBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
+    newBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
     newBilling.invoice_no=`${this.invoiceNoControl.value}`;
     newBilling.status_cv='PENDING';
     var billingEstimateRequests:BillingEstimateRequest[]=[];
@@ -770,7 +779,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
 
       billingEstReq.action="NEW";
-      billingEstReq.billing_party="CUSTOMER";
+      billingEstReq.billing_party=this.billingParty;
       billingEstReq.process_guid=c.guid;
       billingEstReq.process_type=this.processType;
       billingEstimateRequests.push(billingEstReq);
@@ -906,7 +915,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     var updateBilling: any=null;
     var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
     billingEstReq.action="CANCEL";
-    billingEstReq.billing_party="CUSTOMER";
+    billingEstReq.billing_party=this.billingParty;
     billingEstReq.process_guid=processGuid;
     billingEstReq.process_type=this.processType;
     let billingEstimateRequests:BillingEstimateRequest[]=[];

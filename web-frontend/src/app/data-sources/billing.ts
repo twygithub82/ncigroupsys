@@ -91,7 +91,7 @@ export class BillingSOTGo{
   public preinspection_cost?:number;
   public remarks?:string;
   public sot_guid?:string;
-  public storage_biling_guid?:string;
+  public storage_billing_guid?:string;
   public storage_cal_cv?:string;
   public storage_cost?:number;
   public tariff_depot_guid?:string;
@@ -120,7 +120,7 @@ export class BillingSOTGo{
     this.preinspection=item.preinspection;
     this.preinspection_cost=item.preinspection_cost;
     this.sot_guid=item.sot_guid;
-    this.storage_biling_guid=item.storage_biling_guid;
+    this.storage_billing_guid=item.storage_billing_guid;
     this.storage_cal_cv=item.storage_cal_cv;
     this.storage_cost=item.storage_cost;
     this.tariff_depot_guid=item.tariff_depot_guid;
@@ -244,6 +244,18 @@ const SEARCH_BILLING_SOT_QUERY=gql`
           tank_no
           tank_status_cv
           unit_type_guid
+          repair{
+            repair_part
+            {
+              job_order{
+                complete_dt
+                status_cv
+              }
+            }
+          }
+          cleaning{
+            complete_dt
+          }
           tariff_cleaning {
             guid
             open_on_gate_cv
@@ -254,9 +266,11 @@ const SEARCH_BILLING_SOT_QUERY=gql`
               guid
               code
               name
+              currency_guid
             }
           }
           in_gate {
+            create_dt
             eir_no
             eir_dt
             delete_dt
