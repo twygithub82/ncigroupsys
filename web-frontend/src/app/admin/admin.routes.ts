@@ -92,6 +92,8 @@ import { MainDepotComponent } from './billing/depot-cost/main-depot.component';
 import { MainInvoiceComponent } from './billing/invoice/main-invoice.component';
 import { MainPendingComponent } from './billing/pending/main-pending.component';
 import { BilledTankComponent } from './billing/billed-tank/billed-tank.component';
+import { TransferComponent } from './inventory/transfer/transfer.component';
+import { TransferDetailsComponent } from './inventory/transfer-details/transfer-details.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -177,6 +179,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "inventory/release-order/edit/:id",
     component: ReleaseOrderDetailsComponent,
+  },
+  {
+    path: "inventory/transfer",
+    component: TransferComponent,
+  },
+  {
+    path: "inventory/transfer/details/:id",
+    component: TransferDetailsComponent,
   },
   {
     path: "parameter/cleaning-category",

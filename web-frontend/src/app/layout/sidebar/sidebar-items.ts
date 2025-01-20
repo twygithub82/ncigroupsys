@@ -538,6 +538,17 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       },
+      {
+        path: "admin/inventory/transfer",
+        title: "MENUITEMS.INVENTORY.LIST.TRANSFER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      }
     ]
   },
   {

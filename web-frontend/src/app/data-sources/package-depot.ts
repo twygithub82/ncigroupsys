@@ -298,7 +298,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
 
   getStorageBeginDate(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem): number | undefined {
     if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
-      return sotItem?.in_gate?.[0]?.create_dt;
+      return sotItem?.in_gate?.[0]?.eir_dt;
     } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {
       //return sotItem?.cleaning;
     } else if (pdItem?.storage_cal_cv === 'AFTER_AV_DATE') {
@@ -311,7 +311,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
 
   getStorageDays(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem): number | undefined {
     if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
-      sotItem.in_gate= sotItem.in_gate?.filter(inGate=>inGate.delete_dt===0||inGate.delete_dt===null);
+      sotItem.in_gate = sotItem.in_gate?.filter(inGate => inGate.delete_dt === 0 || inGate.delete_dt === null);
       if (sotItem?.in_gate?.[0]?.eir_dt) {
         const createDtInSeconds = sotItem.in_gate[0].eir_dt;
         const createDate = new Date(createDtInSeconds * 1000);
@@ -323,12 +323,11 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
 
         return differenceInDays;
       }
-      else
-      {
+      else {
         return 0;
       }
     } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {
-      sotItem.cleaning= sotItem.cleaning?.filter(clean=>clean.delete_dt===0||clean.delete_dt===null);
+      sotItem.cleaning = sotItem.cleaning?.filter(clean => clean.delete_dt === 0 || clean.delete_dt === null);
       if (sotItem?.cleaning?.[0]?.complete_dt) {
         const createDtInSeconds = sotItem.cleaning[0].complete_dt;
         const createDate = new Date(createDtInSeconds * 1000);
@@ -340,51 +339,45 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
 
         return differenceInDays;
       }
-      else
-      {
+      else {
         return 0;
       }
       //return sotItem?.cleaning;
     } else if (pdItem?.storage_cal_cv === 'AFTER_AV_DATE') {
-
-      if(sotItem?.repair)
-      {
-        sotItem.repair= sotItem.repair?.filter(repair=>repair.delete_dt===0||repair.delete_dt===null);
+      if (sotItem?.repair) {
+        sotItem.repair = sotItem.repair?.filter(repair => repair.delete_dt === 0 || repair.delete_dt === null);
         let qcCompletedList = sotItem?.repair?.[0]?.repair_part?.filter(rp =>
           rp.job_order?.status_cv === "QC_COMPLETED"
         );
 
         const latestCompleteDate = qcCompletedList
-        ?.map(rp => new Date(rp.job_order?.complete_dt!)) // Extract and convert `complete_dt` to Date objects
-        ?.reduce((latest, current) => 
-            current > latest ? current : latest, 
+          ?.map(rp => new Date(rp.job_order?.complete_dt!)) // Extract and convert `complete_dt` to Date objects
+          ?.reduce((latest, current) =>
+            current > latest ? current : latest,
             new Date(0) // Start with epoch as the baseline
-        );
+          );
 
-        if(latestCompleteDate!=new Date(0))
-        {
+        if (latestCompleteDate != new Date(0)) {
           const createDtInSeconds = Number(Utility.convertDate(latestCompleteDate));
           const createDate = new Date(createDtInSeconds * 1000);
           const currentDate = new Date();
-  
+
           const differenceInMs = currentDate.getTime() - createDate.getTime();
-  
+
           const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
-  
+
           return differenceInDays;
         }
-        else
-        {
+        else {
           return 0;
         }
-     }
-     else
-     {
-      return 0;
-     }
-       
+      }
+      else {
+        return 0;
+      }
+
     } else if (pdItem?.storage_cal_cv === 'NO_STORAGE') {
-       return 0;
+      return 0;
     }
     return undefined;
   }

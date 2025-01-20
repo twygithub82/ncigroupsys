@@ -466,19 +466,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     this.repList = this.regroupRepairPart(repair.repair_part);
   }
 
-  // getCustomerLabourPackage(customer_company_guid: string) {
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: customer_company_guid } }
-  //     ]
-  //   }
-  //   this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
-  //     if (data?.length > 0) {
-  //       this.packageLabourItem = data[0];
-  //     }
-  //   });
-  // }
-
   getCustomer() {
     return this.sotItem?.storing_order?.customer_company;
   }

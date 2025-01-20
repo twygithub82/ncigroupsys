@@ -178,6 +178,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
   bookingTypeCvListNewBooking: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  yesnoCvList: CodeValuesItem[] = [];
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
@@ -232,7 +233,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       purpose: [''],
       survey_dt_start: [''],
       survey_dt_end: [''],
-      clean_certificate_cv: ['']
+      certificate_cv: ['']
     });
   }
 
@@ -246,7 +247,8 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
       { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'yesnoCv', codeValType: 'YES_NO' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -264,6 +266,9 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
+      this.yesnoCvList = addDefaultSelectOption(data, 'All');
     });
 
     this.search();
@@ -408,6 +413,38 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
 
     if (this.searchForm!.get('job_no')?.value) {
       where.job_no = { contains: this.searchForm!.get('job_no')?.value };
+    }
+
+    if (this.searchForm!.get('tank_status_cv')?.value) {
+      where.tank_status_cv = { in: [this.searchForm!.get('tank_status_cv')?.value] };
+    }
+
+    if (this.searchForm!.get('certificate_cv')?.value) {
+      where.certificate_cv = { contains: this.searchForm!.get('certificate_cv')?.value };
+    }
+
+    if (this.searchForm!.value['purpose']) {
+      const purposes = this.searchForm!.value['purpose'];
+      if (purposes.includes('STORAGE')) {
+        where.purpose_storage = { eq: true }
+      }
+      if (purposes.includes('CLEANING')) {
+        where.purpose_cleaning = { eq: true }
+      }
+      if (purposes.includes('STEAM')) {
+        where.purpose_steam = { eq: true }
+      }
+
+      const repairPurposes = [];
+      if (purposes.includes('REPAIR')) {
+        repairPurposes.push('REPAIR');
+      }
+      if (purposes.includes('OFFHIRE')) {
+        repairPurposes.push('OFFHIRE');
+      }
+      if (repairPurposes.length > 0) {
+        where.purpose_repair_cv = { in: repairPurposes };
+      }
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -698,7 +735,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       purpose: '',
       survey_dt_start: '',
       survey_dt_end: '',
-      clean_certificate_cv: '',
+      certificate_cv: '',
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

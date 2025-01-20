@@ -30,7 +30,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
@@ -385,7 +385,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     const where: any = {
       and: [
         { status_cv: { eq: "ACCEPTED" } },
-        { tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
+        { tank_status_cv: { in: TANK_STATUS_IN_YARD } },
       ]
     };
 

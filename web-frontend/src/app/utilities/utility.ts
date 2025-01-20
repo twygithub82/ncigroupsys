@@ -26,7 +26,7 @@ export class Utility {
     return `${day}/${month}/${year}`;
   }
 
-  static convertDate(date: any, endOfDay: boolean = false,includeTime:boolean=false): number | Date | undefined {
+  static convertDate(date: any, endOfDay: boolean = false, includeTime: boolean = false): number | Date | undefined {
     try {
       if (!date) {
         return undefined; // Handle null or undefined input
@@ -50,8 +50,7 @@ export class Utility {
       // Handle JavaScript Date objects
       if (date instanceof Date) {
         const jsDate = new Date(date); // Create a copy of the date
-        if(!includeTime)
-        {
+        if (!includeTime) {
           if (endOfDay) {
             jsDate.setHours(23, 59, 59, 999); // Set to end of day
           } else {
@@ -343,20 +342,20 @@ export class Utility {
   static addYearsToEpoch(epochTime: number, yearCount: number): number {
     // Convert epoch time from seconds to milliseconds (JavaScript uses milliseconds)
     const epochMilliseconds = epochTime * 1000;
-  
+
     const date = new Date(epochMilliseconds);
-  
+
     // Separate the whole years and fractional years
     const wholeYears = Math.floor(yearCount); // Integer years (e.g., 2 from 2.5)
     const fractionalYears = yearCount - wholeYears; // Fractional part (e.g., 0.5 from 2.5)
-  
+
     // Add whole years
     date.setFullYear(date.getFullYear() + wholeYears);
-  
+
     // Convert fractional years to months and add them
     const monthsToAdd = Math.round(fractionalYears * 12); // Convert fractional years to months
     date.setMonth(date.getMonth() + monthsToAdd);
-  
+
     // Convert back to seconds and return
     return Math.floor(date.getTime() / 1000);
   }
@@ -391,3 +390,12 @@ export class Utility {
     return await response.blob();
   }
 }
+
+export const TANK_STATUS_IN_YARD = [
+  'STEAM',
+  'RESIDUE',
+  'CLEANING',
+  'REPAIR',
+  'STORAGE',
+  'RO_GENERATED',
+]

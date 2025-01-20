@@ -188,7 +188,9 @@
         "OUT-GATE": "Out Gate",
         "OUT-GATE-DETAILS": "Out Gate Details",
         "OUT-GATE-SURVEY": "Out Gate Survey",
-        "OUT-GATE-SURVEY-FORM": "Out Gate Survey Form"
+        "OUT-GATE-SURVEY-FORM": "Out Gate Survey Form",
+        "TRANSFER": "Transfer",
+        "TRANSFER-DETAILS": "Transfer Details"
       }
     },
     "REPAIR": {
@@ -873,7 +875,16 @@
     "FOR": "For",
     "IN-GATE-OUT-GATE":"In-Gate / Out-Gate",
     "PAGE": "Page",
-    "OF": "Of"
+    "OF": "Of",
+    "CURRENT-LOCATION": "Current Location",
+    "TRANSFER-SINCE": "Transfer Since",
+    "TRANSFER-UNTIL": "Transfer Until",
+    "DAYS": "Day(s)",
+    "TO-YARD": "To Yard",
+    "FROM-YARD": "From Yard",
+    "EDIT-TRANSFER-DETAILS": "Edit Transfer Details",
+    "NEW-TRANSFER-DETAILS": "New Transfer Details",
+    "TRANSFER-LOCATION": "Transfer Location"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

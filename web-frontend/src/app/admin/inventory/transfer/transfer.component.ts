@@ -30,7 +30,7 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
@@ -46,10 +46,10 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
-  selector: 'app-tank-movement',
+  selector: 'app-transfer',
   standalone: true,
-  templateUrl: './tank-movement.component.html',
-  styleUrl: './tank-movement.component.scss',
+  templateUrl: './transfer.component.html',
+  styleUrl: './transfer.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -77,7 +77,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
     MatDividerModule,
   ]
 })
-export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class TransferComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
     'customer',
@@ -88,7 +88,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     'tank_status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.TRANSFER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -152,6 +152,12 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+
+  currentStartCursor: string | undefined = undefined;
+  currentEndCursor: string | undefined = undefined;
+  lastCursorDirection: string | undefined = undefined;
+
+  tankStatusInYard = TANK_STATUS_IN_YARD;
 
   constructor(
     public httpClient: HttpClient,
@@ -305,21 +311,58 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
 
   search() {
     const where: any = {
-      status_cv : { in: ['WAITING', 'ACCEPTED'] }
+      tank_status_cv: { in: TANK_STATUS_IN_YARD }
     };
 
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
-    if (this.searchForm!.get('eir_status_cv')?.value) {
-      where.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
+    if (this.searchForm!.get('tank_status_cv')?.value) {
+      where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
     }
 
-    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    if (this.searchForm!.get('last_cargo')?.value) {
+      where.last_cargo_guid = { eq: this.searchForm!.get('last_cargo')?.value?.guid }
     }
 
+    // in_gate
+    if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_status_cv')?.value || this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
+      const igSearch: any = {}
+
+      if (this.searchForm!.get('eir_no')?.value) {
+        igSearch.eir_no = { contains: this.searchForm!.get('eir_no')?.value };
+      }
+
+      if (this.searchForm!.get('eir_status_cv')?.value) {
+        igSearch.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
+      }
+
+      if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
+        igSearch.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
+      }
+      if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
+        const dtStart = this.searchForm!.get('eir_dt_start')?.value;
+        const dtEnd = this.searchForm!.get('eir_dt_end')?.value;
+        const today = new Date();
+
+        if (dtStart && new Date(dtStart) < today && !dtEnd) {
+          igSearch.eir_dt = {
+            gte: Utility.convertDate(dtStart),
+            lte: Utility.convertDate(today),
+          };
+        } else if (dtStart || dtEnd) {
+          igSearch.eir_dt = {
+            gte: Utility.convertDate(dtStart || today),
+            lte: Utility.convertDate(dtEnd || today),
+          };
+        }
+      }
+      const finalIgSearch = this.igDS.addDeleteDtCriteria(igSearch);
+      where.in_gate = { some: finalIgSearch }
+    }
+
+    // storing_order
     if (this.searchForm!.get('customer_code')?.value) {
       const soSearch: any = {};
       if (this.searchForm!.get('customer_code')?.value) {
@@ -328,68 +371,21 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       where.storing_order = soSearch;
     }
 
-    // if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
-    //   const sotSearch: any = {};
-
-    //   if (this.searchForm!.get('tank_no')?.value) {
-    //     sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-    //   }
-
-    //   if (this.searchForm!.get('tank_status_cv')?.value) {
-    //     sotSearch.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
-    //   }
-
-    //   if (this.searchForm!.get('purpose')?.value) {
-    //     const purposes = this.searchForm!.get('purpose')?.value;
-    //     if (purposes.includes('STORAGE')) {
-    //       sotSearch.purpose_storage = { eq: true }
-    //     }
-    //     if (purposes.includes('CLEANING')) {
-    //       sotSearch.purpose_cleaning = { eq: true }
-    //     }
-    //     if (purposes.includes('STEAM')) {
-    //       sotSearch.purpose_steam = { eq: true }
-    //     }
-
-    //     const repairPurposes = [];
-    //     if (purposes.includes('REPAIR')) {
-    //       repairPurposes.push('REPAIR');
-    //     }
-    //     if (purposes.includes('OFFHIRE')) {
-    //       repairPurposes.push('OFFHIRE');
-    //     }
-    //     if (repairPurposes.length > 0) {
-    //       sotSearch.purpose_repair_cv = { in: repairPurposes };
-    //     }
-    //   }
-
-    //   if (this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value) {
-    //     const soSearch: any = {};
-
-    //     if (this.searchForm!.get('so_no')?.value) {
-    //       soSearch.so_no = { contains: this.searchForm!.get('so_no')?.value };
-    //     }
-
-    //     if (this.searchForm!.get('customer_code')?.value) {
-    //       soSearch.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-    //     }
-    //     sotSearch.storing_order = soSearch;
-    //   }
-    //   where.tank = sotSearch;
-    // }
-
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.subs.sink = this.sotDS.searchStoringOrderTankForMovement(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.subs.sink = this.sotDS.getStoringOrderTankForTransfer(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+
+        this.currentEndCursor = after;
+        this.currentStartCursor = before;
       });
 
     this.pageSize = pageSize;
@@ -414,16 +410,38 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     } else {
       if (pageIndex > this.pageIndex && this.hasNextPage) {
         // Navigate forward
+        this.lastCursorDirection = 'forward';
         first = pageSize;
         after = this.endCursor;
       } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
         // Navigate backward
+        this.lastCursorDirection = 'backward';
         last = pageSize;
         before = this.startCursor;
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before);
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
+  }
+
+  triggerCurrentSearch() {
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    if (this.pageIndex === 0) {
+      first = this.pageSize;
+    } else if (this.lastCursorDirection === 'forward') {
+      first = this.pageSize;
+      after = this.currentEndCursor;
+    } else if (this.lastCursorDirection === 'backward') {
+      last = this.pageSize;
+      before = this.currentStartCursor;
+    }
+
+    // Perform the search
+    this.performSearch(this.pageSize, this.pageIndex, first, after, last, before, () => { });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
