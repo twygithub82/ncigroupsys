@@ -23,7 +23,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TransferItem } from 'app/data-sources/transfer';
 import { TankInfoItem } from 'app/data-sources/tank-info';
-import { CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 
 
 export interface DialogData {
@@ -74,8 +74,7 @@ export class FormDialogComponent {
 
   isPreOrder = false;
 
-  tcDS: TariffCleaningDS;
-  sotDS: StoringOrderTankDS;
+  cvDS: CodeValuesDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -85,8 +84,7 @@ export class FormDialogComponent {
   ) {
     // Set the defaults
 
-    this.tcDS = new TariffCleaningDS(this.apollo);
-    this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
     this.action = data.action!;
     this.tiItem = data.tiItem || new TankInfoItem();
     this.transferItem = data.item ? data.item : new TransferItem();
@@ -141,6 +139,10 @@ export class FormDialogComponent {
     } else {
       this.findInvalidControls();
     }
+  }
+
+  getYardDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.data?.populateData?.yardCvList);
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {

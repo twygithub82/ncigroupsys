@@ -39,7 +39,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -254,6 +254,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
       this.subs.sink = this.sotDS.getStoringOrderTankByIDForTransferDetails(this.sot_guid).subscribe(data => {
         if (data.length > 0) {
           this.storingOrderTankItem = data[0];
+          this.transferList = this.storingOrderTankItem?.transfer || [];
 
           if (this.storingOrderTankItem.tariff_cleaning) {
             this.cargoDetails = this.storingOrderTankItem.tariff_cleaning;
@@ -402,7 +403,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/inventory/in-gate']);
+      this.router.navigate(['/admin/inventory/transfer']);
     }
   }
 
@@ -441,7 +442,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
       if (result) {
         const transfer = new TransferItem({
           ...result.item,
-          storing_order_tank: new StoringOrderTankGO(this.storingOrderTankItem)
+          storing_order_tank: new StoringOrderTank(this.storingOrderTankItem)
         });
 
         console.log(transfer)
@@ -450,6 +451,12 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
           if ((result?.data?.updateTransfer ?? 0) > 0) {
             this.handleSaveSuccess(result?.data?.updateTransfer);
             // TODO :: query transfer again
+            const where = {
+              sot_guid: { eq: this.storingOrderTankItem?.guid }
+            }
+            this.transferDS.getTransferBySotIDForTransfer(where, { transfer_out_dt: "DESC" }).subscribe(data => {
+              this.transferList = data || [];
+            });
           }
         });
       }

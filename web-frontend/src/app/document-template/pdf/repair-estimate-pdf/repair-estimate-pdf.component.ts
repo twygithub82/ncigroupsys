@@ -42,6 +42,7 @@ export interface DialogData {
   cvDS: CodeValuesDS;
   repairEstimatePdf?: any;
   estimate_no?: string;
+  retrieveFile: boolean;
 }
 
 @Component({
@@ -304,7 +305,10 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
 
     // Await the data fetching
-    const data = await this.getRepairData();
+    const [data, pdfData] = await Promise.all([
+      this.getRepairData(),
+      this.data.retrieveFile ? this.getRepairPdf() : Promise.resolve(null)
+    ]);
     if (data?.length > 0) {
       this.repairItem = data[0];
       await this.getCodeValuesData();
@@ -314,11 +318,12 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       this.cdr.detectChanges();
     }
 
+    this.repairEstimatePdf = pdfData ?? this.repairEstimatePdf;
     console.log(this.repairEstimatePdf)
     if (!this.repairEstimatePdf?.length) {
       this.generatePDF();
     }
-     else {
+    else {
       const eirBlob = await Utility.urlToBlob(this.repairEstimatePdf?.[0]?.url);
       const pdfUrl = URL.createObjectURL(eirBlob);
       this.repairEstimatePdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
@@ -639,6 +644,15 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   getRepairData(): Promise<any[]> {
     return new Promise((resolve, reject) => {
       this.subs.sink = this.repairDS.getRepairByIDForPdf(this.repair_guid!, this.customer_company_guid!).subscribe({
+        next: (data) => resolve(data),
+        error: (err) => reject(err),
+      });
+    });
+  }
+
+  getRepairPdf(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });

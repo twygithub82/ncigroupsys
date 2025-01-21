@@ -2576,7 +2576,7 @@ const GET_STORING_ORDER_TANKS_FOR_TRANSFER_DETAILS = gql`
           vehicle_no
           yard_cv
         }
-        transfer {
+        transfer(where: { delete_dt: { eq: null } }) {
           create_by
           create_dt
           delete_dt
