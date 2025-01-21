@@ -212,6 +212,14 @@ namespace IDMS.Inventory.GqlTypes
                         transfer.delete_dt = currentDateTime;
                 }
 
+                var tankInfo = await context.tank_info.Where(t => t.tank_no == transfer.storing_order_tank.tank_no).FirstOrDefaultAsync();
+                if (tankInfo != null) 
+                {
+                    tankInfo.yard_cv = transfer.location_to_cv;
+                    tankInfo.update_by = user;
+                    tankInfo.update_dt = currentDateTime;
+                }
+
                 var res = await context.SaveChangesAsync();
                 return res;
             }
