@@ -1168,6 +1168,148 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANKS_REPAIR_BILLING = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        guid
+        tank_no
+        so_guid
+        tank_status_cv
+        customer_company {
+            code
+            currency_guid
+            guid
+            main_customer_guid
+            name
+            remarks
+            type_cv
+        }
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+        }
+        storing_order {
+           customer_company {
+              code
+              currency_guid
+              guid
+              name
+              remarks
+              type_cv
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
+          delete_dt
+        }
+        repair {
+          guid
+          estimate_no
+          job_no
+          labour_cost
+          labour_cost_discount
+          material_cost_discount
+          status_cv
+          total_cost
+          sot_guid
+          remarks
+          delete_dt
+          customer_billing_guid
+        customer_billing
+        {
+          bill_to_guid
+          delete_dt
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          currency{
+            currency_code
+            currency_name
+            rate
+            delete_dt
+          }
+          customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+          }
+        }
+        owner_billing_guid
+        owner_billing{
+          bill_to_guid
+          delete_dt
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          currency{
+            currency_code
+            currency_name
+            rate
+            delete_dt
+          }
+          customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+          }
+        }
+          storing_order_tank {
+            storing_order {
+              customer_company_guid
+            }
+          }
+          repair_part {
+            hour
+            quantity
+            material_cost
+            delete_dt
+            approve_part
+            approve_hour
+            approve_qty
+            approve_cost
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 const GET_STORING_ORDER_TANKS_REPAIR = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -2502,6 +2644,33 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   constructor(private apollo: Apollo) {
     super();
   }
+
+  searchStoringOrderTanksRepairBiling(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_REPAIR_BILLING,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
   searchStoringOrderTanks(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
 

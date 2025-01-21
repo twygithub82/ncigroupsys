@@ -48,7 +48,9 @@ import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-c
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem } from 'app/data-sources/billing';
-import { RepairDS } from 'app/data-sources/repair';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-repair-billing',
@@ -80,22 +82,30 @@ import { RepairDS } from 'app/data-sources/repair';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatCardModule
   ]
 })
 export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
+    // 'select',
+    // 'tank_no',
+    // 'customer',
+    // 'eir_no',
+    // 'eir_dt',
+    // 'last_cargo',
+    // 'purpose',
+    // 'tank_status_cv',
+    // 'cost',
+    // 'invoice_no',
+    //  'invoiced',
+    // 'action'
     'select',
-    'tank_no',
-    'customer',
-    'eir_no',
-    'eir_dt',
-    'last_cargo',
-    'purpose',
-    'tank_status_cv',
-    'cost',
-    'invoice_no',
-     'invoiced',
-    'action'
+    'estimate_no',
+    'job_no',
+    'net_cost',
+    'status_cv',
+    'remarks',
+    //'actions'
   ];
 
   pageTitle = 'MENUITEMS.BILLING.LIST.REPAIR-BILL'
@@ -145,7 +155,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     INVOICED:'COMMON-FORM.INVOICED',
     CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
     CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
-    COST:'COMMON-FORM.COST'
+    COST:'COMMON-FORM.COST',
+    ESTIMATE_NO:'COMMON-FORM.ESTIMATE-NO'
   }
 
   invForm?: UntypedFormGroup;
@@ -160,6 +171,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  plDS: PackageLabourDS;
+  
   //clnDS:InGateCleaningDS;
   repDS:RepairDS;
   billDS:BillingDS;
@@ -168,12 +181,14 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
   distinctCustomerCodes:any;
   selectedEstimateItem?:ResidueItem;
-  resEstList:ResidueItem[]=[];
-  sotList: StoringOrderTankItem[] = [];
+  packageLabourItem?:PackageLabourItem;
+  sotRepList:StoringOrderTankItem[]=[];
+  //sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?:CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
+  processStatusCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
@@ -187,7 +202,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  selection = new GuidSelectionModel<ResidueItem>(true, []);
+  reSelection = new GuidSelectionModel<RepairItem>(true, []);
   //selection = new SelectionModel<InGateCleaningItem>(true, []);
   invoiceNoControl= new FormControl('', [Validators.required]);
   invoiceDateControl= new FormControl('', [Validators.required]);
@@ -213,6 +228,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     //this.clnDS= new InGateCleaningDS(this.apollo);
     this.repDS= new RepairDS(this.apollo);
     this.billDS=new BillingDS(this.apollo);
+    this.plDS= new PackageLabourDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -310,12 +326,16 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
   public loadData() {
     const queries = [
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
     ];
     this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
+    });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
@@ -378,30 +398,37 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   search() {
     const where: any = {};
     this.selectedEstimateItem=undefined;
-    this.resEstList =[];
-    this.selection.clear();
+    this.sotRepList =[];
+    this.reSelection.clear();
     this.calculateTotalCost();
 
-    where.status_cv={in:['COMPLETED','APPROVED','ASSIGNED','PARTIAL_ASSIGNED','JOB_IN_PROGRESS']};
-    where.bill_to_guid={neq:null};
+    where.repair={some:{and:[ 
+      {status_cv:{in:['COMPLETED','APPROVED','ASSIGNED','PARTIAL_ASSIGNED','JOB_IN_PROGRESS']}},
+      {or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]}
+  
+  
+  ]}};
+   // where.bill_to_guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
-      where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
+      where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank={storing_order:{customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}}};
+     
+      where.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
       where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
     }
 
     if(this.searchForm!.get('branch_code')?.value)
     {
-      where.customer_company={code:{eq: this.searchForm!.get('branch_code')?.value.code }}
+      //where.repair={some:{bill_to_guid:{eq:this.searchForm!.get('branch_code')?.value.guid}}};
+      where.repair.some.and.push({bill_to_guid:{eq:this.searchForm!.get('branch_code')?.value.guid}});
+      //where.customer_company={code:{eq: this.searchForm!.get('branch_code')?.value.code }}
     }
 
     if (this.searchForm!.get('eir_dt')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank.in_gate = { some:{
+      //if(!where.storing_order_tank) where.storing_order_tank={};
+      where.in_gate = { some:{
         and:[
           {eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}
@@ -409,33 +436,38 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       };
     }
     if (this.searchForm!.get('eir_no')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
+     // if(!where.storing_order_tank) where.storing_order_tank={};
+      where.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
     }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if(!where.customer_billing) where.customer_billing={};
-      where.customer_billing.invoice_dt={gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'],true) };
+      
+
+      where.repair.some.and.push({
+        or:[
+        {customer_billing:{invoice_dt:{gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'],true) }}},
+        {owner_billing:{invoice_dt:{gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'],true) }}}
+        ]
+      });
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
     if (this.searchForm!.get('cutoff_dt')?.value) {
-      
-      where.approve_dt={lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) };
+      where.repair.some.and.push({approve_dt:{lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) }});
+      //if(!where.repair) where.repair={};
+      //where.repair={some:{approve_dt:{lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) }}};
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
     if (this.searchForm!.get('release_dt')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank.out_gate={some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
+      
+      where.out_gate={some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
       {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}};
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      
-      where.storing_order_tank.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
+      where.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
@@ -446,16 +478,21 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
    // this.selection.clear();
-    this.subs.sink = this.repDS.searchRepairWithBilling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairBiling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.resEstList = data;
+        const allowedStatuses = ['APPROVED', 'QC_COMPLETED', 'JOB_IN_PROGRESS', 'COMPLETED'];
+        this.sotRepList = data.map(d=>{
+          d.repair = d.repair?.filter(r=>allowedStatuses.includes(r.status_cv!))
+          return d;
+        });
+        
         this.endCursor = this.repDS.pageInfo?.endCursor;
         this.startCursor = this.repDS.pageInfo?.startCursor;
         this.hasNextPage = this.repDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.repDS.pageInfo?.hasPreviousPage ?? false;
         // this.calculateResidueTotalCost();
         this.checkInvoicedAndTotalCost();
-        this.distinctCustomerCodes= [... new Set(this.resEstList.map(item=>item.customer_company?.code))];
+        this.distinctCustomerCodes= [... new Set(this.sotRepList.map(item=>item.storing_order?.customer_company?.code))];
       });
 
     this.pageSize = pageSize;
@@ -614,24 +651,24 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
   isAllSelected() {
    // this.calculateTotalCost();
-    const numSelected = this.selection.selected.length;
-    const numRows = this.resEstList.length;
+    const numSelected = this.reSelection.selected.length;
+    const numRows = this.sotRepList.length;
     return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
      this.isAllSelected()
-       ? this.selection.clear()
-       : this.resEstList.forEach((row) =>
-           this.selection.select(row)
+       ? this.reSelection.clear()
+       : this.sotRepList.forEach((row) =>
+           this.reSelection.select(row)
          );
     this.calculateTotalCost();
   }
 
   AllowToSave():boolean{
     let retval:boolean=false;
-    if(this.selection.selected.length>0)
+    if(this.reSelection.selected.length>0)
     {
         if(this.invoiceDateControl.valid && this.invoiceNoControl.valid)
         {
@@ -717,11 +754,15 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   
     UpdateBilling(event:Event, billingItem:BillingItem)
     {
+      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+      let invoiceDue:Date =new Date(invoiceDate);
+      invoiceDue.setDate(invoiceDate.getDate()+30);
       var updateBilling : BillingInputRequest=new BillingInputRequest();
       updateBilling.bill_to_guid=billingItem.bill_to_guid;
       updateBilling.guid=billingItem.guid;
       updateBilling.currency_guid=billingItem.currency_guid;
-      updateBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
+      updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
+      updateBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
       updateBilling.status_cv=billingItem.status_cv;
       updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
       
@@ -735,7 +776,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         //return { ...cln, action:'' };
         });
       const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
-      this.selection.selected.forEach(cln=>{
+      this.reSelection.selected.forEach(cln=>{
         if(!existingGuids.has(cln.guid))
         {
           var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
@@ -766,7 +807,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       newBilling.invoice_no=`${this.invoiceNoControl.value}`;
       newBilling.status_cv='PENDING';
       var billingEstimateRequests:BillingEstimateRequest[]=[];
-      this.selection.selected.map(c=>{
+      this.reSelection.selected.map(c=>{
         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
   
         billingEstReq.action="NEW";
@@ -809,7 +850,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   calculateTotalCost()
     {
     this.invoiceTotalCostControl.setValue('0.00');
-    const totalCost = this.selection.selected.reduce((accumulator, s) => {
+    const totalCost = this.reSelection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
       var itm:any = s;
       return accumulator + itm.total_cost;
@@ -821,20 +862,20 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
    toggleRow(row:ResidueItem)
    {
     
-     this.selection.toggle(row);
+     this.reSelection.toggle(row);
      this.SelectFirstItem();
      this.calculateTotalCost();
    }
 
    SelectFirstItem()
    {
-    if(!this.selection.selected.length)
+    if(!this.reSelection.selected.length)
     {
       this.selectedEstimateItem=undefined;
     }
-    else if(this.selection.selected.length===1)
+    else if(this.reSelection.selected.length===1)
     {
-      this.selectedEstimateItem=this.selection.selected[0];
+      this.selectedEstimateItem=this.reSelection.selected[0];
     }
    }
    CheckBoxDisable(row:InGateCleaningItem)
@@ -861,18 +902,19 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
    checkInvoicedAndTotalCost()
   {
-    this.resEstList = this.resEstList?.map(res => {
-            
-              return { ...res, invoiced: (res.customer_billing_guid?true:false),total_cost:0};
+    this.sotRepList = this.sotRepList?.map(res => {            
+              return { ...res, invoiced:false,total_cost:0};
                // total_cost:(this.repDS.getApproveTotal(res.residue_part)?.total_mat_cost||0)  };
         });
+
+    //var ownerEstList = this.sotRepList?.filter(res=>res.owner_enable)
   }
 
    checkInvoiced()
   {
-    this.resEstList = this.resEstList?.map(cln => {
+    this.sotRepList = this.sotRepList?.map(cln => {
             
-              return { ...cln, invoiced: (cln.customer_billing_guid?true:false) };
+              return { ...cln, invoiced:false };
         });
   }
 
@@ -923,10 +965,43 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
   }
    
-     IsApproved(residue:ResidueItem)
-     {
-       const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
-       return validStatus.includes(residue!.status_cv!);
-       
-     }
+  IsApproved(residue:ResidueItem)
+  {
+    const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
+    return validStatus.includes(residue!.status_cv!);
+    
+  }
+
+  getCustomerLabourPackage(customer_company_guid: string) {
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    }
+    this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data?.length > 0) {
+        this.packageLabourItem = data[0];
+      }
+    });
+  }
+
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
+  getProcessStatusDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
+  }
 }
