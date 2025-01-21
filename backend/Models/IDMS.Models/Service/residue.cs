@@ -31,7 +31,7 @@ namespace IDMS.Models.Service
 
         [ForeignKey("customer_billing")]
         public string? customer_billing_guid { get; set; }
-        [ForeignKey("owner_billing")]
+        //[ForeignKey("owner_billing")]
         public string? owner_billing_guid { get; set; }
 
         [UseFiltering]
@@ -46,7 +46,7 @@ namespace IDMS.Models.Service
         [UseFiltering]
         public billing? customer_billing { get; set; }
 
-        [UseFiltering]
-        public billing? owner_billing { get; set; }
+        //[UseFiltering]
+        //public billing? owner_billing { get; set; }
     }
 }

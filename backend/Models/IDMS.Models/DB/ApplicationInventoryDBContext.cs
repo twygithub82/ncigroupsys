@@ -80,6 +80,16 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
                  .Property(e => e.right_coord)
                  .HasColumnType("json"); // Specify the column type as JSON for MySQL
 
+            modelBuilder.Entity<billing>()
+               .HasMany(b => b.repair_customer)
+               .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
+               .HasForeignKey(c => c.customer_billing_guid);
+
+            modelBuilder.Entity<billing>()
+               .HasMany(b => b.repair_owner)
+               .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
+               .HasForeignKey(c => c.owner_billing_guid);
+
             modelBuilder.Entity<customer_company_cleaning_category>();
             modelBuilder.Entity<tariff_buffer>();
             modelBuilder.Entity<package_buffer>();

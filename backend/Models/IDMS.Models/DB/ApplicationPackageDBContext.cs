@@ -1,4 +1,4 @@
-﻿using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+﻿using IDMS.Models.Billing;
 using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Parameter;
@@ -21,6 +21,16 @@ namespace IDMS.Models.DB
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<billing>()
+               .HasMany(b => b.repair_customer)
+               .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
+               .HasForeignKey(c => c.customer_billing_guid);
+
+            modelBuilder.Entity<billing>()
+               .HasMany(b => b.repair_owner)
+               .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
+               .HasForeignKey(c => c.owner_billing_guid);
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Billing;
+using IDMS.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Models.DB
@@ -14,12 +15,10 @@ namespace IDMS.Models.DB
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.cleaning)
-               .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.customer_billing_guid);
-            //.OnDelete(DeleteBehavior.Restrict); // Adjust delete behavior as needed
-
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.cleaning)
+            //   .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.customer_billing_guid);
 
             //// If there’s a second foreign key relationship
             //modelBuilder.Entity<billing>()
@@ -28,15 +27,15 @@ namespace IDMS.Models.DB
             //    .HasForeignKey(c => c.owner_billing_guid);
 
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.steaming)
-               .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.customer_billing_guid);
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.steaming)
+            //   .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.customer_billing_guid);
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.residue)
-               .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.customer_billing_guid);
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.residue)
+            //   .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.customer_billing_guid);
 
             modelBuilder.Entity<billing>()
                .HasMany(b => b.repair_customer)
@@ -53,6 +52,6 @@ namespace IDMS.Models.DB
 
         public DbSet<billing> billing { get; set; }
         public DbSet<billing_sot> billing_sot { get; set; }
-
+        public DbSet<currency> currency { get; set; }
     }
 }
