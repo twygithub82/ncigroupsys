@@ -27,6 +27,7 @@ namespace IDMS.Billing.Applicaton
                 o.EnableSensitiveDataLogging(false);
             });
 
+            builder.Services.AddHostedService<KeepAliveService>();
             // Add services to the container.
             builder.Services.AddGraphQLServer()
                             .AddAuthorization()
@@ -41,8 +42,6 @@ namespace IDMS.Billing.Applicaton
                             })
                             .AddQueryType<BillingQuery>()
                             .AddMutationType<BillingMutation>();
-
-
 
             builder.Services.AddAuthentication(options =>
             {
