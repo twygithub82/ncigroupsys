@@ -165,7 +165,8 @@
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <div class="contact-detail-info">
                                   <span
-                                    [class]="'font-bold'">{{getYardDescription((transferDS.getLastLocation(transferList)) || (igDS.getInGateItem(storingOrderTankItem?.in_gate)?.yard_cv))}}</span>
+                                    [class]="'font-bold'">{{getYardDescription((transferDS.getLastLocation(transferList))
+                                    || (igDS.getInGateItem(storingOrderTankItem?.in_gate)?.yard_cv))}}</span>
                                 </div>
                               </div>
                             </div>
@@ -292,9 +293,7 @@
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="actions">
-                                  <mat-header-cell
-                                    [ngClass]="'pr-0'"
-                                    *matHeaderCellDef>
+                                  <mat-header-cell [ngClass]="'pr-0'" *matHeaderCellDef>
                                   </mat-header-cell>
                                   <!-- <mat-cell *matCellDef="let row; let i=index;"
                                     class="tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
@@ -306,7 +305,8 @@
                                   </mat-cell> -->
                                   <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
                                     @if (hasMenuItems(row)) {
-                                    <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                                    <button mat-icon-button [matMenuTriggerFor]="menu"
+                                      (click)="stopEventTrigger($event)">
                                       <mat-icon>more_vert</mat-icon>
                                     </button>
                                     <mat-menu #menu="matMenu">
@@ -317,13 +317,13 @@
                                       </button>
                                       }
                                       @if (transferDS.canCancel(row)) {
-                                      <button mat-menu-item (click)="cancelTransfer($event, row)">
+                                      <button mat-menu-item (click)="cancelDialog($event, row)">
                                         <mat-icon>cancel</mat-icon>
                                         <span>{{translatedLangText.CANCEL}}</span>
                                       </button>
                                       }
-                                      @if (transferDS.canRollback(row)) {
-                                      <button mat-menu-item (click)="rollbackTransfer($event, row)">
+                                      @if (transferDS.canRollback(row, transferList)) {
+                                      <button mat-menu-item (click)="rollbackDialog($event, row)">
                                         <mat-icon>undo</mat-icon>
                                         <span>{{translatedLangText.ROLLBACK}}</span>
                                       </button>
@@ -334,7 +334,7 @@
                                 </ng-container>
                                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                                 <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'"
-                                  matRipple>
+                                  (click)="addTransferDetails($event, row)" matRipple>
                                 </mat-row>
                               </table>
                             </div>
@@ -358,7 +358,7 @@
                         <div class="row m-t-10">
                           <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12 mb-0">
                             <button mat-flat-button aria-label="Back to previous page"
-                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/in-gate/']">
+                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/transfer/']">
                               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                             </button>
                           </div>

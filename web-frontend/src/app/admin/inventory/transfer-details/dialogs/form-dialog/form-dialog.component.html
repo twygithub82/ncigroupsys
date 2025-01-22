@@ -60,7 +60,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
               <mat-label>
                 {{data.translatedLangText.CURRENT_LOCATION}}:
-                {{getYardDescription(tiItem.yard_cv)}}
+                {{getYardDescription(lastLocation)}}
               </mat-label>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
@@ -83,7 +83,14 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" (click)="submit()">{{data.translatedLangText.ADD}}</button>
+        <button mat-flat-button color="primary" (click)="submit()">
+          @if (action === 'new') {
+          {{data.translatedLangText.ADD}}
+          }
+          @else {
+          {{data.translatedLangText.UPDATE}}
+          }
+        </button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>

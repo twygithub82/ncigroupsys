@@ -185,7 +185,11 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     TRANSFER_LOCATION: 'COMMON-FORM.TRANSFER-LOCATION',
     ADD: 'COMMON-FORM.ADD',
     TRANSFER_IN: 'COMMON-FORM.TRANSFER-IN',
-    ROLLBACK: 'COMMON-FORM.ROLLBACK'
+    ROLLBACK: 'COMMON-FORM.ROLLBACK',
+    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    CONFIRM_CANCEL: 'COMMON-FORM.CONFIRM-CANCEL',
+    UPDATE: 'COMMON-FORM.UPDATE',
+    CONFIRM_ROLLBACK: 'COMMON-FORM.CONFIRM-ROLLBACK',
   }
 
   storingOrderTankItem?: StoringOrderTankItem;
@@ -419,9 +423,23 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     }
   }
 
+  handleDeleteSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.DELETE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      // query transfer again
+      const where = {
+        sot_guid: { eq: this.storingOrderTankItem?.guid }
+      }
+      this.transferDS.getTransferBySotIDForTransfer(where, { transfer_out_dt: "DESC" }).subscribe(data => {
+        this.transferList = data || [];
+      });
+    }
+  }
+
   hasMenuItems(row: any): boolean {
     return (
-      this.transferDS.canCompleteTransfer(row)
+      this.transferDS.canCompleteTransfer(row) || this.transferDS.canCancel(row) || this.transferDS.canRollback(row, this.transferList)
     );
   }
 
@@ -438,21 +456,31 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     event.preventDefault(); // Prevents the form submission
   }
 
-  addTransferDetails(event: Event, row?: StoringOrderTankItem) {
+  addTransferDetails(event: Event, row?: TransferItem) {
     this.preventDefault(event);  // Prevents the form submission
+    const lastTransfer = this.transferDS.getLastTransfer(this.transferList);
+    if (row && lastTransfer?.guid !== row?.guid) {
+      return;
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const addTransfer = row ?? new TransferItem({ sot_guid: this.storingOrderTankItem?.guid, location_from_cv: this.tiItem?.yard_cv });
+
+    const lastLocation = (this.transferDS.getLastLocation(this.transferList))
+      || (this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.yard_cv);
+    const addTransfer = row ?? new TransferItem({
+      sot_guid: this.storingOrderTankItem?.guid,
+      location_from_cv: lastLocation
+    });
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
       data: {
         item: addTransfer,
-        tiItem: this.tiItem,
-        action: 'new',
+        lastLocation: lastLocation,
+        action: addTransfer.guid ? 'edit' : 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
           yardCvList: this.yardCvList
@@ -487,6 +515,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     const newTransfer = new TransferItem(transfer);
     newTransfer.transfer_in_dt = Utility.convertDate(new Date(), false, true) as number;
     newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem)
+    newTransfer.action = "complete";
     console.log(newTransfer)
     this.transferDS.updateTransfer(newTransfer).subscribe(result => {
       console.log(result)
@@ -520,12 +549,12 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     this.transferDS.updateTransfer(newTransfer).subscribe(result => {
       console.log(result)
       if ((result?.data?.updateTransfer ?? 0) > 0) {
-        this.handleSaveSuccess(result?.data?.updateTransfer);
+        this.handleDeleteSuccess(result?.data?.updateTransfer);
       }
     });
   }
 
-  resetDialog(event: Event) {
+  rollbackDialog(event: Event, transfer?: TransferItem) {
     event.preventDefault(); // Prevents the form submission
 
     let tempDirection: Direction;
@@ -536,14 +565,38 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+        headerText: this.translatedLangText.CONFIRM_ROLLBACK,
         action: 'new',
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        this.resetForm();
+        this.rollbackTransfer(event, transfer);
+      }
+    });
+  }
+
+  cancelDialog(event: Event, transfer?: TransferItem) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_CANCEL,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        //this.resetForm();
+        this.cancelTransfer(event, transfer);
       }
     });
   }

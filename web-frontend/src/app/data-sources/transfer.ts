@@ -209,17 +209,31 @@ export class TransferDS extends BaseDataSource<TransferItem> {
     );
   }
 
+  getLastTransfer(transfer: TransferItem[]): TransferItem | undefined {
+    if (!transfer?.length) return undefined;
+
+    const validTransfers = transfer.filter(t => t.transfer_in_dt === null);
+
+    if (validTransfers.length) return validTransfers[0];
+
+    const latestTransfer = transfer.reduce((latest, current) => {
+      return (current.transfer_in_dt ?? 0) > (latest.transfer_in_dt ?? 0) ? current : latest;
+    });
+
+    return latestTransfer;
+  }
+
   getLastLocation(transfer: TransferItem[]): string {
     if (!transfer?.length) return "";
-  
+
     const validTransfers = transfer.filter(t => t.transfer_in_dt != null);
-  
+
     if (!validTransfers.length) return "";
-  
+
     const latestTransfer = validTransfers.reduce((latest, current) => {
       return (current.transfer_in_dt ?? 0) > (latest.transfer_in_dt ?? 0) ? current : latest;
     });
-  
+
     return latestTransfer?.location_to_cv || "";
   }
 
@@ -234,7 +248,14 @@ export class TransferDS extends BaseDataSource<TransferItem> {
     return !transfer.transfer_in_dt;
   }
 
-  canRollback(transfer: TransferItem): boolean {
+  canRollback(transfer: TransferItem, transferList: TransferItem[]): boolean {
+    if (transferList?.length) {
+      const lastTransfer = this.getLastTransfer(transferList);
+      if (lastTransfer?.guid === transfer?.guid && lastTransfer?.transfer_in_dt) {
+        return true;
+      }
+      return false;
+    }
     return transfer.transfer_in_dt !== undefined && transfer.transfer_in_dt !== null;
   }
 

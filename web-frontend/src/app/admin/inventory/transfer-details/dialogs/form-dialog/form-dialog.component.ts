@@ -29,7 +29,7 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 export interface DialogData {
   action?: string;
   item: TransferItem;
-  tiItem?: TankInfoItem;
+  lastLocation?: string;
   translatedLangText?: any;
   populateData?: any;
   index: number;
@@ -66,13 +66,10 @@ export class FormDialogComponent {
   dialogTitle: string;
   transferForm: UntypedFormGroup;
   transferItem: TransferItem;
-  tiItem: TankInfoItem;
+  lastLocation: string;
   filteredYardCvList: CodeValuesItem[] = [];
   startDateETA = new Date();
   startDateETR = new Date();
-  valueChangesDisabled: boolean = false;
-
-  isPreOrder = false;
 
   cvDS: CodeValuesDS;
   constructor(
@@ -83,17 +80,17 @@ export class FormDialogComponent {
 
   ) {
     // Set the defaults
-
     this.cvDS = new CodeValuesDS(this.apollo);
     this.action = data.action!;
-    this.tiItem = data.tiItem || new TankInfoItem();
+    this.lastLocation = data.lastLocation || '';
     this.transferItem = data.item ? data.item : new TransferItem();
     if (this.action === 'edit') {
       this.dialogTitle = data.translatedLangText?.EDIT_TRANSFER_DETAILS;
+      this.filteredYardCvList = data.populateData?.yardCvList;
     } else {
       this.dialogTitle = data.translatedLangText?.NEW_TRANSFER_DETAILS;
+      this.filteredYardCvList = data.populateData?.yardCvList?.filter((x: any) => x.code_val !== this.lastLocation);
     }
-    this.filteredYardCvList = data.populateData?.yardCvList?.filter((x: any) => x.code_val !== this.tiItem?.yard_cv);
     this.index = data.index;
     this.transferForm = this.createForm();
   }
@@ -105,7 +102,7 @@ export class FormDialogComponent {
       guid: [this.transferItem.guid],
       sot_guid: [{ value: this.transferItem.sot_guid, disabled: !this.canEdit() }, [Validators.required]],
       location_from_cv: [{ value: this.transferItem.location_from_cv, disabled: !this.canEdit() }, [Validators.required]],
-      location_to_cv: [{ value: this.transferItem.location_to_cv, disabled: !this.canEdit() }, [Validators.required]],
+      location_to_cv: [{ value: this.transferItem.location_to_cv, disabled: this.transferItem?.transfer_in_dt && this.transferItem?.transfer_in_dt > 0 }, [Validators.required]],
       transfer_out_dt: [{ value: Utility.convertDate(this.transferItem.transfer_out_dt), disabled: !this.canEdit() }],
       transfer_in_dt: [{ value: Utility.convertDate(this.transferItem.transfer_in_dt), disabled: !this.canEdit() }],
       haulier: [{ value: this.transferItem.haulier, disabled: !this.canEdit() }, [Validators.required]],
