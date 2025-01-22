@@ -176,35 +176,6 @@ const SEARCH_RESIDUE_BILLING_QUERY = gql`
               type_cv
           }
         }
-        owner_billing_guid
-        owner_billing{
-          bill_to_guid
-          delete_dt
-          invoice_dt
-          invoice_due
-          invoice_no
-          remarks
-          status_cv
-          currency{
-            currency_code
-            currency_name
-            rate
-            delete_dt
-          }
-          customer_company {
-              code
-              currency_guid
-              def_tank_guid
-              def_template_guid
-              delete_dt
-              effective_dt
-              guid
-              main_customer_guid
-              name
-              remarks
-              type_cv
-          }
-        }
         storing_order_tank {
           clean_status_cv
           create_by
@@ -217,10 +188,7 @@ const SEARCH_RESIDUE_BILLING_QUERY = gql`
           job_no
           last_cargo_guid
           last_test_guid
-          liftoff_job_no
-          lifton_job_no
           owner_guid
-          release_job_no
           remarks
           required_temp
           so_guid
