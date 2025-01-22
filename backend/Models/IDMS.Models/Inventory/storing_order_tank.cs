@@ -86,6 +86,7 @@ namespace IDMS.Models.Inventory
         [UseFiltering]
         public IEnumerable<survey_detail?>? survey_detail { get; set; }
         [UseFiltering]
+        [UseSorting]
         public IEnumerable<transfer?>? transfer { get; set; }
     }
 }

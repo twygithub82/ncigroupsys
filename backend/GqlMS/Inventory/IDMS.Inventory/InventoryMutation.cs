@@ -14,6 +14,8 @@ using IDMS.Models.Inventory;
 using IDMS.Models.Notification;
 using System.Data.SqlTypes;
 using System.IO;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using IDMS.Models.Billing;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -177,48 +179,133 @@ namespace IDMS.Inventory.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                if(string.IsNullOrEmpty(transfer.sot_guid))
+                if (string.IsNullOrEmpty(transfer.sot_guid))
                     throw new GraphQLException(new Error($"SOT guid cannot be null", "ERROR"));
 
-                if (string.IsNullOrEmpty(transfer.guid))
+                if (string.IsNullOrEmpty(transfer.action))
                 {
-                    //need to add new transfer record
-                    transfer newTransfer = transfer;
-                    newTransfer.guid = Util.GenerateGUID();
-                    newTransfer.create_by = user;
-                    newTransfer.create_dt = currentDateTime;
-                    newTransfer.transfer_out_dt = currentDateTime;
-                    await context.AddAsync(newTransfer);
+                    if (string.IsNullOrEmpty(transfer.guid))
+                    {
+                        //need to add new transfer record
+                        transfer newTransfer = new transfer();
+                        newTransfer.guid = Util.GenerateGUID();
+                        newTransfer.create_by = user;
+                        newTransfer.create_dt = currentDateTime;
+                        newTransfer.sot_guid = transfer.sot_guid;
+                        newTransfer.location_from_cv = transfer.location_from_cv;
+                        newTransfer.location_to_cv = transfer.location_to_cv;
+                        newTransfer.transfer_out_dt = currentDateTime;
+                        newTransfer.haulier = transfer.haulier;
+                        newTransfer.vehicle_no = transfer.vehicle_no;
+                        newTransfer.driver_name = transfer.driver_name;
+                        newTransfer.remarks = transfer.remarks;
+                        await context.transfer.AddAsync(newTransfer);
+                    }
+                    else
+                    {
+                        transfer updateTransfer = new transfer()
+                        {
+                            guid = transfer.guid
+                        };
+                        context.Attach(updateTransfer);
+                        updateTransfer.sot_guid = transfer.sot_guid;
+                        updateTransfer.update_by = user;
+                        updateTransfer.update_dt = currentDateTime;
+                        updateTransfer.location_from_cv = transfer.location_from_cv;
+                        updateTransfer.location_to_cv = transfer.location_to_cv;
+                        updateTransfer.transfer_out_dt = transfer?.transfer_out_dt;
+                        updateTransfer.transfer_in_dt = transfer?.transfer_in_dt;
+                        updateTransfer.haulier = transfer?.haulier;
+                        updateTransfer.driver_name = transfer?.driver_name;
+                        updateTransfer.vehicle_no = transfer?.vehicle_no;
+                        updateTransfer.remarks = transfer?.remarks;
+                        if (transfer?.delete_dt != null)
+                            transfer.delete_dt = currentDateTime;
+                    }
+
+                    //if (transfer.transfer_in_dt != null)
+                    //{
+                    //    if (transfer?.storing_order_tank == null || string.IsNullOrEmpty(transfer.storing_order_tank.tank_no))
+                    //        throw new GraphQLException(new Error($"SOT & tank_no cannot be null", "ERROR"));
+
+                    //    var tankInfo = await context.tank_info.Where(t => t.tank_no == transfer.storing_order_tank.tank_no).FirstOrDefaultAsync();
+                    //    if (tankInfo != null)
+                    //    {
+                    //        tankInfo.yard_cv = transfer.location_to_cv;
+                    //        tankInfo.update_by = user;
+                    //        tankInfo.update_dt = currentDateTime;
+                    //    }
+                    //}
                 }
                 else
                 {
-                    transfer updateTransfer = new transfer() 
+                    if (transfer.action.EqualsIgnore(SOTankAction.CANCEL))
                     {
-                        guid = transfer.guid
-                    };
-                    context.Attach(updateTransfer);
-                    updateTransfer.sot_guid = transfer.sot_guid;
-                    updateTransfer.update_by = user;
-                    updateTransfer.update_dt = currentDateTime;
-                    updateTransfer.haulier = transfer.haulier;
-                    updateTransfer.driver_name = transfer.driver_name;
-                    updateTransfer.location_from_cv = transfer.location_from_cv;
-                    updateTransfer.location_to_cv = transfer.location_to_cv;
-                    updateTransfer.transfer_out_dt = transfer.transfer_out_dt;
-                    updateTransfer.transfer_in_dt = currentDateTime;
-                    updateTransfer.remarks = transfer.remarks;
+                        var updateTransfer = new transfer() { guid = transfer.guid };   
+                        context.transfer.Attach(updateTransfer);
+                        updateTransfer.update_by = user;
+                        updateTransfer.update_dt = currentDateTime;
+                        updateTransfer.delete_dt = currentDateTime;
 
-                    if (transfer.delete_dt != null)
-                        transfer.delete_dt = currentDateTime;
+                        if(transfer.transfer_in_dt != null)
+                        {
+                            if (transfer?.storing_order_tank == null || string.IsNullOrEmpty(transfer.storing_order_tank.tank_no))
+                                throw new GraphQLException(new Error($"SOT & tank_no cannot be null", "ERROR"));
+
+                            var tankInfo = await context.tank_info.Where(t => t.tank_no == transfer.storing_order_tank.tank_no).FirstOrDefaultAsync();
+                            if (tankInfo != null)
+                            {
+                                tankInfo.yard_cv = transfer.location_from_cv;
+                                tankInfo.update_by = user;
+                                tankInfo.update_dt = currentDateTime;
+                            }
+                        }
+                    }
+                    else if (transfer.action.EqualsIgnore(SOTankAction.ROLLBACK))
+                    {
+                        var updateTransfer = new transfer() { guid = transfer.guid };
+                        context.transfer.Attach(updateTransfer);
+                        updateTransfer.update_by = user;
+                        updateTransfer.update_dt = currentDateTime;
+                        updateTransfer.transfer_in_dt = null;
+                        context.Entry(transfer).Property(p => p.transfer_in_dt).IsModified = true;
+
+                        if (transfer?.storing_order_tank == null || string.IsNullOrEmpty(transfer.storing_order_tank.tank_no))
+                            throw new GraphQLException(new Error($"SOT & tank_no cannot be null", "ERROR"));
+
+                        var tankInfo = await context.tank_info.Where(t => t.tank_no == transfer.storing_order_tank.tank_no).FirstOrDefaultAsync();
+                        if (tankInfo != null)
+                        {
+                            tankInfo.yard_cv = transfer.location_from_cv;
+                            tankInfo.update_by = user;
+                            tankInfo.update_dt = currentDateTime;
+                        }
+                    }
+                    else if (transfer.action.EqualsIgnore("COMPLETE"))
+                    {
+                        var updateTransfer = new transfer() { guid = transfer.guid };
+                        context.transfer.Attach(updateTransfer);
+                        updateTransfer.update_by = user;
+                        updateTransfer.update_dt = currentDateTime;
+                        updateTransfer.transfer_in_dt = currentDateTime;
+
+
+                        //if (transfer.transfer_in_dt != null)
+                        //{
+                        if (transfer?.storing_order_tank == null || string.IsNullOrEmpty(transfer.storing_order_tank.tank_no))
+                            throw new GraphQLException(new Error($"SOT & tank_no cannot be null", "ERROR"));
+
+                        var tankInfo = await context.tank_info.Where(t => t.tank_no == transfer.storing_order_tank.tank_no).FirstOrDefaultAsync();
+                            if (tankInfo != null)
+                            {
+                                tankInfo.yard_cv = transfer.location_to_cv;
+                                tankInfo.update_by = user;
+                                tankInfo.update_dt = currentDateTime;
+                            }
+                        //}
+                    }
                 }
 
-                var tankInfo = await context.tank_info.Where(t => t.tank_no == transfer.storing_order_tank.tank_no).FirstOrDefaultAsync();
-                if (tankInfo != null) 
-                {
-                    tankInfo.yard_cv = transfer.location_to_cv;
-                    tankInfo.update_by = user;
-                    tankInfo.update_dt = currentDateTime;
-                }
 
                 var res = await context.SaveChangesAsync();
                 return res;
@@ -437,7 +524,7 @@ namespace IDMS.Inventory.GqlTypes
                                 item.update_dt = currentDateTime;
                             }
                         }
-                        
+
                         if (await StatusChangeConditionCheck(jobOrders))
                         {
                             rep.status_cv = CurrentServiceStatus.COMPLETED;

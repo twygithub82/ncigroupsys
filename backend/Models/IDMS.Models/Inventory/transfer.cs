@@ -23,7 +23,11 @@ namespace IDMS.Models.Inventory
         public string? vehicle_no { get; set; }
         public string? driver_name { get; set; }
         public string? remarks { get; set; }
+
+        [NotMapped]
+        public string? action { get; set; }
+
         [UseFiltering]
-        public storing_order_tank? storing_order_tank { get; set; } 
+        public storing_order_tank? storing_order_tank { get; set; }
     }
 }
