@@ -30,6 +30,7 @@ export interface DialogData {
   action?: string;
   item: TransferItem;
   lastLocation?: string;
+  lastTransfer?: TransferItem;
   translatedLangText?: any;
   populateData?: any;
   index: number;
@@ -67,6 +68,7 @@ export class FormDialogComponent {
   transferForm: UntypedFormGroup;
   transferItem: TransferItem;
   lastLocation: string;
+  lastTransfer?: TransferItem;
   filteredYardCvList: CodeValuesItem[] = [];
   startDateETA = new Date();
   startDateETR = new Date();
@@ -84,6 +86,7 @@ export class FormDialogComponent {
     this.action = data.action!;
     this.lastLocation = data.lastLocation || '';
     this.transferItem = data.item ? data.item : new TransferItem();
+    this.lastTransfer = data.lastTransfer;
     if (this.action === 'edit') {
       this.dialogTitle = data.translatedLangText?.EDIT_TRANSFER_DETAILS;
       this.filteredYardCvList = data.populateData?.yardCvList;
@@ -105,10 +108,10 @@ export class FormDialogComponent {
       location_to_cv: [{ value: this.transferItem.location_to_cv, disabled: this.transferItem?.transfer_in_dt && this.transferItem?.transfer_in_dt > 0 }, [Validators.required]],
       transfer_out_dt: [{ value: Utility.convertDate(this.transferItem.transfer_out_dt), disabled: !this.canEdit() }],
       transfer_in_dt: [{ value: Utility.convertDate(this.transferItem.transfer_in_dt), disabled: !this.canEdit() }],
-      haulier: [{ value: this.transferItem.haulier, disabled: !this.canEdit() }, [Validators.required]],
-      vehicle_no: [{ value: this.transferItem.vehicle_no, disabled: !this.canEdit() }, [Validators.required]],
-      driver_name: [{ value: this.transferItem.driver_name, disabled: !this.canEdit() }, [Validators.required]],
-      remarks: [{ value: this.transferItem?.remarks, disabled: !this.canEdit() }],
+      haulier: [{ value: this.transferItem.haulier, disabled: false }, [Validators.required]],
+      vehicle_no: [{ value: this.transferItem.vehicle_no, disabled: false }, [Validators.required]],
+      driver_name: [{ value: this.transferItem.driver_name, disabled: false }, [Validators.required]],
+      remarks: [{ value: this.transferItem?.remarks, disabled: false }],
     });
   }
 
@@ -167,6 +170,11 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
+    if (this.action === 'new') return true;
+    const lastTransfer = this.lastTransfer;
+    if (this.transferItem && lastTransfer?.guid !== this.transferItem?.guid) {
+      return false;
+    }
     return true;
   }
 }

@@ -459,9 +459,9 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
   addTransferDetails(event: Event, row?: TransferItem) {
     this.preventDefault(event);  // Prevents the form submission
     const lastTransfer = this.transferDS.getLastTransfer(this.transferList);
-    if (row && lastTransfer?.guid !== row?.guid) {
-      return;
-    }
+    // if (row && lastTransfer?.guid !== row?.guid) {
+    //   return;
+    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -480,6 +480,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
       data: {
         item: addTransfer,
         lastLocation: lastLocation,
+        lastTransfer: lastTransfer,
         action: addTransfer.guid ? 'edit' : 'new',
         translatedLangText: this.translatedLangText,
         populateData: {

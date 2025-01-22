@@ -82,7 +82,6 @@
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
-        @if (canEdit()) {
         <button mat-flat-button color="primary" (click)="submit()">
           @if (action === 'new') {
           {{data.translatedLangText.ADD}}
@@ -91,7 +90,6 @@
           {{data.translatedLangText.UPDATE}}
           }
         </button>
-        }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
