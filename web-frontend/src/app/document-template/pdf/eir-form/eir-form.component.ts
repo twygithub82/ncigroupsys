@@ -192,6 +192,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     REPUBLISH: 'COMMON-FORM.REPUBLISH',
     PREVIEW_PDF: 'COMMON-FORM.PREVIEW-PDF',
     PUBLISH_SUCCESS: 'COMMON-FORM.PUBLISH-SUCCESS',
+    FOR: 'COMMON-FORM.FOR',
+    DELIVERY_COURIER: 'COMMON-FORM.DELIVERY-COURIER',
   }
 
   // @Input() type?: string | null;
@@ -210,6 +212,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   eirDisclaimerNote: string = "";
   eirTitle: string = "";
   eirDetails: any;
+  publish_by?: string;
 
   last_test_desc?: string = "";
 
@@ -309,6 +312,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     const data = await this.getInGateSurveyData();
     if (data?.length > 0) {
       this.eirDetails = data[0];
+      console.log(this.eirDetails);
       await this.getCodeValuesData();
       this.last_test_desc = this.getLastTest(this.eirDetails);
       this.highlightedCellsLeft = this.populateHighlightedCells(this.highlightedCellsLeft, JSON.parse(this.eirDetails?.left_coord || '[]'));
@@ -1533,7 +1537,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     }
   }
 
-  onRepublshClick() {
+  onRepublishClick() {
     this.deleteFile();
   }
 

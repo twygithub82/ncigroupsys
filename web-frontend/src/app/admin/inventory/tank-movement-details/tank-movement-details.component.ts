@@ -71,6 +71,8 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-survey';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
+import { TransferDS, TransferItem } from 'app/data-sources/transfer';
+import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -160,6 +162,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'status_cv',
     'remarks',
     'update_by',
+  ];
+
+  displayedColumnsTransfer = [
+    'transfer_out_dt',
+    'transfer_in_dt',
+    'days',
+    'location_from_cv',
+    'location_to_cv',
+    'update_by',
+    'update_dt'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT-DETAILS'
@@ -377,6 +389,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
     STEAM_MONITOR: 'COMMON-FORM.STEAM-MONITOR',
     TIME: 'COMMON-FORM.TIME',
+    TRANSFER_SINCE: 'COMMON-FORM.TRANSFER-SINCE',
+    TRANSFER_UNTIL: 'COMMON-FORM.TRANSFER-UNTIL',
+    DAYS: 'COMMON-FORM.DAYS',
+    TO_YARD: 'COMMON-FORM.TO-YARD',
+    FROM_YARD: 'COMMON-FORM.FROM-YARD',
   }
 
   sot_guid: string | null | undefined;
@@ -394,7 +411,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   bookingList: BookingItem[] = [];
   schedulingList: SchedulingItem[] = [];
   surveyList: SurveyDetailItem[] = [];
-  transferList: any[] = [];
+  transferList: TransferItem[] = [];
   allowAddPurposeTankStatuses: string[] = [
     'SO_GENERATED',
     'IN_GATE',
@@ -433,6 +450,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   schedulingDS: SchedulingDS;
   surveyDS: SurveyDetailDS;
   tiDS: TankInfoDS;
+  transferDS: TransferDS;
 
   customerCodeControl = new UntypedFormControl();
   ownerControl = new UntypedFormControl();
@@ -468,6 +486,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   bookingStatusCvList: CodeValuesItem[] = [];
   bookingTypeCvList: CodeValuesItem[] = [];
   repairOptionCvList: CodeValuesItem[] = [];
+  yardCvList: CodeValuesItem[] = [];
 
   last_test_desc?: string = "";
   next_test_desc?: string = "";
@@ -568,6 +587,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.schedulingDS = new SchedulingDS(this.apollo);
     this.surveyDS = new SurveyDetailDS(this.apollo);
     this.tiDS = new TankInfoDS(this.apollo);
+    this.transferDS = new TransferDS(this.apollo);
 
     const breakpointObserver = inject(BreakpointObserver);
     this.stepperOrientation = breakpointObserver
@@ -632,6 +652,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' },
       { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
       { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
+      { alias: 'yardCv', codeValType: 'YARD' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -727,6 +748,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
       this.repairOptionCvList = data;
     });
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      this.yardCvList = data;
+      console.log(this.yardCvList)
+    });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
     });
@@ -819,6 +844,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           console.log(`survey: `, data);
           this.surveyList = data;
+        }
+      });
+      this.subs.sink = this.transferDS.getTransferBySotIDForMovement(this.sot_guid).subscribe(data => {
+        if (data.length > 0) {
+          console.log(`transfer: `, data);
+          this.transferList = data;
         }
       });
     }
@@ -917,6 +948,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getCleanStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.cleanStatusCvList);
+  }
+
+  getYardDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
   translateLangText() {
@@ -1126,19 +1161,25 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   repairDialog(event: Event, repair: RepairItem) {
     this.preventDefault(event);
-    return; // TODO :: wait repair dialog done first
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(RepairFormDialogComponent, {
-      // width: '600px',
+
+    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
       data: {
-        tankNote: repair,
-        translatedLangText: this.translatedLangText,
+        type: this.sot?.purpose_repair_cv,
+        repair_guid: repair?.guid,
+        customer_company_guid: this.sot?.storing_order?.customer_company_guid,
+        estimate_no: repair?.estimate_no,
+        repairEstimatePdf: undefined,
+        retrieveFile: true        
       },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -1229,6 +1270,33 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           console.log('Unknown format');
         }
       }
+    });
+  }
+
+  onExport(event: Event, selectedItem: RepairItem) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        type: this.sot?.purpose_repair_cv,
+        repair_guid: selectedItem?.guid,
+        customer_company_guid: this.sot?.storing_order?.customer_company_guid,
+        estimate_no: selectedItem?.estimate_no,
+        repairEstimatePdf: undefined,
+        retrieveFile: true        
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
 

@@ -836,8 +836,14 @@
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            <span
-                                              class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
+                                            <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>
+                                            <span class="me-1">{{row.estimate_no}}</span>
+                                            @if (row.create_by === 'system') {
+                                            <mat-icon>whatshot</mat-icon>
+                                            }
+                                            @else {
+                                            <mat-icon>build</mat-icon>
+                                            }
                                           </mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="actions">
@@ -919,11 +925,11 @@
                                         </ng-container>
                                         <ng-container matColumnDef="bill">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.BILL}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label">{{translatedLangText.BILL}}:</span>
                                             <mat-icon
                                               class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
@@ -2264,65 +2270,99 @@
                                 <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                               </ng-container>
-                              <ng-container matColumnDef="book_type_cv">
+                              <ng-container matColumnDef="transfer_out_dt">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.TRANSFER_SINCE}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span
+                                    class="mobile-tab-label">{{translatedLangText.TRANSFER_SINCE}}:</span>{{displayDate(row.transfer_out_dt)}}
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="transfer_in_dt">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.TRANSFER_UNTIL}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span class="mobile-tab-label">{{translatedLangText.TRANSFER_UNTIL}}:</span>
+                                  <span>{{displayDate(row.transfer_out_dt) ?? "-"}}</span>
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="days">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.DAYS}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span class="mobile-tab-label">{{translatedLangText.DAYS}}:</span>
+                                  <span>{{transferDS.getDays(row) || "-"}}</span>
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="location_from_cv">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.FROM_YARD}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span
+                                    class="mobile-tab-label">{{translatedLangText.FROM_YARD}}:</span>{{getYardDescription(row?.location_from_cv)}}
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="location_to_cv">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.TO_YARD}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span
+                                    class="mobile-tab-label">{{translatedLangText.TO_YARD}}:</span>{{getYardDescription(row?.location_to_cv)}}
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="update_by">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.BOOKING_TYPE}}
+                                  {{translatedLangText.UPDATE_BY}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
+                                    class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by}}
                                 </mat-cell>
                               </ng-container>
-                              <ng-container matColumnDef="scheduling_dt">
+                              <ng-container matColumnDef="update_dt">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.SCHEDULING_DATE}}
-                                </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span class="mobile-tab-label">{{translatedLangText.SCHEDULING_DATE}}:</span>
-                                  <span>{{displayDate(row?.scheduling_sot?.[0]?.scheduling_dt) ?? "-"}}</span>
-                                </mat-cell>
-                              </ng-container>
-                              <ng-container matColumnDef="reference">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.REFERENCE}}
-                                </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
-                                  <span>{{displayDate(row.remarks) ?? "-"}}</span>
-                                </mat-cell>
-                              </ng-container>
-                              <ng-container matColumnDef="status_cv">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.STATUS}}
+                                  {{translatedLangText.UPDATE_DATE}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}}
+                                    class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{displayDate(row?.update_dt
+                                  || row?.create_dt)}}
                                 </mat-cell>
                               </ng-container>
-                              <mat-header-row *matHeaderRowDef="displayedColumnsScheduling"></mat-header-row>
-                              <mat-row *matRowDef="let row; columns: displayedColumnsScheduling;"
+                              <mat-header-row *matHeaderRowDef="displayedColumnsTransfer"></mat-header-row>
+                              <mat-row *matRowDef="let row; columns: displayedColumnsTransfer;"
                                 [style.cursor]="'pointer'" matRipple>
                               </mat-row>
                             </table>
                           </div>
                           <!-- No result -->
-                          @if (!(schedulingDS.loading$ | async) && !schedulingList.length) {
+                          @if (!(transferDS.loading$ | async) && !transferList.length) {
                           <mat-divider></mat-divider>
-                          <div class="no-results m-l-20 pt-3" [style.display]="schedulingList.length ? '' : 'none'">
+                          <div class="no-results m-l-20 pt-3">
                             <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                           </div>
                           }
                           <!-- Loading spinner -->
-                          @if (schedulingDS.loading$ | async) {
+                          @if (transferDS.loading$ | async) {
                           <div class="tbl-spinner">
                             <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                             </mat-progress-spinner>

@@ -14,7 +14,7 @@
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
           <div class="row">
-            <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.HAULIER}}</mat-label>
                 <input matInput formControlName="haulier" required>
@@ -60,7 +60,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
               <mat-label>
                 {{data.translatedLangText.CURRENT_LOCATION}}:
-                {{tiItem.yard_cv}}
+                {{getYardDescription(tiItem.yard_cv)}}
               </mat-label>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">

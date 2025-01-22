@@ -39,7 +39,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -184,6 +184,8 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     NEW_TRANSFER_DETAILS: 'COMMON-FORM.NEW-TRANSFER-DETAILS',
     TRANSFER_LOCATION: 'COMMON-FORM.TRANSFER-LOCATION',
     ADD: 'COMMON-FORM.ADD',
+    TRANSFER_IN: 'COMMON-FORM.TRANSFER-IN',
+    ROLLBACK: 'COMMON-FORM.ROLLBACK'
   }
 
   storingOrderTankItem?: StoringOrderTankItem;
@@ -254,6 +256,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
       this.subs.sink = this.sotDS.getStoringOrderTankByIDForTransferDetails(this.sot_guid).subscribe(data => {
         if (data.length > 0) {
           this.storingOrderTankItem = data[0];
+          this.transferList = this.storingOrderTankItem?.transfer || [];
 
           if (this.storingOrderTankItem.tariff_cleaning) {
             this.cargoDetails = this.storingOrderTankItem.tariff_cleaning;
@@ -303,6 +306,10 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+
+  displayDateTime(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateTimeStr(input);
   }
 
   displayDate(input: number | undefined): string | undefined {
@@ -402,8 +409,25 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/inventory/in-gate']);
+      // query transfer again
+      const where = {
+        sot_guid: { eq: this.storingOrderTankItem?.guid }
+      }
+      this.transferDS.getTransferBySotIDForTransfer(where, { transfer_out_dt: "DESC" }).subscribe(data => {
+        this.transferList = data || [];
+      });
     }
+  }
+
+  hasMenuItems(row: any): boolean {
+    return (
+      this.transferDS.canCompleteTransfer(row)
+    );
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
   }
 
   stopPropagation(event: Event) {
@@ -441,7 +465,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
       if (result) {
         const transfer = new TransferItem({
           ...result.item,
-          storing_order_tank: new StoringOrderTankGO(this.storingOrderTankItem)
+          storing_order_tank: new StoringOrderTank(this.storingOrderTankItem)
         });
 
         console.log(transfer)
@@ -449,9 +473,54 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
           console.log(result)
           if ((result?.data?.updateTransfer ?? 0) > 0) {
             this.handleSaveSuccess(result?.data?.updateTransfer);
-            // TODO :: query transfer again
           }
         });
+      }
+    });
+  }
+
+  completeTransfer(event: Event, transfer?: TransferItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    if (transfer?.transfer_in_dt) {
+      return;
+    }
+    const newTransfer = new TransferItem(transfer);
+    newTransfer.transfer_in_dt = Utility.convertDate(new Date(), false, true) as number;
+    newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem)
+    console.log(newTransfer)
+    this.transferDS.updateTransfer(newTransfer).subscribe(result => {
+      console.log(result)
+      if ((result?.data?.updateTransfer ?? 0) > 0) {
+        this.handleSaveSuccess(result?.data?.updateTransfer);
+      }
+    });
+  }
+
+  rollbackTransfer(event: Event, transfer?: TransferItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    const newTransfer = new TransferItem(transfer);
+    newTransfer.transfer_in_dt = undefined;
+    newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem);
+    newTransfer.action = "rollback"
+    console.log(newTransfer)
+    this.transferDS.updateTransfer(newTransfer).subscribe(result => {
+      console.log(result)
+      if ((result?.data?.updateTransfer ?? 0) > 0) {
+        this.handleSaveSuccess(result?.data?.updateTransfer);
+      }
+    });
+  }
+
+  cancelTransfer(event: Event, transfer?: TransferItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    const newTransfer = new TransferItem(transfer);
+    newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem);
+    newTransfer.action = "cancel"
+    console.log(newTransfer)
+    this.transferDS.updateTransfer(newTransfer).subscribe(result => {
+      console.log(result)
+      if ((result?.data?.updateTransfer ?? 0) > 0) {
+        this.handleSaveSuccess(result?.data?.updateTransfer);
       }
     });
   }
