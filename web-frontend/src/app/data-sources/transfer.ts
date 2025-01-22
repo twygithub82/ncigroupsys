@@ -57,10 +57,12 @@ export class TransferGO extends Transfer {
 
 export class TransferItem extends TransferGO {
   public override storing_order_tank?: StoringOrderTankItem;
+  public action?: string;
 
   constructor(item: Partial<TransferItem> = {}) {
     super(item);
     this.storing_order_tank = item.storing_order_tank;
+    this.action = item.action;
   }
 }
 
@@ -205,6 +207,43 @@ export class TransferDS extends BaseDataSource<TransferItem> {
         this.actionLoadingSubject.next(false);
       })
     );
+  }
+
+  getLastLocation(transfer: TransferItem[]): string {
+    if (!transfer?.length) return "";
+  
+    const validTransfers = transfer.filter(t => t.transfer_in_dt != null);
+  
+    if (!validTransfers.length) return "";
+  
+    const latestTransfer = validTransfers.reduce((latest, current) => {
+      return (current.transfer_in_dt ?? 0) > (latest.transfer_in_dt ?? 0) ? current : latest;
+    });
+  
+    return latestTransfer?.location_to_cv || "";
+  }
+
+  getDays(transfer: TransferItem): string {
+    if (!transfer.transfer_out_dt || !transfer.transfer_in_dt) return "";
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    const differenceInMilliseconds = Math.abs(transfer.transfer_in_dt - transfer.transfer_out_dt) * 1000;
+    return Math.ceil(differenceInMilliseconds / millisecondsPerDay).toString();
+  }
+
+  canCompleteTransfer(transfer: TransferItem): boolean {
+    return !transfer.transfer_in_dt;
+  }
+
+  canRollback(transfer: TransferItem): boolean {
+    return transfer.transfer_in_dt !== undefined && transfer.transfer_in_dt !== null;
+  }
+
+  canCancel(transfer: TransferItem): boolean {
+    return !transfer.transfer_in_dt;
+  }
+
+  isAnyTransferNotDone(transfer: TransferItem[]): boolean {
+    return transfer.some(item => !item.transfer_in_dt);
   }
 }
 

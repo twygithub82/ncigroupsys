@@ -184,6 +184,8 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     NEW_TRANSFER_DETAILS: 'COMMON-FORM.NEW-TRANSFER-DETAILS',
     TRANSFER_LOCATION: 'COMMON-FORM.TRANSFER-LOCATION',
     ADD: 'COMMON-FORM.ADD',
+    TRANSFER_IN: 'COMMON-FORM.TRANSFER-IN',
+    ROLLBACK: 'COMMON-FORM.ROLLBACK'
   }
 
   storingOrderTankItem?: StoringOrderTankItem;
@@ -306,6 +308,10 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
+  displayDateTime(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateTimeStr(input);
+  }
+
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
@@ -403,8 +409,25 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/inventory/transfer']);
+      // query transfer again
+      const where = {
+        sot_guid: { eq: this.storingOrderTankItem?.guid }
+      }
+      this.transferDS.getTransferBySotIDForTransfer(where, { transfer_out_dt: "DESC" }).subscribe(data => {
+        this.transferList = data || [];
+      });
     }
+  }
+
+  hasMenuItems(row: any): boolean {
+    return (
+      this.transferDS.canCompleteTransfer(row)
+    );
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
   }
 
   stopPropagation(event: Event) {
@@ -450,15 +473,54 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
           console.log(result)
           if ((result?.data?.updateTransfer ?? 0) > 0) {
             this.handleSaveSuccess(result?.data?.updateTransfer);
-            // TODO :: query transfer again
-            const where = {
-              sot_guid: { eq: this.storingOrderTankItem?.guid }
-            }
-            this.transferDS.getTransferBySotIDForTransfer(where, { transfer_out_dt: "DESC" }).subscribe(data => {
-              this.transferList = data || [];
-            });
           }
         });
+      }
+    });
+  }
+
+  completeTransfer(event: Event, transfer?: TransferItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    if (transfer?.transfer_in_dt) {
+      return;
+    }
+    const newTransfer = new TransferItem(transfer);
+    newTransfer.transfer_in_dt = Utility.convertDate(new Date(), false, true) as number;
+    newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem)
+    console.log(newTransfer)
+    this.transferDS.updateTransfer(newTransfer).subscribe(result => {
+      console.log(result)
+      if ((result?.data?.updateTransfer ?? 0) > 0) {
+        this.handleSaveSuccess(result?.data?.updateTransfer);
+      }
+    });
+  }
+
+  rollbackTransfer(event: Event, transfer?: TransferItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    const newTransfer = new TransferItem(transfer);
+    newTransfer.transfer_in_dt = undefined;
+    newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem);
+    newTransfer.action = "rollback"
+    console.log(newTransfer)
+    this.transferDS.updateTransfer(newTransfer).subscribe(result => {
+      console.log(result)
+      if ((result?.data?.updateTransfer ?? 0) > 0) {
+        this.handleSaveSuccess(result?.data?.updateTransfer);
+      }
+    });
+  }
+
+  cancelTransfer(event: Event, transfer?: TransferItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    const newTransfer = new TransferItem(transfer);
+    newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem);
+    newTransfer.action = "cancel"
+    console.log(newTransfer)
+    this.transferDS.updateTransfer(newTransfer).subscribe(result => {
+      console.log(result)
+      if ((result?.data?.updateTransfer ?? 0) > 0) {
+        this.handleSaveSuccess(result?.data?.updateTransfer);
       }
     });
   }

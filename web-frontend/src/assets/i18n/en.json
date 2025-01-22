@@ -884,7 +884,8 @@
     "FROM-YARD": "From Yard",
     "EDIT-TRANSFER-DETAILS": "Edit Transfer Details",
     "NEW-TRANSFER-DETAILS": "New Transfer Details",
-    "TRANSFER-LOCATION": "Transfer Location"
+    "TRANSFER-LOCATION": "Transfer Location",
+    "TRANSFER-IN": "Transfer In"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

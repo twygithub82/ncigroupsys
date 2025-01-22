@@ -165,7 +165,7 @@
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <div class="contact-detail-info">
                                   <span
-                                    [class]="'font-bold'">{{getYardDescription(igDS.getInGateItem(storingOrderTankItem?.in_gate)?.yard_cv)}}</span>
+                                    [class]="'font-bold'">{{getYardDescription((transferDS.getLastLocation(transferList)) || (igDS.getInGateItem(storingOrderTankItem?.in_gate)?.yard_cv))}}</span>
                                 </div>
                               </div>
                             </div>
@@ -196,7 +196,9 @@
                       <mat-card-content>
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                            <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'" (click)="addTransferDetails($event)">
+                            <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                              [disabled]="transferDS.isAnyTransferNotDone(transferList)"
+                              (click)="addTransferDetails($event)">
                               <mat-icon class="col-white">add</mat-icon>{{translatedLangText.TRANSFER_DETAILS}}
                             </button>
                           </div>
@@ -212,24 +214,24 @@
                                 </ng-container>
                                 <ng-container matColumnDef="transfer_out_dt">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.TRANSFER_SINCE}}
                                   </mat-header-cell>
                                   <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span
-                                      class="mobile-tab-label">{{translatedLangText.TRANSFER_SINCE}}:</span>{{displayDate(row.transfer_out_dt)}}
+                                      class="mobile-tab-label">{{translatedLangText.TRANSFER_SINCE}}:</span>{{displayDateTime(row.transfer_out_dt)}}
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="transfer_in_dt">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.TRANSFER_UNTIL}}
                                   </mat-header-cell>
                                   <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span class="mobile-tab-label">{{translatedLangText.TRANSFER_UNTIL}}:</span>
-                                    <span>{{displayDate(row.transfer_out_dt) ?? "-"}}</span>
+                                    <span>{{displayDateTime(row.transfer_in_dt) ?? "-"}}</span>
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="days">
@@ -240,21 +242,10 @@
                                   <mat-cell mat-cell *matCellDef="let row"
                                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span class="mobile-tab-label">{{translatedLangText.DAYS}}:</span>
-                                    <span>{{displayDate(row.remarks) ?? "-"}}</span>
+                                    <span>{{transferDS.getDays(row) || "-"}}</span>
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="location_from_cv">
-                                  <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    {{translatedLangText.TO_YARD}}
-                                  </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    <span
-                                      class="mobile-tab-label">{{translatedLangText.TO_YARD}}:</span>{{getYardDescription(row?.status_cv)}}
-                                  </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="location_to_cv">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef
                                     [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.FROM_YARD}}
@@ -262,39 +253,82 @@
                                   <mat-cell mat-cell *matCellDef="let row"
                                     [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span
-                                      class="mobile-tab-label">{{translatedLangText.FROM_YARD}}:</span>{{getYardDescription(row?.status_cv)}}
+                                      class="mobile-tab-label">{{translatedLangText.FROM_YARD}}:</span>{{getYardDescription(row?.location_from_cv)}}
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="location_to_cv">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    {{translatedLangText.TO_YARD}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row"
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    <span
+                                      class="mobile-tab-label">{{translatedLangText.TO_YARD}}:</span>{{getYardDescription(row?.location_to_cv)}}
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="update_by">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.UPDATE_BY}}
                                   </mat-header-cell>
                                   <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span
-                                      class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by}}
+                                      class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by
+                                    || row?.create_by}}
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="update_dt">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.UPDATE_DATE}}
                                   </mat-header-cell>
                                   <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span
-                                      class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{row?.update_dt}}
+                                      class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{displayDate(row?.update_dt
+                                    || row?.create_dt)}}
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="actions">
-                                  <mat-header-cell [ngClass]="'pr-0'" *matHeaderCellDef>
+                                  <mat-header-cell
+                                    [ngClass]="'pr-0'"
+                                    *matHeaderCellDef>
                                   </mat-header-cell>
-                                  <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
-                                    @if (canCompleteTransfer(row)) {
-                                    <button mat-menu-item>
+                                  <!-- <mat-cell *matCellDef="let row; let i=index;"
+                                    class="tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
+                                    @if (transferDS.canCompleteTransfer(row)) {
+                                    <button mat-menu-item (click)="completeTransfer($event, row)">
                                       <mat-icon [ngClass]="">checked</mat-icon>
                                     </button>
+                                    }
+                                  </mat-cell> -->
+                                  <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
+                                    @if (hasMenuItems(row)) {
+                                    <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                                      <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #menu="matMenu">
+                                      @if (transferDS.canCompleteTransfer(row)) {
+                                      <button mat-menu-item (click)="completeTransfer($event, row)">
+                                        <mat-icon [ngClass]="">checked</mat-icon>
+                                        <span>{{translatedLangText.TRANSFER_IN}}</span>
+                                      </button>
+                                      }
+                                      @if (transferDS.canCancel(row)) {
+                                      <button mat-menu-item (click)="cancelTransfer($event, row)">
+                                        <mat-icon>cancel</mat-icon>
+                                        <span>{{translatedLangText.CANCEL}}</span>
+                                      </button>
+                                      }
+                                      @if (transferDS.canRollback(row)) {
+                                      <button mat-menu-item (click)="rollbackTransfer($event, row)">
+                                        <mat-icon>undo</mat-icon>
+                                        <span>{{translatedLangText.ROLLBACK}}</span>
+                                      </button>
+                                      }
+                                    </mat-menu>
                                     }
                                   </mat-cell>
                                 </ng-container>
@@ -329,7 +363,7 @@
                             </button>
                           </div>
                           <div class="col-xl-6 col-lg-8 col-md-12 col-sm-12 mb-0 align-right">
-                            <button mat-flat-button class="bg-light-gold m-r-10" (click)="resetDialog($event)">
+                            <!-- <button mat-flat-button class="bg-light-gold m-r-10" (click)="resetDialog($event)">
                               {{translatedLangText.CLEAR_ALL}}
                             </button>
                             <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
@@ -345,7 +379,7 @@
                             </button>
                             <button mat-flat-button color="primary">
                               <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}
-                            </button>
+                            </button> -->
                           </div>
                         </div>
                       </mat-card-content>

@@ -389,6 +389,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
     STEAM_MONITOR: 'COMMON-FORM.STEAM-MONITOR',
     TIME: 'COMMON-FORM.TIME',
+    TRANSFER_SINCE: 'COMMON-FORM.TRANSFER-SINCE',
+    TRANSFER_UNTIL: 'COMMON-FORM.TRANSFER-UNTIL',
+    DAYS: 'COMMON-FORM.DAYS',
+    TO_YARD: 'COMMON-FORM.TO-YARD',
+    FROM_YARD: 'COMMON-FORM.FROM-YARD',
   }
 
   sot_guid: string | null | undefined;
@@ -745,6 +750,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
+      console.log(this.yardCvList)
     });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
