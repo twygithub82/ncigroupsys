@@ -1,13 +1,9 @@
 ﻿using IDMS.Models.Master;
 using IDMS.Models.Service;
 using IDMS.Models.Shared;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace IDMS.Models.Billing
 {
@@ -38,6 +34,7 @@ namespace IDMS.Models.Billing
         public IEnumerable<residue?>? residue { get; set; }
         [UseFiltering]
         public IEnumerable<repair?>? repair_customer { get; set; }
+        [UseFiltering]
         public IEnumerable<repair?>? repair_owner { get; set; }
 
         //[UseFiltering]
