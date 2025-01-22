@@ -885,7 +885,8 @@
     "EDIT-TRANSFER-DETAILS": "Edit Transfer Details",
     "NEW-TRANSFER-DETAILS": "New Transfer Details",
     "TRANSFER-LOCATION": "Transfer Location",
-    "TRANSFER-IN": "Transfer In"
+    "TRANSFER-IN": "Transfer In",
+    "DELIVERY-COURIER": "Delivery Courier"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -71,7 +71,7 @@
               {{translatedLangText.DATE_OF_INSPECTION}}:<br><b>{{displayDate(eirDetails?.create_dt)}}</b></td>
           </tr>
           <tr>
-            <td>{{translatedLangText.OPERATOR}}:<br><b>{{eirDetails?.create_by}}</b></td>
+            <td>{{translatedLangText.OPERATOR}}:<br><b>{{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b></td>
             <td>{{translatedLangText.OWNER}}:<br><b>{{eirDetails?.in_gate?.tank?.customer_company?.name}}</b></td>
             <td>{{translatedLangText.LAST_CARGO}}:<br><b>{{eirDetails?.in_gate?.tank?.tariff_cleaning?.cargo}}</b></td>
             <td>{{translatedLangText.LAST_TEST}}:<br><b>{{last_test_desc}}</b></td>
@@ -792,7 +792,7 @@
             <td class="w-50">
               <div class="receiver-info-content">
                 <div class="receiver-title">
-                  <b>{{customerInfo.companyName}}</b>
+                  <b>{{translatedLangText.FOR}} {{customerInfo.companyName}}</b>
                 </div>
                 <div class="receiver-description">
                   <span>{{translatedLangText.EIR_COMPANY_DECLARATION}}</span>
@@ -805,7 +805,7 @@
                   </div>
                   <div class="parties-info">
                     <span>{{translatedLangText.REVIEW_BY}}:</span>
-                    <span><b>{{eirDetails?.publish_by}}</b></span>
+                    <span><b>{{eirDetails?.in_gate?.publish_by}}</b></span>
                   </div>
                 </div>
               </div>
@@ -814,7 +814,7 @@
               <div class="haulier-info-content">
                 <div class="haulier-info-upper">
                   <div class="receiver-title">
-                    <b>{{customerInfo.companyName}}</b>
+                    <b>{{translatedLangText.FOR}} {{translatedLangText.DELIVERY_COURIER}}</b>
                   </div>
                   <div class="receiver-description">
                     <span>{{translatedLangText.EIR_HAULIER_DECLARATION}}</span>
@@ -874,7 +874,7 @@
     {{translatedLangText.DOWNLOAD}}
   </button>
   }
-  <button mat-flat-button color="primary" (click)="onRepublshClick()" tabindex="-1" [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+  <button mat-flat-button color="primary" (click)="onRepublishClick()" tabindex="-1" [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
       @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
       publish
