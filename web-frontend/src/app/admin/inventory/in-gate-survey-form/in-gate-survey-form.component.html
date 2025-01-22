@@ -2031,10 +2031,10 @@
                           <!-- <ng-container #dynamicContainer></ng-container> -->
                            @if (canPublish()) {
                             <button mat-raised-button matStepperNext color="primary" class="msr-2"
-                              [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
+                              [disabled]="(igsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"
                               (click)="onPublish()">
                               <mat-icon>
-                                @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async)) {
+                                @if (!(igsDS.actionLoading$ | async) && !(isImageLoading$| async) && !(isFileActionLoading$| async)) {
                                 publish
                                 } @else {
                                 <mat-spinner color="primary" [diameter]="18"></mat-spinner>
