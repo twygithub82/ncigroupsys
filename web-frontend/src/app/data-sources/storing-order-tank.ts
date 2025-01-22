@@ -1222,73 +1222,96 @@ const GET_STORING_ORDER_TANKS_REPAIR_BILLING = gql`
           total_cost
           sot_guid
           remarks
+          owner_enable
           delete_dt
           customer_billing_guid
-        customer_billing
-        {
-          bill_to_guid
-          delete_dt
-          invoice_dt
-          invoice_due
-          invoice_no
-          remarks
-          status_cv
-          currency{
-            currency_code
-            currency_name
-            rate
+          customer_billing
+          {
+            bill_to_guid
             delete_dt
-          }
-          customer_company {
-              code
-              currency_guid
-              def_tank_guid
-              def_template_guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            remarks
+            status_cv
+            currency{
+              currency_code
+              currency_name
+              rate
               delete_dt
-              effective_dt
-              guid
-              main_customer_guid
-              name
-              remarks
-              type_cv
+            }
+            customer_company {
+                code
+                currency_guid
+                delete_dt
+                effective_dt
+                guid
+                main_customer_guid
+                name
+                remarks
+                type_cv
+            }
           }
-        }
-        owner_billing_guid
-        owner_billing{
-          bill_to_guid
-          delete_dt
-          invoice_dt
-          invoice_due
-          invoice_no
-          remarks
-          status_cv
-          currency{
-            currency_code
-            currency_name
-            rate
+          owner_billing_guid
+          owner_billing{
+            bill_to_guid
             delete_dt
-          }
-          customer_company {
-              code
-              currency_guid
-              def_tank_guid
-              def_template_guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            remarks
+            status_cv
+            currency{
+              currency_code
+              currency_name
+              rate
               delete_dt
-              effective_dt
-              guid
-              main_customer_guid
-              name
-              remarks
-              type_cv
+            }
+            customer_company {
+                code
+                currency_guid
+                def_tank_guid
+                def_template_guid
+                delete_dt
+                effective_dt
+                guid
+                main_customer_guid
+                name
+                remarks
+                type_cv
+            }
           }
-        }
           storing_order_tank {
+            
+            customer_company {
+                code
+                currency_guid
+                delete_dt
+                effective_dt
+                guid
+                main_customer_guid
+                name
+                remarks
+                type_cv
+            }
             storing_order {
-              customer_company_guid
+              
+              customer_company {
+                code
+                currency_guid
+                delete_dt
+                effective_dt
+                guid
+                main_customer_guid
+                name
+                remarks
+                type_cv
+              }
             }
           }
           repair_part {
             hour
+            owner
             quantity
             material_cost
             delete_dt

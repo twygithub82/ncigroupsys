@@ -121,12 +121,14 @@
               </div>
               <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
-                  <mat-select formControlName="tank_status_cv">
-                    @for (codeValue of tankStatusCvList; track codeValue) {
-                    <mat-option [value]="codeValue.code_val">
-                      {{codeValue.description}}
-                    </mat-option>
+                  <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
+                  <mat-select multiple formControlName="estimate_status_cv">
+                    @for (codeValue of processStatusCvList; track codeValue) {
+                      @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                       }
                     }
                   </mat-select>
                 </mat-form-field>
@@ -281,13 +283,25 @@
                   <mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                      [checked]="reSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                      [checked]="reSelection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="id">
                   <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-                  <mat-cell *matCellDef="let repairRow">{{repairRow.guid}}</mat-cell>
+                  <mat-cell *matCellDef="let repairRow">{{repairRow.guid}}{{repairRow.storing_order_tank?.storing_order?.customer_company?.guid}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="customer">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER}}</mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(repairRow.storing_order_tank?.storing_order?.customer_company)}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="customer_type">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_TYPE}}</mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER_TYPE}}:</span>{{DisplayCustomerType(repairRow)}}
+                  </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="estimate_no">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -302,7 +316,7 @@
                     {{translatedLangText.JOB_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let repairRow" class="">
-                    <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.job_no}}
+                    <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>{{repairRow.job_no}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="net_cost">
