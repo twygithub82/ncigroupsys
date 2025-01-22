@@ -494,7 +494,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
       if (result) {
         const transfer = new TransferItem({
           ...result.item,
-          storing_order_tank: new StoringOrderTank(this.storingOrderTankItem)
+          storing_order_tank: new StoringOrderTank({ guid: this.storingOrderTankItem?.guid, tank_no: this.storingOrderTankItem?.tank_no })
         });
 
         console.log(transfer)
@@ -515,7 +515,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     }
     const newTransfer = new TransferItem(transfer);
     newTransfer.transfer_in_dt = Utility.convertDate(new Date(), false, true) as number;
-    newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem)
+    newTransfer.storing_order_tank = new StoringOrderTank({ guid: this.storingOrderTankItem?.guid, tank_no: this.storingOrderTankItem?.tank_no })
     newTransfer.action = "complete";
     console.log(newTransfer)
     this.transferDS.updateTransfer(newTransfer).subscribe(result => {
@@ -530,7 +530,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     this.preventDefault(event);  // Prevents the form submission
     const newTransfer = new TransferItem(transfer);
     newTransfer.transfer_in_dt = undefined;
-    newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem);
+    newTransfer.storing_order_tank = new StoringOrderTank({ guid: this.storingOrderTankItem?.guid, tank_no: this.storingOrderTankItem?.tank_no });
     newTransfer.action = "rollback"
     console.log(newTransfer)
     this.transferDS.updateTransfer(newTransfer).subscribe(result => {
@@ -544,7 +544,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
   cancelTransfer(event: Event, transfer?: TransferItem) {
     this.preventDefault(event);  // Prevents the form submission
     const newTransfer = new TransferItem(transfer);
-    newTransfer.storing_order_tank = new StoringOrderTank(this.storingOrderTankItem);
+    newTransfer.storing_order_tank = new StoringOrderTank({ guid: this.storingOrderTankItem?.guid, tank_no: this.storingOrderTankItem?.tank_no });
     newTransfer.action = "cancel"
     console.log(newTransfer)
     this.transferDS.updateTransfer(newTransfer).subscribe(result => {

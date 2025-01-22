@@ -750,7 +750,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
-      console.log(this.yardCvList)
     });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
