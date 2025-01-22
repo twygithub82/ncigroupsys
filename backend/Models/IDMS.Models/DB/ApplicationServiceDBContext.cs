@@ -1,5 +1,4 @@
-﻿using IDMS.Models.Billing;
-using IDMS.Models.Inventory;
+﻿using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Service;
@@ -33,23 +32,23 @@ namespace IDMS.Models.Service.GqlTypes.DB
                 .WithMany(c => c.aspnetuserroles)
                 .HasForeignKey(sc => sc.roleID);
 
-            // Relationship with customer_billing
-            modelBuilder.Entity<cleaning>()
-                .HasOne(c => c.customer_billing)
-                .WithMany(b => b.cleaning) // Assuming billing has no navigation property back to cleaning
-                .HasForeignKey(c => c.customer_billing_guid);
+            //// Relationship with customer_billing
+            //modelBuilder.Entity<cleaning>()
+            //    .HasOne(c => c.customer_billing)
+            //    .WithMany(b => b.cleaning) // Assuming billing has no navigation property back to cleaning
+            //    .HasForeignKey(c => c.customer_billing_guid);
 
-            // Relationship with customer_billing
-            modelBuilder.Entity<steaming>()
-                .HasOne(c => c.customer_billing)
-                .WithMany(b => b.steaming) // Assuming billing has no navigation property back to cleaning
-                .HasForeignKey(c => c.customer_billing_guid);
+            //// Relationship with customer_billing
+            //modelBuilder.Entity<steaming>()
+            //    .HasOne(c => c.customer_billing)
+            //    .WithMany(b => b.steaming) // Assuming billing has no navigation property back to cleaning
+            //    .HasForeignKey(c => c.customer_billing_guid);
 
-            // Relationship with customer_billing
-            modelBuilder.Entity<residue>()
-                .HasOne(c => c.customer_billing)
-                .WithMany(b => b.residue) // Assuming billing has no navigation property back to cleaning
-                .HasForeignKey(c => c.customer_billing_guid);
+            //// Relationship with customer_billing
+            //modelBuilder.Entity<residue>()
+            //    .HasOne(c => c.customer_billing)
+            //    .WithMany(b => b.residue) // Assuming billing has no navigation property back to cleaning
+            //    .HasForeignKey(c => c.customer_billing_guid);
 
             // Relationship with customer_billing
             modelBuilder.Entity<repair>()
