@@ -2289,7 +2289,7 @@
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span class="mobile-tab-label">{{translatedLangText.TRANSFER_UNTIL}}:</span>
-                                  <span>{{displayDate(row.transfer_out_dt) ?? "-"}}</span>
+                                  <span>{{displayDate(row.transfer_in_dt) ?? "-"}}</span>
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="days">
