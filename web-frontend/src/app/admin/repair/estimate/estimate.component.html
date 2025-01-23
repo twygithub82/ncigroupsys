@@ -241,44 +241,44 @@
                       <mat-cell *matCellDef="let repairRow">{{repairRow.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="estimate_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.ESTIMATE_NO}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                      <mat-cell mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.estimate_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="job_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.JOB_NO}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                      <mat-cell mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.job_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="net_cost">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.NET_COST}}
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let repairRow">
+                      <mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
                         <span>$</span><span class="ms-3">{{repairRow.net_cost}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="status_cv">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                      <mat-cell mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span
                           class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(repairRow.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="remarks">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.REMARKS}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                      <mat-cell mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{repairRow.remarks}}
                       </mat-cell>
                     </ng-container>
