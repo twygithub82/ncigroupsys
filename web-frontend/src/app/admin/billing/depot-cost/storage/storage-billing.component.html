@@ -9,7 +9,7 @@
             </mat-panel-title>
             <mat-panel-description>
             </mat-panel-description>
-          </mat-expansion-panel-header> -
+          </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
             <div class="row">
               <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
@@ -219,12 +219,18 @@
             </mat-icon>
             {{translatedLangText.SAVE_AND_SUBMIT}}
           </button>
-          <button mat-flat-button color="warn"  class="m-r-5"
+          <button mat-flat-button color="accent"  class="m-r-5"
             (click)="onCancel($event)">
             <mat-icon>
               close
             </mat-icon>
             {{translatedLangText.CANCEL}}
+          </button>
+          <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5" (click)="delete($event)">
+            <mat-icon>
+              delete_forever
+            </mat-icon>
+            {{translatedLangText.DELETE}}
           </button>
           </div>
         

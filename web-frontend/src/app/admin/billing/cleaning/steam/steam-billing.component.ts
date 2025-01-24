@@ -94,8 +94,8 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'tank_status_cv',
     'cost',
     'invoice_no',
-    'invoiced',
-    'action'
+    // 'invoiced',
+    // 'action'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
@@ -145,7 +145,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     INVOICED:'COMMON-FORM.INVOICED',
     CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
     CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
-    COST:'COMMON-FORM.COST'
+    COST:'COMMON-FORM.COST',
+     CONFIRM_REMOVE_ESITMATE:'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
+    DELETE:'COMMON-FORM.DELETE'
   }
 
   invForm?: UntypedFormGroup;
@@ -386,7 +388,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.selection.clear();
     this.calculateTotalCost();
 
-    where.status_cv={in:['COMPLETED','APPROVED']};
+    where.status_cv={in:['COMPLETED','APPROVED','JOB-IN_PROGRESS']};
     where.bill_to_guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
       where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
@@ -673,12 +675,55 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
            this.SaveNewBilling(event);
          }
        });
-       
-       
-       
-   
      }
-   
+
+     delete(event:Event){
+    
+        event.preventDefault(); // Prevents the form submission
+    
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          data: {
+            headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+            action: 'delete',
+          },
+          direction: tempDirection
+        });
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result.action === 'confirmed') {
+            const guids=this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
+            this.RemoveEstimatesFromInvoice(event,guids!);
+          }
+        });
+      }
+      RemoveEstimatesFromInvoice(event:Event, processGuid:string[])
+      {
+        var updateBilling: any=null;
+        let billingEstimateRequests:BillingEstimateRequest[]=[];
+        processGuid.forEach(g=>{
+          var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+          billingEstReq.action="CANCEL";
+          billingEstReq.billing_party=this.billingParty;
+          billingEstReq.process_guid=g;
+          billingEstReq.process_type=this.processType;
+          billingEstimateRequests.push(billingEstReq);
+        });
+       
+        this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+          if(result.data.updateBilling)
+          {
+            this.handleSaveSuccess(result.data.updateBilling);
+            this.onCancel(event);
+            this.search();
+          }
+        })
+    
+      }
      ConfirmInvalidEstimate(event:Event)
      {
        event.preventDefault(); // Prevents the form submission

@@ -93,8 +93,8 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     'tank_status_cv',
     'cost',
     'invoice_no',
-     'invoiced',
-    'action'
+     //'invoiced',
+   // 'action'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
@@ -144,7 +144,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     INVOICED:'COMMON-FORM.INVOICED',
     CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
     CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
-    COST:'COMMON-FORM.COST'
+    COST:'COMMON-FORM.COST',
+    CONFIRM_REMOVE_ESITMATE:'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
+    DELETE:'COMMON-FORM.DELETE'
   }
 
   invForm?: UntypedFormGroup;
@@ -670,7 +672,53 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       
   
     }
-  
+  delete(event:Event){
+ 
+     event.preventDefault(); // Prevents the form submission
+ 
+     let tempDirection: Direction;
+     if (localStorage.getItem('isRtl') === 'true') {
+       tempDirection = 'rtl';
+     } else {
+       tempDirection = 'ltr';
+     }
+     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+       data: {
+         headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+         action: 'delete',
+       },
+       direction: tempDirection
+     });
+     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+       if (result.action === 'confirmed') {
+         const guids=this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
+         this.RemoveEstimatesFromInvoice(event,guids!);
+       }
+     });
+   }
+   RemoveEstimatesFromInvoice(event:Event, processGuid:string[])
+   {
+     var updateBilling: any=null;
+     let billingEstimateRequests:BillingEstimateRequest[]=[];
+     processGuid.forEach(g=>{
+       var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+       billingEstReq.action="CANCEL";
+       billingEstReq.billing_party=this.billingParty;
+       billingEstReq.process_guid=g;
+       billingEstReq.process_type=this.processType;
+       billingEstimateRequests.push(billingEstReq);
+     });
+    
+     this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+       if(result.data.updateBilling)
+       {
+         this.handleSaveSuccess(result.data.updateBilling);
+         this.onCancel(event);
+         this.search();
+       }
+     })
+ 
+   }
     ConfirmInvalidEstimate(event:Event)
     {
       event.preventDefault(); // Prevents the form submission

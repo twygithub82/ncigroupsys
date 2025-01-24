@@ -589,7 +589,7 @@
     "PACKAGE-LABOUR": "Package Labour",
     "CONFIRM-RESET": "Confirm Reset?",
     "CONFIRM-UPDATE-INVOICE": "Would like to update the existing Invoice?",
-    "CONFIRM-REMOVE-ESITMATE": "Would like to remove the estimate from the existing Invoice?",
+    "CONFIRM-REMOVE-ESITMATE": "Would like to remove the estimate(s) from the existing Invoice?",
     "CONFIRM-INVALID-ESTIMATE":"Fail to update the existing invoice due to invalid estimate added",
     "MARK-DAMAGE": "Mark Damaged",
     "FILL-IN-REMARKS": "Fill in Remarks",
