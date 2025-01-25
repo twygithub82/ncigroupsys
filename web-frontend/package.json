@@ -49,6 +49,7 @@
     "apollo-angular": "^7.0.2",
     "axios": "^1.7.5",
     "bootstrap": "^5.3.3",
+    "browser-fs-access": "^0.35.0",
     "browser-sync": "^3.0.2",
     "chart.js": "^4.4.2",
     "core-js": "^3.36.1",

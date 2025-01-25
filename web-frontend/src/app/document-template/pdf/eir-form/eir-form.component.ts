@@ -1,16 +1,16 @@
-import { ChangeDetectorRef, Component, Inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
+import { InGate, InGateDS, InGateGO, InGateItem } from 'app/data-sources/in-gate';
 import { customerInfo } from 'environments/environment.development';
 import { Utility } from 'app/utilities/utility';
 import { TranslateService } from '@ngx-translate/core';
 import { OutGateItem } from 'app/data-sources/out-gate';
-import { InGateSurveyDS } from 'app/data-sources/in-gate-survey';
+import { InGateSurveyDS, InGateSurveyGO, InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -18,13 +18,16 @@ import { PackageBufferItem } from 'app/data-sources/package-buffer';
 import { NgClass } from '@angular/common';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-import { saveAs } from 'file-saver';
+// import { saveAs } from 'file-saver';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+// import { fileSave } from 'browser-fs-access';
+import { StoringOrderGO } from 'app/data-sources/storing-order';
 
 export interface DialogData {
   type: string;
@@ -195,7 +198,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     FOR: 'COMMON-FORM.FOR',
     DELIVERY_COURIER: 'COMMON-FORM.DELIVERY-COURIER',
   }
-
+  @Output() publishedEir = new EventEmitter<void>();
   // @Input() type?: string | null;
   // @Input() igsDS: InGateSurveyDS;
   // @Input() cvDS: CodeValuesDS;
@@ -1529,12 +1532,34 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   async onDownloadClick() {
     if (this.generatedPDF) {
       const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
-      saveAs(this.generatedPDF, fileName);
+      // saveAs(this.generatedPDF, fileName);
+      // fileSave(this.generatedPDF, {
+      //   fileName: fileName,
+      //   extensions: ['.pdf'],
+      // });
+      this.downloadFile(this.generatedPDF, fileName);
     } else if (this.eirPdf?.[0]?.url) {
       const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
       const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
-      saveAs(eirBlob, fileName);
+      // saveAs(eirBlob, fileName);
+      // fileSave(eirBlob, {
+      //   fileName: fileName,
+      //   extensions: ['.pdf'],
+      // });
+      this.downloadFile(eirBlob, fileName);
     }
+  }
+
+  downloadFile(blob: Blob, fileName: string) {
+    const url = URL.createObjectURL(blob);
+
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+
+    // Revoke the URL to free memory
+    URL.revokeObjectURL(url);
   }
 
   onRepublishClick() {
@@ -1563,14 +1588,22 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
             }
           ];
 
-          console.log(this.eirDetails?.in_gate_guid)
-          this.igDS.publishInGateSurvey(this.eirDetails?.in_gate_guid!).subscribe(result => {
-            console.log(result)
-            if (result.data?.publishIngateSurvey) {
-              let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
-              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-            }
-          });
+          if (this.eirDetails?.in_gate?.eir_status_cv === 'PENDING') {
+            // const sotItem = new StoringOrderTankGO(this.eirDetails?.in_gate?.tank);
+            const inGateSurveyItem = new InGateSurveyGO({ tank_comp_guid: this.eirDetails?.tank_comp_guid });
+            const inGateItem: any = new InGate(this.eirDetails?.in_gate);
+            // inGateItem.tank = sotItem
+            inGateItem.in_gate_survey = inGateSurveyItem
+            console.log(inGateItem)
+            this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
+              console.log(result)
+              if (result.data?.publishIngateSurvey) {
+                this.publishedEir.emit();
+                let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
+                ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+              }
+            });
+          }
         }
       },
       error: (error) => {

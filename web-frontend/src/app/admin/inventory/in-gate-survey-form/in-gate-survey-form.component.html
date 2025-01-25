@@ -226,7 +226,7 @@
                           <div class="row">
                             <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
-                                <mat-label>{{translatedLangText.MANUFACTURER_DOM}}</mat-label>
+                                <mat-label>{{translatedLangText.MANUFACTURER}}</mat-label>
                                 <mat-select formControlName="manufacturer_cv" required>
                                   @for (codeValue of manufacturerCvList; track codeValue) {
                                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
@@ -234,14 +234,14 @@
                                 </mat-select>
                                 @if (surveyForm?.get('tank_details.manufacturer_cv')?.hasError('required')) {
                                 <mat-error>
-                                  {{translatedLangText.MANUFACTURER_DOM}} {{translatedLangText.SO_REQUIRED}}
+                                  {{translatedLangText.MANUFACTURER}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
                                 }
                               </mat-form-field>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
-                                <mat-label>{{translatedLangText.DATE}}</mat-label>
+                                <mat-label>{{translatedLangText.DOM}}</mat-label>
                                 <input matInput formControlName="dom_dt" [matDatepicker]="manufacturer_dom_picker"
                                   [max]="maxManuDOMDt" required>
                                 <mat-datepicker-toggle matSuffix
@@ -249,7 +249,7 @@
                                 <mat-datepicker #manufacturer_dom_picker [startAt]="maxManuDOMDt"></mat-datepicker>
                                 @if (surveyForm?.get('tank_details.dom_dt')?.hasError('required')) {
                                 <mat-error>
-                                  {{translatedLangText.DATE}} {{translatedLangText.SO_REQUIRED}}
+                                  {{translatedLangText.DOM}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
                                 }
                               </mat-form-field>
@@ -1562,7 +1562,7 @@
                                   <mat-label>{{translatedLangText.BOTTOM_DIS_COMP}}:</mat-label>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-radio-group formControlName="btm_dis_comp_cv" required>
+                                  <mat-radio-group formControlName="btm_dis_comp_cv">
                                     @for (codeValue of disCompCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
@@ -1576,7 +1576,7 @@
                                   <mat-label>{{translatedLangText.FOOT_VALVE}}:</mat-label>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-radio-group formControlName="foot_valve_cv" required>
+                                  <mat-radio-group formControlName="foot_valve_cv">
                                     @for (codeValue of footValveCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
@@ -1590,7 +1590,7 @@
                                   <mat-label>{{translatedLangText.BRAND}}:</mat-label>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-radio-group formControlName="btm_valve_brand_cv" required>
+                                  <mat-radio-group formControlName="btm_valve_brand_cv">
                                     @for (codeValue of valveBrandCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
@@ -1603,7 +1603,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.BOTTOM_DIS_VALVE}}</mat-label>
-                                    <mat-select formControlName="btm_dis_valve_cv" required>
+                                    <mat-select formControlName="btm_dis_valve_cv">
                                       @for (codeValue of disValveCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1618,7 +1618,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
-                                    <mat-select formControlName="btm_dis_valve_spec_cv" required>
+                                    <mat-select formControlName="btm_dis_valve_spec_cv">
                                       @for (codeValue of disValveSpecCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1635,7 +1635,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.THERMOMETER}}</mat-label>
-                                    <input matInput formControlName="thermometer" type="number" required>
+                                    <input matInput formControlName="thermometer" type="number">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
                                     @if (getBottomFormGroup().get('thermometer')?.hasError('required')) {
                                     <mat-error>
@@ -1647,7 +1647,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
-                                    <mat-select formControlName="thermometer_cv" required>
+                                    <mat-select formControlName="thermometer_cv">
                                       @for (codeValue of thermometerCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1690,7 +1690,7 @@
                               <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-label>{{translatedLangText.TOP_DIS_COMP}}:</mat-label>
-                                  <mat-radio-group formControlName="top_dis_comp_cv" required>
+                                  <mat-radio-group formControlName="top_dis_comp_cv">
                                     @for (codeValue of disCompCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
@@ -1703,7 +1703,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.TOP_DIS_VALVE}}</mat-label>
-                                    <mat-select formControlName="top_dis_valve_cv" required>
+                                    <mat-select formControlName="top_dis_valve_cv">
                                       @for (codeValue of disValveCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1719,7 +1719,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
-                                    <mat-select formControlName="top_dis_valve_spec_cv" required>
+                                    <mat-select formControlName="top_dis_valve_spec_cv">
                                       @for (codeValue of disValveSpecCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1737,7 +1737,7 @@
                                   <mat-label>{{translatedLangText.BRAND}}:</mat-label>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-radio-group formControlName="top_valve_brand_cv" required>
+                                  <mat-radio-group formControlName="top_valve_brand_cv">
                                     @for (codeValue of valveBrandCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
@@ -1750,7 +1750,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.AIRLINE_VALVE}}</mat-label>
-                                    <mat-select formControlName="airline_valve_cv" required>
+                                    <mat-select formControlName="airline_valve_cv">
                                       @for (codeValue of airlineCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1765,7 +1765,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="airline_valve_pcs" type="number" min="0" required>
+                                    <input matInput formControlName="airline_valve_pcs" type="number" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getTopFormGroup().get('airline_valve_pcs')?.hasError('required')) {
                                     <mat-error>
@@ -1777,7 +1777,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.DIAMITER}}</mat-label>
-                                    <input matInput formControlName="airline_valve_dim" type="number" min="0" required>
+                                    <input matInput formControlName="airline_valve_dim" type="number" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>inch</h6>
                                     @if (getTopFormGroup().get('airline_valve_dim')?.hasError('required')) {
                                     <mat-error>
@@ -1791,7 +1791,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.AIRLINE_VALVE_CONNECTIONS}}</mat-label>
-                                    <mat-select formControlName="airline_valve_conn_cv" required>
+                                    <mat-select formControlName="airline_valve_conn_cv">
                                       @for (codeValue of airlineConnCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1807,7 +1807,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
-                                    <mat-select formControlName="airline_valve_conn_spec_cv" required>
+                                    <mat-select formControlName="airline_valve_conn_spec_cv">
                                       @for (codeValue of manlidCoverCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1842,7 +1842,7 @@
                               <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-label>{{translatedLangText.MANLID_COMPARTMENT}}:</mat-label>
-                                  <mat-radio-group formControlName="manlid_comp_cv" required>
+                                  <mat-radio-group formControlName="manlid_comp_cv">
                                     @for (codeValue of disCompCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
@@ -1855,7 +1855,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.MANLID_COVER}}</mat-label>
-                                    <mat-select formControlName="manlid_cover_cv" required>
+                                    <mat-select formControlName="manlid_cover_cv">
                                       @for (codeValue of manlidCoverCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1870,7 +1870,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="manlid_cover_pcs" type="number" min="0" required>
+                                    <input matInput formControlName="manlid_cover_pcs" type="number" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getManlidFormGroup().get('manlid_cover_pcs')?.hasError('required')) {
                                     <mat-error>
@@ -1882,7 +1882,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.VOLUME}}</mat-label>
-                                    <input matInput formControlName="manlid_cover_pts" type="number" min="0" required>
+                                    <input matInput formControlName="manlid_cover_pts" type="number" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pts</h6>
                                     @if (getManlidFormGroup().get('manlid_cover_pts')?.hasError('required')) {
                                     <mat-error>
@@ -1896,7 +1896,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.MANLID_SEAL}}</mat-label>
-                                    <mat-select formControlName="manlid_seal_cv" required>
+                                    <mat-select formControlName="manlid_seal_cv">
                                       @for (codeValue of manlidSealCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1913,7 +1913,7 @@
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PV}}</mat-label>
-                                    <mat-select formControlName="pv_type_cv" required>
+                                    <mat-select formControlName="pv_type_cv">
                                       @for (codeValue of pvTypeCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1928,7 +1928,7 @@
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="pv_type_pcs" type="number" min="0" required>
+                                    <input matInput formControlName="pv_type_pcs" type="number" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getManlidFormGroup().get('pv_type_pcs')?.hasError('required')) {
                                     <mat-error>
@@ -1940,7 +1940,7 @@
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
-                                    <mat-select formControlName="pv_spec_cv" required>
+                                    <mat-select formControlName="pv_spec_cv">
                                       @for (codeValue of pvSpecCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
@@ -1955,7 +1955,7 @@
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="pv_spec_pcs" type="number" min="0" required>
+                                    <input matInput formControlName="pv_spec_pcs" type="number" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getManlidFormGroup().get('pv_spec_pcs')?.hasError('required')) {
                                     <mat-error>
@@ -1976,7 +1976,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.BUFFER_PLATE}}</mat-label>
-                                    <input matInput formControlName="buffer_plate" type="number" min="0" required>
+                                    <input matInput formControlName="buffer_plate" type="number" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getManlidFormGroup().get('buffer_plate')?.hasError('required')) {
                                     <mat-error>
@@ -1990,7 +1990,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.RESIDUE}}</mat-label>
-                                    <input matInput formControlName="residue" type="number" min="0" required>
+                                    <input matInput formControlName="residue" type="number" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>KG</h6>
                                     @if (getManlidFormGroup().get('residue')?.hasError('required')) {
                                     <mat-error>

@@ -147,14 +147,14 @@
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <mat-checkbox (change)="$event ? masterToggle() : null"
                       [checked]="soSelection.hasValue() && isAllSelected()"
                       [indeterminate]="soSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
                       [checked]="soSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
@@ -240,10 +240,10 @@
                 <!-- actions -->
                 <ng-container matColumnDef="actions">
                   <mat-header-cell
-                    [ngClass]="'pr-0 tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                     *matHeaderCellDef></mat-header-cell>
                   <mat-cell *matCellDef="let row; let i=index;"
-                    [ngClass]="'pr-0 justify-content-end tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
                       class="tbl-action-btn">
                       <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>

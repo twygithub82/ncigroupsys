@@ -888,7 +888,8 @@
     "TRANSFER-IN": "Transfer In",
     "DELIVERY-COURIER": "Delivery Courier",
     "CONFIRM-CANCEL": "Confirm Cancel?",
-    "CONFIRM-ROLLBACK": "Confirm Rollback?"
+    "CONFIRM-ROLLBACK": "Confirm Rollback?",
+    "DOM": "D.O.M"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
