@@ -51,6 +51,7 @@ import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem } f
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { MatCardModule } from '@angular/material/card';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-repair-billing',
@@ -82,23 +83,13 @@ import { MatCardModule } from '@angular/material/card';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatCardModule
+    MatCardModule,
+    MatSlideToggleModule
   ]
 })
 export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    // 'select',
-    // 'tank_no',
-    // 'customer',
-    // 'eir_no',
-    // 'eir_dt',
-    // 'last_cargo',
-    // 'purpose',
-    // 'tank_status_cv',
-    // 'cost',
-    // 'invoice_no',
-    //  'invoiced',
-    // 'action'
+  
     'select',
     'customer',
     'customer_type',
@@ -107,6 +98,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     'net_cost',
     'status_cv',
     'remarks',
+    'invoice_no',
     //'actions'
   ];
 
@@ -173,7 +165,9 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     REMARKS:'COMMON-FORM.REMARKS',
     CUSTOMER_TYPE:'COMMON-FORM.CUSTOMER-TYPE',
     LESSEE:'COMMON-FORM.LESSEE',
-    OWNER:'COMMON-FORM.OWNER'
+    OWNER:'COMMON-FORM.OWNER',
+    CONFIRM_REMOVE_ESITMATE:'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
+    DELETE:'COMMON-FORM.DELETE'
   }
 
   invForm?: UntypedFormGroup;
@@ -193,7 +187,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   //clnDS:InGateCleaningDS;
   repDS:RepairDS;
   billDS:BillingDS;
-  processType:string="RESIDUE";
+  processType:string="REPAIR";
   billingParty:string="CUSTOMER";
 
   distinctCustomerCodes:any;
@@ -224,7 +218,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  reSelection = new GuidSelectionModel<RepairItem>(true, []);
+  reSelection = new GuidSelectionModel<any>(true, []);
   //selection = new SelectionModel<InGateCleaningItem>(true, []);
   invoiceNoControl= new FormControl('', [Validators.required]);
   invoiceDateControl= new FormControl('', [Validators.required]);
@@ -293,7 +287,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       tank_status_cv: [''],
       estimate_status_cv: [''],
       eir_status_cv: [''],
-      yard_cv: ['']
+      yard_cv: [''],
+      invoiced:['']
     });
   }
 
@@ -434,6 +429,12 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     this.reSelection.clear();
     this.calculateTotalCost();
 
+
+    if(this.searchForm!.get('invoiced')?.value)
+     {
+           where.or=[{repair:{some:{customer_billing_guid:{neq: null}}}},{repair:{some:{owner_billing_guid:{neq: null}}}}];
+     }
+
     if(this.searchForm!.get('estimate_status_cv')?.value?.length)
     {
       where.repair={some:{and:[ 
@@ -525,6 +526,10 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         ['APPROVED', 'QC_COMPLETED', 'JOB_IN_PROGRESS', 'COMPLETED','ASSIGNED','PARTIAL_ASSIGNED'];
         this.sotRepList = data.map(d=>{
           d.repair = d.repair?.filter(r=>allowedStatuses.includes(r.status_cv!))
+          if(this.searchForm!.get('invoiced')?.value)
+            {
+                  d.repair= d.repair?.filter(d=> d.customer_billing_guid!==null ||d.owner_billing_guid!==null);
+            }
           return d;
         });
         
@@ -574,33 +579,6 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
     this.performSearch(pageSize, pageIndex, first, after, last, before);
-    // const { pageIndex, pageSize } = event;
-    // let first: number | undefined = undefined;
-    // let after: string | undefined = undefined;
-    // let last: number | undefined = undefined;
-    // let before: string | undefined = undefined;
-
-    // // Check if the page size has changed
-    // if (this.pageSize !== pageSize) {
-    //   // Reset pagination if page size has changed
-    //   this.pageIndex = 0;
-    //   first = pageSize;
-    //   after = undefined;
-    //   last = undefined;
-    //   before = undefined;
-    // } else {
-    //   if (pageIndex > this.pageIndex && this.hasNextPage) {
-    //     // Navigate forward
-    //     first = pageSize;
-    //     after = this.endCursor;
-    //   } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-    //     // Navigate backward
-    //     last = pageSize;
-    //     before = this.startCursor;
-    //   }
-    // }
-
-    // this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -716,26 +694,72 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       inv_dt_start: '',
       inv_dt_end: '',
       inv_no:'',
-      yard_cv: ['']
+      yard_cv: [''],
+      invoiced:null
     });
 
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
   }
 
-  isAllSelected() {
+  unselectAllRepairs(row: StoringOrderTankItem): void {
+    const rowRepairs = row.repair;
+  
+    // Add each repair item to the selection if it's not already selected
+    rowRepairs?.forEach(repairItem => {
+      if (this.reSelection.isSelected(repairItem)) {
+        this.reSelection.toggle(repairItem);
+      }
+    });
+    this.SelectFirstItem();
+  }
+
+  isSomeSelected(row:StoringOrderTankItem) {
+    // this.calculateTotalCost();
+    const rowRepairs = row.repair;
+     const selectedItm = this.reSelection.selected;
+     const someRepairsSelected = rowRepairs?.some(repairItem =>
+       selectedItm.some(selectedItem => selectedItem.guid === repairItem.guid)
+     );
+ 
+     return someRepairsSelected;
+   }
+
+   GetStoringOrderTank(row: RepairItem): StoringOrderTankItem | undefined {
+    // Iterate through sotRepList to find the matching repairItem
+    for (const r of this.sotRepList) {
+      const matchingRepairItem = r.repair?.find(repairItem =>
+        repairItem.guid === row.guid // Assuming 'guid' is a unique identifier
+      );
+  
+      // If a matching repairItem is found, return its storing_order_tank
+      if (matchingRepairItem) {
+        return r;
+      }
+    }
+  
+    // Return undefined if no matching repairItem is found
+    return undefined;
+  }
+
+  isAllSelected(row:StoringOrderTankItem) {
    // this.calculateTotalCost();
-    const numSelected = this.reSelection.selected.length;
-    const numRows = this.sotRepList.length;
-    return numSelected === numRows;
+   const rowRepairs = row.repair;
+    const selectedItm = this.reSelection.selected;
+    const allRepairsSelected = rowRepairs?.every(repairItem =>
+      selectedItm.some(selectedItem => selectedItem.guid === repairItem.guid)
+    );
+
+    return allRepairsSelected;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-     this.isAllSelected()
-       ? this.reSelection.clear()
-       : this.sotRepList.forEach((row) =>
-           this.reSelection.select(row)
+  masterToggle(row:StoringOrderTankItem) {
+     this.isAllSelected(row)
+       ? this.unselectAllRepairs(row)
+       : row.repair?.forEach((r) =>{
+           this.reSelection.select(r);
+           this.SelectFirstItem();}
          );
     this.calculateTotalCost();
   }
@@ -760,7 +784,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       let invNo:string =`${this.invoiceNoControl.value}`;
       const where:any={};
       where.invoice_no={eq:invNo};
-      this.billDS.searchResidueBilling(where).subscribe(b=>{
+      this.billDS.searchRepairBilling(where).subscribe(b=>{
         if(b.length)
         {
           if(b[0].bill_to_guid===this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid)
@@ -830,7 +854,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     {
       let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
       let invoiceDue:Date =new Date(invoiceDate);
-      invoiceDue.setDate(invoiceDate.getDate()+30);
+      invoiceDue.setMonth(invoiceDate.getMonth()+1);
       var updateBilling : BillingInputRequest=new BillingInputRequest();
       updateBilling.bill_to_guid=billingItem.bill_to_guid;
       updateBilling.guid=billingItem.guid;
@@ -840,13 +864,22 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       updateBilling.status_cv=billingItem.status_cv;
       updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
       
-      let billingEstimateRequests:any= billingItem.residue?.map(cln => {
+      let billingEstimateRequests:any= billingItem.repair_customer?.map(cln => {
         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
         billingEstReq.action="";
-        billingEstReq.billing_party=this.billingParty;
+        billingEstReq.billing_party= this.billingParty;
         billingEstReq.process_guid=cln.guid;
         billingEstReq.process_type=this.processType;
         return billingEstReq;
+        //return { ...cln, action:'' };
+        });
+      billingItem.repair_owner?.forEach(cln => {
+        var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+        billingEstReq.action="";
+        billingEstReq.billing_party="OWNER";
+        billingEstReq.process_guid=cln.guid;
+        billingEstReq.process_type=this.processType;
+        billingEstimateRequests.push(billingEstReq);
         //return { ...cln, action:'' };
         });
       const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
@@ -874,19 +907,23 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   
     SaveNewBilling(event:Event)
     {
+      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
+      let invoiceDue:Date =new Date(invoiceDate);
+      invoiceDue.setMonth(invoiceDate.getMonth()+1);
       var newBilling : BillingInputRequest=new BillingInputRequest();
       newBilling.bill_to_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid;
       newBilling.currency_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.currency_guid;
       newBilling.invoice_dt=Number(Utility.convertDate(this.invoiceDateControl.value));
       newBilling.invoice_no=`${this.invoiceNoControl.value}`;
+      newBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
       newBilling.status_cv='PENDING';
       var billingEstimateRequests:BillingEstimateRequest[]=[];
       this.reSelection.selected.map(c=>{
         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
   
         billingEstReq.action="NEW";
-        billingEstReq.billing_party=this.billingParty;
-        billingEstReq.process_guid=c.guid;
+        billingEstReq.billing_party=  c.type===1?"CUSTOMER":"OWNER"; //this.billingParty;
+        billingEstReq.process_guid=c.guid.replace("_1","");
         billingEstReq.process_type=this.processType;
         billingEstimateRequests.push(billingEstReq);
       });
@@ -936,9 +973,12 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
    toggleRow(row:RepairItem)
    {
     
+     
      this.reSelection.toggle(row);
      this.SelectFirstItem();
      this.calculateTotalCost();
+     const sot = this.GetStoringOrderTank(row);
+     this.isAllSelected(sot!);
    }
 
    SelectFirstItem()
@@ -952,6 +992,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       this.selectedEstimateItem=this.reSelection.selected[0];
     }
    }
+
+
    CheckBoxDisable(row:RepairItem)
    {
      if(this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company)
@@ -964,13 +1006,24 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
      return false;
    }
 
-   MasterCheckBoxDisable()
+   MasterCheckBoxDisable(row:StoringOrderTankItem)
    {
-     if(this.distinctCustomerCodes?.length)
-     {
-        return this.distinctCustomerCodes.length>1;
-     }
-
+    this.distinctCustomerCodes = [
+      ...new Set(
+        row.repair
+          ?.map(item => item.storing_order_tank?.storing_order?.customer_company?.code)
+          .filter(code => code !== undefined && code !== null) // Filter out undefined/null values
+      ),
+    ];
+  
+    // Check if the selected estimate item's customer code is in the distinct customer codes
+    if (this.distinctCustomerCodes.length ===1) {
+      if(!this.selectedEstimateItem?.storing_order_tank) return true;
+      const selectedCustomerCode = this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.code;
+      return this.distinctCustomerCodes.includes(selectedCustomerCode);
+    }
+  
+  
      return false;
    }
 
@@ -981,6 +1034,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         ...res,
         repair: res.repair?.map(repairItem => ({
           ...repairItem,
+          bill_to_guid:repairItem.storing_order_tank?.storing_order?.customer_company?.guid,
           invoiced: false,
           net_cost: 0, // Initialize total_cost to 0
           type: 1, // Add the type field with a value of 1
@@ -1003,6 +1057,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         // Update the customer_company field
         if (newRepItem.storing_order_tank && newRepItem.storing_order_tank.storing_order) {
           newRepItem.guid=`${newRepItem.guid}_1`;
+          newRepItem.bill_to_guid=newRepItem.storing_order_tank.customer_company.guid;
           newRepItem.owner_enable=false;
           newRepItem.storing_order_tank.storing_order.customer_company = newRepItem.storing_order_tank.customer_company;
         }
@@ -1120,12 +1175,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
   }
    
-  // IsApproved(residue:ResidueItem)
-  // {
-  //   const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
-  //   return validStatus.includes(residue!.status_cv!);
-    
-  // }
+ 
 
   getCustomerLabourPackage(customer_company_guid: string) {
     const where = {
@@ -1171,4 +1221,66 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         return this.translatedLangText.OWNER;
      }
   }
+
+  delete(event:Event){
+     
+         event.preventDefault(); // Prevents the form submission
+     
+         let tempDirection: Direction;
+         if (localStorage.getItem('isRtl') === 'true') {
+           tempDirection = 'rtl';
+         } else {
+           tempDirection = 'ltr';
+         }
+         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+           data: {
+             headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+             action: 'delete',
+           },
+           direction: tempDirection
+         });
+         this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+           if (result.action === 'confirmed') {
+             const guids=this.reSelection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
+             this.RemoveEstimatesFromInvoice(event,guids!);
+           }
+         });
+       }
+       RemoveEstimatesFromInvoice(event:Event, processGuid:string[])
+       {
+         var updateBilling: any=null;
+         let billingEstimateRequests:BillingEstimateRequest[]=[];
+         processGuid.forEach(g=>{
+           var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+           billingEstReq.action="CANCEL";
+           billingEstReq.billing_party=this.billingParty;
+           billingEstReq.process_guid=g;
+           billingEstReq.process_type=this.processType;
+           billingEstimateRequests.push(billingEstReq);
+         });
+        
+         this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+           if(result.data.updateBilling)
+           {
+             this.handleSaveSuccess(result.data.updateBilling);
+             this.onCancel(event);
+             this.search();
+           }
+         })
+       }
+
+       getInvoiceNo(row:RepairItem):string
+       {
+
+          if(row.bill_to_guid==row.customer_billing?.bill_to_guid)
+          {
+            return row.customer_billing?.invoice_no!;
+          }
+          else if(row.bill_to_guid==row.owner_billing?.bill_to_guid)
+          {
+            return row.owner_billing?.invoice_no!;
+          }
+         return '-';
+
+       }
 }

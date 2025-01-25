@@ -453,8 +453,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
             context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
           }
 
-          const chunkImgData = canvasChunk.toDataURL('image/png');
-          pdf.addImage(chunkImgData, 'PNG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
+          const chunkImgData = canvasChunk.toDataURL('image/jpg');
+          pdf.addImage(chunkImgData, 'JPG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
 
           // Add Footer
           await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);

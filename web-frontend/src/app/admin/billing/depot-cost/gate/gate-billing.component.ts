@@ -48,6 +48,7 @@ import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-c
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, BillingSOTItem } from 'app/data-sources/billing';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-gate-billing',
@@ -79,6 +80,7 @@ import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, Bi
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatSlideToggleModule
   ]
 })
 export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -255,7 +257,8 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       purpose: [''],
       tank_status_cv: [''],
       eir_status_cv: [''],
-      yard_cv: ['']
+      yard_cv: [''],
+      invoiced:['']
     });
   }
 
@@ -389,6 +392,11 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
     }
 
+    if(this.searchForm!.get('invoiced')?.value)
+      {
+        where.gateio_billing_guid={neq: null};
+      }
+
     if (this.searchForm!.get('customer_code')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
       where.storing_order_tank={storing_order:{customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}}};
@@ -443,7 +451,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
    
-    this.lastSearchCriteria = this.resDS.addDeleteDtCriteria(where);
+    this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
@@ -608,7 +616,8 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       inv_dt_start: '',
       inv_dt_end: '',
       inv_no:'',
-      yard_cv: ['']
+      yard_cv: [''],
+      invoiced:null
     });
 
     this.customerCodeControl.reset('');
@@ -767,7 +776,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     {
       let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
       let invoiceDue:Date =new Date(invoiceDate);
-      invoiceDue.setDate(invoiceDate.getDate()+30);
+      invoiceDue.setMonth(invoiceDate.getMonth()+1);
       var updateBilling : BillingInputRequest=new BillingInputRequest();
       updateBilling.bill_to_guid=billingItem.bill_to_guid;
       updateBilling.guid=billingItem.guid;
@@ -813,7 +822,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     {
       let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
       let invoiceDue:Date =new Date(invoiceDate);
-      invoiceDue.setDate(invoiceDate.getDate()+30);
+      invoiceDue.setMonth(invoiceDate.getMonth()+1);
       var newBilling : BillingInputRequest=new BillingInputRequest();
       newBilling.bill_to_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid;
       newBilling.currency_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.currency_guid;

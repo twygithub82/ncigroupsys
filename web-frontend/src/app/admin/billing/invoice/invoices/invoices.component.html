@@ -144,95 +144,156 @@
             </mat-expansion-panel>
           </mat-accordion>
           <div class="body overflow-auto">
-            <div class="responsive_table">
-              <table mat-table [dataSource]="sotList" matSort
-                class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                <!-- ID Column -->
-                <ng-container matColumnDef="id">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="tank_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{translatedLangText.TANK_NO}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.tank_no}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="customer">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{translatedLangText.CUSTOMER}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span
-                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order?.customer_company)}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="eir_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{translatedLangText.EIR_NO}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_no}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="eir_dt">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{translatedLangText.EIR_DATE}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="tank_status_cv">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{translatedLangText.STATUS}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span
-                      class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.tank_status_cv)}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="last_cargo">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
-                    {{translatedLangText.LAST_CARGO}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span
-                      class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.tariff_cleaning?.cargo}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="purpose">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{translatedLangText.PURPOSE}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.PURPOSE}}:</span>{{displayTankPurpose(row)}}
-                  </mat-cell>
-                </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/inventory/tank-movement/details', row.guid]" [style.cursor]="'pointer'"
-                  matRipple>
-                </mat-row>
-              </table>
-            </div>
+            @for(row of billList; track row) {
+              <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
+                <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
+                  <mat-card-title [ngClass]="{'pt-1': true}">
+                    {{row.invoice_no}}
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="row">
+                    <div class="col-xl-3-5 col-lg-3-5 col-md-6 col-sm-6 mb-1">
+                      <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span> {{
+                      ccDS.displayName(row.customer_company)}}
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
+                      <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
+                      {{displayDate(row.invoice_dt)}}
+                    </div>
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
+                      <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
+                      {{displayDate(row.invoice_due)}}
+                    </div>
+                    <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
+                      <span class="font-bold">{{translatedLangText.JOB_NO}}:</span> {{
+                      row.job_no}}
+                    </div> -->
+                    <!-- <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1">
+                      <span class="font-bold">{{translatedLangText.STATUS}}:</span>
+                      {{getTankStatusDescription(row.tank_status_cv!)}}
+                    </div> -->
+                  </div>
+                  <mat-divider></mat-divider>
+                  @if ((filterDeleted(row.estimates || [])?.length ?? 0) > 0) {
+                  <div class="responsive_table">
+                    <table mat-table [dataSource]="filterDeleted(row.estimates || [])" matSort
+                      class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                      <!-- <ng-container matColumnDef="select">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
+                            [checked]="reSelection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
+                          </mat-checkbox>
+                        </mat-cell>
+                      </ng-container> -->
+                      <!-- <ng-container matColumnDef="id">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                        <mat-cell *matCellDef="let repairRow">{{repairRow.guid}}{{repairRow.storing_order_tank?.storing_order?.customer_company?.guid}}</mat-cell>
+                      </ng-container> -->
+                      <!-- <ng-container matColumnDef="customer">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER}}</mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                          <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(repairRow.storing_order_tank?.storing_order?.customer_company)}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="customer_type">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_TYPE}}</mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                          <span class="mobile-label">{{translatedLangText.CUSTOMER_TYPE}}:</span>{{DisplayCustomerType(repairRow)}}
+                        </mat-cell>
+                      </ng-container> -->
+                      <ng-container matColumnDef="estimate_no">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                          {{translatedLangText.ESTIMATE_NO}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let estimateRow" class="">
+                          <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{estimateRow.estimate_no}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="job_no">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                          {{translatedLangText.JOB_NO}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let estimateRow" class="">
+                          <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>{{estimateRow.job_no}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="net_cost">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                          {{translatedLangText.NET_COST}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let estimateRow">
+                          <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
+                          <span>$</span><span class="ms-3">{{estimateRow.total_cost}}</span>
+                        </mat-cell>
+                      </ng-container>
+                      <!-- <ng-container matColumnDef="status_cv">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                          {{translatedLangText.STATUS}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                          <span
+                            class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(repairRow.status_cv)}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="remarks">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                          {{translatedLangText.REMARKS}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                          <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{repairRow.remarks}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="invoice_no">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                          {{translatedLangText.INVOICE_NO}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" class="">
+                          @if(row.invoiced)
+                          {
+                            <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span> {{getInvoiceNo(row)}}
+                          }
+                          @else
+                          {
+                            <span class="mobile-label">{{translatedLangText.INVOICE_NO}}: </span> -
+                          }
+          
+                        </mat-cell>
+                      </ng-container> -->
+                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'"
+                        matRipple>
+                      </mat-row>
+                    </table>
+                  </div>
+                  }
+                  @else {
+                  {{translatedLangText.NO_RESULT}}
+                  }
+                </mat-card-content>
+                <mat-card-actions [ngClass]="'empty-card-actions'">
+                </mat-card-actions>
+              </mat-card>
+              }
             <!-- No result -->
-            @if (!(sotDS.loading$ | async) && !sotList.length) {
+            @if (!(billDS.loading$ | async) && !sotList.length) {
             <mat-divider></mat-divider>
             <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if (sotDS.loading$ | async) {
+            @if (billDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
+            <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="0" [pageSize]="10"
               [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
             </mat-paginator>
           </div>

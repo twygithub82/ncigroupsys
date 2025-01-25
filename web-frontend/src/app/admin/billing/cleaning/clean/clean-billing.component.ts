@@ -47,6 +47,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import {BillingDS,BillingInputRequest,BillingEstimateRequest,BillingItem} from 'app/data-sources/billing';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-clean-billing',
@@ -78,6 +79,7 @@ import {BillingDS,BillingInputRequest,BillingEstimateRequest,BillingItem} from '
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatSlideToggleModule
   ]
 })
 export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -252,7 +254,8 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       purpose: [''],
       tank_status_cv: [''],
       eir_status_cv: [''],
-      yard_cv: ['']
+      yard_cv: [''],
+      invoiced:['']
     });
   }
 
@@ -391,6 +394,11 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       where.storing_order_tank={storing_order:{customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}}};
       where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
     }
+
+    if(this.searchForm!.get('invoiced')?.value)
+      {
+        where.customer_billing_guid={neq: null};
+      }
 
     if(this.searchForm!.get('branch_code')?.value)
     {
@@ -604,7 +612,8 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       inv_dt_start: '',
       inv_dt_end: '',
       inv_no:'',
-      yard_cv: ['']
+      yard_cv: [''],
+      invoiced:null,
     });
 
     this.branchCodeControl.reset('');
@@ -667,6 +676,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       }
     });
   }
+  
   delete(event:Event){
 
     event.preventDefault(); // Prevents the form submission
@@ -763,7 +773,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   {
     let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
     let invoiceDue:Date =new Date(invoiceDate);
-    invoiceDue.setDate(invoiceDate.getDate()+30);
+    invoiceDue.setMonth(invoiceDate.getMonth()+1);
     var updateBilling : BillingInputRequest=new BillingInputRequest();
     updateBilling.bill_to_guid=billingItem.bill_to_guid;
     updateBilling.guid=billingItem.guid;
@@ -811,7 +821,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   {
     let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
     let invoiceDue:Date =new Date(invoiceDate);
-    invoiceDue.setDate(invoiceDate.getDate()+30);
+    invoiceDue.setMonth(invoiceDate.getMonth()+1);
     var newBilling : BillingInputRequest=new BillingInputRequest();
     newBilling.bill_to_guid=this.selectedEstimateItem?.customer_company?.guid;
     newBilling.currency_guid=this.selectedEstimateItem?.customer_company?.currency_guid;

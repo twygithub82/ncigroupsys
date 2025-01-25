@@ -15,7 +15,7 @@
             </mat-panel-title>
             <mat-panel-description>
             </mat-panel-description>
-          </mat-expansion-panel-header> -
+          </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
             <div class="row">
               <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
@@ -134,38 +134,14 @@
                 </mat-form-field>
               </div>
              
-             
-              <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
-                  <mat-select multiple formControlName="purpose">
-                    @for (codeValue of purposeOptionCvList; track codeValue) {
-                    <mat-option [value]="codeValue.code_val">
-                      {{codeValue.description}}
-                    </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
+              <div class="col-1 d-flex align-items-center">
+                <mat-slide-toggle formControlName="invoiced">  {{translatedLangText.INVOICED}}</mat-slide-toggle>
               </div>
-              <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.YARD}}</mat-label>
-                  <mat-select formControlName="yard_cv">
-                    @for (codeValue of yardCvList; track codeValue) {
-                    <mat-option [value]="codeValue.code_val">
-                      {{codeValue.description}}
-                    </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div> -->
+             
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
                 <button mat-mini-fab color="primary" (click)="search()">
                   <mat-icon>search</mat-icon>
                 </button>
-                <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                  <mat-icon>cached</mat-icon>
-                </button> -->
                 <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
                   {{translatedLangText.CLEAR_ALL}}
                 </button>
@@ -177,18 +153,15 @@
       <div class="row">
         &nbsp;
       </div>
-      <div class="row ms-0">
+      <div class="row body ms-0">
         <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
           <mat-label>{{translatedLangText.INVOICE_DETAILS}}</mat-label>
         </div>
-      </div>
-      <div  class="row ms-0">
+      
         <div class="card">
-          <!-- <div class="row">
-            <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
-              <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
-            </div>
-          </div> -->
+          <div class="row">
+             &nbsp;
+          </div> 
           <div class="row">
             <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width" appearance="fill">
@@ -221,19 +194,25 @@
               
               </mat-form-field>
             </div>
-            <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
             <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5" (click)="save($event)">
               <mat-icon>
                 save
               </mat-icon>
               {{translatedLangText.SAVE_AND_SUBMIT}}
             </button>
-            <button mat-flat-button color="warn"  class="m-r-5"
+            <button mat-flat-button color="accent"  class="m-r-5"
               (click)="onCancel($event)">
               <mat-icon>
                 close
               </mat-icon>
               {{translatedLangText.CANCEL}}
+            </button>
+            <button mat-flat-button color="warn" [disabled]="reSelection.selected.length===0" class="m-r-5" (click)="delete($event)">
+              <mat-icon>
+                delete_forever
+              </mat-icon>
+              {{translatedLangText.DELETE}}
             </button>
             </div>
           
@@ -241,11 +220,11 @@
         </div>
       </div>
       <div class="body overflow-auto">
-        @for(row of sotRepList; track row) {
+        @for(sotRow of sotRepList; track sotRow) {
         <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
           <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
             <mat-card-title [ngClass]="{'pt-1': true}">
-              {{row.tank_no}}
+              {{sotRow.tank_no}}
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
@@ -256,11 +235,11 @@
               </div> -->
               <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
-                {{igDS.getInGateItem(row.in_gate)?.eir_no}}
+                {{igDS.getInGateItem(sotRow.in_gate)?.eir_no}}
               </div>
               <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
-                {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
+                {{displayDate(igDS.getInGateItem(sotRow.in_gate)?.eir_dt)}}
               </div>
               <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{translatedLangText.JOB_NO}}:</span> {{
@@ -268,17 +247,21 @@
               </div> -->
               <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{translatedLangText.STATUS}}:</span>
-                {{getTankStatusDescription(row.tank_status_cv!)}}
+                {{getTankStatusDescription(sotRow.tank_status_cv!)}}
               </div>
             </div>
             <mat-divider></mat-divider>
-            @if ((filterDeleted(row.repair || [])?.length ?? 0) > 0) {
+            @if ((filterDeleted(sotRow.repair || [])?.length ?? 0) > 0) {
             <div class="responsive_table">
-              <table mat-table [dataSource]="filterDeleted(row.repair || [])" matSort
+              <table mat-table [dataSource]="filterDeleted(sotRow.repair || [])" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    <mat-checkbox (change)="$event ? masterToggle(sotRow) : null" [checked]="isAllSelected(sotRow)"
+                  
+                    [indeterminate]="isSomeSelected(sotRow)&&!isAllSelected(sotRow)" [ngClass]="'tbl-checkbox'"  [hidden]="!MasterCheckBoxDisable(sotRow)" >
+                  </mat-checkbox>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -345,40 +328,25 @@
                     <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{repairRow.remarks}}
                   </mat-cell>
                 </ng-container>
-                <!-- <ng-container matColumnDef="actions">
-                  <mat-header-cell
-                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                    *matHeaderCellDef></mat-header-cell>
-                  <mat-cell *matCellDef="let repairRow; let i=index;"
-                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                    <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                      <mat-icon>more_vert</mat-icon>
-                    </button>
-                    <mat-menu #menu="matMenu">
-                      @if (repairDS.canCopy(repairRow)) {
-                      <button mat-menu-item (click)="copyRepair(repairRow)">
-                        <mat-icon>content_copy</mat-icon>
-                        <span>{{translatedLangText.COPY}}</span>
-                      </button>
-                      }
-                      @if (repairDS.canRollback(repairRow)) {
-                      <button mat-menu-item (click)="rollbackRow(repairRow)">
-                        <mat-icon>undo</mat-icon>
-                        <span>{{translatedLangText.ROLLBACK}}</span>
-                      </button>
-                      }
-                      @if (repairDS.canCancel(repairRow)) {
-                      <button mat-menu-item (click)="cancelRow(repairRow, row)">
-                        <mat-icon>cancel</mat-icon>
-                        <span>{{translatedLangText.CANCEL}}</span>
-                      </button>
-                      }
-                    </mat-menu>
+                <ng-container matColumnDef="invoice_no">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.INVOICE_NO}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    @if(row.invoiced)
+                    {
+                      <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span> {{getInvoiceNo(row)}}
+                    }
+                    @else
+                    {
+                      <span class="mobile-label">{{translatedLangText.INVOICE_NO}}: </span> -
+                    }
+    
                   </mat-cell>
-                </ng-container> -->
+                </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                  [routerLink]="['/admin/repair/estimate/edit', row.guid, repairRow.guid]" matRipple>
+                  [routerLink]="['/admin/repair/estimate/edit', sotRow.guid, repairRow.guid]" matRipple>
                 </mat-row>
               </table>
             </div>
