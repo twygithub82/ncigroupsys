@@ -276,6 +276,7 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
           haulier
           create_dt
           status_cv
+          customer_company_guid
           customer_company {
             code
             guid

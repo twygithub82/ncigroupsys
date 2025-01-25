@@ -373,8 +373,8 @@ export const UPDATE_IN_GATE = gql`
 `;
 
 export const PUBLISH_IN_GATE_SURVEY = gql`
-  mutation publishIngateSurvey($inGate_guid: String!) {
-    publishIngateSurvey(inGate_guid: $inGate_guid)
+  mutation publishIngateSurvey($inGateRequest: in_gateInput!) {
+    publishIngateSurvey(inGateRequest: $inGateRequest)
   }
 `;
 
@@ -520,12 +520,12 @@ export class InGateDS extends BaseDataSource<InGateItem> {
     );
   }
 
-  publishInGateSurvey(inGate_guid: string): Observable<any> {
+  publishInGateSurvey(inGateRequest: any): Observable<any> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: PUBLISH_IN_GATE_SURVEY,
       variables: {
-        inGate_guid
+        inGateRequest
       }
     }).pipe(
       finalize(() => {

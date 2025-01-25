@@ -268,7 +268,7 @@ namespace IDMS.Inventory.GqlTypes
                         updateTransfer.update_by = user;
                         updateTransfer.update_dt = currentDateTime;
                         updateTransfer.transfer_in_dt = null;
-                        context.Entry(transfer).Property(p => p.transfer_in_dt).IsModified = true;
+                        context.Entry(updateTransfer).Property(p => p.transfer_in_dt).IsModified = true;
 
                         if (transfer?.storing_order_tank == null || string.IsNullOrEmpty(transfer.storing_order_tank.tank_no))
                             throw new GraphQLException(new Error($"SOT & tank_no cannot be null", "ERROR"));

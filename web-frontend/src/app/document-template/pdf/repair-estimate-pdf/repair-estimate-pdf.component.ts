@@ -18,7 +18,7 @@ import { PackageBufferItem } from 'app/data-sources/package-buffer';
 import { NgClass } from '@angular/common';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-import { saveAs } from 'file-saver';
+// import { saveAs } from 'file-saver';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
@@ -32,6 +32,7 @@ import { RepairPartDS } from 'app/data-sources/repair-part';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+// import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
   repair_guid: string;
@@ -877,12 +878,34 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   async onDownloadClick() {
     if (this.generatedPDF) {
       const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
-      saveAs(this.generatedPDF, fileName);
+      // saveAs(this.generatedPDF, fileName);
+      // fileSave(this.generatedPDF, {
+      //   fileName: fileName,
+      //   extensions: ['.pdf'],
+      // });
+      this.downloadFile(this.generatedPDF, fileName);
     } else if (this.repairEstimatePdf?.[0]?.url) {
-      const eirBlob = await Utility.urlToBlob(this.repairEstimatePdf?.[0]?.url);
+      const blob = await Utility.urlToBlob(this.repairEstimatePdf?.[0]?.url);
       const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
-      saveAs(eirBlob, fileName);
+      // saveAs(eirBlob, fileName);
+      // fileSave(eirBlob, {
+      //   fileName: fileName,
+      //   extensions: ['.pdf'],
+      // });
+      this.downloadFile(blob, fileName);
     }
+  }
+
+  downloadFile(blob: Blob, fileName: string) {
+    const url = URL.createObjectURL(blob);
+
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+
+    // Revoke the URL to free memory
+    URL.revokeObjectURL(url);
   }
 
   onRepublshClick() {

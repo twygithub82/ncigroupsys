@@ -90,13 +90,13 @@ namespace IDMS.Survey.GqlTypes
                 //Add the newly created guid into list for return
                 retGuids.Add(ingateSurvey.guid);
 
-                //Add steaming by auto
-                if (tank.purpose_steam ?? false)
-                    await AddSteaming(context, sot, ingate.create_dt);
+                ////Add steaming by auto
+                //if (tank.purpose_steam ?? false)
+                //    await AddSteaming(context, sot, ingate.create_dt);
 
-                //Add cleaning by auto
-                if (tank.purpose_cleaning ?? false)
-                    await AddCleaning(context, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
+                ////Add cleaning by auto
+                //if (tank.purpose_cleaning ?? false)
+                //    await AddCleaning(context, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
 
                 retval = await context.SaveChangesAsync();
                 //TODO
@@ -235,7 +235,7 @@ namespace IDMS.Survey.GqlTypes
         }
 
 
-        public async Task<int> PublishIngateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        private async Task<int> PublishIngateSurveyOld(ApplicationInventoryDBContext context, [Service] IConfiguration config,
                 [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
         {
             int retval = 0;
@@ -258,6 +258,57 @@ namespace IDMS.Survey.GqlTypes
                 retval = await context.SaveChangesAsync(true);
 
                 //TODO: Pending implementation of publish pdf -------------------------------
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public async Task<int> PublishIngateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, in_gate inGateRequest)
+        {
+            int retval = 0;
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (string.IsNullOrEmpty(inGateRequest.guid))
+                    throw new GraphQLException(new Error("Ingate Guid cannot be null or empty.", "ERROR"));
+
+                if (inGateRequest.tank == null || string.IsNullOrEmpty(inGateRequest.tank.guid))
+                    throw new GraphQLException(new Error("Storing Order Tank cannot be null or empty.", "ERROR"));
+
+                if (string.IsNullOrEmpty(inGateRequest?.in_gate_survey?.tank_comp_guid))
+                    throw new GraphQLException(new Error("Tank Comp Guid cannot be null or empty.", "ERROR"));
+
+
+                var ingate = new in_gate() { guid = inGateRequest.guid };
+                context.in_gate.Attach(ingate);
+                ingate.eir_status_cv = EirStatus.PUBLISHED;
+                ingate.update_by = user;
+                ingate.publish_by = user;
+                ingate.update_dt = currentDateTime;
+                ingate.publish_dt = currentDateTime;
+
+                var sot = inGateRequest.tank;
+                //storing_order_tank? sot = await context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
+                //                            .Where(t => t.guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+
+                //Add steaming by auto
+                if (sot?.purpose_steam ?? false)
+                    await AddSteaming(context, sot, inGateRequest.create_dt);
+
+                //Add cleaning by auto
+                if (sot?.purpose_cleaning ?? false)
+                    await AddCleaning(context, sot, ingate.create_dt, inGateRequest?.in_gate_survey?.tank_comp_guid);
+
+                retval = await context.SaveChangesAsync(true);
+
+                //Tank info handling
+                //await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "");
             }
             catch (Exception ex)
             {
