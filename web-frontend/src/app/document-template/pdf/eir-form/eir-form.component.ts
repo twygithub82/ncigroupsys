@@ -198,7 +198,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     FOR: 'COMMON-FORM.FOR',
     DELIVERY_COURIER: 'COMMON-FORM.DELIVERY-COURIER',
   }
-  @Output() publishedEir = new EventEmitter<void>();
+  @Output() publishedEir = new EventEmitter<any>();
   // @Input() type?: string | null;
   // @Input() igsDS: InGateSurveyDS;
   // @Input() cvDS: CodeValuesDS;
@@ -1588,6 +1588,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
               url: response?.url?.[0]
             }
           ];
+          this.publishedEir.emit({type: 'uploaded', eirPdf: this.eirPdf});
 
           if (this.eirDetails?.in_gate?.eir_status_cv === 'PENDING') {
             // const sotItem = new StoringOrderTankGO(this.eirDetails?.in_gate?.tank);
@@ -1599,7 +1600,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
             this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
               console.log(result)
               if (result.data?.publishIngateSurvey) {
-                this.publishedEir.emit();
+                this.publishedEir.emit({type: 'published'});
                 let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
                 ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
               }

@@ -938,6 +938,12 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
+    this.subs.sink = dialogRef.componentInstance.repairEstimateEvent.subscribe((result) => {
+      console.log(`Event received from MatDialog: repairEstimateEvent type = ${result?.type}`);
+      if (result?.type === 'uploaded') {
+        this.repairEstimatePdf = result?.repairEstimatePdf;
+      }
+    });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }

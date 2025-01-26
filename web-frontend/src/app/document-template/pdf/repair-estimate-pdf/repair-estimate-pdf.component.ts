@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
@@ -230,6 +230,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF'
   }
+  @Output() repairEstimateEvent = new EventEmitter<any>();
 
   type?: string | null;
   repairDS: RepairDS;
@@ -935,6 +936,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
               url: response?.url?.[0]
             }
           ];
+          this.repairEstimateEvent.emit({ type: 'uploaded', repairEstimatePdf: this.repairEstimatePdf });
         }
       },
       error: (error) => {

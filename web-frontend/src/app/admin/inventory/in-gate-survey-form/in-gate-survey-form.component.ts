@@ -760,7 +760,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
-          this.dateOfInspection = Utility.convertDate(this.in_gate?.in_gate_survey?.create_dt) as Date;
+          this.dateOfInspection = this.in_gate?.in_gate_survey?.create_dt ? Utility.convertDate(this.in_gate?.in_gate_survey?.create_dt) as Date : new Date();
           this.populateInGateForm(this.in_gate);
           if (!this.in_gate?.tank?.last_release_dt) {
             this.tiDS.getTankInfoForLastTest(this.in_gate!.tank!.tank_no!).subscribe(data => {
@@ -1078,10 +1078,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
-    this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe(() => {
-      console.log('Event received from MatDialog: publishedEir');
-      if (this.in_gate) {
-        this.in_gate.eir_status_cv = 'PUBLISHED';
+    this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe((result) => {
+      console.log(`Event received from MatDialog: publishedEir type = ${result?.type}`);
+      if (result?.type === 'published') {
+        if (this.in_gate) {
+          this.in_gate.eir_status_cv = 'PUBLISHED';
+        }
+      } else if (result?.type === 'uploaded') {
+        this.eirPdf = result?.eirPdf;
       }
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
