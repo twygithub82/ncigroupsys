@@ -84,7 +84,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 })
 export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'select',
+    // 'select',
     'tank_no',
     //'tank_no_validity',
     'last_cargo',
@@ -714,15 +714,15 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   getBadgeClass(action: string): string {
     switch (action) {
       case 'new':
-        return 'badge-solid-green';
+        return 'badge badge-solid-green';
       case 'edit':
-        return 'badge-solid-cyan';
+        return 'badge badge-solid-cyan';
       case 'rollback':
-        return 'badge-solid-blue';
+        return 'badge badge-solid-blue';
       case 'cancel':
-        return 'badge-solid-orange';
+        return 'badge badge-solid-orange';
       case 'preorder':
-        return 'badge-solid-pink';
+        return 'badge badge-solid-pink';
       default:
         return '';
     }
