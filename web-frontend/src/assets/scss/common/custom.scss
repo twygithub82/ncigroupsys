@@ -1449,3 +1449,25 @@ $breakpoints: (
 .td-col-0-25 {
     width: 2.08333334%;
 }
+
+.navbar-brand {
+  margin-left: 0px;
+}
+
+.navbar-header {
+  width: 240px;
+}
+
+.sidebar {
+  width: 240px;
+}
+
+section.content {
+  margin-left: 282px;
+}
+
+nav.navbar {
+  margin-left: 20px;
+  margin-right: 20px;
+  width: calc(100% - 312px);
+}

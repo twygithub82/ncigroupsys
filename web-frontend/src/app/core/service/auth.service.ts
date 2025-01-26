@@ -26,6 +26,10 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  public get currentUserName(): string {
+    return this.currentUserSubject.value?.name;
+  }
+
   login(username: string, password: string, isStaff: boolean, rememberMe: boolean): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const loginUrl = environment.apiUrl;

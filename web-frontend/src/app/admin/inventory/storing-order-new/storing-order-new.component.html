@@ -69,7 +69,7 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
                     <table mat-table [dataSource]="sotList" matSort
-                      class="mat-cell advance-table striped-rows hover-highlight">
+                      class="mat-cell advance-table striped-rows hover-highlight dark-header">
                       <!-- Checkbox Column -->
                       <ng-container matColumnDef="select">
                         <mat-header-cell *matHeaderCellDef
@@ -102,9 +102,11 @@
                           <span class="mobile-label">
                             {{translatedLangText.TANK_NO}}:
                           </span>
-                          {{row.tank_no}}
-                          <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.actions)) + ' ms-1'">{{
-                            getLastAction(row.actions) | uppercase }}</div>
+                          <div [ngClass]="'' + getBadgeClass(getLastAction(row.actions))">
+                            {{row.tank_no}}
+                          </div>
+                          <!-- <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.actions)) + ' ms-1'">{{
+                            getLastAction(row.actions) | uppercase }}</div> -->
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="tank_no_validity">
@@ -134,12 +136,12 @@
                       </ng-container>
                       <ng-container matColumnDef="last_cargo">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.LAST_CARGO}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>
                             {{row.tariff_cleaning?.cargo}}
@@ -148,12 +150,12 @@
                       </ng-container>
                       <ng-container matColumnDef="job_no">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.JOB_NO}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>
                           {{row.job_no}}
                         </mat-cell>
@@ -235,12 +237,12 @@
                       </ng-container>
                       <ng-container matColumnDef="purpose_repair_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
                           {{getRepairDescription(row.purpose_repair_cv)}}
                         </mat-cell>
@@ -272,9 +274,12 @@
                       </ng-container>
                       <!-- actions -->
                       <ng-container matColumnDef="actions">
-                        <mat-header-cell [ngClass]="'pr-0'" *matHeaderCellDef>
+                        <mat-header-cell
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          *matHeaderCellDef>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
+                        <mat-cell *matCellDef="let row; let i=index;"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
                           @if (hasMenuItems(row)) {
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
@@ -350,6 +355,23 @@
                 {{translatedLangText.ADD_ATLEAST_ONE}}
               </mat-error>
               }
+              <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-green">NEW</span>
+                </div>
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-cyan">EDIT</span>
+                </div>
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-blue">ROLLBACK</span>
+                </div>
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-orange">CANCEL</span>
+                </div>
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-pink">PREORDER</span>
+                </div>
+              </div>
               <div class="row m-t-10">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"

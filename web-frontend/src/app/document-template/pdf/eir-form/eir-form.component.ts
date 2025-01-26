@@ -28,6 +28,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 // import { fileSave } from 'browser-fs-access';
 import { StoringOrderGO } from 'app/data-sources/storing-order';
+import { AuthService } from '@core';
 
 export interface DialogData {
   type: string;
@@ -198,7 +199,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     FOR: 'COMMON-FORM.FOR',
     DELIVERY_COURIER: 'COMMON-FORM.DELIVERY-COURIER',
   }
-  @Output() publishedEir = new EventEmitter<void>();
+  @Output() publishedEir = new EventEmitter<any>();
   // @Input() type?: string | null;
   // @Input() igsDS: InGateSurveyDS;
   // @Input() cvDS: CodeValuesDS;
@@ -269,6 +270,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   tankStatusCvList: CodeValuesItem[] = [];
 
   scale = 1.1;
+  imageQuality = 0.85;
 
   generatedPDF: any;
   eirPdf?: any;
@@ -287,7 +289,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     private cdr: ChangeDetectorRef,
     private fileManagerService: FileManagerService,
     private snackBar: MatSnackBar,
-    private sanitizer: DomSanitizer) {
+    private sanitizer: DomSanitizer,
+    private authService: AuthService) {
     super();
     this.translateLangText();
     this.type = data.type;
@@ -318,6 +321,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       console.log(this.eirDetails);
       await this.getCodeValuesData();
       this.last_test_desc = this.getLastTest(this.eirDetails);
+      this.publish_by = this.eirDetails?.in_gate?.publish_by || this.authService.currentUserName;
       this.highlightedCellsLeft = this.populateHighlightedCells(this.highlightedCellsLeft, JSON.parse(this.eirDetails?.left_coord || '[]'));
       this.highlightedCellsRear = this.populateHighlightedCells(this.highlightedCellsRear, JSON.parse(this.eirDetails?.rear_coord || '[]'));
       this.highlightedCellsRight = this.populateHighlightedCells(this.highlightedCellsRight, JSON.parse(this.eirDetails?.right_coord || '[]'));
@@ -456,8 +460,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
             context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
           }
 
-          const chunkImgData = canvasChunk.toDataURL('image/jpg');
-          pdf.addImage(chunkImgData, 'JPG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
+          const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
+          pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
 
           // Add Footer
           await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
@@ -482,7 +486,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       const canvas = await html2canvas(headerElement, {
         scale: this.scale,
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
 
       const availableWidth = pageWidth - leftRightMargin * 2; // Width available between margins
       const imgWidth = availableWidth;
@@ -505,7 +509,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       const canvas = await html2canvas(footerElement, {
         scale: this.scale,
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
 
       const availableWidth = pageWidth - leftRightMargin * 2;
       const imgWidth = availableWidth;
@@ -1587,6 +1591,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
               url: response?.url?.[0]
             }
           ];
+          this.publishedEir.emit({ type: 'uploaded', eirPdf: this.eirPdf });
 
           if (this.eirDetails?.in_gate?.eir_status_cv === 'PENDING') {
             // const sotItem = new StoringOrderTankGO(this.eirDetails?.in_gate?.tank);
@@ -1598,7 +1603,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
             this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
               console.log(result)
               if (result.data?.publishIngateSurvey) {
-                this.publishedEir.emit();
+                this.publishedEir.emit({ type: 'published' });
                 let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
                 ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
               }

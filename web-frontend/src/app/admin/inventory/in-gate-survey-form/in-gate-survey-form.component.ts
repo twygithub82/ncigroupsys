@@ -59,13 +59,14 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { PreviewPdfDialogComponent } from 'app/document-template/pdf/preview-pdf/preview-pdf-dialog.component';
 import { TankInfoDS } from 'app/data-sources/tank-info';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 @Component({
   selector: 'app-in-gate',
   standalone: true,
   templateUrl: './in-gate-survey-form.component.html',
   styleUrl: './in-gate-survey-form.component.scss',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -93,6 +94,12 @@ import { TankInfoDS } from 'app/data-sources/tank-info';
     MatCardModule,
     MatStepperModule,
     MatRadioModule,
+  ],
+  providers: [
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: { showError: true },
+    },
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -215,7 +222,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     PHOTOS: 'COMMON-FORM.PHOTOS',
     PUBLISH: 'COMMON-FORM.PUBLISH',
     MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
-    DOM: 'COMMON-FORM.DOM'
+    DOM: 'COMMON-FORM.DOM',
+    MISSING_INFORMATION: 'COMMON-FORM.MISSING-INFORMATION'
   }
 
   in_gate_guid: string | null | undefined;
@@ -672,15 +680,18 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data || [];
+      this.detectChanges();
     });
     this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
       this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
       this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
       if (data.length) {
         this.last_test_desc = this.getLastTest();
         this.next_test_desc = this.getNextTest();
+        this.detectChanges();
       }
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
@@ -688,70 +699,92 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       if (data.length) {
         this.last_test_desc = this.getLastTest();
         this.next_test_desc = this.getNextTest();
+        this.detectChanges();
       }
     });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
       this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('claddingCv').subscribe(data => {
       this.claddingCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('maxGrossWeightCv').subscribe(data => {
       this.maxGrossWeightCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('tankHeightCv').subscribe(data => {
       this.tankHeightCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('walkwayCv').subscribe(data => {
       this.walkwayCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('airlineCv').subscribe(data => {
       this.airlineCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('airlineConnCv').subscribe(data => {
       this.airlineConnCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('disCompCv').subscribe(data => {
       this.disCompCvList = data || [];
+      this.detectChanges();
     });
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
       this.disValveCvList = data || [];
+      this.detectChanges();
     });
     this.cvDS.connectAlias('disValveSpecCv').subscribe(data => {
       this.disValveSpecCvList = data || [];
+      this.detectChanges();
     });
     this.cvDS.connectAlias('disTypeCv').subscribe(data => {
       this.disTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('footValveCv').subscribe(data => {
       this.footValveCvList = data || [];
+      this.detectChanges();
     });
     this.cvDS.connectAlias('manlidCoverCv').subscribe(data => {
       this.manlidCoverCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('manlidSealCv').subscribe(data => {
       this.manlidSealCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('pvSpecCv').subscribe(data => {
       this.pvSpecCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('pvTypeCv').subscribe(data => {
       this.pvTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('thermometerCv').subscribe(data => {
       this.thermometerCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
       this.valveBrandCvList = data || [];
+      this.detectChanges();
     });
     this.cvDS.connectAlias('tankSideCv').subscribe(data => {
       this.tankSideCvList = data || [];
+      this.detectChanges();
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data || [];
+      this.detectChanges();
     });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data || [];
+      this.detectChanges();
     });
 
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
@@ -760,7 +793,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
-          this.dateOfInspection = Utility.convertDate(this.in_gate?.in_gate_survey?.create_dt) as Date;
+          this.dateOfInspection = this.in_gate?.in_gate_survey?.create_dt ? Utility.convertDate(this.in_gate?.in_gate_survey?.create_dt) as Date : new Date();
           this.populateInGateForm(this.in_gate);
           if (!this.in_gate?.tank?.last_release_dt) {
             this.tiDS.getTankInfoForLastTest(this.in_gate!.tank!.tank_no!).subscribe(data => {
@@ -961,7 +994,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.populateTopSideCells(JSON.parse(ig.in_gate_survey?.top_coord || '{}'));
     this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(ig.in_gate_survey?.front_coord || '[]'));
     this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(ig.in_gate_survey?.bottom_coord || '[]'));
-    // this.markForCheck();
+    this.detectChanges();
   }
 
   getImages() {
@@ -1036,7 +1069,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       frontImage: this.patchOrCreateImageForm('FRONT_SIDE', frontImg, this.surveyForm?.get('frame_type.frontImage')),
       bottomImage: this.patchOrCreateImageForm('BOTTOM_SIDE', bottomImg, this.surveyForm?.get('frame_type.bottomImage'))
     });
-    // this.markForCheck();
+    this.detectChanges();
   }
 
   // export table data in excel file
@@ -1078,10 +1111,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
-    this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe(() => {
-      console.log('Event received from MatDialog: publishedEir');
-      if (this.in_gate) {
-        this.in_gate.eir_status_cv = 'PUBLISHED';
+    this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe((result) => {
+      console.log(`Event received from MatDialog: publishedEir type = ${result?.type}`);
+      if (result?.type === 'published') {
+        if (this.in_gate) {
+          this.in_gate.eir_status_cv = 'PUBLISHED';
+        }
+      } else if (result?.type === 'uploaded') {
+        this.eirPdf = result?.eirPdf;
       }
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -1464,7 +1501,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           const preview = reader.result as string | ArrayBuffer;
           tankSideForm.get('file')?.setValue(file);
           tankSideForm.get('preview')?.setValue(preview);
-          // this.markForCheck();
+          this.detectChanges();
         };
         reader.readAsDataURL(file);
       });
@@ -1480,7 +1517,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         reader.onload = () => {
           const preview = reader.result as string | ArrayBuffer;
           this.dmgImages().push(this.createImageForm('', preview, file));
-          // this.markForCheck();
+          this.detectChanges();
         };
         reader.readAsDataURL(file);
       });
@@ -1536,7 +1573,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           imgForm.patchValue({
             preview: ''
           });
-          // this.markForCheck();
+          this.detectChanges();
           this.handleDeleteSuccess(1);
         } else if (Utility.isUrl(url)) {
           this.fileManagerService.deleteFile([url]).subscribe({
@@ -1545,7 +1582,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
               imgForm.patchValue({
                 preview: ''
               });
-              // this.markForCheck();
+              this.detectChanges();
               this.handleDeleteSuccess(response);
             },
             error: (error) => {
@@ -1585,14 +1622,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       if (result.action === 'confirmed') {
         if (Utility.isBase64Url(url)) {
           this.dmgImages().removeAt(index);
-          // this.markForCheck();
+          this.detectChanges();
           this.handleDeleteSuccess(1);
         } else if (Utility.isUrl(url)) {
           this.fileManagerService.deleteFile([url]).subscribe({
             next: (response) => {
               console.log('Files delete successfully:', response);
               this.dmgImages().removeAt(index);
-              // this.markForCheck();
+              this.detectChanges();
               this.handleDeleteSuccess(response);
             },
             error: (error) => {
@@ -1676,7 +1713,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         } else {
           this.resetHighlightedCells(highlightedCells);
         }
-        // this.markForCheck();
+        this.detectChanges();
       }
     });
   }
@@ -1805,7 +1842,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     event.preventDefault(); // Prevents the form submission
   }
 
-  // markForCheck() {
-  //   this.cdr.markForCheck(); // Trigger change detection manually
-  // }
+  detectChanges() {
+    this.cdr.markForCheck(); // Trigger change detection manually
+  }
 }

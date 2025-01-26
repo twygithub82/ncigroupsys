@@ -150,13 +150,13 @@
             </div>
             <div class="image-container frame-rect">
               <img mat-card-image src="assets/images/idms/tank_frame_type/backup/top_side.png" class="img-fluid">
-              <div [ngClass]="{'grid-overlay': true, 'to-mark': false}">
+              <div [ngClass]="{'grid-overlay': true, 'to-mark': true}">
                 @for (cell of cells; track cell; let index = $index) {
                 <div [ngClass]="{ highlighted: highlightedCellsTop[index] }" [attr.data-index]="index">
                 </div>
                 }
               </div>
-              <div [ngClass]="{'custom-container': true, 'to-mark opacity-75': true}">
+              <div [ngClass]="{'custom-container': true, 'to-mark opacity-75': false}">
                 <div class="outer-layer">
                   <div class="outer-top">
                   </div>
