@@ -169,7 +169,7 @@
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <mat-stepper class="example-stepper" [orientation]="(stepperOrientation | async)!" #stepper>
-                  <mat-step [stepControl]="getTankDetailsFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                  <mat-step [stepControl]="getTankDetailsFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid ? true : getTankDetailsFormGroup().valid">
                     <form [formGroup]="getTankDetailsFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -381,7 +381,7 @@
                       </div>
                     </form>
                   </mat-step>
-                  <mat-step [stepControl]="getPeriodicTestFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                  <mat-step [stepControl]="getPeriodicTestFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid ? true : getPeriodicTestFormGroup().valid">
                     <form [formGroup]="getPeriodicTestFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -489,7 +489,7 @@
                     </form>
                   </mat-step>
                   <mat-step [stepControl]="getInGateDetailsFormGroup()"
-                    [completed]="this.in_gate?.in_gate_survey?.guid">
+                    [completed]="this.in_gate?.in_gate_survey?.guid ? true : getInGateDetailsFormGroup().valid">
                     <form [formGroup]="getInGateDetailsFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -588,7 +588,7 @@
                       </div>
                     </form>
                   </mat-step>
-                  <mat-step [stepControl]="getFrameTypeFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                  <mat-step [stepControl]="getFrameTypeFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid ? true : getFrameTypeFormGroup().valid">
                     <form [formGroup]="getFrameTypeFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -1554,7 +1554,7 @@
                         @if (!(igDS.loading$ | async)) {
                         <mat-stepper class="example-stepper" [orientation]="(compTypeStepperOrientation | async)!">
                           <mat-step [stepControl]="getBottomFormGroup()"
-                            [completed]="this.in_gate?.in_gate_survey?.guid">
+                            [completed]="this.in_gate?.in_gate_survey?.guid ? true : getBottomFormGroup().valid">
                             <form [formGroup]="getBottomFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.BOTTOM}}</ng-template>
                               <div class="row">
@@ -1684,7 +1684,7 @@
                               </div>
                             </form>
                           </mat-step>
-                          <mat-step [stepControl]="getTopFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                          <mat-step [stepControl]="getTopFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid ? true : getTopFormGroup().valid">
                             <form [formGroup]="getTopFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.TOP}}</ng-template>
                               <div class="row">
@@ -1836,7 +1836,7 @@
                             </form>
                           </mat-step>
                           <mat-step [stepControl]="getManlidFormGroup()"
-                            [completed]="this.in_gate?.in_gate_survey?.guid">
+                            [completed]="this.in_gate?.in_gate_survey?.guid ? true : getManlidFormGroup().valid">
                             <form [formGroup]="getManlidFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.MANLID}}</ng-template>
                               <div class="row">
@@ -2029,20 +2029,21 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
                           <!-- <ng-container #dynamicContainer></ng-container> -->
-                           @if (canPublish()) {
-                            <button mat-raised-button matStepperNext color="primary" class="msr-2"
-                              [disabled]="(igsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"
-                              (click)="onPublish()">
-                              <mat-icon>
-                                @if (!(igsDS.actionLoading$ | async) && !(isImageLoading$| async) && !(isFileActionLoading$| async)) {
-                                publish
-                                } @else {
-                                <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                                }
-                              </mat-icon>
-                              {{translatedLangText.PUBLISH}}
-                            </button>
-                           }
+                          @if (canPublish()) {
+                          <button mat-raised-button matStepperNext color="primary" class="msr-2"
+                            [disabled]="(igsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"
+                            (click)="onPublish()">
+                            <mat-icon>
+                              @if (!(igsDS.actionLoading$ | async) && !(isImageLoading$| async) &&
+                              !(isFileActionLoading$| async)) {
+                              publish
+                              } @else {
+                              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                              }
+                            </mat-icon>
+                            {{translatedLangText.PUBLISH}}
+                          </button>
+                          }
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
                             [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
                             (click)="onFormSubmit()">

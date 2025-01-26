@@ -103,7 +103,7 @@ export class HeaderComponent
     const val = this.listLang.filter((x) => x.lang === this.langStoreValue);
     this.countryName = val.map((element) => element.text);
 
-    this.name = this.authService.currentUserValue.name;
+    this.name = this.authService.currentUserName;
     this.NotificationSubscribe();
     this.searchNotificationRecords();
     if (val.length === 0) {
