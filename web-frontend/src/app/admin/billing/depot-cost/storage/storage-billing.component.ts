@@ -744,7 +744,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: {
           headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
-          action: 'new',
+          action: 'confirm_only',
         },
         direction: tempDirection
       });

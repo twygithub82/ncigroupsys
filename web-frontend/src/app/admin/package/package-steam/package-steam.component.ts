@@ -292,6 +292,7 @@ implements OnInit {
     this.initializeFilterCustomerCompany();
     this.loadData();
     this.translateLangText();
+    this.search();
   }
 
   translateLangText() {

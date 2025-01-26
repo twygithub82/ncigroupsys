@@ -280,6 +280,7 @@ implements OnInit {
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.search();
   }
 
   translateLangText() {
@@ -633,7 +634,8 @@ implements OnInit {
     this.CodeValuesDS?.connectAlias('hazardLevel').subscribe(data => {
       this.hazardLevelCvList=data;
     });
-  
+    
+    
   }
   showNotification(
     colorName: string,

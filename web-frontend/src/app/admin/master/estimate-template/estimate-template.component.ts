@@ -341,6 +341,10 @@ implements OnInit {
       }
 
     }
+    else
+    {
+      this.search();
+    }
     
   }
 

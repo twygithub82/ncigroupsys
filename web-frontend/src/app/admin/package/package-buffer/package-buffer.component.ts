@@ -291,6 +291,7 @@ implements OnInit {
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.search();
   }
 
   initPcForm() {
@@ -621,6 +622,7 @@ implements OnInit {
      // this.customer_companyList1 = data
     });
 
+    
     // this.subs.sink = this.packBuffDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
 
     // const queries = [

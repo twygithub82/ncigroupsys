@@ -742,12 +742,14 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: {
           headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
-          action: 'new',
+          action: 'confirm_only',
         },
         direction: tempDirection
       });
       dialogRef.afterClosed();
     }
+
+
     ConfirmUpdateBilling(event:Event, billingItem:BillingItem)
     {
       event.preventDefault(); // Prevents the form submission

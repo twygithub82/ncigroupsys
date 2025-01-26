@@ -321,6 +321,10 @@ implements OnInit {
       }
 
     }
+    else
+    {
+      this.search();
+    }
   }
 
   initPcForm() {
@@ -733,6 +737,7 @@ implements OnInit {
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
+  
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
 

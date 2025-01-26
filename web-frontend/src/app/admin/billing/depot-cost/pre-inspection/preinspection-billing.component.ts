@@ -741,7 +741,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: {
           headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
-          action: 'new',
+          action: 'confirm_only',
         },
         direction: tempDirection
       });

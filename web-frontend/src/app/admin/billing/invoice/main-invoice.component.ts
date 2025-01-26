@@ -129,7 +129,7 @@ export class MainInvoiceComponent extends UnsubscribeOnDestroyAdapter implements
     'status_cv'
   ];
 
-  pageTitle = 'COMMON-FORM.CLEANING'
+  pageTitle = 'MENUITEMS.BILLING.LIST.INVOICES'
   breadcrumsMiddleList = [
     'MENUITEMS.BILLING.TEXT'
   ]
@@ -337,7 +337,7 @@ export class MainInvoiceComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   public loadData() {
-    this.onFilterCleaning();
+   // this.onFilterCleaning();
   //  this.onFilterJobOrder();
 
     const queries = [
@@ -1036,4 +1036,6 @@ export class MainInvoiceComponent extends UnsubscribeOnDestroyAdapter implements
     //   this.bayOverviewComponent.RefreshContent();
     // }
   }
+  
+
 }

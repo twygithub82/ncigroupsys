@@ -746,7 +746,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
          data: {
            headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
-           action: 'new',
+           action: 'confirm_only',
          },
          direction: tempDirection
        });
@@ -786,7 +786,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
        updateBilling.guid=billingItem.guid;
        updateBilling.currency_guid=billingItem.currency_guid;
        updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
-       updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDue));
+       updateBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
        updateBilling.status_cv=billingItem.status_cv;
        updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
        

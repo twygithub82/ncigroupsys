@@ -1,0 +1,146 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h3>{{this.translatedLangText.UPDATE}} {{this.translatedLangText.INVOICES}} </h3>
+      </div>
+    </div>
+    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button> -->
+  </div>
+  <div mat-dialog-content class="auto-height">
+    <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
+        <div class="card">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
+                    <input matInput formControlName="invoice_no">
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
+                    <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date" formControlName="invoice_dt">
+                    <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
+                    <mat-datepicker #invoice_date_picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row" >
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{translatedLangText.CUSTOMER_COMPANY}}</mat-label>
+                    <input matInput formControlName="bill_to_customer_company" [formControl]="customerCodeControl"
+                      [matAutocomplete]="customerCode" required>
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                      @for (cc of customer_companyList; track cc) {
+                      <mat-option [value]="cc">
+                        {{ccDS.displayName(cc)}}
+                      </mat-option>
+                      }
+                    </mat-autocomplete>
+                    @if (this.customerCodeControl.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.CUSTOMER_COMPANY}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+                    <input matInput formControlName="branch_code" [formControl]="branchCodeControl"
+                      [matAutocomplete]="branchCode">
+                    <mat-autocomplete #branchCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                      @for (cc of branch_companyList; track cc) {
+                      <mat-option [value]="cc">
+                        {{ccDS.displayName(cc)}}
+                      </mat-option>
+                      }
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-5 col-lg-5 col-md-12 col-sm12 mb-1">
+              <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.CONVERSION_CURRENCY }}</mat-label>
+                  <mat-select  formControlName="currency" >
+                      <mat-option *ngFor="let cc of currencyList" [value]="cc">
+                        <ng-container *ngIf="cc !== null">
+                          {{cc.currency_code }}
+                        </ng-container>
+                       
+                      </mat-option>
+                    </mat-select>
+              </mat-form-field>
+              
+            </div>
+            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                <input matInput formControlName="remarks" type="text" >
+              </mat-form-field>
+            </div>
+            
+          </div>
+          <div class="row">
+            <div class="materialTableHeader">
+            </div>
+            <div class="body overflow-auto">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
+                  
+                  <ng-container matColumnDef="cust_code">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE }}:</span>{{row.customer_company.code}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="cust_name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="inv_no">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.INVOICE_NO }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.INVOICE_NO }}:</span>{{row.invoice_no}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="inv_dt">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.INVOICE_DATE }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.INVOICE_DATE }}:</span>{{displayDate(row.invoice_dt)}}</mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" 
+                    [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        </div>
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+          <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.UPDATE}}</button>
+        }
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

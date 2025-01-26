@@ -742,7 +742,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: {
           headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
-          action: 'new',
+          action: 'confirm_only',
         },
         direction: tempDirection
       });

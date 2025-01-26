@@ -326,6 +326,8 @@ implements OnInit {
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.search();
+    
   }
 
   initPcForm() {

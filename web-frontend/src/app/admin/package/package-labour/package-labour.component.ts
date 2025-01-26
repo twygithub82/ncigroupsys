@@ -280,6 +280,7 @@ implements OnInit {
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.search();
   }
 
   translateLangText() {
