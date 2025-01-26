@@ -265,6 +265,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   unitTypeCvList: CodeValuesItem[] = [];
 
   scale = 1.1;
+  imageQuality = 0.85;
 
   generatedPDF: any;
   repairEstimatePdf?: any;
@@ -473,7 +474,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       for (const row of rows) {
         // Render each row to canvas
         const rowCanvas = await html2canvas(row as HTMLElement, { scale: this.scale });
-        const rowImg = rowCanvas.toDataURL('image/png');
+        const rowImg = rowCanvas.toDataURL('image/jpeg', this.imageQuality);
         const rowHeight = (rowCanvas.height * (pageWidth - leftRightMarginBody * 2)) / rowCanvas.width;
         currentRowCount++;
 
@@ -502,7 +503,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
 
       // Add remarks section
-      const remarksImg = remarksCanvas.toDataURL('image/png');
+      const remarksImg = remarksCanvas.toDataURL('image/jpeg', this.imageQuality);
 
       console.log('Remarks Height:', remarksHeight);
 
@@ -527,7 +528,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       yOffset += remarksHeight;
 
       // Add summary content
-      const summaryImg = summaryCanvas.toDataURL('image/png');
+      const summaryImg = summaryCanvas.toDataURL('image/jpeg', this.imageQuality);
 
       // Calculate remaining space for summary content
       const remainingSpace = pageHeight - yOffset - footerHeight - bottomMargin;
@@ -581,7 +582,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       const canvas = await html2canvas(headerElement, {
         scale: this.scale,
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
 
       const availableWidth = pageWidth - leftRightMargin * 2; // Width available between margins
       const imgWidth = availableWidth;
@@ -606,7 +607,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       const canvas = await html2canvas(footerElement, {
         scale: this.scale, // Set scale to match PDF resolution
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
 
       // Calculate dimensions for the footer image
       const availableWidth = pageWidth - leftRightMargin * 2;

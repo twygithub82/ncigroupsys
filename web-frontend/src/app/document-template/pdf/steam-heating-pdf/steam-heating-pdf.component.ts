@@ -265,6 +265,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   unitTypeCvList: CodeValuesItem[] = [];
 
   scale = 1.1;
+  imageQuality = 0.85;
 
   generatedPDF: any;
   existingPdf?: any;
@@ -468,7 +469,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       for (const row of rows) {
         // Render each row to canvas
         const rowCanvas = await html2canvas(row as HTMLElement, { scale: this.scale });
-        const rowImg = rowCanvas.toDataURL('image/png');
+        const rowImg = rowCanvas.toDataURL('image/jpeg', this.imageQuality);
         const rowHeight = (rowCanvas.height * (pageWidth - leftRightMarginBody * 2)) / rowCanvas.width;
         currentRowCount++;
 
@@ -497,7 +498,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       }
 
       // Add summary content
-      const summaryImg = summaryCanvas.toDataURL('image/png');
+      const summaryImg = summaryCanvas.toDataURL('image/jpeg', this.imageQuality);
 
       // Calculate remaining space for summary content
       const remainingSpace = pageHeight - yOffset - footerHeight - bottomMargin;
@@ -551,7 +552,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       const canvas = await html2canvas(headerElement, {
         scale: this.scale,
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
 
       const availableWidth = pageWidth - leftRightMargin * 2; // Width available between margins
       const imgWidth = availableWidth;
@@ -576,7 +577,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       const canvas = await html2canvas(footerElement, {
         scale: this.scale, // Set scale to match PDF resolution
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
 
       // Calculate dimensions for the footer image
       const availableWidth = pageWidth - leftRightMargin * 2;

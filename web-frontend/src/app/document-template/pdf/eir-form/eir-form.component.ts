@@ -269,6 +269,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   tankStatusCvList: CodeValuesItem[] = [];
 
   scale = 1.1;
+  imageQuality = 0.85;
 
   generatedPDF: any;
   eirPdf?: any;
@@ -456,8 +457,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
             context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
           }
 
-          const chunkImgData = canvasChunk.toDataURL('image/jpg');
-          pdf.addImage(chunkImgData, 'JPG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
+          const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
+          pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
 
           // Add Footer
           await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
@@ -482,7 +483,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       const canvas = await html2canvas(headerElement, {
         scale: this.scale,
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
 
       const availableWidth = pageWidth - leftRightMargin * 2; // Width available between margins
       const imgWidth = availableWidth;
@@ -505,7 +506,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       const canvas = await html2canvas(footerElement, {
         scale: this.scale,
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
 
       const availableWidth = pageWidth - leftRightMargin * 2;
       const imgWidth = availableWidth;
