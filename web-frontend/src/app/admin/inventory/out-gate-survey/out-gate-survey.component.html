@@ -31,13 +31,13 @@
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                 <div class="row">
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                       <input matInput formControlName="tank_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                       <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -56,7 +56,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -75,19 +75,19 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                       <input matInput formControlName="eir_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.RO_NO}}</mat-label>
                       <input matInput formControlName="ro_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
                       <mat-select formControlName="tank_status_cv">
@@ -99,7 +99,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_STATUS}}</mat-label>
                       <mat-select formControlName="eir_status_cv">
@@ -111,7 +111,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="eta_picker">
@@ -122,7 +122,7 @@
                       <mat-date-range-picker #eta_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
                       <mat-select multiple formControlName="purpose">
@@ -159,35 +159,43 @@
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="tank_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.TANK_NO}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.tank?.tank_no}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <span
                       class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.tank?.storing_order?.customer_company)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.EIR_NO}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.eir_no}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_dt">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.RELEASE_DATE}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <span class="mobile-label">{{translatedLangText.RELEASE_DATE}}:</span>{{displayDate(row.eir_dt)}}
                   </mat-cell>
                 </ng-container>
@@ -201,18 +209,22 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="purpose">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.PURPOSE}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <span class="mobile-label">{{translatedLangText.PURPOSE}}:</span>{{displayTankPurpose(row.tank)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_status_cv">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <span
                       class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{getEirStatusDescription(row.eir_status_cv)}}
                   </mat-cell>
@@ -227,8 +239,8 @@
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/inventory/out-gate-survey/survey-form', row.guid, row.tank?.release_order_sot?.[0]?.guid]" [style.cursor]="'pointer'"
-                  matRipple>
+                  [routerLink]="['/admin/inventory/out-gate-survey/survey-form', row.guid, row.tank?.release_order_sot?.[0]?.guid]"
+                  [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>
