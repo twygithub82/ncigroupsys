@@ -71,7 +71,9 @@
               {{translatedLangText.DATE_OF_INSPECTION}}:<br><b>{{displayDate(eirDetails?.create_dt)}}</b></td>
           </tr>
           <tr>
-            <td>{{translatedLangText.OPERATOR}}:<br><b>{{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b></td>
+            <td>
+              {{translatedLangText.OPERATOR}}:<br><b>{{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b>
+            </td>
             <td>{{translatedLangText.OWNER}}:<br><b>{{eirDetails?.in_gate?.tank?.customer_company?.name}}</b></td>
             <td>{{translatedLangText.LAST_CARGO}}:<br><b>{{eirDetails?.in_gate?.tank?.tariff_cleaning?.cargo}}</b></td>
             <td>{{translatedLangText.LAST_TEST}}:<br><b>{{last_test_desc}}</b></td>
@@ -863,7 +865,8 @@
 </div>
 <div mat-dialog-actions class="mb-2 mt-2 me-2 align-right">
   @if (this.eirPdf?.length) {
-  <button mat-flat-button (click)="onDownloadClick()" tabindex="-1" [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+  <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
       @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
       file_download
@@ -874,7 +877,8 @@
     {{translatedLangText.DOWNLOAD}}
   </button>
   }
-  <button mat-flat-button color="primary" (click)="onRepublishClick()" tabindex="-1" [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+  <button mat-flat-button color="accent" (click)="onRepublishClick()" tabindex="-1"
+    [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
       @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
       publish
@@ -884,4 +888,7 @@
     </mat-icon>
     {{translatedLangText.REPUBLISH}}
   </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
 </div>

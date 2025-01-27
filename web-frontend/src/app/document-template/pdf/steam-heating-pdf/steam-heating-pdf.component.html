@@ -397,7 +397,7 @@
     {{translatedLangText.DOWNLOAD}}
   </button>
   }
-  <button mat-flat-button color="primary" (click)="onRepublshClick()" tabindex="-1"
+  <button mat-flat-button color="accent" (click)="onRepublshClick()" tabindex="-1"
     [disabled]="(repairDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
       @if (!(repairDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {

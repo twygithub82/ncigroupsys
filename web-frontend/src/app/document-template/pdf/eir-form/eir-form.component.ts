@@ -29,6 +29,7 @@ import { StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/stori
 // import { fileSave } from 'browser-fs-access';
 import { StoringOrderGO } from 'app/data-sources/storing-order';
 import { AuthService } from '@core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 export interface DialogData {
   type: string;
@@ -52,6 +53,7 @@ export interface DialogData {
     MatIconModule,
     CommonModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule
   ],
 })
 export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -280,6 +282,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
+  generatingPdfProgress = 0;
 
   constructor(
     public dialogRef: MatDialogRef<EirFormComponent>,
@@ -413,6 +416,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     if (this.type === "in") {
       try {
         this.generatingPdfLoadingSubject.next(true);
+        this.generatingPdfProgress = 0;
         const canvas = await html2canvas(element, {
           scale: this.scale, // Increase resolution
         });
@@ -443,6 +447,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
           // Add Header and get its height
           const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
+          this.generatingPdfProgress += 33;
 
           // Adjust usable height by subtracting header height
           const adjustedUsableHeight = usableHeight - headerHeight;
@@ -462,9 +467,11 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
           const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
           pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
+          this.generatingPdfProgress += 33;
 
           // Add Footer
           await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+          this.generatingPdfProgress = 100;
 
           yOffset += chunkHeight;
           currentPage++;
