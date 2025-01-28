@@ -68,49 +68,49 @@
                 </div>
                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                    <div class="col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.EIR_NO}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                    <div class="col-xl-8 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
                         {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
                       </div>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                    <div class="col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.EIR_DATE}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                    <div class="col-xl-8 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
                         {{displayDateTime(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
                       </div>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                    <div class="col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.PURPOSE}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                    <div class="col-xl-8 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">{{displayTankPurpose(sotItem!)}}
                       </div>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                    <div class="col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.LAST_TEST}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                    <div class="col-xl-8 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
                         {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
                       </div>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                    <div class="col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.NEXT_TEST}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                    <div class="col-xl-8 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
                         {{getNextTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
                       </div>
@@ -362,7 +362,7 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-auto-md tbl-col-width-auto-sm tbl-col-width-auto-xs'">
-                        <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
+                        <span class="mobile-label">{{translatedLangText.APPROVAL}}:</span>
                         @if (repairPartDS.is4X(row.rp_damage_repair)){
                         <mat-icon class="font-bold">close</mat-icon>
                         }
@@ -489,7 +489,7 @@
               }
               @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 m-b-0">
+                <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <mat-form-field class="example-full-width">
@@ -520,7 +520,7 @@
                     </div> -->
                   </div>
                 </div>
-                <div class="col-xl-8-5 col-lg-8-5 col-md-12 col-sm-12 m-b-0">
+                <div class="col-xl-8-5 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row p-l-5 p-r-10">
                     <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 m-b-0">
                       <div class="row">
