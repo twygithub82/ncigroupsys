@@ -7,7 +7,7 @@
     </div>
     <form class="ms-0" [formGroup]="ccForm!" (ngSubmit)="onCustomerFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
             <div class="header">
               <h2>
@@ -18,7 +18,7 @@
             
              
               <div class="row">
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
                     <input matInput formControlName="customer_code" required>
@@ -34,7 +34,7 @@
                         }
                   </mat-form-field>
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CUSTOMER_TYPE }}</mat-label>
                       <mat-select  formControlName="customer_type" required >
@@ -50,7 +50,7 @@
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CUSTOMER_NAME }}</mat-label>
                       <input matInput formControlName="customer_name" required >
@@ -61,7 +61,7 @@
                         }
                   </mat-form-field>
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
 
@@ -97,14 +97,14 @@
               </div>
               <div class="row">
             
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.PHONE }}</mat-label>
                       <input matInput formControlName="phone" required>
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.EMAIL }}</mat-label>
                       <input matInput formControlName="email" required>
@@ -122,14 +122,14 @@
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.WEB }}</mat-label>
                       <input matInput formControlName="web" >
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CONVERSION_CURRENCY }}</mat-label>
                       <mat-select  formControlName="currency" required>
@@ -149,7 +149,7 @@
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.DEFAULT_PROFILE }}</mat-label>
                       <mat-select  formControlName="default_profile" required >
@@ -171,7 +171,7 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.ADDRESS_LINE1}}</mat-label>
                     <input matInput formControlName="address1" required>
@@ -182,14 +182,14 @@
                       }
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.ADDRESS_LINE2 }}</mat-label>
                       <input matInput formControlName="address2">
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.POSTAL_CODE }}</mat-label>
                       <input matInput formControlName="postal_code" required maxlength="10">
@@ -201,14 +201,14 @@
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CITY_NAME }}</mat-label>
                       <input matInput formControlName="city_name">
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
                       <input matInput formControlName="country" required>
@@ -217,13 +217,13 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 mb-1">
+                <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.REMARKS}}</mat-label>
                     <input matInput formControlName="remarks" >
                   </mat-form-field>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                     (click)="addContactPerson($event)">

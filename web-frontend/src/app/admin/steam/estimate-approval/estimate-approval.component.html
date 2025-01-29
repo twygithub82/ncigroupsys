@@ -21,13 +21,13 @@
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                 <div class="row">
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                       <input matInput formControlName="tank_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                       <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -41,7 +41,7 @@
                       </mat-autocomplete>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -60,7 +60,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="eir_picker">
@@ -71,13 +71,13 @@
                       <mat-date-range-picker #eir_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                       <input matInput formControlName="part_name">
                     </mat-form-field>
                   </div>
-                  <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CHANGE_REQUEST}}</mat-label>
                       <mat-select formControlName="change_request_cv">
@@ -89,19 +89,19 @@
                       </mat-select>
                     </mat-form-field>
                   </div> -->
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                       <input matInput formControlName="eir_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                       <input matInput formControlName="job_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="est_picker">
@@ -112,7 +112,7 @@
                       <mat-date-range-picker #est_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.APPROVAL_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="approval_picker">
@@ -123,7 +123,7 @@
                       <mat-date-range-picker #approval_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                       <mat-select multiple formControlName="est_status_cv">
@@ -138,7 +138,7 @@
                       
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm3 mb-1">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.TANK_STATUS }}</mat-label>
                         <mat-select formControlName="tank_status" multiple>
@@ -166,7 +166,7 @@
                     </mat-form-field>
                     
                   </div>
-                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 d-flex align-items-center">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>
