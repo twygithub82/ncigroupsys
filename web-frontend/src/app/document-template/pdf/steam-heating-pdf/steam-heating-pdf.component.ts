@@ -32,6 +32,8 @@ import { RepairPartDS } from 'app/data-sources/repair-part';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { SteamDS } from 'app/data-sources/steam';
+import { SteamPartDS } from 'app/data-sources/steam-part';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -232,8 +234,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   type?: string | null;
-  repairDS: RepairDS;
-  repairPartDS: RepairPartDS;
+  steamDS: SteamDS;
+  steamPartDS: SteamPartDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
@@ -288,8 +290,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     private sanitizer: DomSanitizer) {
     super();
     this.translateLangText();
-    this.repairDS = new RepairDS(this.apollo);
-    this.repairPartDS = new RepairPartDS(this.apollo);
+    this.steamDS = new SteamDS(this.apollo);
+    this.steamPartDS = new SteamPartDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -323,7 +325,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     this.existingPdf = pdfData ?? this.existingPdf;
     console.log(this.existingPdf)
     if (!this.existingPdf?.length) {
-      this.generatePDF();
+      //this.generatePDF();
     }
     // else {
     //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
@@ -331,82 +333,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     //   this.existingPdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
     // }
   }
-
-  // async generatePDF(): Promise<void> {
-  //   const repTableElement = document.getElementById('repair-part-table');
-  //   if (!repTableElement) {
-  //     console.error('Template element not found');
-  //     return;
-  //   }
-
-  //   try {
-  //     this.generatingPdfLoadingSubject.next(true);
-  //     const rows = repTableElement.querySelectorAll('tr');
-  //     const canvas = await html2canvas(element, {
-  //       scale: this.scale, // Increase resolution
-  //     });
-
-  //     const pdf = new jsPDF('p', 'mm', 'a4');
-  //     const pageWidth = pdf.internal.pageSize.width; // A4 page width
-  //     const pageHeight = pdf.internal.pageSize.height; // A4 page height
-  //     const leftRightMargin = 5; // Fixed left and right margins
-  //     const topMargin = 5; // Reduced top margin
-  //     const bottomMargin = 5; // Reduced bottom margin
-  //     const usableHeight = pageHeight - topMargin - bottomMargin; // Increased usable height
-
-  //     // Calculate natural dimensions for the body content
-  //     const imgWidth = canvas.width * 0.264583; // Convert px to mm
-  //     const imgHeight = canvas.height * 0.264583;
-  //     const aspectRatio = imgWidth / imgHeight;
-
-  //     // Calculate scaled width and height to fit the page without stretching
-  //     const scaledWidth = pageWidth - leftRightMargin * 2; // Adjusted width with fixed margins
-  //     const scaledHeight = scaledWidth / aspectRatio;
-
-  //     let yOffset = 0;
-  //     let currentPage = 1;
-  //     const totalPages = Math.ceil(imgHeight / usableHeight);
-
-  //     while (yOffset < imgHeight) {
-  //       if (yOffset > 0) pdf.addPage();
-
-  //       // Add Header and get its height
-  //       const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-
-  //       // Adjust usable height by subtracting header height
-  //       const adjustedUsableHeight = usableHeight - headerHeight;
-
-  //       // Add Body Content
-  //       const chunkHeight = Math.min(imgHeight - yOffset, adjustedUsableHeight);
-  //       const canvasChunk = document.createElement('canvas');
-  //       const context = canvasChunk.getContext('2d');
-
-  //       // Create a new canvas for the current chunk
-  //       canvasChunk.width = canvas.width;
-  //       canvasChunk.height = (chunkHeight * canvas.height) / imgHeight;
-
-  //       if (context) {
-  //         context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
-  //       }
-
-  //       const chunkImgData = canvasChunk.toDataURL('image/png');
-  //       pdf.addImage(chunkImgData, 'PNG', leftRightMargin, (topMargin) + headerHeight, scaledWidth, scaledHeight);
-
-  //       // Add Footer
-  //       await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-
-  //       yOffset += chunkHeight;
-  //       currentPage++;
-  //     }
-  //     pdf.save(`ESTIMATE-${this.repairItem?.estimate_no}.pdf`);
-  //     // this.generatedPDF = pdf.output('blob');
-  //     // this.uploadEir(this.eirDetails?.guid, this.generatedPDF);
-  //     this.generatingPdfLoadingSubject.next(false);
-  //   } catch (error) {
-  //     console.error('Error generating PDF:', error);
-  //   }
-  //   return;
-  // }
 
   async generatePDF(): Promise<void> {
     const repTableElement = document.getElementById('steam-heating-log-table');
@@ -615,7 +541,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   getRepairData(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.repairDS.getRepairByIDForPdf(this.repair_guid!, this.customer_company_guid!).subscribe({
+      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.repair_guid!).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
@@ -719,30 +645,30 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-    if (newData?.length) {
-      newData = newData.map((row) => ({
-        ...row,
-        tariff_repair: {
-          ...row.tariff_repair,
-          sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
-        }
-      }));
+    // if (newData?.length) {
+    //   newData = newData.map((row) => ({
+    //     ...row,
+    //     tariff_repair: {
+    //       ...row.tariff_repair,
+    //       sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
+    //     }
+    //   }));
 
-      console.log('Before sort', newData);
-      newData = this.repairPartDS.sortAndGroupByGroupName(newData);
-      console.log('After sort', newData);
-      // newData = [...this.sortREP(newData)];
+    //   console.log('Before sort', newData);
+    //   newData = this.repairPartDS.sortAndGroupByGroupName(newData);
+    //   console.log('After sort', newData);
+    //   // newData = [...this.sortREP(newData)];
 
-      this.repList = newData.map((row, index) => ({
-        ...row,
-        index: index
-      }));
-      console.log(this.repList);
-      this.calculateCost();
-    } else {
-      this.repList = [];
-      this.calculateCost();
-    }
+    //   this.repList = newData.map((row, index) => ({
+    //     ...row,
+    //     index: index
+    //   }));
+    //   console.log(this.repList);
+    //   this.calculateCost();
+    // } else {
+    //   this.repList = [];
+    //   this.calculateCost();
+    // }
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {
@@ -842,8 +768,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   calculateCost() {
-    this.repairCost = this.repairDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
-    console.log(this.repairCost)
+    // this.repairCost = this.steamDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
+    // console.log(this.repairCost)
   }
 
   async onDownloadClick() {
