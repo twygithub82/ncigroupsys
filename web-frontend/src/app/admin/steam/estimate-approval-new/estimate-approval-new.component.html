@@ -310,10 +310,10 @@
                     
                     </ng-container>
                     <ng-container matColumnDef="desc">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.DESCRIPTION}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row"[ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}">
@@ -321,10 +321,10 @@
                       </mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="qty">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.QUANTITY}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <tlx-form-field customClass="mat-table-form-txt-40px">
                           <mat-form-field>
                             @if(IsApproved())
@@ -347,10 +347,10 @@
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="hour">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.HOUR}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <tlx-form-field customClass="mat-table-form-txt-40px">
                           <mat-form-field>
                             @if(IsApproved())
@@ -373,10 +373,10 @@
                     </ng-container>
               
                     <ng-container matColumnDef="unit_price">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.UNIT_PRICE}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <tlx-form-field customClass="mat-table-form-txt-40px">
                           <mat-form-field>
                             @if(IsApproved())

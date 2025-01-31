@@ -16,6 +16,67 @@ import { StoringOrderTankItem } from "./storing-order-tank";
 import { TariffDepotGO, TariffDepotItem } from "./tariff-depot";
 
 
+export class report_billing_customer{
+  guid?:string;
+  customer?:string;
+  invoice_period?:string;
+  items?:report_billing_item[];
+
+  constructor(item: Partial<report_billing_customer> = {}) {
+    this.guid = item.guid;
+    if (!this.guid) this.guid = '';
+    
+    this.customer=item.customer;
+    this.invoice_period=item.invoice_period;
+    this.items=item.items;
+
+
+  }
+}
+export class report_billing_item {
+   sot_guid?:string
+   job_no?: string;
+   tank_no?:string;
+   eir_no?: string;
+   last_cargo?:string;
+   in_date?:string;
+   out_date?:string;
+   clean_cost?:string;
+   repair_cost?:string;
+   preins_cost?:string;
+   lolo_cost?:string;
+    days?:string;
+   storage_cost?:string;
+   steam_cost?:string;
+   periodic_test?:string;
+   residue_cost?:string;
+   gateio_cost?:string;
+   other_cost?:string;
+   total?:string;
+   constructor(item: Partial<report_billing_item> = {}) {
+    this.job_no = item.job_no;
+    this.sot_guid=item.sot_guid;
+    
+    this.tank_no=item.tank_no;
+    this.eir_no=item.eir_no;
+    this.last_cargo= item.last_cargo;
+    this.in_date=item.in_date;
+    this.out_date=item.out_date;
+    this.clean_cost=item.clean_cost;
+
+    this.repair_cost=item.repair_cost;
+    this.preins_cost = item.preins_cost;
+    this.lolo_cost = item.lolo_cost;
+    this.days = item.days;
+    this.storage_cost = item.storage_cost;
+    this.steam_cost = item.steam_cost;
+    this.periodic_test = item.periodic_test;
+    this.residue_cost = item.residue_cost;
+    this.other_cost = item.other_cost;
+    this.gateio_cost=item.gateio_cost;
+    this.total = item.total;
+  }
+}
 
 export class BillingGo {
     public guid?: string;
@@ -215,6 +276,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
             storage_cal_cv
             storage_cost
             tariff_depot_guid
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+              }
           }
          gateio_billing_sot {
             delete_dt
@@ -225,6 +294,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
             remarks
             sot_guid
             tariff_depot_guid
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+              }
           }
           lolo_billing_sot {
             delete_dt
@@ -236,6 +313,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
             remarks
             sot_guid
             tariff_depot_guid
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+              }
           }
         preinsp_billing_sot {
           delete_dt
@@ -246,36 +331,86 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
           preinspection_cost
           sot_guid
           tariff_depot_guid
+          storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+              }
         }
          cleaning {
             customer_billing_guid
             delete_dt
             guid
             owner_billing_guid
+            cleaning_cost
+            buffer_cost
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+              }
           }
           repair_customer {
             customer_billing_guid
             delete_dt
             guid
             owner_billing_guid
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+              }
           }
           repair_owner {
             customer_billing_guid
             delete_dt
             guid
             owner_billing_guid
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+              }
           }
           residue {
             customer_billing_guid
             delete_dt
             guid
             owner_billing_guid
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+              }
           }
           steaming {
             customer_billing_guid
             delete_dt
             guid
             owner_billing_guid
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+              }
           }
         guid
         bill_to_guid

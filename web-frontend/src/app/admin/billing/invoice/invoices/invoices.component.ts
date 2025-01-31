@@ -393,8 +393,22 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
    
        if(this.searchForm!.get('branch_code')?.value)
        {
-         where.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
-         where.bill_to_guid={eq: this.searchForm!.get('branch_code')?.value.guid };
+
+        const itm:any={or:[]};
+        
+        itm.or.push({cleaning:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        itm.or.push({repair_customer:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        itm.or.push({repair_owner:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        itm.or.push({residue:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        itm.or.push({steaming:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        itm.or.push({gateio_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        itm.or.push({lolo_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        itm.or.push({storage_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        where.and.push(itm);
+
+        //  where.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
+        //  where.bill_to_guid={eq: this.searchForm!.get('branch_code')?.value.guid };
          //where.customer_company={code:{eq: this.searchForm!.get('branch_code')?.value.code }}
        }
    
