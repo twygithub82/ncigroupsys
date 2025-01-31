@@ -37,13 +37,13 @@
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                 <div class="row">
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                       <input matInput formControlName="tank_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                       <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -57,7 +57,7 @@
                       </mat-autocomplete>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -76,7 +76,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="eir_picker">
@@ -87,13 +87,13 @@
                       <mat-date-range-picker #eir_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                       <input matInput formControlName="eir_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.REPAIR_TYPE}}</mat-label>
                       <mat-select multiple formControlName="repair_option_cv">
@@ -105,7 +105,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="est_picker">
@@ -116,7 +116,7 @@
                       <mat-date-range-picker #est_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.APPROVAL_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="approval_picker">
@@ -127,7 +127,7 @@
                       <mat-date-range-picker #approval_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                       <mat-select multiple formControlName="est_status_cv">
@@ -139,7 +139,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 d-flex align-items-center">
+                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-2 d-flex align-items-center">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>
@@ -224,7 +224,7 @@
                 @if ((filterDeleted(row.repair || [])?.length ?? 0) > 0) {
                 <div class="responsive_table">
                   <table mat-table [dataSource]="filterDeleted(row.repair || [])" matSort
-                    class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                    class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="select">
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -245,7 +245,7 @@
                         {{translatedLangText.ESTIMATE_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.estimate_no}}
+                        <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.estimate_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="job_no">
@@ -253,15 +253,15 @@
                         {{translatedLangText.JOB_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.job_no}}
+                        <span class="mobile-tab-label">{{translatedLangText.JOB_NO}}:</span>{{repairRow.job_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="net_cost">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.NET_COST}}
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
+                      <mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-tab-label">{{translatedLangText.NET_COST}}:</span>
                         <span>$</span><span class="ms-3">{{repairRow.net_cost}}</span>
                       </mat-cell>
                     </ng-container>
@@ -271,7 +271,7 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span
-                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(repairRow.status_cv)}}
+                          class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(repairRow.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="remarks">
@@ -279,15 +279,15 @@
                         {{translatedLangText.REMARKS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let repairRow" [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{repairRow.remarks}}
+                        <span class="mobile-tab-label">{{translatedLangText.REMARKS}}:</span>{{repairRow.remarks}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
                       <mat-header-cell
-                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matHeaderCellDef></mat-header-cell>
                       <mat-cell *matCellDef="let repairRow; let i=index;"
-                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                         <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                           <mat-icon>more_vert</mat-icon>
                         </button>

@@ -107,15 +107,15 @@ import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
     MatMenuModule,
     MatCardModule,
     MatSlideToggleModule,
-  //  NgxMatDatetimePickerModule,
-   // MatDatepickerModule,
+    //  NgxMatDatetimePickerModule,
+    // MatDatepickerModule,
     MatNativeDateModule,
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
-   // NgxMatNativeDateModule,
-   // NgxMatTimepickerModule,
-   // NgxMatMomentModule
-    
+    // NgxMatNativeDateModule,
+    // NgxMatTimepickerModule,
+    // NgxMatMomentModule
+
   ]
 })
 export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -248,21 +248,21 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     COMPLETE: 'COMMON-FORM.COMPLETE',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     DURATION: 'COMMON-FORM.DURATION',
-    CURRENT_STATUS:'COMMON-FORM.CURRENT-STATUS',
-    CLEAN_STATUS:'COMMON-FORM.CLEAN-STATUS',
-    REQUIRED_TEMP:'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT:'COMMON-FORM.FLASH-POINT',
-    APPROVED_DATE:'COMMON-FORM.APPROVED-DATE',
-    STEAM_MONITOR:'COMMON-FORM.STEAM-MONITOR',
-    BOTTOM_SIDE:'COMMON-FORM.BOTTOM-SIDE',
-    TOP_SIDE:'COMMON-FORM.TOP-SIDE',
-    THERMOMETER:'COMMON-FORM.THERMOMETER',
-    TIME:'COMMON-FORM.TIME',
-    SELECTED_RECORD:"COMMON-FORM.SELECTED-RECORD",
-    COMPLETE_STEAM:'COMMON-FORM.COMPLETE-STEAM',
-    OVER_REQUIRED_TEMP:'COMMON-FORM.OVER-REQUIRED-TEMP',
-    LOWER_REQUIRED_TEMP:'COMMON-FORM.LOWER-REQUIRED-TEMP'
-    
+    CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
+    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    APPROVED_DATE: 'COMMON-FORM.APPROVED-DATE',
+    STEAM_MONITOR: 'COMMON-FORM.STEAM-MONITOR',
+    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
+    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
+    THERMOMETER: 'COMMON-FORM.THERMOMETER',
+    TIME: 'COMMON-FORM.TIME',
+    SELECTED_RECORD: "COMMON-FORM.SELECTED-RECORD",
+    COMPLETE_STEAM: 'COMMON-FORM.COMPLETE-STEAM',
+    OVER_REQUIRED_TEMP: 'COMMON-FORM.OVER-REQUIRED-TEMP',
+    LOWER_REQUIRED_TEMP: 'COMMON-FORM.LOWER-REQUIRED-TEMP'
+
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -276,7 +276,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   sotItem?: StoringOrderTankItem;
   jobOrderItem?: JobOrderItem;
   steamItem?: SteamItem;
- //steamTmpRec?:SteamTemp;
+  //steamTmpRec?:SteamTemp;
 
   repairItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
@@ -302,7 +302,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   deList: any[] = [];
 
   customerCodeControl = new UntypedFormControl();
-  updateSelectedItem:any;
+  updateSelectedItem: any;
 
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
@@ -319,9 +319,9 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
   isOwner = false;
-  reqTemp?:number=9999;
+  reqTemp?: number = 9999;
 
-  
+
   public disabled = false;
   public showSpinners = true;
   public showSeconds = true;
@@ -331,7 +331,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   public stepMinute = 1;
   public stepSecond = 1;
   public color: ThemePalette = 'primary';
-  
+
   private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
@@ -373,22 +373,22 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   initForm() {
     this.steamForm = this.fb.group({
-      time:[''],
-      thermometer:[''],
-      top:[''],
-      bottom:[''],
-      remarks:[''],
+      time: [''],
+      thermometer: [''],
+      top: [''],
+      bottom: [''],
+      remarks: [''],
       deList: ['']
     });
     const date = new Date(); // Local date and time
     date.setSeconds(0, 0);   // Remove seconds and milliseconds
     const year = date.getFullYear();
-const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-const day = String(date.getDate()).padStart(2, '0');
-const hours = String(date.getHours()).padStart(2, '0');
-const minutes = String(date.getMinutes()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
 
-const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
+    const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
     this.steamForm.patchValue({
       time: new Date()
     });
@@ -471,7 +471,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
       this.processStatusCvList = data;
     });
     this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
-      this.cleanStatusCvList = data;
+      this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");;
     });
 
     this.job_order_guid = this.route.snapshot.paramMap.get('id');
@@ -484,8 +484,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
-          if(this.jobOrderItem.status_cv==='PENDING')
-          {
+          if (this.jobOrderItem.status_cv === 'PENDING') {
             this.toggleJobState(false);
           }
           if (this.steam_guid) {
@@ -495,7 +494,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
                 console.log(steam)
                 this.steamItem = steam[0];
                 this.sotItem = this.steamItem?.storing_order_tank;
-                this.reqTemp=(!this.sotItem?.required_temp)?this.reqTemp:this.sotItem?.required_temp;
+                this.reqTemp = (!this.sotItem?.required_temp) ? this.reqTemp : this.sotItem?.required_temp;
                 this.QuerySteamTemp();
                 //this.populateSteam(this.steamItem);
                 // this.steamDS.getSteamTemp(this.job_order_guid!).subscribe(temp=>{
@@ -506,7 +505,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
                 //   }
                 // });
                 //this.steamDS.getSteamTemp()
-                
+
               }
             });
           }
@@ -647,7 +646,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
       this.deList = newData.map((row, index) => ({
         ...row,
         index: index,
-        edited:false
+        edited: false
       }));
 
       // this.deList.forEach(item => {
@@ -907,7 +906,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
               guid: firstJobPart!.steaming.guid,
               sot_guid: this.jobOrderItem?.sot_guid,
               action: "IN_PROGRESS",
-              
+
             });
             console.log(steamStatusReq);
             this.steamDS.updateSteamStatus(steamStatusReq).subscribe(result => {
@@ -1118,8 +1117,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
 
   }
 
-  deleteEstDetail(event:Event,row: any)
-  {
+  deleteEstDetail(event: Event, row: any) {
     this.preventDefault(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -1139,118 +1137,106 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        
-        
-         var steamTmp:any= new SteamTemp(this.deList[row.index]);
-         //var guid = steamTmp.guid;
-         this.callRecordSteamingTemp(steamTmp,'CANCEL');
+
+
+        var steamTmp: any = new SteamTemp(this.deList[row.index]);
+        //var guid = steamTmp.guid;
+        this.callRecordSteamingTemp(steamTmp, 'CANCEL');
         // this.resetSelectedItemForUpdating();
       }
     });
-   
+
   }
 
   addEstDetails(event: Event) {
     this.preventDefault(event);
 
-    let guid=null;
-    if(this.updateSelectedItem)
-    {
-       var stmTmp = this.updateSelectedItem.item;
-       guid = stmTmp.guid;
-       var steamTmp:SteamTemp= this.GetRecordSteamingTempValue(guid!);
-       this.callRecordSteamingTemp(steamTmp,'EDIT',event);
+    let guid = null;
+    if (this.updateSelectedItem) {
+      var stmTmp = this.updateSelectedItem.item;
+      guid = stmTmp.guid;
+      var steamTmp: SteamTemp = this.GetRecordSteamingTempValue(guid!);
+      this.callRecordSteamingTemp(steamTmp, 'EDIT', event);
 
     }
-    else
-    {
-      var steamTmp:SteamTemp= this.GetRecordSteamingTempValue(guid!);
-      this.callRecordSteamingTemp(steamTmp,'NEW',event);
+    else {
+      var steamTmp: SteamTemp = this.GetRecordSteamingTempValue(guid!);
+      this.callRecordSteamingTemp(steamTmp, 'NEW', event);
     }
 
   }
 
-  editEstDetail(event:Event,row: any)
-  {
-     this.preventDefault(event);
+  editEstDetail(event: Event, row: any) {
+    this.preventDefault(event);
 
-     //this.updateSelectedItem=row;
+    //this.updateSelectedItem=row;
 
-     
-     var IsEditedRow = row.edited;
-   
- 
-     this.resetSelectedItemForUpdating();
- 
-     if(IsEditedRow) 
-     { row.edited=false;
-         return;
-     }
- 
-     
-     this.updateSelectedItem ={
-       item:row,
-       index:row.index,
-       action:"update",
-       
-     }
-     this.updateSelectedItem.item.edited=true;
-      this.patchValue(row);
-   
+
+    var IsEditedRow = row.edited;
+
+
+    this.resetSelectedItemForUpdating();
+
+    if (IsEditedRow) {
+      row.edited = false;
+      return;
+    }
+
+
+    this.updateSelectedItem = {
+      item: row,
+      index: row.index,
+      action: "update",
+
+    }
+    this.updateSelectedItem.item.edited = true;
+    this.patchValue(row);
+
   }
 
-  resetSelectedItemForUpdating()
-  {
-    if(this.updateSelectedItem)
-    {
-      this.updateSelectedItem.item.edited=false;
-      this.updateSelectedItem=null;
-     
+  resetSelectedItemForUpdating() {
+    if (this.updateSelectedItem) {
+      this.updateSelectedItem.item.edited = false;
+      this.updateSelectedItem = null;
+
     }
     this.resetValue();
   }
 
-  GetRecordSteamingTempValue(guid?:string):SteamTemp
-  {
-    var steamTmp:SteamTemp = new SteamTemp();
+  GetRecordSteamingTempValue(guid?: string): SteamTemp {
+    var steamTmp: SteamTemp = new SteamTemp();
     //var action:string = (guid===null || guid==="")?"NEW":"UPDATE";
-    steamTmp.report_dt =Number(Utility.convertDate(this.steamForm?.get("time")?.value,false,true)) ;
-    steamTmp.bottom_temp=this.steamForm?.get("bottom")?.value;
-    steamTmp.top_temp=this.steamForm?.get("top")?.value;
-    steamTmp.meter_temp=this.steamForm?.get("thermometer")?.value;
-    steamTmp.remarks=this.steamForm?.get("remarks")?.value;;
-    steamTmp.job_order_guid=this.job_order_guid!;
-    steamTmp.guid=guid;
+    steamTmp.report_dt = Number(Utility.convertDate(this.steamForm?.get("time")?.value, false, true));
+    steamTmp.bottom_temp = this.steamForm?.get("bottom")?.value;
+    steamTmp.top_temp = this.steamForm?.get("top")?.value;
+    steamTmp.meter_temp = this.steamForm?.get("thermometer")?.value;
+    steamTmp.remarks = this.steamForm?.get("remarks")?.value;;
+    steamTmp.job_order_guid = this.job_order_guid!;
+    steamTmp.guid = guid;
     return steamTmp;
   }
 
-  callRecordSteamingTemp(steamTemp:SteamTemp,action?:string,event?:Event)
-  {
-    var ReqTemp:number= this.reqTemp!;
-   
-    this.steamDS.recordSteamingTemp(steamTemp,action!,ReqTemp).subscribe(result=>{
+  callRecordSteamingTemp(steamTemp: SteamTemp, action?: string, event?: Event) {
+    var ReqTemp: number = this.reqTemp!;
 
-      if(result.data.recordSteamingTemp)
-      {
+    this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
+
+      if (result.data.recordSteamingTemp) {
         let checkAction = [
           'NEW',
           'EDIT',
         ];
-        if(!checkAction.includes(action!))
-        {
+        if (!checkAction.includes(action!)) {
           this.QuerySteamTemp();
           this.resetSelectedItemForUpdating();
         }
-        else
-        {
-          if(ReqTemp<=steamTemp.meter_temp!)
-          {
-             let overTemp:boolean = ReqTemp<steamTemp.meter_temp!
-             let tempStatus:number = (ReqTemp<steamTemp.meter_temp!)?1:0;
-             this.completeSteamJob(event!,false,tempStatus);
+        else {
+          if (ReqTemp <= steamTemp.meter_temp!) {
+            let overTemp: boolean = ReqTemp < steamTemp.meter_temp!
+            let tempStatus: number = (ReqTemp < steamTemp.meter_temp!) ? 1 : 0;
+            this.completeSteamJob(event!, false, tempStatus);
           }
-          else
-          {
+          else {
             this.QuerySteamTemp();
             this.resetSelectedItemForUpdating();
           }
@@ -1260,61 +1246,54 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
     });
   }
 
-  QuerySteamTemp()
-  {
-    this.steamDS.getSteamTemp(this.job_order_guid!).subscribe(temp=>{
-      if(temp?.length)
-      {
+  QuerySteamTemp() {
+    this.steamDS.getSteamTemp(this.job_order_guid!).subscribe(temp => {
+      if (temp?.length) {
         console.log(temp);
         this.updateData(temp);
       }
     });
   }
- 
-  patchValue(steamTmp:SteamTemp)
-  {
-    if(steamTmp)
-    {
-      const date = new Date((!steamTmp.report_dt?steamTmp.create_dt!:steamTmp.report_dt!) * 1000); 
+
+  patchValue(steamTmp: SteamTemp) {
+    if (steamTmp) {
+      const date = new Date((!steamTmp.report_dt ? steamTmp.create_dt! : steamTmp.report_dt!) * 1000);
       this.steamForm?.patchValue({
-        time:date,
-        thermometer:steamTmp.meter_temp,
-        top:steamTmp.top_temp,
-        bottom:steamTmp.bottom_temp,
-        remarks:steamTmp.remarks,
+        time: date,
+        thermometer: steamTmp.meter_temp,
+        top: steamTmp.top_temp,
+        bottom: steamTmp.bottom_temp,
+        remarks: steamTmp.remarks,
       });
     }
   }
 
-  resetValue(){
+  resetValue() {
 
-    const date=new Date();
+    const date = new Date();
     this.steamForm?.patchValue({
-      time:date,
-      thermometer:'',
-      top:'',
-      bottom:'',
-      remarks:'',
-    },{emitEvent:false});
+      time: date,
+      thermometer: '',
+      top: '',
+      bottom: '',
+      remarks: '',
+    }, { emitEvent: false });
     this.steamForm?.get('time')?.setErrors(null);
     this.steamForm?.get('thermometer')?.setErrors(null);
     this.steamForm?.get('top')?.setErrors(null);
     this.steamForm?.get('bottom')?.setErrors(null);
-    
-  
+
+
   }
 
 
-  
-  completeSteamJob(event:Event, checkTemp:boolean,tempStatus:number)
-  {
+
+  completeSteamJob(event: Event, checkTemp: boolean, tempStatus: number) {
     this.preventDefault(event);
-    if(checkTemp)
-    {
-      tempStatus=this.CheckAndGetTempStatus();
+    if (checkTemp) {
+      tempStatus = this.CheckAndGetTempStatus();
     }
-    if(this.steamItem?.steaming_part?.length)
-    {
+    if (this.steamItem?.steaming_part?.length) {
       let tempDirection: Direction;
       if (localStorage.getItem('isRtl') === 'true') {
         tempDirection = 'rtl';
@@ -1327,62 +1306,57 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
           action: 'confirm',
           item: this.steamItem,
           langText: this.translatedLangText,
-          tempStatus:tempStatus,
+          tempStatus: tempStatus,
         },
         direction: tempDirection
       });
       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
         if (result?.action === 'confirmed') {
-          
-          
+
+
           let jobOrder = this.steamItem?.steaming_part?.[0]?.job_order;
-          var updJobOrderReq:UpdateJobOrderRequest = new UpdateJobOrderRequest(jobOrder);
-          updJobOrderReq.complete_dt=Math.floor(Date.now() / 1000);
-          var updJobOrderReqs:UpdateJobOrderRequest[]=[];
+          var updJobOrderReq: UpdateJobOrderRequest = new UpdateJobOrderRequest(jobOrder);
+          updJobOrderReq.complete_dt = Math.floor(Date.now() / 1000);
+          var updJobOrderReqs: UpdateJobOrderRequest[] = [];
           updJobOrderReqs.push(updJobOrderReq);
-          this.joDS.completeJobOrder(updJobOrderReqs).subscribe(result=>{
-             console.log(result);
-             if(result.data.completeJobOrder>0)
-             {
-              let stmStatus : SteamStatusRequest = new SteamStatusRequest();
-              stmStatus.action="COMPLETE";
+          this.joDS.completeJobOrder(updJobOrderReqs).subscribe(result => {
+            console.log(result);
+            if (result.data.completeJobOrder > 0) {
+              let stmStatus: SteamStatusRequest = new SteamStatusRequest();
+              stmStatus.action = "COMPLETE";
               stmStatus.guid = this.steamItem?.guid;
-              stmStatus.sot_guid= this.steamItem?.sot_guid;
-               this.steamDS.updateSteamStatus(stmStatus).subscribe(result=>{
-                if(result.data.updateSteamingStatus>0)
-                  {
+              stmStatus.sot_guid = this.steamItem?.sot_guid;
+              this.steamDS.updateSteamStatus(stmStatus).subscribe(result => {
+                if (result.data.updateSteamingStatus > 0) {
                   console.log(result);
-                   this.handleSaveSuccess(result.data.updateSteamingStatus);
-                  }
-               });
-             }
+                  this.handleSaveSuccess(result.data.updateSteamingStatus);
+                }
+              });
+            }
           });
           // this.resetSelectedItemForUpdating();
         }
-        else
-        {
+        else {
           this.QuerySteamTemp();
-            this.resetSelectedItemForUpdating();
+          this.resetSelectedItemForUpdating();
         }
       });
-     
+
     }
     // this.joDS.completeJobOrder()
   }
-  
-  DisplayEpochToDate(epochTimeInSeconds:number):string
-  {
-    
-    let  tm:Date = new Date;
 
-      if(epochTimeInSeconds)
-      {
-        const convertedVal = Utility.convertDate(epochTimeInSeconds); 
-        if (convertedVal instanceof Date) {
-          tm = convertedVal; // Assign only if it's a Date
-        }
+  DisplayEpochToDate(epochTimeInSeconds: number): string {
+
+    let tm: Date = new Date;
+
+    if (epochTimeInSeconds) {
+      const convertedVal = Utility.convertDate(epochTimeInSeconds);
+      if (convertedVal instanceof Date) {
+        tm = convertedVal; // Assign only if it's a Date
       }
-     return  tm.toLocaleString(undefined, {
+    }
+    return tm.toLocaleString(undefined, {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -1391,21 +1365,20 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
     });
   }
 
-  CheckAndGetTempStatus():number
-  {
-    var ReqTemp:number= this.reqTemp!;
+  CheckAndGetTempStatus(): number {
+    var ReqTemp: number = this.reqTemp!;
     let allGreater = this.deList.some(a => a.meter_temp > ReqTemp);
     let allLess = this.deList.every(a => a.meter_temp < ReqTemp);
     let anyEqual = this.deList.some(a => a.meter_temp === ReqTemp);
-    
+
     if (allGreater) {
-        return 2;
+      return 2;
     } else if (allLess) {
-        return 1;
+      return 1;
     } else if (anyEqual) {
-        return 0;
+      return 0;
     } else {
-        return 0; // Mixed cases (some greater, some less, none equal)
+      return 0; // Mixed cases (some greater, some less, none equal)
     }
 
   }

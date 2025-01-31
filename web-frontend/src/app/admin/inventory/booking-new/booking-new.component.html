@@ -17,13 +17,13 @@
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                 <div class="row">
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                       <input matInput formControlName="tank_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                       <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -42,7 +42,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -61,7 +61,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CLEAN_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="clean_dt_picker">
@@ -72,15 +72,13 @@
                       <mat-date-range-picker #clean_dt_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                </div>
-                <div class="row">
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
                       <input matInput formControlName="capacity" type="number">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.BOOKING_TYPE}}</mat-label>
                       <mat-select formControlName="book_type_cv">
@@ -92,21 +90,19 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                       <input matInput formControlName="eir_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                       <input matInput formControlName="job_no">
                     </mat-form-field>
                   </div>
-                </div>
-                <div class="row">
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="eir_picker">
@@ -117,7 +113,7 @@
                       <mat-date-range-picker #eir_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.REPAIR_COMPLETION_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="repair_dt_picker">
@@ -128,13 +124,13 @@
                       <mat-date-range-picker #repair_dt_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
                       <input matInput formControlName="tare_weight" type="number">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CURRENT_STATUS}}</mat-label>
                       <mat-select formControlName="tank_status_cv">
@@ -146,7 +142,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.YARD}}</mat-label>
                       <mat-select formControlName="yard_cv">
@@ -158,7 +154,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl col-lg col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
                     <button mat-mini-fab class="" color="primary" (click)="search()"
                       [matTooltip]="translatedLangText.SEARCH">
                       <mat-icon>search</mat-icon>
@@ -182,7 +178,9 @@
           </mat-accordion>
           <div class="body overflow-auto">
             @for(row of sotList; track row){
-            <mat-card [ngClass]="{'bg-light-green': checkMatch(filterDeleted(row.scheduling_sot || []), filterDeleted(row.booking || [])), 'card-content p-0 m-b-10': true}" matRipple>
+            <mat-card
+              [ngClass]="{'bg-light-green': checkMatch(filterDeleted(row.scheduling_sot || []), filterDeleted(row.booking || [])), 'card-content p-0 m-b-10': true}"
+              matRipple>
               <mat-card-header class="pt-2 pe-2 pb-0" (click)="toggleRow(row)">
                 <mat-card-title class="pt-1">
                   <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
@@ -190,40 +188,42 @@
                   </mat-checkbox>
                   {{row.tank_no}}
                   @if (checkBooking(filterDeleted(row.booking || []))){
-                  <div [ngClass]="'badge badge-solid-green ms-1'"><span>{{translatedLangText.BOOKED}} {{filterDeleted(row.booking || [])?.length}}</span></div>
+                  <div [ngClass]="'badge badge-solid-green ms-1'"><span>{{translatedLangText.BOOKED}}
+                      {{filterDeleted(row.booking || [])?.length}}</span></div>
                   }
                   @if (checkScheduling(filterDeleted(row.scheduling_sot || []))){
-                  <div [ngClass]="'badge badge-solid-orange ms-1'">{{translatedLangText.SCHEDULED}} {{filterDeleted(row.scheduling_sot || [])?.length}}</div>
+                  <div [ngClass]="'badge badge-solid-orange ms-1'">{{translatedLangText.SCHEDULED}}
+                    {{filterDeleted(row.scheduling_sot || [])?.length}}</div>
                   }
                 </mat-card-title>
               </mat-card-header>
               <mat-card-content>
                 <div class="row" (click)="toggleRow(row)">
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span> {{
                     ccDS.displayName(row.storing_order?.customer_company)}}
                   </div>
-                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1">
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
                     {{igDS.getInGateItem(row.in_gate)?.eir_no}}
                   </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
                     {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
                   </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.CAPACITY}}:</span> {{
                     igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
                   </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.TARE_WEIGHT}}:</span> {{
                     igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
                   </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.STATUS}}:</span>
                     {{getTankStatusDescription(row.tank_status_cv)}}
                   </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.YARD}}:</span>
                     {{getYardDescription(igDS.getInGateItem(row.in_gate)?.yard_cv)}}
                   </div>
@@ -239,19 +239,23 @@
                       <mat-cell *matCellDef="let bookingRow">{{row.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="booking_dt">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.BOOKING_DATE}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let bookingRow" class="">
+                      <mat-cell mat-cell *matCellDef="let bookingRow"
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span
                           class="mobile-label">{{translatedLangText.BOOKING_DATE}}:</span>{{displayDate(bookingRow.booking_dt)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="book_type_cv">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.BOOKING_TYPE}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let bookingRow" class="">
+                      <mat-cell mat-cell *matCellDef="let bookingRow"
+                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span
                           class="mobile-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookTypeDescription(bookingRow?.book_type_cv)}}
                       </mat-cell>
@@ -265,27 +269,31 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="surveyor">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.SURVEYOR}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let bookingRow" class="">
+                      <mat-cell mat-cell *matCellDef="let bookingRow"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.SURVEYOR}}:</span>{{bookingRow?.test_class_cv}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="status_cv">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let bookingRow" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(bookingRow?.status_cv)}}
+                      <mat-cell mat-cell *matCellDef="let bookingRow"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span
+                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(bookingRow?.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
-                      <mat-header-cell
-                        [ngClass]="'pr-0'"
-                        *matHeaderCellDef></mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0'"></mat-header-cell>
                       <mat-cell *matCellDef="let bookingRow; let i=index;"
-                        [ngClass]="'pr-0 justify-content-end'">
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
                         @if (bookingDS.canCancel(bookingRow)) {
                         <button mat-icon-button color="warn" class="tbl-action-btn p-2"
                           (click)="cancelItem(row, bookingRow, $event)">

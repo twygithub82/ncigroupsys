@@ -47,7 +47,7 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <div class="col-xl col-lg col-md-12 col-sm-12 mb-2 d-flex align-items-center">
+    <div class="col-xl col-lg col-md-12 col-sm-12 col-xs-12 mb-2 d-flex align-items-center">
       <button mat-mini-fab color="primary" class="" (click)="onFilter()">
         <mat-icon>search</mat-icon>
       </button>
@@ -171,5 +171,5 @@
 </div>
 }
 <mat-paginator #paginator [length]="repairDS.totalCount" [pageIndex]="0" [pageSize]="10"
-  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
+  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
 </mat-paginator>

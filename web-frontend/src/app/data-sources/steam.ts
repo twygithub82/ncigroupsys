@@ -55,8 +55,8 @@ export class SteamGO {
   // public total_cost?: number;
   // public owner_enable?: boolean;
   // public total_hour?: number;
-  public customer_billing_guid?:string;
-  public owner_billing_guid?:string;
+  public customer_billing_guid?: string;
+  public owner_billing_guid?: string;
 
   constructor(item: Partial<SteamGO> = {}) {
     this.guid = item.guid;
@@ -91,8 +91,8 @@ export class SteamItem extends SteamGO {
   public steaming_part?: SteamPartItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?: CustomerCompanyItem;
-  public customer_billing?:BillingItem;
-  public owner_billing?:BillingItem;
+  public customer_billing?: BillingItem;
+  public owner_billing?: BillingItem;
 
   //public aspnetsuser?: UserItem;
   public actions?: string[]
@@ -100,9 +100,9 @@ export class SteamItem extends SteamGO {
     super(item)
     this.steaming_part = item.steaming_part;
     this.storing_order_tank = item.storing_order_tank;
-    this.customer_company=item.customer_company;
-    this.customer_billing= item.customer_billing;
-    this.owner_billing=item.owner_billing;
+    this.customer_company = item.customer_company;
+    this.customer_billing = item.customer_billing;
+    this.owner_billing = item.owner_billing;
     // this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
   }
@@ -503,8 +503,7 @@ export const GET_STEAM_EST = gql`
 
 //query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
 export const GET_STEAM_EST_JOB_ORDER = gql`
-
-  query querySteaming($where: steamingFilterInput,$steam_part_where:inventory_steaming_partFilterInput) {
+  query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
     resultList: querySteaming(where: $where) {
       nodes {
        allocate_by
@@ -647,6 +646,93 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
 `;
 
 export const GET_STEAM_FOR_MOVEMENT = gql`
+  query querySteaming($where: steamingFilterInput) {
+    resultList: querySteaming(where: $where) {
+      nodes {
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        begin_by
+        begin_dt
+        bill_to_guid
+        complete_by
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        estimate_by
+        estimate_dt
+        estimate_no
+        guid
+        invoice_by
+        invoice_dt
+        job_no
+        na_dt
+        remarks
+        sot_guid
+        status_cv
+        total_cost
+        update_by
+        update_dt
+        steaming_part {
+          approve_cost
+          approve_labour
+          approve_part
+          approve_qty
+          complete_dt
+          cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          job_order_guid
+          labour
+          quantity
+          steaming_guid
+          tariff_steaming_guid
+          update_by
+          update_dt
+          tariff_steaming {
+            cost
+            create_by
+            create_dt
+            delete_dt
+            guid
+            labour
+            remarks
+            temp_max
+            temp_min
+            update_by
+            update_dt
+          }
+          job_order {
+            guid
+            status_cv
+            steaming_temp {
+              report_dt
+              top_temp
+              bottom_temp
+              meter_temp
+              remarks
+              delete_dt
+            }
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+export const GET_STEAM_BY_ID_FOR_PDF = gql`
   query querySteaming($where: steamingFilterInput) {
     resultList: querySteaming(where: $where) {
       nodes {
@@ -943,6 +1029,28 @@ export class SteamDS extends BaseDataSource<SteamItem> {
       );
   }
 
+  getSteamByIDForPdf(sot_guid: string | undefined): Observable<SteamItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { sot_guid: { eq: sot_guid } }
+    return this.apollo
+      .query<any>({
+        query: GET_STEAM_BY_ID_FOR_PDF,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const resultList = result.data?.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        }),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+
   addSteam(steam: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_STEAM_EST,
@@ -1024,7 +1132,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
 
   canMonitorTemp(re: SteamItem): boolean {
     if (!re) return true;
-    const validStatus = ['ASSIGNED','JOB_IN_PROGRESS']
+    const validStatus = ['ASSIGNED', 'JOB_IN_PROGRESS']
     return validStatus.includes(re?.status_cv!);
   }
 
@@ -1051,7 +1159,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canRollbackEstimate(re: SteamItem): boolean {
-    const validStatus = ['PENDING', 'CANCELED', 'NO_ACTION','APPROVED']
+    const validStatus = ['PENDING', 'CANCELED', 'NO_ACTION', 'APPROVED']
     return validStatus.includes(re?.status_cv!);
   }
   canRollback(re: SteamItem): boolean {
@@ -1064,43 +1172,43 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canRollbackJobInProgress(re: SteamItem | undefined): boolean {
-      return re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS';
-    }
-  
-
-    getApprovalTotalWithLabourCost(steamPartList: any[] | undefined , LabourCost:number): any {
-      const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 ||data.approve_part|| data.approve_part == null))?.reduce((totals: any, owner) => {
-        return {
-          //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
-  
-          total_mat_cost: totals.total_mat_cost + (((owner.approve_qty ?? 0) * (owner.approve_cost ?? 0)))+(((owner.approve_labour ?? 0) * (LabourCost ?? 0)))
-        };
-      }, { total_mat_cost: 0 }) || 0;
-      return totalSums;
-    }
+    return re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS';
+  }
 
 
-   getApprovalTotal(steamPartList: any[] | undefined): any {
-      const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 ||data.approve_part|| data.approve_part == null))?.reduce((totals: any, owner) => {
-        return {
-          //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
-  
-          total_mat_cost: totals.total_mat_cost + (((owner.approve_qty ?? 0) * (owner.approve_cost ?? 0)))
-        };
-      }, { total_mat_cost: 0 }) || 0;
-      return totalSums;
-    }
+  getApprovalTotalWithLabourCost(steamPartList: any[] | undefined, LabourCost: number): any {
+    const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part || data.approve_part == null))?.reduce((totals: any, owner) => {
+      return {
+        //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
 
-    getTotalWithLabourCost(steamPartList: any[] | undefined, LabourCost:number): any {
-      const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part == null))?.reduce((totals: any, owner) => {
-        return {
-          //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
-  
-          total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.cost ?? 0)))+(((owner.labour ?? 0) * (LabourCost ?? 0)))
-        };
-      }, { total_mat_cost: 0 }) || 0;
-      return totalSums;
-    }
+        total_mat_cost: totals.total_mat_cost + (((owner.approve_qty ?? 0) * (owner.approve_cost ?? 0))) + (((owner.approve_labour ?? 0) * (LabourCost ?? 0)))
+      };
+    }, { total_mat_cost: 0 }) || 0;
+    return totalSums;
+  }
+
+
+  getApprovalTotal(steamPartList: any[] | undefined): any {
+    const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part || data.approve_part == null))?.reduce((totals: any, owner) => {
+      return {
+        //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+
+        total_mat_cost: totals.total_mat_cost + (((owner.approve_qty ?? 0) * (owner.approve_cost ?? 0)))
+      };
+    }, { total_mat_cost: 0 }) || 0;
+    return totalSums;
+  }
+
+  getTotalWithLabourCost(steamPartList: any[] | undefined, LabourCost: number): any {
+    const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part == null))?.reduce((totals: any, owner) => {
+      return {
+        //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+
+        total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.cost ?? 0))) + (((owner.labour ?? 0) * (LabourCost ?? 0)))
+      };
+    }, { total_mat_cost: 0 }) || 0;
+    return totalSums;
+  }
 
   getTotal(steamPartList: any[] | undefined): any {
     const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part == null))?.reduce((totals: any, owner) => {
@@ -1218,12 +1326,12 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   rollbackCompletedSteaming(steamingJobOrder: any[]): Observable<any> {
-      return this.apollo.mutate({
-        mutation: ROLLBACK_COMPLETED_STEAMING,
-        variables: {
-          steamingJobOrder
-        }
-      });
-    }
+    return this.apollo.mutate({
+      mutation: ROLLBACK_COMPLETED_STEAMING,
+      variables: {
+        steamingJobOrder
+      }
+    });
+  }
 
 }

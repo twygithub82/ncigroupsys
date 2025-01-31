@@ -856,7 +856,7 @@ export const GET_REPAIR_FOR_QC_DETAILS = gql`
 `;
 
 export const GET_REPAIR_FOR_JOB_ORDER = gql`
-  query QueryRepair($where: repairFilterInput, $repair_part_where: inventory_repair_partFilterInput) {
+  query QueryRepair($where: repairFilterInput, $repair_part_where: repair_partFilterInput) {
     resultList: queryRepair(where: $where) {
       nodes {
         aspnetusers_guid

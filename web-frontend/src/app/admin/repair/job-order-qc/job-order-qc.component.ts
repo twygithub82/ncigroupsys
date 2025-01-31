@@ -164,6 +164,10 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
 
+  currentStartCursor: string | undefined = undefined;
+  currentEndCursor: string | undefined = undefined;
+  lastCursorDirection: string | undefined = undefined;
+
   availableProcessStatus: string[] = [
     'COMPLETED',
     'QC_COMPLETED',
@@ -250,9 +254,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   onFilter() {
-    const where: any = {
-      
-    };
+    const where: any = {};
 
     if (this.filterJobOrderForm!.get('filterRepair')?.value) {
       where.or = [
@@ -305,6 +307,14 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
         //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
         //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
         // })
+
+        this.endCursorJobOrder = this.repairDS.pageInfo?.endCursor;
+        this.startCursorJobOrder = this.repairDS.pageInfo?.startCursor;
+        this.hasNextPageJobOrder = this.repairDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageJobOrder = this.repairDS.pageInfo?.hasPreviousPage ?? false;
+
+        this.currentEndCursor = after;
+        this.currentStartCursor = before;
       });
 
     this.pageSizeJobOrder = pageSize;
@@ -343,31 +353,65 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     });
     this.customerCodeControl.reset();
   }
+  
+    onPageEvent(event: PageEvent) {
+      const { pageIndex, pageSize } = event;
+      let first: number | undefined = undefined;
+      let after: string | undefined = undefined;
+      let last: number | undefined = undefined;
+      let before: string | undefined = undefined;
+  
+      // Check if the page size has changed
+      if (this.pageSizeJobOrder !== pageSize) {
+        // Reset pagination if page size has changed
+        this.pageIndexJobOrder = 0;
+        first = pageSize;
+        after = undefined;
+        last = undefined;
+        before = undefined;
+      } else {
+        if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
+          // Navigate forward
+          this.lastCursorDirection = 'forward';
+          first = pageSize;
+          after = this.endCursorJobOrder;
+        } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
+          // Navigate backward
+          this.lastCursorDirection = 'backward';
+          last = pageSize;
+          before = this.startCursorJobOrder;
+        }
+      }
+  
+      this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
+    }
 
-  onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
+  triggerCurrentSearch() {
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
 
-    if (this.pageSizeJobOrder !== pageSize) {
-      this.pageIndexJobOrder = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
-        first = pageSize;
-        after = this.endCursorJobOrder;
-      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
-        last = pageSize;
-        before = this.startCursorJobOrder;
-      }
+    if (this.pageSizeJobOrder === 0) {
+      first = this.pageSizeJobOrder;
+    } else if (this.lastCursorDirection === 'forward') {
+      first = this.pageSizeJobOrder;
+      after = this.currentEndCursor;
+    } else if (this.lastCursorDirection === 'backward') {
+      last = this.pageSizeJobOrder;
+      before = this.currentStartCursor;
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
+    // Perform the search
+    this.performSearch(
+      this.pageSizeJobOrder,
+      this.pageIndexJobOrder,
+      first,
+      after,
+      last,
+      before,
+      () => { }
+    );
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {

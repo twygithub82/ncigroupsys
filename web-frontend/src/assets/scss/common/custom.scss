@@ -1463,11 +1463,13 @@ $breakpoints: (
 }
 
 section.content {
-  margin-left: 282px;
+  margin-left: 272px;
 }
 
-nav.navbar {
-  margin-left: 20px;
-  margin-right: 20px;
-  width: calc(100% - 312px);
+@media (min-width: 1200px) {
+  nav.navbar {
+    margin-left: 10px;
+    margin-right: 10px;
+    width: calc(100% - 302px);
+  }
 }

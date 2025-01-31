@@ -209,7 +209,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     BILL_DETAILS: 'COMMON-FORM.BILL-DETAILS',
     BILL_TO: 'COMMON-FORM.BILL-TO',
     APPROVE_INFO: 'COMMON-FORM.APPROVE-INFO',
-    ABORT: 'COMMON-FORM.ABORT'
+    ABORT: 'COMMON-FORM.ABORT',
+    APPROVAL: 'COMMON-FORM.APPROVAL',
   }
 
   clean_statusList: CodeValuesItem[] = [];

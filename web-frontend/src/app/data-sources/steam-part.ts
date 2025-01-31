@@ -173,7 +173,7 @@ export const GET_SCHEDULING_SOT = gql`
   }
 `;
 
-export class ResiduePartDS extends BaseDataSource<SteamPartItem> {
+export class SteamPartDS extends BaseDataSource<SteamPartItem> {
   
 
   constructor(private apollo: Apollo) {

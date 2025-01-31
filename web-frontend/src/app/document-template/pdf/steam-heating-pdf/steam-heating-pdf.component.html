@@ -386,9 +386,9 @@
 <div mat-dialog-actions class="m-2 align-right">
   @if (this.existingPdf?.length) {
   <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
-    [disabled]="(repairDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
-      @if (!(repairDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
       file_download
       } @else {
       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
@@ -397,10 +397,10 @@
     {{translatedLangText.DOWNLOAD}}
   </button>
   }
-  <button mat-flat-button color="primary" (click)="onRepublshClick()" tabindex="-1"
-    [disabled]="(repairDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+  <button mat-flat-button color="accent" (click)="onRepublshClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
-      @if (!(repairDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
       publish
       } @else {
       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
