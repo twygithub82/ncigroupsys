@@ -50,6 +50,7 @@ namespace IDMS.Models.Service
         public storing_order_tank? storing_order_tank { get; set; } = null;
 
         [UseFiltering]
+        [UseSorting]
         public IEnumerable<steaming_part?>? steaming_part { get; set; }
         [UseFiltering]
         public billing? customer_billing { get; set; }
