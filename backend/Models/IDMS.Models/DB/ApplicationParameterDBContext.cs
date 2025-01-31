@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Billing;
+using IDMS.Models.DB;
 using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using IDMS.Models.Package;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB
 {
-    public class ApplicationParameterDBContext : DbContext
+    public class ApplicationParameterDBContext : BaseDBContext
     {
         public ApplicationParameterDBContext(DbContextOptions<ApplicationParameterDBContext> options):base(options) 
         {
@@ -22,15 +23,15 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.repair_customer)
-               .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.customer_billing_guid);
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.repair_customer)
+            //   .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.customer_billing_guid);
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.repair_owner)
-               .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.owner_billing_guid);
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.repair_owner)
+            //   .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.owner_billing_guid);
 
             modelBuilder.Entity<customer_company>()
                 .HasKey(e => e.guid);

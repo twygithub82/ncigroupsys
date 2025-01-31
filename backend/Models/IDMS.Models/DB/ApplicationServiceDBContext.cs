@@ -1,4 +1,5 @@
-﻿using IDMS.Models.Inventory;
+﻿using IDMS.Models.DB;
+using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Service;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Models.Service.GqlTypes.DB
 {
-    public class ApplicationServiceDBContext : DbContext
+    public class ApplicationServiceDBContext : BaseDBContext
     {
         public ApplicationServiceDBContext(DbContextOptions<ApplicationServiceDBContext> options) : base(options)
         {
@@ -50,17 +51,17 @@ namespace IDMS.Models.Service.GqlTypes.DB
             //    .WithMany(b => b.residue) // Assuming billing has no navigation property back to cleaning
             //    .HasForeignKey(c => c.customer_billing_guid);
 
-            // Relationship with customer_billing
-            modelBuilder.Entity<repair>()
-                .HasOne(c => c.customer_billing)
-                .WithMany(b => b.repair_customer) // Assuming billing has no navigation property back to cleaning
-                .HasForeignKey(c => c.customer_billing_guid);
+            //// Relationship with customer_billing
+            //modelBuilder.Entity<repair>()
+            //    .HasOne(c => c.customer_billing)
+            //    .WithMany(b => b.repair_customer) // Assuming billing has no navigation property back to cleaning
+            //    .HasForeignKey(c => c.customer_billing_guid);
 
-            // Relationship with customer_billing
-            modelBuilder.Entity<repair>()
-                .HasOne(c => c.owner_billing)
-                .WithMany(b => b.repair_owner) // Assuming billing has no navigation property back to cleaning
-                .HasForeignKey(c => c.owner_billing_guid);
+            //// Relationship with customer_billing
+            //modelBuilder.Entity<repair>()
+            //    .HasOne(c => c.owner_billing)
+            //    .WithMany(b => b.repair_owner) // Assuming billing has no navigation property back to cleaning
+            //    .HasForeignKey(c => c.owner_billing_guid);
 
             //// Relationship with customer_billing
             //modelBuilder.Entity<cleaning>()

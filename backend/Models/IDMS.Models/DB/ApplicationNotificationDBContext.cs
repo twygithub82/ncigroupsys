@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.DB
 {
-    public class ApplicationNotificationDBContext : DbContext
+    public class ApplicationNotificationDBContext : BaseDBContext
     {
         public ApplicationNotificationDBContext(DbContextOptions<ApplicationNotificationDBContext> options) : base(options)
         {
