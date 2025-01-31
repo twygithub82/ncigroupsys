@@ -893,7 +893,8 @@
     "CONFIRM-ROLLBACK": "Confirm Rollback?",
     "DOM": "D.O.M",
     "MISSING-INFORMATION": "Missing Information",
-    "CURRENCY":"Currency"
+    "CURRENCY":"Currency",
+    "BILLING-CURRENCY":"Billing Currency"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

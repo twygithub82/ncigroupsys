@@ -8,16 +8,16 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <div class="body overflow-auto">
-            <mat-tab-group dynamicHeight (selectedTabChange)="onTabSelected($event)">
-              <mat-tab >
+            <mat-tab-group dynamicHeight >
+              <mat-tab  [label]="translatedLangText.INVOICES" >
                 <app-invoices></app-invoices>
               </mat-tab>
               <!-- <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
                 <app-job-order-task></app-job-order-task>
               </mat-tab> -->
-              <!-- <mat-tab [label]="translatedLangText.CUSTOMER_INVOICE">
+              <mat-tab [label]="translatedLangText.CUSTOMER_INVOICE">
                  <app-customer-invoice></app-customer-invoice>
-              </mat-tab> -->
+              </mat-tab>
               <!-- <mat-tab [label]="translatedLangText.RESIDUE_BILLING">
               
               </mat-tab> -->

@@ -343,7 +343,7 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   }
 
   public loadData() {
-    this.onFilterCleaning();
+   // this.onFilterCleaning();
   //  this.onFilterJobOrder();
 
     const queries = [
