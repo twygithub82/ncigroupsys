@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Billing;
+using IDMS.Models.DB;
 using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Parameter;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
 {
-    public class ApplicationInventoryDBContext : DbContext
+    public class ApplicationInventoryDBContext : BaseDBContext
     {
         public ApplicationInventoryDBContext(DbContextOptions<ApplicationInventoryDBContext> options) : base(options)
         {
@@ -80,15 +81,15 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
                  .Property(e => e.right_coord)
                  .HasColumnType("json"); // Specify the column type as JSON for MySQL
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.repair_customer)
-               .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.customer_billing_guid);
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.repair_customer)
+            //   .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.customer_billing_guid);
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.repair_owner)
-               .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.owner_billing_guid);
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.repair_owner)
+            //   .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.owner_billing_guid);
 
             modelBuilder.Entity<customer_company_cleaning_category>();
             modelBuilder.Entity<tariff_buffer>();

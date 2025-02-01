@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Models.DB
 {
-    public class ApplicationBillingDBContext : DbContext
+    public class ApplicationBillingDBContext : BaseDBContext
     {
         public ApplicationBillingDBContext(DbContextOptions<ApplicationBillingDBContext> options) : base(options)
         {
@@ -37,17 +37,15 @@ namespace IDMS.Models.DB
             //   .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
             //   .HasForeignKey(c => c.customer_billing_guid);
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.repair_customer)
-               .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.customer_billing_guid);
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.repair_customer)
+            //   .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.customer_billing_guid);
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.repair_owner)
-               .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.owner_billing_guid);
-
-            //.OnDelete(DeleteBehavior.Restrict); // Adjust delete behavior as needed
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.repair_owner)
+            //   .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.owner_billing_guid);
         }
 
         public DbSet<billing> billing { get; set; }

@@ -96,11 +96,50 @@ namespace IDMS.Billing.GqlTypes
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
+        }
+
+        public async Task<int> UpdateBillingInvoices(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<billing> billingInvoices)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (billingInvoices != null)
+                {
+                    foreach (var item in billingInvoices)
+                    {
+                        if (string.IsNullOrEmpty(item.guid))
+                            throw new GraphQLException(new Error($"Billing guid cannot be null or empty", "ERROR"));
+
+                        var updateBill = new billing() { guid = item.guid };
+                        context.billing.Attach(updateBill);
+                        updateBill.update_by = user;
+                        updateBill.update_dt = currentDateTime;
+                        updateBill.invoice_no = item.invoice_no;
+                        updateBill.invoice_dt = currentDateTime;
+                        updateBill.invoice_due = item.invoice_due;
+                        updateBill.bill_to_guid = item.bill_to_guid;
+                        updateBill.remarks = item.remarks;
+                        updateBill.currency_guid = item.currency_guid;
+                    }
+                }
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
 
         }
 
         private async Task EstimateHandling(ApplicationBillingDBContext context, string user, long currentDateTime, List<BillingEstimateRequest> billingEstimateRequests)
         {
+
+            string prevRepairProcessID = "";
+            repair repair = null;
 
             foreach (var item in billingEstimateRequests)
             {
@@ -124,7 +163,7 @@ namespace IDMS.Billing.GqlTypes
                         break;
                     case ProcessType.STEAMING:
                         var steaming = new steaming() { guid = item.process_guid };
-                        context.Set<steaming>().Attach( steaming);
+                        context.Set<steaming>().Attach(steaming);
                         steaming.update_by = user;
                         steaming.update_dt = currentDateTime;
                         if (item.billing_party.EqualsIgnore(BillingParty.OWNER))
@@ -155,25 +194,33 @@ namespace IDMS.Billing.GqlTypes
                         }
                         break;
                     case ProcessType.REPAIR:
-                        var repair = new repair() { guid = item.process_guid };
-                        context.Set<repair>().Attach(repair);
-                        repair.update_by = user;
-                        repair.update_dt = currentDateTime;
-                        if (item.billing_party.EqualsIgnore(BillingParty.OWNER))
+                        if (item.process_guid != prevRepairProcessID)
                         {
-                            repair.owner_billing_guid = item.billing_guid;
-                            context.Entry(repair).Property(p => p.owner_billing_guid).IsModified = true;
+                            repair = new repair() { guid = item.process_guid };
+                            context.Set<repair>().Attach(repair);
+                            prevRepairProcessID = item.process_guid;
                         }
-                        else if (item.billing_party.EqualsIgnore(BillingParty.CUSTOMER))
+
+                        if(repair != null)
                         {
-                            repair.customer_billing_guid = item.billing_guid;
-                            context.Entry(repair).Property(p => p.customer_billing_guid).IsModified = true;
+                            repair.update_by = user;
+                            repair.update_dt = currentDateTime;
+                            if (item.billing_party.EqualsIgnore(BillingParty.OWNER))
+                            {
+                                repair.owner_billing_guid = item.billing_guid;
+                                context.Entry(repair).Property(p => p.owner_billing_guid).IsModified = true;
+                            }
+                            else if (item.billing_party.EqualsIgnore(BillingParty.CUSTOMER))
+                            {
+                                repair.customer_billing_guid = item.billing_guid;
+                                context.Entry(repair).Property(p => p.customer_billing_guid).IsModified = true;
+                            }
                         }
                         break;
                     default:
                         //For LOLO,GATEINOUT,PREINSPEC,STORAGE
                         string processType = item.process_type.ToUpper();
-                        
+
                         var billingSot = new billing_sot() { guid = item.process_guid };
                         context.billing_sot.Attach(billingSot);
                         billingSot.update_by = user;
@@ -222,7 +269,7 @@ namespace IDMS.Billing.GqlTypes
                 updateBS.storage_cost = updateBillingSOT.storage_cost;
                 updateBS.free_storage = updateBillingSOT.free_storage;
                 updateBS.storage_cal_cv = updateBillingSOT.storage_cal_cv;
-                updateBS.remarks = updateBillingSOT.remarks;    
+                updateBS.remarks = updateBillingSOT.remarks;
 
                 var res = await context.SaveChangesAsync();
                 //TODO

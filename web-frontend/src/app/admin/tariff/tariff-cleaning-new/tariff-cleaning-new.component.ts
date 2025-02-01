@@ -863,16 +863,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   
  async onSubmit(groupGuid :string,tableName:string) {
     if (this.selectedFileChanged) {
-      // const formData = new FormData();
-      // const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/UploadFiles";
-      // const jsonObject = {
-      //   TableName: tableName,
-      //   FileType: "pdf",
-      //   GroupGuid: groupGuid,
-      //   Description: "SDS file"
-      // };
-      
-      //   groupGuid :String = this.tcForm?.value["un_no"];
          this.DeleteExistingSDSFiles();
       
          var fType ="pdf";

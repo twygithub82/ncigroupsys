@@ -1,7 +1,10 @@
+import { environment } from "environments/environment"
+
 export const api_endpoints = {
   staff_auth: '/api/StaffAuthentication/StaffLogin',
+  staff_refresh_token: '/api/StaffAuthentication/RefreshToken',
   user_auth: '/api/UserAuthentication/UserLogin',
-  file_management:'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
+  user_refresh_token: '/api/UserAuthentication/UserLogin'
 }
 
 export const uploadEndpoints = {
@@ -9,6 +12,13 @@ export const uploadEndpoints = {
   getFileUrl: '/api/v2/AzureBlob/GetFileUrl',
   getFileUrlByGroupGuid: '/api/v2/AzureBlob/GetFileUrlByGroupGuid',
   deleteFile: '/api/v2/AzureBlob/DeleteFile'
+}
+
+export const api_full_endpoints = {
+  staff_auth: `${environment.apiUrl}${api_endpoints.staff_auth}`,
+  staff_refresh_token: `${environment.apiUrl}${api_endpoints.staff_refresh_token}`,
+  user_auth: `${environment.apiUrl}${api_endpoints.user_auth}`,
+  user_refresh_token: `${environment.apiUrl}${api_endpoints.user_refresh_token}`,
 }
 
 export const jwt_mapping = {

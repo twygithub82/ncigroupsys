@@ -14,4 +14,11 @@ export class User {
   plainToken!: string;
   expiration!: string;
   refreshToken!: string;
+  isStaff!: boolean;
+}
+
+export class UserToken {
+  token!: string;
+  expiration!: string;
+  refreshToken!: string;
 }

@@ -37,7 +37,13 @@ namespace IDMS.Models.Billing
         [UseFiltering]
         public IEnumerable<repair?>? repair_owner { get; set; }
 
-        //[UseFiltering]
-        //public billing_sot? billing_sot { get; set; }
+        [UseFiltering]
+        public IEnumerable<billing_sot?>? lolo_billing_sot { get; set; }
+        [UseFiltering]
+        public IEnumerable<billing_sot?>? preinsp_billing_sot { get; set; }
+        [UseFiltering]
+        public IEnumerable<billing_sot?>? storage_billing_sot { get; set; }
+        [UseFiltering]
+        public IEnumerable<billing_sot?>? gateio_billing_sot { get; set; }
     }
 }

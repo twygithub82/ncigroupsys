@@ -60,7 +60,6 @@ namespace IDMS.Survey.GqlTypes
                     ingate.update_dt = currentDateTime;
                 }
 
-
                 if (inGateRequest.tank == null || string.IsNullOrEmpty(inGateRequest.tank.guid))
                     throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
 
@@ -78,14 +77,14 @@ namespace IDMS.Survey.GqlTypes
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
 
-                if (tank.purpose_steam ?? false)
-                    sot.tank_status_cv = TankMovementStatus.STEAM;
-                else if (tank.purpose_cleaning ?? false)
-                    sot.tank_status_cv = TankMovementStatus.CLEANING;
-                else if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
-                    sot.tank_status_cv = TankMovementStatus.REPAIR;
-                else
-                    sot.tank_status_cv = TankMovementStatus.STORAGE;
+                //if (tank.purpose_steam ?? false)
+                //    sot.tank_status_cv = TankMovementStatus.STEAM;
+                //else if (tank.purpose_cleaning ?? false)
+                //    sot.tank_status_cv = TankMovementStatus.CLEANING;
+                //else if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
+                //    sot.tank_status_cv = TankMovementStatus.REPAIR;
+                //else
+                //    sot.tank_status_cv = TankMovementStatus.STORAGE;
 
                 //Add the newly created guid into list for return
                 retGuids.Add(ingateSurvey.guid);
@@ -278,8 +277,8 @@ namespace IDMS.Survey.GqlTypes
                 if (string.IsNullOrEmpty(inGateRequest.guid))
                     throw new GraphQLException(new Error("Ingate Guid cannot be null or empty.", "ERROR"));
 
-                if (inGateRequest.tank == null || string.IsNullOrEmpty(inGateRequest.tank.guid))
-                    throw new GraphQLException(new Error("Storing Order Tank cannot be null or empty.", "ERROR"));
+                if (string.IsNullOrEmpty(inGateRequest.so_tank_guid))
+                    throw new GraphQLException(new Error("Storing Order Tank Guid cannot be null or empty.", "ERROR"));
 
                 if (string.IsNullOrEmpty(inGateRequest?.in_gate_survey?.tank_comp_guid))
                     throw new GraphQLException(new Error("Tank Comp Guid cannot be null or empty.", "ERROR"));
@@ -293,9 +292,18 @@ namespace IDMS.Survey.GqlTypes
                 ingate.update_dt = currentDateTime;
                 ingate.publish_dt = currentDateTime;
 
-                var sot = inGateRequest.tank;
-                //storing_order_tank? sot = await context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
-                //                            .Where(t => t.guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                //var sot = inGateRequest.tank;
+                storing_order_tank? sot = await context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
+                                            .Where(t => t.guid == inGateRequest.so_tank_guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+
+                if (sot.purpose_steam ?? false)
+                    sot.tank_status_cv = TankMovementStatus.STEAM;
+                else if (sot.purpose_cleaning ?? false)
+                    sot.tank_status_cv = TankMovementStatus.CLEANING;
+                else if (!string.IsNullOrEmpty(sot.purpose_repair_cv))
+                    sot.tank_status_cv = TankMovementStatus.REPAIR;
+                else
+                    sot.tank_status_cv = TankMovementStatus.STORAGE;
 
                 //Add steaming by auto
                 if (sot?.purpose_steam ?? false)
@@ -306,9 +314,6 @@ namespace IDMS.Survey.GqlTypes
                     await AddCleaning(context, sot, ingate.create_dt, inGateRequest?.in_gate_survey?.tank_comp_guid);
 
                 retval = await context.SaveChangesAsync(true);
-
-                //Tank info handling
-                //await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "");
             }
             catch (Exception ex)
             {

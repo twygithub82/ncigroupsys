@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Billing;
+using IDMS.Models.DB;
 using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using IDMS.Models.Package;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Models.Master.GqlTypes.DB
 {
-    public class ApplicationMasterDBContext : DbContext
+    public class ApplicationMasterDBContext : BaseDBContext
     {
         public ApplicationMasterDBContext(DbContextOptions<ApplicationMasterDBContext> options) : base(options)
         {
@@ -19,15 +20,15 @@ namespace IDMS.Models.Master.GqlTypes.DB
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.repair_customer)
-               .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.customer_billing_guid);
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.repair_customer)
+            //   .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.customer_billing_guid);
 
-            modelBuilder.Entity<billing>()
-               .HasMany(b => b.repair_owner)
-               .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.owner_billing_guid);
+            //modelBuilder.Entity<billing>()
+            //   .HasMany(b => b.repair_owner)
+            //   .WithOne(c => c.owner_billing) // Assuming this is the correct navigation
+            //   .HasForeignKey(c => c.owner_billing_guid);
 
             //modelBuilder.Entity<aspnetuserroles>()
             //.HasKey(sc => new { sc.userID, sc.roleID });
