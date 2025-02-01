@@ -79,7 +79,6 @@ export class AppComponent implements OnInit, OnDestroy {
   private clearAllTimers() {
     this.refreshPromptTimer?.unsubscribe();
     this.refreshPromptTimer = null;
-    console.log('cleared refreshPromptTimer')
   }
 
   private resetAutoLogoutTimer() {
@@ -99,7 +98,6 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log('User selected renew');
         this.authService.refreshToken().subscribe({
           next: () => {
-            console.log('Token successfully refreshed');
           },
           error: () => {
             console.error('Token refresh failed - Logging out user');

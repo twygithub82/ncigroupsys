@@ -58,13 +58,14 @@ import { OutGateDS, OutGateGO, OutGateItem } from 'app/data-sources/out-gate';
 import { OutGateSurveyDS, OutGateSurveyGO } from 'app/data-sources/out-gate-survey';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { ReleaseOrderGO } from 'app/data-sources/release-order';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 @Component({
   selector: 'app-out-gate-survey-form',
   standalone: true,
   templateUrl: './out-gate-survey-form.component.html',
   styleUrl: './out-gate-survey-form.component.scss',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -92,6 +93,12 @@ import { ReleaseOrderGO } from 'app/data-sources/release-order';
     MatCardModule,
     MatStepperModule,
     MatRadioModule,
+  ],
+  providers: [
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: { showError: true },
+    },
   ]
 })
 export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -305,7 +312,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
   isFileActionLoading$: Observable<boolean> = this.fileManagerService.actionLoading$;
-  
+
   stepperOrientation: Observable<StepperOrientation>;
   compTypeStepperOrientation: Observable<StepperOrientation>;
 
@@ -654,15 +661,18 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
+      this.detectChanges();
     });
     this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
       this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
       this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
       if (data.length) {
         this.last_test_desc = this.getLastTest();
         this.next_test_desc = this.getNextTest();
+        this.detectChanges();
       }
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
@@ -670,70 +680,92 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       if (data.length) {
         this.last_test_desc = this.getLastTest();
         this.next_test_desc = this.getNextTest();
+        this.detectChanges();
       }
     });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
       this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('claddingCv').subscribe(data => {
       this.claddingCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('maxGrossWeightCv').subscribe(data => {
       this.maxGrossWeightCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('tankHeightCv').subscribe(data => {
       this.tankHeightCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('walkwayCv').subscribe(data => {
       this.walkwayCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('airlineCv').subscribe(data => {
       this.airlineCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('airlineConnCv').subscribe(data => {
       this.airlineConnCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('disCompCv').subscribe(data => {
       this.disCompCvList = data;
+      this.detectChanges();
     });
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
       this.disValveCvList = data;
+      this.detectChanges();
     });
     this.cvDS.connectAlias('disValveSpecCv').subscribe(data => {
       this.disValveSpecCvList = data;
+      this.detectChanges();
     });
     this.cvDS.connectAlias('disTypeCv').subscribe(data => {
       this.disTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('footValveCv').subscribe(data => {
       this.footValveCvList = data;
+      this.detectChanges();
     });
     this.cvDS.connectAlias('manlidCoverCv').subscribe(data => {
       this.manlidCoverCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('manlidSealCv').subscribe(data => {
       this.manlidSealCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('pvSpecCv').subscribe(data => {
       this.pvSpecCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('pvTypeCv').subscribe(data => {
       this.pvTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('thermometerCv').subscribe(data => {
       this.thermometerCvList = addDefaultSelectOption(data, "--Select--");
+      this.detectChanges();
     });
     this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
       this.valveBrandCvList = data;
+      this.detectChanges();
     });
     this.cvDS.connectAlias('tankSideCv').subscribe(data => {
       this.tankSideCvList = data;
+      this.detectChanges();
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
+      this.detectChanges();
     });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
+      this.detectChanges();
     });
 
     this.out_gate_guid = this.route.snapshot.paramMap.get('id');
@@ -764,7 +796,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
               }
             }
           });
-          
+
           this.getCustomerBufferPackage(this.out_gate.tank?.storing_order?.customer_company?.guid);
         }
       });
@@ -868,7 +900,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     this.populateTopSideCells(JSON.parse(og.out_gate_survey?.top_coord || '{}'));
     this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(og.out_gate_survey?.front_coord || '[]'));
     this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(og.out_gate_survey?.bottom_coord || '[]'));
-    // this.markForCheck();
+    this.detectChanges();
   }
 
   getImages() {
@@ -943,7 +975,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       frontImage: this.patchOrCreateImageForm('FRONT_SIDE', frontImg, this.surveyForm?.get('frame_type.frontImage')),
       bottomImage: this.patchOrCreateImageForm('BOTTOM_SIDE', bottomImg, this.surveyForm?.get('frame_type.bottomImage'))
     });
-    // this.markForCheck();
+    this.detectChanges();
   }
 
   // export table data in excel file
@@ -1282,7 +1314,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           const preview = reader.result as string | ArrayBuffer;
           tankSideForm.get('file')?.setValue(file);
           tankSideForm.get('preview')?.setValue(preview);
-          // this.markForCheck();
+          this.detectChanges();
         };
         reader.readAsDataURL(file);
       });
@@ -1298,7 +1330,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         reader.onload = () => {
           const preview = reader.result as string | ArrayBuffer;
           this.dmgImages().push(this.createImageForm('', preview, file));
-          // this.markForCheck();
+          this.detectChanges();
         };
         reader.readAsDataURL(file);
       });
@@ -1354,7 +1386,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           imgForm.patchValue({
             preview: ''
           });
-          // this.markForCheck();
+          this.detectChanges();
           this.handleDeleteSuccess(1);
         } else if (Utility.isUrl(url)) {
           this.fileManagerService.deleteFile([url]).subscribe({
@@ -1363,7 +1395,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
               imgForm.patchValue({
                 preview: ''
               });
-              // this.markForCheck();
+              this.detectChanges();
               this.handleDeleteSuccess(response);
             },
             error: (error) => {
@@ -1403,14 +1435,14 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       if (result.action === 'confirmed') {
         if (Utility.isBase64Url(url)) {
           this.dmgImages().removeAt(index);
-          // this.markForCheck();
+          this.detectChanges();
           this.handleDeleteSuccess(1);
         } else if (Utility.isUrl(url)) {
           this.fileManagerService.deleteFile([url]).subscribe({
             next: (response) => {
               console.log('Files delete successfully:', response);
               this.dmgImages().removeAt(index);
-              // this.markForCheck();
+              this.detectChanges();
               this.handleDeleteSuccess(response);
             },
             error: (error) => {
@@ -1494,7 +1526,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         } else {
           this.resetHighlightedCells(highlightedCells);
         }
-        // this.markForCheck();
+        this.detectChanges();
       }
     });
   }
@@ -1623,7 +1655,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     event.preventDefault(); // Prevents the form submission
   }
 
-  // markForCheck() {
-  //   this.cdr.markForCheck(); // Trigger change detection manually
-  // }
+  detectChanges() {
+    this.cdr.markForCheck(); // Trigger change detection manually
+  }
 }

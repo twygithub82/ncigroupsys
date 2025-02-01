@@ -169,7 +169,8 @@
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <mat-stepper class="example-stepper" [orientation]="(stepperOrientation | async)!" #stepper>
-                  <mat-step [stepControl]="getTankDetailsFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid ? true : getTankDetailsFormGroup().valid">
+                  <mat-step [stepControl]="getTankDetailsFormGroup()"
+                    [completed]="this.in_gate?.in_gate_survey?.guid ? true : getTankDetailsFormGroup().valid">
                     <form [formGroup]="getTankDetailsFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -381,7 +382,8 @@
                       </div>
                     </form>
                   </mat-step>
-                  <mat-step [stepControl]="getPeriodicTestFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid ? true : getPeriodicTestFormGroup().valid">
+                  <mat-step [stepControl]="getPeriodicTestFormGroup()"
+                    [completed]="this.in_gate?.in_gate_survey?.guid ? true : getPeriodicTestFormGroup().valid">
                     <form [formGroup]="getPeriodicTestFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -588,7 +590,8 @@
                       </div>
                     </form>
                   </mat-step>
-                  <mat-step [stepControl]="getFrameTypeFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid ? true : getFrameTypeFormGroup().valid">
+                  <mat-step [stepControl]="getFrameTypeFormGroup()"
+                    [completed]="this.in_gate?.in_gate_survey?.guid ? true : getFrameTypeFormGroup().valid">
                     <form [formGroup]="getFrameTypeFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -1537,7 +1540,7 @@
                     </form>
                   </mat-step> -->
                   <mat-step [stepControl]="getCompartmentTypeFormGroup()"
-                    [completed]="this.in_gate?.in_gate_survey?.guid">
+                    [completed]="this.in_gate?.in_gate_survey?.guid ? true : getCompartmentTypeFormGroup().valid">
                     <form [formGroup]="getCompartmentTypeFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -1684,7 +1687,8 @@
                               </div>
                             </form>
                           </mat-step>
-                          <mat-step [stepControl]="getTopFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid ? true : getTopFormGroup().valid">
+                          <mat-step [stepControl]="getTopFormGroup()"
+                            [completed]="this.in_gate?.in_gate_survey?.guid ? true : getTopFormGroup().valid">
                             <form [formGroup]="getTopFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.TOP}}</ng-template>
                               <div class="row">
