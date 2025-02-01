@@ -898,7 +898,8 @@
     "SESSION-EXPIRE-WARNING": "Session Expire Warning",
     "SESSION-EXPIRE-WARNING-DESCRIPTION": "Your session will expire in {0}, do you want to extend the session?",
     "RENEW": "Renew",
-    "LOGOUT": "Logout"
+    "LOGOUT": "Logout",
+    "CONFIRM-LOGOUT": "Confirm Logout?"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

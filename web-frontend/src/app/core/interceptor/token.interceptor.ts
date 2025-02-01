@@ -61,8 +61,11 @@ export class TokenInterceptor implements HttpInterceptor {
       return this.authService.refreshToken().pipe(
         switchMap((newToken) => {
           this.isRefreshing = false;
-          this.refreshTokenSubject.next(newToken.token);
-          return next.handle(this.addToken(request, newToken.token));
+          if (newToken) {
+            this.refreshTokenSubject.next(newToken.token);
+            request = this.addToken(request, newToken.token);
+          }
+          return next.handle(request);
         }),
         catchError(error => {
           this.isRefreshing = false;
@@ -94,8 +97,10 @@ export class TokenInterceptor implements HttpInterceptor {
     return this.authService.refreshToken().pipe(
       switchMap(newToken => {
         this.isRefreshing = false;
-        this.refreshTokenSubject.next(newToken.token);
-        request = this.addToken(request, newToken.token);
+        if (newToken) {
+          this.refreshTokenSubject.next(newToken.token);
+          request = this.addToken(request, newToken.token);
+        }
         return next.handle(request);
       }),
       catchError(error => {

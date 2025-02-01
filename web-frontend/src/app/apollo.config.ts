@@ -43,13 +43,14 @@ import { GraphQLError } from 'graphql';
                     .pipe(
                       switchMap((newToken): RxJSObservable<FetchResult> => {
                         // Retry the failed request with the new token
-                        operation.setContext(({ headers = {} }) => ({
-                          headers: {
-                            ...headers,
-                            Authorization: `Bearer ${newToken.token}`,
-                          },
-                        }));
-
+                        if (newToken) {
+                          operation.setContext(({ headers = {} }) => ({
+                            headers: {
+                              ...headers,
+                              Authorization: `Bearer ${newToken.token}`,
+                            },
+                          }));
+                        }
                         return from(forward(operation)) as RxJSObservable<FetchResult>;
                       }),
                       catchError((): RxJSObservable<FetchResult> => {

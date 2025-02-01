@@ -92,11 +92,11 @@ export class AuthService {
       );
   }
 
-  refreshToken(): Observable<UserToken> {
+  refreshToken(): Observable<UserToken | null> {
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
       this.logout();
-      return throwError(() => new Error('No refresh token found'));
+      return of(null);;
     }
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
