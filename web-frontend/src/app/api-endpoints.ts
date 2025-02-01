@@ -4,7 +4,7 @@ export const api_endpoints = {
   staff_auth: '/api/StaffAuthentication/StaffLogin',
   staff_refresh_token: '/api/StaffAuthentication/RefreshToken',
   user_auth: '/api/UserAuthentication/UserLogin',
-  user_refresh_token: '/api/UserAuthentication/UserLogin'
+  user_refresh_token: '/api/UserAuthentication/RefreshToken'
 }
 
 export const uploadEndpoints = {

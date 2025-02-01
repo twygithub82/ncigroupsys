@@ -29,7 +29,7 @@ export interface DialogData {
 export class ConfirmationDialogComponent {
   index: number;
   headerText: string;
-  act:string;
+  act: string;
   langText: any = {
     CANCEL: 'COMMON-FORM.CANCEL',
     CONFIRM: 'COMMON-FORM.CONFIRM',
@@ -43,7 +43,7 @@ export class ConfirmationDialogComponent {
     // Set the defaults
     this.headerText = data.headerText || this.langText.ARE_YOU_SURE
     this.index = data.index;
-    this.act=data.action;
+    this.act = data.action;
   }
   onNoClick(): void {
     this.dialogRef.close('cancel');
@@ -56,7 +56,7 @@ export class ConfirmationDialogComponent {
     }
     this.dialogRef.close(returnDialog);
   }
-  hideCancel():boolean{
-    return this.act=="confirm_only";
+  hideCancel(): boolean {
+    return this.act == "confirm_only";
   }
 }

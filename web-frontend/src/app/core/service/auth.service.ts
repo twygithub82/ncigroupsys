@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, map, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, catchError, map, of, throwError } from 'rxjs';
 import { User, UserToken } from '../models/user';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { JwtPayload } from '@core/models/JwtPayload';
@@ -7,27 +7,28 @@ import { environment } from 'environments/environment';
 import { api_endpoints, api_full_endpoints } from 'app/api-endpoints';
 import { decodeToken } from 'app/utilities/jwt-util';
 import { jwt_mapping } from 'app/api-endpoints';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private userKey = 'currentUser';
+  private tokenKey = 'userToken';
+  private rememberMyKey = 'rememberMe';
+  private usernameKey = 'username';
+
   private currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
 
-  private userTokenSubject: BehaviorSubject<UserToken>;
-  public userToken: Observable<UserToken>;
+  tokenRefreshed = new Subject<void>();
+  userLoggedOut = new Subject<void>();
 
   constructor(private http: HttpClient) {
     this.currentUserSubject = new BehaviorSubject<User>(
-      JSON.parse(localStorage.getItem('currentUser') || '{}')
+      JSON.parse(localStorage.getItem(this.userKey) || '{}')
     );
     this.currentUser = this.currentUserSubject.asObservable();
-
-    this.userTokenSubject = new BehaviorSubject<UserToken>(
-      JSON.parse(localStorage.getItem('userToken') || '{}')
-    );
-    this.userToken = this.userTokenSubject.asObservable();
   }
 
   public get currentUserValue(): User {
@@ -42,29 +43,17 @@ export class AuthService {
     return !!this.currentUserSubject.value?.isStaff;
   }
 
-  public get userTokenJwtToken(): any {
-    return this.userTokenSubject.value?.token;
-  }
-
-  public get userTokenRefreshToken(): any {
-    return this.userTokenSubject.value?.refreshToken;
-  }
-
-  public get userTokenIsExpired(): any {
-    return this.userTokenSubject.value;
-  }
-
   login(username: string, password: string, isStaff: boolean, rememberMe: boolean): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const endpoint = isStaff ? api_full_endpoints.staff_auth : api_full_endpoints.user_auth;
     const url = `${endpoint}`
     const body = { username, password };
     if (rememberMe) {
-      localStorage.setItem('rememberMe', 'true');
-      localStorage.setItem('username', body.username);
+      localStorage.setItem(this.rememberMyKey, 'true');
+      localStorage.setItem(this.usernameKey, body.username);
     } else {
-      localStorage.removeItem('rememberMe');
-      localStorage.removeItem('username');
+      localStorage.removeItem(this.rememberMyKey);
+      localStorage.removeItem(this.usernameKey);
     }
     return this.http.post<any>(url, body, { headers })
       .pipe(
@@ -89,10 +78,10 @@ export class AuthService {
             userToken.expiration = usr.expiration;
             userToken.refreshToken = usr.refreshToken;
 
-            localStorage.setItem('currentUser', JSON.stringify(usr));
-            localStorage.setItem('userToken', JSON.stringify(userToken));
-            this.userTokenSubject.next(userToken);
+            localStorage.setItem(this.userKey, JSON.stringify(usr));
+            localStorage.setItem(this.tokenKey, JSON.stringify(userToken));
             this.currentUserSubject.next(usr);
+            this.tokenRefreshed.next();
           }
           return user;
         }),
@@ -103,17 +92,28 @@ export class AuthService {
       );
   }
 
-  refreshToken(): Observable<any> {
+  refreshToken(): Observable<UserToken> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      this.logout();
+      return throwError(() => new Error('No refresh token found'));
+    }
+
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const apiUrl = environment.apiUrl;
     const endpoint = this.currentUserIsStaff ? api_full_endpoints.staff_refresh_token : api_full_endpoints.user_refresh_token;
-    const url = `${apiUrl}${endpoint}`
-    const body = { refreshToken: this.userTokenRefreshToken };
+    const url = `${endpoint}`
+    const body = { refreshToken: refreshToken };
     return this.http.post<any>(url, body, { headers })
       .pipe(
         map(response => {
-          console.log(response);
-          localStorage.setItem('userToken', JSON.stringify({ token: response.token, expiration: response.expiration, refreshToken: response.refreshToken }));
+          const userToken = new UserToken;
+          userToken.token = response.token;
+          userToken.expiration = response.expiration;
+          userToken.refreshToken = response.refreshToken;
+          localStorage.setItem('userToken', JSON.stringify(userToken));
+          this.tokenRefreshed.next();
+          console.log('token is refreshed: ', userToken)
+          return userToken;
         }),
         catchError(error => {
           this.logout();
@@ -137,15 +137,16 @@ export class AuthService {
   }
 
   logout() {
-    // remove user from local storage to log user out
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('userToken');
+    // remove local storage when log user out
+    localStorage.removeItem(this.userKey);
+    localStorage.removeItem(this.tokenKey);
     this.currentUserSubject.next(new User);
+    this.userLoggedOut.next();
     return of({ success: false });
   }
 
   getRememberedUsername(): string | null {
-    return localStorage.getItem('rememberMe') === 'true' ? localStorage.getItem('username') : null;
+    return localStorage.getItem(this.rememberMyKey) === 'true' ? localStorage.getItem(this.usernameKey) : null;
   }
 
   getDecodedToken(): any {
@@ -153,8 +154,20 @@ export class AuthService {
     // return token ? decodeToken(token) : null;
   }
 
-  getUserToken(): any {
-    return localStorage.getItem('userToken');
+  getAccessToken(): string | null {
+    const userToken = JSON.parse(localStorage.getItem('userToken') || '{}');
+    return userToken?.token || null;
+  }
+
+  getRefreshToken(): string | null {
+    const userToken = JSON.parse(localStorage.getItem('userToken') || '{}');
+    return userToken?.refreshToken || null;
+  }
+
+  getTokenExpiration(): number | null {
+    const userToken = JSON.parse(localStorage.getItem(this.tokenKey) || '{}');
+    if (!userToken?.expiration) return null;
+    return new Date(userToken.expiration).getTime(); // Convert to milliseconds
   }
 
   hasRole(expectedRoles: string[] | undefined): boolean {

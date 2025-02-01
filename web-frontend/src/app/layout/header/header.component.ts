@@ -42,7 +42,6 @@ interface Notifications {
     MatButtonModule,
     FeatherIconsComponent,
     MatMenuModule,
-    RouterLink,
     NgClass,
     NgScrollbar,
     MatIconModule,
@@ -163,11 +162,7 @@ export class HeaderComponent
     }
   }
   logout() {
-    this.subs.sink = this.authService.logout().subscribe((res: { success: any; }) => {
-      if (!res.success) {
-        this.router.navigate(['/authentication/signin-staff']);
-      }
-    });
+    this.authService.logout();
   }
 
   private searchNotificationRecords() {

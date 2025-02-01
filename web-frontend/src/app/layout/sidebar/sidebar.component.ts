@@ -186,11 +186,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
   }
   logout() {
-    this.authService.logout().subscribe((res: { success: any; }) => {
-      if (!res.success) {
-        this.router.navigate(['/authentication/signin-staff']);
-      }
-    });
+    this.authService.logout();
   }
   checkScreenSizeAndCollapse() {
     const screenWidth = window.innerWidth;

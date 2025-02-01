@@ -1,0 +1,16 @@
+<div class="container">
+    <h3 mat-dialog-title>{{headerText}}</h3>
+    <div mat-dialog-content>
+        <span>
+            {{getDescription()}}
+        </span>
+    </div>
+    <div mat-dialog-actions class="mb-1 d-flex justify-content-end">
+        <button mat-flat-button color="primary" class="mr-1" (click)="onRenew()">
+            {{translatedLangText.RENEW}}
+        </button>
+        <button mat-flat-button color="warn" (click)="onLogout()">
+            {{translatedLangText.LOGOUT}}
+        </button>
+    </div>
+</div>

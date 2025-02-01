@@ -46,7 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
-  selector: 'app-tank-movement',
+  selector: 'app-steam-billing',
   standalone: true,
   templateUrl: './steam-billing.component.html',
   styleUrl: './steam-billing.component.scss',
