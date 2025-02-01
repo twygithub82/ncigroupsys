@@ -257,14 +257,13 @@
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <mat-checkbox (change)="$event ? masterToggle(sotRow) : null" [checked]="isAllSelected(sotRow)"
-                  
                     [indeterminate]="isSomeSelected(sotRow)&&!isAllSelected(sotRow)" [ngClass]="'tbl-checkbox'"  [hidden]="!MasterCheckBoxDisable(sotRow)" >
                   </mat-checkbox>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
                       [checked]="reSelection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
                     </mat-checkbox>

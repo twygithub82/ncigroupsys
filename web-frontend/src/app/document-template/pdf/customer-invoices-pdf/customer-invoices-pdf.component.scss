@@ -1,0 +1,216 @@
+.pdf-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.pdf-header {
+    display: flex;
+    padding: 10px 10px 0px 10px;
+    height: 351px;
+}
+
+.pdf-body {
+    display: flex;
+    padding: 0px 10px 0px 10px;
+}
+.pdf-body15 {
+    display: flex;
+    padding: 0px 15px 0px 15px;
+}
+
+.pdf-footer {
+    display: flex;
+    padding: 4px 10px 10px 10px;
+    text-align: left;
+
+    .disclaimer {
+        width: 100%;
+        font-size: 0.5rem;
+        margin-top: 1px;
+    }
+
+    .footer-info-content {
+        width: 100%;
+        font-size: 0.6rem;
+        margin-top: 1px;
+    }
+}
+
+.logo-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    width: 180px;
+    object-fit: contain;
+}
+
+.estimate-title {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.table_customer_info {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 5px; /* Adds spacing below the table */
+    border: none; /* Removes border from the table */
+}
+.table_customer_info tr,
+.table_customer_info td,
+.table_customer_info th {
+    border: 1px; /* Removes borders from table rows and cells */
+}
+
+
+.table_customer_info td.sp
+{
+    text-align: right;
+    width: 60%; /* Removes borders from table rows and cells */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table,
+th,
+td {
+    border: 1px solid #9d9d9d;
+}
+
+th,
+td {
+    padding: 1px 4px;
+    text-align: left;
+
+    b {
+        font-weight: 900;
+    }
+}
+
+tr.th {
+    background-color: #353131;
+    text-align: center;
+}
+
+.dmg-repair-code-table {
+    width: 100%;
+    border: 1px double #9d9d9d;
+    padding: 4px;
+    font-size: 0.6rem;
+    display: flex;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.dmg-cv-table {
+    width: 55%;
+}
+
+.repair-cv-table {
+    width: 45%;
+    border-left: 1px double #9d9d9d;
+}
+
+.list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.list-column {
+    flex: 1 1 30%;
+    list-style-type: none;
+}
+
+.list-column ul {
+    margin: 0;
+    padding: 0;
+}
+
+.list-column li {
+    font-size: 0.55rem;
+}
+
+.repair-part-table {
+    font-size: 0.65rem;
+    padding: 0px 10px 0px 10px;
+
+    .sub-header-table {
+        background-color: #d2d2d2;
+    }
+
+    .group-header {
+        background-color: #dedede;
+    }
+}
+
+.repair-remarks {
+    width: 100%;
+    padding-left: 35px;
+    font-size: 0.65rem;
+}
+
+.repair-remarks-title {
+    font-weight: 900;
+}
+
+.header-table {
+    background-color: #c2c2c2;
+}
+
+.footer-info-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.pdf-p-t {
+    padding-top: 10px;
+}
+
+.pdf-p-r {
+    padding-right: 10px;
+}
+
+.pdf-p-b {
+    padding-bottom: 10px;
+}
+
+.pdf-p-l {
+    padding-left: 10px;
+}
+
+.pdf-m-t {
+    margin-top: 10px;
+}
+
+.pdf-m-r {
+    margin-right: 10px;
+}
+
+.pdf-m-b {
+    margin-bottom: 10px;
+}
+
+.pdf-m-l {
+    margin-left: 10px;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.summary-content {
+    font-size: 0.6rem;
+
+}

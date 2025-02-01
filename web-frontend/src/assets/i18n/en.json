@@ -833,6 +833,7 @@
     "LOWER-REQUIRED-TEMP": "The current temperature is lower than the required temperate",
     "PUBLISH": "Publish",
     "INVOICE-DATE":"Invoice Date",
+    "INVOICE-PERIOD":"Invoice Period",
     "INVOICE-NO":"Invoice No",
     "INVOICE-DETAILS":"Invoice Details",
     "FAX": "Fax",

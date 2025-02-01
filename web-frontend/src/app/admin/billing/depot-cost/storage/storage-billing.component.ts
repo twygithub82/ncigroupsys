@@ -261,7 +261,8 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       tank_status_cv: [''],
       eir_status_cv: [''],
       yard_cv: [''],
-      invoiced:['']
+      invoiced:[''],
+      
     });
   }
 
@@ -453,7 +454,13 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
-   
+    if (this.searchForm!.get('inv_no')?.value) {
+      if(!where.storage_billing) where.storage_billing={};
+      
+      where.storage_billing.invoice_no={contains:this.searchForm!.get('inv_no')?.value} ;
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
     this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
@@ -968,12 +975,12 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        this.RmoveEstimateFromInvoice(event,row.guid!);
+        this.RemoveEstimateFromInvoice(event,row.guid!);
       }
     });
   }
 
-  RmoveEstimateFromInvoice(event:Event, processGuid:string)
+  RemoveEstimateFromInvoice(event:Event, processGuid:string)
   {
     var updateBilling: any=null;
     var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();

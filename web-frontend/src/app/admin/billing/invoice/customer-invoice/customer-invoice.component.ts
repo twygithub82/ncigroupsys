@@ -52,6 +52,7 @@ import {RepairDS, RepairItem}from 'app/data-sources/repair';
 import { ResidueItem } from 'app/data-sources/residue';
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
 import { SteamItem } from 'app/data-sources/steam';
+import { CustomerInvoicesPdfComponent } from 'app/document-template/pdf/customer-invoices-pdf/customer-invoices-pdf.component';
 
 
 
@@ -212,7 +213,6 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
 
   initSearchForm() {
     this.searchForm = this.fb.group({
-      so_no: [''],
       customer_code: this.customerCodeControl,
       branch_code:this.branchCodeControl,
       last_cargo: this.lastCargoControl,
@@ -231,7 +231,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
       purpose: [''],
       tank_status_cv: [''],
       eir_status_cv: [''],
-      yard_cv: ['']
+      
     });
   }
 
@@ -265,6 +265,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
         });
       })
     ).subscribe();
+
+
+   
 
     this.searchForm!.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
@@ -355,7 +358,10 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     }
   }
 
-  search() {
+
+  
+
+  search1() {
     const where: any = {};
 
     if (this.searchForm!.get('tank_no')?.value) {
@@ -377,6 +383,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
       }
       where.storing_order = soSearch;
     }
+
 
    
 
@@ -502,17 +509,21 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
 
   resetForm() {
     this.searchForm?.patchValue({
-      so_no: '',
+      currency: '',
       eir_no: '',
-      eir_dt_start: '',
-      eir_dt_end: '',
+      eir_dt:'',
+      inv_dt_start:'',
+      inv_dt_end:'',
       tank_no: '',
       job_no: '',
-      purpose: '',
+      inv_no: '',
       tank_status_cv: '',
-      eir_status_cv: ''
+      eir_status_cv: '',
+
     });
     this.customerCodeControl.reset('');
+    this.branchCodeControl.reset('');
+ 
   }
 
   searchBilling() {
@@ -550,9 +561,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
           // where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
          }
      
-         if(this.searchForm!.get('invoice_no')?.value)
+         if(this.searchForm!.get('inv_no')?.value)
            {
-             where.invoice_no={contains: this.searchForm!.get('invoice_no')?.value};
+             where.invoice_no={contains: this.searchForm!.get('inv_no')?.value};
            }
      
          if (this.searchForm!.get('customer_code')?.value) {
@@ -676,6 +687,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
       this.subs.sink = this.billDS.searchBillingWithBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
         .subscribe(data => {
           this.billList = data;
+          
           this.export_report();
         });
   
@@ -684,6 +696,8 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     }
   export_report()
   {
+    if(!this.billList.length) return;
+
      var repCustomers : report_billing_customer[]=[]
      // var rpItems:report_billing_item[]=[];
 
@@ -696,19 +710,39 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
           repCust= repCusts[0];
           newCust=false;
          }
+         else
+         {
+          repCust.guid=b.customer_company?.guid;
+          repCust.items=[];
+         }
          repCust.customer=b.customer_company?.name;
          if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-            repCust.invoice_period=`${this.displayDate(this.searchForm!.get('inv_dt_start')?.value)} - ${this.displayDate(this.searchForm!.get('inv_dt_end')?.value)}`;
+            repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
          }
-         let rpBillingItm =this.createReportBillingItem(b);
+         let rpBillingItm =this.createReportBillingItem(b,repCust.items!);
+         repCust.items=rpBillingItm;
+
+         if(newCust) repCustomers.push(repCust);
+        
+      });
+      repCustomers.map(c=>{
+       
+          c.items?.map(i=>{
+             var total:number=0;
+             total = Number(i.clean_cost||0)+Number(i.gateio_cost||0)+Number(i.lolo_cost||0)+Number(i.preins_cost||0)
+                    +Number(i.storage_cost||0)+Number(i.repair_cost||0)+Number(i.residue_cost||0)+Number(i.steam_cost||0) ;
+            i.total= total.toFixed(2);
+
+          });
 
       });
+    this.onExport(repCustomers);
 
   }
 
-  createReportBillingItem(b:BillingItem):report_billing_item[]
+  createReportBillingItem(b:BillingItem,rbItm:report_billing_item[]):report_billing_item[]
   {
-    var repBillItems:report_billing_item[]=[];
+    var repBillItems:report_billing_item[]=rbItm;
     var repBillingItm:report_billing_item= new report_billing_item();
 
     var sot_guids:string[]=[];
@@ -716,11 +750,11 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     if(b.gateio_billing_sot?.length!>0) this.calculateGateInOutCost(b.gateio_billing_sot!,repBillItems);
     if(b.lolo_billing_sot?.length!>0) this.calculateLOLOCost(b.lolo_billing_sot!,repBillItems);
     if(b.preinsp_billing_sot?.length!>0)this.calculatePreInspectionCost(b.preinsp_billing_sot!,repBillItems);
-    if(b.repair_customer?.length!>0) this.calculateRepairCost(b.preinsp_billing_sot!,repBillItems);
+    if(b.repair_customer?.length!>0) this.calculateRepairCost(b.repair_customer!,repBillItems);
     if(b.repair_owner?.length!>0) this.calculateRepairCost(b.repair_owner!,repBillItems,1);
     if(b.residue?.length!>0) this.calculateResidueCost(b.residue!,repBillItems);
     if(b.storage_billing_sot?.length!>0)this.calculateStorageCost(b.storage_billing_sot!,repBillItems);
-    if(b.steaming?.length!>0)sot_guids= this.distinctSOT(b.steaming!,sot_guids);
+    if(b.steaming?.length!>0) this.calculateSteamingCost(b.steaming!,repBillItems);
     
     
      // repBillingItm.job_no = b.
@@ -752,12 +786,17 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
           itms.forEach(c=>{
              let newItem=false;
             let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
+
             if(!rep_bill_item)
             {
               newItem=true;
               rep_bill_item= new report_billing_item();
               rep_bill_item.sot_guid=c.storing_order_tank?.guid;
             }
+            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+            
             rep_bill_item.clean_cost = Number(Number( rep_bill_item?.clean_cost||0)+ (c.cleaning_cost||0)+ (c.buffer_cost||0)).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
             
@@ -786,7 +825,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
               rep_bill_item= new report_billing_item();
               rep_bill_item.sot_guid=c.storing_order_tank?.guid;
             }
-            c.preinspection
+            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
             rep_bill_item.gateio_cost = Number(Number( rep_bill_item?.gateio_cost||0)+ (c.gate_in_cost||0)+(c.gate_out_cost||0)).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
             
@@ -815,7 +856,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
               rep_bill_item= new report_billing_item();
               rep_bill_item.sot_guid=c.storing_order_tank?.guid;
             }
-            c.preinspection
+            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
             rep_bill_item.lolo_cost = Number(Number( rep_bill_item?.lolo_cost||0)+ (c.lift_off?c.lift_off_cost!:0)+(c.lift_on?c.lift_on_cost!:0)).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
             
@@ -844,7 +887,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
               rep_bill_item= new report_billing_item();
               rep_bill_item.sot_guid=c.storing_order_tank?.guid;
             }
-            c.preinspection
+            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
             rep_bill_item.preins_cost = Number(Number( rep_bill_item?.preins_cost||0)+ (c.preinspection?c.preinspection_cost!:0)).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
             
@@ -875,6 +920,11 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
               rep_bill_item= new report_billing_item();
               rep_bill_item.sot_guid=c.storing_order_tank?.guid;
             }
+
+            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+
             let packDepotItm :PackageDepotItem=new PackageDepotItem();
             packDepotItm.storage_cal_cv=c.storage_cal_cv;
 
@@ -883,10 +933,17 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
 
              var in_gates= c.storing_order_tank?.in_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
              var out_gates=c.storing_order_tank?.out_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
-             rep_bill_item.days=daysDifference.toFixed(2);
+             rep_bill_item.days= String(daysDifference);
              rep_bill_item.storage_cost = Number((c.storage_cost||0)*daysDifference).toFixed(2);
-            if(in_gates?.length) rep_bill_item.in_date=Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
-            if(out_gates?.length) rep_bill_item.out_date=Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
+            if(in_gates?.length) 
+              {
+                rep_bill_item.in_date=Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+                rep_bill_item.eir_no=in_gates?.[0]?.eir_no;
+              }
+            if(out_gates?.length) {
+              rep_bill_item.out_date=Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
+              rep_bill_item.eir_no=out_gates?.[0]?.eir_no;
+            }
             if(newItem)rep_bill_items.push(rep_bill_item);
             
           });
@@ -913,7 +970,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
               rep_bill_item= new report_billing_item();
               rep_bill_item.sot_guid=c.storing_order_tank?.guid;
             }
-            
+            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
             const totalCost = this.repDS.calculateCost(c,c.repair_part!,c.labour_cost);
             rep_bill_item.repair_cost  = Number(Number( rep_bill_item?.repair_cost||0)+(CustomerType==0?Number(totalCost.total_lessee_mat_cost||0):Number(totalCost.total_owner_cost||0))).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
@@ -944,7 +1003,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
               rep_bill_item.sot_guid=c.storing_order_tank?.guid;
             }
             
-            
+            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
              c.residue_part?.forEach(p=>{  
                  if(rep_bill_item) rep_bill_item.residue_cost  = Number(Number( rep_bill_item?.residue_cost||0)+ (p.approve_part?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
 
@@ -977,7 +1038,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
               rep_bill_item.sot_guid=c.storing_order_tank?.guid;
             }
             
-            
+            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
              c.steaming_part?.forEach(p=>{
               if(rep_bill_item)  rep_bill_item.steam_cost  = Number(Number( rep_bill_item?.steam_cost||0)+ (p.approve_part?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
 
@@ -991,6 +1054,31 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
      return retval;
   }
 
- 
+  preventDefault(event: Event)
+  {
+    event.preventDefault();
+  }
+   onExport(repCustomers: report_billing_customer[]) {
+      //this.preventDefault(event);
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(CustomerInvoicesPdfComponent, {
+        width: '1000px',
+        height: '80vh',
+        data: {
+          billing_customers:repCustomers
+        },
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+      });
+    }
   
 }

@@ -450,6 +450,12 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
+    if (this.searchForm!.get('inv_no')?.value) {
+      if(!where.gateio_billing) where.gateio_billing={};
+      
+      where.gateio_billing.invoice_no={contains:this.searchForm!.get('inv_no')?.value} ;
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
    
     this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);

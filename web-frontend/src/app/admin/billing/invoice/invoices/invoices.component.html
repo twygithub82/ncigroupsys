@@ -136,13 +136,13 @@
               <table mat-table [dataSource]="billList" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_5'">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75'">
                     <mat-checkbox (change)="$event ? masterToggle() : null"
                       [checked]="selection.hasValue() && isAllSelected()"
                       [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" [hidden]="MasterCheckBoxDisable()">
                     </mat-checkbox>
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_5'">
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
                     <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
                       [checked]="isItemSelected(row)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>

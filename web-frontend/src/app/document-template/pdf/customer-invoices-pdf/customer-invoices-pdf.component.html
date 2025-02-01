@@ -1,0 +1,91 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{translatedLangText.CUSTOMER_INVOICE}}</h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  
+
+  <div id="pdf-form-body" class="pdf-container pdf-body">
+    @for (bCust of repBillingCustomers; track bCust) {
+  <div class="card">
+    
+      <div class="row pdf-body">
+        <table  id="table_customer_info" class="table_customer_info">
+          <tr>
+            <td> {{translatedLangText.CUSTOMER}} :</td>
+            <td> {{bCust.customer}}</td>
+          </tr>
+          <tr>
+            <td> {{translatedLangText.INVOICE_PERIOD}} :</td>
+            <td> {{bCust.invoice_period}}</td>
+            <td class="sp"> {{translatedLangText.DATE}} :</td>
+            <td>{{GeneratedDate()}}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- <div class="row">&nbsp;</div> -->
+      <!-- <div class="row pdf-body">
+        {{translatedLangText.INVOICE_PERIOD}} : {{bCust.invoice_period}}
+      </div> -->
+      <table id="repair-part-table" class="repair-part-table">
+        <tr class="group-header">
+          <th>No</th>
+          <th>Job No.</th>
+          <th>Tank No.</th>
+          <th>EIR No.</th>
+          <th>Last Cargo</th>
+          <th>In-Date</th>
+          <th>Out-Date</th>
+          <th>Clean Cost</th>
+          <th>Repair Cost</th>
+          <th>Pre-insp Cost</th>
+          <th>LOLO Cost</th>
+          <th>Days</th>
+          <th>Storage Cost</th>
+          <th>Steam Cost</th>
+          <th>Residue Cost</th>
+          <th>Total</th>
+        </tr>
+        @for (itm of bCust.items; track itm;let index = $index) {
+          <tr>
+            <td>{{ index + 1 }}</td> <!-- Row number -->
+            <td>{{ itm.job_no }}</td> 
+            <td>{{ itm.tank_no }}</td> 
+            <td>{{ itm.eir_no }}</td> 
+            <td>{{ itm.last_cargo }}</td> 
+            <td>{{ itm.in_date }}</td> 
+            <td>{{ itm.out_date }}</td> 
+            <td>{{ itm.clean_cost }}</td> 
+            <td>{{ itm.clean_cost }}</td> 
+            <td>{{ itm.repair_cost }}</td> 
+            <td>{{ itm.preins_cost }}</td> 
+            <td>{{ itm.days }}</td> 
+            <td>{{ itm.storage_cost }}</td> 
+            <td>{{ itm.steam_cost }}</td> 
+            <td>{{ itm.residue_cost }}</td> 
+            <td>{{ itm.total }}</td> 
+          </tr>
+        }
+      </table>
+    
+  </div>
+  }
+  </div>
+
+ 
+</div>
+<div mat-dialog-actions class="m-2 align-right">
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+        file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>

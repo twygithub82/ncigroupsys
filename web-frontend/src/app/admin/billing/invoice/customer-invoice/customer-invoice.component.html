@@ -136,7 +136,7 @@
                     </mat-form-field>
                   </div> -->
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
-                    <button mat-mini-fab color="primary" (click)="searchBilling()">
+                    <button mat-mini-fab color="primary" (click)="searchBilling()" [disabled]="(billDS.actionLoading$| async)">
                       <mat-icon>insert_drive_file</mat-icon>
                     </button>
                     <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
@@ -150,8 +150,8 @@
               </form>
             </mat-expansion-panel>
           </mat-accordion>
-          <div class="body overflow-auto" hidden>
-            <div class="responsive_table">
+          <div class="body overflow-auto" >
+            <div class="responsive_table" hidden>
               <table mat-table [dataSource]="sotList" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- ID Column -->
@@ -225,22 +225,22 @@
                 </mat-row>
               </table>
             </div>
-            <!-- No result -->
-            @if (!(sotDS.loading$ | async) && !sotList.length) {
-            <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-            </div>
-            }
+          
             <!-- Loading spinner -->
-            @if (sotDS.loading$ | async) {
+            @if (!(billDS.loading$ | async) && !billList.length) {
+              <mat-divider></mat-divider>
+              <div class="no-results m-l-20 pt-3" [style.display]="billList.length === 0 ? '' : 'none'">
+                <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+              </div>
+              }
+            @if (billDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
             <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+              [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)" hidden>
             </mat-paginator>
           </div>
         </div>

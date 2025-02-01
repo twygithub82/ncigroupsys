@@ -283,6 +283,23 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 guid
                 job_no
                 tank_no
+                tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
+                out_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
               }
           }
          gateio_billing_sot {
@@ -301,6 +318,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 guid
                 job_no
                 tank_no
+                tariff_cleaning { cargo}
               }
           }
           lolo_billing_sot {
@@ -320,6 +338,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 guid
                 job_no
                 tank_no
+                tariff_cleaning { cargo}
               }
           }
         preinsp_billing_sot {
@@ -338,6 +357,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 guid
                 job_no
                 tank_no
+                tariff_cleaning { cargo}
               }
         }
          cleaning {
@@ -354,6 +374,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 guid
                 job_no
                 tank_no
+                tariff_cleaning { cargo}
               }
           }
           repair_customer {
@@ -368,6 +389,16 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 guid
                 job_no
                 tank_no
+                tariff_cleaning { cargo}
+              }
+              repair_part {
+                approve_cost
+                approve_hour
+                approve_part
+                approve_qty
+                material_cost
+                quantity
+                hour
               }
           }
           repair_owner {
@@ -382,6 +413,16 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 guid
                 job_no
                 tank_no
+                tariff_cleaning { cargo}
+              }
+              repair_part {
+                approve_cost
+                approve_hour
+                approve_part
+                approve_qty
+                material_cost
+                quantity
+                hour
               }
           }
           residue {
@@ -396,7 +437,22 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 guid
                 job_no
                 tank_no
+                tariff_cleaning { cargo}
               }
+         residue_part {
+            approve_part
+            cost
+            delete_dt
+            description
+            guid
+            approve_qty
+            approve_cost
+            quantity
+            residue_guid
+            tariff_residue_guid
+            update_by
+            update_dt
+            }
           }
           steaming {
             customer_billing_guid
@@ -410,7 +466,18 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 guid
                 job_no
                 tank_no
+                tariff_cleaning { cargo}
               }
+            steaming_part {
+              approve_cost
+              approve_labour
+              approve_part
+              approve_qty
+              complete_dt
+              cost
+              delete_dt
+              description
+            }
           }
         guid
         bill_to_guid

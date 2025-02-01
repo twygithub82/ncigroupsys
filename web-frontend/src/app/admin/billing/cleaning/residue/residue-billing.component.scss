@@ -1,0 +1,9 @@
+.cargo-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits text to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Allows text wrapping */
+    max-width: 100%; /* Adjust width as needed */
+  }

@@ -316,7 +316,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     var currentDateOut:Date = new Date();
     
       
-    if(sotItem?.out_gate?.[0].eir_dt)
+    if(sotItem?.out_gate?.[0]?.eir_dt)
     {
       const createDtOutSeconds = sotItem.out_gate[0].eir_dt;
       currentDateOut = new Date(createDtOutSeconds * 1000);

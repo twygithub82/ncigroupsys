@@ -928,6 +928,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/billing/invoices",
