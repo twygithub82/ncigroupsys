@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, of, throwError } from 'rxjs';
-import { User } from '../models/user';
+import { BehaviorSubject, Observable, catchError, map, of, throwError } from 'rxjs';
+import { User, UserToken } from '../models/user';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { JwtPayload } from '@core/models/JwtPayload';
 import { environment } from 'environments/environment';
-import { api_endpoints } from 'app/api-endpoints';
+import { api_endpoints, api_full_endpoints } from 'app/api-endpoints';
 import { decodeToken } from 'app/utilities/jwt-util';
 import { jwt_mapping } from 'app/api-endpoints';
 
@@ -15,11 +15,19 @@ export class AuthService {
   private currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
 
+  private userTokenSubject: BehaviorSubject<UserToken>;
+  public userToken: Observable<UserToken>;
+
   constructor(private http: HttpClient) {
     this.currentUserSubject = new BehaviorSubject<User>(
       JSON.parse(localStorage.getItem('currentUser') || '{}')
     );
     this.currentUser = this.currentUserSubject.asObservable();
+
+    this.userTokenSubject = new BehaviorSubject<UserToken>(
+      JSON.parse(localStorage.getItem('userToken') || '{}')
+    );
+    this.userToken = this.userTokenSubject.asObservable();
   }
 
   public get currentUserValue(): User {
@@ -30,11 +38,26 @@ export class AuthService {
     return this.currentUserSubject.value?.name;
   }
 
+  public get currentUserIsStaff(): boolean {
+    return !!this.currentUserSubject.value?.isStaff;
+  }
+
+  public get userTokenJwtToken(): any {
+    return this.userTokenSubject.value?.token;
+  }
+
+  public get userTokenRefreshToken(): any {
+    return this.userTokenSubject.value?.refreshToken;
+  }
+
+  public get userTokenIsExpired(): any {
+    return this.userTokenSubject.value;
+  }
+
   login(username: string, password: string, isStaff: boolean, rememberMe: boolean): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const loginUrl = environment.apiUrl;
-    const endpoint = isStaff ? api_endpoints.staff_auth : api_endpoints.user_auth;
-    const url = `${loginUrl}${endpoint}`
+    const endpoint = isStaff ? api_full_endpoints.staff_auth : api_full_endpoints.user_auth;
+    const url = `${endpoint}`
     const body = { username, password };
     if (rememberMe) {
       localStorage.setItem('rememberMe', 'true');
@@ -44,28 +67,59 @@ export class AuthService {
       localStorage.removeItem('username');
     }
     return this.http.post<any>(url, body, { headers })
-      .pipe(map(user => {
-        if (user && user.token) {
+      .pipe(
+        map(user => {
+          if (user && user.token) {
+            const decodedToken = decodeToken(user.token);
+            var usr = new User;
+            usr.name = decodedToken[jwt_mapping.name.key]
+            usr.email = decodedToken[jwt_mapping.email.key]
+            usr.groupsid = decodedToken[jwt_mapping.groupsid.key]
+            usr.role = decodedToken[jwt_mapping.role.key]
+            usr.roles = [decodedToken[jwt_mapping.role.key]]
+            usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key]
+            usr.token = decodedToken;
+            usr.plainToken = user.token;
+            usr.expiration = user.expiration;
+            usr.refreshToken = user.refreshToken;
+            usr.isStaff = isStaff;
 
-          const decodedToken = decodeToken(user.token);
-          var usr = new User;
-          usr.name = decodedToken[jwt_mapping.name.key]
-          usr.email = decodedToken[jwt_mapping.email.key]
-          usr.groupsid = decodedToken[jwt_mapping.groupsid.key]
-          usr.role = decodedToken[jwt_mapping.role.key]
-          usr.roles = [decodedToken[jwt_mapping.role.key]]
-          usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key]
-          usr.token = decodedToken;
-          usr.plainToken = user.token;
-          usr.expiration = user.expiration;
-          usr.refreshToken = user.refreshToken;
-          
-          localStorage.setItem('currentUser', JSON.stringify(usr));
-          localStorage.setItem('currentToken', user.token);
-          this.currentUserSubject.next(usr);
-        }
-        return user;
-      }));
+            const userToken = new UserToken;
+            userToken.token = usr.plainToken;
+            userToken.expiration = usr.expiration;
+            userToken.refreshToken = usr.refreshToken;
+
+            localStorage.setItem('currentUser', JSON.stringify(usr));
+            localStorage.setItem('userToken', JSON.stringify(userToken));
+            this.userTokenSubject.next(userToken);
+            this.currentUserSubject.next(usr);
+          }
+          return user;
+        }),
+        catchError(error => {
+          this.logout();
+          return throwError(() => error);
+        })
+      );
+  }
+
+  refreshToken(): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const apiUrl = environment.apiUrl;
+    const endpoint = this.currentUserIsStaff ? api_full_endpoints.staff_refresh_token : api_full_endpoints.user_refresh_token;
+    const url = `${apiUrl}${endpoint}`
+    const body = { refreshToken: this.userTokenRefreshToken };
+    return this.http.post<any>(url, body, { headers })
+      .pipe(
+        map(response => {
+          console.log(response);
+          localStorage.setItem('userToken', JSON.stringify({ token: response.token, expiration: response.expiration, refreshToken: response.refreshToken }));
+        }),
+        catchError(error => {
+          this.logout();
+          return throwError(() => error);
+        })
+      );
   }
 
   ok(body?: {
@@ -85,7 +139,7 @@ export class AuthService {
   logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('currentUser');
-    localStorage.removeItem('currentToken');
+    localStorage.removeItem('userToken');
     this.currentUserSubject.next(new User);
     return of({ success: false });
   }
@@ -99,8 +153,8 @@ export class AuthService {
     // return token ? decodeToken(token) : null;
   }
 
-  getToken(): any {
-    return localStorage.getItem('currentToken');
+  getUserToken(): any {
+    return localStorage.getItem('userToken');
   }
 
   hasRole(expectedRoles: string[] | undefined): boolean {
