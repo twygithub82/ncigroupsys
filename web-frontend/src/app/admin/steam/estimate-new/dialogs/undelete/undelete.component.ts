@@ -13,7 +13,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-undelete',
+    selector: 'app-steam-estimate-new-undelete',
     templateUrl: './undelete.component.html',
     styleUrls: ['./undelete.component.scss'],
     standalone: true,

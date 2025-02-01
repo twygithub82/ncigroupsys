@@ -31,7 +31,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-repair-estimate-cancel-form-dialog',
+  selector: 'app-residue-disposal-job-allocation-cancel-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [],
@@ -42,7 +42,6 @@ export interface DialogData {
     MatDialogContent,
     MatFormFieldModule,
     MatInputModule,
-    MatDialogClose,
     TranslateModule,
     CommonModule,
     MatDividerModule,
