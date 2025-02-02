@@ -859,9 +859,9 @@
     "REPUBLISH": "Republish",
     "PREVIEW-PDF": "Preview PDF",
     "PUBLISH-SUCCESS": "Publish Successfully",
-    "INVOICED":"Invoiced",
-    "DEPOT":"Depot",
-    "CUTOFF-DATE":"Cut-Off Date",
+    "INVOICED": "Invoiced",
+    "DEPOT": "Depot",
+    "CUTOFF-DATE": "Cutoff Date",
     "EXPORT-NEW": "Export New",
     "EXPORT-SUCCESS": "Export Successfully",
     "IN-SERVICE-ESTIMATE": "IN-SERVICE ESTIMATE",
@@ -908,16 +908,6 @@
     "PREINSPECTION":"Pre-inspection",
     "GATEIO":"Gate In/Out",
     "PENDING-INVOICE-DETAIL":"Pending Invoice Detail"
-    
-
-
-    "CURRENCY": "Currency",
-    "BILLING-CURRENCY": "Billing Currency",
-    "SESSION-EXPIRE-WARNING": "Session Expire Warning",
-    "SESSION-EXPIRE-WARNING-DESCRIPTION": "Your session will expire in {0}, do you want to extend the session?",
-    "RENEW": "Renew",
-    "LOGOUT": "Logout",
-    "CONFIRM-LOGOUT": "Confirm Logout?"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
