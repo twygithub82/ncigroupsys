@@ -43,7 +43,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-search-form-dialog',
+  selector: 'app-residue-approval-search-form-dialog',
   templateUrl: './search-form-dialog.component.html',
   styleUrls: ['./search-form-dialog.component.scss'],
   providers: [provideNgxMask()],

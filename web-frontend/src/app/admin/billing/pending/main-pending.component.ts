@@ -335,7 +335,7 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   public loadData() {
-    this.onFilterCleaning();
+   // this.onFilterCleaning();
   //  this.onFilterJobOrder();
 
     const queries = [

@@ -23,6 +23,7 @@ import { SteamItem } from './steam';
 import { SurveyDetailItem } from './survey-detail';
 import { ApolloError } from '@apollo/client/errors';
 import { TransferItem } from './transfer';
+import { BillingSOTItem } from './billing';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -127,6 +128,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public survey_detail?: SurveyDetailItem[];
   public transfer?: TransferItem[];
   public actions?: string[] = [];
+  public billing_sot?:BillingSOTItem[]=[];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
     super(item);
@@ -144,6 +146,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.survey_detail = item.survey_detail;
     this.transfer = item.transfer;
     this.actions = item.actions || [];
+    this.billing_sot=item.billing_sot||[];
   }
 }
 
@@ -1140,7 +1143,6 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
             approve_labour
             approve_qty
             approve_part
-            
             cost
             labour
             delete_dt
@@ -2663,10 +2665,203 @@ const ON_SOT_PURPOSE_CHANGE_SUBSCRIPTION = gql`
   }
 `;
 
+
+const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        customer_company {
+          code
+          guid
+          name
+        }
+        tariff_cleaning {
+          guid
+          cargo
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
+          delete_dt
+        }
+        out_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
+          delete_dt
+        }
+        storing_order {
+          customer_company_guid
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
+        guid
+        job_no
+        owner_guid
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        last_cargo_guid
+        so_guid
+        status_cv
+        tank_no
+        tank_status_cv
+        cleaning(where: { delete_dt: { eq: null } }) {
+          bill_to_guid
+          buffer_cost
+          cleaning_cost
+          delete_dt
+          guid
+          approve_dt
+          customer_billing_guid
+          customer_company {
+            code
+            guid
+            name
+          }
+         
+        }
+        residue(where: { delete_dt: { eq: null } }) {
+          estimate_no
+          approve_by
+          approve_dt
+          bill_to_guid
+          complete_by
+          complete_dt
+          delete_dt
+          guid
+          job_no
+          sot_guid
+          customer_billing_guid
+          status_cv
+          residue_part(where: { delete_dt: { eq: null } }) {
+            action
+            approve_part
+            approve_cost
+            approve_qty
+            qty_unit_type_cv
+            delete_dt
+            description
+            guid
+          }
+        }
+        steaming(where: { delete_dt: { eq: null } }) {
+          estimate_no
+          bill_to_guid
+          approve_by
+          approve_dt
+          delete_dt
+          guid
+          customer_billing_guid
+          steaming_part(where: { delete_dt: { eq: null } }) {
+            approve_cost
+            approve_labour
+            approve_qty
+            approve_part
+            delete_dt
+            description
+            guid
+          }
+        }
+        repair(where: { delete_dt: { eq: null } }) {
+          guid
+          estimate_no
+          job_no
+          labour_cost
+          labour_cost_discount
+          material_cost_discount
+          status_cv
+          total_cost
+          sot_guid
+          remarks
+          delete_dt
+          approve_dt
+          owner_enable
+          customer_billing_guid
+          owner_billing_guid
+          repair_part(where: { delete_dt: { eq: null } }) {
+            hour
+            quantity
+            material_cost
+            delete_dt
+            approve_part
+            approve_hour
+            approve_qty
+            approve_cost
+            owner
+          }
+        }
+        billing_sot
+        {
+          delete_dt
+          free_storage
+          gate_in_cost
+          gate_out_cost
+          gateio_billing_guid
+          guid
+          lift_off
+          lift_off_cost
+          lift_on
+          lift_on_cost
+          lolo_billing_guid
+          preinsp_billing_guid
+          preinspection
+          preinspection_cost
+          remarks
+          storage_billing_guid
+          storage_cal_cv
+          storage_cost
+          tariff_depot_guid
+          update_by
+          update_dt
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   constructor(private apollo: Apollo) {
     super();
+  }
+
+
+  searchStoringOrderTanksEstimateDetails(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
   }
 
   searchStoringOrderTanksRepairBiling(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {

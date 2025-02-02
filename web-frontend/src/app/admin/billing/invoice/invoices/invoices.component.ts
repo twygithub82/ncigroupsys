@@ -406,10 +406,6 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
         itm.or.push({storage_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
         where.and.push(itm);
-
-        //  where.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
-        //  where.bill_to_guid={eq: this.searchForm!.get('branch_code')?.value.guid };
-         //where.customer_company={code:{eq: this.searchForm!.get('branch_code')?.value.code }}
        }
    
        if (this.searchForm!.get('eir_dt')?.value) {

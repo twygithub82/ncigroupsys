@@ -46,7 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
-  selector: 'app-tank-movement',
+  selector: 'app-steam-billing',
   standalone: true,
   templateUrl: './steam-billing.component.html',
   styleUrl: './steam-billing.component.scss',
@@ -88,7 +88,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'tank_status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
+  pageTitle = 'MENUITEMS.BILING.LIST.STEAM-BILL'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -133,6 +133,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  
 
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];

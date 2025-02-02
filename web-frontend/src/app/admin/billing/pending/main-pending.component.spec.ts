@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { JobOrderCleaningComponent } from './job-order.component';
+import { MainPendingComponent } from './main-pending.component';
 
-describe('JobOrderCleaningComponent', () => {
-  let component: JobOrderCleaningComponent;
-  let fixture: ComponentFixture<JobOrderCleaningComponent>;
+describe('MainPendingComponent', () => {
+  let component: MainPendingComponent;
+  let fixture: ComponentFixture<MainPendingComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JobOrderCleaningComponent]
+      imports: [MainPendingComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(JobOrderCleaningComponent);
+    fixture = TestBed.createComponent(MainPendingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

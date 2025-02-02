@@ -33,7 +33,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-repair-estimate-new-cancel-form-dialog',
+  selector: 'app-residue-disposal-estimate-new-cancel-form-dialog',
   templateUrl: './cancel-form-dialog.component.html',
   styleUrls: ['./cancel-form-dialog.component.scss'],
   providers: [],

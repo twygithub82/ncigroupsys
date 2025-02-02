@@ -34,6 +34,9 @@ export class RepairPartGO {
   public update_by?: string;
   public delete_dt?: number;
 
+  public customer_billing_guid?:string;
+  public owner_billing_guid?:string;
+
   constructor(item: Partial<RepairPartGO> = {}) {
     this.guid = item.guid;
     this.tariff_repair_guid = item.tariff_repair_guid;

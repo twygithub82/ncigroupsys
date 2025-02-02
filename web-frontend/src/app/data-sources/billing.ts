@@ -33,6 +33,7 @@ export class report_billing_customer{
 
   }
 }
+
 export class report_billing_item {
    sot_guid?:string
    job_no?: string;
@@ -45,7 +46,7 @@ export class report_billing_item {
    repair_cost?:string;
    preins_cost?:string;
    lolo_cost?:string;
-    days?:string;
+   days?:string;
    storage_cost?:string;
    steam_cost?:string;
    periodic_test?:string;
@@ -53,10 +54,29 @@ export class report_billing_item {
    gateio_cost?:string;
    other_cost?:string;
    total?:string;
+
+   clean_est_no:number=0;
+   repair_est_no:number=0;
+   storage_est_no:number=0;
+   steam_est_no:number=0;
+   residue_est_no:number=0;
+   gateio_est_no:number=0;
+   lolo_est_no:number=0;
+   preins_est_no:number=0;
+
    constructor(item: Partial<report_billing_item> = {}) {
     this.job_no = item.job_no;
     this.sot_guid=item.sot_guid;
     
+    this.clean_est_no=(item.clean_est_no||0);
+    this.repair_est_no=(item.repair_est_no||0);
+    this.storage_est_no=(item.storage_est_no||0);
+    this.steam_est_no= (item.steam_est_no||0);
+    this.residue_est_no=(item.residue_est_no||0);
+    this.gateio_est_no=(item.gateio_est_no||0);
+    this.lolo_est_no=(item.lolo_est_no||0);
+    this.preins_est_no=(item.preins_est_no||0);
+
     this.tank_no=item.tank_no;
     this.eir_no=item.eir_no;
     this.last_cargo= item.last_cargo;

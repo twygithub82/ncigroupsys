@@ -3,21 +3,15 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <mat-accordion>
-            <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="true">
                <mat-expansion-panel-header>
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
                 </mat-panel-description>
-              </mat-expansion-panel-header> -
+              </mat-expansion-panel-header> 
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                 <div class="row">
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-                      <input matInput formControlName="tank_no">
-                    </mat-form-field>
-                  </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
@@ -32,105 +26,20 @@
                       </mat-autocomplete>
                     </mat-form-field>
                   </div>
-                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" >
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
-                      <input matInput formControlName="eir_no">
+                      <mat-label>{{translatedLangText.CUTOFF_DATE}}</mat-label>
+                      <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date" formControlName="cutoff_dt">
+                      <mat-datepicker-toggle matSuffix [for]="cutoff_picker"></mat-datepicker-toggle>
+                      <mat-datepicker #cutoff_picker></mat-datepicker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                      <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt">
-                      <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #eir_picker></mat-datepicker>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
-                      <input matInput [matDatepicker]="release_picker" placeholder="Select date" formControlName="release_dt">
-                      <mat-datepicker-toggle matSuffix [for]="release_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #release_picker></mat-datepicker>
-                    </mat-form-field>
-                  </div>
-                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="inv_picker">
-                        <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
-                        <input matEndDate placeholder="End date" formControlName="inv_dt_end">
-                      </mat-date-range-input>
-                      <mat-datepicker-toggle matSuffix [for]="inv_picker"></mat-datepicker-toggle>
-                      <mat-date-range-picker #inv_picker></mat-date-range-picker>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
-                      <input matInput formControlName="inv_no">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                      <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
-                        formControlName="last_cargo">
-                      <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
-                        @for (tc of last_cargoList; track tc) {
-                        <mat-option [value]="tc">
-                          {{tc.cargo}}
-                        </mat-option>
-                        }
-                      </mat-autocomplete>
-                      @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
-                      <mat-error>
-                        {{translatedLangText.INVALID_SELECTION}}
-                      </mat-error>
-                      }
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
-                      <mat-select formControlName="tank_status_cv">
-                        @for (codeValue of tankStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                 
-                 
-                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
-                      <mat-select multiple formControlName="purpose">
-                        @for (codeValue of purposeOptionCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.YARD}}</mat-label>
-                      <mat-select formControlName="yard_cv">
-                        @for (codeValue of yardCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div> -->
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
-                    <button mat-mini-fab color="primary" (click)="search()">
-                      <mat-icon>search</mat-icon>
+                    <button mat-mini-fab color="primary" (click)="search(1)" matTooltip={{translatedLangText.PENDING_INVOICE_SUMMARY}}>
+                      <mat-icon>assessment</mat-icon>
+                    </button>
+                    <button mat-mini-fab  class="m-l-10" color="primary" (click)="search(2)" matTooltip={{translatedLangText.PENDING_INVOICE_DETAIL}}>
+                      <mat-icon>attach_money</mat-icon>
                     </button>
                     <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
                       <mat-icon>cached</mat-icon>
@@ -144,7 +53,7 @@
             </mat-expansion-panel>
           </mat-accordion>
           <div class="body overflow-auto">
-            <div class="responsive_table">
+            <div class="responsive_table" hidden>
               <table mat-table [dataSource]="sotList" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- ID Column -->
@@ -233,7 +142,7 @@
             </div>
             }
             <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+              [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)" hidden>
             </mat-paginator>
           </div>
         </div>

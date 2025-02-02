@@ -11,14 +11,12 @@
       <div class="row pdf-body">
         <table  id="table_customer_info" class="table_customer_info">
           <tr>
-            <td> {{translatedLangText.CUSTOMER}} :</td>
-            <td> {{bCust.customer}}</td>
-          </tr>
-          <tr>
-            <td> {{translatedLangText.INVOICE_PERIOD}} :</td>
-            <td> {{bCust.invoice_period}}</td>
-            <td class="sp"> {{translatedLangText.DATE}} :</td>
-            <td>{{GeneratedDate()}}</td>
+            <td class="text_right"> {{translatedLangText.CUSTOMER}} :</td>
+            <td class="text_left_width_wider"> {{bCust.customer}}</td>
+            <td class="text_right"> {{translatedLangText.CUTOFF_DATE}} :</td>
+            <td class="text_left"> {{cut_off_dt}}</td>
+            <td class="text_right"> {{translatedLangText.DATE}} :</td>
+            <td class="text_left">{{GeneratedDate()}}</td>
           </tr>
         </table>
       </div>

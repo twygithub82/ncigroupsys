@@ -663,6 +663,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
+  
+  
   calculateNetCost(repair: RepairItem): any {
     const total = this.repairDS.getTotal(repair?.repair_part)
     const labourDiscount = repair.labour_cost_discount;

@@ -1744,7 +1744,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   isAllowToSaveSubmit()
   {
      var NoDel=this.deList.filter(d=>d.action!='cancel');
-     return (NoDel.length);
+     return (NoDel.length );
   }
 
   IsApprovePart(rep: ResiduePartItem) {

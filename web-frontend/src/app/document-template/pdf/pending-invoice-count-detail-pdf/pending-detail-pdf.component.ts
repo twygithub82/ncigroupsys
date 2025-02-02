@@ -38,7 +38,8 @@ import { report_billing_customer } from 'app/data-sources/billing';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  billing_customers: report_billing_customer[]
+  billing_customers: report_billing_customer[],
+  cut_off_dt:string
   // repair_guid: string;
   // customer_company_guid: string;
   // sotDS: StoringOrderTankDS;
@@ -51,9 +52,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-customer-invoices-pdf',
-  templateUrl: './customer-invoices-pdf.component.html',
-  styleUrls: ['./customer-invoices-pdf.component.scss'],
+  selector: 'app-pending-detail-pdf',
+  templateUrl: './pending-detail-pdf.component.html',
+  styleUrls: ['./pending-detail-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -65,7 +66,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PendingDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -246,10 +247,12 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     REPAIR_COST:'COMMON-FORM.REPAIR-COST-REPORT',
     PREINSP_COST:'COMMON-FORM.PREINSP-COST-REPORT',
     STORAGE_COST:'COMMON-FORM.STORAGE-COST-REPORT',
-    GATEIO:'COMMON-FORM.GATEIO'
+    REPORT_TITLE:'COMMON-FORM.PENDING-INVOICE-DETAIL',
+    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE'
 
   }
 
+  cut_off_dt:string;
   type?: string | null;
   steamDS: SteamDS;
   steamPartDS: SteamPartDS;
@@ -284,7 +287,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   unitTypeCvList: CodeValuesItem[] = [];
 
   scale = 2.5;
-  imageQuality = 0.7;
+  imageQuality = 0.75;
 
   generatedPDF: any;
   existingPdf?: any;
@@ -300,7 +303,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   
 
   constructor(
-    public dialogRef: MatDialogRef<CustomerInvoicesPdfComponent>,
+    public dialogRef: MatDialogRef<PendingDetailPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -320,6 +323,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     // this.estimate_no = data.estimate_no;
     // this.existingPdf = data.existingPdf;
     this.repBillingCustomers= data.billing_customers;
+    this.cut_off_dt=data.cut_off_dt;
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -438,7 +442,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         }
 
         // Add row to the current page
-        pdf.addImage(rowImg, 'PNG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, rowHeight);
+        pdf.addImage(rowImg, 'JPEG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, rowHeight);
         yOffset += rowHeight;
         const rowProgress = (rowProgressWeight / rowsCount) * 100;
         this.generatingPdfProgress += rowProgress;
@@ -890,8 +894,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       const card = cardElements[i];
   
       // Convert card to image (JPEG format)
-      const canvas = await html2canvas(card, { scale: this.scale });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+      const canvas = await html2canvas(card, { scale: 2.5 });
+      const imgData = canvas.toDataURL('image/jpeg', 0.8); // Convert to JPEG with 80% quality
   
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
   
@@ -917,7 +921,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
   
-          const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
+          const sectionImgData = sectionCanvas.toDataURL('image/jpeg', 0.8); // Convert section to JPEG
   
           pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
   
@@ -958,7 +962,93 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     this.generatingPdfLoadingSubject.next(false);
   }
 
- 
+  async exportToPDF1(fileName: string = 'document.pdf') {
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const leftMargin = 10; // Left margin
+    const rightMargin = 10; // Right margin
+    const contentWidth = 210 - leftMargin - rightMargin; // 190mm usable width
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+    let totalPages = 0;
+    const reportTitle = this.translatedLangText.CUSTOMER_INVOICE; // Set your report title here
+
+    
+    // Store page positions for later text update
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    const progressValue= 100/cardElements.length;
+   
+    for (let i = 0; i < cardElements.length; i++) {
+      const card = cardElements[i];
+
+      // Convert card to image (JPEG format)
+      const canvas = await html2canvas(card, { scale: 3 });
+      const imgData = canvas.toDataURL('image/jpeg', 0.8); // Convert to JPEG with 80% quality
+
+      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+
+      const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (210 - titleWidth) / 2;
+       // Add the report title at the top of every page
+      pdf.setFontSize(14); // Set title font size
+      pdf.text(reportTitle, titleX, 10); // Position it at the top
+
+       // Draw underline for the title
+        pdf.setLineWidth(0.5); // Set line width for underline
+        pdf.line(titleX, 12, titleX + titleWidth, 12); // Draw the line under the title
+
+      // If card height exceeds A4 page height, split across multiple pages
+      if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
+        let yPosition = 0;
+        while (yPosition < canvas.height) {
+          const sectionCanvas = document.createElement('canvas');
+          sectionCanvas.width = canvas.width;
+          sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
+
+          const sectionCtx = sectionCanvas.getContext('2d');
+          sectionCtx?.drawImage(canvas, 0, -yPosition);
+
+          const sectionImgData = sectionCanvas.toDataURL('image/jpeg', 0.8); // Convert section to JPEG
+
+          pdf.addImage(sectionImgData, 'JPEG', leftMargin, 10, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width);
+
+          // Store page position for page numbering
+          pagePositions.push({ page: pageNumber, x: 200, y: 287 });
+
+          yPosition += sectionCanvas.height;
+          if (yPosition < canvas.height) {
+            pdf.addPage();
+            pageNumber++;
+          }
+        }
+      } else {
+        if (i > 0) pdf.addPage(); // New page for each card
+        pdf.addImage(imgData, 'JPEG', leftMargin, 10, contentWidth, imgHeight);
+
+        // Store page position for page numbering
+        pagePositions.push({ page: pageNumber, x: 200, y: 287 });
+      }
+      pageNumber++;
+      this.generatingPdfProgress +=progressValue;
+    }
+
+    totalPages = pageNumber - 1;
+
+    // Add page numbers in a second pass
+    pagePositions.forEach(({ page, x, y }) => {
+      pdf.setPage(page);
+      pdf.setFontSize(10);
+      
+      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+    });
+
+    this.generatingPdfProgress = 100;
+    pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+  }
+
    GeneratedDate():string
    {
      return  Utility.convertDateToStr(new Date());

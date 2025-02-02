@@ -862,7 +862,7 @@
     "PUBLISH-SUCCESS": "Publish Successfully",
     "INVOICED":"Invoiced",
     "DEPOT":"Depot",
-    "CUTOFF-DATE":"Cutoff Date",
+    "CUTOFF-DATE":"Cut-Off Date",
     "EXPORT-NEW": "Export New",
     "EXPORT-SUCCESS": "Export Successfully",
     "IN-SERVICE-ESTIMATE": "IN-SERVICE ESTIMATE",
@@ -895,7 +895,23 @@
     "DOM": "D.O.M",
     "MISSING-INFORMATION": "Missing Information",
     "CURRENCY":"Currency",
-    "BILLING-CURRENCY":"Billing Currency"
+    "BILLING-CURRENCY":"Billing Currency",
+    "PENDING-INVOICE-SUMMARY":"Pending Invoice Summary",
+    "IN-DATE":"In Date",
+    "OUT-DATE":"Out Date",
+    "STEAM-COST-REPORT":"Steam Cost",
+    "RESIDUE-COST-REPORT":"Residue Cost",
+    "LOLO-COST-REPORT":"LOLO Cost",
+    "STORAGE-COST-REPORT":"Storage Cost",
+    "PREINSP-COST-REPORT":"Pre-Insp. Cost",
+    "REPAIR-COST-REPORT":"Repair Cost",
+    "CLEAN-COST-REPORT":"Clean Cost",
+    "PREINSPECTION":"Pre-inspection",
+    "GATEIO":"Gate In/Out",
+    "PENDING-INVOICE-DETAIL":"Pending Invoice Detail"
+    
+
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

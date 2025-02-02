@@ -537,7 +537,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       residue_part:{all:{
         or:[
           {job_order: { status_cv: {eq:'COMPLETED' }}},
-          {approve_part:{eq:false}}
+          {approve_part:{eq:false}},
+          {delete_dt:{neq:0}},
+          {delete_dt:{neq:null}},
         ]
       }
     }});

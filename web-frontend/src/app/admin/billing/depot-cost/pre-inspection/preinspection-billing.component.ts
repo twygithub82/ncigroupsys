@@ -387,7 +387,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};
-    where.guid={neq:null};
+    where.preinspection={eq:true};
     if (this.searchForm!.get('tank_no')?.value) {
       where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
     }

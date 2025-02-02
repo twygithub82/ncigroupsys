@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CleanBillingComponent } from './clean-billing.component';
+import { SteamBillingComponent } from './steam-billing.component';
 
-describe('CleanBillingComponent', () => {
-  let component: CleanBillingComponent;
-  let fixture: ComponentFixture<CleanBillingComponent>;
+describe('SteamBillingComponent', () => {
+  let component: SteamBillingComponent;
+  let fixture: ComponentFixture<SteamBillingComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CleanBillingComponent]
+      imports: [SteamBillingComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(CleanBillingComponent);
+    fixture = TestBed.createComponent(SteamBillingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

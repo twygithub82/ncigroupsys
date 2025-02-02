@@ -386,6 +386,7 @@ implements OnInit {
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
+  
   adjustCost()
   {
     let tempDirection: Direction;

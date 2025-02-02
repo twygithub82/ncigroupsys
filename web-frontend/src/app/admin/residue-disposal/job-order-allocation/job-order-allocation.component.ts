@@ -66,7 +66,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest, ResJobOrderRequest } from 'app/data-sources/job-order';
 
 @Component({
-  selector: 'app-estimate-new',
+  selector: 'app-residue-disposal-job-order-estimate-new',
   standalone: true,
   templateUrl: './job-order-allocation.component.html',
   styleUrl: './job-order-allocation.component.scss',

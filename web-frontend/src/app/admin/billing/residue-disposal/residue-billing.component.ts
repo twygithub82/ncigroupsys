@@ -46,7 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
-  selector: 'app-tank-movement',
+  selector: 'app-residue-billing',
   standalone: true,
   templateUrl: './residue-billing.component.html',
   styleUrl: './residue-billing.component.scss',

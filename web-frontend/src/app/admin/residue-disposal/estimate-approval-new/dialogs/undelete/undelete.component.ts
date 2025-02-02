@@ -13,7 +13,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-undelete',
+    selector: 'app-residue-approval-undelete',
     templateUrl: './undelete.component.html',
     styleUrls: ['./undelete.component.scss'],
     standalone: true,

@@ -170,7 +170,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
   billList:BillingItem[]=[];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = 100;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
@@ -715,7 +715,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
           repCust.guid=b.customer_company?.guid;
           repCust.items=[];
          }
-         repCust.customer=b.customer_company?.name;
+         repCust.customer=this.ccDS.displayName(b.customer_company);
          if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
             repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
          }
@@ -783,6 +783,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
         var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
         if(itms.length>0)
         { 
+
           itms.forEach(c=>{
              let newItem=false;
             let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
@@ -796,7 +797,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
             if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
             if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
             if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-            
+            rep_bill_item.clean_est_no +=1;
             rep_bill_item.clean_cost = Number(Number( rep_bill_item?.clean_cost||0)+ (c.cleaning_cost||0)+ (c.buffer_cost||0)).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
             
@@ -828,6 +829,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
             if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
             if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
             if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+            rep_bill_item.gateio_est_no +=1;
             rep_bill_item.gateio_cost = Number(Number( rep_bill_item?.gateio_cost||0)+ (c.gate_in_cost||0)+(c.gate_out_cost||0)).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
             
@@ -859,6 +861,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
             if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
             if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
             if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+            rep_bill_item.lolo_est_no +=1;
             rep_bill_item.lolo_cost = Number(Number( rep_bill_item?.lolo_cost||0)+ (c.lift_off?c.lift_off_cost!:0)+(c.lift_on?c.lift_on_cost!:0)).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
             
@@ -890,6 +893,8 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
             if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
             if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
             if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+
+            rep_bill_item.preins_est_no +=1;
             rep_bill_item.preins_cost = Number(Number( rep_bill_item?.preins_cost||0)+ (c.preinspection?c.preinspection_cost!:0)).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
             
@@ -934,6 +939,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
              var in_gates= c.storing_order_tank?.in_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
              var out_gates=c.storing_order_tank?.out_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
              rep_bill_item.days= String(daysDifference);
+             rep_bill_item.storage_est_no +=1;
              rep_bill_item.storage_cost = Number((c.storage_cost||0)*daysDifference).toFixed(2);
             if(in_gates?.length) 
               {
@@ -973,6 +979,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
             if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
             if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
             if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+            rep_bill_item.repair_est_no +=1;
             const totalCost = this.repDS.calculateCost(c,c.repair_part!,c.labour_cost);
             rep_bill_item.repair_cost  = Number(Number( rep_bill_item?.repair_cost||0)+(CustomerType==0?Number(totalCost.total_lessee_mat_cost||0):Number(totalCost.total_owner_cost||0))).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
@@ -1007,10 +1014,10 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
             if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
             if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
              c.residue_part?.forEach(p=>{  
-                 if(rep_bill_item) rep_bill_item.residue_cost  = Number(Number( rep_bill_item?.residue_cost||0)+ (p.approve_part?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
+                 if(rep_bill_item) rep_bill_item.residue_cost  = Number(Number( rep_bill_item?.residue_cost||0)+ ((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
 
              });
-       
+             rep_bill_item.residue_est_no +=1;
             if(newItem)rep_bill_items.push(rep_bill_item);
             
           });
@@ -1042,10 +1049,10 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
             if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
             if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
              c.steaming_part?.forEach(p=>{
-              if(rep_bill_item)  rep_bill_item.steam_cost  = Number(Number( rep_bill_item?.steam_cost||0)+ (p.approve_part?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
+              if(rep_bill_item)  rep_bill_item.steam_cost  = Number(Number( rep_bill_item?.steam_cost||0)+ ((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
 
              });
-       
+             rep_bill_item.steam_est_no +=1;
             if(newItem)rep_bill_items.push(rep_bill_item);
             
           });

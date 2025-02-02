@@ -38,7 +38,8 @@ import { report_billing_customer } from 'app/data-sources/billing';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  billing_customers: report_billing_customer[]
+  billing_customers: report_billing_customer[],
+  cut_off_dt:string
   // repair_guid: string;
   // customer_company_guid: string;
   // sotDS: StoringOrderTankDS;
@@ -51,9 +52,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-customer-invoices-pdf',
-  templateUrl: './customer-invoices-pdf.component.html',
-  styleUrls: ['./customer-invoices-pdf.component.scss'],
+  selector: 'app-pending-summary-pdf',
+  templateUrl: './pending-summary-pdf.component.html',
+  styleUrls: ['./pending-summary-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -65,7 +66,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -235,21 +236,24 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     OF: 'COMMON-FORM.OF',
     INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
     CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    PENDING_INVOICE_SUMMARY:'COMMON-FORM.PENDING-INVOICE-SUMMARY',
     LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
+    STEAM:'COMMON-FORM.STEAM',
     IN_DATE:'COMMON-FORM.IN-DATE',
     OUT_DATE:'COMMON-FORM.OUT-DATE',
     TOTAL:'COMMON-FORM.TOTAL',
     DAYS:'COMMON-FORM.DAYS',
-    CLEAN_COST:'COMMON-FORM.CLEAN-COST-REPORT',
-    REPAIR_COST:'COMMON-FORM.REPAIR-COST-REPORT',
-    PREINSP_COST:'COMMON-FORM.PREINSP-COST-REPORT',
-    STORAGE_COST:'COMMON-FORM.STORAGE-COST-REPORT',
-    GATEIO:'COMMON-FORM.GATEIO'
-
+    CLEAN:'COMMON-FORM.CLEANING',
+    REPAIR:'COMMON-FORM.REPAIR',
+    PREINSPECTION:'COMMON-FORM.PREINSPECTION',
+    STORAGE:'COMMON-FORM.STORAGE',
+    LOLO:'COMMON-FORM.LOLO',
+    GATEIO:'COMMON-FORM.GATEIO',
+    REPORT_TITLE:'COMMON-FORM.PENDING-INVOICE-SUMMARY',
+    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE'
   }
 
+  cut_off_dt:string;
   type?: string | null;
   steamDS: SteamDS;
   steamPartDS: SteamPartDS;
@@ -300,7 +304,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   
 
   constructor(
-    public dialogRef: MatDialogRef<CustomerInvoicesPdfComponent>,
+    public dialogRef: MatDialogRef<PendingSummaryPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -320,6 +324,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     // this.estimate_no = data.estimate_no;
     // this.existingPdf = data.existingPdf;
     this.repBillingCustomers= data.billing_customers;
+    this.cut_off_dt=data.cut_off_dt;
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -329,31 +334,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-    //this.downloadAsPDF();
-    // Await the data fetching
-    // const [data, pdfData] = await Promise.all([
-    //   this.getRepairData(),
-    //   this.data.retrieveFile ? this.getRepairPdf() : Promise.resolve(null)
-    // ]);
-    // if (data?.length > 0) {
-    //   this.repairItem = data[0];
-    //   await this.getCodeValuesData();
-    //   this.updateData(this.repairItem?.repair_part);
-    //   this.last_test_desc = this.getLastTest(this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey);
-
-    //   this.cdr.detectChanges();
-    // }
-
-    // this.existingPdf = pdfData ?? this.existingPdf;
-    // console.log(this.existingPdf)
-    // if (!this.existingPdf?.length) {
-    //   //this.generatePDF();
-    // }
-    // else {
-    //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
-    //   const pdfUrl = URL.createObjectURL(eirBlob);
-    //   this.existingPdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
-    // }
+   
   }
 
   async generatePDF(): Promise<void> {
@@ -795,6 +776,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   async onDownloadClick() {
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
     this.exportToPDF();
    
   }
@@ -865,10 +848,9 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-
+ 
   async exportToPDF(fileName: string = 'document.pdf') {
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
+   
     const pdf = new jsPDF('p', 'mm', 'a4');
     const leftMargin = 10; // Left margin
     const rightMargin = 10; // Right margin
@@ -881,8 +863,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
   
-    const reportTitle = this.translatedLangText.CUSTOMER_INVOICE;  // Set your report title here
-  
+    const reportTitle = this.translatedLangText.REPORT_TITLE;  // Set your report title here
+    //const cutoffContent=`Cut-off Date: ${this.cut_off_dt}`;
     // Set font for the title
     pdf.setFontSize(14); // Title font size
   
@@ -898,14 +880,27 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
       const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
+
+      
   
-      const pos=15;
-      pdf.text(reportTitle, titleX, pos); // Position it at the top
-  
-      // Draw underline for the title
+      const titleY=15;
+      const cutOffY = titleY + 8;
+      const dateX = 200; // Right side for the date
+      const dateY = titleY; // Align with the title
+
+      pdf.setFontSize(14);
+      pdf.text(reportTitle, titleX, titleY); // Position it at the top
       pdf.setLineWidth(0.5); // Set line width for underline
-      pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
+      pdf.line(titleX, titleY+2, titleX + titleWidth, titleY+2); // Draw the line under the title
   
+
+      // pdf.setFontSize(11);
+      // const cutoffWidth = pdf.getStringUnitWidth(cutoffContent) * pdf.getFontSize() / pdf.internal.scaleFactor;
+      // const cutoffX = (210 - cutoffWidth) / 2; // Centering the title (210mm is page width)
+
+      // pdf.text(cutoffContent, cutoffX, cutOffY);
+      // Draw underline for the title
+    
       // If card height exceeds A4 page height, split across multiple pages
       if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
@@ -917,9 +912,9 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
   
-          const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
+          const sectionImgData = sectionCanvas.toDataURL('image/jpeg',this.imageQuality); // Convert section to JPEG
   
-          pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
+          pdf.addImage(sectionImgData, 'JPEG', leftMargin, 30, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
   
           // Store page position for page numbering
           pagePositions.push({ page: pageNumber, x: 200, y: 287 });
@@ -928,13 +923,20 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
           if (yPosition < canvas.height) {
             pdf.addPage();
             pageNumber++;
-            pdf.text(reportTitle, titleX, 10); // Add title on new page
-            pdf.line(titleX, 12, titleX + titleWidth, 12); // Draw underline on new page
+            pdf.setFontSize(14);
+            pdf.text(reportTitle, titleX, titleY); // Add title on new page
+            pdf.line(titleX, titleY+2, titleX + titleWidth, titleY+2); // Draw underline on new page
+
+            // pdf.setFontSize(11);
+            // const cutoffWidth = pdf.getStringUnitWidth(cutoffContent) * pdf.getFontSize() / pdf.internal.scaleFactor;
+            // const cutoffX = (210 - cutoffWidth) / 2; // Centering the title (210mm is page width)
+      
+            // pdf.text(cutoffContent, cutoffX, cutOffY);
           }
         }
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
-        pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
+        pdf.addImage(imgData, 'JPEG', leftMargin, 30, contentWidth, imgHeight); // Adjust y position to leave space for the title
   
         // Store page position for page numbering
         pagePositions.push({ page: pageNumber, x: 200, y: 287 });
@@ -958,10 +960,142 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     this.generatingPdfLoadingSubject.next(false);
   }
 
- 
+  
+
    GeneratedDate():string
    {
      return  Utility.convertDateToStr(new Date());
+   }
+
+   DisplayCustomer(row:report_billing_customer):string
+   {
+      var retval:string =''; 
+      
+        if(row)
+        {
+          retval = row.customer!;
+        }
+
+      return retval;
+   }
+
+   DisplayPreinspectionNo(row:report_billing_customer):string
+   {
+      var retval:string =''; 
+      
+        if(row.items?.length!>0)
+        {
+          const totalEstNo = row.items?.reduce((total, item) => {
+            return total + (item.preins_est_no || 0); // Ensure `preinsp_est_no` is not undefined
+        }, 0);
+          retval = `${totalEstNo}`;
+        }
+
+      return retval;
+   }
+   DisplayLOLONo(row:report_billing_customer):string
+   {
+      var retval:string =''; 
+      
+        if(row.items?.length!>0)
+        {
+          const totalEstNo = row.items?.reduce((total, item) => {
+            return total + (item.lolo_est_no || 0); // Ensure `preinsp_est_no` is not undefined
+        }, 0);
+          retval = `${totalEstNo}`;
+        }
+
+      return retval;
+   }
+
+   DisplayStorageNo(row:report_billing_customer):string
+   {
+      var retval:string =''; 
+      
+        if(row.items?.length!>0)
+        {
+          const totalEstNo = row.items?.reduce((total, item) => {
+            return total + (item.storage_est_no || 0); // Ensure `preinsp_est_no` is not undefined
+        }, 0);
+          retval = `${totalEstNo}`;
+        }
+
+      return retval;
+   }
+
+   DisplayResidueNo(row:report_billing_customer):string
+   {
+      var retval:string =''; 
+      
+        if(row.items?.length!>0)
+        {
+          const totalEstNo = row.items?.reduce((total, item) => {
+            return total + (item.residue_est_no || 0); // Ensure `preinsp_est_no` is not undefined
+        }, 0);
+          retval = `${totalEstNo}`;
+        }
+
+      return retval;
+   }
+
+   
+   DisplayCleanNo(row:report_billing_customer):string
+   {
+      var retval:string =''; 
+      
+        if(row.items?.length!>0)
+        {
+          const totalEstNo = row.items?.reduce((total, item) => {
+            return total + (item.clean_est_no || 0); // Ensure `preinsp_est_no` is not undefined
+        }, 0);
+          retval = `${totalEstNo}`;
+        }
+
+      return retval;
+   }
+
+   DisplaySteamNo(row:report_billing_customer):string
+   {
+      var retval:string =''; 
+      
+        if(row.items?.length!>0)
+        {
+          const totalEstNo = row.items?.reduce((total, item) => {
+            return total + (item.steam_est_no || 0); // Ensure `preinsp_est_no` is not undefined
+        }, 0);
+          retval = `${totalEstNo}`;
+        }
+
+      return retval;
+   }
+   DisplayRepairNo(row:report_billing_customer):string
+   {
+      var retval:string =''; 
+      
+        if(row.items?.length!>0)
+        {
+          const totalEstNo = row.items?.reduce((total, item) => {
+            return total + (item.repair_est_no || 0); // Ensure `preinsp_est_no` is not undefined
+        }, 0);
+          retval = `${totalEstNo}`;
+        }
+
+      return retval;
+   }
+
+   DisplayGateIONo(row:report_billing_customer):string
+   {
+      var retval:string =''; 
+      
+        if(row.items?.length!>0)
+        {
+          const totalEstNo = row.items?.reduce((total, item) => {
+            return total + (item.gateio_est_no || 0); // Ensure `preinsp_est_no` is not undefined
+        }, 0);
+          retval = `${totalEstNo}`;
+        }
+
+      return retval;
    }
   
 }

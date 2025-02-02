@@ -34,11 +34,12 @@ import { RepairPartItem } from 'app/data-sources/repair-part';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
-import { report_billing_customer } from 'app/data-sources/billing';
+import { report_billing_customer,report_billing_item } from 'app/data-sources/billing';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  billing_customers: report_billing_customer[]
+  billing_customers: report_billing_customer[],
+  cut_off_dt:string
   // repair_guid: string;
   // customer_company_guid: string;
   // sotDS: StoringOrderTankDS;
@@ -51,9 +52,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-customer-invoices-pdf',
-  templateUrl: './customer-invoices-pdf.component.html',
-  styleUrls: ['./customer-invoices-pdf.component.scss'],
+  selector: 'app-pending-invoice-cost-detail',
+  templateUrl: './pending-invoice-cost-detail.component.html',
+  styleUrls: ['./pending-invoice-cost-detail.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -65,7 +66,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -246,10 +247,13 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     REPAIR_COST:'COMMON-FORM.REPAIR-COST-REPORT',
     PREINSP_COST:'COMMON-FORM.PREINSP-COST-REPORT',
     STORAGE_COST:'COMMON-FORM.STORAGE-COST-REPORT',
+    REPORT_TITLE:'COMMON-FORM.PENDING-INVOICE-DETAIL-COST',
+    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE',
     GATEIO:'COMMON-FORM.GATEIO'
 
   }
 
+  cut_off_dt:string;
   type?: string | null;
   steamDS: SteamDS;
   steamPartDS: SteamPartDS;
@@ -284,7 +288,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   unitTypeCvList: CodeValuesItem[] = [];
 
   scale = 2.5;
-  imageQuality = 0.7;
+  imageQuality = 0.75;
+  maxItemPerPage=25;
 
   generatedPDF: any;
   existingPdf?: any;
@@ -300,7 +305,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   
 
   constructor(
-    public dialogRef: MatDialogRef<CustomerInvoicesPdfComponent>,
+    public dialogRef: MatDialogRef<PendingInvoiceCostDetailPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -315,11 +320,9 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
-    this.repBillingCustomers= data.billing_customers;
+    
+    this.repBillingCustomers= this.removeEstimateWithZeroTotal(data.billing_customers);
+    this.cut_off_dt=data.cut_off_dt;
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -327,33 +330,21 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
   }
 
+  removeEstimateWithZeroTotal(cust:report_billing_customer[]):report_billing_customer[]
+  {
+    let retval: report_billing_customer[] = cust.map(c => {
+      // Filter the items array and return a new object with modified items
+      return {
+        ...c, // Spread the existing customer data
+        items: c.items?.filter(i => i.total !== "0.00") // Filter items where total is not "0.00"
+      };
+    });
+    
+    return retval;
+  }
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-    //this.downloadAsPDF();
-    // Await the data fetching
-    // const [data, pdfData] = await Promise.all([
-    //   this.getRepairData(),
-    //   this.data.retrieveFile ? this.getRepairPdf() : Promise.resolve(null)
-    // ]);
-    // if (data?.length > 0) {
-    //   this.repairItem = data[0];
-    //   await this.getCodeValuesData();
-    //   this.updateData(this.repairItem?.repair_part);
-    //   this.last_test_desc = this.getLastTest(this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey);
-
-    //   this.cdr.detectChanges();
-    // }
-
-    // this.existingPdf = pdfData ?? this.existingPdf;
-    // console.log(this.existingPdf)
-    // if (!this.existingPdf?.length) {
-    //   //this.generatePDF();
-    // }
-    // else {
-    //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
-    //   const pdfUrl = URL.createObjectURL(eirBlob);
-    //   this.existingPdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
-    // }
+    
   }
 
   async generatePDF(): Promise<void> {
@@ -380,8 +371,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       const bottomMargin = 5; // Bottom margin
 
       // Add Header for the first page
-      const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-      const footerHeight = await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, 1, 1); // Placeholder footer height calculation
+      const headerHeight = await this.addHeader1(pdf, pageWidth, leftRightMargin, topMargin);
+      const footerHeight = await this.addFooter1(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, 1, 1); // Placeholder footer height calculation
       const usableHeight = pageHeight - topMargin - bottomMargin - footerHeight;
 
       console.log('Header Height:', headerHeight);
@@ -425,7 +416,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         if (yOffset + rowHeight > usableHeight) {
           console.log('Starting new page...');
           // Add Footer to the current page
-          await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+          await this.addFooter1(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
 
           // Start a new page
           pdf.addPage();
@@ -433,12 +424,12 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
           yOffset = topMargin;
 
           // Add Header to the new page
-          const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
+          const newHeaderHeight = await this.addHeader1(pdf, pageWidth, leftRightMargin, topMargin);
           yOffset += newHeaderHeight;
         }
 
         // Add row to the current page
-        pdf.addImage(rowImg, 'PNG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, rowHeight);
+        pdf.addImage(rowImg, 'JPEG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, rowHeight);
         yOffset += rowHeight;
         const rowProgress = (rowProgressWeight / rowsCount) * 100;
         this.generatingPdfProgress += rowProgress;
@@ -454,7 +445,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       if (summaryHeight > remainingSpace) {
         console.log('Adding new page for summary...');
         // Add Footer to the current page
-        await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+        await this.addFooter1(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
 
         // Start a new page
         pdf.addPage();
@@ -462,7 +453,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         yOffset = topMargin;
 
         // Add Header to the new page
-        const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
+        const newHeaderHeight = await this.addHeader1(pdf, pageWidth, leftRightMargin, topMargin);
         yOffset += newHeaderHeight;
 
         // Align summary content to the bottom of the page
@@ -479,7 +470,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       yOffset += summaryHeight;
 
       // Add Footer to the last page
-      await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+      await this.addFooter1(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
       this.generatingPdfProgress = 100;
 
       // Save PDF
@@ -494,7 +485,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
+  async addHeader1(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
     const headerElement = document.getElementById('pdf-form-header');
     if (headerElement) {
       const canvas = await html2canvas(headerElement, {
@@ -512,7 +503,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     return 0;
   }
 
-  async addFooter(pdf: jsPDF, pageWidth: number, pageHeight: number, leftRightMargin: number, bottomMargin: number, currentPage: number, totalPages: number): Promise<number> {
+  async addFooter1(pdf: jsPDF, pageWidth: number, pageHeight: number, leftRightMargin: number, bottomMargin: number, currentPage: number, totalPages: number): Promise<number> {
     const footerElement = document.getElementById('pdf-form-footer');
     if (footerElement) {
       // Update dynamic content in the footer
@@ -667,30 +658,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-    // if (newData?.length) {
-    //   newData = newData.map((row) => ({
-    //     ...row,
-    //     tariff_repair: {
-    //       ...row.tariff_repair,
-    //       sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
-    //     }
-    //   }));
-
-    //   console.log('Before sort', newData);
-    //   newData = this.repairPartDS.sortAndGroupByGroupName(newData);
-    //   console.log('After sort', newData);
-    //   // newData = [...this.sortREP(newData)];
-
-    //   this.repList = newData.map((row, index) => ({
-    //     ...row,
-    //     index: index
-    //   }));
-    //   console.log(this.repList);
-    //   this.calculateCost();
-    // } else {
-    //   this.repList = [];
-    //   this.calculateCost();
-    // }
+  
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {
@@ -715,17 +683,6 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     }
     return "";
   }
-
-  // getLastTestTI(): string | undefined {
-  //   if (!this.populateCodeValues?.testTypeCvList?.length || !this.populateCodeValues?.testClassCvList?.length || !this.tiItem) return "";
-
-  //   if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
-  //     const test_type = this.tiItem.last_test_cv;
-  //     const test_class = this.tiItem.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
 
   getTestTypeDescription(codeVal: string): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
@@ -865,7 +822,6 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
@@ -881,7 +837,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
   
-    const reportTitle = this.translatedLangText.CUSTOMER_INVOICE;  // Set your report title here
+    const reportTitle = this.translatedLangText.REPORT_TITLE;  // Set your report title here
   
     // Set font for the title
     pdf.setFontSize(14); // Title font size
@@ -907,30 +863,44 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
   
       // If card height exceeds A4 page height, split across multiple pages
-      if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
+      if (imgHeight > 270) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
-        while (yPosition < canvas.height) {
-          const sectionCanvas = document.createElement('canvas');
-          sectionCanvas.width = canvas.width;
-          sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
-  
-          const sectionCtx = sectionCanvas.getContext('2d');
-          sectionCtx?.drawImage(canvas, 0, -yPosition);
-  
-          const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
-  
-          pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
+        let maxItemPerPage=this.maxItemPerPage;
+        let counter=1;
+        while (yPosition !=-1) {
+         // Serialize the element to XML string
+          const serializer = new XMLSerializer();
+          const xmlString = serializer.serializeToString(card);
+
+          // Parse the XML string to create a new DOM element
+          const parser = new DOMParser();
+          const clonedCardDoc = parser.parseFromString(xmlString, "text/html"); // Use text/html for HTML content
+
+          // Extract the clonedCard element from the parsed document
+          const clonedCard = clonedCardDoc.body.firstChild as HTMLElement;
+
+          // Now, remove rows starting from index 25
+          const rows = clonedCard.querySelectorAll("tr.ng-star-inserted");
+
+          rows.forEach((row: Element, index: number) => {
+            if (index<((counter-1)*maxItemPerPage)|| index >= (counter*maxItemPerPage)) {
+              row.remove();
+            }
+          });
+          
+          this.pdfTable.nativeElement.appendChild(clonedCard);
+          const canvas = await html2canvas(clonedCard, { scale: this.scale });
+          const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+      
+          const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+          pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
   
           // Store page position for page numbering
           pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-  
-          yPosition += sectionCanvas.height;
-          if (yPosition < canvas.height) {
-            pdf.addPage();
-            pageNumber++;
-            pdf.text(reportTitle, titleX, 10); // Add title on new page
-            pdf.line(titleX, 12, titleX + titleWidth, 12); // Draw underline on new page
-          }
+          const bal = rows.length-(counter*maxItemPerPage);
+          if(bal>0)pdf.addPage();
+          else break;
+          counter++;
         }
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
@@ -959,9 +929,71 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   }
 
  
+
    GeneratedDate():string
    {
      return  Utility.convertDateToStr(new Date());
+   }
+
+   displayCleanCost(item:report_billing_item):string
+   {
+     let retval:string='';
+
+      retval = (item.clean_cost==="0.00" || item.clean_cost===undefined?'':`${item.clean_cost} (${item.clean_est_no})`)
+     return retval;
+   }
+   displayStorageCost(item:report_billing_item):string
+   {
+     let retval:string='';
+
+      retval = (item.storage_cost==="0.00" || item.storage_cost===undefined?'':`${item.storage_cost} (${item.storage_est_no})`)
+     return retval;
+   }
+   displaySteamCost(item:report_billing_item):string
+   {
+     let retval:string='';
+
+      retval = (item.steam_cost==="0.00"|| item.steam_cost===undefined?'':`${item.steam_cost} (${item.steam_est_no})`)
+     return retval;
+   }
+   displayRepairCost(item:report_billing_item):string
+   {
+     let retval:string='';
+
+      retval = (item.repair_cost==="0.00" || item.repair_cost===undefined?'':`${item.repair_cost} (${item.repair_est_no})`)
+     return retval;
+   }
+
+   displayResidueCost(item:report_billing_item):string
+   {
+     let retval:string='';
+
+      retval = (item.residue_cost==="0.00" || item.residue_cost===undefined?'':`${item.residue_cost} (${item.residue_est_no})`)
+     return retval;
+   }
+
+   displayLOLOCost(item:report_billing_item):string
+   {
+     let retval:string='';
+
+      retval = (item.lolo_cost==="0.00" || item.lolo_cost===undefined?'':`${item.lolo_cost} (${item.lolo_est_no})`)
+     return retval;
+   }
+
+   displayPreinsCost(item:report_billing_item):string
+   {
+     let retval:string='';
+
+      retval = (item.preins_cost==="0.00" || item.preins_cost===undefined?'':`${item.preins_cost} (${item.preins_est_no})`)
+     return retval;
+   }
+
+   displayGateIOCost(item:report_billing_item):string
+   {
+     let retval:string='';
+
+      retval = (item.gateio_cost==="0.00" || item.gateio_cost===undefined?'':`${item.gateio_cost} (${item.gateio_est_no})`)
+     return retval;
    }
   
 }
