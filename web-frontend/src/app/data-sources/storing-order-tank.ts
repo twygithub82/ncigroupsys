@@ -3651,4 +3651,21 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   isCustomerSameAsOwner(sot?: StoringOrderTankItem): boolean {
     return !!(sot && sot.owner_guid === sot.storing_order?.customer_company_guid);
   }
+  
+  displayTankPurpose(sot: StoringOrderTankItem, getPurposeOptionDescription: (code: string | undefined) => string | undefined) {
+    let purposes: any[] = [];
+    if (sot?.purpose_storage) {
+      purposes.push(getPurposeOptionDescription('STORAGE'));
+    }
+    if (sot?.purpose_steam) {
+      purposes.push(getPurposeOptionDescription('STEAM'));
+    }
+    if (sot?.purpose_cleaning) {
+      purposes.push(getPurposeOptionDescription('CLEANING'));
+    }
+    if (sot?.purpose_repair_cv) {
+      purposes.push(getPurposeOptionDescription(sot?.purpose_repair_cv));
+    }
+    return purposes.join('; ');
+  }
 }

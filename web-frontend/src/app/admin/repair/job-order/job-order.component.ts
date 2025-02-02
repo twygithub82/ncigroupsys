@@ -38,7 +38,6 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -251,44 +250,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     });
   }
 
-  cancelItem(row: StoringOrderItem) {
-    // this.id = row.id;
-    this.cancelSelectedRows([row])
-  }
-
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
-  }
-
-  cancelSelectedRows(row: StoringOrderItem[]) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        item: [...row],
-        langText: this.langText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-        this.soDS.cancelStoringOrder(so).subscribe(result => {
-          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-            let successMsg = this.langText.CANCELED_SUCCESS;
-            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-              successMsg = res;
-              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-              this.refreshTable();
-            });
-          }
-        });
-      }
-    });
   }
 
   public loadData() {

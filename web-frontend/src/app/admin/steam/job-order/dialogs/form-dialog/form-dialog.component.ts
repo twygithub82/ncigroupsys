@@ -39,7 +39,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-repair-estimate-form-dialog',
+  selector: 'app-steam-job-order-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],

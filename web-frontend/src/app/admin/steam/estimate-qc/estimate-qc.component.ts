@@ -708,20 +708,7 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   displayTankPurpose(sot: StoringOrderTankItem) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
   }
 
   getPurposeOptionDescription(codeValType: string | undefined): string | undefined {

@@ -236,22 +236,21 @@
       "TEXT": "Billing",
       "LIST": {
         "DEPOT-COST-BILL": "Depot Cost Bill",
-        "PRE-INSPECTION" :"Pre-Inspection",
-        "LOLO":"LOLO",
-        "STORAGE":"Storage",
-        "RESIDUE-DISPOSAL-BILL":"Residue Disposal Bill",
-        "STEAM-BILL":"Steam Bill",
-        "CLEANING-BILL":"Cleaning Bill",
-        "REPAIR-BILL":"Repair Bill",
-        "BILLED-TANK":"Billed Tank",
-        "INVOICES":"Invoices",
-        "PENDING-SUMMARY":"Pending Summary",
-        "PENDING-DETAIL":"Pending Detail",
-        "PENDING":"Pending",
-        "CUSTOMER-INVOICE":"Customer Invoice"
-        }
+        "PRE-INSPECTION": "Pre-Inspection",
+        "LOLO": "LOLO",
+        "STORAGE": "Storage",
+        "RESIDUE-DISPOSAL-BILL": "Residue Disposal Bill",
+        "STEAM-BILL": "Steam Bill",
+        "CLEANING-BILL": "Cleaning Bill",
+        "REPAIR-BILL": "Repair Bill",
+        "BILLED-TANK": "Billed Tank",
+        "INVOICES": "Invoices",
+        "PENDING-SUMMARY": "Pending Summary",
+        "PENDING-DETAIL": "Pending Detail",
+        "PENDING": "Pending",
+        "CUSTOMER-INVOICE": "Customer Invoice"
       }
-    ,
+    },
     "SURVEY": {
       "TEXT": "Survey",
       "LIST": {
@@ -591,8 +590,8 @@
     "CONFIRM-UPDATE-INVOICE": "Would like to update the existing Invoice?",
     "CONFIRM-REMOVE-ESITMATE": "Would like to remove the estimate(s) from the existing Invoice?",
     "CONFIRM-REMOVE-INVOICES": "Would like to remove the selected invoice(s)?",
-    "CONFIRM-INVALID-ESTIMATE":"Fail to update the existing invoice due to invalid estimate added",
-    "CONFIRM-INVALID-INVOICE":"Failed to update the invoice number because the new invoice number is duplicated.",
+    "CONFIRM-INVALID-ESTIMATE": "Fail to update the existing invoice due to invalid estimate added",
+    "CONFIRM-INVALID-INVOICE": "Failed to update the invoice number because the new invoice number is duplicated.",
     "MARK-DAMAGE": "Mark Damaged",
     "FILL-IN-REMARKS": "Fill in Remarks",
     "LEFT-REMARKS": "Left Remarks",
@@ -832,10 +831,10 @@
     "OVER-REQUIRED-TEMP": "The current temperature is higher than the required temperate",
     "LOWER-REQUIRED-TEMP": "The current temperature is lower than the required temperate",
     "PUBLISH": "Publish",
-    "INVOICE-DATE":"Invoice Date",
+    "INVOICE-DATE": "Invoice Date",
     "INVOICE-PERIOD":"Invoice Period",
-    "INVOICE-NO":"Invoice No",
-    "INVOICE-DETAILS":"Invoice Details",
+    "INVOICE-NO": "Invoice No",
+    "INVOICE-DETAILS": "Invoice Details",
     "FAX": "Fax",
     "EQUIPMENT-INTERCHANGE-RECEIPT": "Equipment Interchange Receipt",
     "TAKE-IN-DATE": "Take-in Date",
@@ -876,7 +875,7 @@
     "APPROVED-COST": "Approved Cost",
     "ESTIMATE-COST": "Estimate Cost",
     "FOR": "For",
-    "IN-GATE-OUT-GATE":"In-Gate / Out-Gate",
+    "IN-GATE-OUT-GATE": "In-Gate / Out-Gate",
     "PAGE": "Page",
     "OF": "Of",
     "CURRENT-LOCATION": "Current Location",
@@ -912,6 +911,13 @@
     
 
 
+    "CURRENCY": "Currency",
+    "BILLING-CURRENCY": "Billing Currency",
+    "SESSION-EXPIRE-WARNING": "Session Expire Warning",
+    "SESSION-EXPIRE-WARNING-DESCRIPTION": "Your session will expire in {0}, do you want to extend the session?",
+    "RENEW": "Renew",
+    "LOGOUT": "Logout",
+    "CONFIRM-LOGOUT": "Confirm Logout?"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

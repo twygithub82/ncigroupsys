@@ -41,7 +41,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-form-in-gate-survey-form-dialog',
+  selector: 'app-form-out-gate-survey-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],
@@ -58,14 +58,11 @@ export interface DialogData {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
     MatTableModule,
     MatDividerModule,
     MatCardModule,

@@ -21,6 +21,11 @@ import { Apollo } from 'apollo-angular';
 import { Subscription } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
+import { Direction } from '@angular/cdk/bidi';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Utility } from 'app/utilities/utility';
+import { TranslateService } from '@ngx-translate/core';
 
 interface Notifications {
   message: string;
@@ -42,7 +47,6 @@ interface Notifications {
     MatButtonModule,
     FeatherIconsComponent,
     MatMenuModule,
-    RouterLink,
     NgClass,
     NgScrollbar,
     MatIconModule,
@@ -53,6 +57,11 @@ interface Notifications {
 export class HeaderComponent
   extends UnsubscribeOnDestroyAdapter
   implements OnInit {
+
+  translatedLangText: any = {};
+  langText = {
+    CONFIRM_LOGOUT: 'COMMON-FORM.CONFIRM-LOGOUT',
+  }
   public config!: InConfiguration;
   userImg?: string;
   homePage?: string;
@@ -77,9 +86,12 @@ export class HeaderComponent
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     // private graphqlNotificationService: GraphqlNotificationService,
-    public languageService: LanguageService
+    public languageService: LanguageService,
+    public dialog: MatDialog,
+    private translate: TranslateService,
   ) {
     super();
+    this.translateLangText();
     this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
   }
   listLang = [
@@ -162,10 +174,31 @@ export class HeaderComponent
       localStorage.setItem('collapsed_menu', 'true');
     }
   }
+
   logout() {
-    this.subs.sink = this.authService.logout().subscribe((res: { success: any; }) => {
-      if (!res.success) {
-        this.router.navigate(['/authentication/signin-staff']);
+    this.authService.logout();
+
+  }
+
+  logoutDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_LOGOUT,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.authService.logout();
       }
     });
   }
@@ -335,5 +368,11 @@ export class HeaderComponent
     } else {
       return `${seconds} seconds ago`;
     }
+  }
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
   }
 }

@@ -1344,75 +1344,12 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     return this.cvDS.getCodeObject(codeValType,this.customerTypeCvList);
   }
 
-
-
-  displayTankPurpose(sot: StoringOrderTankItem) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
-  }
-
-  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  }
-
-  getTestTypeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-  }
-
-  getTestClassDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
-  }
-
-  getDamageCodeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.damageCodeCvList);
-  }
-
-  getRepairCodeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.repairCodeCvList);
-  }
-
-  displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
-      return item.code_cv;
-    }).join('/');
-  }
-
-  displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-    return damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
-      const codeCv = item.code_cv;
-      const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
-      return description ? description : '';
-    }).join('/');
-  }
-
   displayDateTime(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateTimeStr(input);
   }
 
   displayDate(input: Date): string {
     return Utility.convertDateToStr(input);
-  }
-
-  getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
-    if (igs) {
-      const test_type = igs.last_test_cv;
-      const test_class = igs.test_class_cv;
-      const testDt = igs.test_dt as number;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
-    }
-    return "";
   }
 
   addBillingBranch(event: Event) {
