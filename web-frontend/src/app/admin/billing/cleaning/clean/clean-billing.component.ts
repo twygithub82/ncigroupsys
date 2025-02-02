@@ -530,27 +530,14 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   displayTankPurpose(sot: StoringOrderTankItem) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
   }
 
-  getPurposeOptionDescription(codeValType: string): string | undefined {
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
   }
 
-  getTankStatusDescription(codeValType: string): string | undefined {
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
   }
 
