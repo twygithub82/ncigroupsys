@@ -13,7 +13,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-residue-disposal-delete',
+    selector: 'app-residue-disposal-approval-view-delete',
     templateUrl: './delete.component.html',
     styleUrls: ['./delete.component.scss'],
     standalone: true,

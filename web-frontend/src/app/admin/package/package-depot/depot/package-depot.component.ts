@@ -303,7 +303,7 @@ implements OnInit {
       mobile_no:[''],
       //description: this.descriptionControl,
      // handled_item_cv : this.handledItemControl,
-      profile_name: this.profileNameControl
+    //  profile_name: this.profileNameControl
       
     });
   }

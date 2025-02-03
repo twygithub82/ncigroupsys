@@ -13,7 +13,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-delete',
+    selector: 'app-residue-disposal-job-order-task-details-delete',
     templateUrl: './delete.component.html',
     styleUrls: ['./delete.component.scss'],
     standalone: true,

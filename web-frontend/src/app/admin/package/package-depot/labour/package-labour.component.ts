@@ -292,7 +292,7 @@ implements OnInit {
   initPlForm() {
     this.plForm = this.fb.group({
       guid: [{value:''}],
-      customer_code: this.customerCodeControl,
+      customer_code:this.customerCodeControl,
       min_cost:[''],
       max_cost:['']
     });

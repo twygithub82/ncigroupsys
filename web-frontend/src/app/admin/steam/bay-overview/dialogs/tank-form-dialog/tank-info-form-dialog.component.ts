@@ -48,7 +48,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-tank-info-form-dialog',
+  selector: 'app-steam-tank-info-form-dialog',
   templateUrl: './tank-info-form-dialog.component.html',
   styleUrls: ['./tank-info-form-dialog.component.scss'],
   providers: [provideNgxMask()],

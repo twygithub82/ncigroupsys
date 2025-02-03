@@ -13,7 +13,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-delete',
+    selector: 'app-steam-estimate-qc-delete',
     templateUrl: './delete.component.html',
     styleUrls: ['./delete.component.scss'],
     standalone: true,

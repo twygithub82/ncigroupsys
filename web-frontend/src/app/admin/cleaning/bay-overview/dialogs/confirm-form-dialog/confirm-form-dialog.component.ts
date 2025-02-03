@@ -35,7 +35,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-repair-estimate-new-cancel-form-dialog',
+  selector: 'app-cleaning-estimate-new-confirm-form-dialog',
   templateUrl: './confirm-form-dialog.component.html',
   styleUrls: ['./confirm-form-dialog.component.scss'],
   providers: [],

@@ -65,7 +65,7 @@ import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import {SteamDS,SteamItem, SteamStatusRequest,SteamPartRequest} from 'app/data-sources/steam';
 import {SteamPartItem} from 'app/data-sources/steam-part';
 @Component({
-  selector: 'app-estimate-new',
+  selector: 'app-steam-estimate-approval-view-new',
   standalone: true,
   templateUrl: './approval-view.component.html',
   styleUrl: './approval-view.component.scss',

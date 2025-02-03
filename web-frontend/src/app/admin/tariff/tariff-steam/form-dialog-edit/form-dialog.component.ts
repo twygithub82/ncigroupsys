@@ -53,7 +53,7 @@ interface Condition {
 
 
 @Component({
-  selector: 'app-tariff-residue-form-dialog',
+  selector: 'app-tariff-steam-edit-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],
