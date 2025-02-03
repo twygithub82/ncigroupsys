@@ -31,7 +31,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-customer-new-cancel-form-dialog',
+  selector: 'app-master-billing-branch-new-cancel-form-dialog',
   templateUrl: './cancel-form-dialog.component.html',
   styleUrls: ['./cancel-form-dialog.component.scss'],
   providers: [],

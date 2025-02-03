@@ -1610,6 +1610,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
             this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
               console.log(result)
               if (result.data?.publishIngateSurvey) {
+                this.eirDetails.in_gate.eir_status_cv = 'PUBLISHED'; // to avoid republish with PENDING status (first time publish then click republish)
                 this.publishedEir.emit({ type: 'published' });
                 let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
                 ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
