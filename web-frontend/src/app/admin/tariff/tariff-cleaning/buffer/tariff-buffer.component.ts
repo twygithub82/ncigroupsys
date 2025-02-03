@@ -54,16 +54,14 @@ import {SearchCriteriaService} from 'app/services/search-criteria.service';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour';
-import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { TariffBufferDS,TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-steam';
-import { DeleteDialogComponent } from 'app/advance-table/dialogs/delete/delete.component';
+
 @Component({
-  selector: 'app-tariff-residue',
+  selector: 'app-tariff-buffer',
   standalone: true,
-  templateUrl: './tariff-steam.component.html',
-  styleUrl: './tariff-steam.component.scss',
+  templateUrl: './tariff-buffer.component.html',
+  styleUrl: './tariff-buffer.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -93,23 +91,21 @@ import { DeleteDialogComponent } from 'app/advance-table/dialogs/delete/delete.c
     MatDividerModule,
   ]
 })
-export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
+export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
    // 'select',
-    // // 'img',
-      'minTemp',
-      'maxTemp',
-      'cost',
-      'labour',
-     // 'qty',
-      'lastUpdate',
-      
+    // 'img',
+     'fName',
+     'lName',
+     'email',
+    //  'gender',
+    // 'bDate',
     // 'mobile',
-   //  'actions',
+    // 'actions',
   ];
 
-  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-STEAM'
+  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.TARIFF.TEXT'
@@ -134,22 +130,22 @@ implements OnInit {
 
   customerCodeControl = new UntypedFormControl();
   categoryControl= new UntypedFormControl();
-  
+
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  tariffSteamDS : TariffSteamingDS;
+  tariffBufferDS : TariffBufferDS;
 
-  tariffSteamItems : TariffSteamingItem[]=[];
+  tariffBufferItems : TariffBufferItem[]=[];
 
-  custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
-  customer_companyList1?: CustomerCompanyItem[];
-  cleaning_categoryList?: CleaningCategoryItem[];
+  // custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
+  // customer_companyList1?: CustomerCompanyItem[];
+  // cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { temp_max: "DESC" };
+  lastOrderBy: any = { buffer_type: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -159,7 +155,7 @@ implements OnInit {
 
    exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
-  selection = new SelectionModel<TariffResidueItem>(true, []);
+  selection = new SelectionModel<TariffBufferItem>(true, []);
   
   id?: number;
   advanceTable?: AdvanceTable;
@@ -244,18 +240,13 @@ implements OnInit {
     CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_MIN_LABOUR : 'COMMON-FORM.PACKAGE-MIN-LABOUR',
-    PACKAGE_MAX_LABOUR : 'COMMON-FORM.PACKAGE-MAX-LABOUR',
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    DESCRIPTION : 'COMMON-FORM.DESCRIPTION',
+    DESCRIPTION : 'COMMON-FORM.BUFFER-TYPE',
+    BUFFER_CLEANING:'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
     COST : 'COMMON-FORM.COST',
     LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    MAX_TEMP:'COMMON-FORM.MAX-TEMP',
-    MIN_TEMP:'COMMON-FORM.MIN-TEMP',
-    QTY:'COMMON-FORM.QTY',
-    LABOUR:'COMMON-FORM.LABOUR$'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
      }
   
   constructor(
@@ -274,7 +265,7 @@ implements OnInit {
     // this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    this.tariffSteamDS= new TariffSteamingDS(this.apollo);
+    this.tariffBufferDS= new TariffBufferDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -298,12 +289,9 @@ implements OnInit {
       guid: [{value:''}],
       // customer_code: this.customerCodeControl,
       // cleaning_category:this.categoryControl,
-    //  description : [''],
+      buffer_type : [''],
       min_cost:[''],
-      max_cost:[''],
-      min_labour:[''],
-      max_labour:['']
-      
+      max_cost:['']
     });
   }
 
@@ -314,8 +302,7 @@ implements OnInit {
   refresh() {
     this.loadData();
   }
-
-   addCall() {
+  addCall() {
     // this.preventDefault(event);  // Prevents the form submission
      let tempDirection: Direction;
      if (localStorage.getItem('isRtl') === 'true') {
@@ -339,55 +326,22 @@ implements OnInit {
      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result>0) {
            this.handleSaveSuccess(result);
-           //this.search();
-           if(this.tariffSteamDS.totalCount>0)
+           if(this.tariffBufferDS.totalCount>0)
             {
-              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+            this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
             }
+           //this.search();
+          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
     
       }
    });
     }
-  
-  addNew() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: this.advanceTable,
-    //     action: 'add',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // After dialog is closed we're doing frontend updates
-    //     // For add we're just pushing a new row inside DataService
-    //     this.exampleDatabase?.dataChange.value.unshift(
-    //       this.advanceTableService.getDialogData()
-    //     );
-    //     this.refreshTable();
-    //     this.showNotification(
-    //       'snackbar-success',
-    //       'Add Record Successfully...!!!',
-    //       'bottom',
-    //       'center'
-    //     );
-    //   }
-    // });
-  }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayLastUpdated(r: TariffLabourItem) {
+  displayLastUpdated(r: TariffBufferItem) {
     var updatedt= r.update_dt;
     if(updatedt===null)
     {
@@ -431,7 +385,7 @@ implements OnInit {
       });
   }
 
-  editCall(row: TariffResidueItem) {
+  editCall(row: TariffBufferItem) {
    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -439,10 +393,11 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent_New,{
+  
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
       width: '600px',
       data: {
-        action: 'edit',
+        action: 'new',
         langText: this.langText,
         selectedItem:row
       }
@@ -450,14 +405,14 @@ implements OnInit {
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
+         if (result>0) {
           //if(result.selectedValue>0)
             //{
               this.handleSaveSuccess(result);
               //this.search();
-              if(this.tariffSteamDS.totalCount>0)
+              if(this.tariffBufferDS.totalCount>0)
               {
-                this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
               }
             //}
       }
@@ -466,43 +421,36 @@ implements OnInit {
   }
 
   
-  deleteItem(row: TariffSteamingItem) {
-    
-      // let tempDirection: Direction;
-      // if (localStorage.getItem('isRtl') === 'true') {
-      //   tempDirection = 'rtl';
-      // } else {
-      //   tempDirection = 'ltr';
-      // }
-      // const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      //   width: '1000px',
-      //   data: {
-      //     item: row,
-      //     langText: this.langText,
-      //     index: index
-      //   },
-      //   direction: tempDirection
-      // });
-      // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      //   if (result?.action === 'confirmed') {
-      //     if (result.item.guid) {
-      //       const data: any[] = [...this.deList];
-      //       const updatedItem = {
-      //         ...result.item,
-      //         delete_dt: Utility.getDeleteDtEpoch(),
-      //         action: 'cancel'
-      //       };
-      //       data[result.index] = updatedItem;
-      //       this.updateData(data); // Refresh the data source
-      //     } else {
-      //       const data = [...this.deList];
-      //       data.splice(index, 1);
-      //       this.updateData(data); // Refresh the data source
-      //     }
-  
-      //     this.resetSelectedItemForUpdating();
-      //   }
-      // });
+  deleteItem(row: AdvanceTable) {
+    // this.id = row.id;
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    //   data: row,
+    //   direction: tempDirection,
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result === 1) {
+    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
+    //       (x) => x.id === this.id
+    //     );
+    //     // for delete we use splice in order to remove single object from DataService
+    //     if (foundIndex != null && this.exampleDatabase) {
+    //       this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
+    //       this.refreshTable();
+    //       this.showNotification(
+    //         'snackbar-danger',
+    //         'Delete Record Successfully...!!!',
+    //         'bottom',
+    //         'center'
+    //       );
+    //     }
+    //   }
+    // });
   }
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
@@ -510,7 +458,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.custCompClnCatItems.length;
+    const numRows = this.tariffBufferItems.length;
     return numSelected === numRows;
   }
 
@@ -522,7 +470,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.custCompClnCatItems.forEach((row) =>
+       : this.tariffBufferItems.forEach((row) =>
            this.selection.select(row)
          );
   }
@@ -531,47 +479,34 @@ implements OnInit {
 
   search()
   {
-    const where: any = {
-      and:[]
-    };
+    const where: any = {};
 
-    if (this.pcForm!.value["min_labour"])
+    if (this.pcForm!.value["buffer_type"])
       {
-        
-        const minLabour :number = Number(this.pcForm!.value["min_labour"]);
-        where.and.push({labour :{gte:minLabour}})
+        const buffer_type :Text = this.pcForm!.value["buffer_type"];
+        where.buffer_type ={contains:buffer_type}
       }
-  
-      if (this.pcForm!.value["max_labour"])
-        {
-         
-          const maxLabour :number = Number(this.pcForm!.value["max_labour"]);
-          where.and.push({labour :{ngte:maxLabour}})
-          
-        }
 
-    if (this.pcForm!.value["min_cost"])
-    {
-      
-      const minCost :number = Number(this.pcForm!.value["min_cost"]);
-      where.and.push({cost :{gte:minCost}})
+      if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
+        const minCost: number = Number(this.pcForm!.value["min_cost"]);
+        const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+        where.cost = { gte: minCost, lte: maxCost };
+    } else if (this.pcForm!.value["min_cost"]) {
+        const minCost: number = Number(this.pcForm!.value["min_cost"]);
+        where.cost = { gte: minCost };
+    } else if (this.pcForm!.value["max_cost"]) {
+        const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+        where.cost = { lte: maxCost };
     }
-
-    if (this.pcForm!.value["max_cost"])
-      {
-       
-        const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-        where.and.push({cost :{ngte:maxCost}})
-        
-      }
+    
       this.lastSearchCriteria=where;
-    this.subs.sink = this.tariffSteamDS.SearchTariffSteam(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.tariffSteamItems=data;
+    this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.tariffBufferItems=data;
        this.previous_endCursor=undefined;
-       this.endCursor = this.tariffSteamDS.pageInfo?.endCursor;
-       this.startCursor = this.tariffSteamDS.pageInfo?.startCursor;
-       this.hasNextPage = this.tariffSteamDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.tariffSteamDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
+       this.startCursor = this.tariffBufferDS.pageInfo?.startCursor;
+       this.hasNextPage = this.tariffBufferDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.tariffBufferDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -636,12 +571,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.tariffSteamDS.SearchTariffSteam(where,order,first,after,last,before).subscribe(data => {
-        this.tariffSteamItems=data;
-        this.endCursor = this.tariffSteamDS.pageInfo?.endCursor;
-        this.startCursor = this.tariffSteamDS.pageInfo?.startCursor;
-        this.hasNextPage = this.tariffSteamDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.tariffSteamDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where,order,first,after,last,before).subscribe(data => {
+        this.tariffBufferItems=data;
+        this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
+        this.startCursor = this.tariffBufferDS.pageInfo?.startCursor;
+        this.hasNextPage = this.tariffBufferDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.tariffBufferDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
@@ -688,7 +623,7 @@ implements OnInit {
     // );
   }
   public loadData() {
-    this.search();
+      this.search();
     // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
     //  // this.customer_companyList1 = data
     // });
@@ -781,13 +716,7 @@ implements OnInit {
   resetForm() {
     this.initTcForm();
     
-    //this.customerCodeControl.reset('');
+    this.customerCodeControl.reset('');
    
   }
-
-  roundUpToDecimal(value: number, decimalPlaces: number): number {
-    const factor = Math.pow(10, decimalPlaces);
-    return Math.ceil(value * factor) / factor;
-  }
 }
-

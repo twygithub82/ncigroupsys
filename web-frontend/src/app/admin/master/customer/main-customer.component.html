@@ -1,0 +1,25 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <div class="body overflow-auto">
+            <mat-tab-group dynamicHeight (selectedTabChange)="onTabSelected($event)">
+              <mat-tab [label]="translatedLangText.CUSTOMER">
+                <app-customer></app-customer>
+              </mat-tab>
+              <mat-tab [label]="translatedLangText.BILLING_BRANCH">
+                <app-billing-branch></app-billing-branch>
+              </mat-tab>
+              
+            </mat-tab-group>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

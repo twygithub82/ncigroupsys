@@ -6,37 +6,37 @@ import { InGateComponent } from './inventory/in-gate/in-gate.component';
 import { InGateDetailsComponent } from './inventory/in-gate-details/in-gate-details.component';
 import { CleaningCategoryComponent } from './parameter/cleaning-category/cleaning-category.component';
 import { CleaningMethodsComponent } from './parameter/cleaning-methods/cleaning-methods.component';
-import { TariffCleaningComponent } from "./tariff/tariff-cleaning/tariff-cleaning.component";
-import { TariffLabourComponent } from "./tariff/tariff-labour/tariff-labour.component";
-import { TariffDepotComponent } from "./tariff/tariff-depot/tariff-depot.component";
-import { TariffBufferComponent } from "./tariff/tariff-buffer/tariff-buffer.component";
+import { MainTariffCleaningComponent } from "./tariff/tariff-cleaning/main-tariff-clean.component";
+//import { TariffLabourComponent } from "./tariff/tariff-labour/tariff-labour.component";
+//import { TariffDepotComponent } from "./tariff/tariff-depot/tariff-depot.component";
+//import { TariffBufferComponent } from "./tariff/tariff-buffer/tariff-buffer.component";
 import { TariffRepairComponent } from "./tariff/tariff-repair/tariff-repair.component";
-import { TariffResidueComponent } from './tariff/tariff-residue/tariff-residue.component';
+//import { TariffResidueComponent } from './tariff/tariff-residue/tariff-residue.component';
 import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-cleaning-new.component';
 import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey.component';
 import { InGateSurveyFormComponent } from './inventory/in-gate-survey-form/in-gate-survey-form.component';
-import { PackageCleaningComponent } from "./package/package-cleaning/package-cleaning.component"
-import { PackageDepotComponent } from './package/package-depot/package-depot.component';
+// import { PackageCleaningComponent } from "./package/package-cleaning/package-cleaning.component"
+// import { PackageDepotComponent } from './package/package-depot/package-depot.component';
 import { BookingNewComponent } from './inventory/booking-new/booking-new.component';
 import { SchedulingNewComponent } from './inventory/scheduling-new/scheduling-new.component';
 import { ReleaseOrderComponent } from './inventory/release-order/release-order.component';
 import { ReleaseOrderDetailsComponent } from './inventory/release-order-details/release-order-details.component';
 import { OutGateComponent } from './inventory/out-gate/out-gate.component';
 import { OutGateDetailsComponent } from './inventory/out-gate-details/out-gate-details.component';
-import { PackageLabourComponent } from './package/package-labour/package-labour.component';
+// import { PackageLabourComponent } from './package/package-labour/package-labour.component';
 import { AuthGuard } from '@core/guard/auth.guard';
-import { PackageResidueComponent } from './package/package-residue/package-residue.component';
+// import { PackageResidueComponent } from './package/package-residue/package-residue.component';
 import { PackageRepairComponent } from './package/package-repair/package-repair.component';
-import { PackageBufferComponent } from './package/package-buffer/package-buffer.component';
+// import { PackageBufferComponent } from './package/package-buffer/package-buffer.component';
 import { RepairEstimateComponent } from './repair/estimate/estimate.component';
 import { RepairEstimateNewComponent } from './repair/estimate-new/estimate-new.component';
 import { EstimateTemplateComponent } from './master/estimate-template/estimate-template.component';
 import { EstimateTemplateNewComponent } from './master/estimate-template-new/estimate-template-new.component';
-import { CustomerComponent } from './master/customer/customer.component';
+//import { CustomerComponent } from './master/customer/customer.component';
 import { CustomerNewComponent } from './master/customer-new/customer-new.component';
 import { RepairApprovalComponent } from './repair/approval/approval.component';
 import { RepairApprovalViewComponent } from './repair/approval-view/approval-view.component';
-import { BillingBranchComponent } from './master/billing-branch/billing-branch.component';
+//import { BillingBranchComponent } from './master/billing-branch/billing-branch.component';
 import { BillingBranchNewComponent } from './master/billing-branch-new/billing-branch-new.component';
 import { CleaningApprovalComponent } from './cleaning/cleaning-approval/approval.component';
 import { ResidueDisposalApprovalComponent } from './residue-disposal/approval/approval.component';
@@ -56,7 +56,7 @@ import { TankMovementDetailsComponent } from './inventory/tank-movement-details/
 import { ResidueJobOrderTaskDetailsComponent } from './residue-disposal/job-order-task-details/job-order-task-details.component';
 import { ResidueQCViewComponent } from './residue-disposal/estimate-qc/estimate-qc.component';
 import { TariffSteamComponent } from './tariff/tariff-steam/tariff-steam.component';
-import { PackageSteamComponent } from './package/package-steam/package-steam.component';
+// import { PackageSteamComponent } from './package/package-steam/package-steam.component';
 import { SteamQCViewComponent } from './steam/estimate-qc/estimate-qc.component';
 import { SteamJobOrderTaskDetailsComponent } from './steam/job-order-task-details/job-order-task-details.component';
 import { JobOrderAllocationSteamComponent } from './steam/job-order-allocation/job-order-allocation.component';
@@ -79,7 +79,7 @@ import {ResidueDisposalEstimateApprovalNewComponent} from './residue-disposal/es
 import { SteamEstimateApprovalNewComponent } from './steam/estimate-approval-new/estimate-approval-new.component';
 import { SteamEstimateApprovalComponent } from './steam/estimate-approval/estimate-approval.component';
 import { OutGateSurveyComponent } from './inventory/out-gate-survey/out-gate-survey.component';
-import { ExclusiveSteamComponent } from './package/exclusive-steam/exclusive-steam.component';
+// import { ExclusiveSteamComponent } from './package/exclusive-steam/exclusive-steam.component';
 import { OutGateSurveyFormComponent } from './inventory/out-gate-survey-form/out-gate-survey-form.component';
 import { LOLOBillingComponent } from './billing/depot-cost/LOLO/lolo-billing.component';
 import { PreinspectionBillingComponent } from './billing/depot-cost/pre-inspection/preinspection-billing.component';
@@ -94,6 +94,11 @@ import { MainPendingComponent } from './billing/pending/main-pending.component';
 import { BilledTankComponent } from './billing/billed-tank/billed-tank.component';
 import { TransferComponent } from './inventory/transfer/transfer.component';
 import { TransferDetailsComponent } from './inventory/transfer-details/transfer-details.component';
+import { MainTariffDepotComponent } from './tariff/tariff-depot/main-tariff-depot.component';
+import { MainPackageCleaningComponent } from './package/package-cleaning/main-package-clean.component';
+import { MainPackageDepotComponent } from './package/package-depot/main-package-depot.component';
+import { MainPackageSteamComponent } from './package/package-steam/main-package-steam.component';
+import { MainCustomerComponent } from './master/customer/main-customer.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -198,7 +203,7 @@ export const ADMIN_ROUTE: Routes = [
   },
   {
     path: "tariff/tariff-cleaning",
-    component: TariffCleaningComponent,
+    component: MainTariffCleaningComponent,
   },
   {
     path: "tariff/tariff-cleaning/new",
@@ -208,62 +213,62 @@ export const ADMIN_ROUTE: Routes = [
     path: "tariff/tariff-cleaning/edit/:id",
     component: TariffCleaningNewComponent,
   },
-  {
-    path: "tariff/tariff-labour",
-    component: TariffLabourComponent,
-  },
+  // {
+  //   path: "tariff/tariff-labour",
+  //   component: TariffLabourComponent,
+  // },
   {
     path: "tariff/tariff-depot",
-    component: TariffDepotComponent,
+    component: MainTariffDepotComponent,
   },
   {
     path: "tariff/tariff-repair",
     component: TariffRepairComponent,
   },
-  {
-    path: "tariff/tariff-residue",
-    component: TariffResidueComponent,
-  },
-  {
-    path: "tariff/tariff-buffer",
-    component: TariffBufferComponent,
-  },
+  // {
+  //   path: "tariff/tariff-residue",
+  //   component: TariffResidueComponent,
+  // },
+  // {
+  //   path: "tariff/tariff-buffer",
+  //   component: TariffBufferComponent,
+  // },
   {
     path: "tariff/tariff-steam",
     component: TariffSteamComponent,
   },
   {
     path: "package/package-cleaning",
-    component: PackageCleaningComponent,
+    component: MainPackageCleaningComponent,
   },
   {
     path: "package/package-depot",
-    component: PackageDepotComponent,
+    component: MainPackageDepotComponent,
   },
-  {
-    path: "package/package-labour",
-    component: PackageLabourComponent,
-  },
-  {
-    path: "package/package-residue",
-    component: PackageResidueComponent,
-  },
+  // {
+  //   path: "package/package-labour",
+  //   component: PackageLabourComponent,
+  // },
+  // {
+  //   path: "package/package-residue",
+  //   component: PackageResidueComponent,
+  // },
   {
     path: "package/package-repair",
     component: PackageRepairComponent,
   },
   {
     path: "package/package-steam",
-    component: PackageSteamComponent,
+    component: MainPackageSteamComponent,
   },
-  {
-    path: "package/exclusive-steam",
-    component: ExclusiveSteamComponent,
-  },
-  {
-    path: "package/package-buffer",
-    component: PackageBufferComponent,
-  },
+  // {
+  //   path: "package/exclusive-steam",
+  //   component: ExclusiveSteamComponent,
+  // },
+  // {
+  //   path: "package/package-buffer",
+  //   component: PackageBufferComponent,
+  // },
   {
     path: "repair/estimate",
     component: RepairEstimateComponent,
@@ -316,7 +321,7 @@ export const ADMIN_ROUTE: Routes = [
   },
   {
     path: "master/customer",
-    component: CustomerComponent,
+    component: MainCustomerComponent,
   },
   {
     path: "master/customer/new/:id",
@@ -338,10 +343,10 @@ export const ADMIN_ROUTE: Routes = [
     path: "management/group/new/:id",
     component: GroupNewComponent,
   },
-  {
-    path: "master/billing-branch",
-    component: BillingBranchComponent,
-  },
+  // {
+  //   path: "master/billing-branch",
+  //   component: BillingBranchComponent,
+  // },
   {
     path: "master/billing-branch/new/:id",
     component: BillingBranchNewComponent,

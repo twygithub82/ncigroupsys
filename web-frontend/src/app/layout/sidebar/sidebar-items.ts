@@ -98,6 +98,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/tariff/tariff-repair",
@@ -120,6 +121,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/tariff/tariff-residue",
@@ -131,6 +133,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/tariff/tariff-steam",
@@ -143,7 +146,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       },
-    ]
+    ].filter(item => item.visible !== false),
   },
   {
     path: "admin/cleaning-management",
@@ -187,6 +190,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/package/package-repair",
@@ -209,6 +213,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/package/package-residue",
@@ -220,6 +225,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/package/package-steam",
@@ -242,8 +248,9 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
-    ]
+    ].filter(item => item.visible !== false),
   },
   {
     path: "admin/cleaning-management",
@@ -356,19 +363,9 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
-        submenu: []
+        submenu: [],
+        visible: false
       },
-      // {
-      //   path: "admin/master/estimate-template/new",
-      //   title: "MENUITEMS.MASTER.LIST.ASSIGN-ESTIMATE-TEMPLATE",
-      //   iconType: "",
-      //   icon: "",
-      //   class: "ml-menu",
-      //   groupTitle: false,
-      //   badge: "",
-      //   badgeClass: "",
-      //   submenu: [],
-      // },
       {
         path: "admin/cleaning-steps",
         title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-STEPS",

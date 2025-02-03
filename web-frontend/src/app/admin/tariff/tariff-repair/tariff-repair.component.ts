@@ -896,7 +896,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       this.handledItemCvList = data;
     });
 
-
+    this.search();
     // this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
     //   console.log('Selected value:', value);
     //   var aliasName =value.child_code;
