@@ -501,7 +501,6 @@ export const GET_STEAM_EST = gql`
   }
 `;
 
-//query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
 export const GET_STEAM_EST_JOB_ORDER = gql`
   query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
     resultList: querySteaming(where: $where) {
@@ -732,7 +731,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
   }
 `;
 
-export const GET_STEAM_BY_ID_FOR_PDF = gql`
+export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
   query querySteaming($where: steamingFilterInput) {
     resultList: querySteaming(where: $where) {
       nodes {
@@ -762,6 +761,18 @@ export const GET_STEAM_BY_ID_FOR_PDF = gql`
         total_cost
         update_by
         update_dt
+        storing_order_tank {
+          in_gate {
+            eir_no
+            eir_dt
+          }
+          tariff_cleaning {
+            cargo
+            flash_point
+          }
+          etr_dt
+          required_temp
+        }
         steaming_part {
           approve_cost
           approve_labour
@@ -1029,12 +1040,12 @@ export class SteamDS extends BaseDataSource<SteamItem> {
       );
   }
 
-  getSteamByIDForPdf(sot_guid: string | undefined): Observable<SteamItem[]> {
+  getSteamByIDForPdf(guid: string | undefined): Observable<SteamItem[]> {
     this.loadingSubject.next(true);
-    const where: any = { sot_guid: { eq: sot_guid } }
+    const where: any = { guid: { eq: guid } }
     return this.apollo
       .query<any>({
-        query: GET_STEAM_BY_ID_FOR_PDF,
+        query: GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

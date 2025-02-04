@@ -37,10 +37,10 @@ import { SteamPartDS } from 'app/data-sources/steam-part';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repair_guid: string;
+  steam_guid: string;
   customer_company_guid: string;
   sotDS: StoringOrderTankDS;
-  repairDS: RepairDS;
+  steamDS: SteamDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   existingPdf?: any;
@@ -239,7 +239,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
-  repair_guid?: string | null;
+  steam_guid?: string | null;
   customer_company_guid?: string | null;
   estimate_no?: string | null;
 
@@ -252,19 +252,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   repairCost?: RepairCostTableItem;
   repList?: any[] = [];
-  groupNameCvList: CodeValuesItem[] = [];
-  subgroupNameCvList: CodeValuesItem[] = [];
   yesnoCvList: CodeValuesItem[] = [];
   soTankStatusCvList: CodeValuesItem[] = [];
-  purposeOptionCvList: CodeValuesItem[] = [];
-  testTypeCvList: CodeValuesItem[] = [];
-  testClassCvList: CodeValuesItem[] = [];
-  partLocationCvList: CodeValuesItem[] = [];
-  damageCodeCvList: CodeValuesItem[] = [];
-  chunkedDamageCodeCvList: any[][] = [];
-  repairCodeCvList: CodeValuesItem[] = [];
-  chunkedRepairCodeCvList: any[][] = [];
-  unitTypeCvList: CodeValuesItem[] = [];
 
   scale = 1.1;
   imageQuality = 0.85;
@@ -295,7 +284,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.repair_guid = data.repair_guid;
+    this.steam_guid = data.steam_guid;
     this.customer_company_guid = data.customer_company_guid;
     this.estimate_no = data.estimate_no;
     this.existingPdf = data.existingPdf;
@@ -306,18 +295,17 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+    this.pdfTitle = this.translatedLangText.STEAM_PROGRESS_MONITORING_CHART;
 
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
-      this.getRepairData(),
-      this.data.retrieveFile ? this.getRepairPdf() : Promise.resolve(null)
+      this.getSteamData(),
+      this.data.retrieveFile ? this.getSteamPdf() : Promise.resolve(null)
     ]);
     if (data?.length > 0) {
       this.repairItem = data[0];
       await this.getCodeValuesData();
       this.updateData(this.repairItem?.repair_part);
-      this.last_test_desc = this.getLastTest(this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey);
 
       this.cdr.detectChanges();
     }
@@ -539,18 +527,18 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     }
   }
 
-  getRepairData(): Promise<any[]> {
+  getSteamData(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.repair_guid!).subscribe({
+      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.steam_guid!).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
     });
   }
 
-  getRepairPdf(): Promise<any[]> {
+  getSteamPdf(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
+      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.steam_guid!]).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
@@ -575,61 +563,12 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
     // Wrap all alias connections in promises
     const promises = [
-      firstValueFrom(this.cvDS.connectAlias('groupNameCv')).then(async data => {
-        this.groupNameCvList = data || [];
-        const subqueries: any[] = [];
-        data.map(d => {
-          if (d.child_code) {
-            let q = { alias: d.child_code, codeValType: d.child_code };
-            const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-            if (!hasMatch) {
-              subqueries.push(q);
-            }
-          }
-        });
-
-        // Process subqueries if any
-        if (subqueries.length > 0) {
-          await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
-
-          for (const s of subqueries) {
-            const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
-            if (subData) {
-              this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
-            }
-          }
-        }
-
-      }),
       firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
         this.yesnoCvList = data || [];
       }),
       firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
         this.soTankStatusCvList = data || [];
       }),
-      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
-        this.purposeOptionCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
-        this.testTypeCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('testClassCv')).then(data => {
-        this.testClassCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('partLocationCv')).then(data => {
-        this.partLocationCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('damageCodeCv')).then(data => {
-        this.damageCodeCvList = data || [];
-        this.chunkedDamageCodeCvList = this.chunkArray(this.damageCodeCvList, 10);
-      }),
-      firstValueFrom(this.cvDS.connectAlias('repairCodeCv')).then(data => {
-        this.repairCodeCvList = data || [];
-        this.chunkedRepairCodeCvList = this.chunkArray(this.repairCodeCvList, 10);
-      }),
-      firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
-        this.unitTypeCvList = data || [];
-      })
     ];
 
     // Wait for all promises to resolve
@@ -669,79 +608,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     //   this.repList = [];
     //   this.calculateCost();
     // }
-  }
-
-  getGroupSeq(codeVal: string | undefined): number | undefined {
-    const gncv = this.groupNameCvList?.filter(x => x.code_val === codeVal);
-    if (gncv.length) {
-      return gncv[0].sequence;
-    }
-    return -1;
-  }
-
-  getLastTest(igs: any): string | undefined {
-    return this.getLastTestIGS(igs);
-  }
-
-  getLastTestIGS(igs: any): string | undefined {
-    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
-
-    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
-      const test_type = igs.last_test_cv;
-      const test_class = igs.test_class_cv;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
-    }
-    return "";
-  }
-
-  // getLastTestTI(): string | undefined {
-  //   if (!this.populateCodeValues?.testTypeCvList?.length || !this.populateCodeValues?.testClassCvList?.length || !this.tiItem) return "";
-
-  //   if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
-  //     const test_type = this.tiItem.last_test_cv;
-  //     const test_class = this.tiItem.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
-
-  getTestTypeDescription(codeVal: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-  }
-
-  getTestClassDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
-  }
-
-  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  }
-
-  getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
-  }
-
-  displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
-      return item.code_cv;
-    }).join('/');
-  }
-
-  displayTankPurpose(sot: any) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
   }
 
   translateLangText() {

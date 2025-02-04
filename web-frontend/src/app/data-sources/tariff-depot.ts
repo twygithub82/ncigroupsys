@@ -94,34 +94,6 @@ const QUERY_TARIFF_CLEAN_UN_NO = gql`
   }
 `;
 
-export const TARIFF_CLEANING_FRAGMENT = gql`
-  fragment TariffCleaningFields on tariff_cleaning {
-    alias
-    ban_type_cv
-    cargo
-    class_cv
-    cleaning_category_guid
-    cleaning_method_guid
-    create_by
-    create_dt
-    delete_dt
-    depot_note
-    description
-    flash_point
-    guid
-    hazard_level_cv
-    in_gate_alert
-    nature_cv
-    open_on_gate_cv
-    remarks
-    un_no
-    update_by
-    update_dt
-  }
-`;
-
-
-
 export const GET_TARIFF_DEPOT_QUERY_WITH_TANK = gql`
   query queryTariffDepot($where: tariff_depotFilterInput, $order:[tariff_depotSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     tariffDepotResult : queryTariffDepot(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {

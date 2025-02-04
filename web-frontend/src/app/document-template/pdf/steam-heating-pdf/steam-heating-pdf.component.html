@@ -14,7 +14,7 @@
               {{repairItem?.storing_order_tank?.tank_no}}
             </td>
             <td class="td-col-2-25">
-              <b>{{translatedLangText.ESTIMATE_NO}}</b>
+              <b>{{translatedLangText.EIR_NO}}</b>
             </td>
             <td class="td-col-3">
               {{estimate_no}}
@@ -93,15 +93,6 @@
                 </b>
               </span>
               <div class="list-container">
-                @for (chunkedDamageCodeCv of chunkedDamageCodeCvList; track chunkedDamageCodeCv){
-                <div class="list-column">
-                  <ul>
-                    @for (codeValue of chunkedDamageCodeCv; track codeValue){
-                    <li>{{codeValue.code_val}}: {{ codeValue.description }}</li>
-                    }
-                  </ul>
-                </div>
-                }
               </div>
             </td>
             <td class="td-col-6">
@@ -111,15 +102,6 @@
                 </b>
               </span>
               <div class="list-container">
-                @for (chunkedRepairCodeCv of chunkedRepairCodeCvList; track chunkedRepairCodeCv){
-                <div class="list-column">
-                  <ul>
-                    @for (codeValue of chunkedRepairCodeCv; track codeValue){
-                    <li>{{codeValue.code_val}}: {{ codeValue.description }}</li>
-                    }
-                  </ul>
-                </div>
-                }
               </div>
             </td>
           </tr>
