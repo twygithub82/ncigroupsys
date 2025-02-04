@@ -907,7 +907,9 @@
     "CLEAN-COST-REPORT":"Clean Cost",
     "PREINSPECTION":"Pre-inspection",
     "GATEIO":"Gate In/Out",
-    "PENDING-INVOICE-DETAIL":"Pending Invoice Detail"
+    "PENDING-INVOICE-DETAIL":"Pending Invoice Detail",
+    "STEAM-PROGRESS-MONITORING-CHART": "Steam Progress Monitoring Chart",
+    "TEMPERATURE": "Temperature"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

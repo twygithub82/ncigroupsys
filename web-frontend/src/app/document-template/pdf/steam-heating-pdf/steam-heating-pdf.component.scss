@@ -6,12 +6,13 @@
 .pdf-header {
     display: flex;
     padding: 10px 10px 0px 10px;
-    height: 351px;
+    height: 135px;
 }
 
 .pdf-body {
     display: flex;
     padding: 0px 10px 0px 10px;
+    min-height: 1123px;
 }
 
 .pdf-footer {
@@ -43,11 +44,12 @@
     object-fit: contain;
 }
 
-.estimate-title {
+.body-title {
     width: 100%;
     display: flex;
     justify-content: center;
-    font-size: 0.8rem;
+    font-size: 1rem;
+    text-transform: uppercase;
 }
 
 table {
@@ -115,16 +117,22 @@ tr.th {
     font-size: 0.55rem;
 }
 
-.repair-part-table {
+.steam-temp-table {
     font-size: 0.65rem;
     padding: 0px 10px 0px 10px;
 
-    .sub-header-table {
-        background-color: #d2d2d2;
+    .steam-temp-table td,
+    .steam-temp-table th {
+        text-align: center;  /* Centers text horizontally */
+        vertical-align: middle; /* Centers text vertically */
     }
 
-    .group-header {
-        background-color: #dedede;
+    .steam-temp-header {
+        background-color: #dcdcdc;
+    }
+
+    .steam-temp-subheader {
+        background-color: #e8e8e8;
     }
 }
 

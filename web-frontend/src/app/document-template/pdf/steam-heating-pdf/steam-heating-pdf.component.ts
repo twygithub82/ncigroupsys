@@ -66,13 +66,10 @@ export interface DialogData {
 export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-    SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
-    SO_DATE: 'COMMON-FORM.SO-DATE',
-    NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
@@ -82,106 +79,37 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
-    TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     EIR_NO: "COMMON-FORM.EIR-NO",
     EIR_DATE: "COMMON-FORM.EIR-DATE",
-    ORDER_DETAILS: "COMMON-FORM.ORDER-DETAILS",
     CUSTOMER: "COMMON-FORM.CUSTOMER",
     OWNER: "COMMON-FORM.OWNER",
-    CLEAN_STATUS: "COMMON-FORM.CLEAN-STATUS",
     CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
-    EIR_DATE_TIME: "COMMON-FORM.EIR-DATE-TIME",
     SURVEY_INFO: "COMMON-FORM.SURVEY-INFO",
     DATE_OF_INSPECTION: "COMMON-FORM.DATE-OF-INSPECTION",
     PERIODIC_TEST: "COMMON-FORM.PERIODIC-TEST",
-    LAST_TEST: "COMMON-FORM.LAST-TEST",
-    NEXT_TEST: "COMMON-FORM.NEXT-TEST",
-    TEST_TYPE: "COMMON-FORM.TEST-TYPE",
     DATE: "COMMON-FORM.DATE",
-    CLASS: "COMMON-FORM.CLASS",
-    IN_GATE_DETAILS: "COMMON-FORM.IN-GATE-DETAILS",
-    IN_GATE_REMARKS: "COMMON-FORM.IN-GATE-REMARKS",
-    HAULIER: 'COMMON-FORM.HAULIER',
-    VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
-    DRIVER_NAME: 'COMMON-FORM.DRIVER-NAME',
     LAST_UPDATE_BY: 'COMMON-FORM.LAST-UPDATE-BY',
     LAST_UPDATE_ON: 'COMMON-FORM.LAST-UPDATE-ON',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    MANUFACTURER_DOM: 'COMMON-FORM.MANUFACTURER-AND-DOM',
-    CLADDING: 'COMMON-FORM.CLADDING',
-    CAPACITY: 'COMMON-FORM.CAPACITY',
-    TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
-    MAX_GROSS_WEIGHT: 'COMMON-FORM.MAX-GROSS-WEIGHT',
-    TANK_HEIGHT: 'COMMON-FORM.TANK-HEIGHT',
-    WALKWAY: 'COMMON-FORM.WALKWAY',
-    BOTTOM_DISCHARGE_TYPE: 'COMMON-FORM.BOTTOM-DISCHARGE-TYPE',
-    COMPARTMENT_TYPE: 'COMMON-FORM.COMPARTMENT-TYPE',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
-    BOTTOM_DIS_COMP: 'COMMON-FORM.BOTTOM-DIS-COMP',
-    FOOT_VALVE: 'COMMON-FORM.FOOT-VALVE',
-    BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
-    THERMOMETER: 'COMMON-FORM.THERMOMETER',
-    LADDER: 'COMMON-FORM.LADDER',
-    DATA_SCS_TRANSPORT_PLATE: 'COMMON-FORM.DATA-SCS-TRANSPORT-PLATE',
-    TOP_DIS_COMP: 'COMMON-FORM.TOP-DIS-COMP',
-    TOP_DIS_VALVE: 'COMMON-FORM.TOP-DIS-VALVE',
-    AIRLINE_VALVE: 'COMMON-FORM.AIRLINE-VALVE',
-    AIRLINE_VALVE_CONNECTIONS: 'COMMON-FORM.AIRLINE-VALVE-CONNECTIONS',
-    MANLID_COMPARTMENT: 'COMMON-FORM.MANLID-COMPARTMENT',
-    MANLID_COVER: 'COMMON-FORM.MANLID-COVER',
-    MANLID_SEAL: 'COMMON-FORM.MANLID-SEAL',
-    PV: 'COMMON-FORM.PV',
-    SAFETY_HANDRAIL: 'COMMON-FORM.SAFETY-HANDRAIL',
-    BUFFER_PLATE: 'COMMON-FORM.BUFFER-PLATE',
-    RESIDUE: 'COMMON-FORM.RESIDUE',
-    DIPSTICK: 'COMMON-FORM.DIPSTICK',
-    SPECIFICATION: 'COMMON-FORM.SPECIFICATION',
-    DIAMITER: 'COMMON-FORM.DIAMITER',
-    PIECES: 'COMMON-FORM.PIECES',
-    VOLUME: 'COMMON-FORM.VOLUME',
-    OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS',
-    BRAND: 'COMMON-FORM.BRAND',
     BOTTOM: 'COMMON-FORM.BOTTOM',
     TOP: 'COMMON-FORM.TOP',
-    MANLID: 'COMMON-FORM.MANLID',
-    FRAME_TYPE: 'COMMON-FORM.FRAME-TYPE',
-    LEFT_SIDE: 'COMMON-FORM.LEFT-SIDE',
-    REAR_SIDE: 'COMMON-FORM.REAR-SIDE',
-    RIGHT_SIDE: 'COMMON-FORM.RIGHT-SIDE',
-    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
-    FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
-    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
-    TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
-    MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
-    FILL_IN_REMARKS: 'COMMON-FORM.FILL-IN-REMARKS',
-    LEFT_REMARKS: 'COMMON-FORM.LEFT-REMARKS',
-    REAR_REMARKS: 'COMMON-FORM.REAR-REMARKS',
-    RIGHT_REMARKS: 'COMMON-FORM.RIGHT-REMARKS',
-    TOP_REMARKS: 'COMMON-FORM.TOP-REMARKS',
-    FRONT_REMARKS: 'COMMON-FORM.FRONT-REMARKS',
-    BOTTOM_REMARKS: 'COMMON-FORM.BOTTOM-REMARKS',
-    SIDES: 'COMMON-FORM.SIDES',
     SAVE_ERROR: 'COMMON-FORM.SAVE-ERROR',
     DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
     PREVIEW: 'COMMON-FORM.PREVIEW',
     DELETE: 'COMMON-FORM.DELETE',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
-    PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS',
-    PHOTOS: 'COMMON-FORM.PHOTOS',
     PUBLISH: 'COMMON-FORM.PUBLISH',
     PHONE: 'COMMON-FORM.PHONE',
     FAX: 'COMMON-FORM.FAX',
     EMAIL: 'COMMON-FORM.EMAIL',
     WEB: 'COMMON-FORM.WEB',
-    IN_GATE: 'COMMON-FORM.IN-GATE',
-    EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
     LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
     TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
@@ -189,11 +117,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
     YES: 'COMMON-FORM.YES',
     NO: 'COMMON-FORM.NO',
-    BOTTOM_DIS_COMP__ABB: 'COMMON-FORM.BOTTOM-DIS-COMP--ABB',
-    BOTTOM_DIS_VALVE__ABB: 'COMMON-FORM.BOTTOM-DIS-VALVE--ABB',
-    TOP_DIS_COMP__ABB: 'COMMON-FORM.TOP-DIS-COMP--ABB',
-    TOP_DIS_VALVE__ABB: 'COMMON-FORM.TOP-DIS-VALVE--ABB',
-    MANLID_COMP__ABB: 'COMMON-FORM.MANLID-COMP--ABB',
     CRN: 'COMMON-FORM.CRN',
     EIR_COMPANY_DECLARATION: 'COMMON-FORM.EIR-COMPANY-DECLARATION',
     EIR_HAULIER_DECLARATION: 'COMMON-FORM.EIR-HAULIER-DECLARATION',
@@ -205,13 +128,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     EXPORT_NEW: 'COMMON-FORM.EXPORT-NEW',
     PREVIEW_PDF: 'COMMON-FORM.PREVIEW-PDF',
     EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
-    IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
-    OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
-    MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
-    DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
-    REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
     NO_DOT: 'COMMON-FORM.NO-DOT',
     ITEM: 'COMMON-FORM.ITEM',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
@@ -220,7 +138,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     QTY: 'COMMON-FORM.QTY',
     LABOUR: 'COMMON-FORM.LABOUR',
     MATERIAL: 'COMMON-FORM.MATERIAL',
-    LESSEE_OWNER__ABB: 'COMMON-FORM.LESSEE-OWNER--ABB',
     REMARKS: 'COMMON-FORM.REMARKS',
     APPROVED_COST: 'COMMON-FORM.APPROVED-COST',
     RATE_PERC: 'COMMON-FORM.RATE-PERC',
@@ -230,7 +147,19 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
-    OF: 'COMMON-FORM.OF'
+    OF: 'COMMON-FORM.OF',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    QUOATION_NO: 'COMMON-FORM.QUOTATION-NO',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    ETR_DATE: 'COMMON-FORM.ETR-DATE',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
+    STEAM_PROGRESS_MONITORING_CHART: 'COMMON-FORM.STEAM-PROGRESS-MONITORING-CHART',
+    TIME: 'COMMON-FORM.TIME',
+    TEMPERATURE: 'COMMON-FORM.TEMPERATURE',
+    THERMOMETER: 'COMMON-FORM.THERMOMETER',
+    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
+    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
   }
 
   type?: string | null;
@@ -246,12 +175,12 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   customerInfo: any = customerInfo;
   disclaimerNote: string = "";
   pdfTitle: string = "";
-  repairItem: any;
+  steamItem: any;
 
   last_test_desc?: string = ""
 
   repairCost?: RepairCostTableItem;
-  repList?: any[] = [];
+  steamTempList?: any[] = [];
   yesnoCvList: CodeValuesItem[] = [];
   soTankStatusCvList: CodeValuesItem[] = [];
 
@@ -303,16 +232,17 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       this.data.retrieveFile ? this.getSteamPdf() : Promise.resolve(null)
     ]);
     if (data?.length > 0) {
-      this.repairItem = data[0];
+      this.steamItem = data[0];
       await this.getCodeValuesData();
-      this.updateData(this.repairItem?.repair_part);
+      console.log(this.steamItem)
+      this.updateData(this.steamItem?.steaming_part?.[0]?.job_order?.steaming_temp);
 
       this.cdr.detectChanges();
     }
 
     this.existingPdf = pdfData ?? this.existingPdf;
-    console.log(this.existingPdf)
     if (!this.existingPdf?.length) {
+      this.pdfHeader();
       //this.generatePDF();
     }
     // else {
@@ -451,7 +381,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       // Save PDF
       // pdf.save(`ESTIMATE-${this.estimate_no}.pdf`);
       this.generatedPDF = pdf.output('blob');
-      this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
+      this.uploadPdf(this.steamItem?.guid, this.generatedPDF);
       this.generatingPdfLoadingSubject.next(false);
       console.log('End generate', new Date());
     } catch (error) {
@@ -584,30 +514,23 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-    // if (newData?.length) {
-    //   newData = newData.map((row) => ({
-    //     ...row,
-    //     tariff_repair: {
-    //       ...row.tariff_repair,
-    //       sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
-    //     }
-    //   }));
+    if (newData?.length) {
+      newData = newData.map((row) => ({
+        ...row
+      }));
 
-    //   console.log('Before sort', newData);
-    //   newData = this.repairPartDS.sortAndGroupByGroupName(newData);
-    //   console.log('After sort', newData);
-    //   // newData = [...this.sortREP(newData)];
+      // console.log('Before sort', newData);
+      // newData = this.repairPartDS.sortAndGroupByGroupName(newData);
+      // console.log('After sort', newData);
 
-    //   this.repList = newData.map((row, index) => ({
-    //     ...row,
-    //     index: index
-    //   }));
-    //   console.log(this.repList);
-    //   this.calculateCost();
-    // } else {
-    //   this.repList = [];
-    //   this.calculateCost();
-    // }
+      this.steamTempList = newData.map((row, index) => ({
+        ...row,
+        index: index
+      }));
+      console.log(this.steamTempList);
+    } else {
+      this.steamTempList = [];
+    }
   }
 
   translateLangText() {
@@ -723,5 +646,14 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
         }
       });
     }
+  }
+
+  pdfHeader() {
+    const headerElement = document.getElementById('pdf-form-header');
+    if (!headerElement) {
+      return '';
+    }
+    const a = headerElement.innerHTML
+    return '';
   }
 }

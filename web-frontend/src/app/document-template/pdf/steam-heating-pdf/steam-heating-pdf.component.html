@@ -11,13 +11,13 @@
               <b>{{translatedLangText.TANK_NO}}</b>
             </td>
             <td class="td-col-4-5">
-              {{repairItem?.storing_order_tank?.tank_no}}
+              {{steamItem?.storing_order_tank?.tank_no}}
             </td>
             <td class="td-col-2-25">
               <b>{{translatedLangText.EIR_NO}}</b>
             </td>
             <td class="td-col-3">
-              {{estimate_no}}
+              {{steamItem?.storing_order_tank?.in_gate?.[0]?.eir_no}}
             </td>
           </tr>
           <tr>
@@ -25,136 +25,55 @@
               <b>{{translatedLangText.CUSTOMER}}</b>
             </td>
             <td>
-              {{repairItem?.storing_order_tank?.storing_order?.customer_company?.name}}
+              {{steamItem?.storing_order_tank?.storing_order?.customer_company?.name}}
             </td>
             <td>
               <b>{{translatedLangText.EIR_DATE}}</b>
             </td>
             <td>
-              {{displayDate(repairItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}}
+              {{displayDate(steamItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}}
             </td>
           </tr>
           <tr>
             <td>
-              <b>{{translatedLangText.LAST_CARGO}}</b>
+              <b>{{translatedLangText.JOB_NO}}</b>
             </td>
             <td>
-              {{repairItem?.storing_order_tank?.tariff_cleaning?.cargo}}
+              {{steamItem?.job_no}}
             </td>
             <td>
-              <b>{{translatedLangText.ESTIMATE_DATE}}</b>
+              <b>{{translatedLangText.ESTIMATE_NO}}</b>
             </td>
             <td>
-              {{displayDate(repairItem?.create_dt)}}
+              {{steamItem?.estimate_no}}
             </td>
           </tr>
           <tr>
             <td>
-              <b>{{translatedLangText.MANUFACTURER}}</b>
+              <b>{{translatedLangText.CARGO_NAME}}</b>
             </td>
             <td>
-              {{repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey?.manufacturer_cv}}
+              {{steamItem?.storing_order_tank?.tariff_cleaning?.cargo}}
             </td>
             <td>
-              <b>{{translatedLangText.UNIT_TYPE}}</b>
+              <b>{{translatedLangText.FLASH_POINT}}</b>
             </td>
-            <td>
-              {{repairItem?.storing_order_tank?.tank?.unit_type}}
+            <td class="text-danger">
+              {{steamItem?.storing_order_tank?.tariff_cleaning?.flash_point}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
             </td>
           </tr>
           <tr>
             <td>
-              <b>{{translatedLangText.LAST_TEST}}</b>
+              <b>{{translatedLangText.ETR_DATE}}</b>
             </td>
             <td>
-              {{last_test_desc}}
+              {{displayDate(steamItem?.storing_order_tank?.etr_dt)}}
             </td>
             <td>
+              <b>{{translatedLangText.REQUIRED_TEMP}}</b>
             </td>
             <td>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="estimate-title">
-        <span class="mt-1 mb-0">
-          <b class="text-decoration-underline">
-            {{pdfTitle}}
-          </b>
-        </span>
-      </div>
-      <table>
-        <tbody>
-          <tr>
-            <td class="td-col-6">
-              <span class="mb-0">
-                <b>
-                  {{translatedLangText.DAMAGE_CODE}}
-                </b>
-              </span>
-              <div class="list-container">
-              </div>
-            </td>
-            <td class="td-col-6">
-              <span class="mb-0">
-                <b>
-                  {{translatedLangText.REPAIR_CODE}}
-                </b>
-              </span>
-              <div class="list-container">
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="mt-1">
-      <table class="repair-part-table header-table">
-        <tbody>
-          <tr>
-            <td class="th td-col-0-5" rowspan="2">
-              <b>{{translatedLangText.NO_DOT}}</b>
-            </td>
-            <td class="th td-col-2" rowspan="2">
-              <b>{{translatedLangText.ITEM}}</b>
-            </td>
-            <td class="th td-col-1" rowspan="2">
-              <b>{{translatedLangText.DAMAGE_CODE}}</b>
-            </td>
-            <td class="th td-col-1" rowspan="2">
-              <b>{{translatedLangText.REPAIR_CODE}}</b>
-            </td>
-            <td class="th td-col-3" rowspan="2">
-              <b>{{translatedLangText.DESCRIPTION}}</b>
-            </td>
-            <td class="th td-col-2" colspan="3">
-              <b>{{translatedLangText.DEPOT_ESTIMATE}}</b>
-            </td>
-            <td class="th td-col-2-5" colspan="4">
-              <b>{{translatedLangText.CUSTOMER_APPROVAL}}</b>
-            </td>
-          </tr>
-          <tr>
-            <td class="th td-col-0-5 sub-header-table">
-              <b>{{translatedLangText.QTY}}</b>
-            </td>
-            <td class="th td-col-0-75 sub-header-table">
-              <b>{{translatedLangText.LABOUR}}</b>
-            </td>
-            <td class="th td-col-0-75 sub-header-table">
-              <b>{{translatedLangText.MATERIAL}}</b>
-            </td>
-            <td class="th td-col-0-5 sub-header-table">
-              <b>{{translatedLangText.QTY}}</b>
-            </td>
-            <td class="th td-col-0-75 sub-header-table">
-              <b>{{translatedLangText.LABOUR}}</b>
-            </td>
-            <td class="th td-col-0-75 sub-header-table">
-              <b>{{translatedLangText.MATERIAL}}</b>
-            </td>
-            <td class="th td-col-0-5 sub-header-table">
-              <b>{{translatedLangText.LESSEE_OWNER__ABB}}</b>
+              {{steamItem?.storing_order_tank?.required_temp}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
             </td>
           </tr>
         </tbody>
@@ -163,76 +82,60 @@
   </div>
 
   <div id="pdf-form-body" class="pdf-container pdf-body">
-    <!-- <table id="repair-part-table" class="repair-part-table">
+    <div class="body-title text-decoration-underline pt-2 pb-2">
+      <b>{{pdfTitle}}</b>
+    </div>
+    <table id="steam-temp-table" class="steam-temp-table">
       <tbody>
-        @for (rep of repList; track rep) {
-        @if (rep.isGroupHeader) {
-        <tr class="group-header">
-          <td colspan="12">
-            <b>{{rep.group_name_cv}}</b>
+        <tr>
+          <td class="td-col-0-5 text-center align-middle steam-temp-header" rowspan="2">
+            <b>{{translatedLangText.NO_DOT}}</b>
+          </td>
+          <td class="td-col-2 text-center align-middle steam-temp-header" rowspan="2">
+            <b>{{translatedLangText.TIME}}</b>
+          </td>
+          <td class="td-col-6 text-center align-middle steam-temp-header" colspan="3">
+            <b>{{translatedLangText.TEMPERATURE}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}</b>
+          </td>
+          <td class="td-col-3-5 text-center align-middle steam-temp-header" rowspan="2">
+            <b>{{translatedLangText.REMARKS}}</b>
           </td>
         </tr>
-        }
         <tr>
-          <td class="td-col-0-5">
-            <b>{{rep.index + 1}}</b>
+          <td class="td-col-2 text-center align-middle steam-temp-subheader">
+            <b>{{translatedLangText.THERMOMETER}}</b>
           </td>
-          <td class="td-col-2">
-            {{getSubgroupNameCodeDescription(rep.tariff_repair?.subgroup_name_cv)}}
+          <td class="td-col-2 text-center align-middle steam-temp-subheader">
+            <b>{{translatedLangText.TOP_SIDE}}</b>
           </td>
-          <td class="td-col-1">
-            {{displayDamageRepairCode(rep.rp_damage_repair, 0)}}
+          <td class="td-col-2 text-center align-middle steam-temp-subheader">
+            <b>{{translatedLangText.BOTTOM_SIDE}}</b>
           </td>
-          <td class="td-col-1">
-            {{displayDamageRepairCode(rep.rp_damage_repair, 1)}}
+        </tr>
+        @for (steamTemp of steamTempList; track steamTemp) {
+        <tr>
+          <td class="td-col-0-5 text-center align-middle">
+            <b>{{steamTemp.index + 1}}</b>
           </td>
-          <td class="td-col-3">
-            <span [ngClass]="{'text-decoration-line-through': repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.description}}</span>
+          <td class="td-col-2 text-center align-middle">
+            {{displayDateTime(steamTemp.report_dt)}}
           </td>
-          <td class="td-col-0-5">
-            <span [ngClass]="{'text-decoration-line-through': repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.quantity}}</span>
+          <td class="td-col-2 text-center align-middle">
+            {{steamTemp.meter_temp}}
           </td>
-          <td class="td-col-0-75">
-            <span [ngClass]="{'text-decoration-line-through': repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.hour}}</span>
+          <td class="td-col-2 text-center align-middle">
+            {{steamTemp.top_temp}}
           </td>
-          <td class="td-col-0-75 text-right">
-            <span [ngClass]="{'text-decoration-line-through': repairPartDS.is4X(rep.rp_damage_repair)}">{{parse2Decimal(rep.material_cost)}}</span>
+          <td class="td-col-2 text-center align-middle">
+            {{steamTemp.bottom_temp}}
           </td>
-          <td class="td-col-0-5">
-            {{rep.approve_qty}}
-          </td>
-          <td class="td-col-0-75">
-            {{rep.approve_hour}}
-          </td>
-          <td class="td-col-0-75 text-right">
-            {{parse2Decimal(rep.approve_cost)}}
-          </td>
-          <td class="td-col-0-5">
-            @if (rep.owner) {
-            <mat-icon>
-              checked
-            </mat-icon>
-            }
-            @else {
-            <mat-icon>
-              close
-            </mat-icon>
-            }
+          <td class="td-col-3-5">
+            {{steamTemp.remarks}}
           </td>
         </tr>
         }
       </tbody>
     </table>
-    <div id="repair-remarks" class="repair-remarks">
-      <div>
-        <span class="repair-remarks-title text-decoration-underline">
-          {{translatedLangText.REMARKS}}:
-        </span>
-      </div>
-      <div>
-        <b>{{repairItem?.remarks}}</b>
-      </div>
-    </div> -->
   </div>
 
   <div id="summary-content" class="pdf-container pdf-body summary-content">
@@ -260,7 +163,7 @@
             <b>{{translatedLangText.LABOUR}}</b>
           </td>
           <td class="td-col-1 text-right">
-            {{repairItem?.labour_cost}}
+            {{steamItem?.labour_cost}}
           </td>
           <td class="td-col-1-5 text-right">
             {{repairCost?.total_hour_table}}
@@ -293,7 +196,7 @@
         </tr>
         <tr>
           <td class="td-col-3" rowspan="3">
-            <b>{{translatedLangText.FOR}} {{repairItem?.storing_order_tank?.storing_order?.customer_company?.name}}</b>
+            <b>{{translatedLangText.FOR}} {{steamItem?.storing_order_tank?.storing_order?.customer_company?.name}}</b>
           </td>
           <td class="td-col-2">
             <b>{{translatedLangText.LABOUR_DISCOUNT}}</b>

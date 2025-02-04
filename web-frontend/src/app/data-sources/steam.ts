@@ -762,16 +762,28 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
         update_by
         update_dt
         storing_order_tank {
-          in_gate {
+          tank_no
+          etr_dt
+          required_temp
+          storing_order {
+            customer_company_guid
+            customer_company {
+              code
+              name
+            }
+          }
+          in_gate(where: { delete_dt: { eq: null } }) {
             eir_no
             eir_dt
+            in_gate_survey {
+              create_dt
+              create_by
+            }
           }
           tariff_cleaning {
             cargo
             flash_point
           }
-          etr_dt
-          required_temp
         }
         steaming_part {
           approve_cost
