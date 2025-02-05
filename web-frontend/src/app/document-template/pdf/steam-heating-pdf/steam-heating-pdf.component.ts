@@ -160,6 +160,12 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     THERMOMETER: 'COMMON-FORM.THERMOMETER',
     TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
     BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
+    INITIAL_TEMPERATURE: 'COMMON-FORM.INITIAL-TEMPERATURE',
+    STEAM_BEGIN_ON: 'COMMON-FORM.STEAM-BEGIN-ON',
+    STEAM_COMPLETED_ON: 'COMMON-FORM.STEAM-COMPLETED-ON',
+    TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION',
+    PREPARED_BY: 'COMMON-FORM.PREPARED-BY',
+    APPROVED_BY: 'COMMON-FORM.APPROVED-BY',
   }
 
   type?: string | null;
@@ -183,6 +189,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   steamTempList?: any[] = [];
   yesnoCvList: CodeValuesItem[] = [];
   soTankStatusCvList: CodeValuesItem[] = [];
+  totalDuration?: string;
 
   scale = 1.1;
   imageQuality = 0.85;
@@ -242,8 +249,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
     this.existingPdf = pdfData ?? this.existingPdf;
     if (!this.existingPdf?.length) {
-      this.pdfHeader();
-      //this.generatePDF();
+      this.generatePDF();
     }
     // else {
     //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
@@ -253,11 +259,11 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   async generatePDF(): Promise<void> {
-    const repTableElement = document.getElementById('steam-heating-log-table');
-    const summaryElement = document.getElementById('summary-content');
+    const bodyElement = document.getElementById('pdf-form-body');
+    const signElement = document.getElementById('signature-content');
 
-    if (!repTableElement || !summaryElement) {
-      console.error('Template element not found');
+    if (!bodyElement || !signElement) {
+      console.error('Body or Signature element not found');
       return;
     }
 
@@ -266,129 +272,98 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       this.generatingPdfLoadingSubject.next(true);
       this.generatingPdfProgress = 0;
 
-      const rows = Array.from(repTableElement.querySelectorAll('tr'));
+      const canvas = await html2canvas(bodyElement, { scale: this.scale });
+      const signCanvas = await html2canvas(signElement, { scale: this.scale });
+
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.width; // A4 page width
       const pageHeight = pdf.internal.pageSize.height; // A4 page height
-      const leftRightMargin = 5; // Fixed left and right margins
-      const leftRightMarginBody = 7.5; // Fixed left and right margins for body
-      const topMargin = 5; // Top margin
-      const bottomMargin = 5; // Bottom margin
+      const leftRightMargin = 5; // Fixed margins
+      const topMargin = 5;
+      const bottomMargin = 5;
 
-      // Add Header for the first page
+      // Add Header & Footer
       const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-      const footerHeight = await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, 1, 1); // Placeholder footer height calculation
+      const footerHeight = await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, 1, 1);
       const usableHeight = pageHeight - topMargin - bottomMargin - footerHeight;
 
       console.log('Header Height:', headerHeight);
       console.log('Footer Height:', footerHeight);
       console.log('Usable Height:', usableHeight);
 
-      let yOffset = topMargin + headerHeight; // Tracks vertical position on the page
-      let currentPage = 1; // Current page number
+      // Convert dimensions from px to mm
+      const imgWidth = canvas.width * 0.264583;
+      const imgHeight = canvas.height * 0.264583;
+      const aspectRatio = imgWidth / imgHeight;
 
-      const summaryCanvas = await html2canvas(summaryElement, { scale: this.scale });
-      const summaryHeight = (summaryCanvas.height * (pageWidth - leftRightMarginBody * 2)) / summaryCanvas.width;
-      this.generatingPdfProgress += 20;
+      // Signature Size
+      const signWidth = signCanvas.width * 0.264583;
+      const signHeight = signCanvas.height * 0.264583;
+      const signAspectRatio = signWidth / signHeight;
+      const signScaledWidth = pageWidth - leftRightMargin * 2;
+      const signScaledHeight = signScaledWidth / signAspectRatio;
 
-      // Calculate total height of rows
-      const totalRowHeight = rows.reduce((total, row) => {
-        const rowCanvas = document.createElement('canvas');
-        rowCanvas.width = row.offsetWidth;
-        rowCanvas.height = row.offsetHeight;
-        const rowHeight = (row.offsetHeight * (pageWidth - leftRightMarginBody * 2)) / row.offsetWidth;
-        return total + rowHeight;
-      }, 0);
+      // Adjust for footer
+      const signYOffset = pageHeight - bottomMargin - footerHeight - signScaledHeight;
 
-      // Calculate the total required height
-      const totalContentHeight = totalRowHeight + summaryHeight;
+      // Calculate pagination
+      const scaledWidth = pageWidth - leftRightMargin * 2;
+      const scaledHeight = scaledWidth / aspectRatio;
+      let yOffset = 0;
+      let currentPage = 1;
+      const totalPages = Math.ceil(imgHeight / usableHeight);
 
-      // Calculate total pages
-      const totalPages = Math.ceil(totalContentHeight / (usableHeight));
-      console.log('Total Pages:', totalPages);
+      while (yOffset < imgHeight) {
+        if (yOffset > 0) pdf.addPage();
 
-      let rowsCount = rows.length;
-      let currentRowCount = 0;
-      const rowProgressWeight = 0.7;
-      for (const row of rows) {
-        // Render each row to canvas
-        const rowCanvas = await html2canvas(row as HTMLElement, { scale: this.scale });
-        const rowImg = rowCanvas.toDataURL('image/jpeg', this.imageQuality);
-        const rowHeight = (rowCanvas.height * (pageWidth - leftRightMarginBody * 2)) / rowCanvas.width;
-        currentRowCount++;
+        // Add Header
+        const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
+        this.generatingPdfProgress += 33;
 
-        // Check if row fits on the current page
-        if (yOffset + rowHeight > usableHeight) {
-          console.log('Starting new page...');
-          // Add Footer to the current page
-          await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+        // Adjust usable height
+        const adjustedUsableHeight = usableHeight - headerHeight;
 
-          // Start a new page
-          pdf.addPage();
-          currentPage++;
-          yOffset = topMargin;
+        // Add Body Content
+        const chunkHeight = Math.min(imgHeight - yOffset, adjustedUsableHeight);
+        const canvasChunk = document.createElement('canvas');
+        const context = canvasChunk.getContext('2d');
 
-          // Add Header to the new page
-          const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-          yOffset += newHeaderHeight;
+        // Create new canvas for the current chunk
+        canvasChunk.width = canvas.width;
+        canvasChunk.height = (chunkHeight * canvas.height) / imgHeight;
+
+        if (context) {
+          context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
         }
 
-        // Add row to the current page
-        pdf.addImage(rowImg, 'PNG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, rowHeight);
-        yOffset += rowHeight;
-        const rowProgress = (rowProgressWeight / rowsCount) * 100;
-        this.generatingPdfProgress += rowProgress;
-        console.log('generatingPdfProgress', this.generatingPdfProgress);
-      }
+        const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
+        pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
+        this.generatingPdfProgress += 33;
 
-      // Add summary content
-      const summaryImg = summaryCanvas.toDataURL('image/jpeg', this.imageQuality);
+        // If it's the last page, add the signature above the footer
+        if (currentPage === totalPages) {
+          const signImgData = signCanvas.toDataURL('image/jpeg');
+          pdf.addImage(signImgData, 'JPEG', leftRightMargin, signYOffset, signScaledWidth, signScaledHeight);
+        }
 
-      // Calculate remaining space for summary content
-      const remainingSpace = pageHeight - yOffset - footerHeight - bottomMargin;
-
-      if (summaryHeight > remainingSpace) {
-        console.log('Adding new page for summary...');
-        // Add Footer to the current page
+        // Add Footer
         await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
 
-        // Start a new page
-        pdf.addPage();
+        yOffset += chunkHeight;
         currentPage++;
-        yOffset = topMargin;
-
-        // Add Header to the new page
-        const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-        yOffset += newHeaderHeight;
-
-        // Align summary content to the bottom of the page
-        const newRemainingSpace = pageHeight - footerHeight - bottomMargin;
-        yOffset = newRemainingSpace - summaryHeight;
-      } else {
-        // Align summary content to the bottom of the current page
-        yOffset = pageHeight - footerHeight - bottomMargin - summaryHeight;
       }
 
-      pdf.addImage(summaryImg, 'PNG', leftRightMargin, yOffset, pageWidth - leftRightMargin * 2, summaryHeight);
-
-      // Update yOffset after adding summary
-      yOffset += summaryHeight;
-
-      // Add Footer to the last page
-      await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
       this.generatingPdfProgress = 100;
 
       // Save PDF
-      // pdf.save(`ESTIMATE-${this.estimate_no}.pdf`);
-      this.generatedPDF = pdf.output('blob');
-      this.uploadPdf(this.steamItem?.guid, this.generatedPDF);
+      pdf.save(`STEAM-${this.estimate_no}.pdf`);
       this.generatingPdfLoadingSubject.next(false);
       console.log('End generate', new Date());
     } catch (error) {
       console.error('Error generating PDF:', error);
       this.generatingPdfLoadingSubject.next(false);
     }
-  }
+}
 
   async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
     const headerElement = document.getElementById('pdf-form-header');
@@ -531,6 +506,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     } else {
       this.steamTempList = [];
     }
+    this.getTotalSteamDuration();
   }
 
   translateLangText() {
@@ -539,8 +515,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  displayDateTime(input: number | undefined): string | undefined {
-    return Utility.convertEpochToDateTimeStr(input);
+  displayDateTime(input: number | undefined, is12Hr: boolean): string | undefined {
+    return Utility.convertEpochToDateTimeStr(input, is12Hr);
   }
 
   displayDate(input: number | undefined): string | undefined {
@@ -554,6 +530,10 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       return figure.toFixed(2);
     }
     return "";
+  }
+
+  getTotalSteamDuration() {
+    this.totalDuration = this.steamDS.getTotalSteamDuration(this.steamTempList);
   }
 
   calculateCost() {

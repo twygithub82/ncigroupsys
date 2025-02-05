@@ -6,13 +6,13 @@
 .pdf-header {
     display: flex;
     padding: 10px 10px 0px 10px;
-    height: 135px;
+    height: 90px;
 }
 
 .pdf-body {
     display: flex;
     padding: 0px 10px 0px 10px;
-    min-height: 1123px;
+    // min-height: 1123px;
 }
 
 .pdf-footer {
@@ -33,6 +33,11 @@
     }
 }
 
+.header-content {
+    display: flex;
+    justify-content: space-between;
+}
+
 .logo-container {
     height: 100%;
     display: flex;
@@ -42,6 +47,29 @@
 .header-logo {
     width: 180px;
     object-fit: contain;
+}
+
+.company-container {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+
+    .header-company-name {
+        font-weight: 500;
+    }
+
+    .company-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        font-size: 10px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
 }
 
 .body-title {
@@ -78,53 +106,16 @@ tr.th {
     text-align: center;
 }
 
-.dmg-repair-code-table {
-    width: 100%;
-    border: 1px double #9d9d9d;
-    padding: 4px;
-    font-size: 0.6rem;
-    display: flex;
-    justify-content: flex-start;
-    text-align: left;
-}
-
-.dmg-cv-table {
-    width: 55%;
-}
-
-.repair-cv-table {
-    width: 45%;
-    border-left: 1px double #9d9d9d;
-}
-
-.list-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.list-column {
-    flex: 1 1 30%;
-    list-style-type: none;
-}
-
-.list-column ul {
-    margin: 0;
-    padding: 0;
-}
-
-.list-column li {
-    font-size: 0.55rem;
-}
-
 .steam-temp-table {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     padding: 0px 10px 0px 10px;
 
     .steam-temp-table td,
     .steam-temp-table th {
-        text-align: center;  /* Centers text horizontally */
-        vertical-align: middle; /* Centers text vertically */
+        text-align: center;
+        /* Centers text horizontally */
+        vertical-align: middle;
+        /* Centers text vertically */
     }
 
     .steam-temp-header {
@@ -134,16 +125,6 @@ tr.th {
     .steam-temp-subheader {
         background-color: #e8e8e8;
     }
-}
-
-.repair-remarks {
-    width: 100%;
-    padding-left: 35px;
-    font-size: 0.65rem;
-}
-
-.repair-remarks-title {
-    font-weight: 900;
 }
 
 .header-table {
@@ -195,7 +176,36 @@ tr.th {
     text-align: center;
 }
 
-.summary-content {
-    font-size: 0.6rem;
+.total-duration-content {
+    font-size: 0.8rem;
+    margin-top: 10px;
+}
 
+.signature-content {
+    margin-top: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &-left,
+    &-right {
+        flex: 1; // Each section takes equal space
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .signature-line {
+        width: 80%; // Adjust width of the signature line
+        border: none;
+        border-top: 2px solid #000;
+        margin-bottom: 5px;
+    }
+
+    &-left-title,
+    &-right-title {
+        font-weight: bold;
+        font-size: 14px;
+        margin-top: 5px;
+    }
 }

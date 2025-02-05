@@ -3,87 +3,122 @@
 </div>
 <div mat-dialog-content>
   <div id="pdf-form-header" class="pdf-container pdf-header">
+    <hr class="mt-2 mb-1" />
     <div class="header-content">
-      <table>
-        <tbody>
-          <tr>
-            <td class="td-col-2-25">
-              <b>{{translatedLangText.TANK_NO}}</b>
-            </td>
-            <td class="td-col-4-5">
-              {{steamItem?.storing_order_tank?.tank_no}}
-            </td>
-            <td class="td-col-2-25">
-              <b>{{translatedLangText.EIR_NO}}</b>
-            </td>
-            <td class="td-col-3">
-              {{steamItem?.storing_order_tank?.in_gate?.[0]?.eir_no}}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <b>{{translatedLangText.CUSTOMER}}</b>
-            </td>
-            <td>
-              {{steamItem?.storing_order_tank?.storing_order?.customer_company?.name}}
-            </td>
-            <td>
-              <b>{{translatedLangText.EIR_DATE}}</b>
-            </td>
-            <td>
-              {{displayDate(steamItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <b>{{translatedLangText.JOB_NO}}</b>
-            </td>
-            <td>
-              {{steamItem?.job_no}}
-            </td>
-            <td>
-              <b>{{translatedLangText.ESTIMATE_NO}}</b>
-            </td>
-            <td>
-              {{steamItem?.estimate_no}}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <b>{{translatedLangText.CARGO_NAME}}</b>
-            </td>
-            <td>
-              {{steamItem?.storing_order_tank?.tariff_cleaning?.cargo}}
-            </td>
-            <td>
-              <b>{{translatedLangText.FLASH_POINT}}</b>
-            </td>
-            <td class="text-danger">
-              {{steamItem?.storing_order_tank?.tariff_cleaning?.flash_point}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <b>{{translatedLangText.ETR_DATE}}</b>
-            </td>
-            <td>
-              {{displayDate(steamItem?.storing_order_tank?.etr_dt)}}
-            </td>
-            <td>
-              <b>{{translatedLangText.REQUIRED_TEMP}}</b>
-            </td>
-            <td>
-              {{steamItem?.storing_order_tank?.required_temp}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="logo-container">
+        <img src="assets/images/logo.png" class="header-logo" />
+      </div>
+      <div class="company-container">
+        <div>
+          <h5 class="header-company-name mb-0">{{customerInfo.companyName}}</h5>
+        </div>
+        <div class="company-info">
+          <span>{{customerInfo.companyAddress}}</span>
+        </div>
+        <div class="company-info">
+          <span><b>{{translatedLangText.PHONE}}:</b> {{customerInfo.companyPhone}}</span>
+          <span><b>{{translatedLangText.FAX}}:</b> {{customerInfo.companyFax}}</span>
+          <span><b>{{translatedLangText.EMAIL}}:</b> {{customerInfo.companyEmail}}</span>
+          <span><b>{{translatedLangText.WEB}}:</b> {{customerInfo.companyWebsite}}</span>
+          <span><b>{{translatedLangText.CRN}}:</b> {{customerInfo.companyUen}}</span>
+        </div>
+      </div>
     </div>
+    <hr class="mt-1 mb-2" />
   </div>
 
   <div id="pdf-form-body" class="pdf-container pdf-body">
-    <div class="body-title text-decoration-underline pt-2 pb-2">
-      <b>{{pdfTitle}}</b>
+    <table>
+      <tbody>
+        <tr>
+          <td class="td-col-2-25">
+            <b>{{translatedLangText.TANK_NO}}</b>
+          </td>
+          <td class="td-col-4-5">
+            {{steamItem?.storing_order_tank?.tank_no}}
+          </td>
+          <td class="td-col-2-25">
+            <b>{{translatedLangText.EIR_NO}}</b>
+          </td>
+          <td class="td-col-3">
+            {{steamItem?.storing_order_tank?.in_gate?.[0]?.eir_no}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>{{translatedLangText.CUSTOMER}}</b>
+          </td>
+          <td>
+            {{steamItem?.storing_order_tank?.storing_order?.customer_company?.name}}
+          </td>
+          <td>
+            <b>{{translatedLangText.EIR_DATE}}</b>
+          </td>
+          <td>
+            {{displayDate(steamItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>{{translatedLangText.JOB_NO}}</b>
+          </td>
+          <td>
+            {{steamItem?.job_no}}
+          </td>
+          <td>
+            <b>{{translatedLangText.ESTIMATE_NO}}</b>
+          </td>
+          <td>
+            {{steamItem?.estimate_no}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>{{translatedLangText.CARGO_NAME}}</b>
+          </td>
+          <td>
+            {{steamItem?.storing_order_tank?.tariff_cleaning?.cargo}}
+          </td>
+          <td>
+            <b>{{translatedLangText.FLASH_POINT}}</b>
+          </td>
+          <td class="text-danger">
+            {{steamItem?.storing_order_tank?.tariff_cleaning?.flash_point}}
+            {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>{{translatedLangText.INITIAL_TEMPERATURE}}</b>
+          </td>
+          <td>
+            {{steamTempList?.[0]?.meter_temp}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
+          </td>
+          <td>
+            <b>{{translatedLangText.REQUIRED_TEMP}}</b>
+          </td>
+          <td>
+            {{steamItem?.storing_order_tank?.required_temp}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>{{translatedLangText.STEAM_BEGIN_ON}}</b>
+          </td>
+          <td>
+            {{displayDateTime(steamItem?.begin_dt, true)}}
+          </td>
+          <td>
+            <b>{{translatedLangText.STEAM_COMPLETED_ON}}</b>
+          </td>
+          <td>
+            {{displayDateTime(steamItem?.complete_dt, true)}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="body-title pt-2 pb-2">
+      <b class="text-decoration-underline">{{pdfTitle}}</b>
     </div>
     <table id="steam-temp-table" class="steam-temp-table">
       <tbody>
@@ -94,21 +129,21 @@
           <td class="td-col-2 text-center align-middle steam-temp-header" rowspan="2">
             <b>{{translatedLangText.TIME}}</b>
           </td>
-          <td class="td-col-6 text-center align-middle steam-temp-header" colspan="3">
+          <td class="td-col-5-5 text-center align-middle steam-temp-header" colspan="3">
             <b>{{translatedLangText.TEMPERATURE}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}</b>
           </td>
-          <td class="td-col-3-5 text-center align-middle steam-temp-header" rowspan="2">
+          <td class="td-col-4 text-center align-middle steam-temp-header" rowspan="2">
             <b>{{translatedLangText.REMARKS}}</b>
           </td>
         </tr>
         <tr>
-          <td class="td-col-2 text-center align-middle steam-temp-subheader">
+          <td class="td-col-1-5 text-center align-middle steam-temp-subheader">
             <b>{{translatedLangText.THERMOMETER}}</b>
           </td>
-          <td class="td-col-2 text-center align-middle steam-temp-subheader">
+          <td class="td-col-1-5 text-center align-middle steam-temp-subheader">
             <b>{{translatedLangText.TOP_SIDE}}</b>
           </td>
-          <td class="td-col-2 text-center align-middle steam-temp-subheader">
+          <td class="td-col-1-5 text-center align-middle steam-temp-subheader">
             <b>{{translatedLangText.BOTTOM_SIDE}}</b>
           </td>
         </tr>
@@ -118,137 +153,45 @@
             <b>{{steamTemp.index + 1}}</b>
           </td>
           <td class="td-col-2 text-center align-middle">
-            {{displayDateTime(steamTemp.report_dt)}}
+            {{displayDateTime(steamTemp.report_dt, false)}}
           </td>
-          <td class="td-col-2 text-center align-middle">
+          <td class="td-col-1-5 text-center align-middle">
             {{steamTemp.meter_temp}}
           </td>
-          <td class="td-col-2 text-center align-middle">
+          <td class="td-col-1-5 text-center align-middle">
             {{steamTemp.top_temp}}
           </td>
-          <td class="td-col-2 text-center align-middle">
+          <td class="td-col-1-5 text-center align-middle">
             {{steamTemp.bottom_temp}}
           </td>
-          <td class="td-col-3-5">
+          <td class="td-col-4">
             {{steamTemp.remarks}}
           </td>
         </tr>
         }
       </tbody>
     </table>
+    <div class="total-duration-content">
+      <span class="font-bold">{{translatedLangText.TOTAL_DURATION}}: </span>
+      <span class="font-bold">{{totalDuration}} H</span>
+    </div>
   </div>
 
-  <div id="summary-content" class="pdf-container pdf-body summary-content">
-    <table>
-      <tbody>
-        <tr>
-          <td class="td-col-3" rowspan="3">
-            <b>{{translatedLangText.APPROVED_COST}}:</b>
-          </td>
-          <td class="td-col-2 text-center">
-            <b>{{translatedLangText.ITEM}}</b>
-          </td>
-          <td class="td-col-1 text-center">
-            <b>{{translatedLangText.RATE_PERC}}</b>
-          </td>
-          <td class="td-col-3 text-center" colspan="2">
-            <b>{{translatedLangText.ESTIMATE_COST}}</b>
-          </td>
-          <td class="td-col-3 text-center" colspan="2">
-            <b>{{translatedLangText.APPROVED_COST}}</b>
-          </td>
-        </tr>
-        <tr>
-          <td class="td-col-2">
-            <b>{{translatedLangText.LABOUR}}</b>
-          </td>
-          <td class="td-col-1 text-right">
-            {{steamItem?.labour_cost}}
-          </td>
-          <td class="td-col-1-5 text-right">
-            {{repairCost?.total_hour_table}}
-          </td>
-          <td class="td-col-1-5 text-right">
-            {{repairCost?.total_labour_cost}}
-          </td>
-          <td class="td-col-1-5 text-right">
-
-          </td>
-          <td class="td-col-1-5 text-right">
-
-          </td>
-        </tr>
-        <tr>
-          <td class="td-col-2">
-            <b>{{translatedLangText.MATERIAL}}</b>
-          </td>
-          <td class="td-col-1 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-            {{repairCost?.total_mat_cost}}
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-        </tr>
-        <tr>
-          <td class="td-col-3" rowspan="3">
-            <b>{{translatedLangText.FOR}} {{steamItem?.storing_order_tank?.storing_order?.customer_company?.name}}</b>
-          </td>
-          <td class="td-col-2">
-            <b>{{translatedLangText.LABOUR_DISCOUNT}}</b>
-          </td>
-          <td class="td-col-1 text-right">
-            {{repairCost?.labour_cost_discount}}
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-            - {{repairCost?.discount_labour_cost}}
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-        </tr>
-        <tr>
-          <td class="td-col-2">
-            <b>{{translatedLangText.MATERIAL_DISCOUNT}}</b>
-          </td>
-          <td class="td-col-1 text-right">
-            {{repairCost?.material_cost_discount}}
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-            - {{repairCost?.discount_mat_cost}}
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-        </tr>
-        <tr>
-          <td class="td-col-2">
-            <b>{{translatedLangText.NET_COST}}</b>
-          </td>
-          <td class="td-col-1 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-            {{repairCost?.net_cost}}
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-          <td class="td-col-1-5 text-right">
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div id="signature-content" class="pdf-container pdf-body">
+    <div class="signature-content mb-1">
+      <div class="signature-content-left">
+        <hr class="signature-line" />
+        <div class="signature-content-left-title">
+          {{translatedLangText.PREPARED_BY}}
+        </div>
+      </div>
+      <div class="signature-content-right">
+        <hr class="signature-line" />
+        <div class="signature-content-right-title">
+          {{translatedLangText.APPROVED_BY}}
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="pdf-form-footer" class="pdf-container pdf-footer">

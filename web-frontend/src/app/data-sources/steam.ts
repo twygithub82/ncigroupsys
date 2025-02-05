@@ -313,7 +313,7 @@ export const GET_STEAM_BILLING_EST = gql`
             steaming_exclusive_guid
             update_by
             update_dt
-          job_order {
+            job_order {
               team {
                 create_by
                 create_dt
@@ -342,7 +342,8 @@ export const GET_STEAM_BILLING_EST = gql`
               working_hour
               storing_order_tank  {
                 guid
-                tank_no}
+                tank_no
+              }
             }
           }
         }
@@ -457,7 +458,7 @@ export const GET_STEAM_EST = gql`
             steaming_exclusive_guid
             update_by
             update_dt
-          job_order {
+            job_order {
               team {
                 create_by
                 create_dt
@@ -486,7 +487,8 @@ export const GET_STEAM_EST = gql`
               working_hour
               storing_order_tank  {
                 guid
-                tank_no}
+                tank_no
+              }
             }
           }
         }
@@ -601,7 +603,7 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
           tariff_steaming_guid
           update_by
           update_dt
-         job_order {
+          job_order {
             team {
               create_by
               create_dt
@@ -820,7 +822,7 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
           job_order {
             guid
             status_cv
-            steaming_temp {
+            steaming_temp(order: { report_dt: ASC }) {
               report_dt
               top_temp
               bottom_temp
@@ -1357,4 +1359,48 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     });
   }
 
+  getTotalSteamDuration(steamTempList: SteamTemp[] | undefined): string {
+    if (!steamTempList || steamTempList.length === 0 || steamTempList.length === 1) {
+      return "00:00";
+    }
+
+    let earliestReportDt = steamTempList.reduce((earliest, item) => {
+      if (item.report_dt !== null && item.report_dt !== undefined) {
+        return earliest === undefined || item.report_dt < earliest ? item.report_dt : earliest;
+      }
+      return earliest;
+    }, undefined as number | undefined);
+
+    let latestReportDt = steamTempList.reduce((latest, item) => {
+      if (item.report_dt !== null && item.report_dt !== undefined) {
+        return latest === undefined || item.report_dt > latest ? item.report_dt : latest;
+      }
+      return latest;
+    }, undefined as number | undefined);
+
+    if (earliestReportDt === undefined || latestReportDt === undefined) {
+      return "00:00";
+    }
+
+    // Convert timestamps to milliseconds if they are in seconds
+    if (earliestReportDt < 1e10) earliestReportDt *= 1000;
+    if (latestReportDt < 1e10) latestReportDt *= 1000;
+
+    const timeTakenMs = latestReportDt - earliestReportDt;
+
+    if (timeTakenMs <= 0) {
+      return "00:00";
+    }
+
+    // Convert milliseconds to hours and minutes
+    const totalMinutes = Math.floor(timeTakenMs / 60000);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    // Ensure two-digit formatting
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}`;
+  }
 }

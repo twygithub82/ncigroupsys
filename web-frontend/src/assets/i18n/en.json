@@ -909,7 +909,12 @@
     "GATEIO":"Gate In/Out",
     "PENDING-INVOICE-DETAIL":"Pending Invoice Detail",
     "STEAM-PROGRESS-MONITORING-CHART": "Steam Progress Monitoring Chart",
-    "TEMPERATURE": "Temperature"
+    "TEMPERATURE": "Temperature",
+    "INITIAL-TEMPERATURE": "Initial Temperature",
+    "STEAM-BEGIN-ON": "Steam Begin On",
+    "STEAM-COMPLETED-ON": "Steam Completed On",
+    "PREPARED-BY": "Prepared By",
+    "APPROVED-BY": "Approved By"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
