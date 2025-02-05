@@ -356,14 +356,16 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       this.generatingPdfProgress = 100;
 
       // Save PDF
-      pdf.save(`STEAM-${this.estimate_no}.pdf`);
+      pdf.save(`${this.estimate_no}.pdf`);
+      // this.generatedPDF = pdf.output('blob');
+      // this.uploadPdf(this.steamItem?.job_order?.guid, this.generatedPDF);
       this.generatingPdfLoadingSubject.next(false);
       console.log('End generate', new Date());
     } catch (error) {
       console.error('Error generating PDF:', error);
       this.generatingPdfLoadingSubject.next(false);
     }
-}
+  }
 
   async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
     const headerElement = document.getElementById('pdf-form-header');
