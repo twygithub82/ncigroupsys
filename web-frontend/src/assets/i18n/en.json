@@ -259,6 +259,19 @@
         "OTHERS-SURVEY": "Others Survey",
         "OTHERS-SURVEY-DETAILS": "Others Survey Details"
       }
+    },
+    "REPORTS":{
+      "TEXT":"Reports",
+       "LIST":{
+         "TANK-ACTIVITY":"Tank Activity",
+         "DAILY-INVENTORY":"Daily Inventory",
+         "STATUS":"Status",
+         "CLEANING-INVENTORY":"Cleaning Inventory",
+         "LOCATION-TRANSFER":"Location Transfer",
+         "TANK-SURVEY":"Tank Survey",
+         "PERIODIC-TEST-DUE":"Periodic Test Due",
+         "ESTIMATE-PENDING":"Estimate Pending"
+       }
     }
   },
   "LANDING-SIGNIN": {
@@ -907,7 +920,16 @@
     "CLEAN-COST-REPORT":"Clean Cost",
     "PREINSPECTION":"Pre-inspection",
     "GATEIO":"Gate In/Out",
-    "PENDING-INVOICE-DETAIL":"Pending Invoice Detail"
+    "PENDING-INVOICE-DETAIL":"Pending Invoice Detail",
+    "CUSTOMER-REPORT":"Customer Report",
+    "YARD-REPORT":"Yard Report",
+    "INVENTORY-TYPE":"Inventory Type",
+    "SUMMARY-REPORT":"Summary Report",
+    "DETAIL-REPORT":"Detail Report",
+    "TANK-ACTIVITY":"Tank Activity",
+    "INVENTORY-PERIOD":"Inventory Period",
+    "YARD-STATUS":"Yard Status",
+    "LOCATION-STATUS":"Location Status"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -99,6 +99,8 @@ import { MainPackageCleaningComponent } from './package/package-cleaning/main-pa
 import { MainPackageDepotComponent } from './package/package-depot/main-package-depot.component';
 import { MainPackageSteamComponent } from './package/package-steam/main-package-steam.component';
 import { MainCustomerComponent } from './master/customer/main-customer.component';
+import { MainTankActivityComponent } from './reports/tank-activity/main-tank-activity.component';
+import { MainStatusComponent } from './reports/status/main-status.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -506,6 +508,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "billing/billed-tank",
     component: BilledTankComponent,
+  },
+  {
+    path: "reports/tank-activity",
+    component: MainTankActivityComponent,
+  },
+  {
+    path: "reports/status",
+    component: MainStatusComponent,
   },
 ];
 

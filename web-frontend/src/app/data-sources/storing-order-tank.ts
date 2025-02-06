@@ -332,6 +332,19 @@ const GET_STORING_ORDER_TANKS_OUT_GATE = gql`
         guid
         tank_no
         so_guid
+        storing_order {
+          so_no
+          so_notes
+          haulier
+          create_dt
+          status_cv
+          customer_company_guid
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
         tariff_cleaning {
           guid
           open_on_gate_cv

@@ -743,6 +743,65 @@ export const ROUTES: RouteInfo[] = [
       }
     ].filter(item => item.visible !== false),
   },
+  {
+    path: "admin/report",
+    title: "MENUITEMS.REPORTS.TEXT",
+    iconType: "material",
+    icon: "assignment",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/reports/tank-activity",
+        title: "MENUITEMS.REPORTS.LIST.TANK-ACTIVITY",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: []
+      },
+      {
+        path: "admin/reports/status",
+        title: "MENUITEMS.REPORTS.LIST.STATUS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: []
+      },
+      {
+        path: "admin/steam/approval",
+        title: "MENUITEMS.STEAM.LIST.STEAM-APPROVAL",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: false
+      },
+      {
+        path: "admin/steam/job-order",
+        title: "MENUITEMS.STEAM.LIST.JOB-ORDER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: false
+      }
+    ].filter(item => item.visible !== false),
+  },
+
   // {
   //   path: "admin/management",
   //   title: "MENUITEMS.MANAGEMENT.TEXT",

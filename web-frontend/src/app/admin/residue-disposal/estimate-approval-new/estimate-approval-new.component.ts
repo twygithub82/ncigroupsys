@@ -235,7 +235,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   clean_statusList: CodeValuesItem[] = [];
 
   sot_guid?: string | null;
-  repair_guid?: string | null;
+  residue_guid?: string | null;
 
   residueEstForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
@@ -441,7 +441,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     //this.getSurveyorList();
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
-    this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
+    //this.residue_guid = this.route.snapshot.paramMap.get('repair_est_id');
 
     this.route.data.subscribe(routeData => {
       this.isDuplicate = routeData['action'] === 'duplicate';
@@ -530,40 +530,40 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   getTemplateList(customer_company_guid: string) {
-    let where: any = {
-      or: [
-        {
-          and: [
-            { template_est_customer: { some: { customer_company_guid: { eq: customer_company_guid }, delete_dt: { eq: null } } } },
-            { type_cv: { eq: "EXCLUSIVE" } }
-          ]
-        },
-        { type_cv: { eq: "GENERAL" } }
-      ]
-    }
-    where = this.mtDS.addDeleteDtCriteria(where);
-    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
-      if (data?.length > 0) {
-        this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
-        const def_guid = this.getCustomer()?.def_template_guid;
-        if (!this.repair_guid) {
-          if (def_guid) {
-            this.residueEstForm?.get('is_default_template')?.setValue(true);
-          }
+    // let where: any = {
+    //   or: [
+    //     {
+    //       and: [
+    //         { template_est_customer: { some: { customer_company_guid: { eq: customer_company_guid }, delete_dt: { eq: null } } } },
+    //         { type_cv: { eq: "EXCLUSIVE" } }
+    //       ]
+    //     },
+    //     { type_cv: { eq: "GENERAL" } }
+    //   ]
+    // }
+    // where = this.mtDS.addDeleteDtCriteria(where);
+    // this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
+    //   if (data?.length > 0) {
+    //     this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
+    //     const def_guid = this.getCustomer()?.def_template_guid;
+    //     if (!this.repair_guid) {
+    //       if (def_guid) {
+    //         this.residueEstForm?.get('is_default_template')?.setValue(true);
+    //       }
 
-          const def_template = this.templateList.find(x =>
-            def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
-          );
+    //       const def_template = this.templateList.find(x =>
+    //         def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
+    //       );
 
-          if (def_guid !== def_template?.guid) {
-            this.getCustomer()!.def_template_guid = def_guid;
-            this.residueEstForm?.get('is_default_template')?.setValue(true);
-          }
+    //       if (def_guid !== def_template?.guid) {
+    //         this.getCustomer()!.def_template_guid = def_guid;
+    //         this.residueEstForm?.get('is_default_template')?.setValue(true);
+    //       }
 
-          this.residueEstForm?.get('est_template')?.setValue(def_template);
-        }
-      }
-    });
+    //       this.residueEstForm?.get('est_template')?.setValue(def_template);
+    //     }
+    //   }
+    // });
   }
 
   getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {
@@ -1401,76 +1401,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   calculateCost() {
-    // const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
-    // const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
-    // const labourDiscount = this.residueEstForm?.get('labour_cost_discount')?.value;
-    // const matDiscount = this.residueEstForm?.get('material_cost_discount')?.value;
-
-    // let total_hour = 0;
-    // let total_labour_cost = 0;
-    // let total_mat_cost = 0;
-    // let total_cost = 0;
-    // let discount_labour_cost = 0;
-    // let discount_mat_cost = 0;
-    // let net_cost = 0;
-
-    // const totalOwner = this.repairEstDS.getTotal(ownerList);
-    // const total_owner_hour = totalOwner.hour;
-    // const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-    // const total_owner_mat_cost = totalOwner.total_mat_cost;
-    // const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    // const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    // const discount_mat_owner_cost = this.repairEstDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    // const net_owner_cost = this.repairEstDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
-
-    // this.residueEstForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-    // this.residueEstForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-    // this.residueEstForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-    // this.residueEstForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-    // this.residueEstForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-    // this.residueEstForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-    // this.residueEstForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
-
-    // total_hour += total_owner_hour;
-    // total_labour_cost += total_owner_labour_cost;
-    // total_mat_cost += total_owner_mat_cost;
-    // total_cost += total_owner_cost;
-    // discount_labour_cost += discount_labour_owner_cost;
-    // discount_mat_cost += discount_mat_owner_cost;
-    // net_cost += net_owner_cost;
-
-    // const totalLessee = this.repairEstDS.getTotal(lesseeList);
-    // const total_lessee_hour = totalLessee.hour;
-    // const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-    // const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    // const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    // const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    // const discount_mat_lessee_cost = this.repairEstDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    // const net_lessee_cost = this.repairEstDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
-
-    // this.residueEstForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-    // this.residueEstForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-    // this.residueEstForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-    // this.residueEstForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-    // this.residueEstForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-    // this.residueEstForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-    // this.residueEstForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
-
-    // total_hour += total_lessee_hour;
-    // total_labour_cost += total_lessee_labour_cost;
-    // total_mat_cost += total_lessee_mat_cost;
-    // total_cost += total_lessee_cost;
-    // discount_labour_cost += discount_labour_lessee_cost;
-    // discount_mat_cost += discount_mat_lessee_cost;
-    // net_cost += net_lessee_cost;
-
-    // this.residueEstForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-    // this.residueEstForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-    // this.residueEstForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-    // this.residueEstForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-    // this.residueEstForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-    // this.residueEstForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-    // this.residueEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
+   
   }
 
   filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
@@ -1490,7 +1421,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   canExport(): boolean {
-    return !!this.repair_guid;
+    return !!this.residue_guid;
   }
 
   getLabourCost(): number | undefined {
@@ -1535,6 +1466,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     if (this.historyState.selectedRow != null) {
 
       this.isDuplicate = this.historyState.action==='DUPLICATE';
+      this.residue_guid= this.historyState.selectedResidue.guid;
       this.sotItem = this.historyState.selectedRow;
       this.residueItem=this.historyState.selectedResidue;
       this.getPackageResidue();

@@ -136,7 +136,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   pageTitleEdit = 'MENUITEMS.STEAM.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE'
+    'MENUITEMS.STEAM.LIST.STEAM-ESTIMATE'
   ]
   translatedLangText: any = {}
   langText = {
@@ -1455,8 +1455,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     if (this.historyState.selectedRow != null) {
 
       this.isDuplicate = this.historyState.action==='DUPLICATE';
+      
       this.sotItem = this.historyState.selectedRow;
       this.steamItem=this.historyState.selectedSteam;
+      this.steam_guid=this.steamItem?.guid;
       this.getPackageSteam();
       this.loadBillingBranch();
       var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
