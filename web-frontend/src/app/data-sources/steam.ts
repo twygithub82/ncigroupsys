@@ -313,7 +313,7 @@ export const GET_STEAM_BILLING_EST = gql`
             steaming_exclusive_guid
             update_by
             update_dt
-          job_order {
+            job_order {
               team {
                 create_by
                 create_dt
@@ -342,7 +342,8 @@ export const GET_STEAM_BILLING_EST = gql`
               working_hour
               storing_order_tank  {
                 guid
-                tank_no}
+                tank_no
+              }
             }
           }
         }
@@ -457,7 +458,7 @@ export const GET_STEAM_EST = gql`
             steaming_exclusive_guid
             update_by
             update_dt
-          job_order {
+            job_order {
               team {
                 create_by
                 create_dt
@@ -486,7 +487,8 @@ export const GET_STEAM_EST = gql`
               working_hour
               storing_order_tank  {
                 guid
-                tank_no}
+                tank_no
+              }
             }
           }
         }
@@ -501,7 +503,6 @@ export const GET_STEAM_EST = gql`
   }
 `;
 
-//query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
 export const GET_STEAM_EST_JOB_ORDER = gql`
   query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
     resultList: querySteaming(where: $where) {
@@ -602,7 +603,7 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
           tariff_steaming_guid
           update_by
           update_dt
-         job_order {
+          job_order {
             team {
               create_by
               create_dt
@@ -732,7 +733,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
   }
 `;
 
-export const GET_STEAM_BY_ID_FOR_PDF = gql`
+export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
   query querySteaming($where: steamingFilterInput) {
     resultList: querySteaming(where: $where) {
       nodes {
@@ -762,6 +763,30 @@ export const GET_STEAM_BY_ID_FOR_PDF = gql`
         total_cost
         update_by
         update_dt
+        storing_order_tank {
+          tank_no
+          etr_dt
+          required_temp
+          storing_order {
+            customer_company_guid
+            customer_company {
+              code
+              name
+            }
+          }
+          in_gate(where: { delete_dt: { eq: null } }) {
+            eir_no
+            eir_dt
+            in_gate_survey {
+              create_dt
+              create_by
+            }
+          }
+          tariff_cleaning {
+            cargo
+            flash_point
+          }
+        }
         steaming_part {
           approve_cost
           approve_labour
@@ -797,7 +822,7 @@ export const GET_STEAM_BY_ID_FOR_PDF = gql`
           job_order {
             guid
             status_cv
-            steaming_temp {
+            steaming_temp(order: { report_dt: ASC }) {
               report_dt
               top_temp
               bottom_temp
@@ -1029,12 +1054,12 @@ export class SteamDS extends BaseDataSource<SteamItem> {
       );
   }
 
-  getSteamByIDForPdf(sot_guid: string | undefined): Observable<SteamItem[]> {
+  getSteamByIDForPdf(guid: string | undefined): Observable<SteamItem[]> {
     this.loadingSubject.next(true);
-    const where: any = { sot_guid: { eq: sot_guid } }
+    const where: any = { guid: { eq: guid } }
     return this.apollo
       .query<any>({
-        query: GET_STEAM_BY_ID_FOR_PDF,
+        query: GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -1334,4 +1359,48 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     });
   }
 
+  getTotalSteamDuration(steamTempList: SteamTemp[] | undefined): string {
+    if (!steamTempList || steamTempList.length === 0 || steamTempList.length === 1) {
+      return "00:00";
+    }
+
+    let earliestReportDt = steamTempList.reduce((earliest, item) => {
+      if (item.report_dt !== null && item.report_dt !== undefined) {
+        return earliest === undefined || item.report_dt < earliest ? item.report_dt : earliest;
+      }
+      return earliest;
+    }, undefined as number | undefined);
+
+    let latestReportDt = steamTempList.reduce((latest, item) => {
+      if (item.report_dt !== null && item.report_dt !== undefined) {
+        return latest === undefined || item.report_dt > latest ? item.report_dt : latest;
+      }
+      return latest;
+    }, undefined as number | undefined);
+
+    if (earliestReportDt === undefined || latestReportDt === undefined) {
+      return "00:00";
+    }
+
+    // Convert timestamps to milliseconds if they are in seconds
+    if (earliestReportDt < 1e10) earliestReportDt *= 1000;
+    if (latestReportDt < 1e10) latestReportDt *= 1000;
+
+    const timeTakenMs = latestReportDt - earliestReportDt;
+
+    if (timeTakenMs <= 0) {
+      return "00:00";
+    }
+
+    // Convert milliseconds to hours and minutes
+    const totalMinutes = Math.floor(timeTakenMs / 60000);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    // Ensure two-digit formatting
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}`;
+  }
 }

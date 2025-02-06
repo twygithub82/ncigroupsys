@@ -104,7 +104,43 @@ export class Utility {
     return undefined;
   }
 
-  static convertEpochToDateTimeStr(date: number | undefined): string | undefined {
+  static convertEpochToDateTimeStr(date: number | undefined, is12Hr: boolean = false): string | undefined {
+    if (typeof date === 'number' && !isNaN(date)) {
+      if (date.toString().length === 10) {
+        if (is12Hr) {
+          return this.formatDateTo12Hour(new Date(date * 1000));
+        } else {
+          return this.formatDateTo24Hour(new Date(date * 1000));
+        }
+      } else if (date.toString().length === 13) {
+        if (is12Hr) {
+          return this.formatDateTo12Hour(new Date(date));
+        } else {
+          return this.formatDateTo24Hour(new Date(date));
+        }
+      } else {
+        console.error('Invalid epoch time format:', date);
+        return undefined;
+      }
+    }
+    return undefined;
+  }
+
+  static convertEpochToDate12TimeStr(date: number | undefined): string | undefined {
+    if (typeof date === 'number' && !isNaN(date)) {
+      if (date.toString().length === 10) {
+        return this.formatDateTo12Hour(new Date(date * 1000));
+      } else if (date.toString().length === 13) {
+        return this.formatDateTo12Hour(new Date(date));
+      } else {
+        console.error('Invalid epoch time format:', date);
+        return undefined;
+      }
+    }
+    return undefined;
+  }
+
+  static convertEpochToDate24TimeStr(date: number | undefined): string | undefined {
     if (typeof date === 'number' && !isNaN(date)) {
       if (date.toString().length === 10) {
         return this.formatDateTo12Hour(new Date(date * 1000));
@@ -131,6 +167,21 @@ export class Utility {
 
     return `${day}/${month}/${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
   }
+
+  static formatDateTo24Hour(date: Date): string {
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Months are zero-indexed
+    const year = date.getFullYear();
+
+    const hours = date.getHours(); // 24-hour format
+    const minutes = date.getMinutes();
+
+    // Ensure two-digit formatting
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+
+    return `${day}/${month}/${year} ${formattedHours}:${formattedMinutes}`;
+}
 
   static getEarlierDate(date1: Date, date2: Date): Date {
     return date1 < date2 ? date1 : date2;

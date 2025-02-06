@@ -73,6 +73,7 @@ import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-su
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TransferDS, TransferItem } from 'app/data-sources/transfer';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
+import { SteamHeatingPdfComponent } from 'app/document-template/pdf/steam-heating-pdf/steam-heating-pdf.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -1162,6 +1163,32 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         repair_guid: repair?.guid,
         customer_company_guid: this.sot?.storing_order?.customer_company_guid,
         estimate_no: repair?.estimate_no,
+        repairEstimatePdf: undefined,
+        retrieveFile: true        
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
+  steamHeatingLogDialog(event: Event, steam: SteamItem) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(SteamHeatingPdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        steam_guid: steam?.guid,
+        customer_company_guid: this.sot?.storing_order?.customer_company_guid,
+        estimate_no: steam?.estimate_no,
         repairEstimatePdf: undefined,
         retrieveFile: true        
       },

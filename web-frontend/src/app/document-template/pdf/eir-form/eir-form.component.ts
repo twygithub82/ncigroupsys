@@ -471,11 +471,11 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
           // Add Footer
           await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-          this.generatingPdfProgress = 100;
 
           yOffset += chunkHeight;
           currentPage++;
         }
+        this.generatingPdfProgress = 100;
         // pdf.save(`EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`);
         this.generatedPDF = pdf.output('blob');
         this.uploadEir(this.eirDetails?.guid, this.generatedPDF);

@@ -37,10 +37,10 @@ import { SteamPartDS } from 'app/data-sources/steam-part';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repair_guid: string;
+  steam_guid: string;
   customer_company_guid: string;
   sotDS: StoringOrderTankDS;
-  repairDS: RepairDS;
+  steamDS: SteamDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   existingPdf?: any;
@@ -66,13 +66,10 @@ export interface DialogData {
 export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-    SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
-    SO_DATE: 'COMMON-FORM.SO-DATE',
-    NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
@@ -82,106 +79,37 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
-    TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     EIR_NO: "COMMON-FORM.EIR-NO",
     EIR_DATE: "COMMON-FORM.EIR-DATE",
-    ORDER_DETAILS: "COMMON-FORM.ORDER-DETAILS",
     CUSTOMER: "COMMON-FORM.CUSTOMER",
     OWNER: "COMMON-FORM.OWNER",
-    CLEAN_STATUS: "COMMON-FORM.CLEAN-STATUS",
     CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
-    EIR_DATE_TIME: "COMMON-FORM.EIR-DATE-TIME",
     SURVEY_INFO: "COMMON-FORM.SURVEY-INFO",
     DATE_OF_INSPECTION: "COMMON-FORM.DATE-OF-INSPECTION",
     PERIODIC_TEST: "COMMON-FORM.PERIODIC-TEST",
-    LAST_TEST: "COMMON-FORM.LAST-TEST",
-    NEXT_TEST: "COMMON-FORM.NEXT-TEST",
-    TEST_TYPE: "COMMON-FORM.TEST-TYPE",
     DATE: "COMMON-FORM.DATE",
-    CLASS: "COMMON-FORM.CLASS",
-    IN_GATE_DETAILS: "COMMON-FORM.IN-GATE-DETAILS",
-    IN_GATE_REMARKS: "COMMON-FORM.IN-GATE-REMARKS",
-    HAULIER: 'COMMON-FORM.HAULIER',
-    VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
-    DRIVER_NAME: 'COMMON-FORM.DRIVER-NAME',
     LAST_UPDATE_BY: 'COMMON-FORM.LAST-UPDATE-BY',
     LAST_UPDATE_ON: 'COMMON-FORM.LAST-UPDATE-ON',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    MANUFACTURER_DOM: 'COMMON-FORM.MANUFACTURER-AND-DOM',
-    CLADDING: 'COMMON-FORM.CLADDING',
-    CAPACITY: 'COMMON-FORM.CAPACITY',
-    TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
-    MAX_GROSS_WEIGHT: 'COMMON-FORM.MAX-GROSS-WEIGHT',
-    TANK_HEIGHT: 'COMMON-FORM.TANK-HEIGHT',
-    WALKWAY: 'COMMON-FORM.WALKWAY',
-    BOTTOM_DISCHARGE_TYPE: 'COMMON-FORM.BOTTOM-DISCHARGE-TYPE',
-    COMPARTMENT_TYPE: 'COMMON-FORM.COMPARTMENT-TYPE',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
-    BOTTOM_DIS_COMP: 'COMMON-FORM.BOTTOM-DIS-COMP',
-    FOOT_VALVE: 'COMMON-FORM.FOOT-VALVE',
-    BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
-    THERMOMETER: 'COMMON-FORM.THERMOMETER',
-    LADDER: 'COMMON-FORM.LADDER',
-    DATA_SCS_TRANSPORT_PLATE: 'COMMON-FORM.DATA-SCS-TRANSPORT-PLATE',
-    TOP_DIS_COMP: 'COMMON-FORM.TOP-DIS-COMP',
-    TOP_DIS_VALVE: 'COMMON-FORM.TOP-DIS-VALVE',
-    AIRLINE_VALVE: 'COMMON-FORM.AIRLINE-VALVE',
-    AIRLINE_VALVE_CONNECTIONS: 'COMMON-FORM.AIRLINE-VALVE-CONNECTIONS',
-    MANLID_COMPARTMENT: 'COMMON-FORM.MANLID-COMPARTMENT',
-    MANLID_COVER: 'COMMON-FORM.MANLID-COVER',
-    MANLID_SEAL: 'COMMON-FORM.MANLID-SEAL',
-    PV: 'COMMON-FORM.PV',
-    SAFETY_HANDRAIL: 'COMMON-FORM.SAFETY-HANDRAIL',
-    BUFFER_PLATE: 'COMMON-FORM.BUFFER-PLATE',
-    RESIDUE: 'COMMON-FORM.RESIDUE',
-    DIPSTICK: 'COMMON-FORM.DIPSTICK',
-    SPECIFICATION: 'COMMON-FORM.SPECIFICATION',
-    DIAMITER: 'COMMON-FORM.DIAMITER',
-    PIECES: 'COMMON-FORM.PIECES',
-    VOLUME: 'COMMON-FORM.VOLUME',
-    OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS',
-    BRAND: 'COMMON-FORM.BRAND',
     BOTTOM: 'COMMON-FORM.BOTTOM',
     TOP: 'COMMON-FORM.TOP',
-    MANLID: 'COMMON-FORM.MANLID',
-    FRAME_TYPE: 'COMMON-FORM.FRAME-TYPE',
-    LEFT_SIDE: 'COMMON-FORM.LEFT-SIDE',
-    REAR_SIDE: 'COMMON-FORM.REAR-SIDE',
-    RIGHT_SIDE: 'COMMON-FORM.RIGHT-SIDE',
-    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
-    FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
-    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
-    TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
-    MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
-    FILL_IN_REMARKS: 'COMMON-FORM.FILL-IN-REMARKS',
-    LEFT_REMARKS: 'COMMON-FORM.LEFT-REMARKS',
-    REAR_REMARKS: 'COMMON-FORM.REAR-REMARKS',
-    RIGHT_REMARKS: 'COMMON-FORM.RIGHT-REMARKS',
-    TOP_REMARKS: 'COMMON-FORM.TOP-REMARKS',
-    FRONT_REMARKS: 'COMMON-FORM.FRONT-REMARKS',
-    BOTTOM_REMARKS: 'COMMON-FORM.BOTTOM-REMARKS',
-    SIDES: 'COMMON-FORM.SIDES',
     SAVE_ERROR: 'COMMON-FORM.SAVE-ERROR',
     DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
     PREVIEW: 'COMMON-FORM.PREVIEW',
     DELETE: 'COMMON-FORM.DELETE',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
-    PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS',
-    PHOTOS: 'COMMON-FORM.PHOTOS',
     PUBLISH: 'COMMON-FORM.PUBLISH',
     PHONE: 'COMMON-FORM.PHONE',
     FAX: 'COMMON-FORM.FAX',
     EMAIL: 'COMMON-FORM.EMAIL',
     WEB: 'COMMON-FORM.WEB',
-    IN_GATE: 'COMMON-FORM.IN-GATE',
-    EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
     LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
     TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
@@ -189,11 +117,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
     YES: 'COMMON-FORM.YES',
     NO: 'COMMON-FORM.NO',
-    BOTTOM_DIS_COMP__ABB: 'COMMON-FORM.BOTTOM-DIS-COMP--ABB',
-    BOTTOM_DIS_VALVE__ABB: 'COMMON-FORM.BOTTOM-DIS-VALVE--ABB',
-    TOP_DIS_COMP__ABB: 'COMMON-FORM.TOP-DIS-COMP--ABB',
-    TOP_DIS_VALVE__ABB: 'COMMON-FORM.TOP-DIS-VALVE--ABB',
-    MANLID_COMP__ABB: 'COMMON-FORM.MANLID-COMP--ABB',
     CRN: 'COMMON-FORM.CRN',
     EIR_COMPANY_DECLARATION: 'COMMON-FORM.EIR-COMPANY-DECLARATION',
     EIR_HAULIER_DECLARATION: 'COMMON-FORM.EIR-HAULIER-DECLARATION',
@@ -205,13 +128,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     EXPORT_NEW: 'COMMON-FORM.EXPORT-NEW',
     PREVIEW_PDF: 'COMMON-FORM.PREVIEW-PDF',
     EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
-    IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
-    OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
-    MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
-    DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
-    REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
     NO_DOT: 'COMMON-FORM.NO-DOT',
     ITEM: 'COMMON-FORM.ITEM',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
@@ -220,7 +138,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     QTY: 'COMMON-FORM.QTY',
     LABOUR: 'COMMON-FORM.LABOUR',
     MATERIAL: 'COMMON-FORM.MATERIAL',
-    LESSEE_OWNER__ABB: 'COMMON-FORM.LESSEE-OWNER--ABB',
     REMARKS: 'COMMON-FORM.REMARKS',
     APPROVED_COST: 'COMMON-FORM.APPROVED-COST',
     RATE_PERC: 'COMMON-FORM.RATE-PERC',
@@ -230,7 +147,25 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
-    OF: 'COMMON-FORM.OF'
+    OF: 'COMMON-FORM.OF',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    QUOATION_NO: 'COMMON-FORM.QUOTATION-NO',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    ETR_DATE: 'COMMON-FORM.ETR-DATE',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
+    STEAM_PROGRESS_MONITORING_CHART: 'COMMON-FORM.STEAM-PROGRESS-MONITORING-CHART',
+    TIME: 'COMMON-FORM.TIME',
+    TEMPERATURE: 'COMMON-FORM.TEMPERATURE',
+    THERMOMETER: 'COMMON-FORM.THERMOMETER',
+    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
+    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
+    INITIAL_TEMPERATURE: 'COMMON-FORM.INITIAL-TEMPERATURE',
+    STEAM_BEGIN_ON: 'COMMON-FORM.STEAM-BEGIN-ON',
+    STEAM_COMPLETED_ON: 'COMMON-FORM.STEAM-COMPLETED-ON',
+    TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION',
+    PREPARED_BY: 'COMMON-FORM.PREPARED-BY',
+    APPROVED_BY: 'COMMON-FORM.APPROVED-BY',
   }
 
   type?: string | null;
@@ -239,32 +174,22 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
-  repair_guid?: string | null;
+  steam_guid?: string | null;
   customer_company_guid?: string | null;
   estimate_no?: string | null;
 
   customerInfo: any = customerInfo;
   disclaimerNote: string = "";
   pdfTitle: string = "";
-  repairItem: any;
+  steamItem: any;
 
   last_test_desc?: string = ""
 
   repairCost?: RepairCostTableItem;
-  repList?: any[] = [];
-  groupNameCvList: CodeValuesItem[] = [];
-  subgroupNameCvList: CodeValuesItem[] = [];
+  steamTempList?: any[] = [];
   yesnoCvList: CodeValuesItem[] = [];
   soTankStatusCvList: CodeValuesItem[] = [];
-  purposeOptionCvList: CodeValuesItem[] = [];
-  testTypeCvList: CodeValuesItem[] = [];
-  testClassCvList: CodeValuesItem[] = [];
-  partLocationCvList: CodeValuesItem[] = [];
-  damageCodeCvList: CodeValuesItem[] = [];
-  chunkedDamageCodeCvList: any[][] = [];
-  repairCodeCvList: CodeValuesItem[] = [];
-  chunkedRepairCodeCvList: any[][] = [];
-  unitTypeCvList: CodeValuesItem[] = [];
+  totalDuration?: string;
 
   scale = 1.1;
   imageQuality = 0.85;
@@ -295,7 +220,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.repair_guid = data.repair_guid;
+    this.steam_guid = data.steam_guid;
     this.customer_company_guid = data.customer_company_guid;
     this.estimate_no = data.estimate_no;
     this.existingPdf = data.existingPdf;
@@ -306,26 +231,25 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+    this.pdfTitle = this.translatedLangText.STEAM_PROGRESS_MONITORING_CHART;
 
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
-      this.getRepairData(),
-      this.data.retrieveFile ? this.getRepairPdf() : Promise.resolve(null)
+      this.getSteamData(),
+      this.data.retrieveFile ? this.getSteamPdf() : Promise.resolve(null)
     ]);
     if (data?.length > 0) {
-      this.repairItem = data[0];
+      this.steamItem = data[0];
       await this.getCodeValuesData();
-      this.updateData(this.repairItem?.repair_part);
-      this.last_test_desc = this.getLastTest(this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey);
+      console.log(this.steamItem)
+      this.updateData(this.steamItem?.steaming_part?.[0]?.job_order?.steaming_temp);
 
       this.cdr.detectChanges();
     }
 
     this.existingPdf = pdfData ?? this.existingPdf;
-    console.log(this.existingPdf)
     if (!this.existingPdf?.length) {
-      //this.generatePDF();
+      this.generatePDF();
     }
     // else {
     //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
@@ -335,11 +259,11 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   async generatePDF(): Promise<void> {
-    const repTableElement = document.getElementById('steam-heating-log-table');
-    const summaryElement = document.getElementById('summary-content');
+    const bodyElement = document.getElementById('pdf-form-body');
+    const signElement = document.getElementById('signature-content');
 
-    if (!repTableElement || !summaryElement) {
-      console.error('Template element not found');
+    if (!bodyElement || !signElement) {
+      console.error('Body or Signature element not found');
       return;
     }
 
@@ -348,122 +272,93 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       this.generatingPdfLoadingSubject.next(true);
       this.generatingPdfProgress = 0;
 
-      const rows = Array.from(repTableElement.querySelectorAll('tr'));
+      const canvas = await html2canvas(bodyElement, { scale: this.scale });
+      const signCanvas = await html2canvas(signElement, { scale: this.scale });
+
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.width; // A4 page width
       const pageHeight = pdf.internal.pageSize.height; // A4 page height
-      const leftRightMargin = 5; // Fixed left and right margins
-      const leftRightMarginBody = 7.5; // Fixed left and right margins for body
-      const topMargin = 5; // Top margin
-      const bottomMargin = 5; // Bottom margin
+      const leftRightMargin = 5; // Fixed margins
+      const topMargin = 5;
+      const bottomMargin = 5;
 
-      // Add Header for the first page
+      // Add Header & Footer
       const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-      const footerHeight = await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, 1, 1); // Placeholder footer height calculation
+      const footerHeight = await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, 1, 1);
       const usableHeight = pageHeight - topMargin - bottomMargin - footerHeight;
 
       console.log('Header Height:', headerHeight);
       console.log('Footer Height:', footerHeight);
       console.log('Usable Height:', usableHeight);
 
-      let yOffset = topMargin + headerHeight; // Tracks vertical position on the page
-      let currentPage = 1; // Current page number
+      // Convert dimensions from px to mm
+      const imgWidth = canvas.width * 0.264583;
+      const imgHeight = canvas.height * 0.264583;
+      const aspectRatio = imgWidth / imgHeight;
 
-      const summaryCanvas = await html2canvas(summaryElement, { scale: this.scale });
-      const summaryHeight = (summaryCanvas.height * (pageWidth - leftRightMarginBody * 2)) / summaryCanvas.width;
-      this.generatingPdfProgress += 20;
+      // Signature Size
+      const signWidth = signCanvas.width * 0.264583;
+      const signHeight = signCanvas.height * 0.264583;
+      const signAspectRatio = signWidth / signHeight;
+      const signScaledWidth = pageWidth - leftRightMargin * 2;
+      const signScaledHeight = signScaledWidth / signAspectRatio;
 
-      // Calculate total height of rows
-      const totalRowHeight = rows.reduce((total, row) => {
-        const rowCanvas = document.createElement('canvas');
-        rowCanvas.width = row.offsetWidth;
-        rowCanvas.height = row.offsetHeight;
-        const rowHeight = (row.offsetHeight * (pageWidth - leftRightMarginBody * 2)) / row.offsetWidth;
-        return total + rowHeight;
-      }, 0);
+      // Adjust for footer
+      const signYOffset = pageHeight - bottomMargin - footerHeight - signScaledHeight;
 
-      // Calculate the total required height
-      const totalContentHeight = totalRowHeight + summaryHeight;
+      // Calculate pagination
+      const scaledWidth = pageWidth - leftRightMargin * 2;
+      const scaledHeight = scaledWidth / aspectRatio;
+      let yOffset = 0;
+      let currentPage = 1;
+      const totalPages = Math.ceil(imgHeight / usableHeight);
 
-      // Calculate total pages
-      const totalPages = Math.ceil(totalContentHeight / (usableHeight));
-      console.log('Total Pages:', totalPages);
+      while (yOffset < imgHeight) {
+        if (yOffset > 0) pdf.addPage();
 
-      let rowsCount = rows.length;
-      let currentRowCount = 0;
-      const rowProgressWeight = 0.7;
-      for (const row of rows) {
-        // Render each row to canvas
-        const rowCanvas = await html2canvas(row as HTMLElement, { scale: this.scale });
-        const rowImg = rowCanvas.toDataURL('image/jpeg', this.imageQuality);
-        const rowHeight = (rowCanvas.height * (pageWidth - leftRightMarginBody * 2)) / rowCanvas.width;
-        currentRowCount++;
+        // Add Header
+        const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
+        this.generatingPdfProgress += 33;
 
-        // Check if row fits on the current page
-        if (yOffset + rowHeight > usableHeight) {
-          console.log('Starting new page...');
-          // Add Footer to the current page
-          await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+        // Adjust usable height
+        const adjustedUsableHeight = usableHeight - headerHeight;
 
-          // Start a new page
-          pdf.addPage();
-          currentPage++;
-          yOffset = topMargin;
+        // Add Body Content
+        const chunkHeight = Math.min(imgHeight - yOffset, adjustedUsableHeight);
+        const canvasChunk = document.createElement('canvas');
+        const context = canvasChunk.getContext('2d');
 
-          // Add Header to the new page
-          const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-          yOffset += newHeaderHeight;
+        // Create new canvas for the current chunk
+        canvasChunk.width = canvas.width;
+        canvasChunk.height = (chunkHeight * canvas.height) / imgHeight;
+
+        if (context) {
+          context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
         }
 
-        // Add row to the current page
-        pdf.addImage(rowImg, 'PNG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, rowHeight);
-        yOffset += rowHeight;
-        const rowProgress = (rowProgressWeight / rowsCount) * 100;
-        this.generatingPdfProgress += rowProgress;
-        console.log('generatingPdfProgress', this.generatingPdfProgress);
-      }
+        const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
+        pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
+        this.generatingPdfProgress += 33;
 
-      // Add summary content
-      const summaryImg = summaryCanvas.toDataURL('image/jpeg', this.imageQuality);
+        // If it's the last page, add the signature above the footer
+        if (currentPage === totalPages) {
+          const signImgData = signCanvas.toDataURL('image/jpeg');
+          pdf.addImage(signImgData, 'JPEG', leftRightMargin, signYOffset, signScaledWidth, signScaledHeight);
+        }
 
-      // Calculate remaining space for summary content
-      const remainingSpace = pageHeight - yOffset - footerHeight - bottomMargin;
-
-      if (summaryHeight > remainingSpace) {
-        console.log('Adding new page for summary...');
-        // Add Footer to the current page
+        // Add Footer
         await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
 
-        // Start a new page
-        pdf.addPage();
+        yOffset += chunkHeight;
         currentPage++;
-        yOffset = topMargin;
-
-        // Add Header to the new page
-        const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-        yOffset += newHeaderHeight;
-
-        // Align summary content to the bottom of the page
-        const newRemainingSpace = pageHeight - footerHeight - bottomMargin;
-        yOffset = newRemainingSpace - summaryHeight;
-      } else {
-        // Align summary content to the bottom of the current page
-        yOffset = pageHeight - footerHeight - bottomMargin - summaryHeight;
       }
 
-      pdf.addImage(summaryImg, 'PNG', leftRightMargin, yOffset, pageWidth - leftRightMargin * 2, summaryHeight);
-
-      // Update yOffset after adding summary
-      yOffset += summaryHeight;
-
-      // Add Footer to the last page
-      await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
       this.generatingPdfProgress = 100;
 
       // Save PDF
-      // pdf.save(`ESTIMATE-${this.estimate_no}.pdf`);
-      this.generatedPDF = pdf.output('blob');
-      this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
+      pdf.save(`${this.estimate_no}.pdf`);
+      // this.generatedPDF = pdf.output('blob');
+      // this.uploadPdf(this.steamItem?.job_order?.guid, this.generatedPDF);
       this.generatingPdfLoadingSubject.next(false);
       console.log('End generate', new Date());
     } catch (error) {
@@ -539,18 +434,18 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     }
   }
 
-  getRepairData(): Promise<any[]> {
+  getSteamData(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.repair_guid!).subscribe({
+      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.steam_guid!).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
     });
   }
 
-  getRepairPdf(): Promise<any[]> {
+  getSteamPdf(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
+      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.steam_guid!]).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
@@ -575,61 +470,12 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
     // Wrap all alias connections in promises
     const promises = [
-      firstValueFrom(this.cvDS.connectAlias('groupNameCv')).then(async data => {
-        this.groupNameCvList = data || [];
-        const subqueries: any[] = [];
-        data.map(d => {
-          if (d.child_code) {
-            let q = { alias: d.child_code, codeValType: d.child_code };
-            const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-            if (!hasMatch) {
-              subqueries.push(q);
-            }
-          }
-        });
-
-        // Process subqueries if any
-        if (subqueries.length > 0) {
-          await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
-
-          for (const s of subqueries) {
-            const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
-            if (subData) {
-              this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
-            }
-          }
-        }
-
-      }),
       firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
         this.yesnoCvList = data || [];
       }),
       firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
         this.soTankStatusCvList = data || [];
       }),
-      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
-        this.purposeOptionCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
-        this.testTypeCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('testClassCv')).then(data => {
-        this.testClassCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('partLocationCv')).then(data => {
-        this.partLocationCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('damageCodeCv')).then(data => {
-        this.damageCodeCvList = data || [];
-        this.chunkedDamageCodeCvList = this.chunkArray(this.damageCodeCvList, 10);
-      }),
-      firstValueFrom(this.cvDS.connectAlias('repairCodeCv')).then(data => {
-        this.repairCodeCvList = data || [];
-        this.chunkedRepairCodeCvList = this.chunkArray(this.repairCodeCvList, 10);
-      }),
-      firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
-        this.unitTypeCvList = data || [];
-      })
     ];
 
     // Wait for all promises to resolve
@@ -645,103 +491,24 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-    // if (newData?.length) {
-    //   newData = newData.map((row) => ({
-    //     ...row,
-    //     tariff_repair: {
-    //       ...row.tariff_repair,
-    //       sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
-    //     }
-    //   }));
+    if (newData?.length) {
+      newData = newData.map((row) => ({
+        ...row
+      }));
 
-    //   console.log('Before sort', newData);
-    //   newData = this.repairPartDS.sortAndGroupByGroupName(newData);
-    //   console.log('After sort', newData);
-    //   // newData = [...this.sortREP(newData)];
+      // console.log('Before sort', newData);
+      // newData = this.repairPartDS.sortAndGroupByGroupName(newData);
+      // console.log('After sort', newData);
 
-    //   this.repList = newData.map((row, index) => ({
-    //     ...row,
-    //     index: index
-    //   }));
-    //   console.log(this.repList);
-    //   this.calculateCost();
-    // } else {
-    //   this.repList = [];
-    //   this.calculateCost();
-    // }
-  }
-
-  getGroupSeq(codeVal: string | undefined): number | undefined {
-    const gncv = this.groupNameCvList?.filter(x => x.code_val === codeVal);
-    if (gncv.length) {
-      return gncv[0].sequence;
+      this.steamTempList = newData.map((row, index) => ({
+        ...row,
+        index: index
+      }));
+      console.log(this.steamTempList);
+    } else {
+      this.steamTempList = [];
     }
-    return -1;
-  }
-
-  getLastTest(igs: any): string | undefined {
-    return this.getLastTestIGS(igs);
-  }
-
-  getLastTestIGS(igs: any): string | undefined {
-    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
-
-    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
-      const test_type = igs.last_test_cv;
-      const test_class = igs.test_class_cv;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
-    }
-    return "";
-  }
-
-  // getLastTestTI(): string | undefined {
-  //   if (!this.populateCodeValues?.testTypeCvList?.length || !this.populateCodeValues?.testClassCvList?.length || !this.tiItem) return "";
-
-  //   if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
-  //     const test_type = this.tiItem.last_test_cv;
-  //     const test_class = this.tiItem.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
-
-  getTestTypeDescription(codeVal: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-  }
-
-  getTestClassDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
-  }
-
-  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  }
-
-  getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
-  }
-
-  displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
-      return item.code_cv;
-    }).join('/');
-  }
-
-  displayTankPurpose(sot: any) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
+    this.getTotalSteamDuration();
   }
 
   translateLangText() {
@@ -750,8 +517,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  displayDateTime(input: number | undefined): string | undefined {
-    return Utility.convertEpochToDateTimeStr(input);
+  displayDateTime(input: number | undefined, is12Hr: boolean): string | undefined {
+    return Utility.convertEpochToDateTimeStr(input, is12Hr);
   }
 
   displayDate(input: number | undefined): string | undefined {
@@ -765,6 +532,10 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       return figure.toFixed(2);
     }
     return "";
+  }
+
+  getTotalSteamDuration() {
+    this.totalDuration = this.steamDS.getTotalSteamDuration(this.steamTempList);
   }
 
   calculateCost() {
@@ -857,5 +628,14 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
         }
       });
     }
+  }
+
+  pdfHeader() {
+    const headerElement = document.getElementById('pdf-form-header');
+    if (!headerElement) {
+      return '';
+    }
+    const a = headerElement.innerHTML
+    return '';
   }
 }
