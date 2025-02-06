@@ -35,13 +35,13 @@
             <b>{{translatedLangText.TANK_NO}}</b>
           </td>
           <td class="td-col-4-5">
-            {{steamItem?.storing_order_tank?.tank_no}}
+            {{residueItem?.storing_order_tank?.tank_no}}
           </td>
           <td class="td-col-2-25">
             <b>{{translatedLangText.EIR_NO}}</b>
           </td>
           <td class="td-col-3">
-            {{steamItem?.storing_order_tank?.in_gate?.[0]?.eir_no}}
+            {{residueItem?.storing_order_tank?.in_gate?.[0]?.eir_no}}
           </td>
         </tr>
         <tr>
@@ -49,13 +49,13 @@
             <b>{{translatedLangText.CUSTOMER}}</b>
           </td>
           <td>
-            {{steamItem?.storing_order_tank?.storing_order?.customer_company?.name}}
+            {{residueItem?.storing_order_tank?.storing_order?.customer_company?.name}}
           </td>
           <td>
             <b>{{translatedLangText.EIR_DATE}}</b>
           </td>
           <td>
-            {{displayDate(steamItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}}
+            {{displayDate(residueItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}}
           </td>
         </tr>
         <tr>
@@ -63,13 +63,13 @@
             <b>{{translatedLangText.JOB_NO}}</b>
           </td>
           <td>
-            {{steamItem?.job_no}}
+            {{residueItem?.job_no}}
           </td>
           <td>
             <b>{{translatedLangText.ESTIMATE_NO}}</b>
           </td>
           <td>
-            {{steamItem?.estimate_no}}
+            {{residueItem?.estimate_no}}
           </td>
         </tr>
         <tr>
@@ -77,42 +77,13 @@
             <b>{{translatedLangText.CARGO_NAME}}</b>
           </td>
           <td>
-            {{steamItem?.storing_order_tank?.tariff_cleaning?.cargo}}
+            {{residueItem?.storing_order_tank?.tariff_cleaning?.cargo}}
           </td>
           <td>
-            <b>{{translatedLangText.FLASH_POINT}}</b>
-          </td>
-          <td class="text-danger">
-            {{steamItem?.storing_order_tank?.tariff_cleaning?.flash_point}}
-            {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <b>{{translatedLangText.INITIAL_TEMPERATURE}}</b>
+            <b>{{translatedLangText.ESTIMATE_DATE}}</b>
           </td>
           <td>
-            {{steamTempList?.[0]?.meter_temp}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
-          </td>
-          <td>
-            <b>{{translatedLangText.REQUIRED_TEMP}}</b>
-          </td>
-          <td>
-            {{steamItem?.storing_order_tank?.required_temp}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <b>{{translatedLangText.STEAM_BEGIN_ON}}</b>
-          </td>
-          <td>
-            {{displayDateTime(steamItem?.begin_dt, true)}}
-          </td>
-          <td>
-            <b>{{translatedLangText.STEAM_COMPLETED_ON}}</b>
-          </td>
-          <td>
-            {{displayDateTime(steamItem?.complete_dt, true)}}
+            {{displayDate(residueItem?.create_dt)}}
           </td>
         </tr>
       </tbody>
@@ -123,73 +94,61 @@
     <table id="steam-temp-table" class="steam-temp-table">
       <tbody>
         <tr>
-          <td class="td-col-0-5 text-center align-middle steam-temp-header" rowspan="2">
+          <td class="td-col-0-5 text-center align-middle steam-temp-header">
             <b>{{translatedLangText.NO_DOT}}</b>
           </td>
-          <td class="td-col-2 text-center align-middle steam-temp-header" rowspan="2">
-            <b>{{translatedLangText.TIME}}</b>
+          <td class="td-col-5 text-center align-middle steam-temp-header">
+            <b>{{translatedLangText.DESCRIPTION}}</b>
           </td>
-          <td class="td-col-5-5 text-center align-middle steam-temp-header" colspan="3">
-            <b>{{translatedLangText.TEMPERATURE}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}</b>
+          <td class="td-col-1 text-center align-middle steam-temp-header">
+            <b>{{translatedLangText.QTY}}</b>
           </td>
-          <td class="td-col-4 text-center align-middle steam-temp-header" rowspan="2">
-            <b>{{translatedLangText.REMARKS}}</b>
+          <td class="td-col-1 text-center align-middle steam-temp-header">
+            <b>{{translatedLangText.PRICE}}</b>
           </td>
-        </tr>
-        <tr>
-          <td class="td-col-1-5 text-center align-middle steam-temp-subheader">
-            <b>{{translatedLangText.THERMOMETER}}</b>
+          <td class="td-col-1-5 text-center align-middle steam-temp-header">
+            <b>{{translatedLangText.ESTIMATE_COST}}</b>
           </td>
-          <td class="td-col-1-5 text-center align-middle steam-temp-subheader">
-            <b>{{translatedLangText.TOP_SIDE}}</b>
-          </td>
-          <td class="td-col-1-5 text-center align-middle steam-temp-subheader">
-            <b>{{translatedLangText.BOTTOM_SIDE}}</b>
+          <td class="td-col-1-5 text-center align-middle steam-temp-header">
+            <b>{{translatedLangText.APPROVED_COST}}</b>
           </td>
         </tr>
-        @for (steamTemp of steamTempList; track steamTemp) {
+        @for (residuePart of residuePartList; track residuePart) {
         <tr>
           <td class="td-col-0-5 text-center align-middle">
-            <b>{{steamTemp.index + 1}}</b>
+            <b>{{residuePart.index + 1}}</b>
           </td>
-          <td class="td-col-2 text-center align-middle">
-            {{displayDateTime(steamTemp.report_dt, false)}}
-          </td>
-          <td class="td-col-1-5 text-center align-middle">
-            {{steamTemp.meter_temp}}
+          <td class="td-col-2">
+            {{residuePart.description}}
           </td>
           <td class="td-col-1-5 text-center align-middle">
-            {{steamTemp.top_temp}}
+            {{residuePart.quantity}} {{residuePart.qty_unit_type_cv}}
           </td>
-          <td class="td-col-1-5 text-center align-middle">
-            {{steamTemp.bottom_temp}}
+          <td class="td-col-1-5 text-end align-middle">
+            {{parse2Decimal(residuePart.cost)}}
           </td>
-          <td class="td-col-4">
-            {{steamTemp.remarks}}
+          <td class="td-col-1-5 text-end align-middle">
+            {{parse2Decimal(residuePart.quantity * residuePart.cost)}}
+          </td>
+          <td class="td-col-4 text-end align-middle">
+            {{parse2Decimal(residuePart.approved_cost)}}
           </td>
         </tr>
         }
       </tbody>
     </table>
-    <div class="total-duration-content">
-      <span class="font-bold">{{translatedLangText.TOTAL_DURATION}}: </span>
-      <span class="font-bold">{{totalDuration}} H</span>
-    </div>
-  </div>
-
-  <div id="signature-content" class="pdf-container pdf-body">
-    <div class="signature-content mb-1">
-      <div class="signature-content-left">
-        <hr class="signature-line" />
-        <div class="signature-content-left-title">
-          {{translatedLangText.PREPARED_BY}}
+    <div class="total-content">
+      <div class="total-content-right">
+        <div class="total-cost">
+          <span class="font-bold">{{translatedLangText.TOTAL_SGD}}: </span>
+          <span class="font-bold total-cost-value text-end">{{parse2Decimal(totalCost)}}</span>
         </div>
       </div>
-      <div class="signature-content-right">
-        <hr class="signature-line" />
-        <div class="signature-content-right-title">
-          {{translatedLangText.APPROVED_BY}}
-        </div>
+    </div>
+    <div class="approved-content">
+      <div class="approved-cost">
+        <span class="font-bold">{{translatedLangText.APPROVED_COST}}: </span>
+        <span class="font-bold approved-cost-value text-end">{{parse2Decimal(approvedCost)}}</span>
       </div>
     </div>
   </div>
@@ -213,9 +172,9 @@
 </div>
 <div mat-dialog-actions class="m-2 align-right">
   <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
-    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    [disabled]="(residueDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
-      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      @if (!(residueDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
       file_download
       } @else {
       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
@@ -224,9 +183,9 @@
     {{translatedLangText.DOWNLOAD}}
   </button>
   <!-- <button mat-flat-button color="accent" (click)="onRepublshClick()" tabindex="-1"
-    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    [disabled]="(residueDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
-      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      @if (!(residueDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
       publish
       } @else {
       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
