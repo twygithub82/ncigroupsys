@@ -743,64 +743,7 @@ export const ROUTES: RouteInfo[] = [
       }
     ].filter(item => item.visible !== false),
   },
-  {
-    path: "admin/report",
-    title: "MENUITEMS.REPORTS.TEXT",
-    iconType: "material",
-    icon: "assignment",
-    class: "menu-toggle",
-    groupTitle: false,
-    badge: "",
-    badgeClass: "",
-    submenu: [
-      {
-        path: "admin/reports/tank-activity",
-        title: "MENUITEMS.REPORTS.LIST.TANK-ACTIVITY",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: []
-      },
-      {
-        path: "admin/reports/status",
-        title: "MENUITEMS.REPORTS.LIST.STATUS",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: []
-      },
-      {
-        path: "admin/steam/approval",
-        title: "MENUITEMS.STEAM.LIST.STEAM-APPROVAL",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
-        visible: false
-      },
-      {
-        path: "admin/steam/job-order",
-        title: "MENUITEMS.STEAM.LIST.JOB-ORDER",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
-        visible: false
-      }
-    ].filter(item => item.visible !== false),
-  },
+ 
 
   // {
   //   path: "admin/management",
@@ -848,6 +791,40 @@ export const ROUTES: RouteInfo[] = [
   //     }
   //   ].filter(item => item.visible !== false),
   // },
+  {
+    path: "admin/survey",
+    title: "MENUITEMS.SURVEY.TEXT",
+    iconType: "material",
+    icon: "event_note",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/survey/periodic-test",
+        title: "MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/survey/others",
+        title: "MENUITEMS.SURVEY.LIST.OTHERS-SURVEY",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      }
+    ]
+  },
   {
     path: "admin/billing",
     title: "MENUITEMS.BILLING.TEXT",
@@ -1047,29 +1024,40 @@ export const ROUTES: RouteInfo[] = [
     ].filter(item => item.visible !== false),
   },
   {
-    path: "admin/survey",
-    title: "MENUITEMS.SURVEY.TEXT",
+    path: "admin/report",
+    title: "MENUITEMS.REPORTS.TEXT",
     iconType: "material",
-    icon: "event_note",
+    icon: "assignment",
     class: "menu-toggle",
     groupTitle: false,
     badge: "",
     badgeClass: "",
     submenu: [
       {
-        path: "admin/survey/periodic-test",
-        title: "MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY",
+        path: "admin/reports/tank-activity",
+        title: "MENUITEMS.REPORTS.LIST.TANK-ACTIVITY",
         iconType: "",
         icon: "",
         class: "ml-menu",
         groupTitle: false,
         badge: "",
         badgeClass: "",
-        submenu: [],
+        submenu: []
       },
       {
-        path: "admin/survey/others",
-        title: "MENUITEMS.SURVEY.LIST.OTHERS-SURVEY",
+        path: "admin/reports/status",
+        title: "MENUITEMS.REPORTS.LIST.STATUS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: []
+      },
+      {
+        path: "admin/steam/approval",
+        title: "MENUITEMS.STEAM.LIST.STEAM-APPROVAL",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -1077,9 +1065,23 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
+      },
+      {
+        path: "admin/steam/job-order",
+        title: "MENUITEMS.STEAM.LIST.JOB-ORDER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: false
       }
-    ]
+    ].filter(item => item.visible !== false),
   },
+  
   // {
   //   path: "advance-table",
   //   title: "MENUITEMS.ADVANCE-TABLE.TEXT",
