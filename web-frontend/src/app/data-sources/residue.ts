@@ -41,8 +41,8 @@ export class ResidueGO {
   // public total_cost?: number;
   // public owner_enable?: boolean;
   // public total_hour?: number;
-  public customer_billing_guid?:string;
-  public owner_billing_guid?:string;
+  public customer_billing_guid?: string;
+  public owner_billing_guid?: string;
 
 
   constructor(item: Partial<ResidueGO> = {}) {
@@ -71,8 +71,8 @@ export class ResidueItem extends ResidueGO {
   public residue_part?: ResiduePartItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?: CustomerCompanyItem;
-  public customer_billing?:BillingItem;
-    public owner_billing?:BillingItem;
+  public customer_billing?: BillingItem;
+  public owner_billing?: BillingItem;
   //public aspnetsuser?: UserItem;
   public actions?: string[]
   constructor(item: Partial<ResidueItem> = {}) {
@@ -81,26 +81,26 @@ export class ResidueItem extends ResidueGO {
     this.storing_order_tank = item.storing_order_tank;
     // this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
-    this.customer_billing=item.customer_billing;
-    this.owner_billing=item.owner_billing;
+    this.customer_billing = item.customer_billing;
+    this.owner_billing = item.owner_billing;
   }
 }
 
-export class ResiduePartRequest{
-  public approve_part?:boolean;
+export class ResiduePartRequest {
+  public approve_part?: boolean;
   public guid?: string;
   constructor(item: Partial<ResiduePartRequest> = {}) {
 
     this.guid = item.guid;
     this.approve_part = item.approve_part;
-    
+
   }
 }
 
 export class ResidueStatusRequest {
   public guid?: string;
   public action?: string;
-  public remarks?:string;
+  public remarks?: string;
   public sot_guid?: string;
   public residuePartRequests?: ResiduePartRequest[];
   //public aspnetsuser?: UserItem;
@@ -109,7 +109,7 @@ export class ResidueStatusRequest {
 
     this.guid = item.guid;
     this.sot_guid = item.sot_guid;
-    this.residuePartRequests= item.residuePartRequests;
+    this.residuePartRequests = item.residuePartRequests;
     // this.aspnetsuser = item.aspnetsuser;
     this.action = item.action;
   }
@@ -614,6 +614,112 @@ export const GET_RESIDUE_FOR_MOVEMENT = gql`
   }
 `;
 
+export const GET_RESIDUE_FOR_PDF = gql`
+  query queryResidue($where: residueFilterInput) {
+    resultList: queryResidue(where: $where) {
+      nodes {
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        bill_to_guid
+        complete_by
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        estimate_no
+        guid
+        job_no
+        remarks
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        storing_order_tank {
+          tank_no
+          etr_dt
+          required_temp
+          storing_order {
+            customer_company_guid
+            customer_company {
+              code
+              name
+            }
+          }
+          in_gate(where: { delete_dt: { eq: null } }) {
+            eir_no
+            eir_dt
+            in_gate_survey {
+              create_dt
+              create_by
+            }
+          }
+          tariff_cleaning {
+            cargo
+          }
+        }
+        residue_part {
+          action
+          approve_part
+          cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          job_order_guid
+          approve_qty
+          approve_cost
+          quantity
+          residue_guid
+          tariff_residue_guid
+          update_by
+          update_dt
+          qty_unit_type_cv
+          job_order {
+            team {
+              create_by
+              create_dt
+              delete_dt
+              department_cv
+              description
+              guid
+              update_by
+              update_dt
+            }
+            complete_dt
+            create_by
+            create_dt
+            delete_dt
+            qc_dt
+            qc_by
+            guid
+            job_order_no
+            job_type_cv
+            remarks
+            sot_guid
+            start_dt
+            status_cv
+            team_guid
+            total_hour
+            update_by
+            update_dt
+            working_hour
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const ADD_RESIDUE_EST = gql`
   mutation AddResidue($residue: residueInput!) {
     addResidue(residue: $residue)
@@ -774,6 +880,28 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       );
   }
 
+  getResidueByIDForPdf(residue_guid: string | undefined): Observable<ResidueItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { guid: { eq: residue_guid } }
+    return this.apollo
+      .query<any>({
+        query: GET_RESIDUE_FOR_PDF,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const resultList = result.data?.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        }),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+
   addResidue(residue: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_RESIDUE_EST,
@@ -837,7 +965,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
-  
+
   rollbackCompletedResidue(residueJobOrder: any[]): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_COMPLETED_RESIDUE,
@@ -857,34 +985,34 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canAbort(re: ResidueItem | undefined, rp: ResiduePartItem[]): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS','PARTIAL_ASSIGNED','ASSIGNED']
-    const status:string = String(re?.status_cv);
+    const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED', 'ASSIGNED']
+    const status: string = String(re?.status_cv);
     return (validStatus.includes(status) && rp?.some(part => part.job_order?.status_cv && (part.job_order?.status_cv == 'PENDING')));
-   // return (re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS') && rp?.some(part => !part.job_order?.status_cv && part.job_order?.status_cv !== 'PENDING' && part.job_order?.status_cv !== 'CANCELED');
+    // return (re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS') && rp?.some(part => !part.job_order?.status_cv && part.job_order?.status_cv !== 'PENDING' && part.job_order?.status_cv !== 'CANCELED');
   }
 
 
   canAmend(re: ResidueItem): boolean {
     if (!re) return true;
     const validStatus = ['PENDING']
-    return validStatus.includes(re?.status_cv?re?.status_cv:'');
+    return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 
   canSave(re: ResidueItem): boolean {
-    const validStatus = ['APPROVED', 'JOB_IN_PROGRESS','PARTIAL_ASSIGNED']
+    const validStatus = ['APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED']
     return false;
   }
 
   canApprove(re: ResidueItem): boolean {
     //const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
     const validStatus = ['PENDING', 'APPROVED']
-    return validStatus.includes(re?.status_cv?re?.status_cv:'');
+    return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 
   canNoAction(re: ResidueItem): boolean {
     //const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
     const validStatus = ['APPROVED']
-    return validStatus.includes(re?.status_cv?re?.status_cv:'');
+    return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 
   canQCComplete(re: ResidueItem | undefined): boolean {
@@ -896,8 +1024,8 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canRollback(re: ResidueItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION','COMPLETED','QC_COMPLETED']
-    return validStatus.includes(re?.status_cv?re?.status_cv:'');
+    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION', 'COMPLETED', 'QC_COMPLETED']
+    return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 
   canRollbackJobInProgress(re: ResidueItem | undefined): boolean {
@@ -909,7 +1037,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   getApproveTotal(residuePartList: any[] | undefined): any {
-    const totalSums = residuePartList?.filter(data => !data.delete_dt && (data.approve_part == 1||data.approve_part || data.approve_part == null))?.reduce((totals: any, owner) => {
+    const totalSums = residuePartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part || data.approve_part == null))?.reduce((totals: any, owner) => {
       return {
         //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
 

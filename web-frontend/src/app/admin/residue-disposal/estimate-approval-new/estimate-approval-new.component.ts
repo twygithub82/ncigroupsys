@@ -59,10 +59,11 @@ import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { ResidueDS, ResidueItem,ResidueGO,ResidueStatusRequest, ResiduePartRequest } from 'app/data-sources/residue';
+import { ResidueDS, ResidueItem, ResidueGO, ResidueStatusRequest, ResiduePartRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
+import { ResidueDisposalPdfComponent } from 'app/document-template/pdf/residue-disposal-pdf/residue-disposal-pdf.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -84,18 +85,14 @@ import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    NgScrollbar,
     NgClass,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
     MatLabel,
     MatTableModule,
     MatPaginatorModule,
-    FeatherIconsComponent,
     MatProgressSpinnerModule,
-    RouterLink,
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
@@ -107,14 +104,14 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   displayedColumns = [
     'seq',
     // 'group_name_cv',
-     'desc',
-     'qty',
+    'desc',
+    'qty',
     'qty_unit',
-     'unit_price',
-     'cost',
-     'approve_part',
-     "actions"
-   
+    'unit_price',
+    'cost',
+    'approve_part',
+    "actions"
+
   ];
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
@@ -151,8 +148,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
-    ARE_YOU_SURE_UNO:'COMMON-FORM.ARE-YOU-SURE-UNDO',
-    UNDO:'COMMON-FORM.UNDO',
+    ARE_YOU_SURE_UNO: 'COMMON-FORM.ARE-YOU-SURE-UNDO',
+    UNDO: 'COMMON-FORM.UNDO',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
     INVALID: 'COMMON-FORM.INVALID',
@@ -213,13 +210,13 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
-    BILLING_PROFILE:'COMMON-FORM.BILLING-PROFILE',
-    BILLING_TO:'COMMON-FORM.BILLING-TO',
-    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    JOB_REFERENCE:'COMMON-FORM.JOB-REFERENCE',
-    QUANTITY:'COMMON-FORM.QTY',
-    UNIT_PRICE:'COMMON-FORM.UNIT-PRICE',
-    COST:'COMMON-FORM.COST',
+    BILLING_PROFILE: 'COMMON-FORM.BILLING-PROFILE',
+    BILLING_TO: 'COMMON-FORM.BILLING-TO',
+    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
+    JOB_REFERENCE: 'COMMON-FORM.JOB-REFERENCE',
+    QUANTITY: 'COMMON-FORM.QTY',
+    UNIT_PRICE: 'COMMON-FORM.UNIT-PRICE',
+    COST: 'COMMON-FORM.COST',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     APPROVE: 'COMMON-FORM.APPROVE',
@@ -227,10 +224,10 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
   }
 
-  newDesc= new FormControl(null, [Validators.required]);
-  newQty= new FormControl(null, [Validators.required]);;
-  newUnitPrice= new FormControl(null, [Validators.required]);;
-  newQtyType= new FormControl(null);;
+  newDesc = new FormControl(null, [Validators.required]);
+  newQty = new FormControl(null, [Validators.required]);;
+  newUnitPrice = new FormControl(null, [Validators.required]);;
+  newQtyType = new FormControl(null);;
 
   clean_statusList: CodeValuesItem[] = [];
 
@@ -241,7 +238,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
-  residueItem?:ResidueItem;
+  residueItem?: ResidueItem;
   repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
@@ -256,13 +253,13 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
-  
+
   templateList: MasterTemplateItem[] = []
   surveyorList: UserItem[] = []
-  billingBranchList:CustomerCompanyItem[]=[];
-  packResidueList:PackageResidueItem[]=[];
-  displayPackResidueList:PackageResidueItem[]=[];
-  deList:any[]=[];
+  billingBranchList: CustomerCompanyItem[] = [];
+  packResidueList: PackageResidueItem[] = [];
+  displayPackResidueList: PackageResidueItem[] = [];
+  deList: any[] = [];
   reSelection = new SelectionModel<ResidueItem>(true, []);
 
   customerCodeControl = new UntypedFormControl();
@@ -274,12 +271,12 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   plDS: PackageLabourDS;
   repairEstDS: RepairDS;
   repairEstPartDS: RepairPartDS;
-  residueDS:ResidueDS;
-  
+  residueDS: ResidueDS;
+
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
-  
-  packResidueDS:PackageResidueDS;
+
+  packResidueDS: PackageResidueDS;
 
   userDS: UserDS;
   isOwner = false;
@@ -287,7 +284,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   isDuplicate = false;
 
   historyState: any = {};
-  updateSelectedItem:any=undefined;
+  updateSelectedItem: any = undefined;
 
   constructor(
     public httpClient: HttpClient,
@@ -312,8 +309,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
-    this.packResidueDS= new PackageResidueDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
+    this.packResidueDS = new PackageResidueDS(this.apollo);
+    this.residueDS = new ResidueDS(this.apollo);
 
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -330,37 +327,36 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   initForm() {
     this.residueEstForm = this.fb.group({
       guid: [''],
-      customer_code:[''],
-      billing_branch:[''],
-      job_no:[''],
-    
+      customer_code: [''],
+      billing_branch: [''],
+      job_no: [''],
+
       remarks: [''],
       last_test: [''],
       next_test: [''],
-      desc:[''],
-      qty:[''],
-      unit_price:[''],
-   
+      desc: [''],
+      qty: [''],
+      unit_price: [''],
+
       deList: ['']
     });
   }
 
   initializeValueChanges() {
-   
 
- //this.newDesc.valueChanges
-   // this.residueEstForm?.get('desc')?.valueChanges.pipe(
+
+    //this.newDesc.valueChanges
+    // this.residueEstForm?.get('desc')?.valueChanges.pipe(
     this.newDesc.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-       // var desc_value = this.residueEstForm?.get("desc")?.value;
-       var desc_value:any = this.newDesc.value;
-        this.displayPackResidueList= this.packResidueList.filter(data=> data.tariff_residue?.description && data.tariff_residue?.description.includes(desc_value!));
-        if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
-        else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
-        {
-           this.newUnitPrice.setValue(desc_value?.cost?.toFixed(2));
+        // var desc_value = this.residueEstForm?.get("desc")?.value;
+        var desc_value: any = this.newDesc.value;
+        this.displayPackResidueList = this.packResidueList.filter(data => data.tariff_residue?.description && data.tariff_residue?.description.includes(desc_value!));
+        if (!desc_value) this.displayPackResidueList = [...this.packResidueList];
+        else if (typeof desc_value === 'object' && this.updateSelectedItem === undefined) {
+          this.newUnitPrice.setValue(desc_value?.cost?.toFixed(2));
           // this.residueEstForm?.patchValue({
 
           //    unit_price: desc_value?.cost.toFixed(2)
@@ -597,17 +593,17 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     return cc?.description!;
   }
 
-  displayUnitTypeCodeFn(val:string):string{
+  displayUnitTypeCodeFn(val: string): string {
 
-      let retval:string='';
-      // let codeVals = this.unitTypeCvList.filter(d=>d.code_val==val);
-      // if(codeVals.length>0)
-      // {
-      //   retval = codeVals[0].description!;
-      // }
-      return retval;
+    let retval: string = '';
+    // let codeVals = this.unitTypeCvList.filter(d=>d.code_val==val);
+    // if(codeVals.length>0)
+    // {
+    //   retval = codeVals[0].description!;
+    // }
+    return retval;
   }
-  
+
 
   selectOwner($event: Event, row: RepairPartItem) {
     this.stopPropagation($event);
@@ -616,32 +612,26 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
 
-  checkCompulsoryEst(fields:string[])
-  {
-    if(!this.newDesc.value)
-      {
-        this.newDesc.setErrors({required:true});
-        this.newDesc.markAsTouched();
-      }
-    if(!this.newQty.value)
-      {
-        this.newQty?.setErrors({required:true});
-        this.newQty?.markAsTouched();
-      }
-    if(!this.newUnitPrice.value)
-      {
-        this.newUnitPrice.setErrors({required:true});
-        this.newUnitPrice.markAsTouched();
-      }
-    if(!this.newQtyType.value) 
-    {
-      
-      this.newQtyType.setErrors({required:true});
+  checkCompulsoryEst(fields: string[]) {
+    if (!this.newDesc.value) {
+      this.newDesc.setErrors({ required: true });
+      this.newDesc.markAsTouched();
+    }
+    if (!this.newQty.value) {
+      this.newQty?.setErrors({ required: true });
+      this.newQty?.markAsTouched();
+    }
+    if (!this.newUnitPrice.value) {
+      this.newUnitPrice.setErrors({ required: true });
+      this.newUnitPrice.markAsTouched();
+    }
+    if (!this.newQtyType.value) {
+
+      this.newQtyType.setErrors({ required: true });
       this.newQtyType.markAsTouched();
     }
-    else if( typeof this.newQtyType.value!='object')
-    {
-      this.newQtyType.setErrors({required:true});
+    else if (typeof this.newQtyType.value != 'object') {
+      this.newQtyType.setErrors({ required: true });
       this.newQtyType.markAsTouched();
 
     }
@@ -654,24 +644,21 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     // });
   }
 
-  checkDuplicationEst(item:PackageResidueItem ,index:number=-1)
-  {
-    var existItems = this.deList.filter(data=>data.description===item?.description)
-    if(existItems.length>0)
-    {
-      if(index==-1 || index!=existItems[0].index)
-      {
+  checkDuplicationEst(item: PackageResidueItem, index: number = -1) {
+    var existItems = this.deList.filter(data => data.description === item?.description)
+    if (existItems.length > 0) {
+      if (index == -1 || index != existItems[0].index) {
         //this.residueEstForm?.get("desc")?.setErrors({ duplicated: true });
-        this.newDesc.setErrors({duplicated:true});
+        this.newDesc.setErrors({ duplicated: true });
       }
     }
   }
 
   addEstDetails(event: Event) {
-    
+
     this.preventDefault(event);  // Prevents the form submission
-    
-    var descObject :PackageResidueItem;
+
+    var descObject: PackageResidueItem;
 
     // if(typeof this.residueEstForm?.get("desc")?.value==="object")
     // {
@@ -685,29 +672,26 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     //   descObject.cost= Number(this.residueEstForm?.get("unit_price")?.value);
     // }
 
-    if(typeof this.newDesc?.value==="object")
-      {
-        descObject = new PackageResidueItem(this.newDesc?.value!);
-        descObject.description = descObject.tariff_residue?.description;
-      }
-      else
-      {
-        descObject = new PackageResidueItem();
-        descObject.description= this.newDesc?.value!;
-        descObject.cost= Number(this.newUnitPrice?.value);
-      }
-  
+    if (typeof this.newDesc?.value === "object") {
+      descObject = new PackageResidueItem(this.newDesc?.value!);
+      descObject.description = descObject.tariff_residue?.description;
+    }
+    else {
+      descObject = new PackageResidueItem();
+      descObject.description = this.newDesc?.value!;
+      descObject.cost = Number(this.newUnitPrice?.value);
+    }
 
-    this.checkCompulsoryEst(["desc","qty","unit_price"]);
-    var index :number =-1;
-    if(this.updateSelectedItem)
-    {
+
+    this.checkCompulsoryEst(["desc", "qty", "unit_price"]);
+    var index: number = -1;
+    if (this.updateSelectedItem) {
       index = this.updateSelectedItem.index;
     }
-    this.checkDuplicationEst(descObject,index);
-    if(!this.newDesc?.valid || !this.newQty?.valid ||!this.newUnitPrice?.valid || !this.newQtyType?.valid)return;
-    
-    
+    this.checkDuplicationEst(descObject, index);
+    if (!this.newDesc?.valid || !this.newQty?.valid || !this.newUnitPrice?.valid || !this.newQtyType?.valid) return;
+
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -715,35 +699,31 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       tempDirection = 'ltr';
     }
 
-    
-    let residuePartItem:any = new ResiduePartItem();
-    if(index==-1)
-    {
-      residuePartItem.action="NEW";
+
+    let residuePartItem: any = new ResiduePartItem();
+    if (index == -1) {
+      residuePartItem.action = "NEW";
     }
-    else
-    {
+    else {
       residuePartItem = this.deList[index];
-      residuePartItem.action = residuePartItem.guid?"EDIT":"NEW";
+      residuePartItem.action = residuePartItem.guid ? "EDIT" : "NEW";
     }
 
-    residuePartItem.cost= Number(this.newUnitPrice?.value);
-    residuePartItem.description= descObject.description;
-    residuePartItem.quantity=Number(this.newQty?.value);
-    residuePartItem.qty_unit_type_cv=this.newQtyType.value;
+    residuePartItem.cost = Number(this.newUnitPrice?.value);
+    residuePartItem.description = descObject.description;
+    residuePartItem.quantity = Number(this.newQty?.value);
+    residuePartItem.qty_unit_type_cv = this.newQtyType.value;
     residuePartItem.residue_guid = this.historyState.selectedResidue?.guid;
-    residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
+    residuePartItem.tariff_residue_guid = descObject.tariff_residue?.guid;
 
-    if(index===-1)
-    {
-      var newData =[...this.deList,residuePartItem];
+    if (index === -1) {
+      var newData = [...this.deList, residuePartItem];
       this.updateData(newData);
     }
-  this.resetSelectedItemForUpdating();
+    this.resetSelectedItemForUpdating();
   }
 
-  CancelEditEstDetails(event: Event)
-  {
+  CancelEditEstDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     this.resetSelectedItemForUpdating();
     // this.updateSelectedItem=undefined;
@@ -753,84 +733,81 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   editEstDetails(event: Event, row: ResiduePartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
-    if(row.delete_dt) return;
-    var itm =this.deList[index];
+    if (row.delete_dt) return;
+    var itm = this.deList[index];
     var IsEditedRow = itm.edited;
-  
+
 
     this.resetSelectedItemForUpdating();
 
-    if(IsEditedRow) return;
+    if (IsEditedRow) return;
 
-    
-    this.updateSelectedItem ={
-      item:this.deList[index],
-      index:index,
-      action:"update",
-      
+
+    this.updateSelectedItem = {
+      item: this.deList[index],
+      index: index,
+      action: "update",
+
     }
-    this.updateSelectedItem.item.edited=true;
+    this.updateSelectedItem.item.edited = true;
 
-    var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
-    var descValue:any;
-    if(descValues.length>0)
-    {
+    var descValues = this.packResidueList.filter(data => data.tariff_residue?.description === row.description);
+    var descValue: any;
+    if (descValues.length > 0) {
       descValue = descValues[0];
     }
-    else
-    {
+    else {
       descValue = new PackageResidueItem();
-      descValue.guid=row.guid;
-      descValue.description= row.description;
-      descValue.tariff_residue= new TariffResidueItem();
-      descValue.tariff_residue.description= row.description;
-      descValue.cost= Number(row.cost);
-      
+      descValue.guid = row.guid;
+      descValue.description = row.description;
+      descValue.tariff_residue = new TariffResidueItem();
+      descValue.tariff_residue.description = row.description;
+      descValue.cost = Number(row.cost);
+
     }
     this.residueEstForm?.patchValue({
-       desc:descValue,
-       qty:row.quantity,
-       unit_price:row.cost
+      desc: descValue,
+      qty: row.quantity,
+      unit_price: row.cost
     });
 
-   
-    
+
+
   }
 
-  undeleteItem(event: Event, row: ResiduePartItem, index: number)
-  {
-    
+  undeleteItem(event: Event, row: ResiduePartItem, index: number) {
 
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
-     const dialogRef = this.dialog.open(UndeleteDialogComponent, {
-       width: '1000px',
-       data: {
-         item: row,
-         langText: this.langText,
-         index: index
-       },
-       direction: tempDirection
-     });
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-       if (result?.action === 'confirmed') {
-         if (result.item.guid) {
-           const data: any[] = [...this.deList];
-           const updatedItem = {
-             ...result.item,
-             delete_dt: null,
-             action: ''
-           };
-           data[result.index] = updatedItem;
-           this.updateData(data); // Refresh the data source
-         } 
-         this.resetSelectedItemForUpdating();
-       }
-     });
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(UndeleteDialogComponent, {
+      width: '1000px',
+      data: {
+        item: row,
+        langText: this.langText,
+        index: index
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        if (result.item.guid) {
+          const data: any[] = [...this.deList];
+          const updatedItem = {
+            ...result.item,
+            delete_dt: null,
+            action: ''
+          };
+          data[result.index] = updatedItem;
+          this.updateData(data); // Refresh the data source
+        }
+        this.resetSelectedItemForUpdating();
+      }
+    });
 
   }
   deleteItem(event: Event, row: ResiduePartItem, index: number) {
@@ -936,19 +913,18 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
         console.log(reList);
 
-        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-        residueStatus.action="CANCEL";
+        let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action = "CANCEL";
         residueStatus.guid = this.residueItem?.guid;
-        residueStatus.sot_guid= this.residueItem?.sot_guid;
-        residueStatus.remarks=reList[0].remarks;
-         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+        residueStatus.sot_guid = this.residueItem?.sot_guid;
+        residueStatus.remarks = reList[0].remarks;
+        this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
 
           this.handleCancelSuccess(result?.data?.updateResidueStatus);
-          if(result?.data?.updateResidueStatus>0)
-            {
-              this.GoBackPrevious(event);
-            }
-         });
+          if (result?.data?.updateResidueStatus > 0) {
+            this.GoBackPrevious(event);
+          }
+        });
         // this.residueDS.cancelResidue(reList).subscribe(result => {
         //   this.handleCancelSuccess(result?.data?.cancelResidue)
         // });
@@ -964,10 +940,10 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       // this.toggleRow(row);
       selectedList.push(this.residueItem!);
     }
-    this.rollbackSelectedRows(event,selectedList)
+    this.rollbackSelectedRows(event, selectedList)
   }
 
-  rollbackSelectedRows(event: Event,row: ResidueItem[]) {
+  rollbackSelectedRows(event: Event, row: ResidueItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -995,15 +971,14 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
             guid: item.guid,
             remarks: item.remarks,
             sot_guid: item.sot_guid,
-            is_approved:item?.status_cv=="APPROVED"
+            is_approved: item?.status_cv == "APPROVED"
           }
           return ResidueEstimateRequestInput;
         });
         console.log(reList);
         this.residueDS.rollbackResidue(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
           this.handleRollbackSuccess(result?.data?.rollbackResidue)
-          if(result?.data?.rollbackResidue>0)
-          {
+          if (result?.data?.rollbackResidue > 0) {
             this.GoBackPrevious(event);
           }
           //this.performSearch(this.pageSize, 0, this.pageSize);
@@ -1057,6 +1032,29 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     // Add any additional logic if needed
   }
 
+  onExport(event: Event) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(ResidueDisposalPdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        residue_guid: this.residueItem?.guid,
+        estimate_no: this.residueItem?.estimate_no
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
   onFormSubmit() {
 
     this.residueEstForm!.get('desc')?.setErrors(null);
@@ -1064,81 +1062,74 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     this.residueEstForm!.get('unit_price')?.setErrors(null);
     this.residueEstForm!.get('deList')?.setErrors(null);
 
-    if(!this.deList.length){
+    if (!this.deList.length) {
       this.residueEstForm?.get('deList')?.setErrors({ required: true });
     }
-    if(!this.residueEstForm?.valid) return;
+    if (!this.residueEstForm?.valid) return;
 
 
-    if(this.historyState.action==="NEW" ||this.historyState.action==="DUPLICATE")
-    {
-       var newResidueItem :ResidueItem =new ResidueItem();
-       var billGuid:string =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
-       newResidueItem.bill_to_guid= billGuid;
-       newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
-       newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-       newResidueItem.status_cv="PENDING";
-       newResidueItem.sot_guid=this.sotItem?.guid;
-       newResidueItem.residue_part= [];
-       this.deList.forEach(data=>{
-          var residuePart : ResiduePartItem = new ResiduePartItem(data);
+    if (this.historyState.action === "NEW" || this.historyState.action === "DUPLICATE") {
+      var newResidueItem: ResidueItem = new ResidueItem();
+      var billGuid: string = (this.residueEstForm?.get("billing_branch")?.value ? this.sotItem?.storing_order?.customer_company?.guid : this.residueEstForm?.get("billing_branch")?.value?.guid);
+      newResidueItem.bill_to_guid = billGuid;
+      newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
+      newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
+      newResidueItem.status_cv = "PENDING";
+      newResidueItem.sot_guid = this.sotItem?.guid;
+      newResidueItem.residue_part = [];
+      this.deList.forEach(data => {
+        var residuePart: ResiduePartItem = new ResiduePartItem(data);
 
-          if(typeof residuePart.qty_unit_type_cv=='object' )
-          {
-          residuePart.qty_unit_type_cv=data.qty_unit_type_cv?.code_val;
-          }
+        if (typeof residuePart.qty_unit_type_cv == 'object') {
+          residuePart.qty_unit_type_cv = data.qty_unit_type_cv?.code_val;
+        }
         //  delete residuePart.qty_unit_type_cv;
-          newResidueItem.residue_part?.push(residuePart);
+        newResidueItem.residue_part?.push(residuePart);
 
-       });
+      });
 
-       delete newResidueItem.customer_company;
-      
-       this.residueDS.addResidue(newResidueItem).subscribe(result=>{
+      delete newResidueItem.customer_company;
 
-          if(result.data.addResidue>0)
-          {
-            this.handleSaveSuccess(result.data.addResidue);
-          }
-       });
+      this.residueDS.addResidue(newResidueItem).subscribe(result => {
+
+        if (result.data.addResidue > 0) {
+          this.handleSaveSuccess(result.data.addResidue);
+        }
+      });
     }
-    else if(this.historyState.action==="UPDATE")
-    {
-      var updResidueItem :ResidueItem =new ResidueItem(this.residueItem);
-      var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
-      if(!this.residueEstForm.get("billing_branch")?.value?.guid)
-      {
-        billGuid="";
+    else if (this.historyState.action === "UPDATE") {
+      var updResidueItem: ResidueItem = new ResidueItem(this.residueItem);
+      var billGuid: string = (this.residueEstForm.get("billing_branch")?.value ? this.residueEstForm.get("billing_branch")?.value?.guid : this.sotItem?.storing_order?.customer_company?.guid);
+      if (!this.residueEstForm.get("billing_branch")?.value?.guid) {
+        billGuid = "";
       }
-      updResidueItem.bill_to_guid= billGuid;
+      updResidueItem.bill_to_guid = billGuid;
       updResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
       updResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-      updResidueItem.sot_guid=this.sotItem?.guid;
-      updResidueItem.residue_part= [];
-      this.deList.forEach(data=>{
-         var residuePart : ResiduePartItem = new ResiduePartItem(data);
-         if(typeof residuePart.qty_unit_type_cv=='object' )
-          {
-          residuePart.qty_unit_type_cv=data.qty_unit_type_cv?.code_val;
-          }
-         // delete residuePart.qty_unit_type_cv;
-         updResidueItem.residue_part?.push(residuePart);
+      updResidueItem.sot_guid = this.sotItem?.guid;
+      updResidueItem.residue_part = [];
+      this.deList.forEach(data => {
+        var residuePart: ResiduePartItem = new ResiduePartItem(data);
+        if (typeof residuePart.qty_unit_type_cv == 'object') {
+          residuePart.qty_unit_type_cv = data.qty_unit_type_cv?.code_val;
+        }
+        // delete residuePart.qty_unit_type_cv;
+        updResidueItem.residue_part?.push(residuePart);
 
       });
 
       delete updResidueItem.customer_company;
       delete updResidueItem.storing_order_tank;
 
-      this.residueDS.updateResidue(updResidueItem).subscribe(result=>{
+      this.residueDS.updateResidue(updResidueItem).subscribe(result => {
 
-        if(result.data.updateResidue>0)
-        {
+        if (result.data.updateResidue > 0) {
           this.handleSaveSuccess(result.data.updateResidue);
         }
-     });
+      });
 
     }
-   
+
   }
 
   updateData(newData: ResiduePartItem[] | undefined): void {
@@ -1147,25 +1138,24 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         ...row,
         index: index
       }));
-      
+
       //this.calculateCost();
     }
-    else
-    {
-      this.deList=[];
-      
+    else {
+      this.deList = [];
+
     }
   }
 
   handleRollback(event: Event, row: any, index: number): void {
     this.stopEventTrigger(event);
     this.preventDefault(event);
-     //this.rollbackSelectedRows(event, row, index);
-   }
+    //this.rollbackSelectedRows(event, row, index);
+  }
 
   handleDelete(event: Event, row: any, index: number): void {
-   this.stopEventTrigger(event);
-   this.preventDefault(event);
+    this.stopEventTrigger(event);
+    this.preventDefault(event);
     this.deleteItem(event, row, index);
   }
 
@@ -1421,97 +1411,90 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   canExport(): boolean {
-    return !!this.residue_guid;
+    return !!this.residueItem?.guid;
   }
 
   getLabourCost(): number | undefined {
     return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
   }
 
-  getPackageResidue()
-  {
-    let where:any={};
-    let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
-    where.customer_company_guid = {eq:custCompanyGuid};
+  getPackageResidue() {
+    let where: any = {};
+    let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    where.customer_company_guid = { eq: custCompanyGuid };
 
-    this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
+    this.packResidueDS.SearchPackageResidue(where, {}).subscribe(data => {
 
-      this.packResidueList=data;
-      this.displayPackResidueList=data;
+      this.packResidueList = data;
+      this.displayPackResidueList = data;
       this.populateResiduePartList(this.residueItem!);
     });
 
   }
 
-  loadBillingBranch()
-  {
-    let where:any={};
-    let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
-    where.main_customer_guid = {eq:custCompanyGuid};
+  loadBillingBranch() {
+    let where: any = {};
+    let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    where.main_customer_guid = { eq: custCompanyGuid };
 
-    this.ccDS.search(where,{}).subscribe(data=>{
-      var def =this.createDefaultCustomerCompany("--Select--","");
+    this.ccDS.search(where, {}).subscribe(data => {
+      var def = this.createDefaultCustomerCompany("--Select--", "");
 
-      this.billingBranchList=[def, ...data];;
+      this.billingBranchList = [def, ...data];;
 
       this.patchResidueEstForm(this.residueItem!);
     });
 
   }
 
-  loadHistoryState()
-  {
+  loadHistoryState() {
     this.historyState = history.state;
 
     if (this.historyState.selectedRow != null) {
 
-      this.isDuplicate = this.historyState.action==='DUPLICATE';
+      this.isDuplicate = this.historyState.action === 'DUPLICATE';
       this.residue_guid= this.historyState.selectedResidue.guid;
       this.sotItem = this.historyState.selectedRow;
-      this.residueItem=this.historyState.selectedResidue;
+      this.residueItem = this.historyState.selectedResidue;
+
       this.getPackageResidue();
       this.loadBillingBranch();
-      
-      
+
+
     }
   }
 
-  patchResidueEstForm(residue:ResidueItem)
-  {
-    let billingGuid= "";
-    if(residue)
-    {
-      billingGuid=residue.bill_to_guid!;
+  patchResidueEstForm(residue: ResidueItem) {
+    let billingGuid = "";
+    if (residue) {
+      billingGuid = residue.bill_to_guid!;
     }
-    
+
     this.residueEstForm?.patchValue({
 
-      customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no: residue?.job_no?residue.job_no:this.sotItem?.job_no,
-       billing_branch:this.getBillingBranch(billingGuid),
-       remarks:residue?.remarks
+      customer_code: this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
+      job_no: residue?.job_no ? residue.job_no : this.sotItem?.job_no,
+      billing_branch: this.getBillingBranch(billingGuid),
+      remarks: residue?.remarks
 
     });
   }
 
-  getBillingBranch(billingGuid:string):CustomerCompanyItem
-  {
-    let ccItem:CustomerCompanyItem= this.billingBranchList[0] ;
-     let ccItems=this.billingBranchList.filter(data=>data.guid==billingGuid);
+  getBillingBranch(billingGuid: string): CustomerCompanyItem {
+    let ccItem: CustomerCompanyItem = this.billingBranchList[0];
+    let ccItems = this.billingBranchList.filter(data => data.guid == billingGuid);
 
-     if(ccItems.length>0)
-     {
-       ccItem=ccItems[0]!;
-     }
+    if (ccItems.length > 0) {
+      ccItem = ccItems[0]!;
+    }
 
-     return ccItem;
+    return ccItem;
 
   }
-  createDefaultCustomerCompany(code:string, name:string):CustomerCompanyItem
-  {
-    let ccItem:CustomerCompanyItem=new CustomerCompanyItem();
-    ccItem.code=code;
-    ccItem.name=name;
+  createDefaultCustomerCompany(code: string, name: string): CustomerCompanyItem {
+    let ccItem: CustomerCompanyItem = new CustomerCompanyItem();
+    ccItem.code = code;
+    ccItem.name = name;
     return ccItem
 
   }
@@ -1520,52 +1503,52 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     return cc && cc.tariff_residue ? cc.tariff_residue.description : '';
   }
 
-  
 
-  resetValue(){
-    
-//     this.newDesc.setValidators( null);
-// this.newDesc.patchValue(null, { emitEvent: false });
-//this.newDesc.updateValueAndValidity({ emitEvent: false });
+
+  resetValue() {
+
+    //     this.newDesc.setValidators( null);
+    // this.newDesc.patchValue(null, { emitEvent: false });
+    //this.newDesc.updateValueAndValidity({ emitEvent: false });
     // this.newDesc.disable({ emitEvent: false });
     // this.newDesc.patchValue(null, { emitEvent: false });
     // this.newDesc.enable({ emitEvent: false });
-    this.newDesc=new FormControl(null, [Validators.required]);
-        this.newQty=new FormControl(null, [Validators.required]);
-        this.newUnitPrice=new FormControl(null, [Validators.required]);
-        this.newQtyType=new FormControl(null, [Validators.required]);
-        this.initializeValueChanges();
-   // this.newDesc.patchValue(null,{emitEvent:false});
+    this.newDesc = new FormControl(null, [Validators.required]);
+    this.newQty = new FormControl(null, [Validators.required]);
+    this.newUnitPrice = new FormControl(null, [Validators.required]);
+    this.newQtyType = new FormControl(null, [Validators.required]);
+    this.initializeValueChanges();
+    // this.newDesc.patchValue(null,{emitEvent:false});
     // this.newQty.patchValue(null,{emitEvent:false});
     // this.newUnitPrice.patchValue(null,{emitEvent:false});
     // this.newQtyType.patchValue(null,{emitEvent:false});
-     //this.newDesc.setErrors(null);
-     //this.newDesc.setValidators([Validators.required]);
+    //this.newDesc.setErrors(null);
+    //this.newDesc.setValidators([Validators.required]);
     // this.newDesc.updateValueAndValidity({ emitEvent: true });
-//     this.newQty.setErrors(null);
-//     this.newUnitPrice.setErrors(null);
-//     this.newQtyType.setErrors(null);
-//     this.newDesc.setValidators([Validators.required]);
-// this.newQty.setValidators([Validators.required]);
-// this.newUnitPrice.setValidators([Validators.required]);
-// this.newQtyType.setValidators([Validators.required]);
+    //     this.newQty.setErrors(null);
+    //     this.newUnitPrice.setErrors(null);
+    //     this.newQtyType.setErrors(null);
+    //     this.newDesc.setValidators([Validators.required]);
+    // this.newQty.setValidators([Validators.required]);
+    // this.newUnitPrice.setValidators([Validators.required]);
+    // this.newQtyType.setValidators([Validators.required]);
 
-// this.newDesc.updateValueAndValidity({ emitEvent: false });
-// this.newQty.updateValueAndValidity({ emitEvent: false });
-// this.newUnitPrice.updateValueAndValidity({ emitEvent: false });
-// this.newQtyType.updateValueAndValidity({ emitEvent: false });
+    // this.newDesc.updateValueAndValidity({ emitEvent: false });
+    // this.newQty.updateValueAndValidity({ emitEvent: false });
+    // this.newUnitPrice.updateValueAndValidity({ emitEvent: false });
+    // this.newQtyType.updateValueAndValidity({ emitEvent: false });
 
     this.residueEstForm?.patchValue({
-      desc:'',
-      qty:'',
-      unit_price:''
-    },{emitEvent:false});
+      desc: '',
+      qty: '',
+      unit_price: ''
+    }, { emitEvent: false });
     this.residueEstForm?.get('desc')?.setErrors(null);
     this.residueEstForm?.get('qty')?.setErrors(null);
     this.residueEstForm?.get('unit_price')?.setErrors(null);
-   
-    this.displayPackResidueList=[...this.packResidueList];
-  
+
+    this.displayPackResidueList = [...this.packResidueList];
+
   }
 
   GoBackPrevious(event: Event) {
@@ -1578,64 +1561,56 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     );
   }
 
-  
-  populateResiduePartList(residue:ResidueItem){
 
-    if(residue)
-    {
-      var dataList = residue.residue_part?.map(data=>
-        {
-          if (this.isDuplicate && data.description) {
-            data.action='NEW';
-            // Filter packResidueList for matching tariff_residue_guid
-            const packResidue = this.packResidueList.find(res => res.tariff_residue?.guid === data.tariff_residue_guid);
-            if (packResidue) {
-                data.cost = packResidue.cost;
-            }
-          }
-           var d:any =data;
-          if(data.qty_unit_type_cv && this.unitTypeCvList.length>0)
-          {
-            if(typeof data.qty_unit_type_cv==='string')
-            {
-            d.qty_unit_type_cv=this.cvDS.getCodeObject(data.qty_unit_type_cv,this.unitTypeCvList);
-            }
-          }
-          return new ResidueEstPartGO(d)
+  populateResiduePartList(residue: ResidueItem) {
 
-        } );
+    if (residue) {
+      var dataList = residue.residue_part?.map(data => {
+        if (this.isDuplicate && data.description) {
+          data.action = 'NEW';
+          // Filter packResidueList for matching tariff_residue_guid
+          const packResidue = this.packResidueList.find(res => res.tariff_residue?.guid === data.tariff_residue_guid);
+          if (packResidue) {
+            data.cost = packResidue.cost;
+          }
+        }
+        var d: any = data;
+        if (data.qty_unit_type_cv && this.unitTypeCvList.length > 0) {
+          if (typeof data.qty_unit_type_cv === 'string') {
+            d.qty_unit_type_cv = this.cvDS.getCodeObject(data.qty_unit_type_cv, this.unitTypeCvList);
+          }
+        }
+        return new ResidueEstPartGO(d)
+
+      });
       this.updateData(dataList);
     }
   }
-  
-  resetSelectedItemForUpdating()
-  {
-    if(this.updateSelectedItem)
-    {
-      this.updateSelectedItem.item.edited=false;
-      this.updateSelectedItem=null;
-     
+
+  resetSelectedItemForUpdating() {
+    if (this.updateSelectedItem) {
+      this.updateSelectedItem.item.edited = false;
+      this.updateSelectedItem = null;
+
     }
     this.resetValue();
   }
 
   getTotalCost(): number {
     return this.deList.reduce((acc, row) => {
-      if ((row.delete_dt===null||row.delete_dt===undefined) && (row.approve_part==null || row.approve_part==true)) {
-        if(this.IsApproved())
-        {
+      if ((row.delete_dt === null || row.delete_dt === undefined) && (row.approve_part == null || row.approve_part == true)) {
+        if (this.IsApproved()) {
           return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
         }
-        else
-        {
-           return acc + ((row.quantity || 0) * (row.cost || 0));
+        else {
+          return acc + ((row.quantity || 0) * (row.cost || 0));
         }
       }
       return acc; // If row is approved, keep the current accumulator value
     }, 0);
   }
 
-  getFooterBackgroundColor():string{
+  getFooterBackgroundColor(): string {
     return 'light-green';
   }
 
@@ -1643,7 +1618,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      
+
     }
   }
 
@@ -1651,7 +1626,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-     
+
       this.router.navigate(['/admin/residue-disposal/estimate-approval'], {
         state: this.historyState
 
@@ -1660,205 +1635,195 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     }
   }
 
-  isAllowToSaveSubmit()
-  {
-     var NoDel=this.deList.filter(d=>d.action!='cancel');
-     return (NoDel.length );
+  isAllowToSaveSubmit() {
+    var NoDel = this.deList.filter(d => d.action != 'cancel');
+    return (NoDel.length);
   }
 
   IsApprovePart(rep: ResiduePartItem) {
     return rep.approve_part;
   }
 
-  approveRow(event:Event) {
-  
-    this.onApprove(event,this.residueItem!);
+  approveRow(event: Event) {
+
+    this.onApprove(event, this.residueItem!);
   }
 
-   onApprove(event:Event,row: ResidueItem) {
-     event.preventDefault();
-      const bill_to =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
-     
-     if (bill_to) {
-        let re: ResidueItem = new ResidueItem(row);
-        
-         re.guid = this.residueItem?.guid;
-         re.sot_guid = this.residueItem?.sot_guid;
-         re.bill_to_guid = bill_to;
-         re.status_cv=this.residueItem?.status_cv;
-         re.job_no=this.residueEstForm?.get("job_no")?.value
-         re.remarks=this.residueEstForm?.get("remarks")?.value
-        this.deList?.forEach((rep: any) => {
-          rep.approve_qty = (this.IsApproved()?rep.approve_qty : rep.quantity) ;
-         // rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
-          rep.approve_cost = (this.IsApproved()?rep.approve_cost : rep.cost);
-          if(typeof rep.qty_unit_type_cv=='object' )
-            {
-              rep.qty_unit_type_cv=rep.qty_unit_type_cv?.code_val;
-            }
-          //delete rep.qty_unit_type_cv;
-        })
-  
-        re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
-          return new ResiduePartItem({
-            ...rep,
-            action : (this.residueItem?.status_cv==='PENDING'?((rep.action===undefined||rep.action===null)?'EDIT':rep.action):(rep.action===undefined?'':rep.action)),
-            tariff_residue: undefined,
-            tariff_residue_guid:(rep.tariff_residue_guid?rep.tariff_residue_guid:''),
-            approve_part: (rep.approve_part==null?true:rep.approve_part),
-             approve_qty:rep.approve_qty,
-             approve_cost:rep.approve_cost
-          })
-        });
-        delete re.storing_order_tank;
-        
-         console.log(re)
-         this.residueDS.approveResidue(re).subscribe(result => {
-           console.log(result)
-           this.handleSaveSuccess(result?.data?.approveResidue);
-         });
-    //  }
-       } else {
-         bill_to?.setErrors({ required: true })
-         bill_to?.markAsTouched();
-         bill_to?.updateValueAndValidity();
-       }
-    }
+  onApprove(event: Event, row: ResidueItem) {
+    event.preventDefault();
+    const bill_to = (this.residueEstForm?.get("billing_branch")?.value ? this.sotItem?.storing_order?.customer_company?.guid : this.residueEstForm?.get("billing_branch")?.value?.guid);
 
-    toggleApprovePart(event:Event,rep: ResiduePartItem) {
-      event.stopPropagation(); // Prevents click event from bubbling up
-      if (this.isDisabled()) return;
-      rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
-      // if(rep?.action==='' || rep?.action===null)
-      //   {
-          rep.action='EDIT';
-  
-        // }
-    }
-  
-    isDisabled(): boolean {
-      const validStatus = [ 'COMPLETED','QC_COMPLETED','JOB_IN_PROGRESS']
-      return validStatus.includes(this.residueItem?.status_cv!);
-    }
+    if (bill_to) {
+      let re: ResidueItem = new ResidueItem(row);
 
-    updateAction(residuePart:any)
-    {
-      if(residuePart?.action==='' || residuePart?.action===null)
-      {
-        residuePart.action='EDIT';
-
-      }
-    }
-
-    IsAbleToApprove()
-    {
-      var NoDel=this.deList.filter(d=>((d.delete_dt===null||d.delete_dt===undefined) && (d.approve_part==null || d.approve_part==true)));
-      return (NoDel.length);
-    }
-
-    IsApproved()
-    {
-      const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
-      return validStatus.includes(this.residueItem?.status_cv!);
-      
-    }
-
-    calculateResidueItemCost(residuePart: ResiduePartItem):number
-    {
-       let calResCost:number=0;
-
-       if(this.IsApproved())
-       {
-        calResCost=residuePart.approve_cost!*residuePart.approve_qty!;
-       }
-       else
-       {
-         calResCost=residuePart.cost!*residuePart.quantity!;
-       }
-
-       return calResCost;
-
-    }
-
-    checkApprovePart() {
-      return this.deList.some(de => de.approve_part || (de.approve_part === null));
-    }
-  
-    canApprove() {
-      return this.checkApprovePart() && this.residueDS.canApprove(this.residueItem!)
-    }
-
-    onNoAction(event: Event,row: ResidueItem) {
-      this.preventDefault(event);
-      console.log(this.sotItem)
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-      const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-        width: '1000px',
-        data: {
-          action: 'cancel',
-          dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-          item: [this.residueItem],
-          translatedLangText: this.translatedLangText
-        },
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        if (result?.action === 'confirmed') {
-          const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
-          console.log(reList);
-  
-          let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-          residueStatus.action="NA";
-          residueStatus.guid = this.residueItem?.guid;
-          residueStatus.sot_guid= this.residueItem?.sot_guid;
-          residueStatus.remarks=reList[0].remarks;
-          residueStatus.residuePartRequests=[];
-          row.residue_part?.forEach(d=>{
-            var resPart :ResiduePartRequest = new ResiduePartRequest();
-            resPart.guid=d.guid;
-            resPart.approve_part=false;
-            residueStatus.residuePartRequests?.push(resPart);
-          });
-           this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
-  
-            this.handleCancelSuccess(result?.data?.updateResidueStatus);
-            if(result?.data?.updateResidueStatus>0)
-              {
-                this.GoBackPrevious(event);
-              }
-           });
-          // this.residueDS.cancelResidue(reList).subscribe(result => {
-          //   this.handleCancelSuccess(result?.data?.cancelResidue)
-          // });
+      re.guid = this.residueItem?.guid;
+      re.sot_guid = this.residueItem?.sot_guid;
+      re.bill_to_guid = bill_to;
+      re.status_cv = this.residueItem?.status_cv;
+      re.job_no = this.residueEstForm?.get("job_no")?.value
+      re.remarks = this.residueEstForm?.get("remarks")?.value
+      this.deList?.forEach((rep: any) => {
+        rep.approve_qty = (this.IsApproved() ? rep.approve_qty : rep.quantity);
+        // rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
+        rep.approve_cost = (this.IsApproved() ? rep.approve_cost : rep.cost);
+        if (typeof rep.qty_unit_type_cv == 'object') {
+          rep.qty_unit_type_cv = rep.qty_unit_type_cv?.code_val;
         }
+        //delete rep.qty_unit_type_cv;
+      })
+
+      re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
+        return new ResiduePartItem({
+          ...rep,
+          action: (this.residueItem?.status_cv === 'PENDING' ? ((rep.action === undefined || rep.action === null) ? 'EDIT' : rep.action) : (rep.action === undefined ? '' : rep.action)),
+          tariff_residue: undefined,
+          tariff_residue_guid: (rep.tariff_residue_guid ? rep.tariff_residue_guid : ''),
+          approve_part: (rep.approve_part == null ? true : rep.approve_part),
+          approve_qty: rep.approve_qty,
+          approve_cost: rep.approve_cost
+        })
       });
-              
-         
-              // let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-              // residueStatus.action="NA";
-              // residueStatus.guid = row?.guid;
-              // residueStatus.sot_guid= row?.sot_guid;
-              // residueStatus.remarks='';
-              // residueStatus.residuePartRequests=[];
-              // row.residue_part?.forEach(d=>{
-              //   var resPart :ResiduePartRequest = new ResiduePartRequest();
-              //   resPart.guid=d.guid;
-              //   resPart.approve_part=false;
-              //   residueStatus.residuePartRequests?.push(resPart);
-              // });
-              //  this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
-      
-              //   console.log(result)
-              //   this.handleCancelSuccess(result?.data?.updateResidueStatus);
-              //  });
-              // this.residueDS.cancelResidue(reList).subscribe(result => {
-              //   this.handleCancelSuccess(result?.data?.cancelResidue)
-              // });
-            }
+      delete re.storing_order_tank;
+
+      console.log(re)
+      this.residueDS.approveResidue(re).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result?.data?.approveResidue);
+      });
+      //  }
+    } else {
+      bill_to?.setErrors({ required: true })
+      bill_to?.markAsTouched();
+      bill_to?.updateValueAndValidity();
+    }
+  }
+
+  toggleApprovePart(event: Event, rep: ResiduePartItem) {
+    event.stopPropagation(); // Prevents click event from bubbling up
+    if (this.isDisabled()) return;
+    rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
+    // if(rep?.action==='' || rep?.action===null)
+    //   {
+    rep.action = 'EDIT';
+
+    // }
+  }
+
+  isDisabled(): boolean {
+    const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS']
+    return validStatus.includes(this.residueItem?.status_cv!);
+  }
+
+  updateAction(residuePart: any) {
+    if (residuePart?.action === '' || residuePart?.action === null) {
+      residuePart.action = 'EDIT';
+
+    }
+  }
+
+  IsAbleToApprove() {
+    var NoDel = this.deList.filter(d => ((d.delete_dt === null || d.delete_dt === undefined) && (d.approve_part == null || d.approve_part == true)));
+    return (NoDel.length);
+  }
+
+  IsApproved() {
+    const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
+    return validStatus.includes(this.residueItem?.status_cv!);
+
+  }
+
+  calculateResidueItemCost(residuePart: ResiduePartItem): number {
+    let calResCost: number = 0;
+
+    if (this.IsApproved()) {
+      calResCost = residuePart.approve_cost! * residuePart.approve_qty!;
+    }
+    else {
+      calResCost = residuePart.cost! * residuePart.quantity!;
+    }
+
+    return calResCost;
+
+  }
+
+  checkApprovePart() {
+    return this.deList.some(de => de.approve_part || (de.approve_part === null));
+  }
+
+  canApprove() {
+    return this.checkApprovePart() && this.residueDS.canApprove(this.residueItem!)
+  }
+
+  onNoAction(event: Event, row: ResidueItem) {
+    this.preventDefault(event);
+    console.log(this.sotItem)
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        item: [this.residueItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
+        console.log(reList);
+
+        let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action = "NA";
+        residueStatus.guid = this.residueItem?.guid;
+        residueStatus.sot_guid = this.residueItem?.sot_guid;
+        residueStatus.remarks = reList[0].remarks;
+        residueStatus.residuePartRequests = [];
+        row.residue_part?.forEach(d => {
+          var resPart: ResiduePartRequest = new ResiduePartRequest();
+          resPart.guid = d.guid;
+          resPart.approve_part = false;
+          residueStatus.residuePartRequests?.push(resPart);
+        });
+        this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
+
+          this.handleCancelSuccess(result?.data?.updateResidueStatus);
+          if (result?.data?.updateResidueStatus > 0) {
+            this.GoBackPrevious(event);
+          }
+        });
+        // this.residueDS.cancelResidue(reList).subscribe(result => {
+        //   this.handleCancelSuccess(result?.data?.cancelResidue)
+        // });
+      }
+    });
+
+
+    // let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+    // residueStatus.action="NA";
+    // residueStatus.guid = row?.guid;
+    // residueStatus.sot_guid= row?.sot_guid;
+    // residueStatus.remarks='';
+    // residueStatus.residuePartRequests=[];
+    // row.residue_part?.forEach(d=>{
+    //   var resPart :ResiduePartRequest = new ResiduePartRequest();
+    //   resPart.guid=d.guid;
+    //   resPart.approve_part=false;
+    //   residueStatus.residuePartRequests?.push(resPart);
+    // });
+    //  this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+
+    //   console.log(result)
+    //   this.handleCancelSuccess(result?.data?.updateResidueStatus);
+    //  });
+    // this.residueDS.cancelResidue(reList).subscribe(result => {
+    //   this.handleCancelSuccess(result?.data?.cancelResidue)
+    // });
+  }
 }

@@ -333,17 +333,16 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(this.eirDetails?.bottom_coord || '[]'));
 
       this.cdr.detectChanges();
-    }
 
-    console.log(this.eirPdf)
-    if (!this.eirPdf?.length) {
-      this.generatePDF();
+      if (!this.eirPdf?.length) {
+        this.generatePDF();
+      }
+      //  else {
+      //   const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
+      //   const pdfUrl = URL.createObjectURL(eirBlob);
+      //   this.eirPdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
+      // }
     }
-    //  else {
-    //   const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
-    //   const pdfUrl = URL.createObjectURL(eirBlob);
-    //   this.eirPdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
-    // }
   }
 
   showPDF(): void {

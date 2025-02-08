@@ -1,0 +1,250 @@
+.pdf-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.pdf-header {
+    display: flex;
+    padding: 10px 10px 0px 10px;
+    height: 90px;
+}
+
+.pdf-body {
+    display: flex;
+    padding: 0px 10px 0px 10px;
+    // min-height: 1123px;
+}
+
+.pdf-footer {
+    display: flex;
+    padding: 4px 10px 10px 10px;
+    text-align: left;
+
+    .disclaimer {
+        width: 100%;
+        font-size: 0.5rem;
+        margin-top: 1px;
+    }
+
+    .footer-info-content {
+        width: 100%;
+        font-size: 0.6rem;
+        margin-top: 1px;
+    }
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    width: 180px;
+    object-fit: contain;
+}
+
+.company-container {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+
+    .header-company-name {
+        font-weight: 500;
+    }
+
+    .company-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        font-size: 10px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+.body-title {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table,
+th,
+td {
+    border: 1px solid #9d9d9d;
+}
+
+th,
+td {
+    padding: 1px 4px;
+    text-align: left;
+
+    b {
+        font-weight: 900;
+    }
+}
+
+tr.th {
+    background-color: #9d9d9d;
+    text-align: center;
+}
+
+.steam-temp-table {
+    font-size: 0.7rem;
+    padding: 0px 10px 0px 10px;
+
+    .steam-temp-table td,
+    .steam-temp-table th {
+        text-align: center;
+        /* Centers text horizontally */
+        vertical-align: middle;
+        /* Centers text vertically */
+    }
+
+    .steam-temp-header {
+        background-color: #dcdcdc;
+    }
+
+    .steam-temp-subheader {
+        background-color: #e8e8e8;
+    }
+}
+
+.header-table {
+    background-color: #c2c2c2;
+}
+
+.footer-info-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.pdf-p-t {
+    padding-top: 10px;
+}
+
+.pdf-p-r {
+    padding-right: 10px;
+}
+
+.pdf-p-b {
+    padding-bottom: 10px;
+}
+
+.pdf-p-l {
+    padding-left: 10px;
+}
+
+.pdf-m-t {
+    margin-top: 10px;
+}
+
+.pdf-m-r {
+    margin-right: 10px;
+}
+
+.pdf-m-b {
+    margin-bottom: 10px;
+}
+
+.pdf-m-l {
+    margin-left: 10px;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.total-content {
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: flex;
+    justify-content: flex-end;
+
+    .total-content-right {
+        width: 37%;
+    }
+
+    .total-cost {
+        display: flex;
+        width: 100%;
+    }
+
+    .total-cost-value {
+        width: 33%;
+        border: none;
+        border-bottom: 1px solid #000;
+        padding-right: 5px;
+    }
+}
+
+.approved-content {
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: flex;
+
+    .approved-cost {
+        display: flex;
+        width: 100%;
+    }
+
+    .approved-cost-value {
+        width: 10%;
+        border: none;
+        padding-right: 5px;
+    }
+}
+
+.signature-content {
+    margin-top: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &-left,
+    &-right {
+        flex: 1; // Each section takes equal space
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .signature-line {
+        width: 80%; // Adjust width of the signature line
+        border: none;
+        border-top: 2px solid #000;
+        margin-bottom: 5px;
+    }
+
+    &-left-title,
+    &-right-title {
+        font-weight: bold;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+}
+
+.underline-content {
+    width: 30%;
+}

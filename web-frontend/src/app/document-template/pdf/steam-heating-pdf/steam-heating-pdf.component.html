@@ -147,6 +147,7 @@
             <b>{{translatedLangText.BOTTOM_SIDE}}</b>
           </td>
         </tr>
+        @if (steamTempList?.length) {
         @for (steamTemp of steamTempList; track steamTemp) {
         <tr>
           <td class="td-col-0-5 text-center align-middle">
@@ -166,6 +167,14 @@
           </td>
           <td class="td-col-4">
             {{steamTemp.remarks}}
+          </td>
+        </tr>
+        }
+        }
+        @else {
+        <tr>
+          <td class="text-center" colspan="6">
+            <b>{{translatedLangText.NO_RESULT}}</b>
           </td>
         </tr>
         }
@@ -212,7 +221,6 @@
   </div>
 </div>
 <div mat-dialog-actions class="m-2 align-right">
-  @if (this.existingPdf?.length) {
   <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
     [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
@@ -224,8 +232,7 @@
     </mat-icon>
     {{translatedLangText.DOWNLOAD}}
   </button>
-  }
-  <button mat-flat-button color="accent" (click)="onRepublshClick()" tabindex="-1"
+  <!-- <button mat-flat-button color="accent" (click)="onRepublshClick()" tabindex="-1"
     [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
       @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
@@ -235,7 +242,7 @@
       }
     </mat-icon>
     {{translatedLangText.EXPORT_NEW}}
-  </button>
+  </button> -->
   @if ((generatingPdfLoading$| async)) {
   <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
   }

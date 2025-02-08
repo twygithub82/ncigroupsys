@@ -32,15 +32,15 @@ import { RepairPartDS } from 'app/data-sources/repair-part';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { SteamDS } from 'app/data-sources/steam';
-import { SteamPartDS } from 'app/data-sources/steam-part';
+import { ResidueDS } from 'app/data-sources/residue';
+import { ResiduePartDS, ResiduePartItem } from 'app/data-sources/residue-part';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  steam_guid: string;
+  residue_guid: string;
   customer_company_guid: string;
   sotDS: StoringOrderTankDS;
-  steamDS: SteamDS;
+  residueDS: ResidueDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   existingPdf?: any;
@@ -49,9 +49,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-steam-heating-pdf',
-  templateUrl: './steam-heating-pdf.component.html',
-  styleUrls: ['./steam-heating-pdf.component.scss'],
+  selector: 'app-residue-disposal-pdf',
+  templateUrl: './residue-disposal-pdf.component.html',
+  styleUrls: ['./residue-disposal-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -63,7 +63,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -154,7 +154,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     ETR_DATE: 'COMMON-FORM.ETR-DATE',
     REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
     DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
-    STEAM_PROGRESS_MONITORING_CHART: 'COMMON-FORM.STEAM-PROGRESS-MONITORING-CHART',
+    RESIDUE_CARGO_DISPOSAL: 'COMMON-FORM.RESIDUE-CARGO-DISPOSAL',
     TIME: 'COMMON-FORM.TIME',
     TEMPERATURE: 'COMMON-FORM.TEMPERATURE',
     THERMOMETER: 'COMMON-FORM.THERMOMETER',
@@ -166,27 +166,33 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION',
     PREPARED_BY: 'COMMON-FORM.PREPARED-BY',
     APPROVED_BY: 'COMMON-FORM.APPROVED-BY',
+    PRICE: 'COMMON-FORM.PRICE',
+    TOTAL_SGD: 'COMMON-FORM.TOTAL-SGD',
   }
 
   type?: string | null;
-  steamDS: SteamDS;
-  steamPartDS: SteamPartDS;
+  residueDS: ResidueDS;
+  residuePartDS: ResiduePartDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
-  steam_guid?: string | null;
+  residue_guid?: string | null;
   customer_company_guid?: string | null;
   estimate_no?: string | null;
 
   customerInfo: any = customerInfo;
   disclaimerNote: string = "";
   pdfTitle: string = "";
-  steamItem: any;
+  residueItem: any;
 
   last_test_desc?: string = ""
 
-  steamTempList?: any[] = [];
-  totalDuration?: string;
+  repairCost?: RepairCostTableItem;
+  residuePartList?: any[] = [];
+  yesnoCvList: CodeValuesItem[] = [];
+  soTankStatusCvList: CodeValuesItem[] = [];
+  totalCost?: number;
+  approvedCost?: number;
 
   scale = 1.1;
   imageQuality = 0.85;
@@ -202,7 +208,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   generatingPdfProgress = 0;
 
   constructor(
-    public dialogRef: MatDialogRef<SteamHeatingPdfComponent>,
+    public dialogRef: MatDialogRef<ResidueDisposalPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -212,12 +218,12 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     private sanitizer: DomSanitizer) {
     super();
     this.translateLangText();
-    this.steamDS = new SteamDS(this.apollo);
-    this.steamPartDS = new SteamPartDS(this.apollo);
+    this.residueDS = new ResidueDS(this.apollo);
+    this.residuePartDS = new ResiduePartDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.steam_guid = data.steam_guid;
+    this.residue_guid = data.residue_guid;
     this.customer_company_guid = data.customer_company_guid;
     this.estimate_no = data.estimate_no;
     this.existingPdf = data.existingPdf;
@@ -228,26 +234,26 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.translatedLangText.STEAM_PROGRESS_MONITORING_CHART;
-    
+    this.pdfTitle = this.translatedLangText.RESIDUE_CARGO_DISPOSAL;
+
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
-      this.getSteamData(),
-      this.data.retrieveFile ? this.getSteamPdf() : Promise.resolve(null)
+      this.getResidueData(),
+      // this.data.retrieveFile ? this.getSteamPdf() : Promise.resolve(null)
+      Promise.resolve(null)
     ]);
-    
     if (data?.length > 0) {
-      this.steamItem = data[0];
+      this.residueItem = data[0];
       await this.getCodeValuesData();
-      console.log(this.steamItem)
-      this.updateData(this.steamItem?.steaming_part?.[0]?.job_order?.steaming_temp);
+      console.log(this.residueItem)
+      this.updateData(this.residueItem?.residue_part);
 
       this.cdr.detectChanges();
+    }
 
-      this.existingPdf = pdfData ?? this.existingPdf;
-      if (!this.existingPdf?.length) {
-        this.generatePDF();
-      }
+    this.existingPdf = pdfData ?? this.existingPdf;
+    if (!this.existingPdf?.length) {
+      this.generatePDF();
     }
     // else {
     //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
@@ -258,9 +264,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   async generatePDF(): Promise<void> {
     const bodyElement = document.getElementById('pdf-form-body');
-    const signElement = document.getElementById('signature-content');
 
-    if (!bodyElement || !signElement) {
+    if (!bodyElement) {
       console.error('Body or Signature element not found');
       return;
     }
@@ -271,7 +276,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       this.generatingPdfProgress = 0;
 
       const canvas = await html2canvas(bodyElement, { scale: this.scale });
-      const signCanvas = await html2canvas(signElement, { scale: this.scale });
 
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.width; // A4 page width
@@ -294,15 +298,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       const imgHeight = canvas.height * 0.264583;
       const aspectRatio = imgWidth / imgHeight;
 
-      // Signature Size
-      const signWidth = signCanvas.width * 0.264583;
-      const signHeight = signCanvas.height * 0.264583;
-      const signAspectRatio = signWidth / signHeight;
-      const signScaledWidth = pageWidth - leftRightMargin * 2;
-      const signScaledHeight = signScaledWidth / signAspectRatio;
-
       // Adjust for footer
-      const signYOffset = pageHeight - bottomMargin - footerHeight - signScaledHeight;
+      const signYOffset = pageHeight - bottomMargin - footerHeight;
 
       // Calculate pagination
       const scaledWidth = pageWidth - leftRightMargin * 2;
@@ -337,12 +334,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
         const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
         pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
         this.generatingPdfProgress += 33;
-
-        // If it's the last page, add the signature above the footer
-        if (currentPage === totalPages) {
-          const signImgData = signCanvas.toDataURL('image/jpeg');
-          pdf.addImage(signImgData, 'JPEG', leftRightMargin, signYOffset, signScaledWidth, signScaledHeight);
-        }
 
         // Add Footer
         await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
@@ -432,9 +423,9 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     }
   }
 
-  getSteamData(): Promise<any[]> {
+  getResidueData(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.steam_guid!).subscribe({
+      this.subs.sink = this.residueDS.getResidueByIDForPdf(this.residue_guid!).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
@@ -443,7 +434,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   getSteamPdf(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.steam_guid!]).subscribe({
+      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.residue_guid!]).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
@@ -451,32 +442,33 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   async getCodeValuesData(): Promise<void> {
-    // const queries = [
-    //   { alias: 'yesnoCv', codeValType: 'YES_NO' },
-    //   { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
-    //   { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //   { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-    //   { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-    //   { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-    //   { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-    //   { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-    //   { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
-    // ];
+    const queries = [
+      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+      { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
+      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+    ];
 
-    // await this.cvDS.getCodeValuesByTypeAsync(queries);
+    await this.cvDS.getCodeValuesByTypeAsync(queries);
 
-    // // Wrap all alias connections in promises
-    // const promises = [
-    //   firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
-    //     this.yesnoCvList = data || [];
-    //   }),
-    //   firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
-    //     this.soTankStatusCvList = data || [];
-    //   }),
-    // ];
+    // Wrap all alias connections in promises
+    const promises = [
+      firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
+        this.yesnoCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
+        this.soTankStatusCvList = data || [];
+      }),
+    ];
 
-    // // Wait for all promises to resolve
-    // await Promise.all(promises);
+    // Wait for all promises to resolve
+    await Promise.all(promises);
   }
 
   chunkArray(array: any[], chunkSize: number): any[][] {
@@ -487,25 +479,18 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     return chunks;
   }
 
-  updateData(newData: RepairPartItem[] | undefined): void {
+  updateData(newData: ResiduePartItem[] | undefined): void {
     if (newData?.length) {
-      newData = newData.map((row) => ({
-        ...row
-      }));
-
-      // console.log('Before sort', newData);
-      // newData = this.repairPartDS.sortAndGroupByGroupName(newData);
-      // console.log('After sort', newData);
-
-      this.steamTempList = newData.map((row, index) => ({
+      this.residuePartList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
-      console.log(this.steamTempList);
+      this.totalCost = this.residuePartList.reduce((sum, row) => sum + ((row.cost || 0) * (row.quantity || 0)), 0);
+      this.approvedCost = this.residuePartList.reduce((sum, row) => sum + (row.approve_cost || 0), 0);
+      console.log(this.residuePartList);
     } else {
-      this.steamTempList = [];
+      this.residuePartList = [];
     }
-    this.getTotalSteamDuration();
   }
 
   translateLangText() {
@@ -529,10 +514,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       return figure.toFixed(2);
     }
     return "";
-  }
-
-  getTotalSteamDuration() {
-    this.totalDuration = this.steamDS.getTotalSteamDuration(this.steamTempList);
   }
 
   calculateCost() {

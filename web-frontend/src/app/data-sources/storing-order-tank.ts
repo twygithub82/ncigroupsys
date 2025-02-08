@@ -275,6 +275,10 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
           un_no
           update_by
           update_dt
+          cleaning_category {
+            name
+            description
+          }
         }
         storing_order {
           so_no

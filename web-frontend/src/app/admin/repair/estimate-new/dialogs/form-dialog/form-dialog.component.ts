@@ -285,7 +285,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       startWith(''),
       debounceTime(300),
       tap(value => {
-        console.log(value)
         const subgroupName = this.repairPartForm?.get('subgroup_name_cv');
         if (value) {
           this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
@@ -314,7 +313,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tap(value => {
         const groupName = this.repairPartForm?.get('group_name_cv')?.value;
         if (groupName) {
-          console.log(`${groupName.code_val}, ${value}`)
           this.trDS.searchDistinctPartName(groupName.code_val, value || '').subscribe(data => {
             this.partNameList = data;
           });
@@ -326,7 +324,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       startWith(''),
       debounceTime(300),
       tap(value => {
-        console.log(`${value}`)
         if (value.includes('4X')) {
           this.SetRepair4X(false);
         } else {

@@ -48,6 +48,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { FileManagerService } from '@core/service/filemanager.service';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -178,6 +179,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   igDS: InGateDS;
 
   sot_guid?: string | null;
+  sdsPdf: any;
+  sdsPdfName: string = "";
 
   ownerControl = new UntypedFormControl();
   ownerList?: CustomerCompanyItem[];
@@ -202,6 +205,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     private translate: TranslateService,
     private route: ActivatedRoute,
     private router: Router,
+    private fileManagerService: FileManagerService,
   ) {
     super();
     this.translateLangText();
@@ -260,6 +264,22 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
             }
             this.populateInGateForm(this.storingOrderTankItem!);
           });
+
+          this.fileManagerService.getFileUrlByGroupGuid([this.storingOrderTankItem?.tariff_cleaning?.guid!]).subscribe({
+            next: (response) => {
+              console.log('Files retrieved successfully:', response);
+              if (response?.length) {
+                this.sdsPdf = response[0];
+                this.getSDSPdfName();
+              }
+            },
+            error: (error) => {
+              console.error('Error retrieving files:', error);
+            },
+            complete: () => {
+              console.log('File retrieval process completed.');
+            }
+          });
         }
       });
     } else {
@@ -313,6 +333,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if (sot.tariff_cleaning) {
       this.lastCargoControl.setValue(sot.tariff_cleaning);
       this.cargoDetails = sot.tariff_cleaning;
+      this.getSDSPdfName();
     }
   }
 
@@ -343,6 +364,12 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       this.contextMenu.menuData = { item: item };
       this.contextMenu.menu.focusFirstItem('mouse');
       this.contextMenu.openMenu();
+    }
+  }
+
+  getSDSPdfName() {
+    if (this.sdsPdf) {
+      this.sdsPdfName = this.sdsPdf?.description ? this.cargoDetails?.cargo + ".pdf" : ""
     }
   }
 
@@ -485,6 +512,25 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
       this.router.navigate(['/admin/inventory/in-gate']);
     }
+  }
+
+  async onDownloadClick() {
+    if (this.sdsPdf) {
+      const blob = await Utility.urlToBlob(this.sdsPdf.url);
+      this.downloadFile(blob, this.sdsPdfName);
+    }
+  }
+
+  downloadFile(blob: Blob, fileName: string) {
+    const url = URL.createObjectURL(blob);
+
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+
+    // Revoke the URL to free memory
+    URL.revokeObjectURL(url);
   }
 
   resetDialog(event: Event) {

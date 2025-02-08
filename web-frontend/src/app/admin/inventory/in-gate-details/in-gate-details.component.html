@@ -503,7 +503,7 @@
                           {{translatedLangText.MSDS}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.msds_guid ?? "-"}}
+                          <span class="text-decoration-underline cursor-pointer" (click)="onDownloadClick()">{{sdsPdf?.description ? cargoDetails?.cargo + ".pdf" : ""}}</span>
                         </div>
                       </div>
                     </div>

@@ -319,17 +319,17 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       this.last_test_desc = this.getLastTest(this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey);
 
       this.cdr.detectChanges();
-    }
 
-    this.repairEstimatePdf = pdfData ?? this.repairEstimatePdf;
-    console.log(this.repairEstimatePdf)
-    if (!this.repairEstimatePdf?.length) {
-      this.generatePDF();
-    }
-    else {
-      const eirBlob = await Utility.urlToBlob(this.repairEstimatePdf?.[0]?.url);
-      const pdfUrl = URL.createObjectURL(eirBlob);
-      this.repairEstimatePdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
+      this.repairEstimatePdf = pdfData ?? this.repairEstimatePdf;
+      console.log(this.repairEstimatePdf)
+      if (!this.repairEstimatePdf?.length) {
+        this.generatePDF();
+      }
+      else {
+        const eirBlob = await Utility.urlToBlob(this.repairEstimatePdf?.[0]?.url);
+        const pdfUrl = URL.createObjectURL(eirBlob);
+        this.repairEstimatePdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
+      }
     }
   }
 

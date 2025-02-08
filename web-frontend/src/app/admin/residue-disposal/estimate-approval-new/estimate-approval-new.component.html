@@ -121,7 +121,7 @@
         </div>
       </div>
     </div>
-   
+
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
@@ -138,461 +138,470 @@
             </div>
             }
             @if (!(sotDS.loading$ | async)) {
-              <form class="ms-0" [formGroup]="residueEstForm!"  #formDirective="ngForm">
-            <mat-card-content>
-              <div class="row">
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
-                        <input matInput formControlName="customer_code" readonly>
-                      </mat-form-field>
-                    </div>
-                    <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+            <form class="ms-0" [formGroup]="residueEstForm!" #formDirective="ngForm">
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                    <div class="row">
+
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
+                          <input matInput formControlName="customer_code" readonly>
+                        </mat-form-field>
+                      </div>
+                      <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">{{ccDS.displayName(sotItem?.storing_order?.customer_company)}}</div>
                     </div> -->
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
-                        <input matInput formControlName="job_no" [readonly]="!(residueDS.canAmend(this.residueItem!))">
-                      </mat-form-field>
                     </div>
-                  </div>
-                </div>
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                  
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="row">
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
-                          <mat-select formControlName="billing_branch" >
-                            @for (item of billingBranchList; track item) {
-                            <mat-option [value]="item">
-                              {{ this.ccDS.displayName(item)}}
-                            </mat-option>
-                            }
-                          </mat-select>
+                          <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
+                          <input matInput formControlName="job_no"
+                            [readonly]="!(residueDS.canAmend(this.residueItem!))">
                         </mat-form-field>
                       </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                        <input matInput formControlName="remarks" [readonly]="!(residueDS.canAmend(this.residueItem!))">
-                      </mat-form-field>
+                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                    <div class="row">
+
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+                            <mat-select formControlName="billing_branch">
+                              @for (item of billingBranchList; track item) {
+                              <mat-option [value]="item">
+                                {{ this.ccDS.displayName(item)}}
+                              </mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                          <input matInput formControlName="remarks"
+                            [readonly]="!(residueDS.canAmend(this.residueItem!))">
+                        </mat-form-field>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </mat-card-content>
+              </mat-card-content>
             </form>
             }
           </div>
         </div>
       </div>
     </div>
- 
-      <div class="row clearfix">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
-            <div class="header">
-              <h2>
-                {{translatedLangText.ESTIMATE_DETAILS}}
-              </h2>
+
+    <div class="row clearfix">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <div class="header">
+            <h2>
+              {{translatedLangText.ESTIMATE_DETAILS}}
+            </h2>
+          </div>
+          <div class="body">
+            @if (sotDS.loadingSubject | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
             </div>
-            <div class="body">
-              @if (sotDS.loadingSubject | async) {
+            }
+            @if (!(sotDS.loadingSubject | async)) {
+            @if (residueDS.canAmend(this.residueItem!)) {
+            <!-- <form class="ms-0" [formGroup]="residueEstForm!"  #formDirective="ngForm"> -->
+            <div class="row">
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
+                  <input matInput [formControl]="newDesc" [matAutocomplete]="description" required="true">
+                  <mat-autocomplete #description="matAutocomplete" [displayWith]="displayResiduePart">
+                    @for (cc of displayPackResidueList; track cc) {
+                    <mat-option [value]="cc">
+                      {{cc.tariff_residue?.description}}
+                    </mat-option>
+                    }
+                  </mat-autocomplete>
+                  @if (newDesc.hasError('required')) {
+                  <mat-error>
+                    {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.SO_REQUIRED}}
+                  </mat-error>
+                  }
+                  @if (newDesc.hasError('duplicated')) {
+                  <mat-error>
+                    {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.EXISTED}}
+                  </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
+                  <input matInput [formControl]="newQty" type="number" required="true">
+                  <mat-error *ngIf="newQty.hasError('required')">
+                    {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
+                  </mat-error>
+
+                </mat-form-field>
+
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
+                  <input matInput [formControl]="newQtyType" [matAutocomplete]="unitCode" required="true">
+                  <mat-autocomplete #unitCode="matAutocomplete" [displayWith]="displayUnitTypeFn">
+                    @for (cc of unitTypeCvList; track cc) {
+                    <mat-option [value]="cc">
+                      {{cc.description}}
+                    </mat-option>
+                    }
+                  </mat-autocomplete>
+                  @if (newQtyType.hasError('required')) {
+                  <mat-error>
+                    {{this.translatedLangText.UNIT_TYPE}} {{this.translatedLangText.SO_REQUIRED}}
+                  </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.UNIT_PRICE}}</mat-label>
+                  <input matInput [formControl]="newUnitPrice" type="number" required="true">
+                  @if (newUnitPrice.hasError('required')) {
+                  <mat-error>
+                    {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
+                  </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                  (click)="addEstDetails($event)">
+                  <mat-icon class="col-white">
+                    @if (!this.updateSelectedItem){
+                    add
+                    }
+                    @else {
+                    edit
+                    }
+                  </mat-icon>
+                  {{translatedLangText.ESTIMATE_DETAILS}}
+                </button>
+                @if(this.updateSelectedItem){
+                <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                  (click)="CancelEditEstDetails($event)">
+                  <mat-icon class="col-white">
+                    cancel
+                  </mat-icon>
+                  {{translatedLangText.CANCEL}}
+                </button>
+                }
+              </div>
+            </div>
+            <!-- </form> -->
+            }
+            <div class="body overflow-auto">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="deList" matSort
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="seq">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+                    <mat-cell *matCellDef="let row; let i = index"
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="desc">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      {{translatedLangText.DESCRIPTION}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" class="">
+                      <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef [ngClass]="''"
+                      class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="qty">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      {{translatedLangText.QUANTITY}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-5-lg tbl-col-width-per-5-md tbl-col-width-per-5-sm'">
+                      <span class="mobile-label">{{translatedLangText.QTY}}:</span>
+                      <tlx-form-field customClass="mat-table-form-txt-40px">
+                        <mat-form-field>
+                          @if(IsApproved())
+                          {
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
+                            (focus)="selectText($event)" type="number" min="0">
+                          }
+                          @else
+                          {
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.quantity"
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
+                            (focus)="selectText($event)" type="number" min="0">
+                          }
+
+                        </mat-form-field>
+                      </tlx-form-field>
+                    </mat-cell>
+
+                    <!-- <mat-cell mat-cell *matCellDef="let row" class="">
+                        <span
+                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
+                      </mat-cell> -->
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                      [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm '"></mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="qty_unit">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      {{translatedLangText.UNIT_TYPE}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-5-lg tbl-col-width-per-5-md tbl-col-width-per-5-sm'">
+                      <span class="mobile-label">{{translatedLangText.UNIT_TYPE}}:</span>
+                      <tlx-form-field customClass="mat-table-form-txt-40px">
+                        <mat-form-field>
+
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.qty_unit_type_cv"
+                            [disabled]="isDisabled()" (wheel)="preventDefault($event)" (focus)="selectText($event)"
+                            [matAutocomplete]="unitCode1">
+                          <mat-autocomplete #unitCode1="matAutocomplete" [displayWith]="displayUnitTypeFn"
+                            (optionSelected)="updateAction(row);">
+                            @for (cc of unitTypeCvList; track cc) {
+                            <mat-option [value]="cc">
+                              {{cc.description}}
+                            </mat-option>
+                            }
+                          </mat-autocomplete>
+
+                        </mat-form-field>
+                      </tlx-form-field>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm '"></mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="unit_price">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      {{translatedLangText.UNIT_PRICE}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm'">
+                      <span class="mobile-label">{{translatedLangText.QTY}}:</span>
+                      <tlx-form-field customClass="mat-table-form-txt-40px">
+                        <mat-form-field>
+                          @if(IsApproved())
+                          {
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost"
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
+                            (focus)="selectText($event)" type="number" min="0">
+                          }
+                          @else
+                          {
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.cost"
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
+                            (focus)="selectText($event)" type="number" min="0">
+                          }
+                        </mat-form-field>
+
+                      </tlx-form-field>
+                    </mat-cell>
+                    <!-- <mat-cell mat-cell *matCellDef="let row" class="">
+                        <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}}
+                      </mat-cell> -->
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} font-bold">{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="approve_part">
+                    <mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      mat-sort-header>
+                      <mat-icon>more_vert</mat-icon>
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
+
+
+                      @if (row.approve_part === null || row.approve_part === undefined ||
+                      IsApprovePart(row)){
+                      <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
+                      }
+                      @else {
+                      <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
+                      }
+
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef [ngClass]="''"
+                      class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="cost">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      {{translatedLangText.COST}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" class="">
+                      <span
+                        class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateResidueItemCost(row))}}
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}">
+                      <span class="mobile-label"> </span>{{this.parse2Decimal( getTotalCost()) }}
+                    </mat-footer-cell>
+                  </ng-container>
+
+                  <ng-container matColumnDef="actions">
+                    <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row;" class="justify-content-end">
+                      @if (residueDS.canAmend(this.residueItem!)) {
+                      @if (!row.delete_dt){
+                      <button mat-icon-button (click)="handleDelete($event, row, row.index)">
+                        <mat-icon>delete_forever</mat-icon>
+                      </button>
+                      }
+                      @if (row.delete_dt) {
+                      <button mat-icon-button (click)="undeleteItem($event, row, row.index)">
+                        <mat-icon>undo</mat-icon>
+                      </button>
+                      }
+                      }
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
+                    [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': (row.guid || row.action=='NEW') && !row.delete_dt&&row.edited}"
+                    [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                  <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+                </table>
+              </div>
+              <!-- No result -->
+              @if (!(igDS.loading$ | async) && !deList.length) {
+              <mat-divider></mat-divider>
+              <div class="no-results m-l-20 pt-3" [style.display]="deList.length === 0 ? '' : 'none'">
+                <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+              </div>
+              }
+              <!-- Loading spinner -->
+              @if (igDS.loading$ | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(sotDS.loadingSubject | async)) {
-                @if (residueDS.canAmend(this.residueItem!)) {
-                  <!-- <form class="ms-0" [formGroup]="residueEstForm!"  #formDirective="ngForm"> -->
-              <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                    <input matInput [formControl]="newDesc" [matAutocomplete]="description" required="true">
-                    <mat-autocomplete #description="matAutocomplete" [displayWith]="displayResiduePart">
-                      @for (cc of displayPackResidueList; track cc) {
-                      <mat-option [value]="cc">
-                        {{cc.tariff_residue?.description}}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                    @if (newDesc.hasError('required')) {
-                      <mat-error>
-                        {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.SO_REQUIRED}}
-                      </mat-error>
-                      }
-                      @if (newDesc.hasError('duplicated')) {
-                        <mat-error>
-                          {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.EXISTED}}
-                        </mat-error>
-                        }
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
-                    <input matInput [formControl]="newQty" type="number" required="true">
-                    <mat-error *ngIf="newQty.hasError('required')">
-                        {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
-                    </mat-error>
-                    
-                  </mat-form-field>
-                 
-                </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-                    <input matInput [formControl]="newQtyType"
-                      [matAutocomplete]="unitCode" required="true">
-                    <mat-autocomplete #unitCode="matAutocomplete" [displayWith]="displayUnitTypeFn">
-                      @for (cc of unitTypeCvList; track cc) {
-                      <mat-option [value]="cc">
-                        {{cc.description}}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                    @if (newQtyType.hasError('required')) {
-                      <mat-error>
-                        {{this.translatedLangText.UNIT_TYPE}} {{this.translatedLangText.SO_REQUIRED}}
-                      </mat-error>
-                      }
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.UNIT_PRICE}}</mat-label>
-                    <input matInput [formControl]="newUnitPrice" type="number" required="true">
-                    @if (newUnitPrice.hasError('required')) {
-                      <mat-error>
-                        {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
-                      </mat-error>
-                      }
-                  </mat-form-field>
-                </div>
-
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addEstDetails($event)" >
-                    <mat-icon class="col-white">
-                      @if (!this.updateSelectedItem){
-                         add
-                      }
-                      @else {
-                        edit
-                      }
-                    </mat-icon>
-                    {{translatedLangText.ESTIMATE_DETAILS}}
-                  </button>
-                  @if(this.updateSelectedItem){
-                    <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="CancelEditEstDetails($event)">
-                    <mat-icon class="col-white">
-                      cancel
-                    </mat-icon>
-                      {{translatedLangText.CANCEL}}
-                    </button>
-                  }
-                </div>
-              </div>
-            <!-- </form> -->
-            }
-              <div class="body overflow-auto">
-                <div class="responsive_table">
-                  <table mat-table [dataSource]="deList" matSort
-                    class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                    <!-- ID Column -->
-                    <ng-container matColumnDef="seq">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
-                      <mat-cell *matCellDef="let row; let i = index"  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="desc">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.DESCRIPTION}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
-                      </mat-cell>
-                      <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="qty">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.QUANTITY}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-5-lg tbl-col-width-per-5-md tbl-col-width-per-5-sm'">
-                        <span class="mobile-label">{{translatedLangText.QTY}}:</span>
-                        <tlx-form-field customClass="mat-table-form-txt-40px">
-                          <mat-form-field>
-                            @if(IsApproved())
-                            {
-                              <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty" (change)="updateAction(row);" [disabled]="isDisabled()"
-                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
-                            }
-                            @else
-                            {
-                              <input class="text-end" tlxFormInput matInput [(ngModel)]="row.quantity" (change)="updateAction(row);" [disabled]="isDisabled()"
-                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
-                            }
-                           
-                          </mat-form-field>
-                        </tlx-form-field>
-                       </mat-cell> 
-                      
-                      <!-- <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
-                      </mat-cell> -->
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm '"></mat-footer-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="qty_unit">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.UNIT_TYPE}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-5-lg tbl-col-width-per-5-md tbl-col-width-per-5-sm'">
-                        <span class="mobile-label">{{translatedLangText.UNIT_TYPE}}:</span>
-                        <tlx-form-field customClass="mat-table-form-txt-40px">
-                          <mat-form-field>
-                           
-                              <input class="text-end" tlxFormInput matInput [(ngModel)]="row.qty_unit_type_cv" [disabled]="isDisabled()"
-                              (wheel)="preventDefault($event)" (focus)="selectText($event)" [matAutocomplete]="unitCode1" >
-                              <mat-autocomplete #unitCode1="matAutocomplete" [displayWith]="displayUnitTypeFn"  (optionSelected)="updateAction(row);">
-                                @for (cc of unitTypeCvList; track cc) {
-                                <mat-option [value]="cc">
-                                  {{cc.description}}
-                                </mat-option>
-                                }
-                              </mat-autocomplete> 
-                           
-                          </mat-form-field>
-                        </tlx-form-field>
-                       </mat-cell> 
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm '"></mat-footer-cell>
-                    </ng-container> 
-                    <ng-container matColumnDef="unit_price">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.UNIT_PRICE}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm'">
-                      <span class="mobile-label">{{translatedLangText.QTY}}:</span>
-                      <tlx-form-field customClass="mat-table-form-txt-40px">
-                        <mat-form-field>
-                      @if(IsApproved())
-                      {
-                        <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost" (change)="updateAction(row);"  [disabled]="isDisabled()"
-                        (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
-                      }
-                      @else
-                      {
-                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.cost" (change)="updateAction(row);" [disabled]="isDisabled()"
-                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
-                      }
-                        </mat-form-field>
-                        
-                      </tlx-form-field>
-                     </mat-cell> 
-                      <!-- <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}}
-                      </mat-cell> -->
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" 
-                      >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="approve_part">
-                      <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                        mat-sort-header>
-                        <mat-icon>more_vert</mat-icon>
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-                      
-    
-                        @if (row.approve_part === null || row.approve_part === undefined ||
-                        IsApprovePart(row)){
-                        <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
-                        }
-                        @else {
-                        <mat-icon class="col-red font-bold"  (click)="toggleApprovePart($event,row)">close</mat-icon>
-                        }
-                        
-                      </mat-cell>
-                      <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
-                    </ng-container> 
-                    <ng-container matColumnDef="cost">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.COST}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateResidueItemCost(row))}}
-                      </mat-cell>
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"  >
-                        <span class="mobile-label" > </span>{{this.parse2Decimal( getTotalCost()) }}
-                      </mat-footer-cell>
-                    </ng-container>
-                 
-                    <ng-container matColumnDef="actions">
-                      <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row;" class="justify-content-end">
-                        @if (residueDS.canAmend(this.residueItem!)) {
-                        @if (!row.delete_dt){
-                        <button mat-icon-button  (click)="handleDelete($event, row, row.index)">
-                          <mat-icon>delete_forever</mat-icon>
-                        </button>
-                        }
-                        @if (row.delete_dt) {
-                          <button mat-icon-button  (click)="undeleteItem($event, row, row.index)">
-                            <mat-icon>undo</mat-icon>
-                          </button>
-                          }
-                        }
-                        
-                      </mat-cell>
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
-                    </ng-container>
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
-                    [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': (row.guid || row.action=='NEW') && !row.delete_dt&&row.edited}"
-                     [style.cursor]="'pointer'"  
-                      matRipple>
-                    </mat-row>
-                    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
-                  </table>
-                </div>
-                <!-- No result -->
-                @if (!(igDS.loading$ | async) && !deList.length) {
-                <mat-divider></mat-divider>
-                <div class="no-results m-l-20 pt-3" [style.display]="deList.length === 0 ? '' : 'none'">
-                  <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-                </div>
-                }
-                <!-- Loading spinner -->
-                @if (igDS.loading$ | async) {
-                <div class="tbl-spinner">
-                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                  </mat-progress-spinner>
-                </div>
-                }
-              </div>
-              }
-              <mat-divider></mat-divider>
-              @if (residueEstForm?.get('deList')?.hasError('required')) {
-              <mat-error class="ps-3">
-                {{translatedLangText.ADD_ATLEAST_ONE}}
-              </mat-error>
-              }
             </div>
-
-            <div class="row m-t-3">
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
-                <button mat-flat-button type="button" aria-label="Back to previous page"
-                   (click)="GoBackPrevious($event)">
-                  <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
-                </button>
-              </div>
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                @if (canExport()) {
-                <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5">
-                  @if (!(residueDS.loading$ | async)) {
-                  <i class="fas fa-file-export"></i>
-                  } @else if ((residueDS.loading$ | async)) {
-                  <mat-icon>
-                    <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                  </mat-icon>
-                  }
-                  {{translatedLangText.EXPORT}}
-                </button>
+            }
+            <mat-divider></mat-divider>
+            @if (residueEstForm?.get('deList')?.hasError('required')) {
+            <mat-error class="ps-3">
+              {{translatedLangText.ADD_ATLEAST_ONE}}
+            </mat-error>
+            }
+          </div>
+          <div class="row m-t-3">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
+              <button mat-flat-button type="button" aria-label="Back to previous page" (click)="GoBackPrevious($event)">
+                <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+              </button>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+              @if (canExport()) {
+              <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5" (click)="onExport($event)">
+                @if (!(residueDS.loading$ | async)) {
+                <i class="fas fa-file-export"></i>
+                } @else if ((residueDS.loading$ | async)) {
+                <mat-icon>
+                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                </mat-icon>
                 }
-                @if (residueDS.canAmend(this.residueItem!)||this.isDuplicate) {
-                  @if(isAllowToSaveSubmit())
-                  {
-                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5" (click)="onFormSubmit()">
-                  <mat-icon>
-                    @if (!(residueDS.loading$ | async)) {
-                    save
-                    } @else if ((residueDS.loading$ | async)) {
-                    <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                    }
-                  </mat-icon>
-                  {{translatedLangText.SAVE_AND_SUBMIT}}
-                </button>
+                {{translatedLangText.EXPORT}}
+              </button>
               }
-                }
-                @if (canApprove()) {
-                  <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async) ||(!IsAbleToApprove())" class="m-r-5 bg-green"
-                    (click)="approveRow($event)">
-                    <mat-icon>
-                      @if (!(residueDS.loading$ | async)) {
-                      check
-                      } @else if ((residueDS.loading$ | async)) {
-                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                      }
-                    </mat-icon>
-                    {{translatedLangText.APPROVE}}
-                  </button>
+              @if (residueDS.canAmend(this.residueItem!)||this.isDuplicate) {
+              @if(isAllowToSaveSubmit())
+              {
+              <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                (click)="onFormSubmit()">
+                <mat-icon>
+                  @if (!(residueDS.loading$ | async)) {
+                  save
+                  } @else if ((residueDS.loading$ | async)) {
+                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
-                @if (residueDS.canRollback(this.residueItem!)) {
-                  <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
-                    (click)="rollbackRow($event)">
-                    <mat-icon>
-                      @if (!(residueDS.loading$ | async)) {
-                      undo
-                      } @else if ((residueDS.loading$ | async)) {
-                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                      }
-                    </mat-icon>
-                    {{translatedLangText.ROLLBACK}}
-                  </button>
+                </mat-icon>
+                {{translatedLangText.SAVE_AND_SUBMIT}}
+              </button>
+              }
+              }
+              @if (canApprove()) {
+              <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async) ||(!IsAbleToApprove())"
+                class="m-r-5 bg-green" (click)="approveRow($event)">
+                <mat-icon>
+                  @if (!(residueDS.loading$ | async)) {
+                  check
+                  } @else if ((residueDS.loading$ | async)) {
+                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
-                  @if (residueDS.canCancel(residueItem!)) {
-                    <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
-                      (click)="onCancel($event)">
-                      <mat-icon>
-                        @if (!(residueDS.loading$ | async)) {
-                        close
-                        } @else if ((residueDS.loading$ | async)) {
-                        <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                        }
-                      </mat-icon>
-                      {{translatedLangText.CANCEL}}
-                    </button>
-                    }
-                    @if (residueDS.canNoAction(residueItem!)) {
-
-                      <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
-                      (click)="onNoAction($event,residueItem!)">
-                      <mat-icon>
-                        @if (!(residueDS.loading$ | async)) {
-                        close
-                        } @else if ((residueDS.loading$ | async)) {
-                        <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                        }
-                      </mat-icon>
-                      {{translatedLangText.ABORT}}
-                    </button>
-                      }
-              </div>
+                </mat-icon>
+                {{translatedLangText.APPROVE}}
+              </button>
+              }
+              @if (residueDS.canRollback(this.residueItem!)) {
+              <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                (click)="rollbackRow($event)">
+                <mat-icon>
+                  @if (!(residueDS.loading$ | async)) {
+                  undo
+                  } @else if ((residueDS.loading$ | async)) {
+                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                  }
+                </mat-icon>
+                {{translatedLangText.ROLLBACK}}
+              </button>
+              }
+              @if (residueDS.canCancel(residueItem!)) {
+              <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                (click)="onCancel($event)">
+                <mat-icon>
+                  @if (!(residueDS.loading$ | async)) {
+                  close
+                  } @else if ((residueDS.loading$ | async)) {
+                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                  }
+                </mat-icon>
+                {{translatedLangText.CANCEL}}
+              </button>
+              }
+              @if (residueDS.canNoAction(residueItem!)) {
+              <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                (click)="onNoAction($event,residueItem!)">
+                <mat-icon>
+                  @if (!(residueDS.loading$ | async)) {
+                  close
+                  } @else if ((residueDS.loading$ | async)) {
+                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                  }
+                </mat-icon>
+                {{translatedLangText.ABORT}}
+              </button>
+              }
             </div>
           </div>
         </div>
       </div>
-     
-    
+    </div>
   </div>
 </section>

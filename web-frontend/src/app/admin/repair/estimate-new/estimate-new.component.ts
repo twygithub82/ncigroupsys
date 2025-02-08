@@ -234,6 +234,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
+  processStatusCvList: CodeValuesItem[] = []
   templateList: MasterTemplateItem[] = []
   surveyorList: UserItem[] = []
 
@@ -454,6 +455,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -505,6 +507,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     });
     this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
       this.unitTypeCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
     });
 
     this.getSurveyorList();
@@ -594,6 +599,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
       return rep;
     });
+    console.log(this.repairItem!.repair_part);
     this.updateData(this.repairItem!.repair_part);
     this.repairForm?.patchValue({
       guid: !isDuplicate ? this.repairItem!.guid : '',
@@ -1165,6 +1171,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
+  }
+
+  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {

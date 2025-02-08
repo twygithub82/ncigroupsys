@@ -24,8 +24,8 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
+import { Observable, Subject, Subscription, fromEvent, merge } from 'rxjs';
+import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -225,6 +225,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     DOM: 'COMMON-FORM.DOM',
     MISSING_INFORMATION: 'COMMON-FORM.MISSING-INFORMATION'
   }
+  private destroy$ = new Subject<void>();
 
   in_gate_guid: string | null | undefined;
   in_gate: InGateItem | null | undefined;
@@ -370,6 +371,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.loadData();
 
     // this.stepper.selectedIndex = this.calculateInitialStepIndex();
+  }
+
+  override ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   initForm() {
@@ -571,6 +577,283 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         });
       })
     ).subscribe();
+
+    this.initBtmDisValveValueChange();
+    this.initBtmThermoValueChange();
+    this.initTopDisValveValueChange();
+    this.initTopAirlineValveValueChange();
+    this.initTopAirlineValveConnValueChange();
+    this.initManlidCoverValueChange();
+    this.initManlidPVValueChange();
+  }
+
+  initBtmDisValveValueChange() {
+    const bottomForm = this.getBottomFormGroup();
+    const btmDisValveCvCtrl = bottomForm.get('btm_dis_valve_cv');
+    const btmDisValveSpecCvCtrl = bottomForm.get('btm_dis_valve_spec_cv');
+    if (!btmDisValveCvCtrl || !btmDisValveSpecCvCtrl) return;
+
+    merge(
+      this.surveyForm!.get('compartment_type.bottomFormGroup.btm_dis_valve_cv')!.valueChanges.pipe(startWith(btmDisValveCvCtrl.value)),
+      this.surveyForm!.get('compartment_type.bottomFormGroup.btm_dis_valve_spec_cv')!.valueChanges.pipe(startWith(btmDisValveSpecCvCtrl.value))
+    )
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(300),
+        tap(() => {
+          const valveValue = btmDisValveCvCtrl.value;
+          const specValue = btmDisValveSpecCvCtrl.value;
+
+          if (valveValue || specValue) {
+            btmDisValveCvCtrl.setValidators([Validators.required]);
+            btmDisValveSpecCvCtrl.setValidators([Validators.required]);
+          } else {
+            btmDisValveCvCtrl.clearValidators();
+            btmDisValveSpecCvCtrl.clearValidators();
+          }
+
+          setTimeout(() => {
+            btmDisValveCvCtrl.updateValueAndValidity({ emitEvent: false });
+            btmDisValveSpecCvCtrl.updateValueAndValidity({ emitEvent: false });
+            this.detectChanges();
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  initBtmThermoValueChange() {
+    const bottomForm = this.getBottomFormGroup();
+    const btmThermoCtrl = bottomForm.get('thermometer');
+    const btmThermoSpecCvCtrl = bottomForm.get('thermometer_cv');
+    if (!btmThermoCtrl || !btmThermoSpecCvCtrl) return;
+
+    merge(
+      this.surveyForm!.get('compartment_type.bottomFormGroup.thermometer')!.valueChanges.pipe(startWith(btmThermoCtrl.value)),
+      this.surveyForm!.get('compartment_type.bottomFormGroup.thermometer_cv')!.valueChanges.pipe(startWith(btmThermoSpecCvCtrl.value))
+    )
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(300),
+        tap(() => {
+          const valveValue = btmThermoCtrl.value;
+          const specValue = btmThermoSpecCvCtrl.value;
+
+          if (valveValue || specValue) {
+            btmThermoCtrl.setValidators([Validators.required]);
+            btmThermoSpecCvCtrl.setValidators([Validators.required]);
+          } else {
+            btmThermoCtrl.clearValidators();
+            btmThermoSpecCvCtrl.clearValidators();
+          }
+
+          setTimeout(() => {
+            btmThermoCtrl.updateValueAndValidity({ emitEvent: false });
+            btmThermoSpecCvCtrl.updateValueAndValidity({ emitEvent: false });
+            this.detectChanges();
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  initTopDisValveValueChange() {
+    const topForm = this.getTopFormGroup();
+    const topDisValveCvCtrl = topForm.get('top_dis_valve_cv');
+    const topDisValveSpecCvCtrl = topForm.get('top_dis_valve_spec_cv');
+    if (!topDisValveCvCtrl || !topDisValveSpecCvCtrl) return;
+
+    merge(
+      this.surveyForm!.get('compartment_type.topFormGroup.top_dis_valve_cv')!.valueChanges.pipe(startWith(topDisValveCvCtrl.value)),
+      this.surveyForm!.get('compartment_type.topFormGroup.top_dis_valve_spec_cv')!.valueChanges.pipe(startWith(topDisValveSpecCvCtrl.value))
+    )
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(300),
+        tap(() => {
+          const valveValue = topDisValveCvCtrl.value;
+          const specValue = topDisValveSpecCvCtrl.value;
+
+          if (valveValue || specValue) {
+            topDisValveCvCtrl.setValidators([Validators.required]);
+            topDisValveSpecCvCtrl.setValidators([Validators.required]);
+          } else {
+            topDisValveCvCtrl.clearValidators();
+            topDisValveSpecCvCtrl.clearValidators();
+          }
+
+          setTimeout(() => {
+            topDisValveCvCtrl.updateValueAndValidity({ emitEvent: false });
+            topDisValveSpecCvCtrl.updateValueAndValidity({ emitEvent: false });
+            this.detectChanges();
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  initTopAirlineValveValueChange() {
+    const topForm = this.getTopFormGroup();
+    const topAirlineValveCvCtrl = topForm.get('airline_valve_cv');
+    const topAirlineValvePcsCtrl = topForm.get('airline_valve_pcs');
+    const topAirlineValveDimCtrl = topForm.get('airline_valve_dim');
+    if (!topAirlineValveCvCtrl || !topAirlineValvePcsCtrl || !topAirlineValveDimCtrl) return;
+
+    merge(
+      this.surveyForm!.get('compartment_type.topFormGroup.airline_valve_cv')!.valueChanges.pipe(startWith(topAirlineValveCvCtrl.value)),
+      this.surveyForm!.get('compartment_type.topFormGroup.airline_valve_pcs')!.valueChanges.pipe(startWith(topAirlineValvePcsCtrl.value)),
+      this.surveyForm!.get('compartment_type.topFormGroup.airline_valve_dim')!.valueChanges.pipe(startWith(topAirlineValveDimCtrl.value))
+    )
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(300),
+        tap(() => {
+          const valveValue = topAirlineValveCvCtrl.value;
+          const pcsValue = topAirlineValvePcsCtrl.value;
+          const dimValue = topAirlineValveDimCtrl.value;
+
+          if (valveValue || pcsValue || dimValue) {
+            topAirlineValveCvCtrl.setValidators([Validators.required]);
+            topAirlineValvePcsCtrl.setValidators([Validators.required]);
+            topAirlineValveDimCtrl.setValidators([Validators.required]);
+          } else {
+            topAirlineValveCvCtrl.clearValidators();
+            topAirlineValvePcsCtrl.clearValidators();
+            topAirlineValveDimCtrl.clearValidators();
+          }
+
+          setTimeout(() => {
+            topAirlineValveCvCtrl.updateValueAndValidity({ emitEvent: false });
+            topAirlineValvePcsCtrl.updateValueAndValidity({ emitEvent: false });
+            topAirlineValveDimCtrl.updateValueAndValidity({ emitEvent: false });
+            this.detectChanges();
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  initTopAirlineValveConnValueChange() {
+    const topForm = this.getTopFormGroup();
+    const topAirlineValveConnCvCtrl = topForm.get('airline_valve_conn_cv');
+    const topAirlineValveConnSpecCvCtrl = topForm.get('airline_valve_conn_spec_cv');
+    if (!topAirlineValveConnCvCtrl || !topAirlineValveConnSpecCvCtrl) return;
+
+    merge(
+      this.surveyForm!.get('compartment_type.topFormGroup.airline_valve_conn_cv')!.valueChanges.pipe(startWith(topAirlineValveConnCvCtrl.value)),
+      this.surveyForm!.get('compartment_type.topFormGroup.airline_valve_conn_spec_cv')!.valueChanges.pipe(startWith(topAirlineValveConnSpecCvCtrl.value))
+    )
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(300),
+        tap(() => {
+          const valveValue = topAirlineValveConnCvCtrl.value;
+          const specValue = topAirlineValveConnSpecCvCtrl.value;
+
+          if (valveValue || specValue) {
+            topAirlineValveConnCvCtrl.setValidators([Validators.required]);
+            topAirlineValveConnSpecCvCtrl.setValidators([Validators.required]);
+          } else {
+            topAirlineValveConnCvCtrl.clearValidators();
+            topAirlineValveConnSpecCvCtrl.clearValidators();
+          }
+
+          setTimeout(() => {
+            topAirlineValveConnCvCtrl.updateValueAndValidity({ emitEvent: false });
+            topAirlineValveConnSpecCvCtrl.updateValueAndValidity({ emitEvent: false });
+            this.detectChanges();
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  initManlidCoverValueChange() {
+    const manlidForm = this.getManlidFormGroup();
+    const manlidCoverCvCtrl = manlidForm.get('manlid_cover_cv');
+    const manlidCoverPcsCtrl = manlidForm.get('manlid_cover_pcs');
+    const manlidCoverPtsCtrl = manlidForm.get('manlid_cover_pts');
+    if (!manlidCoverCvCtrl || !manlidCoverPcsCtrl || !manlidCoverPtsCtrl) return;
+
+    merge(
+      this.surveyForm!.get('compartment_type.manlidFormGroup.manlid_cover_cv')!.valueChanges.pipe(startWith(manlidCoverCvCtrl.value)),
+      this.surveyForm!.get('compartment_type.manlidFormGroup.manlid_cover_pcs')!.valueChanges.pipe(startWith(manlidCoverPcsCtrl.value)),
+      this.surveyForm!.get('compartment_type.manlidFormGroup.manlid_cover_pts')!.valueChanges.pipe(startWith(manlidCoverPtsCtrl.value))
+    )
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(300),
+        tap(() => {
+          const valveValue = manlidCoverCvCtrl.value;
+          const pcsValue = manlidCoverPcsCtrl.value;
+          const dimValue = manlidCoverPtsCtrl.value;
+
+          if (valveValue || pcsValue || dimValue) {
+            manlidCoverCvCtrl.setValidators([Validators.required]);
+            manlidCoverPcsCtrl.setValidators([Validators.required]);
+            manlidCoverPtsCtrl.setValidators([Validators.required]);
+          } else {
+            manlidCoverCvCtrl.clearValidators();
+            manlidCoverPcsCtrl.clearValidators();
+            manlidCoverPtsCtrl.clearValidators();
+          }
+
+          setTimeout(() => {
+            manlidCoverCvCtrl.updateValueAndValidity({ emitEvent: false });
+            manlidCoverPcsCtrl.updateValueAndValidity({ emitEvent: false });
+            manlidCoverPtsCtrl.updateValueAndValidity({ emitEvent: false });
+            this.detectChanges();
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  initManlidPVValueChange() {
+    const manlidForm = this.getManlidFormGroup();
+    const pvTypeCvCtrl = manlidForm.get('pv_type_cv');
+    const pvTypePcsCtrl = manlidForm.get('pv_type_pcs');
+    const pvSpecCvCtrl = manlidForm.get('pv_spec_cv');
+    const pvSpecPcsCtrl = manlidForm.get('pv_spec_pcs');
+    if (!pvTypeCvCtrl || !pvTypePcsCtrl || !pvSpecCvCtrl || !pvSpecPcsCtrl) return;
+
+    merge(
+      this.surveyForm!.get('compartment_type.manlidFormGroup.pv_type_cv')!.valueChanges.pipe(startWith(pvTypeCvCtrl.value)),
+      this.surveyForm!.get('compartment_type.manlidFormGroup.pv_type_pcs')!.valueChanges.pipe(startWith(pvTypePcsCtrl.value)),
+      this.surveyForm!.get('compartment_type.manlidFormGroup.pv_spec_cv')!.valueChanges.pipe(startWith(pvSpecCvCtrl.value)),
+      this.surveyForm!.get('compartment_type.manlidFormGroup.pv_spec_pcs')!.valueChanges.pipe(startWith(pvSpecPcsCtrl.value))
+    )
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(300),
+        tap(() => {
+          const pvTypeValue = pvTypeCvCtrl.value;
+          const pvTypePcsValue = pvTypePcsCtrl.value;
+          const pvSpecValue = pvSpecCvCtrl.value;
+          const pvSpecPcsValue = pvSpecPcsCtrl.value;
+
+          if (pvTypeValue || pvTypePcsValue || pvSpecValue || pvSpecPcsValue) {
+            pvTypeCvCtrl.setValidators([Validators.required]);
+            pvTypePcsCtrl.setValidators([Validators.required]);
+            pvSpecCvCtrl.setValidators([Validators.required]);
+            pvSpecPcsCtrl.setValidators([Validators.required]);
+          } else {
+            pvTypeCvCtrl.clearValidators();
+            pvTypePcsCtrl.clearValidators();
+            pvSpecCvCtrl.clearValidators();
+            pvSpecPcsCtrl.clearValidators();
+          }
+
+          setTimeout(() => {
+            pvTypeCvCtrl.updateValueAndValidity({ emitEvent: false });
+            pvTypePcsCtrl.updateValueAndValidity({ emitEvent: false });
+            pvSpecCvCtrl.updateValueAndValidity({ emitEvent: false });
+            pvSpecPcsCtrl.updateValueAndValidity({ emitEvent: false });
+            this.detectChanges();
+          });
+        })
+      )
+      .subscribe();
   }
 
   dmgImages(): UntypedFormArray {
@@ -735,11 +1018,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.detectChanges();
     });
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
-      this.disValveCvList = data || [];
+      this.disValveCvList = addDefaultSelectOption(data, "--Select--");
       this.detectChanges();
     });
     this.cvDS.connectAlias('disValveSpecCv').subscribe(data => {
-      this.disValveSpecCvList = data || [];
+      this.disValveSpecCvList = addDefaultSelectOption(data, "--Select--");
       this.detectChanges();
     });
     this.cvDS.connectAlias('disTypeCv').subscribe(data => {

@@ -114,7 +114,7 @@ import { SteamHeatingPdfComponent } from 'app/document-template/pdf/steam-heatin
 export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumnsSteaming = [
     'estimate_no',
-    'actions',
+    // 'actions',
     'degree_celsius',
     'estimate_date',
     'approve_dt',
@@ -1576,7 +1576,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
             //     this.steamItem = data;
             //   }
             // });
-            this.subs.sink = this.sotRepairDS.getStoringOrderTankForMovementCleaning(this.sot_guid).subscribe(data => {
+            this.subs.sink = this.sotRepairDS.getStoringOrderTankForMovementSteaming(this.sot_guid).subscribe(data => {
               if (data.length > 0 && this.sot) {
                 console.log(`sot steam: `, data);
                 this.sot.purpose_steam = data[0].purpose_steam;
@@ -1671,7 +1671,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       } else if (purpose === 'cleaning') {
         return this.cleaningItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && this.residueItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       } else if (purpose === 'repair') {
-        return this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return !this.repairItem.length || this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       }
     }
     return true;
