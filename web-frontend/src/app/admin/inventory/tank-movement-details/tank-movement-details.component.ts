@@ -114,7 +114,7 @@ import { SteamHeatingPdfComponent } from 'app/document-template/pdf/steam-heatin
 export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumnsSteaming = [
     'estimate_no',
-    'actions',
+    // 'actions',
     'degree_celsius',
     'estimate_date',
     'approve_dt',
