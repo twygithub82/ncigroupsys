@@ -711,7 +711,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
           job_order {
             guid
             status_cv
-            steaming_temp {
+            steaming_temp(where: { delete_dt: null }) {
               report_dt
               top_temp
               bottom_temp
@@ -822,7 +822,7 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
           job_order {
             guid
             status_cv
-            steaming_temp(order: { report_dt: ASC }) {
+            steaming_temp(where: { delete_dt: null }, order: { report_dt: ASC }) {
               report_dt
               top_temp
               bottom_temp

@@ -235,6 +235,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       this.getSteamData(),
       this.data.retrieveFile ? this.getSteamPdf() : Promise.resolve(null)
     ]);
+    
     if (data?.length > 0) {
       this.steamItem = data[0];
       await this.getCodeValuesData();
@@ -242,11 +243,11 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       this.updateData(this.steamItem?.steaming_part?.[0]?.job_order?.steaming_temp);
 
       this.cdr.detectChanges();
-    }
 
-    this.existingPdf = pdfData ?? this.existingPdf;
-    if (!this.existingPdf?.length) {
-      this.generatePDF();
+      this.existingPdf = pdfData ?? this.existingPdf;
+      if (!this.existingPdf?.length) {
+        this.generatePDF();
+      }
     }
     // else {
     //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
