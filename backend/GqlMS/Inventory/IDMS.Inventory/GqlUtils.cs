@@ -8,6 +8,7 @@ using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Notification;
 using IDMS.Models.Package;
 using IDMS.Models.Service;
+using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Shared;
 using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
@@ -721,7 +722,7 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
-        public static async Task<string> TankMovementConditionCheck1(ApplicationInventoryDBContext context, storing_order_tank tank)
+        public static async Task<string> TankMovementConditionCheck1(ApplicationInventoryDBContext context, storing_order_tank tank, bool pendingJob = false)
         {
             try
             {
@@ -748,45 +749,7 @@ namespace IDMS.Inventory.GqlTypes
                 //check if tank have any cleaning purpose
                 if (tank.purpose_cleaning ?? false)
                 {
-                    //var res = await context.cleaning.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                    //if (res.Any())
-                    //{
-                    //    if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
-                    //    {
-                    //        currentTankStatus = TankMovementStatus.CLEANING;
-                    //        goto ProceesUpdate;
-                    //    }
-                    //    else
-                    //    {
-                    //        //Else, check if tank have any residue estimate already created but pending
-                    //        //res.Clear();
-                    //        var resd = await context.residue.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                    //        if (resd.Any())
-                    //        {
-                    //            if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
-                    //            {
-                    //                //tank.tank_status_cv = TankMovementStatus.CLEANING;
-                    //                currentTankStatus = TankMovementStatus.CLEANING;
-                    //                goto ProceesUpdate;
-                    //            }
-                    //        }
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    //currentTankStatus = TankMovementStatus.CLEANING;
-                    //    //goto ProceesUpdate;
-                    //    var resd = await context.residue.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                    //    if (resd.Any())
-                    //    {
-                    //        if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
-                    //        {
-                    //            //tank.tank_status_cv = TankMovementStatus.CLEANING;
-                    //            currentTankStatus = TankMovementStatus.CLEANING;
-                    //            goto ProceesUpdate;
-                    //        }
-                    //    }
-                    //}
+
                     var cleaningTasks = await context.cleaning.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     var residueTasks = await context.residue.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
 
@@ -811,6 +774,14 @@ namespace IDMS.Inventory.GqlTypes
                             //tank.tank_status_cv = TankMovementStatus.REPAIR;
                             currentTankStatus = TankMovementStatus.REPAIR;
                             goto ProceesUpdate;
+                        }
+                        else
+                        {
+                            if (pendingJob)
+                            {
+                                currentTankStatus = TankMovementStatus.REPAIR;
+                                goto ProceesUpdate;
+                            }
                         }
                     }
                     else
@@ -879,5 +850,22 @@ namespace IDMS.Inventory.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
+
+        //private static bool AnyJobInProgress(ApplicationInventoryDBContext context, string processGuid)
+        //{
+        //    string sqlQuery = $@"SELECT * FROM job_order WHERE delete_dt IS NULL AND guid IN (
+        //                                SELECT distinct job_order_guid FROM repair_part 
+        //                                WHERE repair_guid = '{processGuid}' AND approve_part = 1 AND delete_dt IS NULL);";
+
+        //    var jobOrderList = context.job_order.FromSqlRaw(sqlQuery).AsNoTracking().ToList();
+        //    if (jobOrderList?.Any() == true & !jobOrderList.Any(j => j == null))
+        //    {
+        //        bool pendingJob = false;
+        //        pendingJob = jobOrderList.Any(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
+
+        //        return pendingJob;
+        //    }
+        //    return false;
+        //}
     }
 }

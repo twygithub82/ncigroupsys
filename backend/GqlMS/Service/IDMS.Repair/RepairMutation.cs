@@ -358,7 +358,7 @@ namespace IDMS.Repair.GqlTypes
                     abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
                 var res = await context.SaveChangesAsync();
 
-                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, repJobOrder.sot_guid);
+                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, repJobOrder.sot_guid, repJobOrder.guid);
 
                 return res;
             }

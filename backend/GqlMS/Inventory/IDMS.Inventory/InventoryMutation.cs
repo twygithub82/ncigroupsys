@@ -503,6 +503,7 @@ namespace IDMS.Inventory.GqlTypes
                 string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
+                    bool pendingJob = false;
                     //var repairs = await context.repair.Where(r => r.sot_guid == tank.guid & r.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
                     var repairs = await context.repair.Where(r => r.sot_guid == tank.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
                     foreach (var rep in repairs)
@@ -525,6 +526,9 @@ namespace IDMS.Inventory.GqlTypes
                             }
                         }
 
+                        if (jobOrders.Any(j => j.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS)))
+                            pendingJob = true;  
+
                         if (await StatusChangeConditionCheck(jobOrders))
                         {
                             rep.status_cv = CurrentServiceStatus.COMPLETED;
@@ -542,7 +546,7 @@ namespace IDMS.Inventory.GqlTypes
                     {
                         sot.purpose_repair_cv = null;
                         sot.repair_remarks = tank.repair_remarks;
-                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
+                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot, pendingJob);
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
                         currentTankStatus = sot.tank_status_cv;
