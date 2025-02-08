@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using IDMS.Models.Billing;
 using IDMS.Models.Master;
 using IDMS.Models.Service;
 using IDMS.Models.Shared;
@@ -29,7 +30,8 @@ namespace IDMS.Models.Inventory
         public string? last_test_guid { get; set; }
 
         [ForeignKey("customer_company")]
-        public string? owner_guid { get; set; } 
+        public string? owner_guid { get; set; }
+
         public string? tank_no { get; set; }
         public string? job_no { get; set; }
         public string? preinspect_job_no { get; set; }
@@ -61,6 +63,7 @@ namespace IDMS.Models.Inventory
         public storing_order? storing_order { get; set; }
         public tariff_cleaning? tariff_cleaning { get; set; }
         public customer_company? customer_company { get; set; }
+        public tank_info? tank_info { get; set; }
 
         [UseFiltering]
         public tank? tank { get; set; }
@@ -88,5 +91,7 @@ namespace IDMS.Models.Inventory
         [UseFiltering]
         [UseSorting]
         public IEnumerable<transfer?>? transfer { get; set; }
+        [UseFiltering]
+        public IEnumerable<billing_sot?>? billing_sot { get; set; } 
     }
 }

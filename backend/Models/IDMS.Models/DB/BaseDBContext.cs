@@ -1,4 +1,6 @@
 ﻿using IDMS.Models.Billing;
+using IDMS.Models.Inventory;
+using IDMS.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -47,6 +49,17 @@ namespace IDMS.Models.DB
                .HasMany(b => b.gateio_billing_sot)
                .WithOne(c => c.gateio_billing) // Assuming this is the correct navigation
                .HasForeignKey(c => c.gateio_billing_guid);
+
+            modelBuilder.Entity<storing_order_tank>()
+             .HasOne(s => s.tank_info)              // Sot has one TankInfo
+             .WithMany(t => t.storing_order_tank)                  // TankInfo has one Sot
+             .HasForeignKey(s => s.tank_no)    // Foreign Key in Sot
+             .HasPrincipalKey(t => t.tank_no);
+
+            // Ensure that TankNo in TankInfo is unique
+            modelBuilder.Entity<tank_info>()
+                .HasIndex(t => t.tank_no)
+                .IsUnique();  // Ensure that TankNo is unique in TankInfo
         }
     }
 }
