@@ -205,16 +205,16 @@
             {{displayDamageRepairCode(rep.rp_damage_repair, 1)}}
           </td>
           <td class="td-col-3">
-            <span [ngClass]="{'text-decoration-line-through': repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.description}}</span>
+            <span [ngClass]="{'text-decoration-line-through': false || repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.description}}</span>
           </td>
           <td class="td-col-0-5">
-            <span [ngClass]="{'text-decoration-line-through': repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.quantity}}</span>
+            <span [ngClass]="{'text-decoration-line-through': false || repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.quantity}}</span>
           </td>
           <td class="td-col-0-75">
-            <span [ngClass]="{'text-decoration-line-through': repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.hour}}</span>
+            <span [ngClass]="{'text-decoration-line-through': false || repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.hour}}</span>
           </td>
           <td class="td-col-0-75 text-right">
-            <span [ngClass]="{'text-decoration-line-through': repairPartDS.is4X(rep.rp_damage_repair)}">{{parse2Decimal(rep.material_cost)}}</span>
+            <span [ngClass]="{'text-decoration-line-through': false || repairPartDS.is4X(rep.rp_damage_repair)}">{{parse2Decimal(rep.material_cost)}}</span>
           </td>
           <td class="td-col-0-5">
             {{rep.approve_qty}}

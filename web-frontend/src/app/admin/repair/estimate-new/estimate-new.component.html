@@ -425,7 +425,7 @@
                     </div>
                     <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       {{translatedLangText.STATUS}}: <span
-                        [ngClass]="'font-bold badge ' + repairDS.getStatusBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
+                        [ngClass]="'font-bold badge ' + repairDS.getStatusBadgeClass(repairItem?.status_cv)">{{getProcessStatusDescription(repairItem?.status_cv)}}</span>
                     </div>
                   </div>
                 </div>

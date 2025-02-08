@@ -1671,7 +1671,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       } else if (purpose === 'cleaning') {
         return this.cleaningItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && this.residueItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       } else if (purpose === 'repair') {
-        return this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return !this.repairItem.length || this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       }
     }
     return true;
