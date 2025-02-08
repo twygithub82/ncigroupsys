@@ -26,7 +26,7 @@ namespace IDMS.User.Authentication.API.Utilities
 
         public JwtTokenService(IConfiguration config, ApplicationDbContext context)
         {
-            _duration = 0.5;
+            _duration = 10;
             _secret = config["JWT:Secret"];
             _issuer = config["JWT:ValidIssuer"];
             _audience = config["JWT:ValidAudience"];
@@ -78,6 +78,7 @@ namespace IDMS.User.Authentication.API.Utilities
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
             //var exp = DateTime.Now.AddHours(_duration);
             var exp = DateTime.Now.AddYears(1);
+            //var exp = DateTime.Now.AddMinutes(_duration);
             List<Claim> authClaims = GetClaims(userType, loginId, email, roles, functionNamesArray, teamsArray);
             var token = new JwtSecurityToken(
                   issuer: _issuer,
