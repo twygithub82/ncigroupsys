@@ -161,6 +161,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
+  depotCvList: CodeValuesItem[]=[];
 
   pageIndex = 0;
   pageSize = 10;
@@ -221,7 +222,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       tank_status_cv: [''],
       eir_status_cv: [''],
       yard_cv: [''],
-      invoice_no:['']
+      invoice_no:[''],
+      depot_status_cv:['IN_YARD']
     });
   }
 
@@ -280,6 +282,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -294,6 +297,9 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('depotCv').subscribe(data => {
+      this.depotCvList = data;
     });
     this.search();
   }
@@ -380,6 +386,30 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         // where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
        }
    
+       if (this.searchForm!.get('depot_status_cv')?.value!="ALL") {
+       // if(!where.storing_order_tank) where.storing_order_tank={};
+       
+       var cond :any ={tank_status_cv: {eq: "RELEASED"}};
+       if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
+       {
+        cond = {tank_status_cv: {neq: "RELEASED"}};
+       }
+       const itm:any={or:[]};
+        
+       itm.or.push({cleaning:{some:{storing_order_tank:cond}}});
+       itm.or.push({repair_customer:{some:{storing_order_tank:cond}}});
+       itm.or.push({repair_owner:{some:{storing_order_tank:cond}}});
+       itm.or.push({residue:{some:{storing_order_tank:cond}}});
+       itm.or.push({steaming:{some:{storing_order_tank:cond}}});
+       itm.or.push({gateio_billing_sot:{some:{storing_order_tank:cond}}});
+       itm.or.push({lolo_billing_sot:{some:{storing_order_tank:cond}}});
+       itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:cond}}});
+       itm.or.push({storage_billing_sot:{some:{storing_order_tank:cond}}});
+       where.and.push(itm);
+       
+        
+      }
+
        if(this.searchForm!.get('invoice_no')?.value)
          {
            where.invoice_no={contains: this.searchForm!.get('invoice_no')?.value};
@@ -630,7 +660,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       job_no: '',
       purpose: '',
       tank_status_cv: '',
-      eir_status_cv: ''
+      eir_status_cv: '',
+      depot_status_cv:'IN_YARD'
     });
     this.customerCodeControl.reset('');
     this.branchCodeControl.reset('');

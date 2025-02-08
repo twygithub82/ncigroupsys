@@ -50,6 +50,9 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { BillingDS, BillingEstimateRequest,BillingItem,BillingInputRequest } from 'app/data-sources/billing';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { report_customer_tank_activity } from 'app/data-sources/reports';
+import { YardDetailPdfComponent } from 'app/document-template/pdf/tank-activity/yard/detail-pdf/yard-detail-pdf.component';
+import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activity/customer-detail-pdf/customer-detail-pdf.component';
 
 @Component({
   selector: 'app-customer-report',
@@ -187,13 +190,15 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
+  depotStatusCvList:CodeValuesItem[]=[];
   yardCvList: CodeValuesItem[] = [];
+
 
   processType:string="STEAMING";
   billingParty:string="CUSTOMER";
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = 100;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
@@ -267,7 +272,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       tank_status_cv: [''],
       eir_status_cv: [''],
       yard_cv: [''],
-      tare_weight:['']
+      tare_weight:[''],
+      depot_status_cv:[''],
     });
   }
 
@@ -327,6 +333,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -341,6 +348,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('depotCv').subscribe(data => {
+      this.depotStatusCvList = addDefaultSelectOption(data, 'All');
     });
    // this.search();
   }
@@ -389,94 +399,139 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   }
 
   search() {
-    const where: any = {};
-    this.selectedEstimateItem=undefined;
-    this.selectedEstimateLabourCost=0;
-    this.stmEstList =[];
-    this.selection.clear();
-    this.calculateTotalCost();
 
-    where.status_cv={in:['COMPLETED','APPROVED','JOB-IN_PROGRESS']};
-    where.bill_to_guid={neq:null};
-    if (this.searchForm!.get('tank_no')?.value) {
-      where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
-    }
+     var report_type:string ="ALL";
+     const where: any = {};
+        this.selectedEstimateItem=undefined;
+        this.selectedEstimateLabourCost=0;
+        this.stmEstList =[];
+        this.selection.clear();
+        
+        // var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
+        
+        // if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
+        // {
+        //    queryType=2;
+        // }
+    
+        if (this.searchForm!.get('tank_no')?.value) {
+          where.tank_no = {contains: this.searchForm!.get('tank_no')?.value };
+        }
+    
+        if (this.searchForm!.get('depot_status_cv')?.value!="ALL") {
+         // if(!where.storing_order_tank) where.storing_order_tank={};
+         report_type="RELEASED";
+         var cond :any = {eq: "RELEASED"};
+         if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
+         {
+          cond = {neq: "RELEASED"};
+          report_type="IN_YARD";
+         }
+          if(where.tank_status_cv)where.tank_status_cv={};
+          where.tank_status_cv=cond;
+        }
+    
+        if (this.searchForm!.get('customer_code')?.value) {
+          // if(!where.storing_order_tank) where.storing_order_tank={};
+           where.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
+         }
+        
+        if (this.searchForm!.get('eir_no')?.value) {
+          
+          var cond :any ={eir_no:{contains: this.searchForm!.get('eir_no')?.value }};
+          if(!where.in_gate) {
+            where.in_gate={};
+            where.in_gate.some={};
+            where.in_gate.some.and=[];
+          }
 
-    if (this.searchForm!.get('customer_code')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank={storing_order:{customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}}};
-      where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
-    }
+          if(!where.out_gate) {
+            where.out_gate={};
+            where.out_gate.some={};
+            where.out_gate.some.and=[];
+          }
+            where.in_gate.some.and.push(cond);
+            where.out_gate.some.and.push(cond);
+          
+        }
+    
+        if (this.searchForm!.get('tare_weight')?.value) {
 
-    if(this.searchForm!.get('invoiced')?.value)
-      {
-        where.customer_billing_guid={neq: null};
+          var cond :any ={tare_weight:{eq:Number(this.searchForm!.value['tare_weight'])}};
+          if(!where.tank_info) where.tank_info={};
+          where.tank_info=cond;
+        }
+
+        if (this.searchForm!.get('capacity')?.value) {
+
+          var cond :any ={capacity:{eq: Number(this.searchForm!.value['capacity'])}};
+          if(!where.tank_info) where.tank_info={};
+          where.tank_info=cond;
+        }
+
+        if (this.searchForm!.get('av_date')?.value) {
+
+          var cond :any ={completed_dt:{eq: Utility.convertDate(this.searchForm!.value['av_date'])}};
+          if(!where.repair) where.repair={};
+          where.repair=cond;
+        }
+       
+
+        var date:string=` - ${Utility.convertDateToStr(new Date())}`;
+      if (this.searchForm!.get('release_dt_start')?.value && this.searchForm!.get('release_dt_end')?.value) {
+        var cond :any ={some:{release_order:{release_dt:{gte: Utility.convertDate(this.searchForm!.value['release_dt_start']), lte: Utility.convertDate(this.searchForm!.value['release_dt_end'],true) }}}};
+        date=`${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_end')?.value))}`;
+        if(!where.release_order_sot)where.release_order_sot={};
+        where.release_order_sot = cond;
+        //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
       }
 
-    if(this.searchForm!.get('branch_code')?.value)
-    {
-      where.customer_company={code:{eq: this.searchForm!.get('branch_code')?.value.code }}
-    }
+        if (this.searchForm!.get('eir_dt')?.value) {
 
+          if(!where.in_gate) {
+            where.in_gate={};
+            where.in_gate.some={};
+            where.in_gate.some.and=[];
+          }
+
+          if(!where.out_gate) {
+            where.out_gate={};
+            where.out_gate.some={};
+            where.out_gate.some.and=[];
+          }
+
+          var cond :any ={eir_dt:{eq: Utility.convertDate(this.searchForm!.value['eir_dt'])}};
+          
+          where.in_gate.some.and.push(cond);
+          where.out_gate.some.and.push(cond);
+          
+          //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+        }
+       
+        if (this.searchForm!.get('last_cargo')?.value) {
+          where.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
+        }
     
-    if (this.searchForm!.get('eir_dt')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank.in_gate = { some:{
-        and:[
-          {eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-          {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}
-        ]}
-      };
-    }
-    if (this.searchForm!.get('eir_no')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
-    }
-
-    if (this.searchForm!.get('release_dt_start')?.value && this.searchForm!.get('release_dt_end')?.value) {
-      if(!where.customer_billing) where.customer_billing={};
-      where.customer_billing.invoice_dt={gte: Utility.convertDate(this.searchForm!.value['release_dt_start']), lte: Utility.convertDate(this.searchForm!.value['release_dt_end'],true) };
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
-
-    if (this.searchForm!.get('av_dt')?.value) {
-      
-      where.approve_dt={lte: Utility.convertDate(this.searchForm!.value['av_dt'],true) };
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
-
-    if (this.searchForm!.get('release_dt')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank.out_gate={some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-      {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}};
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
-
-    if (this.searchForm!.get('last_cargo')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      
-      where.storing_order_tank.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
-
-   
-    this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+       
+        this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+        this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined,report_type);
+    
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string,report_type?:string) {
    // this.selection.clear();
-    this.subs.sink = this.stmDS.searchWithBilling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.stmEstList = data;
+        this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-
-        this.checkInvoicedAndGetTotalCost();
+        report_type=this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
+        this.ProcessReportCustomerTankActivity(report_type!);
+       // this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
-        this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
+        //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
       });
 
     this.pageSize = pageSize;
@@ -510,7 +565,6 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -614,8 +668,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       release_dt_start: '',
       release_dt_end: '',
       inv_no:'',
-      tare_weight: [''],
-      invoiced:null
+      tare_weight: '',
+      invoiced:null,
+      depot_status_cv:'',
     });
 
     this.branchCodeControl.reset('');
@@ -631,351 +686,158 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-     this.isAllSelected()
-       ? this.selection.clear()
-       : this.stmEstList.forEach((row) =>
-           this.selection.select(row)
-         );
-    this.calculateTotalCost();
-  }
+  // masterToggle() {
+  //    this.isAllSelected()
+  //      ? this.selection.clear()
+  //      : this.stmEstList.forEach((row) =>
+  //          this.selection.select(row)
+  //        );
+  //   this.calculateTotalCost();
+  // }
 
-  AllowToSave():boolean{
-    let retval:boolean=false;
-    if(this.selection.selected.length>0)
-    {
-        if(this.invoiceDateControl.valid && this.invoiceNoControl.valid)
-        {
-          return true;
-        }
-    }
+  // AllowToSave():boolean{
+  //   let retval:boolean=false;
+  //   if(this.selection.selected.length>0)
+  //   {
+  //       if(this.invoiceDateControl.valid && this.invoiceNoControl.valid)
+  //       {
+  //         return true;
+  //       }
+  //   }
 
-    return retval;
-  }
+  //   return retval;
+  // }
 
- save(event:Event){
-       event.stopPropagation();
-       if(this.invoiceDateControl.invalid || this.invoiceNoControl.invalid) return;
-   
-       let invNo:string =`${this.invoiceNoControl.value}`;
-       const where:any={};
-       where.invoice_no={eq:invNo};
-       this.billDS.searchSteamingBilling(where).subscribe(b=>{
-         if(b.length)
-         {
-           if(b[0].bill_to_guid===this.selectedEstimateItem?.customer_company?.guid)
-           {
-              this.ConfirmUpdateBilling(event,b[0]);
-           }
-           else
-           {
-               this.ConfirmInvalidEstimate(event);
-           }
-         }
-         else
-         {
-           this.SaveNewBilling(event);
-         }
-       });
-     }
-
-     delete(event:Event){
-    
-        event.preventDefault(); // Prevents the form submission
-    
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          data: {
-            headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
-            action: 'delete',
-          },
-          direction: tempDirection
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-          if (result.action === 'confirmed') {
-            const guids=this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
-            this.RemoveEstimatesFromInvoice(event,guids!);
-          }
-        });
-      }
-      RemoveEstimatesFromInvoice(event:Event, processGuid:string[])
-      {
-        var updateBilling: any=null;
-        let billingEstimateRequests:BillingEstimateRequest[]=[];
-        processGuid.forEach(g=>{
-          var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-          billingEstReq.action="CANCEL";
-          billingEstReq.billing_party=this.billingParty;
-          billingEstReq.process_guid=g;
-          billingEstReq.process_type=this.processType;
-          billingEstimateRequests.push(billingEstReq);
-        });
-       
-        this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-          if(result.data.updateBilling)
-          {
-            this.handleSaveSuccess(result.data.updateBilling);
-            this.onCancel(event);
-            this.search();
-          }
-        })
-    
-      }
-     ConfirmInvalidEstimate(event:Event)
-     {
-       event.preventDefault(); // Prevents the form submission
-   
-       let tempDirection: Direction;
-       if (localStorage.getItem('isRtl') === 'true') {
-         tempDirection = 'rtl';
-       } else {
-         tempDirection = 'ltr';
-       }
-       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-         data: {
-           headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
-           action: 'confirm_only',
-         },
-         direction: tempDirection
-       });
-       dialogRef.afterClosed();
-     }
-     ConfirmUpdateBilling(event:Event, billingItem:BillingItem)
-     {
-       event.preventDefault(); // Prevents the form submission
-   
-       let tempDirection: Direction;
-       if (localStorage.getItem('isRtl') === 'true') {
-         tempDirection = 'rtl';
-       } else {
-         tempDirection = 'ltr';
-       }
-       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-         data: {
-           headerText: this.translatedLangText.CONFIRM_UPDATE_INVOICE,
-           action: 'new',
-         },
-         direction: tempDirection
-       });
-       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result.action === 'confirmed') {
-           this.UpdateBilling(event,billingItem);
-         }
-       });
-     }
-   
-     UpdateBilling(event:Event, billingItem:BillingItem)
-     {
-      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
-      let invoiceDue:Date =new Date(invoiceDate);
-      invoiceDue.setMonth(invoiceDate.getMonth()+1);
-       var updateBilling : BillingInputRequest=new BillingInputRequest();
-       updateBilling.bill_to_guid=billingItem.bill_to_guid;
-       updateBilling.guid=billingItem.guid;
-       updateBilling.currency_guid=billingItem.currency_guid;
-       updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
-       updateBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
-       updateBilling.status_cv=billingItem.status_cv;
-       updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
-       
-       let billingEstimateRequests:any= billingItem.steaming?.map(cln => {
-         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-         billingEstReq.action="";
-         billingEstReq.billing_party=this.billingParty;
-         billingEstReq.process_guid=cln.guid;
-         billingEstReq.process_type=this.processType;
-         return billingEstReq;
-         //return { ...cln, action:'' };
-         });
-       const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
-       this.selection.selected.forEach(cln=>{
-         if(!existingGuids.has(cln.guid))
-         {
-           var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-           billingEstReq.action="NEW";
-           billingEstReq.billing_party=this.billingParty;
-           billingEstReq.process_guid=cln.guid;
-           billingEstReq.process_type=this.processType;
-           billingEstimateRequests.push(billingEstReq);
-         }
-       })
-       this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-         if(result.data.updateBilling)
-         {
-           this.handleSaveSuccess(result.data.updateBilling);
-           this.onCancel(event);
-           this.search();
-         }
-       })
-   
-     }
-   
-     SaveNewBilling(event:Event)
-     {
-      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
-      let invoiceDue:Date =new Date(invoiceDate);
-      invoiceDue.setMonth(invoiceDate.getMonth()+1);
-       var newBilling : BillingInputRequest=new BillingInputRequest();
-       newBilling.bill_to_guid=this.selectedEstimateItem?.customer_company?.guid;
-       newBilling.currency_guid=this.selectedEstimateItem?.customer_company?.currency_guid;
-       newBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
-       newBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
-       newBilling.invoice_no=`${this.invoiceNoControl.value}`;
-       newBilling.status_cv='PENDING';
-       var billingEstimateRequests:BillingEstimateRequest[]=[];
-       this.selection.selected.map(c=>{
-         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-   
-         billingEstReq.action="NEW";
-         billingEstReq.billing_party=this.billingParty;
-         billingEstReq.process_guid=c.guid;
-         billingEstReq.process_type=this.processType;
-         billingEstimateRequests.push(billingEstReq);
-       });
-       this.billDS.addBilling(newBilling,billingEstimateRequests).subscribe(result=>{
-         if(result.data.addBilling)
-         {
-           this.handleSaveSuccess(result.data.addBilling);
-           this.onCancel(event);
-           this.search();
-         }
-       })
-     }
  
-     handleSaveSuccess(count: any) {
-       if ((count ?? 0) > 0) {
-         let successMsg = this.langText.SAVE_SUCCESS;
-         this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-           successMsg = res;
-           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-           //this.router.navigate(['/admin/master/estimate-template']);
+  //    handleSaveSuccess(count: any) {
+  //      if ((count ?? 0) > 0) {
+  //        let successMsg = this.langText.SAVE_SUCCESS;
+  //        this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+  //          successMsg = res;
+  //          ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+  //          //this.router.navigate(['/admin/master/estimate-template']);
    
-           // Navigate to the route and pass the JSON object
+  //          // Navigate to the route and pass the JSON object
            
-         });
-       }
-     }
+  //        });
+  //      }
+  //    }
  
 
-  onCancel(event:Event){
-    event.stopPropagation();
-    this.invoiceNoControl.reset('');
-    this.invoiceDateControl.reset('');
-  }
+  // onCancel(event:Event){
+  //   event.stopPropagation();
+  //   this.invoiceNoControl.reset('');
+  //   this.invoiceDateControl.reset('');
+  // }
 
-  calculateTotalCost()
-    {
-    this.invoiceTotalCostControl.setValue('0.00');
-    const totalCost = this.selection.selected.reduce((accumulator, s) => {
-      // Add buffer_cost and cleaning_cost of the current item to the accumulator
-      //var cost:number = this.selectedEstimateLabourCost||0;
-      var itm:any = s;
-      return accumulator + itm.total_cost;
-      //return accumulator+ Number(stmItm.net_cost||0);
-    }, 0); // Initialize accumulator to 0
-    this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
-  }
-   toggleRow(row:SteamItem)
-   {
+  // calculateTotalCost()
+  //   {
+  //   this.invoiceTotalCostControl.setValue('0.00');
+  //   const totalCost = this.selection.selected.reduce((accumulator, s) => {
+  //     // Add buffer_cost and cleaning_cost of the current item to the accumulator
+  //     //var cost:number = this.selectedEstimateLabourCost||0;
+  //     var itm:any = s;
+  //     return accumulator + itm.total_cost;
+  //     //return accumulator+ Number(stmItm.net_cost||0);
+  //   }, 0); // Initialize accumulator to 0
+  //   this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
+  // }
+  //  toggleRow(row:SteamItem)
+  //  {
     
-     this.selection.toggle(row);
-     this.SelectFirstItem();
-     this.calculateTotalCost();
-   }
+  //    this.selection.toggle(row);
+  //    this.SelectFirstItem();
+  //    this.calculateTotalCost();
+  //  }
 
-   SelectFirstItem()
-   {
-    if(!this.selection.selected.length)
-    {
-      this.selectedEstimateItem=undefined;
-    }
-    else if(this.selection.selected.length===1)
-    {
-      this.selectedEstimateItem=this.selection.selected[0];
-      if(this.selectedEstimateItem?.bill_to_guid)
-      {
-      this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
+  //  SelectFirstItem()
+  //  {
+  //   if(!this.selection.selected.length)
+  //   {
+  //     this.selectedEstimateItem=undefined;
+  //   }
+  //   else if(this.selection.selected.length===1)
+  //   {
+  //     this.selectedEstimateItem=this.selection.selected[0];
+  //     if(this.selectedEstimateItem?.bill_to_guid)
+  //     {
+  //     this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
       
-      }
-    }
-   }
-   CheckBoxDisable(row:InGateCleaningItem)
-   {
-     if(this.selectedEstimateItem?.customer_company)
-     {
-     if(row.customer_company?.code!=this.selectedEstimateItem.customer_company?.code)
-     {
-      return true;
-     }
-    }
-     return false;
-   }
+  //     }
+  //   }
+  //  }
+  //  CheckBoxDisable(row:InGateCleaningItem)
+  //  {
+  //    if(this.selectedEstimateItem?.customer_company)
+  //    {
+  //    if(row.customer_company?.code!=this.selectedEstimateItem.customer_company?.code)
+  //    {
+  //     return true;
+  //    }
+  //   }
+  //    return false;
+  //  }
 
-   MasterCheckBoxDisable()
-   {
-     if(this.distinctCustomerCodes?.length)
-     {
-        return this.distinctCustomerCodes.length>1;
-     }
+  //  MasterCheckBoxDisable()
+  //  {
+  //    if(this.distinctCustomerCodes?.length)
+  //    {
+  //       return this.distinctCustomerCodes.length>1;
+  //    }
 
-     return false;
-   }
+  //    return false;
+  //  }
 
    
-   getTotalCost(row:any)
-   {
+  //  getTotalCost(row:any)
+  //  {
      
-    const customer_company_guid= row.storing_order_tank?.storing_order?.customer_company?.guid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-      if(data.length>0)
-      {
-        var cost:number =data[0].cost;
-        row.total_cost=(this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part,cost).total_mat_cost||0);
-        //this.calculateTotalCost();
-      }
-    });
+  //   const customer_company_guid= row.storing_order_tank?.storing_order?.customer_company?.guid;
+  //   const where = {
+  //     and: [
+  //       { customer_company_guid: { eq: customer_company_guid } }
+  //     ]
+  //   };
+  //   this.plDS.getCustomerPackageCost(where).subscribe(data=>{
+  //     if(data.length>0)
+  //     {
+  //       var cost:number =data[0].cost;
+  //       row.total_cost=(this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part,cost).total_mat_cost||0);
+  //       //this.calculateTotalCost();
+  //     }
+  //   });
 
-   }
+  //  }
    
-   getCustomerLabourPackage(custGuid: string){
+  //  getCustomerLabourPackage(custGuid: string){
 
-    const customer_company_guid= custGuid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-      if(data.length>0)
-      {
-        this.selectedEstimateLabourCost =data[0].cost;
-        // this.stmEstList = this.stmEstList?.map(stm => {
-        //       var stm_part=[...stm.steaming_part!];
-        //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
-        //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
-        // });
-        this.calculateTotalCost();
-      }
-    });
+  //   const customer_company_guid= custGuid;
+  //   const where = {
+  //     and: [
+  //       { customer_company_guid: { eq: customer_company_guid } }
+  //     ]
+  //   };
+  //   this.plDS.getCustomerPackageCost(where).subscribe(data=>{
+  //     if(data.length>0)
+  //     {
+  //       this.selectedEstimateLabourCost =data[0].cost;
+  //       // this.stmEstList = this.stmEstList?.map(stm => {
+  //       //       var stm_part=[...stm.steaming_part!];
+  //       //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
+  //       //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
+  //       // });
+  //       this.calculateTotalCost();
+  //     }
+  //   });
    
-  }
+  // }
 
-  calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): number {
+  // calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): number {
     
-    const total = this.IsApproved(steam)?this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.stmDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
-      return total.total_mat_cost;
+  //   const total = this.IsApproved(steam)?this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.stmDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
+  //     return total.total_mat_cost;
 
-  }
+  // }
 
   IsApproved(steam:SteamItem)
   {
@@ -984,15 +846,15 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     
   }
 
-  checkInvoicedAndGetTotalCost()
-  {
-    this.stmEstList = this.stmEstList?.map(stm => {
-              return { ...stm, invoiced: (stm.customer_billing_guid?true:false), total_cost:0 };
-        });
-    this.stmEstList?.forEach(stm => {
-         this.getTotalCost(stm);
-        });    
-  }
+  // checkInvoicedAndGetTotalCost()
+  // {
+  //   this.stmEstList = this.stmEstList?.map(stm => {
+  //             return { ...stm, invoiced: (stm.customer_billing_guid?true:false), total_cost:0 };
+  //       });
+  //   this.stmEstList?.forEach(stm => {
+  //        this.getTotalCost(stm);
+  //       });    
+  // }
 
   checkInvoiced()
   {
@@ -1002,52 +864,69 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         });
   }
 
-  handleDelete(event:Event, row:SteamItem)
-  {
+ 
 
-    event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
+  ProcessReportCustomerTankActivity(report_type:string)
+    {
+      if(this.sotList.length===0) return;
+  
+      var report_customer_tank_acts:report_customer_tank_activity[]=[];
+      
+      this.sotList.map(s=>{
+  
+        if(s)
+        {
+           var repCust :report_customer_tank_activity= report_customer_tank_acts.find(r=>r.code===s.storing_order?.customer_company?.code)||new report_customer_tank_activity();
+           let newCust=false;
+           if(!repCust.code)
+           {
+             repCust.code = s.storing_order?.customer_company?.code;
+             repCust.customer = s.storing_order?.customer_company?.name;
+             newCust=true;
+           }
+           repCust.number_tank ??= 0;
+           repCust.number_tank+=1;
+           if(!repCust.storing_order_tank) repCust.storing_order_tank=[];
+           repCust.storing_order_tank?.push(s);
+           if(newCust)report_customer_tank_acts.push(repCust);
+  
+  
+  
+        }
+      });
+  
+      
+        this.onExportDetail(report_customer_tank_acts,report_type);
+      
+  
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
-        action: 'delete',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.RmoveEstimateFromInvoice(event,row.guid!);
+  
+    onExportDetail(repCustomerTankActivity: report_customer_tank_activity[],report_type :string) {
+      //this.preventDefault(event);
+      let cut_off_dt = new Date();
+  
+    
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
       }
-    });
-  }
-
-  RmoveEstimateFromInvoice(event:Event, processGuid:string)
-  {
-    var updateBilling: any=null;
-    var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-    billingEstReq.action="CANCEL";
-    billingEstReq.billing_party=this.billingParty;
-    billingEstReq.process_guid=processGuid;
-    billingEstReq.process_type=this.processType;
-    let billingEstimateRequests:BillingEstimateRequest[]=[];
-    billingEstimateRequests.push(billingEstReq);
-   
-    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-      if(result.data.updateBilling)
-      {
-        this.handleSaveSuccess(result.data.updateBilling);
-        this.onCancel(event);
-        this.search();
-      }
-    })
-
-  }
+  
+      const dialogRef = this.dialog.open(CustomerDetailPdfComponent, {
+        width: '1200px',
+        height: '80vh',
+        data: {
+          report_customer_tank_activity: repCustomerTankActivity,
+          type:report_type
+        },
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  
+      });
+    }
    
   
  

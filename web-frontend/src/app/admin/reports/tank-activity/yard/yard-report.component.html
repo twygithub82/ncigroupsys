@@ -149,13 +149,13 @@
               {{translatedLangText.SAVE_AND_SUBMIT}}
             </button>
             <button mat-flat-button color="accent"  class="m-r-5"
-              (click)="onCancel($event)">
+              >
               <mat-icon>
                 close
               </mat-icon>
               {{translatedLangText.CANCEL}}
             </button>
-            <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5" (click)="delete($event)">
+            <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5" >
               <mat-icon>
                 delete_forever
               </mat-icon>
@@ -172,14 +172,14 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox (change)="$event ? masterToggle() : null"
+                <mat-checkbox 
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" [hidden]="MasterCheckBoxDisable()">
+                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" >
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" >
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -293,7 +293,7 @@
                 @if(row.invoiced)
                 {
                   <span class="mobile-label"><mat-icon>more_vert</mat-icon></span>
-                  <button mat-icon-button  (click)="handleDelete($event, row)">
+                  <button mat-icon-button  >
                      <mat-icon>delete_forever</mat-icon>
                   </button>
                 }

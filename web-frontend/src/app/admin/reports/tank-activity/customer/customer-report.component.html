@@ -81,14 +81,14 @@
                   <mat-datepicker #clean_picker></mat-datepicker>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.REPAIR_COMPLETED_DATE}}</mat-label>
                   <input matInput [matDatepicker]="repair_completed_picker" placeholder="Select date" formControlName="repair_cmp_dt">
                   <mat-datepicker-toggle matSuffix [for]="repair_completed_picker"></mat-datepicker-toggle>
                   <mat-datepicker #repair_completed_picker></mat-datepicker>
                 </mat-form-field>
-              </div>
+              </div> -->
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
@@ -114,9 +114,21 @@
               </div>
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
+                  <mat-label>{{translatedLangText.CURRENT_STATUS}}</mat-label>
                   <mat-select formControlName="tank_status_cv">
                     @for (codeValue of tankStatusCvList; track codeValue) {
+                    <mat-option [value]="codeValue.code_val">
+                      {{codeValue.description}}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
+                  <mat-select formControlName="depot_status_cv">
+                    @for (codeValue of depotStatusCvList; track codeValue) {
                     <mat-option [value]="codeValue.code_val">
                       {{codeValue.description}}
                     </mat-option>
@@ -196,20 +208,19 @@
               </mat-form-field>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
-            <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5" (click)="save($event)">
+            <button mat-flat-button color="primary"  class="m-r-5" >
               <mat-icon>
                 save
               </mat-icon>
               {{translatedLangText.SAVE_AND_SUBMIT}}
             </button>
-            <button mat-flat-button color="accent"  class="m-r-5"
-              (click)="onCancel($event)">
+            <button mat-flat-button color="accent"  class="m-r-5">
               <mat-icon>
                 close
               </mat-icon>
               {{translatedLangText.CANCEL}}
             </button>
-            <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5" (click)="delete($event)">
+            <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5" >
               <mat-icon>
                 delete_forever
               </mat-icon>
@@ -226,14 +237,14 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox (change)="$event ? masterToggle() : null"
+                <mat-checkbox 
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" [hidden]="MasterCheckBoxDisable()">
+                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" >
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
+                <mat-checkbox (click)="$event.stopPropagation()" 
+                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" >
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -347,7 +358,7 @@
                 @if(row.invoiced)
                 {
                   <span class="mobile-label"><mat-icon>more_vert</mat-icon></span>
-                  <button mat-icon-button  (click)="handleDelete($event, row)">
+                  <button mat-icon-button  >
                      <mat-icon>delete_forever</mat-icon>
                   </button>
                 }
@@ -361,20 +372,20 @@
           </table>
         </div>
         <!-- No result -->
-        @if (!(stmDS.loading$ | async) && !stmEstList.length) {
+        @if (!(sotDS.loading$ | async) && !sotList.length) {
         <mat-divider></mat-divider>
-        <div class="no-results m-l-20 pt-3" [style.display]="stmEstList.length === 0 ? '' : 'none'">
+        <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
         <!-- Loading spinner -->
-        @if (stmDS.loading$ | async) {
+        @if (sotDS.loading$ | async) {
         <div class="tbl-spinner">
           <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
           </mat-progress-spinner>
         </div>
         }
-        <mat-paginator #paginator [length]="stmDS.totalCount" [pageIndex]="0" [pageSize]="10"
+        <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
           [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)" hidden>
         </mat-paginator>
       </div>

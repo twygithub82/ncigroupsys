@@ -807,6 +807,7 @@
     "LIFT-ON": "Lift On",
     "TAKE-IN-REFERENCE": "Take-in Reference",
     "RELEASE-REFERENCE": "Release Reference",
+    "APPROVAL-REFERENCE": "Approval Reference",
     "STORAGE-BILLING-DETAILS": "Storage Billing Details",
     "STORAGE-BILLED-UNTIL": "Storage Billed Until",
     "BOOKING": "Booking",
@@ -937,7 +938,8 @@
     "TANK-ACTIVITY":"Tank Activity",
     "INVENTORY-PERIOD":"Inventory Period",
     "YARD-STATUS":"Yard Status",
-    "LOCATION-STATUS":"Location Status"
+    "LOCATION-STATUS":"Location Status",
+    "RELEASE-BOOKING":"Release Booking"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
