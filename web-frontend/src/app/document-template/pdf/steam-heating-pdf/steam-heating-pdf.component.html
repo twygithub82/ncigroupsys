@@ -147,6 +147,7 @@
             <b>{{translatedLangText.BOTTOM_SIDE}}</b>
           </td>
         </tr>
+        @if (steamTempList?.length) {
         @for (steamTemp of steamTempList; track steamTemp) {
         <tr>
           <td class="td-col-0-5 text-center align-middle">
@@ -166,6 +167,14 @@
           </td>
           <td class="td-col-4">
             {{steamTemp.remarks}}
+          </td>
+        </tr>
+        }
+        }
+        @else {
+        <tr>
+          <td class="text-center" colspan="6">
+            <b>{{translatedLangText.NO_RESULT}}</b>
           </td>
         </tr>
         }

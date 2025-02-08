@@ -229,7 +229,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   async ngOnInit() {
     this.pdfTitle = this.translatedLangText.STEAM_PROGRESS_MONITORING_CHART;
-
+    
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
       this.getSteamData(),
