@@ -182,6 +182,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
+  depotCvList: CodeValuesItem[]=[];
 
   processType:string="STEAMING";
   billingParty:string="CUSTOMER";
@@ -262,7 +263,8 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       tank_status_cv: [''],
       eir_status_cv: [''],
       yard_cv: [''],
-      invoiced:['']
+      invoiced:[''],
+      depot_status_cv:['IN_YARD']
     });
   }
 
@@ -322,6 +324,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -336,6 +339,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('depotCv').subscribe(data => {
+      this.depotCvList = data;
     });
     this.search();
   }
@@ -393,13 +399,31 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
     where.status_cv={in:['COMPLETED','APPROVED','JOB-IN_PROGRESS']};
     where.bill_to_guid={neq:null};
+
+    
+    if (this.searchForm!.get('depot_status_cv')?.value!="ALL") {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+     
+     var cond :any ={tank_status_cv: {eq: "RELEASED"}};
+     if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
+     {
+      cond = {tank_status_cv: {neq: "RELEASED"}};
+     }
+     
+      where.storing_order_tank=cond;
+    }
+
+    
     if (this.searchForm!.get('tank_no')?.value) {
       where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
     }
 
+
+
     if (this.searchForm!.get('customer_code')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank={storing_order:{customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}}};
+      if(!where.storing_order_tank.storing_order) where.storing_order_tank.storing_order={};
+      where.storing_order_tank.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
       where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
     }
 
@@ -609,7 +633,8 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       inv_dt_end: '',
       inv_no:'',
       yard_cv: [''],
-      invoiced:null
+      invoiced:null,
+      depot_status_cv:'IN_YARD'
     });
 
     this.branchCodeControl.reset('');

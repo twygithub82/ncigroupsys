@@ -40,9 +40,8 @@ import { report_customer_tank_activity } from 'app/data-sources/reports';
 
 export interface DialogData {
   report_customer_tank_activity: report_customer_tank_activity[],
-  queryType:number,
   type:string,
-  date:string,
+  
 
   // repair_guid: string;
   // customer_company_guid: string;
@@ -56,9 +55,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-yard-detail-pdf',
-  templateUrl: './yard-detail-pdf.component.html',
-  styleUrls: ['./yard-detail-pdf.component.scss'],
+  selector: 'app-customer-detail-pdf',
+  templateUrl: './customer-detail-pdf.component.html',
+  styleUrls: ['./customer-detail-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -70,7 +69,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -257,7 +256,10 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     AV_DATE:'COMMON-FORM.AV-DATE',
     RELEASE_DATE:'COMMON-FORM.RELEASE-DATE',
     RELEASE_REFERENCE:'COMMON-FORM.RELEASE-REFERENCE',
-    INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD'
+    INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
+    CUSTOMER_REPORT:'COMMON-FORM.CUSTOMER-REPORT',
+    TANK_STATUS:'COMMON-FORM.TANK-STATUS',
+    RELEASE_BOOKING:'COMMON-FORM.RELEASE-BOOKING'
   }
 
   
@@ -314,7 +316,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
   
 
   constructor(
-    public dialogRef: MatDialogRef<YardDetailPdfComponent>,
+    public dialogRef: MatDialogRef<CustomerDetailPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -335,8 +337,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     // this.existingPdf = data.existingPdf;
     this.report_customer_tank_activity= data.report_customer_tank_activity;
     this.invType=data.type;
-    this.date=data.date;
-    this.queryType=data.queryType;
+ 
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -936,7 +937,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
    }
    GetReportTitle():string
    {
-     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.DETAIL_REPORT}`
+     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.CUSTOMER_REPORT}`
    }
 
    removeDeletedInGateAndOutGate(sot:StoringOrderTankItem)
@@ -1045,7 +1046,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
    {
     this.removeDeletedInGateAndOutGate(sot);
     return Utility.convertEpochToDateStr(sot.out_gate?.[0]?.eir_dt!)!;
-    return '';
+    
   }
    DisplayReleaseRef(sot:StoringOrderTankItem):string
    {
@@ -1062,6 +1063,34 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
 
     return sot?.remarks||'';
   }
+
+  DisplayCustomerName(repCustomer:report_customer_tank_activity)
+  {
+    return `${repCustomer.code}(${repCustomer.customer})`
+  }
   
-  
+  DisplayNextTest(sot:StoringOrderTankItem):string
+  {
+    var nextTest:string='';
+    this.removeDeletedInGateAndOutGate(sot);
+    if(sot.in_gate?.length)
+    {
+      nextTest=this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv,this.testTypeCvList)||'';
+    }
+
+    if(sot.out_gate?.length)
+    {
+      nextTest=this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.next_test_cv,this.testTypeCvList)||'';
+    }
+    return nextTest;
+  }
+
+  DisplayCleanCertDate(sot:StoringOrderTankItem):string
+  {
+     return '';
+  }
+  DisplayReleaseBooking(sot:StoringOrderTankItem):string
+  {
+    return  Utility.convertEpochToDateStr(sot.release_order_sot?.[0]?.release_order?.release_dt!)!;
+  }
 }

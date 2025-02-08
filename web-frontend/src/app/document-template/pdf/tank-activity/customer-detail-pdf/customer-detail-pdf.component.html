@@ -9,7 +9,7 @@
      @for (bCust of report_customer_tank_activity; track bCust) {
   <div class="card">
 
-    <div class="row pdf-body">
+    <!-- <div class="row pdf-body">
       <table  id="table_customer_info" class="table_customer_info">
         <tr>
           <td>{{translatedLangText.INVENTORY_PERIOD}} :</td>
@@ -19,12 +19,19 @@
           <td>{{GeneratedDate()}}</td>
         </tr>
       </table>
-    </div> 
+    </div>  -->
      
       <div class="row pdf-body">
         <table  id="table_customer_info" class="table_customer_info">
           <tr>
-            <td>[{{bCust.code}}]</td>
+            <td>{{translatedLangText.CUSTOMER}} :</td>
+            <td>{{this.DisplayCustomerName(bCust)}}</td>
+          </tr>
+          <tr>
+            <td>{{translatedLangText.TANK_STATUS}} :</td>
+            <td>{{this.invType}}</td>
+            <td class="sp"> {{translatedLangText.DATE}} :</td>
+            <td>{{GeneratedDate()}}</td>
           </tr>
         </table>
       </div> 
@@ -44,6 +51,9 @@
           <th class="th-w12">{{translatedLangText.APPROVAL_REFERENCE}}</th>
           <th class="th-w12">{{translatedLangText.AV_DATE}}</th>
           <th class="th-w12">{{translatedLangText.LAST_TEST}}</th>
+          <th class="th-w12">{{translatedLangText.NEXT_TEST}}</th>
+          <!-- <th class="th-w12">{{translatedLangText.CLEAN_CERT_DATE}}</th> -->
+          <th class="th-w12">{{translatedLangText.RELEASE_BOOKING}}</th>
           <th class="th-w12">{{translatedLangText.RELEASE_DATE}}</th>
           <th class="th-w8">{{translatedLangText.RELEASE_REFERENCE}}</th>
           <th class="th-w8">{{translatedLangText.CURRENT_STATUS}}</th>
@@ -65,6 +75,9 @@
             <td>{{ DisplayApprovalRef(itm) }}</td>
             <td>{{ DisplayAVDate(itm) }}</td>
             <td>{{ DisplayLastTest(itm) }}</td>
+            <td>{{ DisplayNextTest(itm) }}</td>
+            <!-- <td>{{ DisplayCleanCertDate(itm) }}</td> -->
+            <td>{{ DisplayReleaseBooking(itm) }}</td>
             <td>{{ DisplayReleaseDate(itm) }}</td>
             <td>{{ DisplayReleaseRef(itm) }}</td>
             <td>{{ DisplayCurrentStatus(itm) }}</td>

@@ -807,6 +807,7 @@
     "LIFT-ON": "Lift On",
     "TAKE-IN-REFERENCE": "Take-in Reference",
     "RELEASE-REFERENCE": "Release Reference",
+    "APPROVAL-REFERENCE": "Approval Reference",
     "STORAGE-BILLING-DETAILS": "Storage Billing Details",
     "STORAGE-BILLED-UNTIL": "Storage Billed Until",
     "BOOKING": "Booking",
@@ -943,7 +944,9 @@
     "SESSION-EXPIRE-WARNING-DESCRIPTION": "Your session will expire in {0}, do you want to extend the session?",
     "RENEW": "Renew",
     "LOGOUT": "Logout",
-    "CONFIRM-LOGOUT": "Confirm Logout?"
+    "CONFIRM-LOGOUT": "Confirm Logout?",
+    "LOCATION-STATUS":"Location Status",
+    "RELEASE-BOOKING":"Release Booking"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

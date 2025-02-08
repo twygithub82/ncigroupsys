@@ -183,6 +183,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
+  depotCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -262,6 +263,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       eir_status_cv: [''],
       yard_cv: [''],
       invoiced:[''],
+      depot_status_cv:['IN_YARD']
       
     });
   }
@@ -322,6 +324,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -336,6 +339,9 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('depotCv').subscribe(data => {
+      this.depotCvList = data;
     });
     this.search();
   }
@@ -396,6 +402,18 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
     }
 
+    if (this.searchForm!.get('depot_status_cv')?.value!="ALL") {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+     
+     var cond :any ={tank_status_cv: {eq: "RELEASED"}};
+     if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
+     {
+      cond = {tank_status_cv: {neq: "RELEASED"}};
+     }
+     
+      where.storing_order_tank=cond;
+    }
+
     if(this.searchForm!.get('invoiced')?.value)
       {
         where.storage_billing_guid={neq: null};
@@ -403,8 +421,8 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.searchForm!.get('customer_code')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank={storing_order:{customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}}};
-      // where.storing_order_tank={customer_company:{code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
+      if(!where.storing_order_tank.storing_order) where.storing_order_tank.storing_order={};
+      where.storing_order_tank.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
     }
 
     if(this.searchForm!.get('branch_code')?.value)
@@ -614,7 +632,8 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       inv_dt_end: '',
       inv_no:'',
       yard_cv: [''],
-      invoiced:null
+      invoiced:null,
+      depot_status_cv:'IN_YARD'
     });
 
     this.customerCodeControl.reset('');
