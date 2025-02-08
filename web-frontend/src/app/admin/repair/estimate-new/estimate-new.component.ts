@@ -599,6 +599,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
       return rep;
     });
+    console.log(this.repairItem!.repair_part);
     this.updateData(this.repairItem!.repair_part);
     this.repairForm?.patchValue({
       guid: !isDuplicate ? this.repairItem!.guid : '',
