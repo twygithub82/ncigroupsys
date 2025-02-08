@@ -1576,7 +1576,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
             //     this.steamItem = data;
             //   }
             // });
-            this.subs.sink = this.sotRepairDS.getStoringOrderTankForMovementCleaning(this.sot_guid).subscribe(data => {
+            this.subs.sink = this.sotRepairDS.getStoringOrderTankForMovementSteaming(this.sot_guid).subscribe(data => {
               if (data.length > 0 && this.sot) {
                 console.log(`sot steam: `, data);
                 this.sot.purpose_steam = data[0].purpose_steam;
