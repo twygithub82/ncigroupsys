@@ -945,8 +945,9 @@
     "RENEW": "Renew",
     "LOGOUT": "Logout",
     "CONFIRM-LOGOUT": "Confirm Logout?",
-    "LOCATION-STATUS":"Location Status",
-    "RELEASE-BOOKING":"Release Booking"
+    "RELEASE-BOOKING":"Release Booking",
+    "CLEANING-COST":"Cleaning Cost",
+    "BUFFER-COST":"Buffer Cost"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

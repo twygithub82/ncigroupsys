@@ -434,6 +434,10 @@ export const ADMIN_ROUTE: Routes = [
     component: JobOrderSteamComponent,
   },
   {
+    path: "steam/job-order/:idx",
+    component: JobOrderSteamComponent,
+  },
+  {
     path: "steam/job-order/allocation/:id",
     component: JobOrderAllocationSteamComponent,
   },

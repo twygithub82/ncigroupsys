@@ -1024,7 +1024,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canRollback(re: ResidueItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION', 'COMPLETED', 'QC_COMPLETED']
+    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION']//, 'COMPLETED', 'QC_COMPLETED']
     return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 

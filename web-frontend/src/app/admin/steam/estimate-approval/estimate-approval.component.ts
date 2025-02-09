@@ -606,7 +606,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
           this.sotList = data.map(sot => {
             sot.steaming = sot.steaming?.map(stm => {
               
-              if(steamingStatusFilter)
+              if(steamingStatusFilter.length)
               {
                 if(steamingStatusFilter.includes(stm.status_cv))
                 {

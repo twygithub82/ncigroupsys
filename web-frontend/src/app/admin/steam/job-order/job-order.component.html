@@ -8,7 +8,7 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <div class="body overflow-auto">
-            <mat-tab-group dynamicHeight>
+            <mat-tab-group #tabGroup dynamicHeight [selectedIndex]="isActiveTab" >
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
                 <form class="ms-0" [formGroup]="filterSteamForm!" (ngSubmit)="onFilterSteam()" #formDirective="ngForm">
                   <div class="row">
@@ -168,12 +168,6 @@
               <mat-tab [label]="translatedLangText.BAY_OVERVIEW">
                 <app-bay-overview></app-bay-overview>
               </mat-tab>
-              <!-- <mat-tab>
-                <ng-template mat-tab-label>
-                  <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
-                </ng-template>
-                <app-job-order-qc></app-job-order-qc>
-              </mat-tab> -->
             </mat-tab-group>
           </div>
         </div>

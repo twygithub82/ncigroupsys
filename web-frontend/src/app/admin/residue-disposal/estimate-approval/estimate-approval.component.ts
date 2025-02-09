@@ -622,7 +622,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
         var residueStatusFilter=this.searchForm!.value['est_status_cv'];
         this.sotList = data.map(sot => {
           sot.residue = sot.residue?.map(res => {
-            if(residueStatusFilter)
+            if(residueStatusFilter.length)
               {
                 if(residueStatusFilter.includes(res.status_cv))
                 {
@@ -991,11 +991,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
              this.search();
             // this.handleSaveSuccess(result?.data?.approveResidue);
            });
-      //  }
-        //  } else {
-        //    bill_to?.setErrors({ required: true })
-        //    bill_to?.markAsTouched();
-        //    bill_to?.updateValueAndValidity();
-        //  }
+      
       }
 }

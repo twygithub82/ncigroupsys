@@ -30,7 +30,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
-import { CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
@@ -122,7 +122,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   storageCalControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   profileNameControl= new UntypedFormControl();
+  customerCodeControl=new UntypedFormControl();
+  branchCodeControl=new UntypedFormControl();
   custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
+  ccDS:CustomerCompanyDS;
+
+  customer_companyList?: CustomerCompanyItem[];
+  branch_companyList?:CustomerCompanyItem[];
   jobOrderDS : JobOrderDS;
   selectedItems: any;
   selectedItem:any;
@@ -238,6 +244,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     TOTAL_COST:"COMMON-FORM.TOTAL-COST",
     ROLLBACK:'COMMON-FORM.ROLLBACK',
     ARE_SURE_ROLLBACK:'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
+    BILLING_TO:'COMMON-FORM.BILLING-TO',
+    CLEANING_COST:'COMMON-FORM.CLEANING-COST',
+    BUFFER_COST:'COMMON-FORM.BUFFER-COST'
   };
 
   
@@ -263,11 +273,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.packageDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.ccDS= new CustomerCompanyDS(this.apollo);
     this.jobOrderDS= new JobOrderDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
-    this.loadData();
+    //this.loadData();
     
+  }
+
+  ngOnInit() {
+    
+    // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.loadData();
+    if(this.AllowChangingCost())this.initializeValueChanges();
   }
 
   createCleaningChargesItem(){
@@ -307,8 +325,57 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       update_on:[''],
       status_cv:[''],
       approve_dt:[''],
-      na_dt:['']
+      na_dt:[''],
+      bill_to:this.customerCodeControl,
+      bill_branch:this.branchCodeControl,
+      cleaning_cost:[''],
+      buffer_cost:['']
     });
+  }
+
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+
+  initializeValueChanges() {
+    this.pcForm!.get('bill_to')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        this.branch_companyList=[];
+       // this.branchCodeControl.reset('');
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+          this.updateValidators(this.customerCodeControl, this.customer_companyList);
+          if(!this.customerCodeControl.invalid)
+          {
+            if(this.customerCodeControl.value?.guid)
+            {
+              let mainCustomerGuid = this.customerCodeControl.value.guid;
+              this.ccDS.loadItems({main_customer_guid:{eq:mainCustomerGuid}}).subscribe(data=>{
+                this.branch_companyList=data;
+                this.updateValidators(this.branchCodeControl, this.branch_companyList);
+              });
+            }
+          }
+        });
+      })
+    ).subscribe();
+
+  
+  }
+
+  
+  updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
+    untypedFormControl.setValidators([
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 
   displayDateFromEpoch(epoch: any) {
@@ -372,8 +439,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
          approve_dt:this.displayDateFromEpoch(inGateClnItem.approve_dt),
          na_dt:this.displayDateFromEpoch(inGateClnItem.na_dt),
          remarks:inGateClnItem.remarks,
+         cleaning_cost:inGateClnItem.cleaning_cost,
+         buffer_cost:inGateClnItem.buffer_cost
       });
-
+      this.PatchBillingParty(inGateClnItem);
       this.createCleaningChargesItem();
     //  this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
 
@@ -454,6 +523,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         rep.na_dt=Utility.convertDate(this.pcForm.get("no_action_dt")?.value)as number;
         rep.remarks=this.pcForm.get("remarks")?.value;
         break;
+      case "COST":
+        rep.action="APPROVE";
+        rep.bill_to_guid = this.getBillingParty();
+        rep.cleaning_cost= Number(this.pcForm.get('cleaning_cost')?.value);
+        rep.buffer_cost=Number(this.pcForm.get('buffer_cost')?.value);
+        rep.remarks=this.pcForm.get("remarks")?.value;
+
     }
    
     if(this.action.toUpperCase()==="NO_ACTION" )
@@ -599,7 +675,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   ShowRemarks()
   {
-    var validActions :string[]= ["kiv","no_action"];
+    var validActions :string[]= ["kiv","no_action","approve"];
     return validActions.includes(this.action);
   }
 
@@ -725,7 +801,63 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       
               }
             });
+   }
+
+   PatchBillingParty(clnItem :InGateCleaningItem)
+   {
+
+      if(clnItem.bill_to_guid===clnItem.storing_order_tank?.storing_order?.customer_company?.guid)
+      {
+         this.customerCodeControl.setValue(clnItem.storing_order_tank?.storing_order?.customer_company);
+      }
+      else
+      {
+        this.ccDS.loadItems({guid:{eq:clnItem.bill_to_guid} }, { code: 'ASC' }).subscribe(data =>{
+
+            if(data.length)
+            {
+              if(!data[0].main_customer_guid)
+              {
+                  this.customerCodeControl.setValue(data[0]);
+              }
+              else
+              {
+                 var branchCompany = data[0];
+                 this.ccDS.loadItems({guid:{eq:branchCompany.main_customer_guid} }, { code: 'ASC' }).subscribe(data =>{
+                 
+                  if(data.length)
+                  {
+                    this.customerCodeControl.setValue(data[0]);
+                  }
+                   this.branchCodeControl.setValue(branchCompany);
+                });
+
+              }
+            }
+
+
+        })
+      }
+   }
+
+   AllowChangingCost():Boolean
+   {
+      return this.action==='cost';
+   }
+
+   getBillingParty():string
+   {
+      var retval:string='';
+      if(this.pcForm.get('bill_branch')?.value.code)
+      {
+        retval =this.pcForm.get('bill_branch')?.value.guid;
+      }
+      else
+      {
+        retval =this.pcForm.get('bill_to')?.value.guid;
       }
 
+      return retval;
+   }
   
 }

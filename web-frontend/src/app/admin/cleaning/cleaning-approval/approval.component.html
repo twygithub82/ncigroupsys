@@ -236,11 +236,15 @@
                           <span>{{translatedLangText.KIV}}</span>
                         </button>
                      
-                          <button mat-menu-item (click)="NoActionTank(row)" [hidden]="HiddenMenu(row,'NO_ACTION')">
-                            <mat-icon>remove_circle_outline</mat-icon>
-                            <span>{{translatedLangText.NO_ACTION}}</span>
-                          </button>
+                      <button mat-menu-item (click)="NoActionTank(row)" [hidden]="HiddenMenu(row,'NO_ACTION')">
+                        <mat-icon>remove_circle_outline</mat-icon>
+                        <span>{{translatedLangText.NO_ACTION}}</span>
+                      </button>
                      
+                      <button mat-menu-item (click)="AdjustCost(row)" [hidden]="HiddenMenuApprovedCost(row)">
+                        <mat-icon>monetization_on</mat-icon>
+                        <span>{{translatedLangText.APPROVED_COST}}</span>
+                      </button>
                     </mat-menu>
                   </mat-cell>
                 </ng-container>

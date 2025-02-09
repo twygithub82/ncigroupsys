@@ -26,7 +26,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -47,7 +47,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
@@ -98,15 +98,7 @@ import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 ]
 })
 export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  // displayedColumns = [
-  //   'tank_no',
-  //   'customer',
-  //   'eir_no',
-  //   'eir_dt',
-  //   'last_cargo',
-  //   'tank_status_cv'
-  // ];
-
+  // @ViewChild('tabGroup') tabGroup!: MatTabGroup;
   displayedColumnsResidue = [
     'tank_no',
     'customer',
@@ -236,6 +228,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   startCursorJobOrder: string | undefined = undefined;
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
+  isActiveTab=0;
 
   constructor(
     public httpClient: HttpClient,
@@ -244,7 +237,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
   ) {
     super();
     this.translateLangText();
@@ -259,6 +253,9 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     
     this.joDS = new JobOrderDS(this.apollo);
     this.steamDs=new SteamDS(this.apollo);
+
+    var tabIdx= this.route.snapshot.paramMap.get('idx');
+    if(tabIdx) this.isActiveTab=Number(tabIdx);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -285,6 +282,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
       filterJobOrder: [''],
     });
   }
+
+ 
 
   cancelItem(row: StoringOrderItem) {
     // this.id = row.id;

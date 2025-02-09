@@ -133,8 +133,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     APPROVED_DATE: "COMMON-FORM.APPROVED-DATE",
     QUOTATION_DATE: "COMMON-FORM.QUOTATION-DATE",
     APPROVAL_STATUS: "COMMON-FORM.APPROVAL-STATUS",
-    METHOD: "COMMON-FORM.METHOD"
-
+    METHOD: "COMMON-FORM.METHOD",
+    APPROVED_COST:"COMMON-FORM.APPROVED-COST"
   }
 
 
@@ -148,7 +148,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     'APPROVED',
     'JOB_IN_PROGRESS',
     'COMPLETED',
-    'NO_ACTION'
+    'NO_ACTION',
+    'KIV'
   ]
 
   searchForm?: UntypedFormGroup;
@@ -533,22 +534,26 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     event.preventDefault(); // Prevents the form submission
   }
 
-  ApproveTank(row: InGateItem) {
+  ApproveTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "approve");
 
   }
 
-  NoActionTank(row: InGateItem) {
+  NoActionTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "no_action");
 
   }
 
-  KIVTank(row: InGateItem) {
+  KIVTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "kiv");
 
   }
 
-  ViewTank(row: InGateItem) {
+  AdjustCost(row: InGateCleaningItem)
+  {
+    this.popupDialogForm(row, "cost");
+  }
+  ViewTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "view");
 
   }
@@ -625,6 +630,14 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   }
 
+  HiddenMenuApprovedCost(row: InGateCleaningItem): Boolean {
+    var bRetval: Boolean = false;
+
+     bRetval = row.status_cv!='APPROVED';
+
+    return bRetval;
+  }
+
   HiddenMenu(row: InGateCleaningItem, statusMenu: String): Boolean {
     var bRetval: Boolean = false;
 
@@ -634,12 +647,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
     return bRetval;
   }
-  // updateValidators(validOptions: any[]) {
-  //   this.lastCargoControl.setValidators([
-  //     Validators.required,
-  //     AutocompleteSelectionValidator(validOptions)
-  //   ]);
-  // }
+ 
 
 
 }
