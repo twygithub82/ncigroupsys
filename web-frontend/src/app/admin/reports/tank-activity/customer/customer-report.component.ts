@@ -159,6 +159,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     REPAIR_COMPLETED_DATE:'COMMON-FORM.REPAIR-COMPLETED-DATE',
     TARE_WEIGHT:'COMMON-FORM.TARE-WEIGHT',
     CURRENT_STATUS:'COMMON-FORM.CURRENT-STATUS',
+    DETAIL_REPORT:'COMMON-FORM.DETAIL-REPORT',
+    ONE_CONDITION_NEEDED:'COMMON-FORM.ONE-CONDITION-NEEDED'
   }
 
   invForm?: UntypedFormGroup;
@@ -210,6 +212,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   invoiceNoControl= new FormControl('', [Validators.required]);
   invoiceDateControl= new FormControl('', [Validators.required]);
   invoiceTotalCostControl= new FormControl('0.00');
+  noCond:boolean=false;
 
   constructor(
     public httpClient: HttpClient,
@@ -260,11 +263,17 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       eir_no: [''],
       ro_no: [''],
       eir_dt:[''],
+      eir_dt_start:[''],
+      eir_dt_end:[''],
       av_dt:[''],
+      av_dt_start:[''],
+      av_dt_end:[''],
       repair_cmp_dt:[''],
       release_dt_start: [''],
       release_dt_end: [''],
       clean_dt:[''],
+      clean_dt_start:[''],
+      clean_dt_end:[''],
       tank_no: [''],
       inv_no:[''],
       job_no: [''],
@@ -400,6 +409,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
   search() {
 
+     var cond_counter=0;
      var report_type:string ="ALL";
      const where: any = {};
         this.selectedEstimateItem=undefined;
@@ -416,9 +426,10 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     
         if (this.searchForm!.get('tank_no')?.value) {
           where.tank_no = {contains: this.searchForm!.get('tank_no')?.value };
+          cond_counter++;
         }
     
-        if (this.searchForm!.get('depot_status_cv')?.value!="ALL") {
+        if (this.searchForm!.get('depot_status_cv')?.value) {
          // if(!where.storing_order_tank) where.storing_order_tank={};
          report_type="RELEASED";
          var cond :any = {eq: "RELEASED"};
@@ -429,11 +440,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
          }
           if(where.tank_status_cv)where.tank_status_cv={};
           where.tank_status_cv=cond;
+          cond_counter++;
         }
     
         if (this.searchForm!.get('customer_code')?.value) {
           // if(!where.storing_order_tank) where.storing_order_tank={};
            where.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
+           cond_counter++;
          }
         
         if (this.searchForm!.get('eir_no')?.value) {
@@ -452,28 +465,33 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
           }
             where.in_gate.some.and.push(cond);
             where.out_gate.some.and.push(cond);
-          
+            cond_counter++;
         }
     
         if (this.searchForm!.get('tare_weight')?.value) {
 
-          var cond :any ={tare_weight:{eq:Number(this.searchForm!.value['tare_weight'])}};
+          var cond :any ={eq:Number(this.searchForm!.value['tare_weight'])};
           if(!where.tank_info) where.tank_info={};
-          where.tank_info=cond;
+          if(!where.tank_info.tare_weight) where.tank_info.tare_weight={};
+          where.tank_info.tare_weight=cond;
+          cond_counter++;
         }
 
         if (this.searchForm!.get('capacity')?.value) {
 
-          var cond :any ={capacity:{eq: Number(this.searchForm!.value['capacity'])}};
+          var cond :any ={eq: Number(this.searchForm!.value['capacity'])};
           if(!where.tank_info) where.tank_info={};
-          where.tank_info=cond;
+          if(!where.tank_info.capacity) where.tank_info.capacity={};
+          where.tank_info.capacity=cond;
+          cond_counter++;
         }
 
-        if (this.searchForm!.get('av_date')?.value) {
+        if (this.searchForm!.get('av_dt_start')?.value && this.searchForm!.get('av_dt_end')?.value) {
 
-          var cond :any ={completed_dt:{eq: Utility.convertDate(this.searchForm!.value['av_date'])}};
+          var cond :any ={completed_dt:{gte: Utility.convertDate(this.searchForm!.value['av_dt_start']), lte: Utility.convertDate(this.searchForm!.value['av_dt_end'],true)}};
           if(!where.repair) where.repair={};
           where.repair=cond;
+          cond_counter++;
         }
        
 
@@ -483,11 +501,21 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         date=`${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_end')?.value))}`;
         if(!where.release_order_sot)where.release_order_sot={};
         where.release_order_sot = cond;
+        cond_counter++;
         //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
       }
 
-        if (this.searchForm!.get('eir_dt')?.value) {
 
+      if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
+        var cond :any ={some:{complete_dt:{gte: Utility.convertDate(this.searchForm!.value['clean_dt_start']), lte: Utility.convertDate(this.searchForm!.value['clean_dt_end'],true) }}};
+        if(!where.cleaning)where.cleaning={};
+        where.cleaning = cond;
+        cond_counter++;
+        //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+      }
+
+       // if (this.searchForm!.get('eir_dt')?.value) {
+        if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
           if(!where.in_gate) {
             where.in_gate={};
             where.in_gate.some={};
@@ -500,19 +528,23 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
             where.out_gate.some.and=[];
           }
 
-          var cond :any ={eir_dt:{eq: Utility.convertDate(this.searchForm!.value['eir_dt'])}};
+          //var cond :any ={eir_dt:{eq: Utility.convertDate(this.searchForm!.value['eir_dt'])}};
+          var cond :any ={eir_dt:{gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'],true)}};
           
           where.in_gate.some.and.push(cond);
           where.out_gate.some.and.push(cond);
+          cond_counter++;
           
           //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
         }
        
         if (this.searchForm!.get('last_cargo')?.value) {
           where.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
+          cond_counter++;
         }
     
-       
+        this.noCond=(cond_counter===0);
+        if(this.noCond) return;
         this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
         this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined,report_type);
     
@@ -662,8 +694,12 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       eir_status_cv: '',
       ro_no: '',
       eir_dt:'',
+      av_dt_start:'',
       av_dt:'',
+      av_dt_end:'',
       clean_dt:'',
+      clean_dt_start:'',
+      clean_dt_end:'',
       repair_cmp_dt:'',
       release_dt_start: '',
       release_dt_end: '',
@@ -676,6 +712,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.branchCodeControl.reset('');
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
+    this.noCond=false;
   }
 
   isAllSelected() {

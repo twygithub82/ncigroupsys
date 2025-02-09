@@ -60,25 +60,43 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt">
+                  <mat-date-range-input [rangePicker]="eir_picker">
+                    <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
+                    <input matEndDate placeholder="End date" formControlName="eir_dt_end">
+                  </mat-date-range-input>
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
-                  <mat-datepicker #eir_picker></mat-datepicker>
+                  <mat-date-range-picker #eir_picker></mat-date-range-picker>
+                  <!-- <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt">
+                  <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
+                  <mat-datepicker #eir_picker></mat-datepicker> -->
                 </mat-form-field>
               </div>
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.AV_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="av_picker" placeholder="Select date" formControlName="av_dt">
+                  <mat-date-range-input [rangePicker]="av_picker">
+                    <input matStartDate placeholder="Start date" formControlName="av_dt_start">
+                    <input matEndDate placeholder="End date" formControlName="av_dt_end">
+                  </mat-date-range-input>
                   <mat-datepicker-toggle matSuffix [for]="av_picker"></mat-datepicker-toggle>
-                  <mat-datepicker #av_picker></mat-datepicker>
+                  <mat-date-range-picker #av_picker></mat-date-range-picker>
+                  <!-- <input matInput [matDatepicker]="av_picker" placeholder="Select date" formControlName="av_dt">
+                  <mat-datepicker-toggle matSuffix [for]="av_picker"></mat-datepicker-toggle>
+                  <mat-datepicker #av_picker></mat-datepicker> -->
                 </mat-form-field>
               </div>
                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEAN_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="clean_picker" placeholder="Select date" formControlName="clean_dt">
+                  <mat-date-range-input [rangePicker]="clean_picker">
+                    <input matStartDate placeholder="Start date" formControlName="clean_dt_start">
+                    <input matEndDate placeholder="End date" formControlName="clean_dt_end">
+                  </mat-date-range-input>
                   <mat-datepicker-toggle matSuffix [for]="clean_picker"></mat-datepicker-toggle>
-                  <mat-datepicker #clean_picker></mat-datepicker>
+                  <mat-date-range-picker #clean_picker></mat-date-range-picker>
+                  <!-- <input matInput [matDatepicker]="clean_picker" placeholder="Select date" formControlName="clean_dt">
+                  <mat-datepicker-toggle matSuffix [for]="clean_picker"></mat-datepicker-toggle>
+                  <mat-datepicker #clean_picker></mat-datepicker> -->
                 </mat-form-field>
               </div>
               <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -150,7 +168,7 @@
                 </mat-form-field>
               </div> -->
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
-                <button mat-mini-fab color="primary" (click)="search()">
+                <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.DETAIL_REPORT}}>
                   <mat-icon>assignment</mat-icon>
                 </button>
                 <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
@@ -378,6 +396,13 @@
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
+
+        @if (!(sotDS.loading$ | async) && this.noCond) {
+          <mat-divider></mat-divider>
+          <div class="no-results m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
+            <h5 class="m-b-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
+          </div>
+          }
         <!-- Loading spinner -->
         @if (sotDS.loading$ | async) {
         <div class="tbl-spinner">

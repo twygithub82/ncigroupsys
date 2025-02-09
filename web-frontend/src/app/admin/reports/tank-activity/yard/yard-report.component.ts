@@ -162,7 +162,8 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     DATE:'COMMON-FORM.DATE',
     INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
     SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    DETAIL_REPORT:'COMMON-FORM.DETAIL-REPORT'
+    DETAIL_REPORT:'COMMON-FORM.DETAIL-REPORT',
+    ONE_CONDITION_NEEDED:'COMMON-FORM.ONE-CONDITION-NEEDED'
   }
 
   invForm?: UntypedFormGroup;
@@ -212,6 +213,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   invoiceNoControl= new FormControl('', [Validators.required]);
   invoiceDateControl= new FormControl('', [Validators.required]);
   invoiceTotalCostControl= new FormControl('0.00');
+  noCond:boolean=false;
 
   constructor(
     public httpClient: HttpClient,
@@ -384,6 +386,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   search(report_type:number)
   {
 
+    var cond_counter=0;
     let queryType =1;
     const where: any = {};
     this.selectedEstimateItem=undefined;
@@ -400,11 +403,13 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = {contains: this.searchForm!.get('tank_no')?.value };
+      cond_counter++;
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
      // if(!where.storing_order_tank) where.storing_order_tank={};
       where.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
+      cond_counter++;
     }
 
     
@@ -420,6 +425,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       {
         where.out_gate = cond;
       }
+      cond_counter++;
     }
 
     var date:string=` - ${Utility.convertDateToStr(new Date())}`;
@@ -436,13 +442,16 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
           where.out_gate={};
           where.out_gate =  cond;
         }
+        cond_counter++;
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
    
     if (this.searchForm!.get('last_cargo')?.value) {
       where.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
+      cond_counter++
     }
-
+    this.noCond=(cond_counter===0);
+    if(this.noCond)return;
    
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined , report_type,queryType,invType,date);
@@ -464,23 +473,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
           //this.checkInvoiced();
           //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
         });
-      // }
-      // else if(queryType==2)
-      // {
-      //   this.subs.sink = this.sotDS.searchStoringOrderTanksOutGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-      //   .subscribe(data => {
-      //     this.sotList = data;
-      //     this.endCursor = this.stmDS.pageInfo?.endCursor;
-      //     this.startCursor = this.stmDS.pageInfo?.startCursor;
-      //     this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-      //     this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-
-      //     //this.checkInvoicedAndGetTotalCost();
-      //     //this.checkInvoiced();
-      //     this.ProcessReportCustomerTankActivity(invType!,date!,report_type!,queryType);
-      //   });
-
-      // }
+   
     
 
     this.pageSize = pageSize;
