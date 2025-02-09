@@ -302,7 +302,7 @@ namespace IDMS.Repair.GqlTypes
                                 part.approve_qty = part.quantity;
                             }
                         }
-                        else//if the repair still oending, rollback the repair
+                        else//if the repair still pending, rollback the repair
                         {
                             var partsTarifRepairGuids = repairPart.Select(x => x.tariff_repair_guid).ToArray();
                             var packageRepair = await context.package_repair.Where(r => partsTarifRepairGuids.Contains(r.tariff_repair_guid) &&
