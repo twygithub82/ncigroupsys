@@ -1077,7 +1077,7 @@ const GET_REPAIR_FOR_QC = gql`
             }
           }
         }
-        repair_part {
+        repair_part(where: { delete_dt: { eq: null } }) {
           job_order_guid
           approve_part
           rp_damage_repair {
@@ -1128,7 +1128,7 @@ const GET_REPAIR_FOR_MOVEMENT = gql`
         allocate_dt
         allocate_by
         complete_dt
-        repair_part {
+        repair_part(where: { delete_dt: { eq: null } }) {
           action
           create_by
           create_dt
@@ -1293,7 +1293,7 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
         total_cost
         update_by
         update_dt
-        repair_part {
+        repair_part(where: { delete_dt: { eq: null } }) {
           action
           create_by
           create_dt

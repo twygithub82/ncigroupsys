@@ -178,6 +178,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   tankStatusCvList: CodeValuesItem[] = [];
   testClassCvList: CodeValuesItem[] = [];
   testClassCvListNewBooking: CodeValuesItem[] = [];
+  tankStatusInYard = TANK_STATUS_IN_YARD;
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
@@ -385,7 +386,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     const where: any = {
       and: [
         { status_cv: { eq: "ACCEPTED" } },
-        { tank_status_cv: { in: TANK_STATUS_IN_YARD } },
       ]
     };
 
@@ -395,6 +395,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
     if (this.searchForm!.get('tank_status_cv')?.value) {
       where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
+    } else {
+      where.tank_status_cv = { in: this.tankStatusInYard };
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {
@@ -403,6 +405,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
     if (this.searchForm!.get('job_no')?.value) {
       where.job_no = { contains: this.searchForm!.get('job_no')?.value };
+    }
+
+    if (this.searchForm!.get('book_type_cv')?.value) {
+      const booking: any = {};
+      booking.book_type_cv = { contains: this.searchForm!.get('book_type_cv')?.value };
+      where.booking = { some: booking };
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -417,25 +425,54 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         gte: Utility.convertDate(this.searchForm!.get('clean_dt_start')?.value),
         lte: Utility.convertDate(this.searchForm!.get('clean_dt_end')?.value)
       };
-      where.cleaningSearch = { some: cleaningSearch };
+      where.cleaning = { some: cleaningSearch };
+    }
+
+    if (this.searchForm!.get('repair_dt_start')?.value || this.searchForm!.get('repair_dt_end')?.value) {
+      const repairSearch: any = {};
+      repairSearch.complete_dt = {
+        gte: Utility.convertDate(this.searchForm!.get('repair_dt_start')?.value),
+        lte: Utility.convertDate(this.searchForm!.get('repair_dt_end')?.value)
+      };
+      where.repair = { some: repairSearch };
     }
 
     if (this.searchForm!.get('capacity')?.value ||
       this.searchForm!.get('eir_no')?.value ||
       this.searchForm!.get('eir_dt_start')?.value ||
       this.searchForm!.get('eir_dt_end')?.value ||
-      this.searchForm!.get('tare_weight')?.value) {
+      this.searchForm!.get('tare_weight')?.value ||
+      this.searchForm!.get('yard_cv')?.value) {
       // In Gate
       const igSearch: any = {};
       if (this.searchForm!.get('eir_no')?.value) {
         igSearch.eir_no = { contains: this.searchForm!.get('eir_no')?.value }
       }
-      if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
-        igSearch.eir_dt = {
-          gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value),
-          lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value)
-        };
+
+      if (this.searchForm!.get('yard_cv')?.value) {
+        igSearch.yard_cv = { contains: this.searchForm!.get('yard_cv')?.value }
       }
+      
+      if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
+        const eirDtStart = this.searchForm?.get('eir_dt_start')?.value;
+        const eirDtEnd = this.searchForm?.get('eir_dt_end')?.value;
+        const today = new Date();
+
+        // Check if `est_dt_start` is before today and `est_dt_end` is empty
+        if (eirDtStart && new Date(eirDtStart) < today && !eirDtEnd) {
+          igSearch.eir_dt = {
+            gte: Utility.convertDate(eirDtStart),
+            lte: Utility.convertDate(today), // Set end date to today
+          };
+        } else if (eirDtStart || eirDtEnd) {
+          // Handle general case where either or both dates are provided
+          igSearch.eir_dt = {
+            gte: Utility.convertDate(eirDtStart || today),
+            lte: Utility.convertDate(eirDtEnd || today),
+          };
+        }
+      }
+
       if (this.searchForm!.get('capacity')?.value || this.searchForm!.get('tare_weight')?.value) {
         // In Gate Survey
         const igsSearch: any = {};

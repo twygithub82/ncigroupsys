@@ -210,7 +210,8 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     SAVE_ANOTHER: 'COMMON-FORM.SAVE-ANOTHER',
     TEAM_ALLOCATION: 'COMMON-FORM.TEAM-ALLOCATION',
     ASSIGN: 'COMMON-FORM.ASSIGN',
-    ABORT: 'COMMON-FORM.ABORT'
+    ABORT: 'COMMON-FORM.ABORT',
+    ARE_YOU_SURE_ABORT: 'COMMON-FORM.ARE-YOU-SURE-ABORT',
   }
 
   clean_statusList: CodeValuesItem[] = [];

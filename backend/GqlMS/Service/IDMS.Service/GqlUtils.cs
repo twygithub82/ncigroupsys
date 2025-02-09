@@ -5,6 +5,7 @@ using IDMS.Models.Service;
 using IDMS.Models.Service.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
@@ -337,7 +338,7 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        public static async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid)
+        public static async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid, string processGuid="")
         {
 
             //first check tank purpose
@@ -364,43 +365,6 @@ namespace IDMS.Service.GqlTypes
                 //check if tank have any cleaning purpose
                 if (tank.purpose_cleaning ?? false)
                 {
-
-                    //var res = await context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                    //if (res.Any())
-                    //{
-                    //    if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
-                    //    {
-                    //        tank.tank_status_cv = TankMovementStatus.CLEANING;
-                    //        goto ProceesUpdate;
-                    //    }
-                    //    else
-                    //    {
-                    //        //Else, check if tank have any residue estimate already created but pending
-                    //        //res.Clear();
-                    //        var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                    //        if (resd.Any())
-                    //        {
-                    //            if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
-                    //            {
-                    //                tank.tank_status_cv = TankMovementStatus.CLEANING;
-                    //                goto ProceesUpdate;
-                    //            }
-                    //        }
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                    //    if (resd.Any())
-                    //    {
-                    //        if (resd.Any(t => !completedStatuses.Contains(t.status_cv)))
-                    //        {
-                    //            tank.tank_status_cv = TankMovementStatus.CLEANING;
-                    //            goto ProceesUpdate;
-                    //        }
-                    //    }
-                    //}
-
                     var cleaningTasks = await context.cleaning.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     var residueTasks = await context.residue.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
 
@@ -425,6 +389,14 @@ namespace IDMS.Service.GqlTypes
                             tank.tank_status_cv = TankMovementStatus.REPAIR;
                             goto ProceesUpdate;
                         }
+                        else
+                        {
+                            if (AnyJobInProgress(context, processGuid))
+                            {
+                                tank.tank_status_cv = TankMovementStatus.REPAIR;
+                                goto ProceesUpdate;
+                            }
+                        }
                     }
                     else
                     {
@@ -447,5 +419,21 @@ namespace IDMS.Service.GqlTypes
             return false;
         }
 
+        private static bool AnyJobInProgress(ApplicationServiceDBContext context, string processGuid)
+        {
+            string sqlQuery = $@"SELECT * FROM job_order WHERE delete_dt IS NULL AND guid IN (
+                                        SELECT distinct job_order_guid FROM repair_part 
+                                        WHERE repair_guid = '{processGuid}' AND approve_part = 1 AND delete_dt IS NULL);";
+
+            var jobOrderList = context.job_order.FromSqlRaw(sqlQuery).AsNoTracking().ToList();
+            if (jobOrderList?.Any() == true & !jobOrderList.Any(j => j == null))
+            {
+                bool pendingJob = false;
+                pendingJob = jobOrderList.Any(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
+
+                return pendingJob;
+            }
+            return false;
+        }    
     }
 }

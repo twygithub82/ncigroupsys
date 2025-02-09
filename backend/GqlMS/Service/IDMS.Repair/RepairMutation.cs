@@ -212,6 +212,7 @@ namespace IDMS.Repair.GqlTypes
                             //context.Attach(existingPart);
                             existingPart.update_by = user;
                             existingPart.update_dt = currentDateTime;
+                            existingPart.tariff_repair_guid = part.tariff_repair_guid;
                             existingPart.description = part.description;
                             existingPart.comment = part.comment;
                             existingPart.owner = part.owner;
@@ -357,7 +358,7 @@ namespace IDMS.Repair.GqlTypes
                     abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
                 var res = await context.SaveChangesAsync();
 
-                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, repJobOrder.sot_guid);
+                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, repJobOrder.sot_guid, repJobOrder.guid);
 
                 return res;
             }

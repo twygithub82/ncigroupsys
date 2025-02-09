@@ -48,5 +48,7 @@ namespace IDMS.Models.Shared
         public customer_company? customer_company { get; set; }
         [UseFiltering]
         public tariff_buffer? tariff_buffer { get; set; }
+        [UseFiltering]
+        public IEnumerable<storing_order_tank?>? storing_order_tank { get; set; }
     }
 }
