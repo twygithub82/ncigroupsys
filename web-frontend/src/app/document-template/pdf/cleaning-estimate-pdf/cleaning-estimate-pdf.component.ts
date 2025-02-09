@@ -32,15 +32,16 @@ import { RepairPartDS } from 'app/data-sources/repair-part';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { ResidueDS } from 'app/data-sources/residue';
-import { ResiduePartDS, ResiduePartItem } from 'app/data-sources/residue-part';
+import { SteamDS } from 'app/data-sources/steam';
+import { SteamPartDS } from 'app/data-sources/steam-part';
+import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  residue_guid: string;
+  cleaning_guid: string;
   customer_company_guid: string;
   sotDS: StoringOrderTankDS;
-  residueDS: ResidueDS;
+  steamDS: SteamDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   existingPdf?: any;
@@ -49,9 +50,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-residue-disposal-pdf',
-  templateUrl: './residue-disposal-pdf.component.html',
-  styleUrls: ['./residue-disposal-pdf.component.scss'],
+  selector: 'app-cleaning-estimate-pdf',
+  templateUrl: './cleaning-estimate-pdf.component.html',
+  styleUrls: ['./cleaning-estimate-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -63,7 +64,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -154,7 +155,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     ETR_DATE: 'COMMON-FORM.ETR-DATE',
     REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
     DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
-    RESIDUE_CARGO_DISPOSAL: 'COMMON-FORM.RESIDUE-CARGO-DISPOSAL',
+    LAST_CARGO_CLEANING_QUOTATION: 'COMMON-FORM.LAST-CARGO-CLEANING-QUOTATION',
     TIME: 'COMMON-FORM.TIME',
     TEMPERATURE: 'COMMON-FORM.TEMPERATURE',
     THERMOMETER: 'COMMON-FORM.THERMOMETER',
@@ -166,33 +167,30 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION',
     PREPARED_BY: 'COMMON-FORM.PREPARED-BY',
     APPROVED_BY: 'COMMON-FORM.APPROVED-BY',
-    PRICE: 'COMMON-FORM.PRICE',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE',
+    CLEANING_COST: 'COMMON-FORM.CLEANING-COST',
     TOTAL_SGD: 'COMMON-FORM.TOTAL-SGD',
   }
 
   type?: string | null;
-  residueDS: ResidueDS;
-  residuePartDS: ResiduePartDS;
+  cleaningDS: InGateCleaningDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
-  residue_guid?: string | null;
+  cleaning_guid?: string | null;
   customer_company_guid?: string | null;
   estimate_no?: string | null;
 
   customerInfo: any = customerInfo;
   disclaimerNote: string = "";
   pdfTitle: string = "";
-  residueItem: any;
+  cleaningItem: any;
 
   last_test_desc?: string = ""
 
-  repairCost?: RepairCostTableItem;
-  residuePartList?: any[] = [];
-  yesnoCvList: CodeValuesItem[] = [];
-  soTankStatusCvList: CodeValuesItem[] = [];
-  totalCost?: number;
-  approvedCost?: number;
+  steamTempList?: any[] = [];
+  totalDuration?: string;
 
   scale = 1.1;
   imageQuality = 0.85;
@@ -208,7 +206,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   generatingPdfProgress = 0;
 
   constructor(
-    public dialogRef: MatDialogRef<ResidueDisposalPdfComponent>,
+    public dialogRef: MatDialogRef<CleaningEstimatePdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -218,12 +216,11 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     private sanitizer: DomSanitizer) {
     super();
     this.translateLangText();
-    this.residueDS = new ResidueDS(this.apollo);
-    this.residuePartDS = new ResiduePartDS(this.apollo);
+    this.cleaningDS = new InGateCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.residue_guid = data.residue_guid;
+    this.cleaning_guid = data.cleaning_guid;
     this.customer_company_guid = data.customer_company_guid;
     this.estimate_no = data.estimate_no;
     this.existingPdf = data.existingPdf;
@@ -234,26 +231,26 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.translatedLangText.RESIDUE_CARGO_DISPOSAL;
-
+    this.pdfTitle = this.translatedLangText.LAST_CARGO_CLEANING_QUOTATION;
+    
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
-      this.getResidueData(),
-      // this.data.retrieveFile ? this.getSteamPdf() : Promise.resolve(null)
-      Promise.resolve(null)
+      this.getCleaningData(),
+      Promise.resolve(null)//this.data.retrieveFile ? this.getCleaningEstimatePdf() : Promise.resolve(null)
     ]);
+    
     if (data?.length > 0) {
-      this.residueItem = data[0];
+      this.cleaningItem = data[0];
+      console.log(this.cleaningItem);
       await this.getCodeValuesData();
-      console.log(this.residueItem)
-      this.updateData(this.residueItem?.residue_part);
+      // this.updateData(this.cleaningItem?.steaming_part?.[0]?.job_order?.steaming_temp);
 
       this.cdr.detectChanges();
-    }
 
-    this.existingPdf = pdfData ?? this.existingPdf;
-    if (!this.existingPdf?.length) {
-      this.generatePDF();
+      this.existingPdf = pdfData ?? this.existingPdf;
+      if (!this.existingPdf?.length) {
+        this.generatePDF();
+      }
     }
     // else {
     //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
@@ -266,7 +263,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     const bodyElement = document.getElementById('pdf-form-body');
 
     if (!bodyElement) {
-      console.error('Body or Signature element not found');
+      console.error('Body element not found');
       return;
     }
 
@@ -297,9 +294,6 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
       const imgWidth = canvas.width * 0.264583;
       const imgHeight = canvas.height * 0.264583;
       const aspectRatio = imgWidth / imgHeight;
-
-      // Adjust for footer
-      const signYOffset = pageHeight - bottomMargin - footerHeight;
 
       // Calculate pagination
       const scaledWidth = pageWidth - leftRightMargin * 2;
@@ -335,6 +329,10 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
         this.generatingPdfProgress += 33;
 
+        // If it's the last page, add the signature above the footer
+        if (currentPage === totalPages) {
+        }
+
         // Add Footer
         await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
 
@@ -345,7 +343,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
       this.generatingPdfProgress = 100;
 
       // Save PDF
-      pdf.save(`RESIDUE_DISPOSAL-${this.estimate_no}.pdf`);
+      pdf.save(`CLEANING_QUOTATION-${this.cleaningItem?.storing_order_tank?.in_gate?.[0]?.eir_no}.pdf`);
       this.generatedPDF = pdf.output('blob');
       // this.uploadPdf(this.steamItem?.job_order?.guid, this.generatedPDF);
       this.generatingPdfLoadingSubject.next(false);
@@ -423,18 +421,18 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     }
   }
 
-  getResidueData(): Promise<any[]> {
+  getCleaningData(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.residueDS.getResidueByIDForPdf(this.residue_guid!).subscribe({
+      this.subs.sink = this.cleaningDS.getCleaningForEstimatePdf(this.cleaning_guid!).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
     });
   }
 
-  getSteamPdf(): Promise<any[]> {
+  getCleaningEstimatePdf(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.residue_guid!]).subscribe({
+      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.cleaning_guid!]).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
@@ -442,33 +440,32 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   async getCodeValuesData(): Promise<void> {
-    const queries = [
-      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
-    ];
+    // const queries = [
+    //   { alias: 'yesnoCv', codeValType: 'YES_NO' },
+    //   { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
+    //   { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+    //   { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+    //   { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+    //   { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
+    //   { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+    //   { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+    //   { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+    // ];
 
-    await this.cvDS.getCodeValuesByTypeAsync(queries);
+    // await this.cvDS.getCodeValuesByTypeAsync(queries);
 
-    // Wrap all alias connections in promises
-    const promises = [
-      firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
-        this.yesnoCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
-        this.soTankStatusCvList = data || [];
-      }),
-    ];
+    // // Wrap all alias connections in promises
+    // const promises = [
+    //   firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
+    //     this.yesnoCvList = data || [];
+    //   }),
+    //   firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
+    //     this.soTankStatusCvList = data || [];
+    //   }),
+    // ];
 
-    // Wait for all promises to resolve
-    await Promise.all(promises);
+    // // Wait for all promises to resolve
+    // await Promise.all(promises);
   }
 
   chunkArray(array: any[], chunkSize: number): any[][] {
@@ -479,17 +476,23 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     return chunks;
   }
 
-  updateData(newData: ResiduePartItem[] | undefined): void {
+  updateData(newData: RepairPartItem[] | undefined): void {
     if (newData?.length) {
-      this.residuePartList = newData.map((row, index) => ({
+      newData = newData.map((row) => ({
+        ...row
+      }));
+
+      // console.log('Before sort', newData);
+      // newData = this.repairPartDS.sortAndGroupByGroupName(newData);
+      // console.log('After sort', newData);
+
+      this.steamTempList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
-      this.totalCost = this.residuePartList.reduce((sum, row) => sum + ((row.cost || 0) * (row.quantity || 0)), 0);
-      this.approvedCost = this.residuePartList.reduce((sum, row) => sum + (row.approve_cost || 0), 0);
-      console.log(this.residuePartList);
+      console.log(this.steamTempList);
     } else {
-      this.residuePartList = [];
+      this.steamTempList = [];
     }
   }
 
@@ -522,11 +525,22 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   async onDownloadClick() {
-    const fileName = `RESIDUE_DISPOSAL-${this.estimate_no}.pdf`; // Define the filename
     if (this.generatedPDF) {
+      const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
+      // saveAs(this.generatedPDF, fileName);
+      // fileSave(this.generatedPDF, {
+      //   fileName: fileName,
+      //   extensions: ['.pdf'],
+      // });
       this.downloadFile(this.generatedPDF, fileName);
     } else if (this.existingPdf?.[0]?.url) {
       const blob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
+      const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
+      // saveAs(eirBlob, fileName);
+      // fileSave(blob, {
+      //   fileName: fileName,
+      //   extensions: ['.pdf'],
+      // });
       this.downloadFile(blob, fileName);
     }
   }

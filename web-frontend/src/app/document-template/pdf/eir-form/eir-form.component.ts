@@ -1540,22 +1540,11 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   async onDownloadClick() {
+    const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
     if (this.generatedPDF) {
-      const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
-      // saveAs(this.generatedPDF, fileName);
-      // fileSave(this.generatedPDF, {
-      //   fileName: fileName,
-      //   extensions: ['.pdf'],
-      // });
       this.downloadFile(this.generatedPDF, fileName);
     } else if (this.eirPdf?.[0]?.url) {
       const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
-      const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
-      // saveAs(eirBlob, fileName);
-      // fileSave(eirBlob, {
-      //   fileName: fileName,
-      //   extensions: ['.pdf'],
-      // });
       this.downloadFile(eirBlob, fileName);
     }
   }

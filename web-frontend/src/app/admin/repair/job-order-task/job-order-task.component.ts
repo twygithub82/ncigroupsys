@@ -581,15 +581,17 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         //     console.log(result);
         //   });
         // }
-        const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
-          guid: firstJobPart!.repair?.guid,
-          sot_guid: jobOrderItem.storing_order_tank?.guid,
-          action: "COMPLETE"
-        });
-        console.log(repairStatusReq);
-        this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
-          console.log(result);
-        });
+        if (firstJobPart?.repair?.status_cv === 'ASSIGNED' || firstJobPart?.repair?.status_cv === 'JOB_IN_PROGRESS' || firstJobPart?.repair?.status_cv === 'COMPLETED') {
+          const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+            guid: firstJobPart!.repair?.guid,
+            sot_guid: jobOrderItem.storing_order_tank?.guid,
+            action: "COMPLETE"
+          });
+          console.log(repairStatusReq);
+          this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+            console.log(result);
+          });
+        }
       }
     });
   }
