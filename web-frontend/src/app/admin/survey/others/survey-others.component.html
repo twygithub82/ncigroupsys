@@ -173,11 +173,11 @@
                 </ng-container>
                 <ng-container matColumnDef="customer">
                   <mat-header-cell mat-header-cell mat-sort-header *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span
                       class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order?.customer_company)}}
                   </mat-cell>
@@ -206,11 +206,11 @@
                 </ng-container>
                 <ng-container matColumnDef="last_cargo">
                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.LAST_CARGO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span
                       class="mobile-tab-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.tariff_cleaning?.cargo}}
                   </mat-cell>
