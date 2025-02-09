@@ -136,7 +136,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     APPROVAL_STATUS: "COMMON-FORM.APPROVAL-STATUS",
     METHOD: "COMMON-FORM.METHOD",
     EXPORT: "COMMON-FORM.EXPORT",
-    APPROVED_COST:"COMMON-FORM.APPROVED-COST"
+    APPROVED_COST: "COMMON-FORM.APPROVED-COST"
   }
 
 
@@ -513,26 +513,22 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   ApproveTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "approve");
-
   }
 
   NoActionTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "no_action");
-
   }
 
   KIVTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "kiv");
-
   }
 
-  AdjustCost(row: InGateCleaningItem)
-  {
+  AdjustCost(row: InGateCleaningItem) {
     this.popupDialogForm(row, "cost");
   }
+
   ViewTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "view");
-
   }
 
   popupDialogForm(row: InGateItem, action: string) {
@@ -609,9 +605,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   HiddenMenuApprovedCost(row: InGateCleaningItem): Boolean {
     var bRetval: Boolean = false;
-
-     bRetval = row.status_cv!='APPROVED';
-
+    bRetval = row.status_cv != 'APPROVED';
     return bRetval;
   }
 
