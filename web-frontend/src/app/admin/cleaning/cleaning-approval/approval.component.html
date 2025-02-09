@@ -67,19 +67,19 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
-                      formControlName="last_cargo">
-                    <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
-                      @for (tc of last_cargoList; track tc) {
-                      <mat-option [value]="tc">
-                        {{tc.cargo}}
-                      </mat-option>
+                        formControlName="last_cargo">
+                      <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
+                        @for (tc of last_cargoList; track tc) {
+                        <mat-option [value]="tc">
+                          {{tc.cargo}}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                      @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
+                      <mat-error>
+                        {{translatedLangText.INVALID_SELECTION}}
+                      </mat-error>
                       }
-                    </mat-autocomplete>
-                    @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
-                    <mat-error>
-                      {{translatedLangText.INVALID_SELECTION}}
-                    </mat-error>
-                    }
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -109,11 +109,11 @@
                       <mat-label>{{translatedLangText.APPROVAL_STATUS}}</mat-label>
                       <mat-select multiple formControlName="approval_status">
                         @for (codeValue of processStatusCvList; track codeValue) {
-                          @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
-                            <mat-option [value]="codeValue.code_val">
-                              {{codeValue.description}}
-                            </mat-option>
-                            }
+                        @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
                         }
                       </mat-select>
                     </mat-form-field>
@@ -122,9 +122,6 @@
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>
-                    <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                      <mat-icon>cached</mat-icon>
-                    </button> -->
                     <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
                       {{translatedLangText.CLEAR_ALL}}
                     </button>
@@ -147,7 +144,8 @@
                     {{translatedLangText.TANK_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no ? row.storing_order_tank.tank_no : '-'}}
+                    <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no ?
+                    row.storing_order_tank.tank_no : '-'}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer">
@@ -164,7 +162,8 @@
                     {{translatedLangText.EIR_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.storing_order_tank?.in_gate[0].eir_no?row.storing_order_tank?.in_gate[0].eir_no:'-'}}
+                    <span
+                      class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.storing_order_tank?.in_gate[0].eir_no?row.storing_order_tank?.in_gate[0].eir_no:'-'}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_dt">
@@ -172,10 +171,11 @@
                     {{translatedLangText.EIR_DATE}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.storing_order_tank?.in_gate[0].eir_dt)}}
+                    <span
+                      class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.storing_order_tank?.in_gate[0].eir_dt)}}
                   </mat-cell>
                 </ng-container>
-               
+
                 <ng-container matColumnDef="last_cargo">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
                     {{translatedLangText.LAST_CARGO}}
@@ -208,7 +208,8 @@
                     {{translatedLangText.PURPOSE}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.PURPOSE}}:</span>{{displayTankPurpose(row.storing_order_tank)}}
+                    <span
+                      class="mobile-label">{{translatedLangText.PURPOSE}}:</span>{{displayTankPurpose(row.storing_order_tank)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="tank_status_cv">
@@ -223,7 +224,8 @@
                   <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row;" class="justify-content-end">
-                    <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)" [hidden]="MenuButtonHidden(row)">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)"
+                      [hidden]="MenuButtonHidden(row)">
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #menu="matMenu">
@@ -232,28 +234,25 @@
                         <span>{{translatedLangText.APPROVE}}</span>
                       </button>
                       <button mat-menu-item (click)="KIVTank(row)" [hidden]="HiddenMenu(row,'KIV')">
-                          <mat-icon>block</mat-icon>
-                          <span>{{translatedLangText.KIV}}</span>
-                        </button>
-                     
+                        <mat-icon>block</mat-icon>
+                        <span>{{translatedLangText.KIV}}</span>
+                      </button>
                       <button mat-menu-item (click)="NoActionTank(row)" [hidden]="HiddenMenu(row,'NO_ACTION')">
                         <mat-icon>remove_circle_outline</mat-icon>
                         <span>{{translatedLangText.NO_ACTION}}</span>
                       </button>
-                     
-                      <button mat-menu-item (click)="AdjustCost(row)" [hidden]="HiddenMenuApprovedCost(row)">
-                        <mat-icon>monetization_on</mat-icon>
-                        <span>{{translatedLangText.APPROVED_COST}}</span>
+                      @if (canExport(row)) {
+                      <button mat-menu-item (click)="onExport($event, row)">
+                        <i class="fas fa-file-export"></i>
+                        {{translatedLangText.EXPORT}}
                       </button>
+                      }
                     </mat-menu>
                   </mat-cell>
                 </ng-container>
-               
-            
-
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" matRipple (click)="ViewTank(row)" [style.cursor]="'pointer'"/>
-                
+                <mat-row *matRowDef="let row; columns: displayedColumns;" matRipple (click)="ViewTank(row)"
+                  [style.cursor]="'pointer'" />
               </table>
             </div>
             <!-- No result -->

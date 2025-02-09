@@ -1,0 +1,171 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.CLEANING}} {{translatedLangText.PREVIEW_PDF}}</h4>
+</div>
+<div mat-dialog-content>
+  <div id="pdf-form-header" class="pdf-container pdf-header">
+    <hr class="mt-2 mb-1" />
+    <div class="header-content">
+      <div class="logo-container">
+        <img src="assets/images/logo.png" class="header-logo" />
+      </div>
+      <div class="company-container">
+        <div>
+          <h5 class="header-company-name mb-0">{{customerInfo.companyName}}</h5>
+        </div>
+        <div class="company-info">
+          <span>{{customerInfo.companyAddress}}</span>
+        </div>
+        <div class="company-info">
+          <span><b>{{translatedLangText.PHONE}}:</b> {{customerInfo.companyPhone}}</span>
+          <span><b>{{translatedLangText.FAX}}:</b> {{customerInfo.companyFax}}</span>
+          <span><b>{{translatedLangText.EMAIL}}:</b> {{customerInfo.companyEmail}}</span>
+          <span><b>{{translatedLangText.WEB}}:</b> {{customerInfo.companyWebsite}}</span>
+          <span><b>{{translatedLangText.CRN}}:</b> {{customerInfo.companyUen}}</span>
+        </div>
+      </div>
+    </div>
+    <hr class="mt-1 mb-2" />
+  </div>
+
+  <div id="pdf-form-body" class="pdf-container pdf-body">
+    <table>
+      <tbody>
+        <tr>
+          <td class="td-col-2-25">
+            <b>{{translatedLangText.TANK_NO}}</b>
+          </td>
+          <td class="td-col-4-5">
+            {{cleaningItem?.storing_order_tank?.tank_no}}
+          </td>
+          <td class="td-col-2-25">
+            <b>{{translatedLangText.EIR_NO}}</b>
+          </td>
+          <td class="td-col-3">
+            {{cleaningItem?.storing_order_tank?.in_gate?.[0]?.eir_no}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>{{translatedLangText.CUSTOMER}}</b>
+          </td>
+          <td>
+            {{cleaningItem?.storing_order_tank?.storing_order?.customer_company?.name}}
+          </td>
+          <td>
+            <b>{{translatedLangText.EIR_DATE}}</b>
+          </td>
+          <td>
+            {{displayDate(cleaningItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>{{translatedLangText.JOB_NO}}</b>
+          </td>
+          <td>
+            {{cleaningItem?.job_no}}
+          </td>
+          <td>
+            <b>{{translatedLangText.QUOTATION_DATE}}</b>
+          </td>
+          <td>
+            {{displayDate(cleaningItem?.create_dt)}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>{{translatedLangText.CARGO_NAME}}</b>
+          </td>
+          <td>
+            {{cleaningItem?.storing_order_tank?.tariff_cleaning?.cargo}}
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="body-title pt-2 pb-2">
+      <b class="text-decoration-underline">{{pdfTitle}}</b>
+    </div>
+    <table id="steam-temp-table" class="steam-temp-table">
+      <tbody>
+        <tr>
+          <td class="td-col-0-5 text-center align-middle steam-temp-header">
+            <b>{{translatedLangText.NO_DOT}}</b>
+          </td>
+          <td class="td-col-auto text-center align-middle steam-temp-header">
+            <b>{{translatedLangText.DESCRIPTION}}</b>
+          </td>
+          <td class="td-col-2 text-center align-middle steam-temp-header">
+            <b>{{translatedLangText.CLEANING_COST}}</b>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-col-0-5 text-center align-middle">
+            <b>{{1}}</b>
+          </td>
+          <td class="td-col-auto align-middle">
+            {{cleaningItem?.storing_order_tank?.tariff_cleaning?.cargo}}
+          </td>
+          <td class="td-col-2 text-end align-middle">
+            {{parse2Decimal(cleaningItem?.cleaning_cost)}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="total-content">
+      <div class="total-content-right">
+        <div class="total-cost">
+          <span class="font-bold">{{translatedLangText.TOTAL_SGD}}: </span>
+          <span class="font-bold total-cost-value text-end">{{parse2Decimal(cleaningItem?.cleaning_cost)}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pdf-form-footer" class="pdf-container pdf-footer">
+    <hr class="mt-0 mb-1" />
+    <div class="disclaimer">
+      <span class="font-bold text-decoration-underline">{{translatedLangText.DISCLAIMER}}: </span>
+      <span>{{disclaimerNote}}</span>
+    </div>
+    <div class="footer-info-content">
+      <span>
+        {{customerInfo.eirDisclaimerVer}}
+      </span>
+      <span>
+        {{translatedLangText.PAGE}} <span id="current-page"></span> {{translatedLangText.OF}} <span
+          id="total-pages"></span>
+      </span>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions class="m-2 align-right">
+  <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(cleaningDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(cleaningDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  <!-- <button mat-flat-button color="accent" (click)="onRepublshClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      publish
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.EXPORT_NEW}}
+  </button> -->
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>

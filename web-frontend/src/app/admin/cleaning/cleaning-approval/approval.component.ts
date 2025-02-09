@@ -46,6 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { CleaningEstimatePdfComponent } from 'app/document-template/pdf/cleaning-estimate-pdf/cleaning-estimate-pdf.component';
 
 @Component({
   selector: 'app-in-gate',
@@ -61,13 +62,10 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -134,7 +132,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     QUOTATION_DATE: "COMMON-FORM.QUOTATION-DATE",
     APPROVAL_STATUS: "COMMON-FORM.APPROVAL-STATUS",
     METHOD: "COMMON-FORM.METHOD",
-    APPROVED_COST:"COMMON-FORM.APPROVED-COST"
+    EXPORT: "COMMON-FORM.EXPORT",
+    APPROVED_COST: "COMMON-FORM.APPROVED-COST"
   }
 
 
@@ -334,39 +333,23 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   search() {
     const where: any = {
-      storing_order_tank: { tank_status_cv: { in: ["CLEANING","STORAGE"] } }
+      storing_order_tank: { tank_status_cv: { in: ["CLEANING", "STORAGE"] } }
     };
 
-    //where.storing_order_tank={};
-    // where.storing_order_tank.tank_status_cv={eq:"CLEANING"};
-
     if (this.searchForm!.get('tank_no')?.value) {
-      //if(!where.storing_order_tank) where.storing_order_tank={};
       where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-
     }
 
-
     if (this.searchForm!.get('eir_no')?.value) {
-      //if(!where.storing_order_tank) where.storing_order_tank={};
       if (!where.storing_order_tank.in_gate) where.storing_order_tank.in_gate = {};
       where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.searchForm!.value['eir_no'] } } };
     }
 
     if (this.searchForm?.get("approval_status")?.value) {
-
       if (this.searchForm?.get("approval_status")?.value.length > 0) {
         where.status_cv = { in: this.searchForm!.value['approval_status'] };
       }
-
     }
-    // if (this.searchForm!.get('approval_status')?.value) {
-    //   let appStatus =this.searchForm!.get('approval_status')?.value;
-    //   if(appStatus!="")
-    //   {
-    //      where.status_cv = { eq: appStatus };
-    //   }
-    // }
 
     if (this.searchForm!.get('start_approved_date')?.value && this.searchForm!.get('end_approved_date')?.value) {
       where.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['start_approved_date']), lte: Utility.convertDate(this.searchForm!.value['end_approved_date']) };
@@ -386,13 +369,6 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
       where.job_no = { contains: this.searchForm!.value['job_no'].code };
     }
-
-    // if (this.searchForm!.get('approval_status')?.value) {
-
-    //   where.status_cv= { eq: this.searchForm!.value['approval_status'] } ;
-    // }
-
-
     this.lastSearchCriteria = where;
     this.searchData(this.lastSearchCriteria, this.lastOrderBy, this.pageSize, undefined, undefined, undefined, 0);
   }
@@ -414,8 +390,6 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onPageEvent(event: PageEvent) {
-
-
     const { pageIndex, pageSize, previousPageIndex } = event;
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;
@@ -536,26 +510,22 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   ApproveTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "approve");
-
   }
 
   NoActionTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "no_action");
-
   }
 
   KIVTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "kiv");
-
   }
 
-  AdjustCost(row: InGateCleaningItem)
-  {
+  AdjustCost(row: InGateCleaningItem) {
     this.popupDialogForm(row, "cost");
   }
+
   ViewTank(row: InGateCleaningItem) {
     this.popupDialogForm(row, "view");
-
   }
 
   popupDialogForm(row: InGateItem, action: string) {
@@ -632,9 +602,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   HiddenMenuApprovedCost(row: InGateCleaningItem): Boolean {
     var bRetval: Boolean = false;
-
-     bRetval = row.status_cv!='APPROVED';
-
+    bRetval = row.status_cv != 'APPROVED';
     return bRetval;
   }
 
@@ -647,7 +615,30 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
     return bRetval;
   }
- 
 
+  canExport(row: any): boolean {
+    return true;
+  }
 
+  onExport(event: Event, row: any) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(CleaningEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        cleaning_guid: row?.guid,
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
 }

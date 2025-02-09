@@ -354,7 +354,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       this.generatingPdfProgress = 100;
 
       // Save PDF
-      pdf.save(`${this.estimate_no}.pdf`);
+      pdf.save(`STEAM_HEATING-${this.estimate_no}.pdf`);
       this.generatedPDF = pdf.output('blob');
       // this.uploadPdf(this.steamItem?.job_order?.guid, this.generatedPDF);
       this.generatingPdfLoadingSubject.next(false);
@@ -541,22 +541,11 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   async onDownloadClick() {
+    const fileName = `STEAM_HEATING-${this.estimate_no}.pdf`; // Define the filename
     if (this.generatedPDF) {
-      const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
-      // saveAs(this.generatedPDF, fileName);
-      // fileSave(this.generatedPDF, {
-      //   fileName: fileName,
-      //   extensions: ['.pdf'],
-      // });
       this.downloadFile(this.generatedPDF, fileName);
     } else if (this.existingPdf?.[0]?.url) {
       const blob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
-      const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
-      // saveAs(eirBlob, fileName);
-      // fileSave(blob, {
-      //   fileName: fileName,
-      //   extensions: ['.pdf'],
-      // });
       this.downloadFile(blob, fileName);
     }
   }

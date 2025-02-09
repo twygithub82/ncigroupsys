@@ -878,22 +878,11 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   async onDownloadClick() {
+    const fileName = `REPAIR_ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
     if (this.generatedPDF) {
-      const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
-      // saveAs(this.generatedPDF, fileName);
-      // fileSave(this.generatedPDF, {
-      //   fileName: fileName,
-      //   extensions: ['.pdf'],
-      // });
       this.downloadFile(this.generatedPDF, fileName);
     } else if (this.repairEstimatePdf?.[0]?.url) {
       const blob = await Utility.urlToBlob(this.repairEstimatePdf?.[0]?.url);
-      const fileName = `ESTIMATE-${this.estimate_no}.pdf`; // Define the filename
-      // saveAs(eirBlob, fileName);
-      // fileSave(eirBlob, {
-      //   fileName: fileName,
-      //   extensions: ['.pdf'],
-      // });
       this.downloadFile(blob, fileName);
     }
   }

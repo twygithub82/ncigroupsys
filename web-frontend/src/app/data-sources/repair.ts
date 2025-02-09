@@ -37,8 +37,8 @@ export class RepairGO {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  public customer_billing_guid?:string;
-  public owner_billing_guid?:string;
+  public customer_billing_guid?: string;
+  public owner_billing_guid?: string;
 
   constructor(item: Partial<RepairGO> = {}) {
     this.guid = item.guid;
@@ -66,9 +66,9 @@ export class RepairGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    this.customer_billing_guid=item.customer_billing_guid;
-    this.owner_billing_guid=item.owner_billing_guid;
-  
+    this.customer_billing_guid = item.customer_billing_guid;
+    this.owner_billing_guid = item.owner_billing_guid;
+
   }
 }
 
@@ -77,16 +77,16 @@ export class RepairItem extends RepairGO {
   public storing_order_tank?: StoringOrderTankItem;
   public aspnetsuser?: UserItem;
   public actions?: string[]
-  public customer_billing?:BillingItem;
-  public owner_billing?:BillingItem;
+  public customer_billing?: BillingItem;
+  public owner_billing?: BillingItem;
   constructor(item: Partial<RepairItem> = {}) {
     super(item)
     this.repair_part = item.repair_part;
     this.storing_order_tank = item.storing_order_tank;
     this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
-    this.customer_billing=item.customer_billing;
-    this.owner_billing=item.owner_billing;
+    this.customer_billing = item.customer_billing;
+    this.owner_billing = item.owner_billing;
   }
 }
 
@@ -1897,7 +1897,8 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canRollbackStatus(re: RepairItem | undefined, rp: RepairPartItem[]): boolean {
-    return (re?.status_cv === 'NO_ACTION' || re?.status_cv === 'APPROVED' || re?.status_cv === 'PENDING');
+    return (re?.status_cv === 'APPROVED' || re?.status_cv === 'PENDING');
+    // return (re?.status_cv === 'NO_ACTION' || re?.status_cv === 'APPROVED' || re?.status_cv === 'PENDING');
   }
 
   canAssign(re: RepairItem | undefined): boolean {

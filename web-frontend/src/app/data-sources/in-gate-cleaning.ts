@@ -36,8 +36,8 @@ export class InGateCleaningGO {
   public update_by?: string;
   public delete_dt?: number;
 
-  public customer_billing_guid?:string;
-  public owner_billing_guid?:string;
+  public customer_billing_guid?: string;
+  public owner_billing_guid?: string;
 
   constructor(item: Partial<InGateCleaningGO> = {}) {
     this.action = item.action || '';
@@ -61,8 +61,8 @@ export class InGateCleaningGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    this.customer_billing_guid= item.customer_billing_guid;
-    this.owner_billing_guid= item.owner_billing_guid;
+    this.customer_billing_guid = item.customer_billing_guid;
+    this.owner_billing_guid = item.owner_billing_guid;
   }
 }
 
@@ -70,16 +70,16 @@ export class InGateCleaningItem extends InGateCleaningGO {
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?: CustomerCompanyItem;
   public job_order?: JobOrderItem;
-  public customer_billing?:BillingItem;
-  public owner_billing?:BillingItem;
+  public customer_billing?: BillingItem;
+  public owner_billing?: BillingItem;
 
   constructor(item: Partial<InGateCleaningItem> = {}) {
     super(item)
     this.storing_order_tank = item.storing_order_tank;
     this.customer_company = item.customer_company;
     this.job_order = item.job_order;
-    this.customer_billing= item.customer_billing;
-    this.owner_billing=item.owner_billing;
+    this.customer_billing = item.customer_billing;
+    this.owner_billing = item.owner_billing;
   }
 }
 
@@ -95,7 +95,7 @@ export interface InGateCleaningResult {
 //   public remarks?: string;
 //   public sot_guid?: string;
 //   constructor(item: Partial<CleanJobOrderRequest> = {}) {
-   
+
 //     this.guid = item.guid;
 //     this.job_order = item.job_order;
 //     this.remarks = item.remarks;
@@ -233,7 +233,7 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
         hasPreviousPage
         startCursor
       }
-       nodes {
+      nodes {
         allocate_by
         allocate_dt
         approve_by
@@ -414,7 +414,6 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
           }
         }
       }
-      
     }
   }
 `;
@@ -461,6 +460,85 @@ const GET_IN_GATE_CLEANING_BY_SOT = gql`
             update_by
             update_dt
           }
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_order_no
+          job_type_cv
+          qc_dt
+          qc_by
+          remarks
+          sot_guid
+          start_dt
+          status_cv
+          team_guid
+          total_hour
+          update_by
+          update_dt
+          working_hour
+        }
+      }
+    }
+  }
+`;
+
+const GET_IN_GATE_CLEANING_BY_ID_FOR_ESTIMATE_PDF = gql`
+  query queryInGateCleaning($where: cleaningFilterInput) {
+    resultList: queryCleaning(where: $where) {
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      nodes {
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        bill_to_guid
+        buffer_cost
+        cleaning_cost
+        complete_by
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        guid
+        job_no
+        na_dt
+        remarks
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        storing_order_tank {
+          tank_no
+          etr_dt
+          required_temp
+          storing_order {
+            customer_company_guid
+            customer_company {
+              code
+              name
+            }
+          }
+          in_gate(where: { delete_dt: { eq: null } }) {
+            eir_no
+            eir_dt
+            in_gate_survey {
+              create_dt
+              create_by
+            }
+          }
+          tariff_cleaning {
+            cargo
+          }
+        }
+        job_order {
           complete_dt
           create_by
           create_dt
@@ -566,6 +644,31 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
     return this.apollo
       .query<any>({
         query: GET_IN_GATE_CLEANING_BY_SOT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const retResult = result?.data?.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          this.pageInfo = retResult.pageInfo;
+          return retResult.nodes;
+        }),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+
+  getCleaningForEstimatePdf(guid?: any): Observable<InGateCleaningItem[]> {
+    this.loadingSubject.next(true);
+    const where = this.addDeleteDtCriteria({ guid: { eq: guid } })
+    return this.apollo
+      .query<any>({
+        query: GET_IN_GATE_CLEANING_BY_ID_FOR_ESTIMATE_PDF,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
