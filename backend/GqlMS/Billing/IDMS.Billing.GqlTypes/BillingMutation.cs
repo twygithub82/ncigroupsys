@@ -68,7 +68,7 @@ namespace IDMS.Billing.GqlTypes
                     updateBill.update_by = user;
                     updateBill.update_dt = currentDateTime;
                     updateBill.invoice_no = updateBilling.invoice_no;
-                    updateBill.invoice_dt = currentDateTime;
+                    updateBill.invoice_dt = updateBilling.invoice_dt;
                     updateBill.invoice_due = updateBilling.invoice_due;
                     updateBill.status_cv = updateBilling.status_cv;
                     updateBill.remarks = updateBilling.remarks;
@@ -118,7 +118,7 @@ namespace IDMS.Billing.GqlTypes
                         updateBill.update_by = user;
                         updateBill.update_dt = currentDateTime;
                         updateBill.invoice_no = item.invoice_no;
-                        updateBill.invoice_dt = currentDateTime;
+                        updateBill.invoice_dt = item.invoice_dt;
                         updateBill.invoice_due = item.invoice_due;
                         updateBill.bill_to_guid = item.bill_to_guid;
                         updateBill.remarks = item.remarks;
