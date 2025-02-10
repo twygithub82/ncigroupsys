@@ -82,8 +82,12 @@ namespace IDMS.Cleaning.GqlTypes
                 {
                     case ObjectAction.APPROVE:
                         updateCleaning.status_cv = CurrentServiceStatus.APPROVED;
-                        updateCleaning.approve_dt = currentDateTime;
+                        updateCleaning.approve_dt = cleaning.approve_dt ?? currentDateTime;
                         updateCleaning.approve_by = user;
+
+                        updateCleaning.bill_to_guid = cleaning.bill_to_guid;
+                        updateCleaning.buffer_cost = cleaning.buffer_cost;
+                        updateCleaning.cleaning_cost = cleaning.cleaning_cost;
 
                         await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.APPROVE, processGuid: cleaning.guid);
                         break;
@@ -111,7 +115,7 @@ namespace IDMS.Cleaning.GqlTypes
                         tankMovementCheck = true;
                         break;
                     case ObjectAction.NA:
-                        updateCleaning.na_dt = currentDateTime;
+                        updateCleaning.na_dt = cleaning.na_dt ?? currentDateTime;
                         updateCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
 
                         if (string.IsNullOrEmpty(cleaning.sot_guid))
@@ -292,7 +296,7 @@ namespace IDMS.Cleaning.GqlTypes
                     sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
                             $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
                 }
-                else 
+                else
                 {
                     sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
                             $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
