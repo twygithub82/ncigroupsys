@@ -496,23 +496,23 @@ displayDate(input: number | undefined): string | undefined {
         
         if(this.pcForm.get('bill_to_customer_company')?.value)
         {
-          updBilling.bill_to_guid = this.pcForm!.get('bill_to_customer_company')?.value.guid;
+          updBilling.bill_to_guid = this.pcForm.get('bill_to_customer_company')?.value.guid;
         }
 
         if(this.pcForm.get('currency')?.value)
           {
-            updBilling.currency_guid = this.pcForm!.get('currency')?.value.guid;
+            updBilling.currency_guid = this.pcForm.get('currency')?.value.guid;
           }
 
           
         if(this.pcForm.get('branch_code')?.value)
         {
-          updBilling.bill_to_guid = this.pcForm!.get('branch_code')?.value.guid;
+          updBilling.bill_to_guid = this.pcForm.get('branch_code')?.value.guid;
         }
 
         if(this.pcForm.get('invoice_no')?.value)
         {
-          updBilling.invoice_no = this.pcForm!.get('invoice_no')?.value;
+          updBilling.invoice_no = this.pcForm.get('invoice_no')?.value;
         }
 
         if(this.pcForm.get('invoice_dt')?.value)
@@ -526,7 +526,7 @@ displayDate(input: number | undefined): string | undefined {
 
         if(this.pcForm.get('remarks')?.value)
         {
-          updBilling.remarks = this.pcForm!.get('remarks')?.value;
+          updBilling.remarks = this.pcForm.get('remarks')?.value;
         }
         billInvoices.push(updBilling);
     });

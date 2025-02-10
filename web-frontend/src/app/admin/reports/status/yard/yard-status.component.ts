@@ -50,8 +50,9 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { BillingDS, BillingEstimateRequest,BillingItem,BillingInputRequest } from 'app/data-sources/billing';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import {report_customer_tank_activity, report_status, report_status_yard} from 'app/data-sources/reports';
+import {report_status, report_status_yard} from 'app/data-sources/reports';
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/charts/yard-chart-pdf.component';
 
 @Component({
   selector: 'app-yard-status-report',
@@ -297,23 +298,23 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       })
     ).subscribe();
 
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-        }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-          this.updateValidators(this.lastCargoControl, this.last_cargoList);
+    // this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     if (typeof value === 'string') {
+    //       searchCriteria = value;
+    //     } else {
+    //       searchCriteria = value.cargo;
+    //     }
+    //     this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+    //       this.last_cargoList = data
+    //       this.updateValidators(this.lastCargoControl, this.last_cargoList);
           
-        });
-      })
-    ).subscribe();
+    //     });
+    //   })
+    // ).subscribe();
   }
 
   public loadData() {
@@ -327,18 +328,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
       this.inventoryTypeCvList = data;
     });
-    // this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
-    //   this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
-    // });
-    // this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-    //   this.tankStatusCvListDisplay = data;
-    //   this.tankStatusCvList = addDefaultSelectOption(data, 'All');
-    // });
-    // this.cvDS.connectAlias('yardCv').subscribe(data => {
-    //   this.yardCvList = addDefaultSelectOption(data, 'All');
-    // });
-   // this.search();
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -453,27 +444,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
           //this.checkInvoiced();
           //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
         });
-      //}
-      // else if(queryType==2)
-      // {
-      //   this.subs.sink = this.sotDS.searchStoringOrderTanksOutGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-      //   .subscribe(data => {
-      //     this.sotList = data;
-      //     this.endCursor = this.stmDS.pageInfo?.endCursor;
-      //     this.startCursor = this.stmDS.pageInfo?.startCursor;
-      //     this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-      //     this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-
-      //     //this.checkInvoicedAndGetTotalCost();
-      //     //this.checkInvoiced();
-      //     this.ProcessReportStatus(invType!,date!,report_type!);
-      //   });
-
-      // }
-    
-
-    // this.pageSize = pageSize;
-    // this.pageIndex = pageIndex;
+     
   }
 
   onPageEvent(event: PageEvent) {
@@ -892,7 +863,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
       if(s)
       {
-        
+        if(!s.in_gate?.[0]?.yard_cv)return;
          var repCust :report_status= repStatus.find(r=>r.code===s.storing_order?.customer_company?.code)||new report_status ();
          let newCust=false;
          if(!repCust.code)
@@ -985,11 +956,11 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
               tempDirection = 'ltr';
             }
         
-            const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
-              width: '850px',
+            const dialogRef = this.dialog.open(YardChartPdfComponent, {
+              width: '1100px',
              // height: '80vh',
               data: {
-                report_customer_tank_activity: repStatus
+                report_summary_status: repStatus
               },
               // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
               direction: tempDirection

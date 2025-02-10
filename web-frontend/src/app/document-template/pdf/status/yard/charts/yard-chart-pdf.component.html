@@ -1,0 +1,51 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  
+  <div class="row clearfix">
+    
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+      <div class="card">
+        <div class="header">
+          <h2>{{this.translatedLangText.TANK_STATUS}}</h2>
+        </div>
+        <div class="card-body">
+          <div style="height: 400px">
+            <ngx-charts-bar-horizontal [scheme]="horizontalBarOptions.colorScheme!" [results]="horizontalBarOptions.single" [gradient]="horizontalBarOptions.gradient!"
+              [xAxis]="horizontalBarOptions.showXAxis" [yAxis]="horizontalBarOptions.showYAxis" [legend]="horizontalBarOptions.showLegend!" [legendPosition]="horizontalBarOptions.legendPosition!"
+              [showXAxisLabel]="horizontalBarOptions.showXAxisLabel!" [showYAxisLabel]="horizontalBarOptions.showYAxisLabel!" [xAxisLabel]="horizontalBarOptions.hbarxAxisLabel!"
+              >
+            </ngx-charts-bar-horizontal>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+      <div class="card">
+        <div class="header">
+          <h2>{{this.translatedLangText.TOP_TEN_CUSTOMER}}</h2>
+        </div>
+        <div class="body">
+          <div style="text-align:center">
+            <apx-chart [series]="columnChartOptions.series!" [chart]="columnChartOptions.chart!"
+              [grid]="columnChartOptions.grid!" [title]="columnChartOptions.title!"  [xaxis]="columnChartOptions.xaxis!"></apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+      <div class="card">
+        <div class="header">
+          <h2>{{this.translatedLangText.YARD_STATUS}}</h2>
+        </div>
+        <div class="body">
+          <div style="text-align:center">
+            <apx-chart [series]="pieChartOptions.series2!" [chart]="pieChartOptions.chart!" [labels]="pieChartOptions.labels!"
+              [title]="pieChartOptions.title!" [xaxis]="columnChartOptions.xaxis!"></apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

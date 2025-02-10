@@ -48,10 +48,10 @@ export class report_status_yard{
       this.code = item.code;
       if (!this.code) this.code = '';
       
-      this.noTank_repair=item.noTank_repair;
-      this.noTank_clean=item.noTank_clean;
-      this.noTank_storage=item.noTank_storage;
-      this.noTank_steam=item.noTank_steam;
+      this.noTank_repair=Number(item.noTank_repair||0);
+      this.noTank_clean=Number(item.noTank_clean||0);
+      this.noTank_storage=Number(item.noTank_storage||0);
+      this.noTank_steam=Number(item.noTank_steam||0);
       this.storing_order_tank=item.storing_order_tank;
     }
 

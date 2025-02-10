@@ -395,19 +395,22 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     //where.status_cv={in:['COMPLETED','APPROVED']};
     where.guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
-      where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      if(!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no={};
+      where.storing_order_tank.tank_no= {contains: this.searchForm!.get('tank_no')?.value };
     }
 
     if (this.searchForm!.get('depot_status_cv')?.value!="ALL") {
       if(!where.storing_order_tank) where.storing_order_tank={};
+      if(!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv={};
      
-     var cond :any ={tank_status_cv: {eq: "RELEASED"}};
+     var cond :any ={eq: "RELEASED"};
      if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
      {
-      cond = {tank_status_cv: {neq: "RELEASED"}};
+      cond = {neq: "RELEASED"};
      }
      
-      where.storing_order_tank=cond;
+      where.storing_order_tank.tank_status_cv=cond;
     }
 
     if(this.searchForm!.get('invoiced')?.value)

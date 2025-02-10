@@ -948,7 +948,9 @@
     "RELEASE-BOOKING":"Release Booking",
     "CLEANING-COST":"Cleaning Cost",
     "BUFFER-COST":"Buffer Cost",
-    "ONE-CONDITION-NEEDED":"At least one condition needed for searching"
+    "ONE-CONDITION-NEEDED":"At least one condition needed for searching",
+    "TOP-TEN-CUSTOMER":"Top Ten Customer",
+    "PENDING-INVOICE-DETAIL-COST":"Pending Invoice Detail"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
