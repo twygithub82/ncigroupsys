@@ -311,7 +311,7 @@ namespace IDMS.Survey.GqlTypes
 
                 //Add cleaning by auto
                 if (sot?.purpose_cleaning ?? false)
-                    await AddCleaning(context, sot, ingate.create_dt, inGateRequest?.in_gate_survey?.tank_comp_guid);
+                    await AddCleaning(context, sot, inGateRequest.create_dt, inGateRequest?.in_gate_survey?.tank_comp_guid);
 
                 retval = await context.SaveChangesAsync(true);
             }
