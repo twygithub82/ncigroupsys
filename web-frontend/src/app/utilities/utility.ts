@@ -31,47 +31,43 @@ export class Utility {
       if (!date) {
         return undefined; // Handle null or undefined input
       }
-
-      // Handle numbers (epoch time)
+  
+      // ✅ If input is a number (epoch time), return a correct Date object
       if (typeof date === 'number' && !isNaN(date)) {
-        const isSeconds = date.toString().length === 10; // Check if input is in seconds
-        const jsDate = new Date(isSeconds ? date * 1000 : date); // Convert to milliseconds if needed
-        return jsDate; // Return as Date object
+        const isSeconds = date < 10000000000; // Check if input is in seconds
+        const epochMs = isSeconds ? date * 1000 : date; // Convert SECONDS to MILLISECONDS
+        return new Date(epochMs); // Force UTC interpretation
       }
-
-      // Handle Moment.js objects
+  
+      // ✅ Handle Moment.js Objects (Return Epoch Time in Seconds)
       if (moment.isMoment(date)) {
         const momentDate = endOfDay
-          ? date.endOf('day') // Set to end of day
-          : date.startOf('day'); // Set to start of day
+          ? date.utc().endOf('day') // Set to end of day in UTC
+          : date.utc().startOf('day'); // Set to start of day in UTC
         return Math.floor(momentDate.valueOf() / 1000); // Return epoch time in seconds
       }
-
-      // Handle JavaScript Date objects
+  
+      // ✅ Handle JavaScript Date objects (Return Epoch Time in Seconds)
       if (date instanceof Date) {
         const jsDate = new Date(date); // Create a copy of the date
         if (!includeTime) {
-          if (endOfDay) {
-            jsDate.setHours(23, 59, 59, 999); // Set to end of day
-          } else {
-            jsDate.setHours(0, 0, 0, 0); // Set to start of day
-          }
+          jsDate.setUTCHours(endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0, endOfDay ? 999 : 0);
         }
         return Math.floor(jsDate.getTime() / 1000); // Return epoch time in seconds
       }
-
-      // Handle strings that can be parsed as dates
+  
+      // ✅ Handle Strings (Parse into Epoch Seconds)
       if (typeof date === 'string' && !isNaN(Date.parse(date))) {
         const parsedDate = new Date(date); // Parse the string into a Date object
         if (endOfDay) {
-          parsedDate.setHours(23, 59, 59, 999); // Set to end of day
+          parsedDate.setUTCHours(23, 59, 59, 999); // Set to end of day in UTC
         } else {
-          parsedDate.setHours(0, 0, 0, 0); // Set to start of day
+          parsedDate.setUTCHours(0, 0, 0, 0); // Set to start of day in UTC
         }
         return Math.floor(parsedDate.getTime() / 1000); // Return epoch time in seconds
       }
-
-      // If input type is unrecognized, log error
+  
+      // ❌ If the input format is unrecognized, log an error
       console.error('Unrecognized date format:', date);
       return undefined;
     } catch (error) {

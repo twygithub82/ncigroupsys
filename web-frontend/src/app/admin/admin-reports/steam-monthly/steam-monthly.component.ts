@@ -44,12 +44,14 @@ import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { Moment } from 'moment';
+import * as moment from 'moment';
 
 @Component({
-  selector: 'app-tank-movement',
+  selector: 'app-steam-monthly',
+  templateUrl: './steam-monthly.component.html',
+  styleUrl: './steam-monthly.component.scss',
   standalone: true,
-  templateUrl: './tank-movement.component.html',
-  styleUrl: './tank-movement.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -77,7 +79,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
     MatDividerModule,
   ]
 })
-export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SteamMonthlyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
     'customer',
@@ -88,7 +90,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     'tank_status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
+  pageTitle = 'MENUITEMS.ADMIN-REPORTS.LIST.STEAM-MONTHLY'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -122,7 +124,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     RO_NO: 'COMMON-FORM.RO-NO',
-    YARD: 'COMMON-FORM.YARD'
+    YARD: 'COMMON-FORM.YARD',
+    DATE: 'COMMON-FORM.DATE'
   }
 
   searchForm?: UntypedFormGroup;
@@ -184,19 +187,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
 
   initSearchForm() {
     this.searchForm = this.fb.group({
-      so_no: [''],
       customer_code: this.customerCodeControl,
-      last_cargo: this.lastCargoControl,
-      eir_no: [''],
-      ro_no: [''],
-      eir_dt_start: [''],
-      eir_dt_end: [''],
-      tank_no: [''],
-      job_no: [''],
-      purpose: [''],
-      tank_status_cv: [''],
-      eir_status_cv: [''],
-      yard_cv: ['']
+      steam_estimate_dt: [''],
     });
   }
 
@@ -214,23 +206,6 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-        });
-      })
-    ).subscribe();
-
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-        }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-          this.updateValidators(this.lastCargoControl, this.last_cargoList);
         });
       })
     ).subscribe();
@@ -460,6 +435,19 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     untypedFormControl.setValidators([
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  chosenYearHandler(normalizedYear: Moment) {
+    const ctrlValue = this.searchForm!.get('steam_estimate_dt')!.value ? moment(this.searchForm!.get('steam_estimate_dt')!.value) : moment();
+    ctrlValue.year(normalizedYear.year()).date(1);
+    this.searchForm!.get('steam_estimate_dt')!.setValue(ctrlValue);
+  }
+
+  chosenMonthHandler(normalizedMonth: Moment, datepicker: any) {
+    const ctrlValue = this.searchForm!.get('steam_estimate_dt')!.value ? moment(this.searchForm!.get('steam_estimate_dt')!.value) : moment();
+    ctrlValue.month(normalizedMonth.month()).year(normalizedMonth.year()).date(1);
+    this.searchForm!.get('steam_estimate_dt')!.setValue(ctrlValue);
+    datepicker.close();
   }
 
   resetDialog(event: Event) {

@@ -1594,7 +1594,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
             const inGateItem: any = new InGate(this.eirDetails?.in_gate);
             // inGateItem.tank = sotItem
             inGateItem.in_gate_survey = inGateSurveyItem
-            console.log(inGateItem)
+            console.log('publishInGateSurvey: ' + inGateItem)
             this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
               console.log(result)
               if (result.data?.publishIngateSurvey) {
