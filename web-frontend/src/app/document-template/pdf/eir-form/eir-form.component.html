@@ -82,7 +82,7 @@
             <td>{{translatedLangText.UNIT_TYPE}}:<br><b>{{eirDetails?.in_gate?.tank?.tank?.unit_type}}</b></td>
             <td>{{translatedLangText.CLADDING}}:<br><b>{{getCladdingDescription(eirDetails?.cladding_cv)}}</b></td>
             <td>
-              {{translatedLangText.MANUFACTURER_DOM}}:<br><b>{{getCladdingDescription(eirDetails?.manufacturer_cv)}}({{displayDate(eirDetails?.dom_dt)}})</b>
+              {{translatedLangText.MANUFACTURER_DOM}}:<br><b>{{getManufactureDescription(eirDetails?.manufacturer_cv)}} ({{displayDate(eirDetails?.dom_dt)}})</b>
             </td>
             <td>
               {{translatedLangText.TAKE_IN_STATUS}}:<br><b>{{getCleanStatusDescription(eirDetails?.in_gate?.tank?.clean_status_cv)}}</b>
@@ -807,7 +807,7 @@
                   </div>
                   <div class="parties-info">
                     <span>{{translatedLangText.REVIEW_BY}}:</span>
-                    <span><b>{{eirDetails?.in_gate?.publish_by}}</b></span>
+                    <span><b>{{publish_by}}</b></span>
                   </div>
                 </div>
               </div>

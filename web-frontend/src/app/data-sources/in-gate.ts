@@ -258,6 +258,33 @@ export const GET_IN_GATE_BY_ID = gql`
               guid
             }
           }
+          tank_info {
+            capacity
+            cladding_cv
+            create_by
+            create_dt
+            delete_dt
+            dom_dt
+            guid
+            height_cv
+            last_notify_dt
+            last_release_dt
+            last_test_cv
+            manufacturer_cv
+            max_weight_cv
+            next_test_cv
+            owner_guid
+            tank_comp_guid
+            tank_no
+            tare_weight
+            test_class_cv
+            test_dt
+            unit_type_guid
+            update_by
+            update_dt
+            walkway_cv
+            yard_cv
+          }
         }
         in_gate_survey {
           airline_valve_conn_cv

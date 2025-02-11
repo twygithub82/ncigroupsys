@@ -370,4 +370,8 @@ export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
   canCancel(ro: any): boolean {
     return ro && ro.status_cv === 'PENDING';
   }
+
+  canAddTank(ro: any): boolean {
+    return !ro || !ro.status_cv || ro.status_cv === 'PENDING' || ro.status_cv === 'PROCESSING';
+  }
 }

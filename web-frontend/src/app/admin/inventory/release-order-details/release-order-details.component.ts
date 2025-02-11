@@ -769,6 +769,10 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     event.preventDefault(); // Prevents the form submission
   }
 
+  canAddTank(): boolean {
+    return this.roDS.canAddTank(this.releaseOrderItem);
+  }
+
   isAnyItemEdited(): boolean {
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }

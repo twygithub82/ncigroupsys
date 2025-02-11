@@ -232,11 +232,13 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                  @if (canAddTank()) {
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                     (click)="addOrderDetails($event)" [disabled]="roForm?.get('customer_company_guid')!.value === ''">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ADD_TANK}}
                   </button>
-                  @if (isAnyItemEdited()) {
+                  }
+                  @if (canAddTank()) {
                   <button mat-flat-button color="primary" [disabled]="(roDS.actionLoading$ | async)">
                     <mat-icon>
                       @if (!(roDS.actionLoading$ | async)) {

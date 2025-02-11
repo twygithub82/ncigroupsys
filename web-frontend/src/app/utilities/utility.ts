@@ -82,7 +82,7 @@ export class Utility {
       let dateObj: Date;
 
       // Check if the number is more likely to be in seconds or milliseconds
-      if (date.toString().length === 10) {
+      if (date < 10000000000) {
         // If it's in seconds, convert to milliseconds
         dateObj = new Date(date * 1000);
       } else if (date.toString().length === 13) {
@@ -102,7 +102,7 @@ export class Utility {
 
   static convertEpochToDateTimeStr(date: number | undefined, is12Hr: boolean = false): string | undefined {
     if (typeof date === 'number' && !isNaN(date)) {
-      if (date.toString().length === 10) {
+      if (date < 10000000000) {
         if (is12Hr) {
           return this.formatDateTo12Hour(new Date(date * 1000));
         } else {
@@ -124,7 +124,7 @@ export class Utility {
 
   static convertEpochToDate12TimeStr(date: number | undefined): string | undefined {
     if (typeof date === 'number' && !isNaN(date)) {
-      if (date.toString().length === 10) {
+      if (date < 10000000000) {
         return this.formatDateTo12Hour(new Date(date * 1000));
       } else if (date.toString().length === 13) {
         return this.formatDateTo12Hour(new Date(date));
@@ -138,7 +138,7 @@ export class Utility {
 
   static convertEpochToDate24TimeStr(date: number | undefined): string | undefined {
     if (typeof date === 'number' && !isNaN(date)) {
-      if (date.toString().length === 10) {
+      if (date < 10000000000) {
         return this.formatDateTo12Hour(new Date(date * 1000));
       } else if (date.toString().length === 13) {
         return this.formatDateTo12Hour(new Date(date));
