@@ -169,7 +169,7 @@ namespace IDMS.Survey.GqlTypes
 
                 var tank = inGateRequest.tank;
                 storing_order_tank sot = new storing_order_tank() { guid = tank.guid };
-                context.Attach(sot);
+                context.storing_order_tank.Attach(sot);
                 sot.unit_type_guid = tank.unit_type_guid;
                 sot.owner_guid = tank.owner_guid;
                 sot.tank_no = string.IsNullOrEmpty(tank.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tank.tank_no;

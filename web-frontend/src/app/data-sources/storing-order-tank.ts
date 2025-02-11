@@ -57,7 +57,7 @@ export class StoringOrderTank {
   public repair_remarks?: string;
   public steaming_remarks?: string;
   public storage_remarks?: string;
-  public last_release_dt?: string;
+  public last_release_dt?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;

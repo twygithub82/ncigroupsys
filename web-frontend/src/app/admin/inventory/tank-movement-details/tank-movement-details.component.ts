@@ -311,7 +311,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     REPAIR: 'COMMON-FORM.REPAIR',
     STORAGE_BEGIN_DATE: 'COMMON-FORM.STORAGE-BEGIN-DATE',
     STORAGE_DAYS: 'COMMON-FORM.STORAGE-DAYS',
-    AV_DATE: 'COMMON-FORM.AV-DATE',
+    AVAILABLE_DATE: 'COMMON-FORM.AVAILABLE-DATE',
     ETR_DATE: 'COMMON-FORM.ETR-DATE',
     STORAGE_CLOSE_DATE: 'COMMON-FORM.STORAGE-CLOSE-DATE',
     FREE_STORAGE_DAYS: 'COMMON-FORM.FREE-STORAGE-DAYS',
@@ -1164,7 +1164,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         customer_company_guid: this.sot?.storing_order?.customer_company_guid,
         estimate_no: repair?.estimate_no,
         repairEstimatePdf: undefined,
-        retrieveFile: true        
+        retrieveFile: true
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -1190,7 +1190,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         customer_company_guid: this.sot?.storing_order?.customer_company_guid,
         estimate_no: steam?.estimate_no,
         repairEstimatePdf: undefined,
-        retrieveFile: true        
+        retrieveFile: true
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -1304,7 +1304,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         customer_company_guid: this.sot?.storing_order?.customer_company_guid,
         estimate_no: selectedItem?.estimate_no,
         repairEstimatePdf: undefined,
-        retrieveFile: true        
+        retrieveFile: true
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

@@ -245,7 +245,7 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.YARD}}</mat-label>
                                   <mat-select formControlName="yard_cv" required>
-                                    @for (codeValue of yardCv; track codeValue) {
+                                    @for (codeValue of yardCvList; track codeValue) {
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
                                   </mat-select>
@@ -260,7 +260,7 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.PRE_INSPECTION}}</mat-label>
                                   <mat-select formControlName="preinspection_cv" required>
-                                    @for (codeValue of yesnoCv; track codeValue) {
+                                    @for (codeValue of yesnoCvList; track codeValue) {
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
                                   </mat-select>
@@ -275,7 +275,7 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.LOLO}}</mat-label>
                                   <mat-select formControlName="lolo_cv" required>
-                                    @for (codeValue of loloCv; track codeValue) {
+                                    @for (codeValue of loloCvList; track codeValue) {
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
                                   </mat-select>
@@ -340,7 +340,7 @@
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <label>{{translatedLangText.OPEN_ON_GATE}}:</label>
                                 <mat-radio-group formControlName="open_on_gate">
-                                  @for (codeValue of yesnoCv; track codeValue) {
+                                  @for (codeValue of yesnoCvList; track codeValue) {
                                   <mat-radio-button [value]="codeValue.code_val" color="primary">
                                     {{codeValue.description}}
                                   </mat-radio-button>
@@ -455,7 +455,7 @@
                           {{translatedLangText.CARGO_HAZARD_LEVEL}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.hazard_level_cv ?? "-"}}
+                          {{getHazardLevelDescription(cargoDetails?.hazard_level_cv) ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -463,7 +463,7 @@
                           {{translatedLangText.CARGO_BAN_TYPE}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.ban_type_cv ?? "-"}}
+                          {{getBanTypeDescription(cargoDetails?.ban_type_cv) ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -471,7 +471,7 @@
                           {{translatedLangText.CARGO_NATURE}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.nature_cv ?? "-"}}
+                          {{getNatureTypeDescription(cargoDetails?.nature_cv) ?? "-"}}
                         </div>
                       </div>
                       <div class="row">

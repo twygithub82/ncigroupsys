@@ -205,16 +205,16 @@
             {{displayDamageRepairCode(rep.rp_damage_repair, 1)}}
           </td>
           <td class="td-col-3">
-            <span [ngClass]="{'text-decoration-line-through': false || repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.description}}</span>
+            <span [ngClass]="{'text-decoration-line-through': false && repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.description}}</span>
           </td>
           <td class="td-col-0-5">
-            <span [ngClass]="{'text-decoration-line-through': false || repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.quantity}}</span>
+            <span [ngClass]="{'text-decoration-line-through': false && repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.quantity}}</span>
           </td>
           <td class="td-col-0-75">
-            <span [ngClass]="{'text-decoration-line-through': false || repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.hour}}</span>
+            <span [ngClass]="{'text-decoration-line-through': false && repairPartDS.is4X(rep.rp_damage_repair)}">{{rep.hour}}</span>
           </td>
           <td class="td-col-0-75 text-right">
-            <span [ngClass]="{'text-decoration-line-through': false || repairPartDS.is4X(rep.rp_damage_repair)}">{{parse2Decimal(rep.material_cost)}}</span>
+            <span [ngClass]="{'text-decoration-line-through': false && repairPartDS.is4X(rep.rp_damage_repair)}">{{parse2Decimal(rep.material_cost)}}</span>
           </td>
           <td class="td-col-0-5">
             {{rep.approve_qty}}
@@ -264,7 +264,7 @@
             <b>{{translatedLangText.ITEM}}</b>
           </td>
           <td class="td-col-1 text-center">
-            <b>{{translatedLangText.RATE_PERC}}</b>
+            <b>{{translatedLangText.RATE}}</b>
           </td>
           <td class="td-col-3 text-center" colspan="2">
             <b>{{translatedLangText.ESTIMATE_COST}}</b>
@@ -278,13 +278,13 @@
             <b>{{translatedLangText.LABOUR}}</b>
           </td>
           <td class="td-col-1 text-right">
-            {{repairItem?.labour_cost}}
+            $ {{repairItem?.labour_cost}}
           </td>
           <td class="td-col-1-5 text-right">
             {{repairCost?.total_hour_table}}
           </td>
           <td class="td-col-1-5 text-right">
-            {{repairCost?.total_labour_cost}}
+            $ {{repairCost?.total_labour_cost}}
           </td>
           <td class="td-col-1-5 text-right">
 
@@ -302,7 +302,7 @@
           <td class="td-col-1-5 text-right">
           </td>
           <td class="td-col-1-5 text-right">
-            {{repairCost?.total_mat_cost}}
+            $ {{repairCost?.total_mat_cost}}
           </td>
           <td class="td-col-1-5 text-right">
           </td>
@@ -317,12 +317,12 @@
             <b>{{translatedLangText.LABOUR_DISCOUNT}}</b>
           </td>
           <td class="td-col-1 text-right">
-            {{repairCost?.labour_cost_discount}}
+            {{repairCost?.labour_cost_discount}} %
           </td>
           <td class="td-col-1-5 text-right">
           </td>
           <td class="td-col-1-5 text-right">
-            - {{repairCost?.discount_labour_cost}}
+            - $ {{repairCost?.discount_labour_cost}}
           </td>
           <td class="td-col-1-5 text-right">
           </td>
@@ -331,15 +331,15 @@
         </tr>
         <tr>
           <td class="td-col-2">
-            <b>{{translatedLangText.MATERIAL_DISCOUNT}}</b>
+            <b>{{translatedLangText.MATERIAL_DISCOUNT}} %</b>
           </td>
           <td class="td-col-1 text-right">
-            {{repairCost?.material_cost_discount}}
+            {{repairCost?.material_cost_discount}} %
           </td>
           <td class="td-col-1-5 text-right">
           </td>
           <td class="td-col-1-5 text-right">
-            - {{repairCost?.discount_mat_cost}}
+            - $ {{repairCost?.discount_mat_cost}}
           </td>
           <td class="td-col-1-5 text-right">
           </td>
@@ -355,7 +355,7 @@
           <td class="td-col-1-5 text-right">
           </td>
           <td class="td-col-1-5 text-right">
-            {{repairCost?.net_cost}}
+            $ {{repairCost?.net_cost}}
           </td>
           <td class="td-col-1-5 text-right">
           </td>

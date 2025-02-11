@@ -374,17 +374,16 @@
                       </ng-container>
                       <ng-container matColumnDef="action">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'"
                           mat-sort-header>
-                          <mat-icon>more_vert</mat-icon>
+                          <mat-icon class="me-3">more_vert</mat-icon>
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.DELETE}}:</span>
-                          <button mat-menu-item (click)="stopEventTrigger($event)"
+                          <button mat-menu-item class="pe-0 justify-content-end" (click)="stopEventTrigger($event)"
                             (click)="deleteEstDetail($event,row)">
                             <mat-icon>delete_forever</mat-icon>
-                            <span>{{translatedLangText.DELETE}}</span>
                           </button>
                         </mat-cell>
                       </ng-container>

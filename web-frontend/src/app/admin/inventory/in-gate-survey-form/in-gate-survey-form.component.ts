@@ -1076,19 +1076,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
+          console.log(this.in_gate)
           this.dateOfInspection = this.in_gate?.in_gate_survey?.create_dt ? Utility.convertDate(this.in_gate?.in_gate_survey?.create_dt) as Date : new Date();
           this.populateInGateForm(this.in_gate);
-          if (!this.in_gate?.tank?.last_release_dt) {
-            this.tiDS.getTankInfoForLastTest(this.in_gate!.tank!.tank_no!).subscribe(data => {
-              if (data.length > 0) {
-                this.surveyForm?.patchValue({
-                  tank_details: {
-                    last_release_dt: data[0]?.last_release_dt,
-                  },
-                })
-              }
-            });
-          }
+          // if (!this.in_gate?.tank?.last_release_dt) {
+          //   this.tiDS.getTankInfoForLastTest(this.in_gate!.tank!.tank_no!).subscribe(data => {
+          //     if (data.length > 0) {
+          //       this.surveyForm?.patchValue({
+          //         tank_details: {
+          //           last_release_dt: data[0]?.last_release_dt,
+          //         },
+          //       })
+          //     }
+          //   });
+          // }
           // this.ccDS.getOwnerList().subscribe(data => {
           //   this.ownerList = data;
           // });
@@ -1133,26 +1134,26 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   populateInGateForm(ig: InGateItem): void {
     this.surveyForm?.patchValue({
       tank_details: {
-        unit_type_guid: ig.tank?.unit_type_guid,
+        unit_type_guid: ig.tank?.unit_type_guid || ig.tank?.tank_info?.unit_type_guid,
         owner: ig.tank?.customer_company,
         owner_guid: ig.tank?.owner_guid,
-        manufacturer_cv: ig.in_gate_survey?.manufacturer_cv,
-        dom_dt: Utility.convertDate(ig.in_gate_survey?.dom_dt),
-        cladding_cv: ig.in_gate_survey?.cladding_cv,
-        capacity: ig.in_gate_survey?.capacity,
-        tare_weight: ig.in_gate_survey?.tare_weight,
-        max_weight_cv: ig.in_gate_survey?.max_weight_cv,
-        height_cv: ig.in_gate_survey?.height_cv,
-        walkway_cv: ig.in_gate_survey?.walkway_cv,
-        tank_comp_guid: ig.in_gate_survey?.tank_comp_guid,
+        manufacturer_cv: ig.in_gate_survey?.manufacturer_cv || ig.tank?.tank_info?.manufacturer_cv,
+        dom_dt: Utility.convertDate(ig.in_gate_survey?.dom_dt || ig.tank?.tank_info?.dom_dt),
+        cladding_cv: ig.in_gate_survey?.cladding_cv || ig.tank?.tank_info?.cladding_cv,
+        capacity: ig.in_gate_survey?.capacity || ig.tank?.tank_info?.capacity,
+        tare_weight: ig.in_gate_survey?.tare_weight || ig.tank?.tank_info?.tare_weight,
+        max_weight_cv: ig.in_gate_survey?.max_weight_cv || ig.tank?.tank_info?.max_weight_cv,
+        height_cv: ig.in_gate_survey?.height_cv || ig.tank?.tank_info?.height_cv,
+        walkway_cv: ig.in_gate_survey?.walkway_cv || ig.tank?.tank_info?.walkway_cv,
+        tank_comp_guid: ig.in_gate_survey?.tank_comp_guid || ig.tank?.tank_info?.tank_comp_guid,
         comments: ig.in_gate_survey?.comments,
         last_release_dt: ig.tank?.last_release_dt,
       },
       periodic_test: {
-        last_test_cv: ig.in_gate_survey?.last_test_cv,
-        next_test_cv: ig.in_gate_survey?.next_test_cv,
-        test_class_cv: ig.in_gate_survey?.test_class_cv,
-        test_dt: Utility.convertDate(ig.in_gate_survey?.test_dt),
+        last_test_cv: ig.in_gate_survey?.last_test_cv || ig.tank?.tank_info?.last_test_cv,
+        next_test_cv: ig.in_gate_survey?.next_test_cv || ig.tank?.tank_info?.next_test_cv,
+        test_class_cv: ig.in_gate_survey?.test_class_cv || ig.tank?.tank_info?.test_class_cv,
+        test_dt: Utility.convertDate(ig.in_gate_survey?.test_dt || ig.tank?.tank_info?.test_dt),
       },
       in_gate_details: {
         vehicle_no: ig.vehicle_no,
@@ -1475,6 +1476,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       ig.driver_name = this.surveyForm.get('in_gate_details.driver_name')?.value;
       ig.haulier = this.surveyForm.get('in_gate_details.haulier')?.value;
       ig.remarks = this.surveyForm.get('in_gate_details.in_gate_remarks')?.value;
+      ig.in_gate_survey = undefined;
       ig.tank = sot;
 
       const periodicTestFormGroup = this.getBottomFormGroup();

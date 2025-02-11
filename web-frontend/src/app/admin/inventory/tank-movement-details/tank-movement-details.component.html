@@ -702,7 +702,7 @@
                                     </div>
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.AV_DATE}}:</span>
+                                        <span>{{translatedLangText.AVAILABLE_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">{{getAvailableDate(sot!) || "-"}}
@@ -931,13 +931,20 @@
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label">{{translatedLangText.BILL}}:</span>
+                                            @if (row?.customer_billing_guid) {
+                                            <mat-icon
+                                              class="material-icons-two-tone col-green font-bold m-l-0">checked</mat-icon>
+                                            }
+                                            @else {
                                             <mat-icon
                                               class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
+                                            }
                                           </mat-cell>
                                         </ng-container>
                                         <mat-header-row *matHeaderRowDef="displayedColumnsSteaming"></mat-header-row>
                                         <mat-row *matRowDef="let row; columns: displayedColumnsSteaming;"
-                                          (click)="steamHeatingLogDialog($event, row)" [style.cursor]="'pointer'" matRipple>
+                                          (click)="steamHeatingLogDialog($event, row)" [style.cursor]="'pointer'"
+                                          matRipple>
                                         </mat-row>
                                       </table>
                                     </div>
@@ -1304,14 +1311,13 @@
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold d-flex align-items-center">
-                                          @if (false) {
+                                          @if (cleaningItem?.[0]?.customer_billing_guid) {
                                           <mat-icon
                                             class="material-icons-two-tone col-green font-bold m-l-0">check</mat-icon>
                                           }
                                           @else {
-                                          <!-- <mat-icon
-                                            class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon> -->
-                                          -
+                                          <mat-icon
+                                            class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
                                           }
                                         </div>
                                       </div>

@@ -449,6 +449,7 @@ const GET_IN_GATE_CLEANING_BY_SOT = gql`
         status_cv
         update_by
         update_dt
+        customer_billing_guid
         job_order {
           team {
             create_by

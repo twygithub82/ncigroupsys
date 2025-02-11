@@ -836,6 +836,7 @@ namespace IDMS.Inventory.GqlTypes
                 }
                 else
                 {
+                    //tf.storing_order_tank = null;
                     mapper.Map(tankInfo, tf);
                     //already ignore the guid, created_by, created_dt in program.config
                     tf.update_by = user;

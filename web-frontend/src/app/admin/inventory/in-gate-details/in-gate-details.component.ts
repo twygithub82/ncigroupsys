@@ -187,9 +187,12 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   customerBranch?: CustomerCompanyItem;
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
-  yesnoCv: CodeValuesItem[] = [];
-  yardCv: CodeValuesItem[] = [];
-  loloCv: CodeValuesItem[] = [];
+  yesnoCvList: CodeValuesItem[] = [];
+  yardCvList: CodeValuesItem[] = [];
+  loloCvList: CodeValuesItem[] = [];
+  hazardLevelCvList: CodeValuesItem[] = [];
+  banTypeCvList: CodeValuesItem[] = [];
+  natureTypeCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -291,7 +294,10 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'yardCv', codeValType: 'YARD' },
-      { alias: 'loloCv', codeValType: 'LOLO' }
+      { alias: 'loloCv', codeValType: 'LOLO' },
+      { alias: 'hazardLevelCv', codeValType: 'HAZARD_LEVEL' },
+      { alias: 'banTypeCv', codeValType: 'BAN_TYPE' },
+      { alias: 'natureTypeCv', codeValType: 'NATURE_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -301,13 +307,22 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       this.purposeOptionCvList = data;
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
-      this.yesnoCv = data;
+      this.yesnoCvList = data;
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
-      this.yardCv = data;
+      this.yardCvList = data;
     });
     this.cvDS.connectAlias('loloCv').subscribe(data => {
-      this.loloCv = data;
+      this.loloCvList = data;
+    });
+    this.cvDS.connectAlias('hazardLevelCv').subscribe(data => {
+      this.hazardLevelCvList = data;
+    });
+    this.cvDS.connectAlias('banTypeCv').subscribe(data => {
+      this.banTypeCvList = data;
+    });
+    this.cvDS.connectAlias('natureTypeCv').subscribe(data => {
+      this.natureTypeCvList = data;
     });
   }
 
@@ -493,6 +508,18 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  getHazardLevelDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.hazardLevelCvList);
+  }
+
+  getBanTypeDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.banTypeCvList);
+  }
+
+  getNatureTypeDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.natureTypeCvList);
   }
 
   cleanStatusColor(clean_status_cv?: string): string {

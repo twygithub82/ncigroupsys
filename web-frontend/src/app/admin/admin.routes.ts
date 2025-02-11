@@ -101,6 +101,7 @@ import { MainPackageSteamComponent } from './package/package-steam/main-package-
 import { MainCustomerComponent } from './master/customer/main-customer.component';
 import { MainTankActivityComponent } from './reports/tank-activity/main-tank-activity.component';
 import { MainStatusComponent } from './reports/status/main-status.component';
+import { SteamMonthlyComponent } from './admin-reports/steam-monthly/steam-monthly.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -520,6 +521,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "reports/status",
     component: MainStatusComponent,
+  },
+  {
+    path: "admin-reports/steam-monthly",
+    component: SteamMonthlyComponent,
   },
 ];
 

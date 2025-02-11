@@ -676,6 +676,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         total_cost
         update_by
         update_dt
+        customer_billing_guid
         steaming_part {
           approve_cost
           approve_labour
