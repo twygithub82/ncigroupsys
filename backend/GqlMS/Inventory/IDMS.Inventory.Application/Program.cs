@@ -53,6 +53,7 @@ namespace IDMS.Inventory
                 cfg.CreateMap<StoringOrderRequest, storing_order>();
 
                 cfg.CreateMap<tank_info, tank_info>()
+                    .ForMember(dest => dest.storing_order_tank, opt => opt.Ignore())
                     .ForMember(dest => dest.guid, opt => opt.Ignore())
                     .ForMember(dest => dest.create_dt, opt => opt.Ignore())
                     .ForMember(dest => dest.create_by, opt => opt.Ignore());
