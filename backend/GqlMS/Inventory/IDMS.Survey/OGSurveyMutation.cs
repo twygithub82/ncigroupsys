@@ -266,7 +266,7 @@ namespace IDMS.Survey.GqlTypes
                 tank_no = sot.tank_no,
                 owner_guid = sot.owner_guid,
                 unit_type_guid = sot.unit_type_guid,
-                last_release_dt = sot.last_release_dt,
+                last_release_dt = currentDateTime, //use current Date Time 
                 tank_comp_guid = outgateSurvey.tank_comp_guid,
                 manufacturer_cv = outgateSurvey.manufacturer_cv,
                 dom_dt = outgateSurvey.dom_dt,
