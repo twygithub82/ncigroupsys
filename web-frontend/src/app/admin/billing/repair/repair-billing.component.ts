@@ -458,7 +458,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     if (this.searchForm!.get('customer_code')?.value) {
      
       where.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
-      where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
+      //where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
     }
 
     if(this.searchForm!.get('branch_code')?.value)

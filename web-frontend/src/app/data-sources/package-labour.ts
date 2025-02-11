@@ -215,7 +215,7 @@ export class PackageLabourDS extends BaseDataSource<PackageLabourItem> {
       );
   }
 
-  getCustomerPackageCost(where: any) {
+  getCustomerPackageCost(where: any):Observable<any>  {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({

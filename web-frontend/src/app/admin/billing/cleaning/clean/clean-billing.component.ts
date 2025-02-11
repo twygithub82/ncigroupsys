@@ -392,20 +392,26 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     where.bill_to_guid={neq:null};
 
     if (this.searchForm!.get('depot_status_cv')?.value!="ALL") {
-       if(!where.storing_order_tank) where.storing_order_tank={};
-      
-      var cond :any ={tank_status_cv: {eq: "RELEASED"}};
-      if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
-      {
-       cond = {tank_status_cv: {neq: "RELEASED"}};
-      }
-      
-       where.storing_order_tank=cond;
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      if(!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv={};
+     var cond :any ={eq: "RELEASED"};
+     if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
+     {
+      cond = {neq: "RELEASED"};
      }
+     
 
-    if (this.searchForm!.get('tank_no')?.value) {
-      where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
+      where.storing_order_tank.tank_status_cv=cond;
     }
+
+    
+    if (this.searchForm!.get('tank_no')?.value) {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      if(!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no={};
+     
+      where.storing_order_tank.tank_no =  {contains: this.searchForm!.get('tank_no')?.value };
+    }
+
 
     if (this.searchForm!.get('customer_code')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
@@ -426,16 +432,28 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
     if (this.searchForm!.get('eir_dt')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank.in_gate = { some:{
+      if(!where.storing_order_tank.or)where.storing_order_tank.or=[];
+      where.storing_order_tank.or.push({in_gate:{ some:{
         and:[
           {eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}
         ]}
-      };
+      }});
+      where.storing_order_tank.or.push({out_gate:{ some:{
+        and:[
+          {eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
+          {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}
+        ]}
+      }});
     }
+    
     if (this.searchForm!.get('eir_no')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
+      if(!where.storing_order_tank.or)where.storing_order_tank.or=[];
+      where.storing_order_tank.or.push({in_gate:{ some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}});
+      where.storing_order_tank.or.push({out_gate:{ some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}});
+      //where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
+
     }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {

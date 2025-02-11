@@ -50,9 +50,11 @@ import { RepairPartItem } from 'app/data-sources/repair-part';
 import {RepairDS, RepairItem}from 'app/data-sources/repair';
 import { ResidueItem } from 'app/data-sources/residue';
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
-import { SteamItem } from 'app/data-sources/steam';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { PendingSummaryPdfComponent } from 'app/document-template/pdf/pending-summary-pdf/pending-summary-pdf.component';
 import {PendingInvoiceCostDetailPdfComponent} from 'app/document-template/pdf/pending-invoice-cost-detail-pdf/pending-invoice-cost-detail.component';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -151,6 +153,8 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   tcDS: TariffCleaningDS;
   pdDS:PackageDepotDS;
   repDS:RepairDS;
+   plDS:PackageLabourDS;
+   stmDS:SteamDS;
 
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
@@ -161,6 +165,9 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
 
+  distinctCustomerGuids:any;
+  allCustLabourCosts:PackageLabourItem[]=[]
+
   pageIndex = 0;
   pageSize = 100;
   lastSearchCriteria: any;
@@ -169,6 +176,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+
 
   constructor(
     public httpClient: HttpClient,
@@ -188,6 +196,9 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.pdDS= new PackageDepotDS(this.apollo);
     this.repDS= new RepairDS(this.apollo);
+    this.plDS=new PackageLabourDS(this.apollo);
+    this.stmDS=new SteamDS(this.apollo);
+
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -363,7 +374,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.searchForm!.get('customer_code')?.value) {
       const soSearch: any = {};
       if (this.searchForm!.get('customer_code')?.value) {
-        soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
+        soSearch.customer_company = { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } };
       }
       where.storing_order = soSearch;
     }
@@ -382,6 +393,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
         this.removeNotApproveEstimates();
+        this.distinctCustomerGuids= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.guid))];
         this.export_report(reportType);
       });
 
@@ -549,9 +561,12 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
               // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
               // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
               // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-              rep_bill_item.clean_est_no +=1;
-              rep_bill_item.clean_cost = Number(Number( rep_bill_item?.clean_cost||0)+ (c.cleaning_cost||0)+ (c.buffer_cost||0)).toFixed(2);
-              if(newItem)rep_bill_items.push(rep_bill_item);
+              if(c.status_cv!='NO_ACTION')
+                {
+                  rep_bill_item.clean_est_no +=1;
+                  rep_bill_item.clean_cost = Number(Number( rep_bill_item?.clean_cost||0)+ (c.cleaning_cost||0)+ (c.buffer_cost||0)).toFixed(2);
+                  if(newItem)rep_bill_items.push(rep_bill_item);
+                }
               
             });
           }
@@ -690,7 +705,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
               // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
               // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
               // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-  
+             
               let packDepotItm :PackageDepotItem=new PackageDepotItem();
               packDepotItm.storage_cal_cv=c.storage_cal_cv;
   
@@ -713,6 +728,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
               //   rep_bill_item.eir_no=out_gates?.[0]?.eir_no;
               // }
               if(newItem)rep_bill_items.push(rep_bill_item);
+                
               
             });
           }
@@ -743,16 +759,20 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
               // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
               // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
               // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-
+              if(c.status_cv!='NO_ACTION')
+                {
               
-              const totalCost = this.repDS.calculateCost(c,c.repair_part!,c.labour_cost);
-              rep_bill_item.repair_cost  = Number(Number( rep_bill_item?.repair_cost||0)+(CustomerType==0?Number(totalCost.total_lessee_mat_cost||0):Number(totalCost.total_owner_cost||0))).toFixed(2);
+                const totalCost = this.repDS.calculateCost(c,c.repair_part!,c.labour_cost);
+                rep_bill_item.repair_cost  = Number(Number( rep_bill_item?.repair_cost||0)+(CustomerType==0?Number(totalCost.total_lessee_mat_cost||0):Number(totalCost.total_owner_cost||0))).toFixed(2);
+                var currentEstNo:number=rep_bill_item.repair_est_no;
+                if((CustomerType==0 &&Number(totalCost.total_lessee_mat_cost||0)>0)||
+                  (CustomerType==1 &&Number(totalCost.total_owner_cost||0)>0))
+                  {
+                    rep_bill_item.repair_est_no +=1;
+                  }
 
-              if((CustomerType==0 &&Number(totalCost.total_lessee_mat_cost||0)>0)||
-                (CustomerType==1 &&Number(totalCost.total_owner_cost||0)>0))
-                {rep_bill_item.repair_est_no +=1;}
-
-              if(newItem)rep_bill_items.push(rep_bill_item);
+                if(newItem && (rep_bill_item.repair_est_no>currentEstNo))rep_bill_items.push(rep_bill_item);
+                }
               
             });
           }
@@ -783,18 +803,21 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
               // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
               // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
               // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-              let total =0;
-               c.residue_part?.forEach(p=>{  
-                
-                   if(rep_bill_item) 
-                    {
-                      total +=((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0);
-                      rep_bill_item.residue_cost  = Number(Number( rep_bill_item?.residue_cost||0)+ ((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
-                    }
-  
-               });
-               if(total>0)  rep_bill_item.residue_est_no +=1;
-              if(newItem)rep_bill_items.push(rep_bill_item);
+              if(c.status_cv!='NO_ACTION')
+              {
+                let total =0;
+                c.residue_part?.forEach(p=>{  
+                  
+                    if(rep_bill_item) 
+                      {
+                        total +=((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0);
+                        rep_bill_item.residue_cost  = Number(Number( rep_bill_item?.residue_cost||0)+ ((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
+                      }
+    
+                });
+                if(total>0)  rep_bill_item.residue_est_no +=1;
+                if(newItem)rep_bill_items.push(rep_bill_item);
+              }
               
             });
           }
@@ -811,38 +834,85 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
            var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
           if(itms.length>0)
           { 
-            itms.forEach(c=>{
-              c.storing_order_tank=sot;
-               let newItem=false;
-              let rep_bill_item = rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-              if(!rep_bill_item)
-              {
-                newItem=true;
-                rep_bill_item=this.createNewReportBillingItem(sot);
+            itms.forEach( (c) => {
+              c.storing_order_tank = sot;
+              let newItem = false;
+              let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+              if (!rep_bill_item) {
+                newItem = true;
+                rep_bill_item = this.createNewReportBillingItem(sot);
                 // rep_bill_item= new report_billing_item();
                 // rep_bill_item.sot_guid=c.storing_order_tank?.guid;
               }
-              
+
               // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
               // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
               // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-               let total =0;
-               c.steaming_part?.forEach(p=>{
-                if(rep_bill_item) 
-                  {
-                     total +=((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0);
-                     rep_bill_item.steam_cost  = Number(Number( rep_bill_item?.steam_cost||0)+ ((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
-                  }
-  
-               });
-               if(total>0) rep_bill_item.steam_est_no +=1;
-              if(newItem)rep_bill_items.push(rep_bill_item);
+              if (c.status_cv != 'NO_ACTION') {
+                let total = 0;
+                let cost=this.retrieveLabourCost(c.storing_order_tank?.storing_order?.customer_company?.guid!);
+                total = (this.stmDS.getApprovalTotalWithLabourCost(c?.steaming_part, cost).total_mat_cost || 0);
+               
+                rep_bill_item.steam_cost= Number(Number(rep_bill_item.steam_cost||0)+total).toFixed(2);
               
+                if (total > 0) rep_bill_item.steam_est_no += 1;
+                if (newItem) rep_bill_items.push(rep_bill_item);
+              }
+
             });
           }
         }
        
     }
+
+    retrieveLabourCost(ccGuid:string):number
+    {
+       var cost:number=0;
+
+       if(this.allCustLabourCosts.length>0)
+       {
+          var selCC:PackageLabourItem = this.allCustLabourCosts.find(c=>c.customer_company_guid===ccGuid)||new PackageLabourItem();
+          cost= selCC.cost||0;
+       }
+       return cost;
+    }
+    async getAllClientLabourCost():Promise<void>{
+
+      const where:any = {or:[]};
+      this.distinctCustomerGuids.forEach((d:string) => {
+        where.or.push({ customer_company_guid: { eq: d } });
+      });
+      try {
+        this.allCustLabourCosts =  await firstValueFrom(this.plDS.getCustomerPackageCost(where));
+        
+        
+      } catch (error) {
+        console.error("Error fetching customer package cost:", error);
+      }
+    }
+
+
+
+
+    async getSteamPartsTotalCost(row: any): Promise<void> {
+      const customer_company_guid = row.storing_order_tank?.storing_order?.customer_company?.guid;
+      const where = {
+        and: [{ customer_company_guid: { eq: customer_company_guid } }]
+      };
+    
+      try {
+        let data =  await firstValueFrom(this.plDS.getCustomerPackageCost(where));
+        
+        if (data.length > 0) {
+          const cost: number = data[0].cost;
+          row.total_cost = (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+          // this.calculateTotalCost();
+        }
+      } catch (error) {
+        console.error("Error fetching customer package cost:", error);
+      }
+    }
+
 
     calculateBillingSOT(sot:StoringOrderTankItem,rep_bill_items:report_billing_item[])//(items:BillingSOTItem[],rep_bill_items:report_billing_item[])
     {
@@ -877,57 +947,58 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
     {
       if(!this.sotList.length) return;
   
-       var repCustomers : report_billing_customer[]=[]
-       // var rpItems:report_billing_item[]=[];
-  
-        this.sotList.forEach(b=>{
-           var repCusts = repCustomers.filter(c=>c.guid===b.storing_order?.customer_company?.guid);
-           var repCust : report_billing_customer=new report_billing_customer();
-           var newCust:boolean=true;
-           if(repCusts.length>0)
-           {
-            repCust= repCusts[0];
-            newCust=false;
-           }
-           else
-           {
-            repCust.guid=b.storing_order?.customer_company?.guid;
-            repCust.items=[];
-           }
-           repCust.customer=this.ccDS.displayName(b.storing_order?.customer_company);
+       this.getAllClientLabourCost().then(()=>{
+          var repCustomers : report_billing_customer[]=[]
+          // var rpItems:report_billing_item[]=[];
+      
+            this.sotList.forEach( (b) => {
+          var repCusts = repCustomers.filter(c => c.guid === b.storing_order?.customer_company?.guid);
+          var repCust: report_billing_customer = new report_billing_customer();
+          var newCust: boolean = true;
+          if (repCusts.length > 0) {
+            repCust = repCusts[0];
+            newCust = false;
+          }
+
+          else {
+            repCust.guid = b.storing_order?.customer_company?.guid;
+            repCust.items = [];
+          }
+          repCust.customer = this.ccDS.displayName(b.storing_order?.customer_company);
           //  if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
           //     repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
           //  }
-           let rpBillingItm =this.createReportBillingItem(b,repCust.items!);
-           repCust.items=rpBillingItm;
-  
-           if(newCust) repCustomers.push(repCust);
+            this.createReportBillingItem_R1(b, repCust);
+          //const rpBillingItm = await this.createReportBillingItem_R1(b, repCust);
+          //repCust.items = rpBillingItm;
 
-            this.checkRepairBillingForTankOwner(b,repCustomers);
-          
+          if (newCust) repCustomers.push(repCust);
+
+          this.checkRepairBillingForTankOwner(b, repCustomers);
+
         });
-        repCustomers.map(c=>{
-         
-            c.items?.map(i=>{
-               var total:number=0;
-               total = Number(i.clean_cost||0)+Number(i.gateio_cost||0)+Number(i.lolo_cost||0)+Number(i.preins_cost||0)
-                      +Number(i.storage_cost||0)+Number(i.repair_cost||0)+Number(i.residue_cost||0)+Number(i.steam_cost||0)
-                      ;
-              i.total= total.toFixed(2);
-  
+            repCustomers.map(c=>{
+            
+                c.items?.map(i=>{
+                  var total:number=0;
+                  total = Number(i.clean_cost||0)+Number(i.gateio_cost||0)+Number(i.lolo_cost||0)+Number(i.preins_cost||0)
+                          +Number(i.storage_cost||0)+Number(i.repair_cost||0)+Number(i.residue_cost||0)+Number(i.steam_cost||0)
+                          ;
+                  i.total= total.toFixed(2);
+      
+                });
+      
             });
-  
-        });
-      if(reportType===1)
-      {
-        this.onExportSummary(repCustomers);
-      }
-      else if(reportType==2)
-      {
-        this.onExportDetail_Cost(repCustomers);
+          if(reportType===1)
+          {
+            this.onExportSummary(repCustomers);
+          }
+          else if(reportType==2)
+          {
+            this.onExportDetail_Cost(repCustomers);
 
-      }
-
+          }
+    });
       
   
     }
@@ -958,14 +1029,14 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
             repCust.customer=this.ccDS.displayName(sot.customer_company);
            }
            this.calculateRepairCost(sot,repCust.items!,1);
-           if(newCust) repCustomers.push(repCust);
+           if(newCust && repCust.items?.length) repCustomers.push(repCust);
 
     }
   
-    createReportBillingItem(b:StoringOrderTankItem,rbItm:report_billing_item[]):report_billing_item[]
+     createReportBillingItem_R1(b:StoringOrderTankItem,rbCust:report_billing_customer)
     {
-      var repBillItems:report_billing_item[]=rbItm;
-      var repBillingItm:report_billing_item= new report_billing_item();
+      var repBillItems:report_billing_item[]=rbCust.items||[];
+      //var repBillingItm:report_billing_item= new report_billing_item();
   
       // if(b.cleaning?.length!>0) this.calculateCleaningCost(b.cleaning!,repBillItems);
       //if(b.repair?.length!>0) this.calculateRepairCost(b.repair!,repBillItems);
@@ -976,6 +1047,25 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       if(b.repair?.length!>0) this.calculateRepairCost(b,repBillItems);
       if(b.residue?.length!>0) this.calculateResidueCost(b,repBillItems);
       if(b.steaming?.length!>0) this.calculateSteamingCost(b,repBillItems);
+      if(b.billing_sot?.length!>0) this.calculateBillingSOT(b,repBillItems);
+      rbCust.items=repBillItems||[];
+      //return repBillItems;
+  
+    }
+   async createReportBillingItem(b:StoringOrderTankItem,rbItm:report_billing_item[]):Promise<report_billing_item[]>
+    {
+      var repBillItems:report_billing_item[]=rbItm;
+      //var repBillingItm:report_billing_item= new report_billing_item();
+  
+      // if(b.cleaning?.length!>0) this.calculateCleaningCost(b.cleaning!,repBillItems);
+      //if(b.repair?.length!>0) this.calculateRepairCost(b.repair!,repBillItems);
+      // if(b.residue?.length!>0) this.calculateResidueCost(b.residue!,repBillItems);
+      // if(b.steaming?.length!>0) this.calculateSteamingCost(b.steaming!,repBillItems);
+      //if(b.billing_sot?.length!>0) this.calculateBillingSOT(b.billing_sot!,repBillItems);
+      if(b.cleaning?.length!>0) this.calculateCleaningCost(b,repBillItems);
+      if(b.repair?.length!>0) this.calculateRepairCost(b,repBillItems);
+      if(b.residue?.length!>0) this.calculateResidueCost(b,repBillItems);
+      if(b.steaming?.length!>0) await this.calculateSteamingCost(b,repBillItems);
       if(b.billing_sot?.length!>0) this.calculateBillingSOT(b,repBillItems);
   
       return repBillItems;

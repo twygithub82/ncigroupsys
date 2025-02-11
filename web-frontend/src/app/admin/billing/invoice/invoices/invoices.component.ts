@@ -416,8 +416,9 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
          }
    
        if (this.searchForm!.get('customer_code')?.value) {
-         if(!where.customer_company) where.customer_company={};
-         where.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
+         if(!where.storing_order) where.storing_order={};
+         where.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
+        // where.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
          // where.storing_order_tank={customer_company:{code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
        }
    

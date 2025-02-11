@@ -2905,6 +2905,7 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
           approve_by
           approve_dt
           delete_dt
+          status_cv
           guid
           customer_billing_guid
           steaming_part(where: { delete_dt: { eq: null } }) {
