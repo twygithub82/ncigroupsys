@@ -1279,7 +1279,6 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       let sot: StoringOrderTank = new StoringOrderTank(this.out_gate?.tank);
       sot.unit_type_guid = this.surveyForm.get('tank_details.unit_type_guid')?.value;
       sot.owner_guid = this.surveyForm.get('tank_details.owner_guid')?.value;
-      sot.last_release_dt = Utility.convertDate(new Date(), false, true) as number;
 
       let og: any = new OutGateGO(this.out_gate!);
       og.out_gate_survey = undefined;
