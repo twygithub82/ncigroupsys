@@ -429,26 +429,40 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     this.reSelection.clear();
     this.calculateTotalCost();
 
-
+    where.repair={some:{and:[]}};
+    
+    
     if(this.searchForm!.get('invoiced')?.value)
      {
            where.or=[{repair:{some:{customer_billing_guid:{neq: null}}}},{repair:{some:{owner_billing_guid:{neq: null}}}}];
      }
 
+     if (this.searchForm!.get('inv_no')?.value) {
+      where.repair.some.and.push({or:[
+        {customer_billing:{invoice_no:{contains: this.searchForm!.get('inv_no')?.value}}},
+        {owner_billing:{invoice_no:{contains: this.searchForm!.get('inv_no')?.value}}}
+      ]});
+    
+    // where.customer_billing.invoice_no =  {contains: this.searchForm!.get('inv_no')?.value };
+   }
+
     if(this.searchForm!.get('estimate_status_cv')?.value?.length)
     {
-      where.repair={some:{and:[ 
-        {status_cv:{in:this.searchForm!.get('estimate_status_cv')?.value}},
-        {or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]}
-      ]}}; 
+      where.repair.some.and.push( {status_cv:{in:this.searchForm!.get('estimate_status_cv')?.value}},
+      {or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]});
+      // where.repair={some:{and:[ 
+      //   {status_cv:{in:this.searchForm!.get('estimate_status_cv')?.value}},
+      //   {or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]}
+      // ]}}; 
     }
     else
     {
-        where.repair={some:{and:[ 
-          //{status_cv:{in:['COMPLETED','APPROVED','ASSIGNED','PARTIAL_ASSIGNED','JOB_IN_PROGRESS','QC_COMPLETED']}},
-          {status_cv:{in:this.availableProcessStatus}},
-          {or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]}
-        ]}}; 
+      where.repair.some.and.push({status_cv:{in:this.availableProcessStatus}},{or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]});
+        // where.repair={some:{and:[ 
+        //   //{status_cv:{in:['COMPLETED','APPROVED','ASSIGNED','PARTIAL_ASSIGNED','JOB_IN_PROGRESS','QC_COMPLETED']}},
+        //   {status_cv:{in:this.availableProcessStatus}},
+        //   {or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]}
+        // ]}}; 
     }
    // where.bill_to_guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
@@ -869,7 +883,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         billingEstimateRequests.push(billingEstReq);
         //return { ...cln, action:'' };
         });
-      const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
+      const existingGuids = new Set(billingEstimateRequests.map((item: { process_guid: any; }) => item.process_guid));
       this.reSelection.selected.forEach(cln=>{
         if(!existingGuids.has(cln.guid))
         {
@@ -881,7 +895,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
           billingEstimateRequests.push(billingEstReq);
         }
       })
-      this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+      this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
         if(result.data.updateBilling)
         {
           this.handleSaveSuccess(result.data.updateBilling);
@@ -1064,7 +1078,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     {
        res.repair?.forEach(r=>{
           let repEst:any=r;
-          let resultTotalCost=this.repDS.calculateCost(r,r.repair_part!,0);
+          let resultTotalCost=this.repDS.calculateCost(r,r.repair_part!,r.labour_cost);
           repEst.invoiced=(r.customer_billing_guid)?true:false;
           repEst.net_cost=resultTotalCost.net_lessee_cost;
        });
@@ -1080,7 +1094,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
      let r :any=row;
      if(r.type==1)
      {
-       let resultTotalCost=this.repDS.calculateCost(r,r.repair_part!,0);
+      r.labour_cost
+       let resultTotalCost=this.repDS.calculateCost(r,r.repair_part!,r.labour_cost);
         r.invoiced=(r.customer_billing_guid)?true:false;
         r.net_cost=resultTotalCost.net_lessee_cost;
      }
@@ -1088,7 +1103,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
      {
         const where = {
           and: [
-            { customer_company_guid: { eq: row.storing_order_tank?.storing_order?.customer_company?.guid } }
+            { customer_company_guid: { eq: row.storing_order_tank?.customer_company?.guid } }
           ]
         }
         this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
@@ -1151,7 +1166,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     let billingEstimateRequests:BillingEstimateRequest[]=[];
     billingEstimateRequests.push(billingEstReq);
    
-    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+    this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
       if(result.data.updateBilling)
       {
         this.handleSaveSuccess(result.data.updateBilling);
@@ -1246,7 +1261,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
            billingEstimateRequests.push(billingEstReq);
          });
         
-         this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+         this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
            if(result.data.updateBilling)
            {
              this.handleSaveSuccess(result.data.updateBilling);

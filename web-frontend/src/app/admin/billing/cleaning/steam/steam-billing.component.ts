@@ -422,6 +422,12 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       where.storing_order_tank.tank_no =  {contains: this.searchForm!.get('tank_no')?.value };
     }
 
+    if (this.searchForm!.get('inv_no')?.value) {
+      if(!where.customer_billing) where.customer_billing={};
+     // if(!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no={};
+    
+     where.customer_billing.invoice_no =  {contains: this.searchForm!.get('inv_no')?.value };
+   }
 
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -457,13 +463,8 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}
         ]}
       }});
-      // where.storing_order_tank.in_gate = { some:{
-      //   and:[
-      //     {eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-      //     {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}
-      //   ]}
-      // };
     }
+    
     if (this.searchForm!.get('eir_no')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
       if(!where.storing_order_tank.or)where.storing_order_tank.or=[];
@@ -756,7 +757,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
           billingEstimateRequests.push(billingEstReq);
         });
        
-        this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+        this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
           if(result.data.updateBilling)
           {
             this.handleSaveSuccess(result.data.updateBilling);
@@ -832,7 +833,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
          return billingEstReq;
          //return { ...cln, action:'' };
          });
-       const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
+       const existingGuids = new Set(billingEstimateRequests.map((item: { process_guid: any; }) => item.process_guid));
        this.selection.selected.forEach(cln=>{
          if(!existingGuids.has(cln.guid))
          {
@@ -844,7 +845,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
            billingEstimateRequests.push(billingEstReq);
          }
        })
-       this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+       this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
          if(result.data.updateBilling)
          {
            this.handleSaveSuccess(result.data.updateBilling);
@@ -1078,7 +1079,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     let billingEstimateRequests:BillingEstimateRequest[]=[];
     billingEstimateRequests.push(billingEstReq);
    
-    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+    this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
       if(result.data.updateBilling)
       {
         this.handleSaveSuccess(result.data.updateBilling);

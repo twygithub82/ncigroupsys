@@ -640,7 +640,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
           billingEstimateRequests.push(billingEstReq);
         });
        
-        this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+        this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
           if(result.data.updateBilling)
           {
             this.handleSaveSuccess(result.data.updateBilling);
@@ -842,7 +842,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     let billingEstimateRequests:BillingEstimateRequest[]=[];
     billingEstimateRequests.push(billingEstReq);
    
-    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+    this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
       if(result.data.updateBilling)
       {
         this.handleSaveSuccess(result.data.updateBilling);

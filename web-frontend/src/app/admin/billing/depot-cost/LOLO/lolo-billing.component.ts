@@ -489,10 +489,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.subs.sink = this.billDS.searchBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.billSotList = data;
-        this.endCursor = this.resDS.pageInfo?.endCursor;
-        this.startCursor = this.resDS.pageInfo?.startCursor;
-        this.hasNextPage = this.resDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.resDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.billDS.pageInfo?.endCursor;
+        this.startCursor = this.billDS.pageInfo?.startCursor;
+        this.hasNextPage = this.billDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.billDS.pageInfo?.hasPreviousPage ?? false;
         // this.calculateResidueTotalCost();
         this.checkInvoicedAndTotalCost();
         this.distinctCustomerCodes= [... new Set(this.billSotList.map(item=>item.storing_order_tank?.storing_order?.customer_company?.code))];
@@ -735,7 +735,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
          billingEstimateRequests.push(billingEstReq);
        });
       
-       this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+       this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
          if(result.data.updateBilling)
          {
            this.handleSaveSuccess(result.data.updateBilling);
@@ -824,7 +824,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
           billingEstimateRequests.push(billingEstReq);
         }
       })
-      this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+      this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
         if(result.data.updateBilling)
         {
           this.handleSaveSuccess(result.data.updateBilling);
@@ -993,7 +993,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     let billingEstimateRequests:BillingEstimateRequest[]=[];
     billingEstimateRequests.push(billingEstReq);
    
-    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+    this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
       if(result.data.updateBilling)
       {
         this.handleSaveSuccess(result.data.updateBilling);

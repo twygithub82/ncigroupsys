@@ -981,7 +981,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
             if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
             rep_bill_item.repair_est_no +=1;
             const totalCost = this.repDS.calculateCost(c,c.repair_part!,c.labour_cost);
-            rep_bill_item.repair_cost  = Number(Number( rep_bill_item?.repair_cost||0)+(CustomerType==0?Number(totalCost.total_lessee_mat_cost||0):Number(totalCost.total_owner_cost||0))).toFixed(2);
+            rep_bill_item.repair_cost  = Number(Number( rep_bill_item?.repair_cost||0)+(CustomerType==0?Number(totalCost.net_lessee_cost||0):Number(totalCost.net_owner_cost||0))).toFixed(2);
             if(newItem)rep_bill_items.push(rep_bill_item);
             
           });

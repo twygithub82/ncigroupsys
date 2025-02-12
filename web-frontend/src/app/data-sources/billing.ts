@@ -399,6 +399,9 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
           }
           repair_customer {
             customer_billing_guid
+            labour_cost
+            labour_cost_discount
+            material_cost_discount
             delete_dt
             guid
             owner_billing_guid
@@ -423,6 +426,9 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
           }
           repair_owner {
             customer_billing_guid
+            labour_cost
+            labour_cost_discount
+            material_cost_discount
             delete_dt
             guid
             owner_billing_guid
@@ -1180,7 +1186,7 @@ export class BillingDS extends BaseDataSource<BillingItem> {
     });
   }
 
-  updateBilling(updateBilling: any,billingEstimateRequests:any): Observable<any> {
+  _updateBilling(updateBilling: any,billingEstimateRequests:any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_BILLING,
       variables: {

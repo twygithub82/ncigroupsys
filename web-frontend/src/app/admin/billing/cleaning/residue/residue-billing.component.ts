@@ -408,7 +408,13 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       where.storing_order_tank.tank_status_cv=cond;
     }
 
+    if (this.searchForm!.get('inv_no')?.value) {
+      if(!where.customer_billing) where.customer_billing={};
+     // if(!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no={};
     
+     where.customer_billing.invoice_no =  {contains: this.searchForm!.get('inv_no')?.value };
+   }
+
     if (this.searchForm!.get('tank_no')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
       if(!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no={};
@@ -745,7 +751,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
        billingEstimateRequests.push(billingEstReq);
      });
     
-     this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+     this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
        if(result.data.updateBilling)
        {
          this.handleSaveSuccess(result.data.updateBilling);
@@ -821,7 +827,8 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         return billingEstReq;
         //return { ...cln, action:'' };
         });
-      const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
+        const existingGuids = new Set(billingEstimateRequests.map((item: { process_guid: any; }) => item.process_guid));
+      //const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
       this.selection.selected.forEach(cln=>{
         if(!existingGuids.has(cln.guid))
         {
@@ -833,7 +840,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
           billingEstimateRequests.push(billingEstReq);
         }
       })
-      this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+      this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
         if(result.data.updateBilling)
         {
           this.handleSaveSuccess(result.data.updateBilling);
@@ -1002,7 +1009,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     let billingEstimateRequests:BillingEstimateRequest[]=[];
     billingEstimateRequests.push(billingEstReq);
    
-    this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
+    this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
       if(result.data.updateBilling)
       {
         this.handleSaveSuccess(result.data.updateBilling);

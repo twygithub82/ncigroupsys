@@ -529,10 +529,10 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
           rep_bill_item.in_date=Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
           rep_bill_item.eir_no=in_gates?.[0]?.eir_no;
         }
-      if(out_gates?.length) {
-        rep_bill_item.out_date=Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
-        rep_bill_item.eir_no=out_gates?.[0]?.eir_no;
-      }
+      // if(out_gates?.length) {
+      //   rep_bill_item.out_date=Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
+      //   rep_bill_item.eir_no=out_gates?.[0]?.eir_no;
+      // }
 
       return rep_bill_item;
    }
@@ -989,6 +989,11 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
                 });
       
             });
+
+             if (this.searchForm!.get('customer_code')?.value) {
+              repCustomers= repCustomers.filter(c=>c.guid===this.searchForm!.get('customer_code')?.value.guid);
+             }
+
           if(reportType===1)
           {
             this.onExportSummary(repCustomers);
