@@ -826,8 +826,8 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "admin/billing",
     title: "MENUITEMS.BILLING.TEXT",
-    iconType: "material",
-    icon: "whatshot",
+    iconType: "fas",
+    icon: "fas fa-file-invoice-dollar",
     class: "menu-toggle",
     groupTitle: false,
     badge: "",

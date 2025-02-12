@@ -129,8 +129,8 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public survey_detail?: SurveyDetailItem[];
   public transfer?: TransferItem[];
   public actions?: string[] = [];
-  public billing_sot?:BillingSOTItem[]=[];
-  public tank_info?:TankInfoItem;
+  public billing_sot?: BillingSOTItem[] = [];
+  public tank_info?: TankInfoItem;
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
     super(item);
@@ -148,8 +148,8 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.survey_detail = item.survey_detail;
     this.transfer = item.transfer;
     this.actions = item.actions || [];
-    this.billing_sot=item.billing_sot||[];
-    this.tank_info=item.tank_info;
+    this.billing_sot = item.billing_sot || [];
+    this.tank_info = item.tank_info;
   }
 }
 
@@ -2259,6 +2259,32 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
           create_dt
           delete_dt
         }
+        billing_sot {
+          create_by
+          create_dt
+          delete_dt
+          free_storage
+          gate_in_cost
+          gate_out_cost
+          gateio_billing_guid
+          guid
+          lift_off
+          lift_off_cost
+          lift_on
+          lift_on_cost
+          lolo_billing_guid
+          preinsp_billing_guid
+          preinspection
+          preinspection_cost
+          remarks
+          sot_guid
+          storage_billing_guid
+          storage_cal_cv
+          storage_cost
+          tariff_depot_guid
+          update_by
+          update_dt
+        }
       }
       pageInfo {
         endCursor
@@ -2815,7 +2841,6 @@ const ON_SOT_PURPOSE_CHANGE_SUBSCRIPTION = gql`
   }
 `;
 
-
 const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -2946,8 +2971,7 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
             owner
           }
         }
-        billing_sot
-        {
+        billing_sot {
           delete_dt
           free_storage
           gate_in_cost
@@ -3827,7 +3851,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   isCustomerSameAsOwner(sot?: StoringOrderTankItem): boolean {
     return !!(sot && sot.owner_guid === sot.storing_order?.customer_company_guid);
   }
-  
+
   displayTankPurpose(sot: StoringOrderTankItem, getPurposeOptionDescription: (code: string | undefined) => string | undefined) {
     let purposes: any[] = [];
     if (sot?.purpose_storage) {
