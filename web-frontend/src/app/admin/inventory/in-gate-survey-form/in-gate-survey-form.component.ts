@@ -1147,7 +1147,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         walkway_cv: ig.in_gate_survey?.walkway_cv || ig.tank?.tank_info?.walkway_cv,
         tank_comp_guid: ig.in_gate_survey?.tank_comp_guid || ig.tank?.tank_info?.tank_comp_guid,
         comments: ig.in_gate_survey?.comments,
-        last_release_dt: ig.tank?.last_release_dt,
+        last_release_dt: ig.tank?.last_release_dt || ig.tank?.tank_info?.last_release_dt,
       },
       periodic_test: {
         last_test_cv: ig.in_gate_survey?.last_test_cv || ig.tank?.tank_info?.last_test_cv,
