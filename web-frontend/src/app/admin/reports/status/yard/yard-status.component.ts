@@ -888,6 +888,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
             case "STEAM":
               yard.noTank_steam!+=1;
               break;
+            case "OFFHIRE":
             case "REPAIR":
               yard.noTank_repair!+=1;
               break;
@@ -897,8 +898,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
             case "STORAGE":
               yard.noTank_storage!+=1;
               break;
-            case "OFFHIRE":
-              yard.noTank_offhire!+=1;
+            case "IN_SURVEY":
+              yard.noTank_in_survey!+=1;
               break;
          }
          yard.storing_order_tank?.push(s);

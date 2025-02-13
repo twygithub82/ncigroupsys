@@ -327,7 +327,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   chunkedDamageCodeCvList: any[][] = [];
   repairCodeCvList: CodeValuesItem[] = [];
   chunkedRepairCodeCvList: any[][] = [];
-  unitTypeCvList: CodeValuesItem[] = [];
+  yardCvList: CodeValuesItem[] = [];
 
   scale = 2.5;
   imageQuality = 0.7;
@@ -388,6 +388,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   public loadData() {
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'yardCv', codeValType: 'YARD' },
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       // { alias: 'yardCv', codeValType: 'YARD' },
@@ -397,6 +398,13 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
       this.processHorizontalBarValue(this.report_summary_status);
+      
+    });
+
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      this.yardCvList = data;
+      this.processTankStatus(this.report_summary_status);
+      
     });
  
     
@@ -413,7 +421,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
       // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      // { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+       { alias: 'yardCv', codeValType: 'YARD' },
     ];
 
     await this.cvDS.getCodeValuesByTypeAsync(queries);
@@ -452,6 +460,11 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
    
       firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
         this.purposeOptionCvList = data || [];
+        
+      }),
+
+      firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
+        this.yardCvList = data || [];
         
       }),
       
@@ -898,18 +911,58 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
      return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.SUMMARY_REPORT}`
    }
 
+   processCustomerStatus(repStatus:report_status[])
+   {
+    const topTenReports = repStatus
+    .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
+    .slice(0, 10); // Get the top 10
+
+    var categories:any =[
+    ];
+    this.purposeOptionCvList.map(p=>{
+        
+      categories.push({code:p.code_val,name:p.description });
+    });
+
+   }
+   processTankStatus(repStatus:report_status[])
+   {
+    var yardInfo:any =[
+    ];
+    this.yardCvList.map(p=>{
+        
+      yardInfo.push({code:p.code_val,name:p.description,value:0 });
+    });
+    repStatus.map(r=>{
+      r.yards?.map(y=>{
+        var yInfo = yardInfo.find((i:{ code: string,name:string,value:number })=>(i.code===y.code ));
+
+        yInfo.value += Number(y.noTank_repair)+Number(y.noTank_steam)+Number(y.noTank_clean)+Number(y.noTank_storage)+Number(y.noTank_in_survey);
+      });
+    });
+    var labels:any=[];
+    var series:any=[];
+    yardInfo.forEach((y:{ code: string,name:string,value:number })=>{
+      labels.push(y.name);
+      series.push(y.value);
+    });
+
+     this.pieChartOptions.labels=labels;
+     this.pieChartOptions.series2=series;
+   }
+
    processHorizontalBarValue(repStatus:report_status[])
    {
       var singleValues:any =[
       ];
       this.purposeOptionCvList.map(p=>{
-
+          
           singleValues.push({name:p.description,value:0 });
       });
       repStatus.map(r=>{
         r.yards?.map(y=>{
         this.purposeOptionCvList.map(p=>{
-          var s = singleValues.find((g:{ name: string })=>g.name===p.description);
+          var s = singleValues.find((g:{ name: string })=>(g.name===p.description ));
           if(s)
           {
             switch(p.code_val)
@@ -920,14 +973,15 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
               case "CLEANING":
                 s.value +=y.noTank_clean;
                 break;
+              case "OFFHIRE":
               case "REPAIR":
                 s.value +=y.noTank_repair;
                 break;
               case "STORAGE":
                 s.value +=y.noTank_storage;
                 break;
-              case "OFFHIRE":
-                s.value +=y.noTank_offhire;
+              case "IN_SURVEY":
+                s.value +=y.noTank_in_survey;
                 break;
             }
           }
@@ -937,7 +991,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
           //let s = singleValues.find(s=>s.name===r.)
       });
 
-      this.horizontalBarOptions.single=singleValues;
+      this.horizontalBarOptions.single=singleValues.filter((s:{name:string})=>s.name!="Offhire");
 
    }
    InitialDefaultData()

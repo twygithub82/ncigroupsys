@@ -41,7 +41,7 @@ export class report_status_yard{
     noTank_clean?:number=0;
     noTank_storage?:number=0;
     noTank_steam?:number=0;
-    noTank_offhire?:number=0;
+    noTank_in_survey?:number=0;
     storing_order_tank?:StoringOrderTankItem[];
 
     constructor(item: Partial<report_status_yard> = {}) {
