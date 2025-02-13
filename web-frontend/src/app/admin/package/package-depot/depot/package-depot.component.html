@@ -24,46 +24,7 @@
                 </mat-expansion-panel-header>
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <form class="ms-0" [formGroup]="pcForm!"  #formDirective="ngForm">
-                    <!-- <div class="row">
-                      <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-                            <mat-select [formControl]="customerCodeControl" formControlName="customer_code" multiple>
-                                <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
-                                 
-                                  <ng-container *ngIf="cc !== null">
-                                    {{ ccDS.displayName(cc) }}
-                                  </ng-container>
-                                 
-                                </mat-option>
-                              </mat-select>
-                           
-                        </mat-form-field>
-                        
-                      </div>
-                      <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
-                            <mat-select [formControl]="profileNameControl" formControlName="profile_name" multiple>
-                                <mat-option *ngFor="let cc of tariffDepotDS.connect() | async" [value]="cc">
-                                   
-                                  <ng-container *ngIf="cc !== null">
-                                    {{ cc.profile_name }}
-                                  </ng-container>
-                                    
-                                 
-                                </mat-option>
-                              </mat-select>
-                           
-                        </mat-form-field>
-                        
-                      </div> 
-                      
-                      <button mat-mini-fab color="primary" (click)="search()" style="margin-top: 10px; margin-left:15px">
-                        <mat-icon>search</mat-icon>
-                      </button>
-                    
-                    </div> -->
+                   
                     <div class="row">
                       <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                         <mat-form-field class="example-full-width">

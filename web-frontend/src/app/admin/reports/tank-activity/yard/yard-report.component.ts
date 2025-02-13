@@ -396,9 +396,11 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     
     var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
     
+    where.tank_status_cv = {neq:'RELEASED'};
     if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
     {
        queryType=2;
+       where.tank_status_cv = {eq:'RELEASED'};
     }
 
     if (this.searchForm!.get('tank_no')?.value) {
@@ -602,6 +604,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
+    this.noCond=false;
   }
 
   isAllSelected() {
