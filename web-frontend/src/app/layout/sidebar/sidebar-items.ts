@@ -1040,7 +1040,8 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
-        submenu: []
+        submenu: [],
+        visible: false
       },
       {
         path: "admin/reports/status",
@@ -1051,7 +1052,8 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
-        submenu: []
+        submenu: [],
+        visible: false
       },
       {
         path: "admin/steam/approval",
@@ -1099,7 +1101,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: true
+        visible: false
       }
     ].filter(item => item.visible !== false),
   },
