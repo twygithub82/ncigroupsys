@@ -1613,7 +1613,7 @@
                                 <td class="table-col-4">{{translatedLangText.PRE_INSPECTION}}</td>
                                 <td class="table-col-4">{{sot?.preinspect_job_no || "-"}}</td>
                                 <td class="table-col-1 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.[0]?.preinspection_cost) {
+                                  @if (sot?.billing_sot?.preinspection_cost) {
                                   <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                   }
                                   @else {
@@ -1631,7 +1631,7 @@
                                 <td class="table-col-4">{{translatedLangText.LIFT_OFF}}</td>
                                 <td class="table-col-4">{{sot?.liftoff_job_no || "-"}}</td>
                                 <td class="table-col-1 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.[0]?.lolo_billing_guid) {
+                                  @if (sot?.billing_sot?.lolo_billing_guid) {
                                   <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                   }
                                   @else {
@@ -1649,7 +1649,7 @@
                                 <td class="table-col-4">{{translatedLangText.LIFT_ON}}</td>
                                 <td class="table-col-4">{{sot?.lifton_job_no || "-"}}</td>
                                 <td class="table-col-1 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.[0]?.lolo_billing_guid) {
+                                  @if (sot?.billing_sot?.lolo_billing_guid) {
                                   <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                   }
                                   @else {
@@ -1667,7 +1667,7 @@
                                 <td class="table-col-4">{{translatedLangText.TAKE_IN_REFERENCE}}</td>
                                 <td class="table-col-4">{{sot?.takein_job_no || "-"}}</td>
                                 <td class="table-col-1 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.[0]?.gateio_billing_guid) {
+                                  @if (sot?.billing_sot?.gateio_billing_guid) {
                                   <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                   }
                                   @else {
@@ -1685,7 +1685,7 @@
                                 <td class="table-col-4">{{translatedLangText.RELEASE_REFERENCE}}</td>
                                 <td class="table-col-4">{{sot?.release_job_no || "-"}}</td>
                                 <td class="table-col-1 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.[0]?.gateio_billing_guid) {
+                                  @if (sot?.billing_sot?.gateio_billing_guid) {
                                   <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                   }
                                   @else {
@@ -1735,65 +1735,7 @@
                               </tr>
                             </tbody>
                           </table>
-                          <!-- <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-1 m-b-0 border text-center bg-light-grey d-flex">
-                              <span class="font-bold table-label">{{translatedLangText.STORAGE_BILLING_DETAILS}}</span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.BILLING_PROFILE}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{pdItem?.tariff_depot?.description}}</span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.STORAGE_CALCULATE_BY}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{getStorageCalDescription(pdItem?.storage_cal_cv) ??
-                                "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.FREE_STORAGE_DAYS}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{pdItem?.free_storage || "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.STORAGE_BEGIN_DATE}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) ||
-                                "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.STORAGE_BILLED_UNTIL}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) ||
-                                "-"}}</span>
-                            </div>
-                          </div> -->
+                       
                         </div>
                       </div>
                     </mat-card-content>

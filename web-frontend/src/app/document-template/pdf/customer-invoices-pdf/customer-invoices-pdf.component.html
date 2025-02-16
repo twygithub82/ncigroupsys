@@ -28,33 +28,33 @@
       </div> -->
       <table id="repair-part-table" class="repair-part-table">
         <tr class="group-header">
-          <th>{{translatedLangText.NO}}</th>
-          <th>{{translatedLangText.JOB_NO}}</th>
-          <th>{{translatedLangText.TANK_NO}}</th>
-          <th>{{translatedLangText.EIR_NO}}</th>
-          <th>{{translatedLangText.LAST_CARGO}}</th>
-          <th>{{translatedLangText.IN_DATE}}</th>
-          <th>{{translatedLangText.OUT_DATE}}</th>
-          <th>{{translatedLangText.CLEAN_COST}}</th>
-          <th>{{translatedLangText.REPAIR_COST}}</th>
-          <th>{{translatedLangText.PREINSP_COST}}</th>
-          <th>{{translatedLangText.LOLO_COST}}</th>
-          <th>{{translatedLangText.DAYS}}</th>
-          <th>{{translatedLangText.STORAGE_COST}}</th>
-          <th>{{translatedLangText.STEAM_COST}}</th>
-          <th>{{translatedLangText.RESIDUE_COST}}</th>
-          <th>{{translatedLangText.GATEIO}}</th>
-          <th>{{translatedLangText.TOTAL}}</th>
+          <th class="th-w2">{{translatedLangText.NO}}</th>
+          <th class="th-w5">{{translatedLangText.JOB_NO}}</th>
+          <th class="th-w8">{{translatedLangText.TANK_NO}}</th>
+          <th class="th-w8">{{translatedLangText.EIR_NO}}</th>
+          <th class="th-w12">{{translatedLangText.LAST_CARGO}}</th>
+          <th class="th-w6">{{translatedLangText.IN_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.OUT_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.CLEAN_COST}}</th>
+          <th class="th-w6">{{translatedLangText.REPAIR_COST}}</th>
+          <th class="th-w7">{{translatedLangText.PREINSP_COST}}</th>
+          <th class="th-w6">{{translatedLangText.LOLO_COST}}</th>
+          <th class="th-w3">{{translatedLangText.DAYS}}</th>
+          <th class="th-w6">{{translatedLangText.STORAGE_COST}}</th>
+          <th class="th-w6">{{translatedLangText.STEAM_COST}}</th>
+          <th class="th-w7">{{translatedLangText.RESIDUE_COST}}</th>
+          <th class="th-w6">{{translatedLangText.GATEIO_S}}</th>
+          <th class="th-w8">{{translatedLangText.TOTAL}}</th>
         </tr>
         @for (itm of bCust.items; track itm;let index = $index) {
-          <tr>
+          <tr class="fixed_height_40px">
             <td>{{ index + 1 }}</td> <!-- Row number -->
-            <td>{{ itm.job_no }}</td> 
-            <td>{{ itm.tank_no }}</td> 
-            <td>{{ itm.eir_no }}</td> 
-            <td>{{ itm.last_cargo }}</td> 
-            <td>{{ itm.in_date }}</td> 
-            <td>{{ itm.out_date }}</td> 
+            <td><span class="overflow-text">{{ itm.job_no }}</span></td> 
+            <td><span class="overflow-text">{{ itm.tank_no }}</span></td> 
+            <td><span class="overflow-text">{{ itm.eir_no }}</span></td> 
+            <td><span class="overflow-text"  matTooltip={{itm.last_cargo}}>{{ itm.last_cargo }}</span></td> 
+            <td><span class="overflow-text">{{ itm.in_date }}</span></td> 
+            <td><span class="overflow-text">{{ itm.out_date }}</span></td> 
             <td>{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
             <td>{{ (itm.repair_cost==="0.00"?'':itm.repair_cost) }}</td> 
             <td>{{ (itm.preins_cost==="0.00"?'':itm.preins_cost) }}</td> 

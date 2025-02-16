@@ -179,7 +179,7 @@ export class BillingSOTGo{
   public storage_billing_guid?:string;
   public storage_cal_cv?:string;
   public storage_cost?:number;
-  public tariff_depot_guid?:string;
+ // public tariff_depot_guid?:string;
 
   public create_dt?: number;
   public create_by?: string;
@@ -208,7 +208,7 @@ export class BillingSOTGo{
     this.storage_billing_guid=item.storage_billing_guid;
     this.storage_cal_cv=item.storage_cal_cv;
     this.storage_cost=item.storage_cost;
-    this.tariff_depot_guid=item.tariff_depot_guid;
+    //this.tariff_depot_guid=item.tariff_depot_guid;
     this.remarks=item.remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;

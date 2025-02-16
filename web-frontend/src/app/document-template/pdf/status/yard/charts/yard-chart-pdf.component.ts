@@ -434,35 +434,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
     // Wrap all alias connections in promises
     const promises = [
-      // firstValueFrom(this.cvDS.connectAlias('groupNameCv')).then(async data => {
-      //   this.groupNameCvList = data || [];
-      //   const subqueries: any[] = [];
-      //   data.map(d => {
-      //     if (d.child_code) {
-      //       let q = { alias: d.child_code, codeValType: d.child_code };
-      //       const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-      //       if (!hasMatch) {
-      //         subqueries.push(q);
-      //       }
-      //     }
-      //   });
-
-      //   // Process subqueries if any
-      //   if (subqueries.length > 0) {
-      //     await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
-
-      //     for (const s of subqueries) {
-      //       const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
-      //       if (subData) {
-      //         this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
-      //       }
-      //     }
-      //   }
-
-      // }),
-      // firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
-      //   this.yesnoCvList = data || [];
-      // }),
+     
    
       firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
         this.purposeOptionCvList = data || [];
@@ -925,49 +897,111 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
     var categories:any =[
     ];
-    this.purposeOptionCvList.map(p=>{
+    topTenReports.map(p=>{
         
-      categories.push({code:p.code_val,name:p.description });
+      categories.push(p.code);
     });
 
      var series:any=[];
 
-     topTenReports.forEach(t=>{
-       var code = t.code;
-       var values:number[]=[];
-       var totalTankNo:number=0; 
-       categories.forEach((c: { code: string; data: string }) =>{
+     this.purposeOptionCvList.map(c=>{
 
-        switch(c.code)
+      var values:number[]=[];
+      switch(c.code_val)
         {
           case "STEAM":
-            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_steam||0), 0)||0;
-            values.push(totalTankNo);
+               topTenReports.forEach(t=>{
+                var value:number =0;
+                 t.yards?.forEach(y=>{
+                    value+=Number(y.noTank_steam||0);
+                 });
+                 values.push(value);
+               });
+               series.push({name:c.description,data:values});
             break;
           case "CLEANING":
-            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_clean||0), 0)||0;
-            values.push(totalTankNo||0);
+            topTenReports.forEach(t=>{
+              var value:number =0;
+               t.yards?.forEach(y=>{
+                  value+=Number(y.noTank_clean||0);
+               });
+               values.push(value);
+             });
+             series.push({name:c.description,data:values});
             break;
           case "REPAIR":
-            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_repair||0), 0)||0;
-            values.push(totalTankNo||0);
+            topTenReports.forEach(t=>{
+              var value:number =0;
+               t.yards?.forEach(y=>{
+                  value+=Number(y.noTank_repair||0);
+               });
+               values.push(value);
+             });
+             series.push({name:c.description,data:values});
             break;
           case "STORAGE":
-            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_storage||0), 0)||0;
-            values.push(totalTankNo||0);
+            topTenReports.forEach(t=>{
+              var value:number =0;
+               t.yards?.forEach(y=>{
+                  value+=Number(y.noTank_storage||0);
+               });
+               values.push(value);
+             });
+             series.push({name:c.description,data:values});
             break;
           case "IN_SURVEY":
-            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_in_survey||0), 0)||0;
-            values.push(totalTankNo||0);
+            topTenReports.forEach(t=>{
+              var value:number =0;
+               t.yards?.forEach(y=>{
+                  value+=Number(y.noTank_in_survey||0);
+               });
+               values.push(value);
+             });
+             series.push({name:c.description,data:values});
             break;
         }
 
-       });
-       series.push({name:code,data:values});
+
+
+
      });
-    // this.columnChartOptions.series=series;
+
+    //  topTenReports.forEach(t=>{
+    //    var code = t.code;
+    //    var values:number[]=[];
+    //    var totalTankNo:number=0; 
+    //   //  categories.forEach((c: { code: string; data: string }) =>{
+
+    //   //   switch(c.code)
+    //   //   {
+    //   //     case "STEAM":
+    //   //       totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_steam||0), 0)||0;
+    //   //       values.push(totalTankNo);
+    //   //       break;
+    //   //     case "CLEANING":
+    //   //       totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_clean||0), 0)||0;
+    //   //       values.push(totalTankNo||0);
+    //   //       break;
+    //   //     case "REPAIR":
+    //   //       totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_repair||0), 0)||0;
+    //   //       values.push(totalTankNo||0);
+    //   //       break;
+    //   //     case "STORAGE":
+    //   //       totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_storage||0), 0)||0;
+    //   //       values.push(totalTankNo||0);
+    //   //       break;
+    //   //     case "IN_SURVEY":
+    //   //       totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_in_survey||0), 0)||0;
+    //   //       values.push(totalTankNo||0);
+    //   //       break;
+    //   //   }
+
+    //   //  });
+    //    series.push({name:code,data:values});
+    //  });
+     this.columnChartOptions.series=series;
      if (this.columnChartOptions.xaxis) {
-      //this.columnChartOptions.xaxis.categories = categories!;
+      this.columnChartOptions.xaxis.categories = categories!;
     }
 
    }

@@ -35,6 +35,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { report_billing_customer,report_billing_item } from 'app/data-sources/billing';
+import { MatTooltipModule } from '@angular/material/tooltip';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -63,7 +64,8 @@ export interface DialogData {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatTooltipModule
   ],
 })
 export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -249,7 +251,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     STORAGE_COST:'COMMON-FORM.STORAGE-COST-REPORT',
     REPORT_TITLE:'COMMON-FORM.PENDING-INVOICE-DETAIL-COST',
     CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE',
-    GATEIO:'COMMON-FORM.GATEIO'
+    GATEIO_S:'COMMON-FORM.GATEIO-S'
 
   }
 
