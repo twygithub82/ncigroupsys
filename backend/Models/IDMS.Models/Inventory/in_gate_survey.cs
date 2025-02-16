@@ -29,7 +29,7 @@ namespace IDMS.Models.Inventory
         public string? test_class_cv { get; set; }
         public long? dom_dt { get; set; }
         public long? inspection_dt { get; set; }
-        public long? last_release_dt { get; set; }
+        //public long? last_release_dt { get; set; }
         public string? manufacturer_cv { get; set; }
         public string? cladding_cv { get; set; }
         public string? max_weight_cv { get; set; }
