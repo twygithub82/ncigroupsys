@@ -396,14 +396,20 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
-      this.processHorizontalBarValue(this.report_summary_status);
-      
+      if(data.length)
+        {
+          this.purposeOptionCvList = data;
+          this.processHorizontalBarValue(this.report_summary_status);
+          this.processCustomerStatus(this.report_summary_status);
+        }
     });
 
     this.cvDS.connectAlias('yardCv').subscribe(data => {
-      this.yardCvList = data;
-      this.processTankStatus(this.report_summary_status);
+      if(data.length)
+      {
+        this.yardCvList = data;
+        this.processTankStatus(this.report_summary_status);
+      }
       
     });
  
@@ -924,6 +930,46 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       categories.push({code:p.code_val,name:p.description });
     });
 
+     var series:any=[];
+
+     topTenReports.forEach(t=>{
+       var code = t.code;
+       var values:number[]=[];
+       var totalTankNo:number=0; 
+       categories.forEach((c: { code: string; data: string }) =>{
+
+        switch(c.code)
+        {
+          case "STEAM":
+            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_steam||0), 0)||0;
+            values.push(totalTankNo);
+            break;
+          case "CLEANING":
+            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_clean||0), 0)||0;
+            values.push(totalTankNo||0);
+            break;
+          case "REPAIR":
+            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_repair||0), 0)||0;
+            values.push(totalTankNo||0);
+            break;
+          case "STORAGE":
+            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_storage||0), 0)||0;
+            values.push(totalTankNo||0);
+            break;
+          case "IN_SURVEY":
+            totalTankNo = t.yards?.reduce((sum, y) => sum + (y.noTank_in_survey||0), 0)||0;
+            values.push(totalTankNo||0);
+            break;
+        }
+
+       });
+       series.push({name:code,data:values});
+     });
+    // this.columnChartOptions.series=series;
+     if (this.columnChartOptions.xaxis) {
+      //this.columnChartOptions.xaxis.categories = categories!;
+    }
+
    }
    processTankStatus(repStatus:report_status[])
    {
@@ -936,8 +982,10 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     repStatus.map(r=>{
       r.yards?.map(y=>{
         var yInfo = yardInfo.find((i:{ code: string,name:string,value:number })=>(i.code===y.code ));
-
-        yInfo.value += Number(y.noTank_repair)+Number(y.noTank_steam)+Number(y.noTank_clean)+Number(y.noTank_storage)+Number(y.noTank_in_survey);
+        if(yInfo)
+        {
+           yInfo.value += Number(y.noTank_repair)+Number(y.noTank_steam)+Number(y.noTank_clean)+Number(y.noTank_storage)+Number(y.noTank_in_survey);
+        }
       });
     });
     var labels:any=[];
