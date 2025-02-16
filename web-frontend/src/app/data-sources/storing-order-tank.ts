@@ -323,7 +323,6 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
             test_dt
             walkway_cv
             capacity
-            last_release_dt
             take_in_reference
           }
         }
@@ -2791,7 +2790,6 @@ const GET_STORING_ORDER_TANKS_ACTIVITY = gql`
             test_dt
             walkway_cv
             capacity
-            last_release_dt
             take_in_reference
           }
         }
