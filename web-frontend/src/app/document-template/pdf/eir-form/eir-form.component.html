@@ -58,8 +58,9 @@
             <td class="td-col-2-25">{{translatedLangText.SO_DATE}}:
               <b>{{displayDate(eirDetails?.in_gate?.tank?.storing_order?.create_dt)}}</b>
             </td>
-            <td class="td-col-7-5" colspan="2">{{translatedLangText.LAST_RELEASE_DATE}}:
-              <b>{{displayDate(eirDetails?.in_gate?.tank?.last_release_dt)}}</b>
+            <td class="td-col-7-5" colspan="2">
+              {{translatedLangText.LAST_CARGO}}:
+              <b>{{eirDetails?.in_gate?.tank?.tariff_cleaning?.cargo}}</b>
             </td>
           </tr>
           <tr>
@@ -75,14 +76,18 @@
               {{translatedLangText.OPERATOR}}:<br><b>{{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b>
             </td>
             <td>{{translatedLangText.OWNER}}:<br><b>{{eirDetails?.in_gate?.tank?.customer_company?.name}}</b></td>
-            <td>{{translatedLangText.LAST_CARGO}}:<br><b>{{eirDetails?.in_gate?.tank?.tariff_cleaning?.cargo}}</b></td>
+            <td>
+              {{translatedLangText.LAST_RELEASE_DATE}}:<br>
+              <b>{{displayDate(eirDetails?.in_gate?.tank?.last_release_dt) || '-'}}</b>
+            </td>
             <td>{{translatedLangText.LAST_TEST}}:<br><b>{{last_test_desc}}</b></td>
           </tr>
           <tr>
             <td>{{translatedLangText.UNIT_TYPE}}:<br><b>{{eirDetails?.in_gate?.tank?.tank?.unit_type}}</b></td>
             <td>{{translatedLangText.CLADDING}}:<br><b>{{getCladdingDescription(eirDetails?.cladding_cv)}}</b></td>
             <td>
-              {{translatedLangText.MANUFACTURER_DOM}}:<br><b>{{getManufactureDescription(eirDetails?.manufacturer_cv)}} ({{displayDate(eirDetails?.dom_dt)}})</b>
+              {{translatedLangText.MANUFACTURER_DOM}}:<br><b>{{getManufactureDescription(eirDetails?.manufacturer_cv)}}
+                ({{displayDate(eirDetails?.dom_dt)}})</b>
             </td>
             <td>
               {{translatedLangText.TAKE_IN_STATUS}}:<br><b>{{getCleanStatusDescription(eirDetails?.in_gate?.tank?.clean_status_cv)}}</b>
@@ -241,32 +246,19 @@
       <table class="manlid-info w-50">
         <tbody>
           <tr class="th">
-            <td class="td-col-6">
+            <td class="td-col-7">
               <b>{{translatedLangText.BOTTOM_DIS_COMP}}</b>
-            </td>
-            <td class="td-col-1">
-              <b>{{translatedLangText.YES}}</b>
-            </td>
-            <td class="td-col-1">
-              <b>{{translatedLangText.NO}}</b>
             </td>
             <td class="td-col-4">
               <b>{{translatedLangText.SPECIFICATION}}</b>
+            </td>
+            <td class="td-col-1">
+              <b></b>
             </td>
           </tr>
           <tr>
             <td>
               {{translatedLangText.BOTTOM_DIS_COMP__ABB}}
-            </td>
-            <td>
-              @if (eirDetails?.btm_dis_comp_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.btm_dis_comp_cv) {
-              <mat-icon>checked</mat-icon>
-              }
             </td>
             <td>
               @for (codeValue of disCompCvList; track codeValue; let index = $index) {
@@ -278,19 +270,17 @@
               }
               }
             </td>
+            <td>
+              @if (eirDetails?.btm_dis_comp_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
+              }
+            </td>
           </tr>
           <tr>
             <td>{{translatedLangText.FOOT_VALVE}}</td>
-            <td>
-              @if (eirDetails?.foot_valve_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.foot_valve_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
             <td>
               @for (codeValue of footValveCvList; track codeValue; let index = $index) {
               <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.foot_valve_cv}">
@@ -301,19 +291,17 @@
               }
               }
             </td>
+            <td>
+              @if (eirDetails?.foot_valve_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
+              }
+            </td>
           </tr>
           <tr>
             <td>{{translatedLangText.BRAND}}</td>
-            <td>
-              @if (eirDetails?.btm_valve_brand_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.btm_valve_brand_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
             <td>
               @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
               <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.btm_valve_brand_cv}">
@@ -322,6 +310,14 @@
               @if (index + 1 !== valveBrandCvList.length) {
               /
               }
+              }
+            </td>
+            <td>
+              @if (eirDetails?.btm_valve_brand_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
               }
             </td>
           </tr>
@@ -340,16 +336,6 @@
               )
             </td>
             <td>
-              @if (eirDetails?.btm_dis_valve_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.btm_dis_valve_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
               @for (codeValue of disValveSpecCvList; track codeValue; let index = $index) {
               <span
                 [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.btm_dis_valve_spec_cv}">
@@ -358,6 +344,14 @@
               @if (index + 1 !== disValveSpecCvList.length) {
               /
               }
+              }
+            </td>
+            <td>
+              @if (eirDetails?.btm_dis_valve_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
               }
             </td>
           </tr>
@@ -371,16 +365,6 @@
               )
             </td>
             <td>
-              @if (eirDetails?.thermometer) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.thermometer) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
               @for (codeValue of thermometerCvList; track codeValue; let index = $index) {
               <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.thermometer_cv}">
                 {{codeValue.description}}
@@ -390,62 +374,53 @@
               }
               }
             </td>
+            <td>
+              @if (eirDetails?.thermometer) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
+              }
+            </td>
           </tr>
           <tr>
             <td>{{translatedLangText.LADDER}}</td>
+            <td></td>
             <td>
               @if (eirDetails?.ladder) {
               <mat-icon>checked</mat-icon>
               }
-            </td>
-            <td>
-              @if (!eirDetails?.ladder) {
-              <mat-icon>checked</mat-icon>
+              @else {
+              <mat-icon>close</mat-icon>
               }
             </td>
-            <td></td>
           </tr>
           <tr>
             <td>{{translatedLangText.DATA_SCS_TRANSPORT_PLATE}}</td>
+            <td></td>
             <td>
               @if (eirDetails?.data_csc_transportplate) {
               <mat-icon>checked</mat-icon>
               }
-            </td>
-            <td>
-              @if (!eirDetails?.data_csc_transportplate) {
-              <mat-icon>checked</mat-icon>
+              @else {
+              <mat-icon>close</mat-icon>
               }
             </td>
-            <td></td>
           </tr>
           <tr class="th">
-            <td class="td-col-6">
+            <td class="td-col-7">
               <b>{{translatedLangText.TOP_DIS_COMP}}</b>
-            </td>
-            <td class="td-col-1">
-              <b>{{translatedLangText.YES}}</b>
-            </td>
-            <td class="td-col-1">
-              <b>{{translatedLangText.NO}}</b>
             </td>
             <td class="td-col-4">
               <b>{{translatedLangText.SPECIFICATION}}</b>
+            </td>
+            <td class="td-col-1">
+              <b></b>
             </td>
           </tr>
           <tr>
             <td>
               {{translatedLangText.TOP_DIS_COMP__ABB}}
-            </td>
-            <td>
-              @if (eirDetails?.top_dis_comp_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.top_dis_comp_cv) {
-              <mat-icon>checked</mat-icon>
-              }
             </td>
             <td>
               @for (codeValue of disCompCvList; track codeValue; let index = $index) {
@@ -455,6 +430,14 @@
               @if (index + 1 !== disCompCvList.length) {
               /
               }
+              }
+            </td>
+            <td>
+              @if (eirDetails?.top_dis_comp_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
               }
             </td>
           </tr>
@@ -473,16 +456,6 @@
               )
             </td>
             <td>
-              @if (eirDetails?.top_dis_valve_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.top_dis_valve_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
               @for (codeValue of disValveSpecCvList; track codeValue; let index = $index) {
               <span
                 [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.top_dis_valve_spec_cv}">
@@ -493,19 +466,17 @@
               }
               }
             </td>
+            <td>
+              @if (eirDetails?.top_dis_valve_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
+              }
+            </td>
           </tr>
           <tr>
             <td>{{translatedLangText.BRAND}}</td>
-            <td>
-              @if (eirDetails?.top_valve_brand_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.top_valve_brand_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
             <td>
               @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
               <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.top_valve_brand_cv}">
@@ -516,22 +487,20 @@
               }
               }
             </td>
+            <td>
+              @if (eirDetails?.top_valve_brand_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
+              }
+            </td>
           </tr>
           <tr>
             <td>
               {{translatedLangText.AIRLINE_VALVE}}
               (<span class="text-decoration-underline">{{eirDetails?.airline_valve_pcs || '_'}}</span> pcs)
               (<span class="text-decoration-underline">{{eirDetails?.airline_valve_dim || '_'}}</span> inch)
-            </td>
-            <td>
-              @if (eirDetails?.airline_valve_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.airline_valve_cv) {
-              <mat-icon>checked</mat-icon>
-              }
             </td>
             <td>
               @for (codeValue of airlineCvList; track codeValue; let index = $index) {
@@ -541,6 +510,14 @@
               @if (index + 1 !== airlineCvList.length) {
               /
               }
+              }
+            </td>
+            <td>
+              @if (eirDetails?.airline_valve_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
               }
             </td>
           </tr>
@@ -560,16 +537,6 @@
               )
             </td>
             <td>
-              @if (eirDetails?.airline_valve_conn_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.airline_valve_conn_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
               @for (codeValue of manlidCoverCvList; track codeValue; let index = $index) {
               <span
                 [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.airline_valve_conn_spec_cv}">
@@ -580,37 +547,32 @@
               }
               }
             </td>
+            <td>
+              @if (eirDetails?.airline_valve_conn_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
+              }
+            </td>
           </tr>
         </tbody>
       </table>
       <table class="manlid-info w-50">
         <tbody>
           <tr class="th">
-            <td class="td-col-6">
+            <td class="td-col-7">
               <b>{{translatedLangText.MANLID_COMPARTMENT}}</b>
-            </td>
-            <td class="td-col-1">
-              <b>{{translatedLangText.YES}}</b>
-            </td>
-            <td class="td-col-1">
-              <b>{{translatedLangText.NO}}</b>
             </td>
             <td class="td-col-4">
               <b>{{translatedLangText.SPECIFICATION}}</b>
             </td>
+            <td class="td-col-1">
+              <b></b>
+            </td>
           </tr>
           <tr>
             <td>{{translatedLangText.MANLID_COMP__ABB}}</td>
-            <td>
-              @if (eirDetails?.manlid_comp_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
-            <td>
-              @if (!eirDetails?.manlid_comp_cv) {
-              <mat-icon>checked</mat-icon>
-              }
-            </td>
             <td>
               @for (codeValue of disCompCvList; track codeValue; let index = $index) {
               <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.manlid_comp_cv}">
@@ -619,6 +581,14 @@
               @if (index + 1 !== disCompCvList.length) {
               /
               }
+              }
+            </td>
+            <td>
+              @if (eirDetails?.manlid_comp_cv) {
+              <mat-icon>checked</mat-icon>
+              }
+              @else {
+              <mat-icon>close</mat-icon>
               }
             </td>
           </tr>
@@ -637,18 +607,16 @@
               )
             </td>
             <td>
+              <span class="text-decoration-underline">{{eirDetails?.manlid_cover_pcs}}</span> pcs /
+              <span class="text-decoration-underline">{{eirDetails?.manlid_cover_pts}}</span> pts
+            </td>
+            <td>
               @if (eirDetails?.manlid_cover_cv) {
               <mat-icon>checked</mat-icon>
               }
-            </td>
-            <td>
-              @if (!eirDetails?.manlid_cover_cv) {
-              <mat-icon>checked</mat-icon>
+              @else {
+              <mat-icon>close</mat-icon>
               }
-            </td>
-            <td>
-              <span class="text-decoration-underline">{{eirDetails?.manlid_cover_pcs}}</span> pcs /
-              <span class="text-decoration-underline">{{eirDetails?.manlid_cover_pts}}</span> pts
             </td>
           </tr>
           <tr>
@@ -666,16 +634,14 @@
               )
             </td>
             <td>
+            </td>
+            <td>
               @if (eirDetails?.manlid_seal_cv) {
               <mat-icon>checked</mat-icon>
               }
-            </td>
-            <td>
-              @if (!eirDetails?.manlid_seal_cv) {
-              <mat-icon>checked</mat-icon>
+              @else {
+              <mat-icon>close</mat-icon>
               }
-            </td>
-            <td>
             </td>
           </tr>
           <tr>
@@ -703,79 +669,69 @@
               )
             </td>
             <td>
+              <span class="text-decoration-underline">{{eirDetails?.pv_type_pcs}}</span> pcs /
+              <span class="text-decoration-underline">{{eirDetails?.pv_spec_pcs}}</span> pcs
+            </td>
+            <td>
               @if (eirDetails?.pv_type_cv) {
               <mat-icon>checked</mat-icon>
               }
-            </td>
-            <td>
-              @if (!eirDetails?.pv_type_cv) {
-              <mat-icon>checked</mat-icon>
+              @else {
+              <mat-icon>close</mat-icon>
               }
-            </td>
-            <td>
-              <span class="text-decoration-underline">{{eirDetails?.pv_type_pcs}}</span> pcs /
-              <span class="text-decoration-underline">{{eirDetails?.pv_spec_pcs}}</span> pcs
             </td>
           </tr>
           <tr>
             <td>{{translatedLangText.SAFETY_HANDRAIL}}</td>
+            <td></td>
             <td>
               @if (eirDetails?.safety_handrail) {
               <mat-icon>checked</mat-icon>
               }
-            </td>
-            <td>
-              @if (!eirDetails?.safety_handrail) {
-              <mat-icon>checked</mat-icon>
+              @else {
+              <mat-icon>close</mat-icon>
               }
             </td>
-            <td></td>
           </tr>
           <tr>
             <td>{{translatedLangText.BUFFER_PLATE}}</td>
             <td>
+              <span class="text-decoration-underline">{{eirDetails?.buffer_plate}}</span> pcs
+            </td>
+            <td>
               @if (eirDetails?.buffer_plate) {
               <mat-icon>checked</mat-icon>
               }
-            </td>
-            <td>
-              @if (!eirDetails?.buffer_plate) {
-              <mat-icon>checked</mat-icon>
+              @else {
+              <mat-icon>close</mat-icon>
               }
-            </td>
-            <td>
-              <span class="text-decoration-underline">{{eirDetails?.buffer_plate}}</span> pcs
             </td>
           </tr>
           <tr>
             <td>{{translatedLangText.RESIDUE}}</td>
             <td>
+              <span class="text-decoration-underline">{{eirDetails?.residue}}</span> KG
+            </td>
+            <td>
               @if (eirDetails?.residue) {
               <mat-icon>checked</mat-icon>
               }
-            </td>
-            <td>
-              @if (!eirDetails?.residue) {
-              <mat-icon>checked</mat-icon>
+              @else {
+              <mat-icon>close</mat-icon>
               }
-            </td>
-            <td>
-              <span class="text-decoration-underline">{{eirDetails?.residue}}</span> KG
             </td>
           </tr>
           <tr>
             <td>{{translatedLangText.DIPSTICK}}</td>
+            <td></td>
             <td>
               @if (eirDetails?.dipstick) {
               <mat-icon>checked</mat-icon>
               }
-            </td>
-            <td>
-              @if (!eirDetails?.dipstick) {
-              <mat-icon>checked</mat-icon>
+              @else {
+              <mat-icon>close</mat-icon>
               }
             </td>
-            <td></td>
           </tr>
         </tbody>
       </table>
