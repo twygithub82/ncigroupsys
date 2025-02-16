@@ -944,7 +944,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     }
 
     const dialogRef = this.dialog.open(YardDetailPdfComponent, {
-      width: '1200px',
+      width: '85wv',
       height: '80vh',
       data: {
         report_customer_tank_activity: repCustomerTankActivity,

@@ -143,6 +143,7 @@ export class MainTariffDepotComponent extends UnsubscribeOnDestroyAdapter implem
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-DEPOT'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.TARIFF.TEXT'
   ]
 

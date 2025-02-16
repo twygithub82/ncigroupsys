@@ -132,6 +132,7 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.REPORTS.LIST.TANK-ACTIVITY'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.REPORTS.TEXT'
   ]
 

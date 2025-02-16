@@ -139,6 +139,7 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
 
   pageTitle = 'COMMON-FORM.CLEANING'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.TARIFF.TEXT'
   ]
 

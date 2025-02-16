@@ -128,9 +128,10 @@ export class MainCustomerComponent extends UnsubscribeOnDestroyAdapter implement
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-STEAMING'
+  pageTitle = 'MENUITEMS.MASTER.LIST.CUSTOMER'
   breadcrumsMiddleList = [
-    'MENUITEMS.PACKAGE.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.MASTER.TEXT'
   ]
 
   translatedLangText: any = {};

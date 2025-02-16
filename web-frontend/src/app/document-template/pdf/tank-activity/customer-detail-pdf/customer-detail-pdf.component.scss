@@ -13,7 +13,6 @@
     display: flex;
     padding: 0px 10px 0px 10px;
 }
-
 .pdf-body15 {
     display: flex;
     padding: 0px 15px 0px 15px;
@@ -58,29 +57,25 @@
 .table_customer_info {
     border-collapse: collapse;
     width: 100%;
-    margin-bottom: 5px;
-    /* Adds spacing below the table */
-    border: none;
-    /* Removes border from the table */
+    margin-bottom: 5px; /* Adds spacing below the table */
+    border: none; /* Removes border from the table */
 }
-
 .table_customer_info tr,
 .table_customer_info td,
 .table_customer_info th {
-    border: 1px;
-    /* Removes borders from table rows and cells */
+    border: 1px; /* Removes borders from table rows and cells */
 }
 
-.table_customer_info td.sp20 {
+.table_customer_info td.sp20
+{
     text-align: right;
-    width: 20%;
-    /* Removes borders from table rows and cells */
+    width: 20%; /* Removes borders from table rows and cells */
 }
 
-.table_customer_info td.sp {
+.table_customer_info td.sp
+{
     text-align: right;
-    width: 40%;
-    /* Removes borders from table rows and cells */
+    width:40%; /* Removes borders from table rows and cells */
 }
 
 table {
@@ -107,7 +102,7 @@ td {
 tr.th {
     background-color: #353131;
     text-align: center;
-
+    
 }
 
 .dmg-repair-code-table {
@@ -231,31 +226,47 @@ tr.th {
 .detail-table.table {
     width: 100%;
     table-layout: fixed;
-}
-
-.detail-table.th,
-.detail-table.td {
+  }
+  .detail-table.th, .detail-table.td {
     word-wrap: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .restricted-height {
+    width:100%;
+ //   height: 40px; /* Set the height for the cells */
+    overflow: hidden; /* Prevent overflow */
+    text-overflow: ellipsis; /* Add ellipsis (...) if the content overflows */
+    white-space: nowrap; /* Allow text to wrap */
+    word-wrap: break-word; /* Allow words to break and wrap to the next line */
 }
 
-.th-w5 {
-    width: 5%
+.fixed_height_40px{
+overflow:hidden; 
+min-height:40px;
+max-height:40px;
+height:40px;
+padding:0;
+border:0;
 }
 
-.th-w8 {
-    width: 8%
-}
+.th-w2{width:2%}
+.th-w3{width:3%}
+.th-w5{width:5%}
+.th-w6{width:6%}
+.th-w7{width:7%}
+.th-w8{width:8%}
+.th-w10{width:10%}
+.th-w12{width:12%}
+.th-w15{width:15%}
 
-.th-w10 {
-    width: 10%
-}
-
-.th-w12 {
-    width: 12%
-}
-
-.th-w15 {
-    width: 15%
+.overflow-text {
+display: -webkit-box;
+-webkit-line-clamp: 2; /* Limits text to 2 lines */
+-webkit-box-orient: vertical;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: normal; /* Allows text wrapping */
+max-width: 100%; /* Adjust width as needed */
 }

@@ -36,6 +36,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { report_billing_customer } from 'app/data-sources/billing';
 import { report_customer_tank_activity } from 'app/data-sources/reports';
+import { MatTooltipModule } from '@angular/material/tooltip';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -66,7 +67,8 @@ export interface DialogData {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatTooltipModule
   ],
 })
 export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -189,8 +191,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     IN_GATE: 'COMMON-FORM.IN-GATE',
     EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
-    LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
-    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
+    LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE-S',
+    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE-S',
     OPERATOR: 'COMMON-FORM.OPERATOR',
     TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
     YES: 'COMMON-FORM.YES',
@@ -213,8 +215,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
     IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
     OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
     MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
     DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
     REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
@@ -246,20 +248,20 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     OUT_DATE: 'COMMON-FORM.OUT-DATE',
     TOTAL: 'COMMON-FORM.TOTAL',
     DAYS: 'COMMON-FORM.DAYS',
-    GATEIO: 'COMMON-FORM.GATEIO',
+    GATEIO: 'COMMON-FORM.GATEIO-S',
     INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
     TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
-    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
-    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE',
+    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
+    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
     AV_DATE: 'COMMON-FORM.AV-DATE',
-    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
-    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE-S',
+    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE-S',
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING'
+    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S'
   }
 
 

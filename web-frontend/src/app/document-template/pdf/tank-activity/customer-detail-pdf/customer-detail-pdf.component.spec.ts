@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { YardDetailPdfComponent } from "./yard-detail-pdf.component"
-describe("YardDetailPdfComponent", () => {
-  let component: YardDetailPdfComponent;
-  let fixture: ComponentFixture<YardDetailPdfComponent>;
+import { CustomerDetailPdfComponent } from "./customer-detail-pdf.component"
+describe("CustomerDetailPdfComponent", () => {
+  let component: CustomerDetailPdfComponent;
+  let fixture: ComponentFixture<CustomerDetailPdfComponent>;
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-    imports: [YardDetailPdfComponent],
+    imports: [CustomerDetailPdfComponent],
 }).compileComponents();
     })
   );
   beforeEach(() => {
-    fixture = TestBed.createComponent(YardDetailPdfComponent);
+    fixture = TestBed.createComponent(CustomerDetailPdfComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

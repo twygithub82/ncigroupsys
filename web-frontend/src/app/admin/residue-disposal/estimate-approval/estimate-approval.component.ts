@@ -110,7 +110,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
 
   pageTitle = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE-APPROVAL'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.RESIDUE-DISPOSAL.TEXT'
   ]
 
   translatedLangText: any = {};

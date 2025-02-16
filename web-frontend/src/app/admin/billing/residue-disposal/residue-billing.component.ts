@@ -90,6 +90,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageTitle = 'MENUITEMS.BILING.LIST.RESIDUE-BILL'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.HOME.TEXT'
   ]
 

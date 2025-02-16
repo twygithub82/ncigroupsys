@@ -136,6 +136,7 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
 
   pageTitle = 'COMMON-FORM.DEPOT'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.BILLING.TEXT'
   ]
 

@@ -160,7 +160,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     TARE_WEIGHT:'COMMON-FORM.TARE-WEIGHT',
     CURRENT_STATUS:'COMMON-FORM.CURRENT-STATUS',
     DETAIL_REPORT:'COMMON-FORM.DETAIL-REPORT',
-    ONE_CONDITION_NEEDED:'COMMON-FORM.ONE-CONDITION-NEEDED'
+    ONE_CONDITION_NEEDED:'COMMON-FORM.ONE-CONDITION-NEEDED',
+  
   }
 
   invForm?: UntypedFormGroup;
@@ -488,9 +489,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
         if (this.searchForm!.get('av_dt_start')?.value && this.searchForm!.get('av_dt_end')?.value) {
 
-          var cond :any ={completed_dt:{gte: Utility.convertDate(this.searchForm!.value['av_dt_start']), lte: Utility.convertDate(this.searchForm!.value['av_dt_end'],true)}};
+          var cond :any ={complete_dt:{gte: Utility.convertDate(this.searchForm!.value['av_dt_start']), lte: Utility.convertDate(this.searchForm!.value['av_dt_end'],true)}};
           if(!where.repair) where.repair={};
-          where.repair=cond;
+          where.repair={some:cond};
           cond_counter++;
         }
        
@@ -951,7 +952,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       }
   
       const dialogRef = this.dialog.open(CustomerDetailPdfComponent, {
-        width: '85wv',
+        width: '90wv',
         height: '80vh',
         data: {
           report_customer_tank_activity: repCustomerTankActivity,

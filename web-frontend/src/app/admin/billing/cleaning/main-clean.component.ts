@@ -133,6 +133,7 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageTitle = 'COMMON-FORM.CLEANING'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.BILLING.TEXT'
   ]
 

@@ -118,7 +118,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   pageTitleEdit = 'MENUITEMS.MASTER.LIST.CUSTOMER-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.ESTIMATE'
+    'MENUITEMS.MASTER.LIST.CUSTOMER'
   ]
   translatedLangText: any = {}
   langText = {

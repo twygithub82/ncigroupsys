@@ -131,6 +131,7 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-STEAMING'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.PACKAGE.TEXT'
   ]
 

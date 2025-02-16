@@ -56,7 +56,7 @@ import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-c
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 //import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { TankActivitiyComponent } from './tank-activity/tank-activity.component';
+//import { TankActivitiyComponent } from './tank-activity/tank-activity.component';
 // import { CleanBillingComponent } from './clean/clean-billing.component';
 // import { ResidueBillingComponent } from './residue/residue-billing.component';
 // import { SteamBillingComponent } from './steam/steam-billing.component';
@@ -93,8 +93,8 @@ import { TankActivitiyComponent } from './tank-activity/tank-activity.component'
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
-    MatTabsModule,
-    TankActivitiyComponent
+    MatTabsModule
+    
    
 ]
 })
@@ -128,9 +128,10 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
     'status_cv'
   ];
 
-  pageTitle = 'COMMON-FORM.CLEANING'
+  pageTitle = 'MENUITEMS.REPORTS.TEXT.TANK-ACTIVITY'
   breadcrumsMiddleList = [
-    'MENUITEMS.BILLING.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.REPORTS.TEXT'
   ]
 
   translatedLangText: any = {};

@@ -129,7 +129,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.CLEANING.TEXT'
   ]
 
   translatedLangText: any = {};

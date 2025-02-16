@@ -130,6 +130,7 @@ export class MainPackageDepotComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.PACKAGE.TEXT'
   ]
 

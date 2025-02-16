@@ -134,6 +134,7 @@ export class MainPackageCleaningComponent extends UnsubscribeOnDestroyAdapter im
 
   pageTitle = 'COMMON-FORM.CLEANING'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.PACKAGE.TEXT'
   ]
 

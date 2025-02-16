@@ -129,6 +129,7 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
 
   pageTitle = 'MENUITEMS.BILLING.LIST.PENDING'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.BILLING.TEXT'
   ]
 

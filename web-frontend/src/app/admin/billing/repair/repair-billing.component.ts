@@ -113,6 +113,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitle = 'MENUITEMS.BILLING.LIST.REPAIR-BILL'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.HOME.TEXT'
   ]
 

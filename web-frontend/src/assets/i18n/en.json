@@ -958,7 +958,15 @@
     "BUFFER-COST": "Buffer Cost",
     "ONE-CONDITION-NEEDED":"At least one condition needed for searching",
     "TOP-TEN-CUSTOMER":"Top Ten Customer",
-    "PENDING-INVOICE-DETAIL-COST":"Pending Invoice Detail"
+    "PENDING-INVOICE-DETAIL-COST":"Pending Invoice Detail",
+    "TAKE-IN-REFERENCE-S":"Take-In Ref.",
+    "ESTIMATE-NO-S":"Est. No",
+    "ESTIMATE-DATE-S":"Est. Date",
+    "APPROVAL-DATE-S":"App. Date",
+    "APPROVAL-REFERENCE-S":"App. Ref.",
+    "RELEASE-BOOKING-S":"Rel. Booking",
+    "RELEASE-DATE-S":"Rel. Date",
+    "RELEASE-REFERENCE-S":"Rel. Ref."
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

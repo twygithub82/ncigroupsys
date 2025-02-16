@@ -122,7 +122,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.ESTIMATE'
+    'MENUITEMS.MASTER.LIST.ESTIMATE-TEMPLATE'
   ]
   translatedLangText: any = {}
   langText = {

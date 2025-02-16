@@ -126,6 +126,7 @@ export class MainStatusComponent extends UnsubscribeOnDestroyAdapter implements 
 
   pageTitle = 'MENUITEMS.REPORTS.LIST.STATUS'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.REPORTS.TEXT'
   ]
 

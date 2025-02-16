@@ -233,8 +233,31 @@ tr.th {
     text-overflow: ellipsis;
   }
 
-.th-w5{width:5%}
-.th-w8{width:8%}
-.th-w10{width:10%}
-.th-w12{width:12%}
-.th-w15{width:15%}
+  .fixed_height_40px{
+    overflow:hidden; 
+    min-height:40px;
+    max-height:40px;
+    height:40px;
+    padding:0;
+    border:0;
+    }
+    
+    .th-w2{width:2%}
+    .th-w3{width:3%}
+    .th-w5{width:5%}
+    .th-w6{width:6%}
+    .th-w7{width:7%}
+    .th-w8{width:8%}
+    .th-w10{width:10%}
+    .th-w12{width:12%}
+    .th-w15{width:15%}
+    
+    .overflow-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits text to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Allows text wrapping */
+    max-width: 100%; /* Adjust width as needed */
+    }

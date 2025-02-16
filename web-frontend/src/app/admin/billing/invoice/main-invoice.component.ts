@@ -131,6 +131,7 @@ export class MainInvoiceComponent extends UnsubscribeOnDestroyAdapter implements
 
   pageTitle = 'MENUITEMS.BILLING.LIST.INVOICES'
   breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT',
     'MENUITEMS.BILLING.TEXT'
   ]
 

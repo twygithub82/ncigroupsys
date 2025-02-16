@@ -119,7 +119,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.HOME.TEXT',
+     'MENUITEMS.STEAM.TEXT'
   ]
 
   translatedLangText: any = {};
