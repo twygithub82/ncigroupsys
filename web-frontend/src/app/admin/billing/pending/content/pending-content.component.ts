@@ -409,12 +409,18 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       sot.residue=sot.residue?.filter(c=>c.approve_dt!=null);
       sot.repair= sot.repair?.filter(c=>c.approve_dt!=null);
       sot.steaming= sot.steaming?.filter(c=>c.approve_dt!=null);
-      sot.billing_sot=sot.billing_sot?.filter(c=>c.gateio_billing_guid==null
-                                               ||((c.lift_off||c.lift_on)&&c.lolo_billing_guid==null)
-                                               ||(c.preinsp_billing_guid==null&&c.preinspection)
-                                               ||(c.storage_billing_guid==null))
+      const billingSot = sot.billing_sot;
+        if (billingSot &&
+            (billingSot.gateio_billing_guid == null ||
+            ((billingSot.lift_off || billingSot.lift_on) && billingSot.lolo_billing_guid == null) ||
+            (billingSot.preinsp_billing_guid == null && billingSot.preinspection) ||
+            billingSot.storage_billing_guid == null)) {
+          sot.billing_sot = billingSot;
+        } else {
+          sot.billing_sot = undefined; // If conditions are not met, set it to null
+        }
         return sot;
-     }).filter(sot => sot.cleaning?.length || sot.residue?.length || sot.repair?.length || sot.steaming?.length || sot.billing_sot?.length);;
+     }).filter(sot => sot.cleaning?.length || sot.residue?.length || sot.repair?.length || sot.steaming?.length || sot.billing_sot);;
   }
 
   onPageEvent(event: PageEvent) {
@@ -541,6 +547,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
     {
        
         var items:InGateCleaningItem[]= sot.cleaning!;
+
         if(items.length>0)
         {
           var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
@@ -579,33 +586,58 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
     calculateGateInOutCost(sot:StoringOrderTankItem,rep_bill_items:report_billing_item[])//(items:BillingSOTItem[],rep_bill_items:report_billing_item[])
     {
        
-      var items:BillingSOTItem[]=sot.billing_sot!;
-        if(items.length>0)
-        {
-          var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-          if(itms.length>0)
-          { 
-            itms.forEach(c=>{
-              c.storing_order_tank=sot;
-               let newItem=false;
-              let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-              if(!rep_bill_item)
-              {
-                newItem=true;
-                rep_bill_item= this.createNewReportBillingItem(sot);
-                // rep_bill_item= new report_billing_item();
-                // rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-              }
-              // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-              // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-              // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-              if(((c.gate_in_cost||0)+(c.gate_out_cost||0))>0)rep_bill_item.gateio_est_no +=1;
-              rep_bill_item.gateio_cost = Number(Number( rep_bill_item?.gateio_cost||0)+ (c.gate_in_cost||0)+(c.gate_out_cost||0)).toFixed(2);
-              if(newItem)rep_bill_items.push(rep_bill_item);
-              
-            });
-          }
+      const item: BillingSOTItem = sot.billing_sot!;
+
+      if (item && (item.delete_dt === null || item.delete_dt === 0)) {
+        item.storing_order_tank = sot;
+
+        let newItem = false;
+
+        // Find the corresponding report billing item by sot_guid
+        let rep_bill_item = rep_bill_items.find(i => i.sot_guid === item.storing_order_tank?.guid);
+
+        if (!rep_bill_item) {
+          newItem = true;
+          rep_bill_item = this.createNewReportBillingItem(sot);
         }
+
+        // Calculate gate I/O cost and update rep_bill_item
+        const gateIOCost = (item.gate_in_cost || 0) + (item.gate_out_cost || 0);
+        
+        if (gateIOCost > 0) {
+          rep_bill_item.gateio_est_no += 1; // Increment gate I/O estimation number
+        }
+
+        rep_bill_item.gateio_cost = Number(Number(rep_bill_item.gateio_cost || 0) + gateIOCost).toFixed(2);
+
+        // Push the new item if it was not found previously
+        if (newItem) {
+          rep_bill_items.push(rep_bill_item);
+        }
+      }
+
+      // var items:BillingSOTItem[]=sot.billing_sot!;
+      //   if(items.length>0)
+      //   {
+      //     var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
+      //     if(itms.length>0)
+      //     { 
+      //       itms.forEach(c=>{
+      //         c.storing_order_tank=sot;
+      //          let newItem=false;
+      //         let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
+      //         if(!rep_bill_item)
+      //         {
+      //           newItem=true;
+      //           rep_bill_item= this.createNewReportBillingItem(sot);
+      //         }
+      //         if(((c.gate_in_cost||0)+(c.gate_out_cost||0))>0)rep_bill_item.gateio_est_no +=1;
+      //         rep_bill_item.gateio_cost = Number(Number( rep_bill_item?.gateio_cost||0)+ (c.gate_in_cost||0)+(c.gate_out_cost||0)).toFixed(2);
+      //         if(newItem)rep_bill_items.push(rep_bill_item);
+              
+      //       });
+      //     }
+      //   }
        
   
     }
@@ -613,34 +645,60 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
     calculateLOLOCost(sot:StoringOrderTankItem,rep_bill_items:report_billing_item[])//(items:BillingSOTItem[],rep_bill_items:report_billing_item[])
     {
        
-        var items:BillingSOTItem[]=sot.billing_sot!;
-        if(items.length>0)
-        {
-          var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-          if(itms.length>0)
-          { 
-            itms.forEach(c=>{
-               c.storing_order_tank=sot;
-               let newItem=false;
-              let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-              if(!rep_bill_item)
-              {
-                newItem=true;
-                rep_bill_item= this.createNewReportBillingItem(sot);
-                // rep_bill_item= new report_billing_item();
-                // rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-              }
-              // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-              // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-              // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-              if(((c.lift_off?c.lift_off_cost!:0)+(c.lift_on?c.lift_on_cost!:0))>0)rep_bill_item.lolo_est_no +=1;
-              
-              rep_bill_item.lolo_cost = Number(Number( rep_bill_item?.lolo_cost||0)+ (c.lift_off?c.lift_off_cost!:0)+(c.lift_on?c.lift_on_cost!:0)).toFixed(2);
-              if(newItem)rep_bill_items.push(rep_bill_item);
-              
-            });
-          }
+      const item = sot.billing_sot; // Single object instead of an array
+
+      if (item && (item.delete_dt === null || item.delete_dt === 0)) {
+        item.storing_order_tank = sot;
+
+        let newItem = false;
+        let rep_bill_item = rep_bill_items.find(i => i.sot_guid === item.storing_order_tank?.guid);
+
+        if (!rep_bill_item) {
+          newItem = true;
+          rep_bill_item = this.createNewReportBillingItem(sot);
         }
+
+        const loloCost = (item.lift_off ? item.lift_off_cost! : 0) + (item.lift_on ? item.lift_on_cost! : 0);
+
+        if (loloCost > 0) {
+          rep_bill_item.lolo_est_no += 1;
+        }
+
+        rep_bill_item.lolo_cost = Number((Number(rep_bill_item?.lolo_cost || 0) + loloCost)).toFixed(2);
+
+        if (newItem) {
+          rep_bill_items.push(rep_bill_item);
+        }
+      }
+
+        // var items:BillingSOTItem[]=sot.billing_sot!;
+        // if(items.length>0)
+        // {
+        //   var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
+        //   if(itms.length>0)
+        //   { 
+        //     itms.forEach(c=>{
+        //        c.storing_order_tank=sot;
+        //        let newItem=false;
+        //       let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
+        //       if(!rep_bill_item)
+        //       {
+        //         newItem=true;
+        //         rep_bill_item= this.createNewReportBillingItem(sot);
+        //         // rep_bill_item= new report_billing_item();
+        //         // rep_bill_item.sot_guid=c.storing_order_tank?.guid;
+        //       }
+        //       // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+        //       // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+        //       // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+        //       if(((c.lift_off?c.lift_off_cost!:0)+(c.lift_on?c.lift_on_cost!:0))>0)rep_bill_item.lolo_est_no +=1;
+              
+        //       rep_bill_item.lolo_cost = Number(Number( rep_bill_item?.lolo_cost||0)+ (c.lift_off?c.lift_off_cost!:0)+(c.lift_on?c.lift_on_cost!:0)).toFixed(2);
+        //       if(newItem)rep_bill_items.push(rep_bill_item);
+              
+        //     });
+        //   }
+        // }
        
   
     }
@@ -648,91 +706,147 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
     calculatePreInspectionCost(sot:StoringOrderTankItem,rep_bill_items:report_billing_item[])//(items:BillingSOTItem[],rep_bill_items:report_billing_item[])
     {
        
-      var items:BillingSOTItem[]=sot.billing_sot!;
-        if(items.length>0)
-        {
-          var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-          if(itms.length>0)
-          { 
-            itms.forEach(c=>{
-              c.storing_order_tank=sot;
-               let newItem=false;
-              let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-              if(!rep_bill_item)
-              {
-                newItem=true;
-                rep_bill_item= this.createNewReportBillingItem(sot);
-                // rep_bill_item= new report_billing_item();
-                // rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-              }
-              // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-              // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-              // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-              if((c.preinspection?c.preinspection_cost!:0)>0)rep_bill_item.preins_est_no +=1;  
-              
-              rep_bill_item.preins_cost = Number(Number( rep_bill_item?.preins_cost||0)+ (c.preinspection?c.preinspection_cost!:0)).toFixed(2);
-              if(newItem)rep_bill_items.push(rep_bill_item);
-              
-            });
-          }
+      const item = sot.billing_sot; // Single object instead of an array
+
+      if (item && (item.delete_dt === null || item.delete_dt === 0)) {
+        item.storing_order_tank = sot;
+
+        let newItem = false;
+        let rep_bill_item = rep_bill_items.find(i => i.sot_guid === item.storing_order_tank?.guid);
+
+        if (!rep_bill_item) {
+          newItem = true;
+          rep_bill_item = this.createNewReportBillingItem(sot);
         }
+
+        const preinsCost = item.preinspection ? item.preinspection_cost! : 0;
+
+        if (preinsCost > 0) {
+          rep_bill_item.preins_est_no += 1;
+        }
+
+        rep_bill_item.preins_cost = Number((Number(rep_bill_item?.preins_cost || 0) + preinsCost)).toFixed(2);
+
+        if (newItem) {
+          rep_bill_items.push(rep_bill_item);
+        }
+      }
+
+      // var items:BillingSOTItem[]=sot.billing_sot!;
+      //   if(items.length>0)
+      //   {
+      //     var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
+      //     if(itms.length>0)
+      //     { 
+      //       itms.forEach(c=>{
+      //         c.storing_order_tank=sot;
+      //          let newItem=false;
+      //         let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
+      //         if(!rep_bill_item)
+      //         {
+      //           newItem=true;
+      //           rep_bill_item= this.createNewReportBillingItem(sot);
+      //           // rep_bill_item= new report_billing_item();
+      //           // rep_bill_item.sot_guid=c.storing_order_tank?.guid;
+      //         }
+      //         // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+      //         // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+      //         // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+      //         if((c.preinspection?c.preinspection_cost!:0)>0)rep_bill_item.preins_est_no +=1;  
+              
+      //         rep_bill_item.preins_cost = Number(Number( rep_bill_item?.preins_cost||0)+ (c.preinspection?c.preinspection_cost!:0)).toFixed(2);
+      //         if(newItem)rep_bill_items.push(rep_bill_item);
+              
+      //       });
+      //     }
+      //   }
        
     }
   
     calculateStorageCost(sot:StoringOrderTankItem,rep_bill_items:report_billing_item[])
     {
-       
-        var items=sot.billing_sot!;
-        if(items.length>0)
-        {
-          var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-          if(itms.length>0)
-          { 
-            itms.forEach(c=>{
-  
-                c.storing_order_tank=sot;
-                
-               let newItem=false;
-              let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-              if(!rep_bill_item)
-              {
-                newItem=true;
-                rep_bill_item= this.createNewReportBillingItem(sot);
-                // rep_bill_item= new report_billing_item();
-                // rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-              }
-  
-              // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-              // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-              // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-             
-              let packDepotItm :PackageDepotItem=new PackageDepotItem();
-              packDepotItm.storage_cal_cv=c.storage_cal_cv;
-  
-              let daysDifference:number =Number(this.pdDS.getStorageDays(c.storing_order_tank!,packDepotItm));
-  
-  
-              //  var in_gates= c.storing_order_tank?.in_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
-              //  var out_gates=c.storing_order_tank?.out_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
-               rep_bill_item.days= String(daysDifference);
+      const item = sot.billing_sot; // Single object instead of an array
 
-               if(((c.storage_cost||0)*daysDifference)>0)  rep_bill_item.storage_est_no +=1;
-               rep_bill_item.storage_cost = Number((c.storage_cost||0)*daysDifference).toFixed(2);
-              // if(in_gates?.length) 
-              //   {
-              //     rep_bill_item.in_date=Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
-              //     rep_bill_item.eir_no=in_gates?.[0]?.eir_no;
-              //   }
-              // if(out_gates?.length) {
-              //   rep_bill_item.out_date=Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
-              //   rep_bill_item.eir_no=out_gates?.[0]?.eir_no;
-              // }
-              if(newItem)rep_bill_items.push(rep_bill_item);
-                
-              
-            });
+        if (item && (item.delete_dt === null || item.delete_dt === 0)) {
+          item.storing_order_tank = sot;
+
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(i => i.sot_guid === item.storing_order_tank?.guid);
+
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = this.createNewReportBillingItem(sot);
+          }
+
+          let packDepotItm: PackageDepotItem = new PackageDepotItem();
+          packDepotItm.storage_cal_cv = item.storage_cal_cv;
+
+          let daysDifference: number = Number(this.pdDS.getStorageDays(item.storing_order_tank!, packDepotItm));
+          rep_bill_item.days = String(daysDifference);
+
+          if ((item.storage_cost || 0) * daysDifference > 0) {
+            rep_bill_item.storage_est_no += 1;
+          }
+
+          rep_bill_item.storage_cost = Number((item.storage_cost || 0) * daysDifference).toFixed(2);
+
+          if (newItem) {
+            rep_bill_items.push(rep_bill_item);
           }
         }
+
+       
+        // var items=sot.billing_sot!;
+        // if(items.length>0)
+        // {
+        //   var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
+        //   if(itms.length>0)
+        //   { 
+        //     itms.forEach(c=>{
+  
+        //         c.storing_order_tank=sot;
+                
+        //        let newItem=false;
+        //       let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
+        //       if(!rep_bill_item)
+        //       {
+        //         newItem=true;
+        //         rep_bill_item= this.createNewReportBillingItem(sot);
+        //         // rep_bill_item= new report_billing_item();
+        //         // rep_bill_item.sot_guid=c.storing_order_tank?.guid;
+        //       }
+  
+        //       // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
+        //       // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
+        //       // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+             
+        //       let packDepotItm :PackageDepotItem=new PackageDepotItem();
+        //       packDepotItm.storage_cal_cv=c.storage_cal_cv;
+  
+        //       let daysDifference:number =Number(this.pdDS.getStorageDays(c.storing_order_tank!,packDepotItm));
+  
+  
+        //       //  var in_gates= c.storing_order_tank?.in_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
+        //       //  var out_gates=c.storing_order_tank?.out_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
+        //        rep_bill_item.days= String(daysDifference);
+
+        //        if(((c.storage_cost||0)*daysDifference)>0)  rep_bill_item.storage_est_no +=1;
+        //        rep_bill_item.storage_cost = Number((c.storage_cost||0)*daysDifference).toFixed(2);
+        //       // if(in_gates?.length) 
+        //       //   {
+        //       //     rep_bill_item.in_date=Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+        //       //     rep_bill_item.eir_no=in_gates?.[0]?.eir_no;
+        //       //   }
+        //       // if(out_gates?.length) {
+        //       //   rep_bill_item.out_date=Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
+        //       //   rep_bill_item.eir_no=out_gates?.[0]?.eir_no;
+        //       // }
+        //       if(newItem)rep_bill_items.push(rep_bill_item);
+                
+              
+        //     });
+        //   }
+        // }
        
     }
   
@@ -916,29 +1030,25 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
 
     calculateBillingSOT(sot:StoringOrderTankItem,rep_bill_items:report_billing_item[])//(items:BillingSOTItem[],rep_bill_items:report_billing_item[])
     {
-      var items:BillingSOTItem[]=sot.billing_sot!;
-      if(items.length>0)
+      const item=sot.billing_sot!;
+     // if(items.length>0)
         {
-           var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
+       //    var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
          //  itms = itms.map(i => ({ ...i, storing_order_tank: sot }));
-          if(itms.length>0)
+         // if(itms.length>0)
           {
-            sot.billing_sot = itms.filter(i=>i.storage_billing_guid==null);
-            if(sot.billing_sot .length) this.calculateStorageCost(sot,rep_bill_items);
-            sot.billing_sot = itms.filter(i=>i.preinsp_billing_guid==null);
-            if(sot.billing_sot .length) this.calculatePreInspectionCost(sot,rep_bill_items);
-            sot.billing_sot = itms.filter(i=>i.lolo_billing_guid==null);
-            if(sot.billing_sot .length) this.calculateLOLOCost(sot,rep_bill_items);
-            sot.billing_sot = itms.filter(i=>i.gateio_billing_guid==null);
-            if(sot.billing_sot .length) this.calculateGateInOutCost(sot,rep_bill_items);
-            //  let storageBillingSOT = itms.filter(i=>i.storage_billing_guid==null);
-            //  if(storageBillingSOT.length) this.calculateStorageCost(storageBillingSOT,rep_bill_items);
-            //  let preinspBillingSOT = itms.filter(i=>i.preinsp_billing_guid==null && i.preinspection);
-            //  if(preinspBillingSOT.length) this.calculatePreInspectionCost(preinspBillingSOT,rep_bill_items);
-            //  let loloBillingSOT = itms.filter(i=>i.lolo_billing_guid==null && (i.lift_off||i.lift_on));
-            //  if(loloBillingSOT.length) this.calculateLOLOCost(loloBillingSOT,rep_bill_items);
-            //  let gateioBillingSOT= itms.filter(i=>i.gateio_billing_guid==null);
-            //  if(gateioBillingSOT.length) this.calculateGateInOutCost(gateioBillingSOT,rep_bill_items);
+            this.calculateStorageCost(sot,rep_bill_items);
+            this.calculatePreInspectionCost(sot,rep_bill_items);
+            this.calculateLOLOCost(sot,rep_bill_items);
+            this.calculateGateInOutCost(sot,rep_bill_items);
+            //sot.billing_sot = itms.filter(i=>i.storage_billing_guid==null);
+            // if(sot.billing_sot .length) this.calculateStorageCost(sot,rep_bill_items);
+            // sot.billing_sot = itms.filter(i=>i.preinsp_billing_guid==null);
+            // if(sot.billing_sot .length) this.calculatePreInspectionCost(sot,rep_bill_items);
+            // sot.billing_sot = itms.filter(i=>i.lolo_billing_guid==null);
+            // if(sot.billing_sot .length) this.calculateLOLOCost(sot,rep_bill_items);
+            // sot.billing_sot = itms.filter(i=>i.gateio_billing_guid==null);
+            // if(sot.billing_sot .length) this.calculateGateInOutCost(sot,rep_bill_items);
           }
         }
     }
@@ -1052,7 +1162,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       if(b.repair?.length!>0) this.calculateRepairCost(b,repBillItems);
       if(b.residue?.length!>0) this.calculateResidueCost(b,repBillItems);
       if(b.steaming?.length!>0) this.calculateSteamingCost(b,repBillItems);
-      if(b.billing_sot?.length!>0) this.calculateBillingSOT(b,repBillItems);
+      if(b.billing_sot!=null) this.calculateBillingSOT(b,repBillItems);
       rbCust.items=repBillItems||[];
       //return repBillItems;
   
@@ -1071,7 +1181,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       if(b.repair?.length!>0) this.calculateRepairCost(b,repBillItems);
       if(b.residue?.length!>0) this.calculateResidueCost(b,repBillItems);
       if(b.steaming?.length!>0) await this.calculateSteamingCost(b,repBillItems);
-      if(b.billing_sot?.length!>0) this.calculateBillingSOT(b,repBillItems);
+      if(b.billing_sot!=null) this.calculateBillingSOT(b,repBillItems);
   
       return repBillItems;
   
@@ -1093,8 +1203,8 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       }
   
       const dialogRef = this.dialog.open(PendingInvoiceCostDetailPdfComponent, {
-        width: '1000px',
-        height: '80vh',
+        width: '85vw',
+        height: '85vh',
         data: {
           billing_customers:repCustomers,
           cut_off_dt: Utility.convertDateToStr(new Date(cut_off_dt))
@@ -1124,7 +1234,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
           }
       
           const dialogRef = this.dialog.open(PendingSummaryPdfComponent, {
-            width: '850px',
+            width: '65vw',
            // height: '80vh',
             data: {
               billing_customers:repCustomers,

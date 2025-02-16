@@ -53,6 +53,7 @@ export class report_status_yard{
       this.noTank_storage=Number(item.noTank_storage||0);
       this.noTank_steam=Number(item.noTank_steam||0);
       this.storing_order_tank=item.storing_order_tank;
+      this.noTank_in_survey=Number(item.noTank_in_survey||0);
     }
 
 

@@ -39,13 +39,13 @@
                       <mat-icon>assessment</mat-icon>
                     </button>
                     <button mat-mini-fab  class="m-l-10" color="primary" (click)="search(2)" matTooltip={{translatedLangText.PENDING_INVOICE_DETAIL}}>
-                      <mat-icon>attach_money</mat-icon>
+                      <mat-icon>assignment</mat-icon>
                     </button>
                     <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
                       <mat-icon>cached</mat-icon>
                     </button> -->
-                    <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
-                      {{translatedLangText.CLEAR_ALL}}
+                    <button  mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                      <mat-icon>clear_all</mat-icon>
                     </button>
                   </div>
                 </div>

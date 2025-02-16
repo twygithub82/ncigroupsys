@@ -1075,7 +1075,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
       }
   
       const dialogRef = this.dialog.open(CustomerInvoicesPdfComponent, {
-        width: '1000px',
+        width: '85wv',
         height: '80vh',
         data: {
           billing_customers:repCustomers

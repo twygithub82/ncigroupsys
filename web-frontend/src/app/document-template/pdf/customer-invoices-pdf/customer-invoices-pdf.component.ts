@@ -35,6 +35,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { report_billing_customer } from 'app/data-sources/billing';
+import { MatTooltipModule } from '@angular/material/tooltip';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -62,7 +63,8 @@ export interface DialogData {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatTooltipModule
   ],
 })
 export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -246,8 +248,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     REPAIR_COST:'COMMON-FORM.REPAIR-COST-REPORT',
     PREINSP_COST:'COMMON-FORM.PREINSP-COST-REPORT',
     STORAGE_COST:'COMMON-FORM.STORAGE-COST-REPORT',
-    GATEIO:'COMMON-FORM.GATEIO'
-
+    GATEIO:'COMMON-FORM.GATEIO',
+     GATEIO_S:'COMMON-FORM.GATEIO-S'
   }
 
   type?: string | null;
@@ -371,7 +373,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       this.generatingPdfProgress = 0;
 
       const rows = Array.from(repTableElement.querySelectorAll('tr'));
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdf = new jsPDF('l', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.width; // A4 page width
       const pageHeight = pdf.internal.pageSize.height; // A4 page height
       const leftRightMargin = 5; // Fixed left and right margins
@@ -869,7 +871,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdf = new jsPDF('l', 'mm', 'a4');
     const leftMargin = 10; // Left margin
     const rightMargin = 10; // Right margin
     const contentWidth = 210 - leftMargin - rightMargin; // 190mm usable width

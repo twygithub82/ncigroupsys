@@ -9,6 +9,9 @@
         <div class="card">
           <div class="body overflow-auto">
             <mat-tab-group dynamicHeight (selectedTabChange)="onTabSelected($event)">
+              <mat-tab [label]="translatedLangText.IN_GATE_OUT_GATE">
+                <app-gate-billing></app-gate-billing>
+              </mat-tab>
               <mat-tab [label]="translatedLangText.PRE_INSPECTION">
                 <app-preinspection-billing></app-preinspection-billing>
               </mat-tab>
@@ -21,9 +24,7 @@
               <mat-tab [label]="translatedLangText.STORAGE">
                 <app-storage-billing></app-storage-billing>
               </mat-tab>
-              <mat-tab [label]="translatedLangText.IN_GATE_OUT_GATE">
-                <app-gate-billing></app-gate-billing>
-              </mat-tab>
+              
               <!-- <mat-tab>
                 <ng-template mat-tab-label>
                   <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>

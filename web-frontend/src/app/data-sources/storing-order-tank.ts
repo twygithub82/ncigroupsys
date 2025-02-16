@@ -129,7 +129,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public survey_detail?: SurveyDetailItem[];
   public transfer?: TransferItem[];
   public actions?: string[] = [];
-  public billing_sot?: BillingSOTItem[] = [];
+  public billing_sot?: BillingSOTItem;
   public tank_info?: TankInfoItem;
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -148,7 +148,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.survey_detail = item.survey_detail;
     this.transfer = item.transfer;
     this.actions = item.actions || [];
-    this.billing_sot = item.billing_sot || [];
+    this.billing_sot = item.billing_sot ;
     this.tank_info = item.tank_info;
   }
 }
@@ -323,7 +323,6 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
             test_dt
             walkway_cv
             capacity
-            last_release_dt
             take_in_reference
           }
         }
@@ -2774,7 +2773,6 @@ const GET_STORING_ORDER_TANKS_ACTIVITY = gql`
             test_dt
             walkway_cv
             capacity
-            last_release_dt
             take_in_reference
           }
         }
@@ -2792,7 +2790,6 @@ const GET_STORING_ORDER_TANKS_ACTIVITY = gql`
             test_dt
             walkway_cv
             capacity
-            last_release_dt
             take_in_reference
           }
         }
@@ -2990,7 +2987,6 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
           storage_billing_guid
           storage_cal_cv
           storage_cost
-          tariff_depot_guid
           update_by
           update_dt
         }
