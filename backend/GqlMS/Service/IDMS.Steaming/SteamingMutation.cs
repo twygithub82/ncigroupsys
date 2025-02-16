@@ -166,8 +166,8 @@ namespace IDMS.Steaming.GqlTypes
                 updateSteaming.update_by = user;
                 updateSteaming.update_dt = currentDateTime;
                 updateSteaming.job_no = steaming.job_no;
-                updateSteaming.invoice_by = steaming.invoice_by;
-                updateSteaming.invoice_dt = steaming.invoice_dt;
+                //updateSteaming.invoice_by = steaming.invoice_by;
+                //updateSteaming.invoice_dt = steaming.invoice_dt;
                 updateSteaming.remarks = steaming.remarks;
                 updateSteaming.bill_to_guid = steaming.bill_to_guid;
 

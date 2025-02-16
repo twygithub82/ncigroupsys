@@ -27,8 +27,6 @@ namespace IDMS.Models.Service
         public string? complete_by { get; set; }
         public long? complete_dt { get; set; }
         public long? na_dt { get; set; }
-        public string? invoice_by { get; set; }
-        public long? invoice_dt { get; set; }
         public string? allocate_by { get; set; }
         public long? allocate_dt { get; set; }
 
