@@ -312,7 +312,6 @@ export const GET_IN_GATE_BY_ID = gql`
           in_gate_guid
           inspection_dt
           ladder
-          last_release_dt
           last_test_cv
           manlid_comp_cv
           manlid_cover_cv

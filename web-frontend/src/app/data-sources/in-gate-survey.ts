@@ -23,7 +23,6 @@ export class InGateSurveyGO {
   public test_class_cv?: string;
   public dom_dt?: number | Date;
   public inspection_dt?: number;
-  public last_release_dt?: number;
   public manufacturer_cv?: string;
   public cladding_cv?: string;
   public max_weight_cv?: string;
@@ -92,7 +91,6 @@ export class InGateSurveyGO {
     this.test_class_cv = item?.test_class_cv;
     this.dom_dt = item?.dom_dt;
     this.inspection_dt = item?.inspection_dt;
-    this.last_release_dt = item?.last_release_dt;
     this.manufacturer_cv = item?.manufacturer_cv;
     this.cladding_cv = item?.cladding_cv;
     this.max_weight_cv = item?.max_weight_cv;
@@ -275,7 +273,6 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
         in_gate_guid
         inspection_dt
         ladder
-        last_release_dt
         last_test_cv
         manlid_comp_cv
         manlid_cover_cv
@@ -423,7 +420,6 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_MOVEMENT = gql`
         in_gate_guid
         inspection_dt
         ladder
-        last_release_dt
         last_test_cv
         test_class_cv
         test_dt
@@ -514,7 +510,6 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
         in_gate_guid
         inspection_dt
         ladder
-        last_release_dt
         last_test_cv
         test_class_cv
         test_dt
@@ -608,7 +603,6 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
             unit_type_guid
             update_by
             update_dt
-            last_release_dt
             customer_company {
               name
             }

@@ -36,9 +36,6 @@ export class SteamGO {
 
   public na_dt?: number;
 
-  public invoice_by?: string;
-  public invoice_dt?: number;
-
   public total_cost?: number;
 
   public create_dt?: number;
@@ -74,8 +71,6 @@ export class SteamGO {
     this.begin_dt = item.begin_dt;
     this.na_dt = item.na_dt;
     this.total_cost = item.total_cost;
-    this.invoice_by = item.invoice_by;
-    this.invoice_dt = item.invoice_dt;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
     this.create_dt = item.create_dt;
@@ -666,8 +661,6 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         estimate_dt
         estimate_no
         guid
-        invoice_by
-        invoice_dt
         job_no
         na_dt
         remarks
@@ -754,8 +747,6 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
         estimate_dt
         estimate_no
         guid
-        invoice_by
-        invoice_dt
         job_no
         na_dt
         remarks
