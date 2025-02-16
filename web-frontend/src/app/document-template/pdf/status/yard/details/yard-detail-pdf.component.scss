@@ -13,6 +13,7 @@
     display: flex;
     padding: 0px 10px 0px 10px;
 }
+
 .pdf-body15 {
     display: flex;
     padding: 0px 15px 0px 15px;
@@ -57,25 +58,29 @@
 .table_customer_info {
     border-collapse: collapse;
     width: 100%;
-    margin-bottom: 5px; /* Adds spacing below the table */
-    border: none; /* Removes border from the table */
+    margin-bottom: 5px;
+    /* Adds spacing below the table */
+    border: none;
+    /* Removes border from the table */
 }
+
 .table_customer_info tr,
 .table_customer_info td,
 .table_customer_info th {
-    border: 1px; /* Removes borders from table rows and cells */
+    border: 1px;
+    /* Removes borders from table rows and cells */
 }
 
-.table_customer_info td.sp20
-{
+.table_customer_info td.sp20 {
     text-align: right;
-    width: 20%; /* Removes borders from table rows and cells */
+    width: 20%;
+    /* Removes borders from table rows and cells */
 }
 
-.table_customer_info td.sp
-{
+.table_customer_info td.sp {
     text-align: right;
-    width:40%; /* Removes borders from table rows and cells */
+    width: 40%;
+    /* Removes borders from table rows and cells */
 }
 
 table {
@@ -102,7 +107,7 @@ td {
 tr.th {
     background-color: #353131;
     text-align: center;
-    
+
 }
 
 .dmg-repair-code-table {
@@ -226,15 +231,31 @@ tr.th {
 .detail-table.table {
     width: 100%;
     table-layout: fixed;
-  }
-  .detail-table.th, .detail-table.td {
+}
+
+.detail-table.th,
+.detail-table.td {
     word-wrap: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
+}
 
-.th-w5{width:5%}
-.th-w8{width:8%}
-.th-w10{width:10%}
-.th-w12{width:12%}
-.th-w15{width:15%}
+.th-w5 {
+    width: 5%
+}
+
+.th-w8 {
+    width: 8%
+}
+
+.th-w10 {
+    width: 10%
+}
+
+.th-w12 {
+    width: 12%
+}
+
+.th-w15 {
+    width: 15%
+}

@@ -2,27 +2,11 @@
   <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
 </div>
 <div #pdfTable id="pdfTable" mat-dialog-content>
-  
-
   <div id="pdf-form-body" class="pdf-container pdf-body">
-
-     @for (bCust of report_customer_tank_activity; track bCust) {
-  <div class="card">
-
-    <!-- <div class="row pdf-body">
-      <table  id="table_customer_info" class="table_customer_info">
-        <tr>
-          <td>{{translatedLangText.INVENTORY_PERIOD}} :</td>
-          <td> {{this.date}}</td>
-          <td class="sp20">({{this.invType}})</td>
-          <td class="sp"> {{translatedLangText.DATE}} :</td>
-          <td>{{GeneratedDate()}}</td>
-        </tr>
-      </table>
-    </div>  -->
-     
+    @for (bCust of report_customer_tank_activity; track bCust) {
+    <div class="card">
       <div class="row pdf-body">
-        <table  id="table_customer_info" class="table_customer_info">
+        <table id="table_customer_info" class="table_customer_info">
           <tr>
             <td>{{translatedLangText.CUSTOMER}} :</td>
             <td>{{this.DisplayCustomerName(bCust)}}</td>
@@ -34,7 +18,7 @@
             <td>{{GeneratedDate()}}</td>
           </tr>
         </table>
-      </div> 
+      </div>
       <table id="repair-part-table" class="repair-part-table">
         <tr class="group-header">
           <th class="th-w5">#</th>
@@ -60,29 +44,29 @@
           <th class="th-w12">{{translatedLangText.REMARKS}}</th>
         </tr>
         @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
-          <tr>
-            <td>{{ index + 1 }}</td> <!-- Row number -->
-            <td>{{ itm.tank_no }}</td> 
-            <td>{{ DisplayInDate(itm) }}</td> 
-            <td>{{ DisplayTakeInRef(itm) }}</td> 
-            <td>{{ DisplayCapacity(itm) }}</td> 
-            <td>{{ DisplayTareWeight(itm) }}</td> 
-            <td>{{ itm.tariff_cleaning?.cargo }}</td> 
-            <td>{{ DisplayCleanDate(itm) }}</td>
-            <td>{{ DisplayEstimateNo(itm) }}</td>
-            <td>{{ DisplayEstimateDate(itm) }}</td>
-            <td>{{ DisplayApprovalDate(itm) }}</td>
-            <td>{{ DisplayApprovalRef(itm) }}</td>
-            <td>{{ DisplayAVDate(itm) }}</td>
-            <td>{{ DisplayLastTest(itm) }}</td>
-            <td>{{ DisplayNextTest(itm) }}</td>
-            <!-- <td>{{ DisplayCleanCertDate(itm) }}</td> -->
-            <td>{{ DisplayReleaseBooking(itm) }}</td>
-            <td>{{ DisplayReleaseDate(itm) }}</td>
-            <td>{{ DisplayReleaseRef(itm) }}</td>
-            <td>{{ DisplayCurrentStatus(itm) }}</td>
-            <td>{{ DisplayRemarks(itm) }}</td>
-            <!-- <td>{{ itm.last_cargo }}</td> 
+        <tr>
+          <td>{{ index + 1 }}</td> <!-- Row number -->
+          <td>{{ itm.tank_no }}</td>
+          <td>{{ DisplayInDate(itm) }}</td>
+          <td>{{ DisplayTakeInRef(itm) }}</td>
+          <td>{{ DisplayCapacity(itm) }}</td>
+          <td>{{ DisplayTareWeight(itm) }}</td>
+          <td>{{ itm.tariff_cleaning?.cargo }}</td>
+          <td>{{ DisplayCleanDate(itm) }}</td>
+          <td>{{ DisplayEstimateNo(itm) }}</td>
+          <td>{{ DisplayEstimateDate(itm) }}</td>
+          <td>{{ DisplayApprovalDate(itm) }}</td>
+          <td>{{ DisplayApprovalRef(itm) }}</td>
+          <td>{{ DisplayAVDate(itm) }}</td>
+          <td>{{ DisplayLastTest(itm) }}</td>
+          <td>{{ DisplayNextTest(itm) }}</td>
+          <!-- <td>{{ DisplayCleanCertDate(itm) }}</td> -->
+          <td>{{ DisplayReleaseBooking(itm) }}</td>
+          <td>{{ DisplayReleaseDate(itm) }}</td>
+          <td>{{ DisplayReleaseRef(itm) }}</td>
+          <td>{{ DisplayCurrentStatus(itm) }}</td>
+          <td>{{ DisplayRemarks(itm) }}</td>
+          <!-- <td>{{ itm.last_cargo }}</td> 
             <td>{{ itm.in_date }}</td> 
             <td>{{ itm.out_date }}</td> 
             <td>{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
@@ -95,22 +79,20 @@
             <td>{{ (itm.residue_cost==="0.00"?'':itm.residue_cost)}}</td> 
             <td>{{ (itm.gateio_cost==="0.00"?'':itm.gateio_cost)}}</td> 
             <td>{{ (itm.total==="0.00"?'':itm.total) }}</td>  -->
-          </tr>
+        </tr>
         }
       </table>
-    
-  </div>
-  }
-  </div>
 
- 
+    </div>
+    }
+  </div>
 </div>
 <div mat-dialog-actions class="m-2 align-right">
   <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
     [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
       @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
-        file_download
+      file_download
       } @else {
       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
       }

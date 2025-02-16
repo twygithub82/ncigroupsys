@@ -22,6 +22,7 @@ import { RefreshTokenDialogComponent } from '@shared/components/refresh-token-di
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
+  private isRefreshing = false; // Prevent multiple simultaneous refresh calls
   private refreshPromptTimer: Subscription | null = null;
   private userActivitySubscription: Subscription | null = null;
 
@@ -42,6 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.startAutoLogoutTimer();
+    this.detectUserActivity();
     this.authService.tokenRefreshed.subscribe(() => this.resetAutoLogoutTimer());
     this.authService.userLoggedOut.subscribe(() => {
       this.clearAllTimers();
@@ -53,6 +55,39 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.clearAllTimers();
     this.userActivitySubscription?.unsubscribe();
+  }
+
+  private detectUserActivity() {
+    const activityEvents: Array<keyof DocumentEventMap> = ['mousemove', 'keydown', 'mousedown', 'touchstart'];
+  
+    this.userActivitySubscription = merge(
+      ...activityEvents.map(event => fromEvent<MouseEvent | KeyboardEvent | TouchEvent>(document, event))
+    )
+      .pipe(debounceTime(500)) // Prevent excessive calls (wait 500ms before reacting)
+      .subscribe(() => {
+        const tokenExpiration = this.authService.getTokenExpiration();
+        const now = Date.now();
+        const timeLeft = tokenExpiration ? tokenExpiration - now : 0; // Remaining token time in ms
+  
+        if (timeLeft > 600000 || this.isRefreshing) {
+          return; // Exit if more than 10 minutes remain or refresh is in progress
+        }
+  
+        console.log('User is active - refreshing token...');
+        this.isRefreshing = true; // Set flag to avoid duplicate requests
+  
+        this.authService.refreshToken().subscribe({
+          next: () => {
+            console.log('Token refreshed due to user activity');
+            this.isRefreshing = false; // Reset flag after successful refresh
+          },
+          error: () => {
+            console.error('Token refresh failed - Logging out user');
+            this.isRefreshing = false; // Reset flag on failure
+            this.authService.logout();
+          }
+        });
+      });
   }
 
   private startAutoLogoutTimer() {

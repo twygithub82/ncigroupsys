@@ -22,7 +22,6 @@ export class OutGateSurveyGO {
   public test_class_cv?: string;
   public dom_dt?: number | Date;
   public inspection_dt?: number;
-  public last_release_dt?: number;
   public manufacturer_cv?: string;
   public cladding_cv?: string;
   public max_weight_cv?: string;
@@ -91,7 +90,6 @@ export class OutGateSurveyGO {
     this.test_class_cv = item?.test_class_cv;
     this.dom_dt = item?.dom_dt;
     this.inspection_dt = item?.inspection_dt;
-    this.last_release_dt = item?.last_release_dt;
     this.manufacturer_cv = item?.manufacturer_cv;
     this.cladding_cv = item?.cladding_cv;
     this.max_weight_cv = item?.max_weight_cv;
@@ -195,7 +193,6 @@ export const QUERY_OUT_GATE_SURVEY_BY_ID_FOR_MOVEMENT = gql`
         out_gate_guid
         inspection_dt
         ladder
-        last_release_dt
         last_test_cv
         test_class_cv
         test_dt

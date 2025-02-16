@@ -84,13 +84,13 @@
          <div class="row">
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width"> 
-             <mat-label style="font-size: 13px;">{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
+             <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
              <input matInput formControlName="height_diameter" type="number" >
              </mat-form-field>  
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
-              <mat-label style="font-size: 13px;">{{translatedLangText.UNIT_TYPE}}</mat-label>
+              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
               <mat-select  formControlName="height_diameter_unit_cv" > 
                 <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                   {{ t.description }}
@@ -101,13 +101,13 @@
            </div>  
            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width"> 
-             <mat-label style="font-size: 13px;">{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
+             <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
              <input matInput formControlName="width_diameter" type="number"  >
              </mat-form-field>  
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
-              <mat-label style="font-size: 13px;">{{translatedLangText.UNIT_TYPE}}</mat-label>
+              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
               <mat-select  formControlName="width_diameter_unit_cv"> 
                 <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                   {{ t.description }}
@@ -122,13 +122,13 @@
           
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width"> 
-             <mat-label style="font-size: 13px;">{{translatedLangText.THICKNESS}}</mat-label>
+             <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
              <input matInput formControlName="thickness" type="number"  >
              </mat-form-field>  
            </div> 
            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
-              <mat-label style="font-size: 13px;">{{translatedLangText.UNIT_TYPE}}</mat-label>
+              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
               <mat-select  formControlName="thickness_unit_cv" > 
                 <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                   {{ t.description }}
@@ -139,7 +139,7 @@
            </div>  
            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width"> 
-             <mat-label style="font-size: 13px;">{{translatedLangText.LENGTH}}</mat-label>
+             <mat-label>{{translatedLangText.LENGTH}}</mat-label>
              <input matInput formControlName="length" type="number"  >
              </mat-form-field>
              @if (pcForm.get('length')?.hasError('existed')) {
@@ -150,7 +150,7 @@
            </div> 
            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
-              <mat-label style="font-size: 13px;">{{translatedLangText.UNIT_TYPE}}</mat-label>
+              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
               <mat-select  formControlName="length_unit_cv" > 
                 <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                   {{ t.description }}
