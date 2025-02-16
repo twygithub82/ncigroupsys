@@ -76,15 +76,23 @@ namespace IDMS.Billing.GqlTypes
                     updateBill.bill_to_guid = updateBilling.bill_to_guid;
                 }
 
+
+                List<BillingEstimateRequest> billingEstimateList = new List<BillingEstimateRequest>();
                 foreach (var item in billingEstimateRequests)
                 {
                     if (item.action.EqualsIgnore(ObjectAction.NEW) || item.action.EqualsIgnore(ObjectAction.EDIT))
+                    {
                         item.billing_guid = updateBilling.guid;
+                        billingEstimateList.Add(item);
+                    }
                     else if (item.action.EqualsIgnore(ObjectAction.CANCEL))
+                    {
                         item.billing_guid = null;
+                        billingEstimateList.Add(item);
+                    }
                 }
 
-                await EstimateHandling(context, user, currentDateTime, billingEstimateRequests);
+                await EstimateHandling(context, user, currentDateTime, billingEstimateList);
                 var res = await context.SaveChangesAsync();
 
                 //TODO
