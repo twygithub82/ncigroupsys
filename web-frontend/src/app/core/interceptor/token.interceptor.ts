@@ -31,13 +31,13 @@ export class TokenInterceptor implements HttpInterceptor {
       );
     }
 
-    const tokenExpiration = this.authService.getTokenExpiration();
-    const now = Date.now();
-    const timeLeft = tokenExpiration ? tokenExpiration - now : 0;
+    // const tokenExpiration = this.authService.getTokenExpiration();
+    // const now = Date.now();
+    // const timeLeft = tokenExpiration ? tokenExpiration - now : 0;
 
-    if (timeLeft <= 120000 && !this.isRefreshing) {
-      return this.refreshTokenAndRetry(request, next);
-    }
+    // if (timeLeft <= 600000 && !this.isRefreshing) {
+    //   return this.refreshTokenAndRetry(request, next);
+    // }
 
     if (accessToken) {
       request = this.addToken(request, accessToken);
@@ -88,26 +88,5 @@ export class TokenInterceptor implements HttpInterceptor {
         Authorization: `Bearer ${token}`
       }
     });
-  }
-
-  private refreshTokenAndRetry(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.isRefreshing = true;
-    this.refreshTokenSubject.next(null);
-
-    return this.authService.refreshToken().pipe(
-      switchMap(newToken => {
-        this.isRefreshing = false;
-        if (newToken) {
-          this.refreshTokenSubject.next(newToken.token);
-          request = this.addToken(request, newToken.token);
-        }
-        return next.handle(request);
-      }),
-      catchError(error => {
-        this.isRefreshing = false;
-        this.authService.logout();
-        return throwError(() => error);
-      })
-    );
   }
 }
