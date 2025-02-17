@@ -1453,7 +1453,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     if (this.historyState.selectedRow != null) {
 
       this.isDuplicate = this.historyState.action === 'DUPLICATE';
-      this.residue_guid= this.historyState.selectedResidue.guid;
+      this.residue_guid= this.historyState.selectedResidue?.guid;
       this.sotItem = this.historyState.selectedRow;
       this.residueItem = this.historyState.selectedResidue;
 
