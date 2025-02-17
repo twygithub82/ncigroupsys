@@ -65,7 +65,7 @@
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
 
-                      <input matInput formControlName="billing_branches" [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
+                      <input matInput formControlName="billing_branches"  [matAutocomplete]="customerCode">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
