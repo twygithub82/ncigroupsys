@@ -310,7 +310,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
   }
 
   getStorageDays(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem, free_storage: number = 0): number | undefined {
-    sotItem.out_gate = sotItem.out_gate?.filter(outGate => outGate.delete_dt === 0 || outGate.delete_dt === null);
+    sotItem.out_gate = sotItem.out_gate?.filter(outGate => outGate.delete_dt == 0 || outGate.delete_dt == null);
     var currentDateOut: Date = new Date();
 
     if (sotItem?.out_gate?.[0]?.eir_dt) {
@@ -319,7 +319,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     }
 
     if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
-      sotItem.in_gate = sotItem.in_gate?.filter(inGate => inGate.delete_dt === 0 || inGate.delete_dt === null);
+      sotItem.in_gate = sotItem.in_gate?.filter(inGate => inGate.delete_dt == 0 || inGate.delete_dt == null);
       if (sotItem?.in_gate?.[0]?.eir_dt) {
         const createDtInSeconds = sotItem.in_gate[0].eir_dt;
         const createDate = new Date(createDtInSeconds * 1000);
@@ -332,7 +332,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
         return 0;
       }
     } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {
-      sotItem.cleaning = sotItem.cleaning?.filter(clean => clean.delete_dt === 0 || clean.delete_dt === null);
+      sotItem.cleaning = sotItem.cleaning?.filter(clean => clean.delete_dt == 0 || clean.delete_dt == null);
       if (sotItem?.cleaning?.[0]?.complete_dt) {
         const createDtInSeconds = sotItem.cleaning[0].complete_dt;
         const createDate = new Date(createDtInSeconds * 1000);
@@ -346,7 +346,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
       }
     } else if (pdItem?.storage_cal_cv === 'AFTER_AV_DATE') {
       if (sotItem?.repair) {
-        sotItem.repair = sotItem.repair?.filter(repair => repair.delete_dt === 0 || repair.delete_dt === null);
+        sotItem.repair = sotItem.repair?.filter(repair => repair.delete_dt == 0 || repair.delete_dt == null);
         let qcCompletedList = sotItem?.repair?.[0]?.repair_part?.filter(rp =>
           rp.job_order?.status_cv === "QC_COMPLETED"
         );
