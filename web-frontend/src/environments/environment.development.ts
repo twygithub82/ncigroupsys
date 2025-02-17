@@ -9,7 +9,6 @@ export const environment = {
   apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
   fileManagerURL: 'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
   graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
-  //graphQLUrl:'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
   graphqlWsUrl: 'wss://tlx-idms-global-notification.azurewebsites.net/graphql',
 };
 
