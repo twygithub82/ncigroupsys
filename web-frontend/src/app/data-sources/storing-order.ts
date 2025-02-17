@@ -113,6 +113,7 @@ export const SEARCH_STORING_ORDER_BY_ID = gql`
         storing_order_tank {
           certificate_cv
           clean_status_cv
+          cleaning_remarks
           create_by
           create_dt
           delete_dt
@@ -122,16 +123,27 @@ export const SEARCH_STORING_ORDER_BY_ID = gql`
           guid
           job_no
           last_cargo_guid
+          last_test_guid
+          liftoff_job_no
+          lifton_job_no
           owner_guid
+          preinspect_job_no
           purpose_cleaning
           purpose_repair_cv
           purpose_steam
           purpose_storage
+          release_job_no
+          release_note
           remarks
+          repair_remarks
           required_temp
           so_guid
           status_cv
+          steaming_remarks
+          storage_remarks
+          takein_job_no
           tank_no
+          tank_note
           tank_status_cv
           unit_type_guid
           update_by
