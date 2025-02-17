@@ -221,10 +221,19 @@
       </div>
       <div class="body overflow-auto">
         @for(sotRow of sotRepList; track sotRow) {
+          <mat-accordion>
+            <mat-expansion-panel>
+               <mat-expansion-panel-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
+                <mat-panel-title [ngClass]="'custom-title'" >
+                  {{sotRow.tank_no}}
+                </mat-panel-title>
+                <mat-panel-description>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
         <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
           <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
             <mat-card-title [ngClass]="{'pt-1': true}">
-              {{sotRow.tank_no}}
+              
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
@@ -276,7 +285,7 @@
                 <ng-container matColumnDef="customer">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER}}</mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let repairRow" class="">
-                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(repairRow.storing_order_tank?.storing_order?.customer_company)}}
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text" matTooltip={{repairRow.storing_order_tank?.storing_order?.customer_company?.name}}>{{repairRow.storing_order_tank?.storing_order?.customer_company?.code}}</span>
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_type">
@@ -357,6 +366,8 @@
           <mat-card-actions [ngClass]="'empty-card-actions'">
           </mat-card-actions>
         </mat-card>
+      </mat-expansion-panel>
+    </mat-accordion>
         }
         <!-- No result -->
         @if (!(sotDS.loading$ | async) && !sotRepList.length) {

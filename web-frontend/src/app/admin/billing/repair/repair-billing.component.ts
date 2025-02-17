@@ -92,12 +92,12 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   
     'select',
     'customer',
-    'customer_type',
+   // 'customer_type',
     'estimate_no',
     'job_no',
     'net_cost',
     'status_cv',
-    'remarks',
+    //'remarks',
     'invoice_no',
     //'actions'
   ];

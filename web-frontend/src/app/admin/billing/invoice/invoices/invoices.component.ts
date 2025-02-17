@@ -48,6 +48,7 @@ import { BillingDS, BillingItem ,BillingEstimateRequest} from 'app/data-sources/
 import { MatCardModule } from '@angular/material/card';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import {UpdateInvoicesDialogComponent} from '../form-dialog/update-invoices.component'
+import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 
 @Component({
   selector: 'app-invoices',
@@ -134,7 +135,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     CURRENCY:'COMMON-FORM.CURRENCY',
     BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
-    CONFIRM_REMOVE_INVOICES:'COMMON-FORM.CONFIRM-REMOVE-INVOICES'
+    CONFIRM_REMOVE_INVOICES:'COMMON-FORM.CONFIRM-REMOVE-INVOICES',
+    BILLING_CURRENCY:'COMMON-FORM.BILLING-CURRENCY',
   }
 
   distinctCustomerCodes:any;
@@ -149,8 +151,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  curDS:CurrencyDS;
 
   selection = new GuidSelectionModel<any>(true, []);
+  currencyList:CurrencyItem[]=[];
   billList:any[]=[];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
@@ -188,6 +192,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
+    this.curDS=new CurrencyDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -223,7 +228,9 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       eir_status_cv: [''],
       yard_cv: [''],
       invoice_no:[''],
-      depot_status_cv:['IN_YARD']
+      depot_status_cv:['IN_YARD'],
+      currency:[''],
+
     });
   }
 
@@ -299,7 +306,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       this.yardCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('depotCv').subscribe(data => {
-      this.depotCvList = data;
+      this.depotCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.curDS.search({},{sequence:'ASC'},100).subscribe(data=>{
+      this.currencyList=data;
     });
     this.search();
   }
@@ -408,7 +418,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
        where.and.push(itm);
        
         
-      }
+       }
 
        if(this.searchForm!.get('invoice_no')?.value)
          {
@@ -416,26 +426,40 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
          }
    
        if (this.searchForm!.get('customer_code')?.value) {
-         if(!where.storing_order) where.storing_order={};
-         where.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
-        // where.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
-         // where.storing_order_tank={customer_company:{code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
+        // if(!where.storing_order) where.storing_order={};
+         const itm:any={or:[]};
+        
+         itm.or.push({cleaning:{some:{storing_order_tank:{storing_order:{customer_company_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}}}}}});
+         itm.or.push({repair_customer:{some:{storing_order_tank:{storing_order:{customer_company_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}}}}}});
+         itm.or.push({repair_owner:{some:{storing_order_tank:{storing_order:{customer_company_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}}}}}});
+         itm.or.push({residue:{some:{storing_order_tank:{storing_order:{customer_company_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}}}}}});
+         itm.or.push({steaming:{some:{storing_order_tank:{storing_order:{customer_company_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}}}}}});
+         itm.or.push({gateio_billing_sot:{some:{storing_order_tank:{storing_order:{customer_company_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}}}}}});
+         itm.or.push({lolo_billing_sot:{some:{storing_order_tank:{storing_order:{customer_company_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}}}}}});
+         itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:{storing_order:{customer_company_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}}}}}});
+         itm.or.push({storage_billing_sot:{some:{storing_order_tank:{storing_order:{customer_company_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}}}}}});
+         where.and.push(itm);
        }
+
+       if(this.searchForm!.get('currency')?.value)
+        {
+          where.currency_guid ={eq:this.searchForm!.get('currency')?.value.guid};
+        }
    
        if(this.searchForm!.get('branch_code')?.value)
        {
 
         const itm:any={or:[]};
         
-        itm.or.push({cleaning:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-        itm.or.push({repair_customer:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-        itm.or.push({repair_owner:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-        itm.or.push({residue:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-        itm.or.push({steaming:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-        itm.or.push({gateio_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-        itm.or.push({lolo_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-        itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-        itm.or.push({storage_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
+        itm.or.push({cleaning:{some:{bill_to_guid:{eq: this.searchForm!.get('branch_code')?.value.guid}}}});
+        itm.or.push({repair_customer:{some:{bill_to_guid:{eq: this.searchForm!.get('branch_code')?.value.guid}}}});
+        itm.or.push({repair_owner:{some:{bill_to_guid:{eq: this.searchForm!.get('branch_code')?.value.guid}}}});
+        itm.or.push({residue:{some:{bill_to_guid:{eq: this.searchForm!.get('branch_code')?.value.guid}}}});
+        itm.or.push({steaming:{some:{sbill_to_guid:{eq: this.searchForm!.get('branch_code')?.value.guid}}}});
+        itm.or.push({gateio_billing_sot:{some:{bill_to_guid:{eq: this.searchForm!.get('branch_code')?.value.guid}}}});
+        itm.or.push({lolo_billing_sot:{some:{bill_to_guid:{eq: this.searchForm!.get('branch_code')?.value.guid}}}});
+        itm.or.push({preinsp_billing_sot:{some:{bill_to_guid:{eq: this.searchForm!.get('branch_code')?.value.guid}}}});
+        itm.or.push({storage_billing_sot:{some:{bill_to_guid:{eq: this.searchForm!.get('branch_code')?.value.guid}}}});
         where.and.push(itm);
        }
    

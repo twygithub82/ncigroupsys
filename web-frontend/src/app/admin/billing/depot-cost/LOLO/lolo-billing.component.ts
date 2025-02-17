@@ -92,8 +92,8 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     'eir_dt',
     'last_cargo',
     'purpose',
-    'tank_status_cv',
     'cost',
+    'tank_status_cv',
     'invoice_no',
     //  'invoiced',
     // 'action'

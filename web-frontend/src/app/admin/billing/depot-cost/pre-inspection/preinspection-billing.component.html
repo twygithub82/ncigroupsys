@@ -244,12 +244,12 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
                 {{translatedLangText.CUSTOMER}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2'">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
                 <span
-                  class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
+                  class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text" matTooltip={{row.storing_order_tank?.storing_order?.customer_company?.name}}>{{row.storing_order_tank?.storing_order?.customer_company?.code}}</span>
               </mat-cell>
             </ng-container>
 

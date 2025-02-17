@@ -1506,7 +1506,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     // Navigate to the route and pass the JSON object
     if(this.isFromBranch)
     {
-      this.router.navigate(['/admin/master/billing-branch'], {
+      this.router.navigate(['/admin/master/customer'], {
         state: this.historyState
 
       }

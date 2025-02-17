@@ -47,6 +47,20 @@
                       </mat-autocomplete>
                     </mat-form-field>
                   </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+                      <input matInput formControlName="branch_code" [formControl]="branchCodeControl"
+                        [matAutocomplete]="branchCode">
+                      <mat-autocomplete #branchCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                        @for (cc of branch_companyList; track cc) {
+                        <mat-option [value]="cc">
+                          {{ccDS.displayName(cc)}}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </div>
                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
@@ -117,7 +131,18 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                 
+                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.BILLING_CURRENCY }}</mat-label>
+                       <mat-select  formControlName="currency" >
+                        <mat-option *ngFor="let cc of currencyList" [value]="cc">
+                          <ng-container *ngIf="cc !== null">
+                            {{cc.currency_code }}
+                          </ng-container>
+                        </mat-option>
+                    </mat-select>
+                    </mat-form-field>
+                  </div>
                  
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
                     <button mat-mini-fab color="primary" (click)="search()">
@@ -167,9 +192,10 @@
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
                     <span
-                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
+                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text" matTooltip={{row.customer_company?.name}}>{{row.customer_company?.code}}</span>
                   </mat-cell>
                 </ng-container>
+               
                 <ng-container matColumnDef="invoice_dt">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                     {{translatedLangText.INVOICE_DATE}}

@@ -1,0 +1,17 @@
+.customer-text {
+    max-width: 6ch; /* Limit text width to 6 characters */
+    overflow: hidden;
+    white-space: nowrap; /* Prevents wrapping */
+    text-overflow: ellipsis; /* Adds "..." if text is too long */
+}
+
+.custom-title {
+    font-size: 16px; /* Increase font size */
+    font-weight: bold;
+   // border: 2px solid black; /* Add a border */
+    padding: 2px; /* Add some spacing */
+    display: inline-block; /* Ensures border wraps around text properly */
+    //border-radius: 4px; /* Optional: Rounded corners */
+   // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3); /* Box shadow for panel */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow effect */
+}
