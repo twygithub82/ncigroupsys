@@ -1607,6 +1607,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       startWith(''),
       debounceTime(300),
       tap(value => {
+        if(value===undefined) return;
         var searchCriteria = '';
         if (typeof value === 'string') {
           searchCriteria = value;
