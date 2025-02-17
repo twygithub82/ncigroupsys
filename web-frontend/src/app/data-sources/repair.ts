@@ -638,6 +638,7 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
           update_by
           update_dt
           storing_order {
+            customer_company_guid
             customer_company {
               code
               name
