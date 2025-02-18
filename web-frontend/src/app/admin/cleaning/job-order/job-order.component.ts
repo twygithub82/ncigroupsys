@@ -1,62 +1,57 @@
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule, DatePipe, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-import {CancelFormDialogComponent}from './dialogs/cancel-form-dialog/cancel-form-dialog.component'
+import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+import { Utility } from 'app/utilities/utility';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
-import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { RepairItem } from 'app/data-sources/repair';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.component";
 import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
-import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-job-order',
@@ -72,13 +67,10 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -92,8 +84,6 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    JobOrderQCComponent,
-    JobOrderTaskComponent,
     BayOverviewComponent
 ]
 })
