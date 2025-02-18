@@ -71,11 +71,11 @@ import { SurveyOthersDetailsComponent } from './survey/others-details/survey-oth
 import { UserNewComponent } from './management/user-new/user-new.component';
 import { UserComponent } from './management/user/user.component';
 import { GroupComponent } from './management/group/group.component';
-import {GroupNewComponent} from './management/group-new/group-new.component'
+import { GroupNewComponent } from './management/group-new/group-new.component'
 import { SurveyPeriodicTestComponent } from './survey/periodic-test/survey-periodic-test.component';
 import { SurveyPeriodicTestDetailsComponent } from './survey/periodic-test-details/survey-periodic-test-details.component';
 import { ResidueDisposalEstimateApprovalComponent } from './residue-disposal/estimate-approval/estimate-approval.component';
-import {ResidueDisposalEstimateApprovalNewComponent} from './residue-disposal/estimate-approval-new/estimate-approval-new.component';
+import { ResidueDisposalEstimateApprovalNewComponent } from './residue-disposal/estimate-approval-new/estimate-approval-new.component';
 import { SteamEstimateApprovalNewComponent } from './steam/estimate-approval-new/estimate-approval-new.component';
 import { SteamEstimateApprovalComponent } from './steam/estimate-approval/estimate-approval.component';
 import { OutGateSurveyComponent } from './inventory/out-gate-survey/out-gate-survey.component';
@@ -102,6 +102,61 @@ import { MainCustomerComponent } from './master/customer/main-customer.component
 import { MainTankActivityComponent } from './reports/tank-activity/main-tank-activity.component';
 import { MainStatusComponent } from './reports/status/main-status.component';
 import { SteamMonthlyComponent } from './admin-reports/steam-monthly/steam-monthly.component';
+// const ADMIN_ROUTE: Routes = [
+//   {
+//     path: 'parameter',
+//     loadChildren: () => import('./parameter/parameter.module').then(m => m.ParameterModule)
+//   },
+//   {
+//   path: 'inventory',
+//   loadChildren: () => import('./inventory/inventory.routes').then(m => m.INVENTORY_ROUTE)
+// },
+//   {
+//     path: 'tariff',
+//     loadChildren: () => import('./tariff/tariff.module').then(m => m.TariffModule)
+//   },
+//   {
+//     path: 'package',
+//     loadChildren: () => import('./package/package.module').then(m => m.PackageModule)
+//   },
+//   {
+//     path: 'repair',
+//     loadChildren: () => import('./repair/repair.module').then(m => m.RepairModule)
+//   },
+//   {
+//     path: 'residue-disposal',
+//     loadChildren: () => import('./residue-disposal/residue-disposal.module').then(m => m.ResidueDisposalModule)
+//   },
+//   {
+//     path: 'steam',
+//     loadChildren: () => import('./steam/steam.module').then(m => m.SteamModule)
+//   },
+//   {
+//     path: 'survey',
+//     loadChildren: () => import('./survey/survey.module').then(m => m.SurveyModule)
+//   },
+//   {
+//     path: 'billing',
+//     loadChildren: () => import('./billing/billing.routes').then(m => m.BILLING_ROUTE)
+//   },
+//   {
+//     path: 'cleaning',
+//     loadChildren: () => import('./cleaning/cleaning.routes').then(m => m.CLEANING_ROUTE)
+//   },
+//   {
+//     path: 'reports',
+//     loadChildren: () => import('./reports/reports.module').then(m => m.ReportsModule)
+//   },
+//   {
+//     path: 'management',
+//     loadChildren: () => import('./management/management.module').then(m => m.ManagementModule)
+//   },
+//   {
+//     path: 'master',
+//     loadChildren: () => import('./master/master.module').then(m => m.MasterModule)
+//   }
+// ];
+
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -112,419 +167,475 @@ export const ADMIN_ROUTE: Routes = [
     path: "parameter/cleaning-methods",
     component: CleaningMethodsComponent,
   },
-  {
-    path: "inventory/storing-order",
-    component: StoringOrderComponent,
-    canActivate: [AuthGuard],
-    data: { expectedRole: ['Admin'] }
-  },
-  {
-    path: "inventory/storing-order/new",
-    component: StoringOrderNewComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: "inventory/storing-order/edit/:id",
-    component: StoringOrderNewComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: "inventory/in-gate",
-    component: InGateComponent,
-  },
-  {
-    path: "inventory/in-gate/details/:id",
-    component: InGateDetailsComponent,
-  },
-  {
-    path: "inventory/in-gate-survey",
-    component: InGateSurveyComponent,
-  },
-  {
-    path: "inventory/in-gate-survey/survey-form/:id",
-    component: InGateSurveyFormComponent,
-  },
-  {
-    path: "inventory/tank-movement",
-    component: TankMovementComponent,
-  },
-  {
-    path: "inventory/tank-movement/details/:id",
-    component: TankMovementDetailsComponent,
-  },
-  {
-    path: "inventory/out-gate",
-    component: OutGateComponent,
-  },
-  {
-    path: "inventory/out-gate/details/:id",
-    component: OutGateDetailsComponent,
-  },
-  {
-    path: "inventory/out-gate-survey",
-    component: OutGateSurveyComponent,
-  },
-  {
-    path: "inventory/out-gate-survey/survey-form/:id/:roSotId",
-    component: OutGateSurveyFormComponent,
-  },
-  {
-    path: "inventory/booking",
-    component: BookingNewComponent,
-  },
-  {
-    path: "inventory/scheduling",
-    component: SchedulingNewComponent,
-  },
-  {
-    path: "inventory/release-order",
-    component: ReleaseOrderComponent,
-  },
-  {
-    path: "inventory/release-order/new",
-    component: ReleaseOrderDetailsComponent,
-  },
-  {
-    path: "inventory/release-order/edit/:id",
-    component: ReleaseOrderDetailsComponent,
-  },
-  {
-    path: "inventory/transfer",
-    component: TransferComponent,
-  },
-  {
-    path: "inventory/transfer/details/:id",
-    component: TransferDetailsComponent,
-  },
-  {
-    path: "parameter/cleaning-category",
-    component: CleaningCategoryComponent,
-  },
-  {
-    path: "parameter/cleaning-methods",
-    component: CleaningMethodsComponent,
-  },
-  {
-    path: "tariff/tariff-cleaning",
-    component: MainTariffCleaningComponent,
-  },
-  {
-    path: "tariff/tariff-cleaning/new",
-    component: TariffCleaningNewComponent,
-  },
-  {
-    path: "tariff/tariff-cleaning/edit/:id",
-    component: TariffCleaningNewComponent,
-  },
   // {
-  //   path: "tariff/tariff-labour",
-  //   component: TariffLabourComponent,
-  // },
-  {
-    path: "tariff/tariff-depot",
-    component: MainTariffDepotComponent,
-  },
-  {
-    path: "tariff/tariff-repair",
-    component: TariffRepairComponent,
-  },
-  // {
-  //   path: "tariff/tariff-residue",
-  //   component: TariffResidueComponent,
+  //   path: "inventory/storing-order",
+  //   component: StoringOrderComponent,
+  //   canActivate: [AuthGuard],
+  //   data: { expectedRole: ['Admin'] }
   // },
   // {
-  //   path: "tariff/tariff-buffer",
-  //   component: TariffBufferComponent,
-  // },
-  {
-    path: "tariff/tariff-steam",
-    component: TariffSteamComponent,
-  },
-  {
-    path: "package/package-cleaning",
-    component: MainPackageCleaningComponent,
-  },
-  {
-    path: "package/package-depot",
-    component: MainPackageDepotComponent,
-  },
-  // {
-  //   path: "package/package-labour",
-  //   component: PackageLabourComponent,
+  //   path: "inventory/storing-order/new",
+  //   component: StoringOrderNewComponent,
+  //   canActivate: [AuthGuard],
   // },
   // {
-  //   path: "package/package-residue",
-  //   component: PackageResidueComponent,
-  // },
-  {
-    path: "package/package-repair",
-    component: PackageRepairComponent,
-  },
-  {
-    path: "package/package-steam",
-    component: MainPackageSteamComponent,
-  },
-  // {
-  //   path: "package/exclusive-steam",
-  //   component: ExclusiveSteamComponent,
+  //   path: "inventory/storing-order/edit/:id",
+  //   component: StoringOrderNewComponent,
+  //   canActivate: [AuthGuard],
   // },
   // {
-  //   path: "package/package-buffer",
-  //   component: PackageBufferComponent,
+  //   path: "inventory/in-gate",
+  //   component: InGateComponent,
+  // },
+  // {
+  //   path: "inventory/in-gate/details/:id",
+  //   component: InGateDetailsComponent,
+  // },
+  // {
+  //   path: "inventory/in-gate-survey",
+  //   component: InGateSurveyComponent,
+  // },
+  // {
+  //   path: "inventory/in-gate-survey/survey-form/:id",
+  //   component: InGateSurveyFormComponent,
+  // },
+  // {
+  //   path: "inventory/tank-movement",
+  //   component: TankMovementComponent,
+  // },
+  // {
+  //   path: "inventory/tank-movement/details/:id",
+  //   component: TankMovementDetailsComponent,
+  // },
+  // {
+  //   path: "inventory/out-gate",
+  //   component: OutGateComponent,
+  // },
+  // {
+  //   path: "inventory/out-gate/details/:id",
+  //   component: OutGateDetailsComponent,
+  // },
+  // {
+  //   path: "inventory/out-gate-survey",
+  //   component: OutGateSurveyComponent,
+  // },
+  // {
+  //   path: "inventory/out-gate-survey/survey-form/:id/:roSotId",
+  //   component: OutGateSurveyFormComponent,
+  // },
+  // {
+  //   path: "inventory/booking",
+  //   component: BookingNewComponent,
+  // },
+  // {
+  //   path: "inventory/scheduling",
+  //   component: SchedulingNewComponent,
+  // },
+  // {
+  //   path: "inventory/release-order",
+  //   component: ReleaseOrderComponent,
+  // },
+  // {
+  //   path: "inventory/release-order/new",
+  //   component: ReleaseOrderDetailsComponent,
+  // },
+  // {
+  //   path: "inventory/release-order/edit/:id",
+  //   component: ReleaseOrderDetailsComponent,
+  // },
+  // {
+  //   path: "inventory/transfer",
+  //   component: TransferComponent,
+  // },
+  // {
+  //   path: "inventory/transfer/details/:id",
+  //   component: TransferDetailsComponent,
   // },
   {
-    path: "repair/estimate",
-    component: RepairEstimateComponent,
-  },
-  {
-    path: "repair/estimate/new/:id",
-    component: RepairEstimateNewComponent,
-  },
-  {
-    path: "repair/estimate/edit/:id/:repair_id",
-    component: RepairEstimateNewComponent,
-    data: { action: 'edit' }
-  },
-  {
-    path: "repair/estimate/duplicate/:id/:repair_id",
-    component: RepairEstimateNewComponent,
-    data: { action: 'duplicate' }
-  },
-  {
-    path: "repair/approval",
-    component: RepairApprovalComponent,
-  },
-  {
-    path: "repair/approval/view/:id",
-    component: RepairApprovalViewComponent,
-  },
-  {
-    path: "repair/job-order",
-    component: JobOrderComponent,
-  },
-  {
-    path: "repair/job-order/allocation/:id",
-    component: JobOrderAllocationComponent,
-  },
-  {
-    path: "repair/job-order/task/:id/:repair_id",
-    component: JobOrderTaskDetailsComponent,
-  },
-  {
-    path: "repair/job-order/qc/view/:id",
-    component: RepairQCViewComponent,
-  },
-  {
-    path: "master/estimate-template",
-    component: EstimateTemplateComponent,
-  },
-  {
-    path: "master/estimate-template/new/:id",
-    component: EstimateTemplateNewComponent,
-  },
-  {
-    path: "master/customer",
-    component: MainCustomerComponent,
-  },
-  {
-    path: "master/customer/new/:id",
-    component: CustomerNewComponent,
-  },
-  {
-    path: "management/user",
-    component: UserComponent,
-  },
-  {
-    path: "management/user/new/:id",
-    component: UserNewComponent,
-  },
-  {
-    path: "management/group",
-    component: GroupComponent,
-  },
-  {
-    path: "management/group/new/:id",
-    component: GroupNewComponent,
+    path: 'inventory',
+    loadChildren: () => import('./inventory/inventory.routes').then(m => m.INVENTORY_ROUTE)
   },
   // {
-  //   path: "master/billing-branch",
-  //   component: BillingBranchComponent,
+  //   path: "parameter/cleaning-category",
+  //   component: CleaningCategoryComponent,
+  // },
+  // {
+  //   path: "parameter/cleaning-methods",
+  //   component: CleaningMethodsComponent,
   // },
   {
-    path: "master/billing-branch/new/:id",
-    component: BillingBranchNewComponent,
+    path: 'parameter',
+    loadChildren: () => import('./parameter/parameter.routes').then(m => m.PARAMETER_ROUTE)
   },
+  // {
+  //   path: "tariff/tariff-cleaning",
+  //   component: MainTariffCleaningComponent,
+  // },
+  // {
+  //   path: "tariff/tariff-cleaning/new",
+  //   component: TariffCleaningNewComponent,
+  // },
+  // {
+  //   path: "tariff/tariff-cleaning/edit/:id",
+  //   component: TariffCleaningNewComponent,
+  // },
+  // // {
+  // //   path: "tariff/tariff-labour",
+  // //   component: TariffLabourComponent,
+  // // },
+  // {
+  //   path: "tariff/tariff-depot",
+  //   component: MainTariffDepotComponent,
+  // },
+  // {
+  //   path: "tariff/tariff-repair",
+  //   component: TariffRepairComponent,
+  // },
+  // // {
+  // //   path: "tariff/tariff-residue",
+  // //   component: TariffResidueComponent,
+  // // },
+  // // {
+  // //   path: "tariff/tariff-buffer",
+  // //   component: TariffBufferComponent,
+  // // },
+  // {
+  //   path: "tariff/tariff-steam",
+  //   component: TariffSteamComponent,
+  // },
   {
-    path: "cleaning/approval",
-    component: CleaningApprovalComponent,
+    path: 'tariff',
+    loadChildren: () => import('./tariff/tariff.routes').then(m => m.TARIFF_ROUTE)
   },
+  // {
+  //   path: "package/package-cleaning",
+  //   component: MainPackageCleaningComponent,
+  // },
+  // {
+  //   path: "package/package-depot",
+  //   component: MainPackageDepotComponent,
+  // },
+  // // {
+  // //   path: "package/package-labour",
+  // //   component: PackageLabourComponent,
+  // // },
+  // // {
+  // //   path: "package/package-residue",
+  // //   component: PackageResidueComponent,
+  // // },
+  // {
+  //   path: "package/package-repair",
+  //   component: PackageRepairComponent,
+  // },
+  // {
+  //   path: "package/package-steam",
+  //   component: MainPackageSteamComponent,
+  // },
+  // // {
+  // //   path: "package/exclusive-steam",
+  // //   component: ExclusiveSteamComponent,
+  // // },
+  // // {
+  // //   path: "package/package-buffer",
+  // //   component: PackageBufferComponent,
+  // // },
   {
-    path: "residue-disposal/estimate-approval",
-    component: ResidueDisposalEstimateApprovalComponent,
+    path: 'package',
+    loadChildren: () => import('./package/package.routes').then(m => m.PACKAGE_ROUTE)
   },
+  // {
+  //   path: "repair/estimate",
+  //   component: RepairEstimateComponent,
+  // },
+  // {
+  //   path: "repair/estimate/new/:id",
+  //   component: RepairEstimateNewComponent,
+  // },
+  // {
+  //   path: "repair/estimate/edit/:id/:repair_id",
+  //   component: RepairEstimateNewComponent,
+  //   data: { action: 'edit' }
+  // },
+  // {
+  //   path: "repair/estimate/duplicate/:id/:repair_id",
+  //   component: RepairEstimateNewComponent,
+  //   data: { action: 'duplicate' }
+  // },
+  // {
+  //   path: "repair/approval",
+  //   component: RepairApprovalComponent,
+  // },
+  // {
+  //   path: "repair/approval/view/:id",
+  //   component: RepairApprovalViewComponent,
+  // },
+  // {
+  //   path: "repair/job-order",
+  //   component: JobOrderComponent,
+  // },
+  // {
+  //   path: "repair/job-order/allocation/:id",
+  //   component: JobOrderAllocationComponent,
+  // },
+  // {
+  //   path: "repair/job-order/task/:id/:repair_id",
+  //   component: JobOrderTaskDetailsComponent,
+  // },
+  // {
+  //   path: "repair/job-order/qc/view/:id",
+  //   component: RepairQCViewComponent,
+  // },
   {
-    path: "residue-disposal/approval",
-    component: ResidueDisposalApprovalComponent,
+    path: 'repair',
+    loadChildren: () => import('./repair/repair.routes').then(m => m.REPAIR_ROUTE)
   },
+  // {
+  //   path: "master/estimate-template",
+  //   component: EstimateTemplateComponent,
+  // },
+  // {
+  //   path: "master/estimate-template/new/:id",
+  //   component: EstimateTemplateNewComponent,
+  // },
+  // {
+  //   path: "master/customer",
+  //   component: MainCustomerComponent,
+  // },
+  // {
+  //   path: "master/customer/new/:id",
+  //   component: CustomerNewComponent,
+  // },
+  // // {
+  // //   path: "master/billing-branch",
+  // //   component: BillingBranchComponent,
+  // // },
+  // {
+  //   path: "master/billing-branch/new/:id",
+  //   component: BillingBranchNewComponent,
+  // },
   {
-    path: "residue-disposal/estimate",
-    component: ResidueDisposalEstimateComponent,
+    path: 'master',
+    loadChildren: () => import('./master/master.routes').then(m => m.MASTER_ROUTE)
   },
+  // {
+  //   path: "management/user",
+  //   component: UserComponent,
+  // },
+  // {
+  //   path: "management/user/new/:id",
+  //   component: UserNewComponent,
+  // },
+  // {
+  //   path: "management/group",
+  //   component: GroupComponent,
+  // },
+  // {
+  //   path: "management/group/new/:id",
+  //   component: GroupNewComponent,
+  // },
   {
-    path: "residue-disposal/estimate/new/:id",
-    component: ResidueDisposalEstimateNewComponent,
+    path: 'management',
+    loadChildren: () => import('./management/management.routes').then(m => m.MANAGEMENT_ROUTE)
   },
+  // {
+  //   path: "residue-disposal/estimate-approval",
+  //   component: ResidueDisposalEstimateApprovalComponent,
+  // },
+  // {
+  //   path: "residue-disposal/approval",
+  //   component: ResidueDisposalApprovalComponent,
+  // },
+  // {
+  //   path: "residue-disposal/estimate",
+  //   component: ResidueDisposalEstimateComponent,
+  // },
+  // {
+  //   path: "residue-disposal/estimate/new/:id",
+  //   component: ResidueDisposalEstimateNewComponent,
+  // },
+  // {
+  //   path: "residue-disposal/estimate-approval/new/:id",
+  //   component: ResidueDisposalEstimateApprovalNewComponent,
+  // },
+  // {
+  //   path: "residue-disposal/approval/view/:id",
+  //   component: ResidueDisposalApprovalViewComponent,
+  // },
+  // {
+  //   path: "residue-disposal/job-order",
+  //   component: JobOrderResidueDisposalComponent,
+  // },
+  // {
+  //   path: "residue-disposal/job-order/allocation/:id",
+  //   component: JobOrderAllocationResidueDisposalComponent,
+  // },
+  // {
+  //   path: "residue-disposal/job-order/task/:id/:residue_id",
+  //   component: ResidueJobOrderTaskDetailsComponent,
+  // },
+  // {
+  //   path: "residue-disposal/qc/view/:id",
+  //   component: ResidueQCViewComponent,
+  // },
   {
-    path: "residue-disposal/estimate-approval/new/:id",
-    component: ResidueDisposalEstimateApprovalNewComponent,
+    path: 'residue-disposal',
+    loadChildren: () => import('./residue-disposal/residue-disposal.routes').then(m => m.RESIDUE_DISPOSAL_ROUTE)
   },
+  // {
+  //   path: "cleaning/approval",
+  //   component: CleaningApprovalComponent,
+  // },
+  // {
+  //   path: "cleaning/job-order",
+  //   component: JobOrderCleaningComponent,
+  // },
+  // {
+  //   path: "cleaning/job-order/task/:id/:clean_id",
+  //   component: CleaningJobOrderTaskDetailsComponent,
+  // },
   {
-    path: "residue-disposal/approval/view/:id",
-    component: ResidueDisposalApprovalViewComponent,
+    path: 'cleaning',
+    loadChildren: () => import('./cleaning/cleaning.routes').then(m => m.CLEANING_ROUTE)
   },
+  // {
+  //   path: "steam/approval",
+  //   component: SteamApprovalComponent,
+  // },
+  // {
+  //   path: "steam/estimate",
+  //   component: SteamEstimateComponent,
+  // },
+  // {
+  //   path: "steam/estimate/new/:id",
+  //   component: SteamEstimateNewComponent,
+  // },
+  // {
+  //   path: "steam/approval/view/:id",
+  //   component: SteamApprovalViewComponent,
+  // },
+  // {
+  //   path: "steam/estimate-approval",
+  //   component: SteamEstimateApprovalComponent,
+  // },
+  // {
+  //   path: "steam/estimate-approval/new/:id",
+  //   component: SteamEstimateApprovalNewComponent,
+  // },
+  // {
+  //   path: "steam/job-order",
+  //   component: JobOrderSteamComponent,
+  // },
+  // {
+  //   path: "steam/job-order/:idx",
+  //   component: JobOrderSteamComponent,
+  // },
+  // {
+  //   path: "steam/job-order/allocation/:id",
+  //   component: JobOrderAllocationSteamComponent,
+  // },
+  // {
+  //   path: "steam/job-order/task/:id/:steam_id",
+  //   component: SteamJobOrderTaskDetailsComponent,
+  // },
+  // {
+  //   path: "steam/job-order/monitor/:id/:steam_id",
+  //   component: SteamJobOrderTaskMonitorComponent,
+  // },
+  // {
+  //   path: "steam/qc/view/:id",
+  //   component: SteamQCViewComponent,
+  // },
   {
-    path: "cleaning/job-order",
-    component: JobOrderCleaningComponent,
+    path: 'steam',
+    loadChildren: () => import('./steam/steam.routes').then(m => m.STEAM_ROUTE)
   },
+  // {
+  //   path: "survey/others",
+  //   component: SurveyOthersComponent,
+  // },
+  // {
+  //   path: "survey/others/details/:id",
+  //   component: SurveyOthersDetailsComponent,
+  // },
+  // {
+  //   path: "survey/periodic-test",
+  //   component: SurveyPeriodicTestComponent,
+  // },
+  // {
+  //   path: "survey/periodic-test/details/:id",
+  //   component: SurveyPeriodicTestDetailsComponent,
+  // },
   {
-    path: "cleaning/job-order/task/:id/:clean_id",
-    component: CleaningJobOrderTaskDetailsComponent,
+    path: 'survey',
+    loadChildren: () => import('./survey/survey.routes').then(m => m.SURVEY_ROUTE)
   },
+  // {
+  //   path: "billing/depot",
+  //   component: MainDepotComponent,
+  // },
+  // {
+  //   path: "billing/depot/lolo",
+  //   component: LOLOBillingComponent,
+  // },
+  // {
+  //   path: "billing/depot/preinspection",
+  //   component: PreinspectionBillingComponent,
+  // },
+  // {
+  //   path: "billing/depot/storage",
+  //   component: StorageBillingComponent,
+  // },
+  // {
+  //   path: "billing/clean",
+  //   component: MainCleaningComponent,
+  // },
+  // {
+  //   path: "billing/repair",
+  //   component: RepairBillingComponent,
+  // },
+  // {
+  //   path: "billing/residue",
+  //   component: ResidueBillingComponent,
+  // },
+  // {
+  //   path: "billing/steam",
+  //   component: SteamBillingComponent,
+  // },
+  // {
+  //   path: "billing/invoices",
+  //   component: MainInvoiceComponent,
+  // },
+  // {
+  //   path: "billing/pending",
+  //   component: MainPendingComponent,
+  // },
+  // {
+  //   path: "billing/billed-tank",
+  //   component: BilledTankComponent,
+  // },
   {
-    path: "residue-disposal/job-order",
-    component: JobOrderResidueDisposalComponent,
+    path: 'billing',
+    loadChildren: () => import('./billing/billing.routes').then(m => m.BILLING_ROUTE)
   },
+  // {
+  //   path: "reports/tank-activity",
+  //   component: MainTankActivityComponent,
+  // },
+  // {
+  //   path: "reports/status",
+  //   component: MainStatusComponent,
+  // },
   {
-    path: "residue-disposal/job-order/allocation/:id",
-    component: JobOrderAllocationResidueDisposalComponent,
+    path: 'reports',
+    loadChildren: () => import('./reports/reports.routes').then(m => m.REPORTS_ROUTE)
   },
+  // {
+  //   path: "admin-reports/steam-monthly",
+  //   component: SteamMonthlyComponent,
+  // },
   {
-    path: "residue-disposal/job-order/task/:id/:residue_id",
-    component: ResidueJobOrderTaskDetailsComponent,
-  },
-  {
-    path: "residue-disposal/qc/view/:id",
-    component: ResidueQCViewComponent,
-  },
-  {
-    path: "steam/approval",
-    component: SteamApprovalComponent,
-  },
-  {
-    path: "steam/estimate",
-    component: SteamEstimateComponent,
-  },
-  {
-    path: "steam/estimate/new/:id",
-    component: SteamEstimateNewComponent,
-  },
-  {
-    path: "steam/approval/view/:id",
-    component: SteamApprovalViewComponent,
-  },
-  {
-    path: "steam/estimate-approval",
-    component: SteamEstimateApprovalComponent,
-  },
-  {
-    path: "steam/estimate-approval/new/:id",
-    component: SteamEstimateApprovalNewComponent,
-  },
-  {
-    path: "steam/job-order",
-    component: JobOrderSteamComponent,
-  },
-  {
-    path: "steam/job-order/:idx",
-    component: JobOrderSteamComponent,
-  },
-  {
-    path: "steam/job-order/allocation/:id",
-    component: JobOrderAllocationSteamComponent,
-  },
-  {
-    path: "steam/job-order/task/:id/:steam_id",
-    component: SteamJobOrderTaskDetailsComponent,
-  },
-  {
-    path: "steam/job-order/monitor/:id/:steam_id",
-    component: SteamJobOrderTaskMonitorComponent,
-  },
-  {
-    path: "steam/qc/view/:id",
-    component: SteamQCViewComponent,
-  },
-  {
-    path: "survey/others",
-    component: SurveyOthersComponent,
-  },
-  {
-    path: "survey/others/details/:id",
-    component: SurveyOthersDetailsComponent,
-  },
-  {
-    path: "survey/periodic-test",
-    component: SurveyPeriodicTestComponent,
-  },
-  {
-    path: "survey/periodic-test/details/:id",
-    component: SurveyPeriodicTestDetailsComponent,
-  },
-  {
-    path: "billing/depot",
-    component: MainDepotComponent,
-  },
-  {
-    path: "billing/depot/lolo",
-    component: LOLOBillingComponent,
-  },
-  {
-    path: "billing/depot/preinspection",
-    component: PreinspectionBillingComponent,
-  },
-  {
-    path: "billing/depot/storage",
-    component: StorageBillingComponent,
-  },
-  {
-    path: "billing/clean",
-    component: MainCleaningComponent,
-  },
-  {
-    path: "billing/repair",
-    component: RepairBillingComponent,
-  },
-  {
-    path: "billing/residue",
-    component: ResidueBillingComponent,
-  },
-  {
-    path: "billing/steam",
-    component: SteamBillingComponent,
-  },
-  {
-    path: "billing/invoices",
-    component: MainInvoiceComponent,
-  },
-  {
-    path: "billing/pending",
-    component: MainPendingComponent,
-  },
-  {
-    path: "billing/billed-tank",
-    component: BilledTankComponent,
-  },
-  {
-    path: "reports/tank-activity",
-    component: MainTankActivityComponent,
-  },
-  {
-    path: "reports/status",
-    component: MainStatusComponent,
-  },
-  {
-    path: "admin-reports/steam-monthly",
-    component: SteamMonthlyComponent,
+    path: 'admin-reports',
+    loadChildren: () => import('./admin-reports/admin-reports.routes').then(m => m.ADMIN_REPORTS_ROUTE)
   },
 ];
 
