@@ -5,7 +5,7 @@ import { PageLoaderComponent } from './layout/page-loader/page-loader.component'
 import { AuthService } from '@core/service/auth.service';
 import { Subscription, timer, fromEvent, merge } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { RefreshTokenDialogComponent } from '@shared/components/refresh-token-dialog/refresh-token-dialog.component';
 
 @Component({
