@@ -99,7 +99,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-CATEGORY'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.CLEANING-MANAGEMENT.TEXT'
   ]
 
   translatedLangText: any = {};

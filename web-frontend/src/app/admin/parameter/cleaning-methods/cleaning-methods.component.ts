@@ -99,9 +99,10 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     
   ];
 
-  pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-CATEGORY'
+  pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-METHODS'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.CLEANING-MANAGEMENT.TEXT'
   ]
 
   translatedLangText: any = {};
