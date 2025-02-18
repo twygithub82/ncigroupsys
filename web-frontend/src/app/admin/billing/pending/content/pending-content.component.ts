@@ -1099,7 +1099,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   
       const dialogRef = this.dialog.open(PendingInvoiceCostDetailPdfComponent, {
         width: '85vw',
-        height: '85vh',
+        maxHeight: '85vh',
         data: {
           billing_customers:repCustomers,
           cut_off_dt: Utility.convertDateToStr(new Date(cut_off_dt))
@@ -1130,7 +1130,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       
           const dialogRef = this.dialog.open(PendingSummaryPdfComponent, {
             width: '65vw',
-           // height: '80vh',
+            maxHeight: '85vh',
             data: {
               billing_customers:repCustomers,
               cut_off_dt: Utility.convertDateToStr(new Date(cut_off_dt))

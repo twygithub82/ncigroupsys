@@ -35,61 +35,19 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { report_billing_customer } from 'app/data-sources/billing';
-import {report_status, report_status_yard} from 'app/data-sources/reports';
-import {
-  ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis,
-  ApexDataLabels,  ApexPlotOptions,  ApexYAxis,  ApexLegend,
-  ApexStroke,  ApexFill,  ApexTooltip,  ApexTitleSubtitle,
-  ApexGrid,  ApexMarkers,  ApexNonAxisChartSeries,  ApexResponsive,
-  NgApexchartsModule} from 'ng-apexcharts';
-import{BarChartModule, Color, LegendPosition, ScaleType} from '@swimlane/ngx-charts'
-
-  export type HorizontalBarOptions={
-    showXAxis?:boolean;
-    showYAxis?:boolean;
-    gradient?:boolean ;
-    showLegend?:boolean ;
-    showXAxisLabel?:boolean;
-    showYAxisLabel?:boolean ;
-    legendPosition: LegendPosition ;
-    timeline?:boolean ;
-    colorScheme?: Color;
-    showLabels?:boolean ;
-    // data goes here
-    single?:any ;
-    hbarxAxisLabel?:string;
-  };
-
-  export type ChartOptions = {
-    series?: ApexAxisChartSeries;
-    series2?: ApexNonAxisChartSeries;
-    chart?: ApexChart;
-    dataLabels?: ApexDataLabels;
-    plotOptions?: ApexPlotOptions;
-    yaxis?: ApexYAxis;
-    xaxis?: ApexXAxis;
-    fill?: ApexFill;
-    tooltip?: ApexTooltip;
-    stroke?: ApexStroke;
-    legend?: ApexLegend;
-    title?: ApexTitleSubtitle;
-    colors?: string[];
-    grid?: ApexGrid;
-    markers?: ApexMarkers;
-    labels: string[];
-    responsive: ApexResponsive[];
-  };
+import { report_customer_tank_activity, report_status,report_status_yard } from 'app/data-sources/reports';
+// import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
   report_summary_status: report_status[],
- 
- 
+  yards:CodeValuesItem[]
+  
 }
 
 @Component({
-  selector: 'app-yard-chart-pdf',
-  templateUrl: './yard-chart-pdf.component.html',
-  styleUrls: ['./yard-chart-pdf.component.scss'],
+  selector: 'app-location-status-summary-pdf',
+  templateUrl: './location-status-summary-pdf.component.html',
+  styleUrls: ['./location-status-summary-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -98,12 +56,10 @@ export interface DialogData {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatProgressBarModule,
-    NgApexchartsModule,
-    BarChartModule,
+    MatProgressBarModule
   ],
 })
-export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -285,22 +241,16 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
     SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
     INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
-    TANK_STATUS:'COMMON-FORM.TANK-STATUS',
-    YARD_STATUS:'COMMON-FORM.YARD-STATUS',
-    TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER'
+    LOCATION_STATUS:'COMMON-FORM.LOCATION-STATUS'
     
 
   }
 
-  public pieChartOptions!: Partial<ChartOptions>;
-  public columnChartOptions!: Partial<ChartOptions>;
-  public horizontalBarOptions!:Partial<HorizontalBarOptions>;
-  
   type?: string | null;
-  // steamDS: SteamDS;
-  // steamPartDS: SteamPartDS;
-  // sotDS: StoringOrderTankDS;
-  // ccDS: CustomerCompanyDS;
+  steamDS: SteamDS;
+  steamPartDS: SteamPartDS;
+  sotDS: StoringOrderTankDS;
+  ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   repair_guid?: string | null;
   customer_company_guid?: string | null;
@@ -327,7 +277,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   chunkedDamageCodeCvList: any[][] = [];
   repairCodeCvList: CodeValuesItem[] = [];
   chunkedRepairCodeCvList: any[][] = [];
-  yardCvList: CodeValuesItem[] = [];
+  unitTypeCvList: CodeValuesItem[] = [];
 
   scale = 2.5;
   imageQuality = 0.7;
@@ -342,13 +292,13 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   report_summary_status:report_status[]=[];
-  date:string='';
-  invType:string='';
+  yards:CodeValuesItem[]=[];
+  
 
   
 
   constructor(
-    public dialogRef: MatDialogRef<YardChartPdfComponent>,
+    public dialogRef: MatDialogRef<LocationStatusSummaryPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -357,99 +307,29 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer) {
     super();
-    
     this.translateLangText();
-    this.InitialDefaultData();
-    
-    // this.steamDS = new SteamDS(this.apollo);
-    // this.steamPartDS = new SteamPartDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-     this.cvDS = new CodeValuesDS(this.apollo);
+    this.steamDS = new SteamDS(this.apollo);
+    this.steamPartDS = new SteamPartDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
     // this.repair_guid = data.repair_guid;
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
     // this.existingPdf = data.existingPdf;
     this.report_summary_status= data.report_summary_status;
+    this.yards=data.yards;
     
-    this.loadData();
+
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-    
   }
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
    
-  }
-
-  public loadData() {
-    const queries = [
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'yardCv', codeValType: 'YARD' },
-      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      // { alias: 'yardCv', codeValType: 'YARD' },
-      // { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
-    ];
-    this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      if(data.length)
-        {
-          this.purposeOptionCvList = data;
-          this.processHorizontalBarValue(this.report_summary_status);
-          this.processCustomerStatus(this.report_summary_status);
-        }
-    });
-
-    this.cvDS.connectAlias('yardCv').subscribe(data => {
-      if(data.length)
-      {
-        this.yardCvList = data;
-        this.processTankStatus(this.report_summary_status);
-      }
-      
-    });
- 
-    
-  }
-
-  async getCodeValuesData(): Promise<void> {
-    const queries = [
-      // { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      // { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      // { alias: 'TankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      // { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-      // { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-      // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-       { alias: 'yardCv', codeValType: 'YARD' },
-    ];
-
-    await this.cvDS.getCodeValuesByTypeAsync(queries);
-
-    // Wrap all alias connections in promises
-    const promises = [
-     
-   
-      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
-        this.purposeOptionCvList = data || [];
-        
-      }),
-
-      firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
-        this.yardCvList = data || [];
-        
-      }),
-      
-    ];
-
-    // Wait for all promises to resolve
-    await Promise.all(promises);
   }
 
   async generatePDF(): Promise<void> {
@@ -657,7 +537,102 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
- 
+  getRepairData(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.repair_guid!).subscribe({
+        next: (data) => resolve(data),
+        error: (err) => reject(err),
+      });
+    });
+  }
+
+  getRepairPdf(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
+        next: (data) => resolve(data),
+        error: (err) => reject(err),
+      });
+    });
+  }
+
+  async getCodeValuesData(): Promise<void> {
+    const queries = [
+      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+      { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
+      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+    ];
+
+    await this.cvDS.getCodeValuesByTypeAsync(queries);
+
+    // Wrap all alias connections in promises
+    const promises = [
+      firstValueFrom(this.cvDS.connectAlias('groupNameCv')).then(async data => {
+        this.groupNameCvList = data || [];
+        const subqueries: any[] = [];
+        data.map(d => {
+          if (d.child_code) {
+            let q = { alias: d.child_code, codeValType: d.child_code };
+            const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+            if (!hasMatch) {
+              subqueries.push(q);
+            }
+          }
+        });
+
+        // Process subqueries if any
+        if (subqueries.length > 0) {
+          await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
+
+          for (const s of subqueries) {
+            const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
+            if (subData) {
+              this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
+            }
+          }
+        }
+
+      }),
+      firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
+        this.yesnoCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
+        this.soTankStatusCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
+        this.purposeOptionCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
+        this.testTypeCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('testClassCv')).then(data => {
+        this.testClassCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('partLocationCv')).then(data => {
+        this.partLocationCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('damageCodeCv')).then(data => {
+        this.damageCodeCvList = data || [];
+        this.chunkedDamageCodeCvList = this.chunkArray(this.damageCodeCvList, 10);
+      }),
+      firstValueFrom(this.cvDS.connectAlias('repairCodeCv')).then(data => {
+        this.repairCodeCvList = data || [];
+        this.chunkedRepairCodeCvList = this.chunkArray(this.repairCodeCvList, 10);
+      }),
+      firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
+        this.unitTypeCvList = data || [];
+      })
+    ];
+
+    // Wait for all promises to resolve
+    await Promise.all(promises);
+  }
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -679,14 +654,62 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     return -1;
   }
 
+  getLastTest(igs: any): string | undefined {
+    return this.getLastTestIGS(igs);
+  }
+
+  getLastTestIGS(igs: any): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
+
+    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
+      const test_type = igs.last_test_cv;
+      const test_class = igs.test_class_cv;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
+    }
+    return "";
+  }
+
   
+
+  getTestTypeDescription(codeVal: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
+  }
+
+  getTestClassDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
+  }
+
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
+  }
+
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
- 
+  displayTankPurpose(sot: any) {
+    let purposes: any[] = [];
+    if (sot?.purpose_storage) {
+      purposes.push(this.getPurposeOptionDescription('STORAGE'));
+    }
+    if (sot?.purpose_cleaning) {
+      purposes.push(this.getPurposeOptionDescription('CLEANING'));
+    }
+    if (sot?.purpose_steam) {
+      purposes.push(this.getPurposeOptionDescription('STEAM'));
+    }
+    if (sot?.purpose_repair_cv) {
+      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
+    }
+    return purposes.join('; ');
+  }
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -886,368 +909,22 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
    }
    GetReportTitle():string
    {
-     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.SUMMARY_REPORT}`
+     return `${this.translatedLangText.LOCATION_STATUS} ${this.translatedLangText.SUMMARY_REPORT}`
    }
 
-   processCustomerStatus(repStatus:report_status[])
-   {
-    if (this.columnChartOptions.xaxis)   
-      {
-    const topTenReports = repStatus
-    .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
-    .slice(0, 10); // Get the top 10
+   displayTankNo(yard_cv:CodeValuesItem, yards: report_status_yard[] | undefined): string | undefined {
+     var result = yards?.find(y=>y.code==yard_cv.code_val);
 
-    var categories:any =[
-    ];
-    topTenReports.map(p=>
-        
-      categories.push(p.code)
-    );
+     if(result)
+     {
+      return `${result?.storing_order_tank?.length||0}`;
+     }
+     else
+     {
+       return '0';
+     }
+
     
-     var series:any=[];
-
-     this.purposeOptionCvList.map(c=>{
-
-      var values:number[]=[];
-      switch(c.code_val)
-        {
-          case "STEAM":
-               topTenReports.forEach(t=>{
-                var value:number =0;
-                 t.yards?.forEach(y=>{
-                    value+=Number(y.noTank_steam||0);
-                 });
-                 values.push(value);
-               });
-               series.push({name:c.description,data:values});
-            break;
-          case "CLEANING":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_clean||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
-            break;
-          case "REPAIR":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_repair||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
-            break;
-          case "STORAGE":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_storage||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
-            break;
-          case "IN_SURVEY":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_in_survey||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
-            break;
-        }
-     });
-    
-    
-        this.columnChartOptions.xaxis =  {
-          type: 'category',
-          categories: categories,
-          labels: {
-            style: {
-              colors: '#9aa0ac',
-            },
-          },
-        };
-        //categories;
-
-      
-      this.columnChartOptions.series=series;
-    }
-   }
-   processTankStatus(repStatus:report_status[])
-   {
-    var yardInfo:any =[
-    ];
-    this.yardCvList.map(p=>{
-        
-      yardInfo.push({code:p.code_val,name:p.description,value:0 });
-    });
-    repStatus.map(r=>{
-      r.yards?.map(y=>{
-        var yInfo = yardInfo.find((i:{ code: string,name:string,value:number })=>(i.code===y.code ));
-        if(yInfo)
-        {
-           yInfo.value += Number(y.noTank_repair)+Number(y.noTank_steam)+Number(y.noTank_clean)+Number(y.noTank_storage)+Number(y.noTank_in_survey);
-        }
-      });
-    });
-    var labels:any=[];
-    var series:any=[];
-    yardInfo.forEach((y:{ code: string,name:string,value:number })=>{
-      labels.push(y.name);
-      series.push(y.value);
-    });
-
-     this.pieChartOptions.labels=labels;
-     this.pieChartOptions.series2=series;
-   }
-
-   processHorizontalBarValue(repStatus:report_status[])
-   {
-      var singleValues:any =[
-      ];
-      this.purposeOptionCvList.map(p=>{
-          
-          singleValues.push({name:p.description,value:0 });
-      });
-      repStatus.map(r=>{
-        r.yards?.map(y=>{
-        this.purposeOptionCvList.map(p=>{
-          var s = singleValues.find((g:{ name: string })=>(g.name===p.description ));
-          if(s)
-          {
-            switch(p.code_val)
-            {
-              case "STEAM":
-                s.value +=y.noTank_steam;
-                break;
-              case "CLEANING":
-                s.value +=y.noTank_clean;
-                break;
-              case "OFFHIRE":
-              case "REPAIR":
-                s.value +=y.noTank_repair;
-                break;
-              case "STORAGE":
-                s.value +=y.noTank_storage;
-                break;
-              case "IN_SURVEY":
-                s.value +=y.noTank_in_survey;
-                break;
-            }
-          }
-        });
-
-        });
-          //let s = singleValues.find(s=>s.name===r.)
-      });
-
-      this.horizontalBarOptions.single=singleValues.filter((s:{name:string})=>s.name!="Offhire");
-
-   }
-   InitialDefaultData()
-   {
-    // pie chart
-    this.pieChartOptions = {
-      chart: {
-        width: 360,
-        type: 'pie',
-        foreColor: '#9aa0ac',
-        toolbar: {
-          show: true,
-        },
-      },
-      labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
-      series2: [44, 55, 13, 43, 22],
-      series: [
-        {
-          name: 'PRODUCT A',
-          data: [44, 55, 41, 67, 22, 43],
-        },
-        {
-          name: 'PRODUCT B',
-          data: [13, 23, 20, 8, 13, 27],
-        },
-        {
-          name: 'PRODUCT C',
-          data: [11, 17, 15, 15, 21, 14],
-        },
-        {
-          name: 'PRODUCT D',
-          data: [21, 7, 25, 13, 22, 8],
-        },
-      ],
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200,
-            },
-            legend: {
-              position: 'bottom',
-            },
-          },
-        },
-      ],
-      xaxis: {
-        type: 'category',
-        categories: [
-          '2018-09-19T00:00:00',
-          '2018-09-19T01:30:00',
-          '2018-09-19T02:30:00',
-          '2018-09-19T03:30:00',
-          '2018-09-19T04:30:00',
-        ],
-        labels: {
-          style: {
-            colors: '#9aa0ac',
-          },
-        },
-      },
-    };
-    // radar chart
-
-    this.columnChartOptions = {
-      chart: {
-        height: 350,
-        type: 'bar',
-        stacked: true,
-        toolbar: {
-          show: true,
-        },
-        zoom: {
-          enabled: true,
-        },
-        foreColor: '#9aa0ac',
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            legend: {
-              position: 'bottom',
-              offsetX: -5,
-              offsetY: 0,
-            },
-          },
-        },
-      ],
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          // endingShape: 'rounded',
-          columnWidth: '180%',
-        },
-      },
-      grid: {
-        show: true,
-        borderColor: '#9aa0ac',
-        strokeDashArray: 1,
-      },
-      series: [
-        {
-          name: 'PRODUCT A',
-          data: [44, 55, 41, 67, 22, 43],
-        },
-        {
-          name: 'PRODUCT B',
-          data: [13, 23, 20, 8, 13, 27],
-        },
-        {
-          name: 'PRODUCT C',
-          data: [11, 17, 15, 15, 21, 14],
-        },
-        {
-          name: 'PRODUCT D',
-          data: [21, 7, 25, 13, 22, 8],
-        },
-      ],
-      xaxis: {
-        type: 'category',
-        categories: [
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-        ],
-        labels: {
-          style: {
-            colors: '#9aa0ac',
-          },
-        },
-      },
-      yaxis: {
-        // labels: {
-        //   show:false,
-        //   style: {
-        //     colors: ['#000000'],
-        //   },
-        // },
-      },
-      legend: {
-        position: 'bottom',
-        offsetY: 0,
-      },
-      fill: {
-        opacity: 1,
-      },
-    };
-
-    this.horizontalBarOptions={
-      hbarxAxisLabel:this.translatedLangText.NO_OF_TANKS,
-      showXAxis : true,
-      showYAxis : true,
-      gradient : false,
-      showLegend : false,
-      showXAxisLabel : true,
-      showYAxisLabel : true,
-      legendPosition: LegendPosition.Right,
-      timeline : true,
-      colorScheme:  {
-        domain: ['#9370DB', '#87CEFA', '#FA8072', '#FF7F50', '#90EE90', '#9370DB'],
-        group: ScaleType.Ordinal,
-        selectable: true,
-        name: 'Customer Usage',
-      },
-      showLabels : true,
-      // data goes here
-       single : [
-        {
-          name: 'China',
-          value: 2243772,
-        },
-        {
-          name: 'USA',
-          value: 1826000,
-        },
-        {
-          name: 'India',
-          value: 1173657,
-        },
-        {
-          name: 'Japan',
-          value: 857363,
-        },
-        {
-          name: 'Germany',
-          value: 496750,
-        },
-        {
-          name: 'France',
-          value: 204617,
-        },
-      ]
-    };
-
-   }
+  }
   
 }

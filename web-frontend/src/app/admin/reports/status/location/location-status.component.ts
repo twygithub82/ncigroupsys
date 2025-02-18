@@ -50,8 +50,10 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { BillingDS, BillingEstimateRequest,BillingItem,BillingInputRequest } from 'app/data-sources/billing';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import {report_customer_tank_activity} from 'app/data-sources/reports';
+import {report_customer_tank_activity, report_status, report_status_yard} from 'app/data-sources/reports';
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/charts/yard-chart-pdf.component';
+import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
 
 @Component({
   selector: 'app-location-status-report',
@@ -161,7 +163,9 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     DATE:'COMMON-FORM.DATE',
     INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
     SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    YARD_STATUS:'COMMON-FORM.YARD-STATUS'
+    YARD_STATUS:'COMMON-FORM.YARD-STATUS',
+    YARD:'COMMON-FORM.YARD',
+    ONE_CONDITION_NEEDED:'COMMON-FORM.ONE-CONDITION-NEEDED',
   }
 
   invForm?: UntypedFormGroup;
@@ -194,6 +198,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   inventoryTypeCvList: CodeValuesItem[] = [];
+  yardCvList:CodeValuesItem[]=[];
 
   processType:string="STEAMING";
   billingParty:string="CUSTOMER";
@@ -211,6 +216,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   invoiceNoControl= new FormControl('', [Validators.required]);
   invoiceDateControl= new FormControl('', [Validators.required]);
   invoiceTotalCostControl= new FormControl('0.00');
+  noCond:boolean=false;
 
   constructor(
     public httpClient: HttpClient,
@@ -261,7 +267,8 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       tank_no: [''],
       eir_dt_start:[''],
       eir_dt_end:[''],
-      inv_type: ['MASTER_IN']
+      inv_type: ['MASTER_IN'],
+      yard:['']
       
     });
   }
@@ -322,10 +329,11 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
+      { alias: 'yardCv', codeValType: 'YARD' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
-      this.inventoryTypeCvList = data;
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      this.yardCvList = data || [];
     });
     // this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
     //   this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
@@ -383,111 +391,79 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   search(report_type:number)
   {
 
+    var cond_counter=0;
     let queryType =1;
     const where: any = {};
-    this.selectedEstimateItem=undefined;
-    this.selectedEstimateLabourCost=0;
-    this.stmEstList =[];
-    this.selection.clear();
+  
     
-    var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
-    
-    if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
-    {
-       queryType=2;
-    }
-
-    if (this.searchForm!.get('tank_no')?.value) {
-      where.tank_no = {contains: this.searchForm!.get('tank_no')?.value };
-    }
-
-    if (this.searchForm!.get('customer_code')?.value) {
+    where.tank_status_cv = {neq: "RELEASED"};
+    if (this.searchForm?.get('customer_code')?.value) {
      // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
+      where.customer_company = { code:{eq: this.searchForm?.get('customer_code')?.value.code }};
+      cond_counter++;
     }
 
-    
-    if (this.searchForm!.get('eir_no')?.value) {
-      
-      var cond :any ={ some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
 
-      if(queryType==1)
-      {
-        where.in_gate = cond;
+    if (this.searchForm?.get('eir_no')?.value) {
+      var cond :any ={eir_no:{contains: this.searchForm!.get('eir_no')?.value }};
+      if(!where.in_gate) {
+        where.in_gate={};
+        where.in_gate.some={};
+        where.in_gate.some.and=[];
       }
-      else
-      {
-        where.out_gate = cond;
+        where.in_gate.some.and.push(cond);
+        cond_counter++;
+     }
+
+     if (this.searchForm?.get('yard')?.value) {
+      var yards: string[] = this.searchForm!.get('yard')?.value?.map((y: any) => y.code_val) || [];
+
+      var cond :any ={yard_cv:{in: yards }};
+      if(!where.in_gate) {
+        where.in_gate={};
+        where.in_gate.some={};
+        where.in_gate.some.and=[];
       }
-    }
+        where.in_gate.some.and.push(cond);
+        cond_counter++;
+     }
 
-    var date:string=` - ${Utility.convertDateToStr(new Date())}`;
-    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      var cond :any ={some:{eir_dt:{gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'],true) }}};
-      date=`${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
-      if(queryType==1)
-        {
-          where.in_gate={};
-          where.in_gate = cond;
-        }
-        else
-        {
-          where.out_gate={};
-          where.out_gate =  cond;
-        }
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
-   
-    if (this.searchForm!.get('last_cargo')?.value) {
-      where.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
-    }
 
-   
+     if (this.searchForm?.get('tank_no')?.value) {
+      // if(!where.storing_order_tank) where.storing_order_tank={};
+       where.tank_no = { eq: this.searchForm?.get('tank_no')?.value.code };
+       cond_counter++;
+     }
+
+     this.noCond=(cond_counter===0);
+     if(this.noCond) return;
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined , report_type,queryType,invType,date);
-  }
-
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string,report_type?:number,queryType?:number,invType?:string,date?:string) {
-   // this.selection.clear();
-
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined , report_type);
    
-
-    if(queryType==1)
-    {
-      this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-        .subscribe(data => {
-          this.sotList = data;
-          this.endCursor = this.stmDS.pageInfo?.endCursor;
-          this.startCursor = this.stmDS.pageInfo?.startCursor;
-          this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-          this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-          this.ProcessReportCustomerTankActivity(invType!,date!,report_type!);
-          //this.checkInvoicedAndGetTotalCost();
-          //this.checkInvoiced();
-          //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
-        });
-      }
-      else if(queryType==2)
-      {
-        this.subs.sink = this.sotDS.searchStoringOrderTanksOutGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-        .subscribe(data => {
-          this.sotList = data;
-          this.endCursor = this.stmDS.pageInfo?.endCursor;
-          this.startCursor = this.stmDS.pageInfo?.startCursor;
-          this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-          this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-
-          //this.checkInvoicedAndGetTotalCost();
-          //this.checkInvoiced();
-          this.ProcessReportCustomerTankActivity(invType!,date!,report_type!);
-        });
-
-      }
     
-
-    this.pageSize = pageSize;
-    this.pageIndex = pageIndex;
   }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string,report_type?:number) {
+    // this.selection.clear();
+ 
+    
+ 
+     // if(queryType==1)
+     // {
+       this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+         .subscribe(data => {
+           this.sotList = data;
+           this.endCursor = this.stmDS.pageInfo?.endCursor;
+           this.startCursor = this.stmDS.pageInfo?.startCursor;
+           this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
+           this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+           this.ProcessReportStatus(report_type!);
+           //this.checkInvoicedAndGetTotalCost();
+           //this.checkInvoiced();
+           //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
+         });
+      
+   }
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
@@ -549,6 +525,9 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     return retval;
   }
 
+  displayYard(codeValType: CodeValuesItem | undefined): string  {
+    return this.cvDS.getCodeDescription(codeValType?.code_val, this.yardCvList)!;
+  }
   displayTankPurpose(sot: StoringOrderTankItem) {
     return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
   }
@@ -607,7 +586,8 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       tank_no: '',
       eir_dt_start:'',
       eir_dt_end:'',
-      inv_type: ['MASTER_IN']
+      inv_type: ['MASTER_IN'],
+      yard:''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
@@ -619,31 +599,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     const numRows = this.stmEstList.length;
     return numSelected === numRows;
   }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-     this.isAllSelected()
-       ? this.selection.clear()
-       : this.stmEstList.forEach((row) =>
-           this.selection.select(row)
-         );
-    this.calculateTotalCost();
-  }
-
-  AllowToSave():boolean{
-    let retval:boolean=false;
-    if(this.selection.selected.length>0)
-    {
-        if(this.invoiceDateControl.valid && this.invoiceNoControl.valid)
-        {
-          return true;
-        }
-    }
-
-    return retval;
-  }
-
-
 
      delete(event:Event){
     
@@ -714,84 +669,10 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     this.invoiceDateControl.reset('');
   }
 
-  calculateTotalCost()
-    {
-    this.invoiceTotalCostControl.setValue('0.00');
-    const totalCost = this.selection.selected.reduce((accumulator, s) => {
-      // Add buffer_cost and cleaning_cost of the current item to the accumulator
-      //var cost:number = this.selectedEstimateLabourCost||0;
-      var itm:any = s;
-      return accumulator + itm.total_cost;
-      //return accumulator+ Number(stmItm.net_cost||0);
-    }, 0); // Initialize accumulator to 0
-    this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
-  }
-   toggleRow(row:SteamItem)
-   {
-    
-     this.selection.toggle(row);
-     this.SelectFirstItem();
-     this.calculateTotalCost();
-   }
+  
 
-   SelectFirstItem()
-   {
-    if(!this.selection.selected.length)
-    {
-      this.selectedEstimateItem=undefined;
-    }
-    else if(this.selection.selected.length===1)
-    {
-      this.selectedEstimateItem=this.selection.selected[0];
-      if(this.selectedEstimateItem?.bill_to_guid)
-      {
-      this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
-      
-      }
-    }
-   }
-   CheckBoxDisable(row:InGateCleaningItem)
-   {
-     if(this.selectedEstimateItem?.customer_company)
-     {
-     if(row.customer_company?.code!=this.selectedEstimateItem.customer_company?.code)
-     {
-      return true;
-     }
-    }
-     return false;
-   }
-
-   MasterCheckBoxDisable()
-   {
-     if(this.distinctCustomerCodes?.length)
-     {
-        return this.distinctCustomerCodes.length>1;
-     }
-
-     return false;
-   }
-
+  
    
-   getTotalCost(row:any)
-   {
-     
-    const customer_company_guid= row.storing_order_tank?.storing_order?.customer_company?.guid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-      if(data.length>0)
-      {
-        var cost:number =data[0].cost;
-        row.total_cost=(this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part,cost).total_mat_cost||0);
-        //this.calculateTotalCost();
-      }
-    });
-
-   }
    
    getCustomerLabourPackage(custGuid: string){
 
@@ -810,186 +691,140 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
         //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
         //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
         // });
-        this.calculateTotalCost();
+        //this.calculateTotalCost();
       }
     });
    
   }
 
-  calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): number {
-    
-    const total = this.IsApproved(steam)?this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.stmDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
-      return total.total_mat_cost;
+ 
 
-  }
-
-  IsApproved(steam:SteamItem)
-  {
-    const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
-    return validStatus.includes(steam!.status_cv!);
-    
-  }
-
-  checkInvoicedAndGetTotalCost()
-  {
-    this.stmEstList = this.stmEstList?.map(stm => {
-              return { ...stm, invoiced: (stm.customer_billing_guid?true:false), total_cost:0 };
-        });
-    this.stmEstList?.forEach(stm => {
-         this.getTotalCost(stm);
-        });    
-  }
-
-  checkInvoiced()
-  {
-    this.stmEstList = this.stmEstList?.map(stm => {
-            
-              return { ...stm, invoiced: (stm.customer_billing_guid?true:false) };
-        });
-  }
-
-  handleDelete(event:Event, row:SteamItem)
-  {
-
-    event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
-        action: 'delete',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.RmoveEstimateFromInvoice(event,row.guid!);
-      }
-    });
-  }
-
-  RmoveEstimateFromInvoice(event:Event, processGuid:string)
-  {
-    var updateBilling: any=null;
-    var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-    billingEstReq.action="CANCEL";
-    billingEstReq.billing_party=this.billingParty;
-    billingEstReq.process_guid=processGuid;
-    billingEstReq.process_type=this.processType;
-    let billingEstimateRequests:BillingEstimateRequest[]=[];
-    billingEstimateRequests.push(billingEstReq);
+ 
    
-    this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-      if(result.data.updateBilling)
-      {
-        this.handleSaveSuccess(result.data.updateBilling);
-        this.onCancel(event);
-        //this.search();
-      }
-    })
-
-  }
-   
-  ProcessReportCustomerTankActivity(queryType:string,date:string,report_type:number)
-  {
-    if(this.sotList.length===0) return;
-
-    var report_customer_tank_acts:report_customer_tank_activity[]=[];
-    
-    this.sotList.map(s=>{
-
-      if(s)
-      {
-         var repCust :report_customer_tank_activity= report_customer_tank_acts.find(r=>r.code===s.storing_order?.customer_company?.code)||new report_customer_tank_activity();
-         let newCust=false;
-         if(!repCust.code)
-         {
-           repCust.code = s.storing_order?.customer_company?.code;
-           repCust.customer = s.storing_order?.customer_company?.name;
-           newCust=true;
-         }
-         repCust.number_tank ??= 0;
-         repCust.number_tank+=1;
-         if(!repCust.storing_order_tank) repCust.storing_order_tank=[];
-         repCust.storing_order_tank?.push(s);
-         if(newCust)report_customer_tank_acts.push(repCust);
-
-
-
-      }
-    });
-
-    if(report_type==1)
-    {
-    this.onExportSummary(report_customer_tank_acts,queryType,date);
-    }
-    else
-    {
-      this.onExportDetail(report_customer_tank_acts,queryType,date);
-    }
-
-  }
-
-  onExportDetail(repCustomerTankActivity: report_customer_tank_activity[],invType :string, date:string) {
-    //this.preventDefault(event);
-    let cut_off_dt = new Date();
-
   
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
 
-    const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
-      width: '850px',
-     // height: '80vh',
-      data: {
-        report_customer_tank_activity: repCustomerTankActivity,
-        type:invType,
-        date:date
-      },
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
-    });
-  }
-
-  onExportSummary(repCustomerTankActivity: report_customer_tank_activity[],invType :string, date:string) {
-            //this.preventDefault(event);
-            let cut_off_dt = new Date();
+    ProcessReportStatus(report_type:number)
+    {
+      if(this.sotList.length===0) return;
   
-          
-            let tempDirection: Direction;
-            if (localStorage.getItem('isRtl') === 'true') {
-              tempDirection = 'rtl';
-            } else {
-              tempDirection = 'ltr';
-            }
-        
-            const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
-              width: '850px',
-             // height: '80vh',
-              data: {
-                report_customer_tank_activity: repCustomerTankActivity,
-                type:invType,
-                date:date
-              },
-              // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-              direction: tempDirection
-            });
-            this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      var repStatus:report_status[]=[];
       
-            });
-          }
+      this.sotList.map(s=>{
+  
+        if(s)
+        {
+          if(!s.in_gate?.[0]?.yard_cv)return;
+           var repCust :report_status= repStatus.find(r=>r.code===s.storing_order?.customer_company?.code)||new report_status ();
+           let newCust=false;
+           if(!repCust.code)
+           {
+             repCust.code = s.storing_order?.customer_company?.code;
+             repCust.customer = s.storing_order?.customer_company?.name;
+             repCust.yards=[];
+             newCust=true;
+           }
+           repCust.number_tank ??= 0;
+           repCust.number_tank+=1;
+           var yard : report_status_yard= repCust.yards?.find(y=>y.code===s.in_gate?.[0].yard_cv)||new report_status_yard();
+           let newYard=false;
+           if(!yard.code)
+           {
+             yard.code= s.in_gate?.[0].yard_cv;
+             yard.storing_order_tank=[];
+             newYard=true;
+           }
+           switch(s.tank_status_cv)
+           {
+              case "STEAM":
+                yard.noTank_steam!+=1;
+                break;
+              case "OFFHIRE":
+              case "REPAIR":
+                yard.noTank_repair!+=1;
+                break;
+              case "CLEANING":
+                yard.noTank_clean!+=1;
+                break;
+              case "STORAGE":
+                yard.noTank_storage!+=1;
+                break;
+              case "IN_SURVEY":
+                yard.noTank_in_survey!+=1;
+                break;
+           }
+           yard.storing_order_tank?.push(s);
+           if(newYard)repCust.yards?.push(yard);
+           if(newCust)repStatus.push(repCust);
+        }
+      });
+  
+      if (this.searchForm?.get('customer_code')?.value) {
+        repStatus= repStatus.filter(s=>s.code==this.searchForm?.get('customer_code')?.value.code);
+      }
+      if(report_type==1)
+      {
+      this.onExportSummary(repStatus);
+      }
+      else
+      {
+        this.onExportDetail(repStatus);
+      }
+  
+    }
+  
+    onExportDetail(repStatus: report_status[]) {
+      //this.preventDefault(event);
+      let cut_off_dt = new Date();
+  
+    
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
+        width: '85vw',
+        maxHeight: '85vh',
+        data: {
+          report_customer_tank_activity: repStatus,
+        },
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  
+      });
+    }
+  
+    onExportSummary(repStatus: report_status[]) {
+              //this.preventDefault(event);
+              let cut_off_dt = new Date();
+    
+              var yardsCv:CodeValuesItem[]=( this.searchForm?.get('yard')?.value|| this.yardCvList);
+
+              let tempDirection: Direction;
+              if (localStorage.getItem('isRtl') === 'true') {
+                tempDirection = 'rtl';
+              } else {
+                tempDirection = 'ltr';
+              }
+          
+              const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
+                width: '85vw',
+                maxHeight: '85vh',
+                data: {
+                  report_summary_status: repStatus,
+                  yards:yardsCv
+                },
+                // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                direction: tempDirection
+              });
+              this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        
+              });
+            }
 
   
  

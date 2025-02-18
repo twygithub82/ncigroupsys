@@ -162,6 +162,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     DATE:'COMMON-FORM.DATE',
     INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
     SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
+    DETAIL_REPORT:'COMMON-FORM.DETAIL-REPORT',
     YARD_STATUS:'COMMON-FORM.YARD-STATUS'
   }
 
@@ -379,48 +380,11 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   
     
     where.tank_status_cv = {neq: "RELEASED"};
-    if (this.searchForm!.get('customer_code')?.value) {
+    if (this.searchForm?.get('customer_code')?.value) {
      // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
+      where.customer_company = { code:{eq: this.searchForm?.get('customer_code')?.value.code }};
     }
 
-    
-    // if (this.searchForm!.get('eir_no')?.value) {
-      
-    //   var cond :any ={ some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
-
-    //   if(queryType==1)
-    //   {
-    //     where.in_gate = cond;
-    //   }
-    //   else
-    //   {
-    //     where.out_gate = cond;
-    //   }
-    // }
-
-    // var date:string=` - ${Utility.convertDateToStr(new Date())}`;
-    // if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-    //   var cond :any ={some:{eir_dt:{gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'],true) }}};
-    //   date=`${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
-    //   if(queryType==1)
-    //     {
-    //       where.in_gate={};
-    //       where.in_gate = cond;
-    //     }
-    //     else
-    //     {
-    //       where.out_gate={};
-    //       where.out_gate =  cond;
-    //     }
-    //   //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    // }
-   
-    // if (this.searchForm!.get('last_cargo')?.value) {
-    //   where.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
-    // }
-
-   
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined , report_type);
   }
@@ -908,6 +872,9 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       }
     });
 
+    if (this.searchForm?.get('customer_code')?.value) {
+      repStatus= repStatus.filter(s=>s.code==this.searchForm?.get('customer_code')?.value.code);
+    }
     if(report_type==1)
     {
     this.onExportSummary(repStatus);
@@ -932,8 +899,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
-      width: '850px',
-      height: '80vh',
+      width: '85vw',
+      maxHeight: '85vh',
       data: {
         report_customer_tank_activity: repStatus,
       },
@@ -958,8 +925,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
             }
         
             const dialogRef = this.dialog.open(YardChartPdfComponent, {
-              width: '1100px',
-             // height: '80vh',
+              width: '85vw',
+              maxHeight: '85vh',
               data: {
                 report_summary_status: repStatus
               },
