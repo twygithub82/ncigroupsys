@@ -721,13 +721,13 @@ implements OnInit {
   // context menu
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
     event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-      this.contextMenu.menuData = { item: item };
-      this.contextMenu.menu.focusFirstItem('mouse');
-      this.contextMenu.openMenu();
-    }
+    // this.contextMenuPosition.x = event.clientX + 'px';
+    // this.contextMenuPosition.y = event.clientY + 'px';
+    // if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
+    //   this.contextMenu.menuData = { item: item };
+    //   this.contextMenu.menu.focusFirstItem('mouse');
+    //   this.contextMenu.openMenu();
+    // }
   }
 
   onlyNumbersDashValidator(control: AbstractControl): { [key: string]: boolean } | null {
