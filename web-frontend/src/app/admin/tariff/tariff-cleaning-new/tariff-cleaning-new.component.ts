@@ -1,56 +1,47 @@
-import { HttpClient,HttpHeaders  } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild,HostListener } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl,AbstractControl,Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { Utility } from 'app/utilities/utility';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 // import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
-import { MatRadioModule } from '@angular/material/radio';
-import { Apollo } from 'apollo-angular';
+import { HttpClientModule } from '@angular/common/http';
 import { MatDividerModule } from '@angular/material/divider';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { BehaviorSubject, firstValueFrom, Observable, Subscription } from 'rxjs';
-import { TankDS, TankItem } from 'app/data-sources/tank';
-import { ClassNoItem, TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-import { ComponentUtil } from 'app/utilities/component-util';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatTabsModule } from '@angular/material/tabs';
+import { FileManagerService } from '@core/service/filemanager.service';
+import { Apollo } from 'apollo-angular';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { StoringOrderDS } from 'app/data-sources/storing-order';
+import { ClassNoItem, TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { HttpClientModule } from '@angular/common/http';
-import { UniqueFieldDefinitionNamesRule } from 'graphql';
-import { FileManagerService } from '@core/service/filemanager.service';
 
 
 @Component({
@@ -66,9 +57,6 @@ import { FileManagerService } from '@core/service/filemanager.service';
     MatIconModule,
     MatFormFieldModule,
     MatTabsModule,
-    MatTabGroup,
-    MatTabHeader,
-    MatTabBody,
     MatInputModule,
     MatCheckboxModule,
     MatSelectModule,
@@ -77,31 +65,26 @@ import { FileManagerService } from '@core/service/filemanager.service';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    NgScrollbar,
-    NgClass,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
     MatLabel,
     MatTableModule,
     MatPaginatorModule,
-    FeatherIconsComponent,
     MatProgressSpinnerModule,
-    RouterLink,
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
     HttpClientModule
-    
-  ] 
+
+  ]
 })
 
 
 
 export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
 
-  
+
 
   displayedColumns = [
     'select',
@@ -125,8 +108,9 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   pageTitleNew = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING-NEW'
   pageTitleEdit = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING-EDIT'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.TARIFF.TEXT', route: '/admin/tariff/tariff-cleaning' },
+    { text: 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING', route: '/admin/tariff/tariff-cleaning' }
   ]
   translatedLangText: any = {}
   langText = {
@@ -182,84 +166,84 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME:'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS:'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST :'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
-    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
-    ATTACHMENT_TOO_BIG:"COMMON-FORM.ATTACHMENT-TOO-BIG",
-    SDS_FILE :"COMMON-FORM.SDS-FILE"
+    CARGO_ALERT: 'COMMON-FORM.CARGO-ALERT',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
+    ATTACHMENT_TOO_BIG: "COMMON-FORM.ATTACHMENT-TOO-BIG",
+    SDS_FILE: "COMMON-FORM.SDS-FILE"
   }
 
   historyState: any = {};
 
   sdsFiles: (string | ArrayBuffer)[] = [];
-  cCategoryList : CleaningCategoryItem[]=[];
-  cMethodList : CleaningMethodItem[]=[];
-  tcList :TariffCleaningItem[]=[];
-  classNoCvList :CodeValuesItem[] = [];
-  banTypeCvList :CodeValuesItem[] = [];
-  hazardLevelCvList :CodeValuesItem[] = [];
-  natureCvList:CodeValuesItem[]=[];
-  openGateCvList:CodeValuesItem[]=[];
+  cCategoryList: CleaningCategoryItem[] = [];
+  cMethodList: CleaningMethodItem[] = [];
+  tcList: TariffCleaningItem[] = [];
+  classNoCvList: CodeValuesItem[] = [];
+  banTypeCvList: CodeValuesItem[] = [];
+  hazardLevelCvList: CodeValuesItem[] = [];
+  natureCvList: CodeValuesItem[] = [];
+  openGateCvList: CodeValuesItem[] = [];
 
 
   classNoControl = new UntypedFormControl();
   methodControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
-  banTypeControl= new UntypedFormControl();
-  hazardLevelControl= new UntypedFormControl();
-  openGateControl= new UntypedFormControl();
-  natureControl=new UntypedFormControl();
+  banTypeControl = new UntypedFormControl();
+  hazardLevelControl = new UntypedFormControl();
+  openGateControl = new UntypedFormControl();
+  natureControl = new UntypedFormControl();
   tcForm?: UntypedFormGroup;
- 
-  tariffCleaningItem:TariffCleaningItem=new TariffCleaningItem();
-  existingClassNos:ClassNoItem[]=[];
+
+  tariffCleaningItem: TariffCleaningItem = new TariffCleaningItem();
+  existingClassNos: ClassNoItem[] = [];
   tc_guid?: string | null;
 
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
   tcDS: TariffCleaningDS;
-  tcUNDS:TariffCleaningDS;
+  tcUNDS: TariffCleaningDS;
 
-  cCategoryDS:CleaningCategoryDS;
-  cMethodDS:CleaningMethodDS;
+  cCategoryDS: CleaningCategoryDS;
+  cMethodDS: CleaningMethodDS;
 
   selectedFileLoading: BehaviorSubject<boolean>; // Declare as Observable<boolean>
-  submitForSaving:BehaviorSubject<boolean>;
+  submitForSaving: BehaviorSubject<boolean>;
   private loadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  
-  selectedFileChanged : boolean=false;
-  newUNNo:boolean=true;
-  selectedFile: File | null = null;
-  existingSDSFiles:File[]|null=null;
-  existingSDSFilesUrls:any[]|null=null;
 
-  
+  selectedFileChanged: boolean = false;
+  newUNNo: boolean = true;
+  selectedFile: File | null = null;
+  existingSDSFiles: File[] | null = null;
+  existingSDSFilesUrls: any[] | null = null;
+
+
 
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   prefix = 'UN';
-  sdsFileLoading:boolean=false;
-  trfCleaningSubmitting:boolean=false;
+  sdsFileLoading: boolean = false;
+  trfCleaningSubmitting: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -274,104 +258,102 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   ) {
     super();
     this.translateLangText();
-   // this.loadData();
-   this.initTcForm();
+    // this.loadData();
+    this.initTcForm();
     this.soDS = new StoringOrderDS(this.apollo);
-    this.tcDS=new TariffCleaningDS(this.apollo);
-    this.tcUNDS=new TariffCleaningDS(this.apollo);
+    this.tcDS = new TariffCleaningDS(this.apollo);
+    this.tcUNDS = new TariffCleaningDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.cCategoryDS= new CleaningCategoryDS(this.apollo);
-    this.cMethodDS= new CleaningMethodDS(this.apollo);
+    this.cCategoryDS = new CleaningCategoryDS(this.apollo);
+    this.cMethodDS = new CleaningMethodDS(this.apollo);
     this.selectedFileLoading = new BehaviorSubject<boolean>(false);
-    this.submitForSaving= new BehaviorSubject<boolean>(false);
-    
-   
+    this.submitForSaving = new BehaviorSubject<boolean>(false);
+
+
   }
 
-   
+
   initTcForm() {
     this.tcForm = this.fb.group({
-      guid: [{value:''}],
+      guid: [{ value: '' }],
       cargo_name: [''],
-      cargo_alias:[''],
-      cargo_description:[''],
+      cargo_alias: [''],
+      cargo_description: [''],
       class_no: this.classNoControl,
       method: this.methodControl,
-      category:this.categoryControl,
-      hazard_level:this.hazardLevelControl,
-      ban_type:this.banTypeControl,
-      open_gate:this.openGateControl,
-      flash_point:[''],
+      category: this.categoryControl,
+      hazard_level: this.hazardLevelControl,
+      ban_type: this.banTypeControl,
+      open_gate: this.openGateControl,
+      flash_point: [''],
       un_no: ['', [Validators.required, this.onlyNumbersDashValidator]],
-      nature:this.natureCvList,
-      in_gate_alert:[''],
-      depot_note:[''],
-      sds_file:[null],
-      file_size:[0, [Validators.required, this.onlyFileSizeValidator]],
-      remarks:['']
+      nature: this.natureCvList,
+      in_gate_alert: [''],
+      depot_note: [''],
+      sds_file: [null],
+      file_size: [0, [Validators.required, this.onlyFileSizeValidator]],
+      remarks: ['']
     });
   }
 
   ngOnInit() {
     //this.initializeFilter();
-  
-    
-        this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
 
-          if (value && !value.startsWith(this.prefix) && value!='-') {
-            // Remove existing prefix before adding a new one
-            const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
-            if (numericPart && !isNaN(Number(numericPart))) {
-            const newValue = this.prefix + value.replace(this.prefix, '');
-            this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
-            }
-          }
 
-        this.CheckUnNoValidity();
-      });
-      this.loadData();
+    this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
+
+      if (value && !value.startsWith(this.prefix) && value != '-') {
+        // Remove existing prefix before adding a new one
+        const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
+        if (numericPart && !isNaN(Number(numericPart))) {
+          const newValue = this.prefix + value.replace(this.prefix, '');
+          this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
+        }
+      }
+
+      this.CheckUnNoValidity();
+    });
+    this.loadData();
   }
 
-  populatetcForm(tc: TariffCleaningItem):void {
+  populatetcForm(tc: TariffCleaningItem): void {
     //this.tcForm!.patchValue({
-    this.tcForm=  this.fb.group({
+    this.tcForm = this.fb.group({
       guid: tc.guid,
       cargo_name: tc.cargo,
-      cargo_alias:tc.alias,
-      cargo_description:tc.description,
+      cargo_alias: tc.alias,
+      cargo_description: tc.description,
       class_no: { value: tc.class_cv, disabled: false },
       method: { value: tc.cleaning_method_guid, disabled: false },
-      category:{ value: tc.cleaning_category_guid, disabled: false },
-      hazard_level:{ value: tc.hazard_level_cv, disabled: false },
-      ban_type:{ value: tc.ban_type_cv, disabled: false },
-     
-      open_gate:{ value: tc.open_on_gate_cv, disabled: false },
-      flash_point:tc.flash_point,
-      un_no:[tc.un_no, [Validators.required, this.onlyNumbersDashValidator]],
-      nature:{ value: tc.nature_cv, disabled: false },
-      in_gate_alert:tc.in_gate_alert,
-      depot_note:tc.depot_note,
-      sds_file:[''],
-      file_size:[0, [Validators.required, this.onlyFileSizeValidator]],
-      remarks:tc.remarks
+      category: { value: tc.cleaning_category_guid, disabled: false },
+      hazard_level: { value: tc.hazard_level_cv, disabled: false },
+      ban_type: { value: tc.ban_type_cv, disabled: false },
+
+      open_gate: { value: tc.open_on_gate_cv, disabled: false },
+      flash_point: tc.flash_point,
+      un_no: [tc.un_no, [Validators.required, this.onlyNumbersDashValidator]],
+      nature: { value: tc.nature_cv, disabled: false },
+      in_gate_alert: tc.in_gate_alert,
+      depot_note: tc.depot_note,
+      sds_file: [''],
+      file_size: [0, [Validators.required, this.onlyFileSizeValidator]],
+      remarks: tc.remarks
     });
-    
-   
+
+
   }
 
   public loadData() {
-    this.cCategoryDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-      if(this.cCategoryDS.totalCount>0)
-      {
-        this.cCategoryList=data;
+    this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+      if (this.cCategoryDS.totalCount > 0) {
+        this.cCategoryList = data;
       }
 
     });
 
-    this.cMethodDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-      if(this.cMethodDS.totalCount>0)
-      {
-        this.cMethodList=data;
+    this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+      if (this.cMethodDS.totalCount > 0) {
+        this.cMethodList = data;
       }
 
     });
@@ -386,7 +368,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('ctHazardLevelCv').subscribe(data => {
       this.hazardLevelCvList = data;
-     // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('classNoCv').subscribe(data => {
       this.classNoCvList = data;
@@ -403,55 +385,51 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
     this.historyState = history.state;
     this.tc_guid = this.route.snapshot.paramMap.get('id');
-    if(this.tc_guid)
-    {
+    if (this.tc_guid) {
       {
         const where: any = {};
-        where.guid ={eq:this.tc_guid};
-       
+        where.guid = { eq: this.tc_guid };
+
         // EDIT
         this.subs.sink = this.tcDS.SearchTariffCleaning(where).subscribe(data => {
           if (this.tcDS.totalCount > 0) {
             this.tariffCleaningItem = data[0];
             this.populatetcForm(this.tariffCleaningItem);
             this.QueryAllFilesInGroup(this.tariffCleaningItem.guid!);
-            
-          this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
 
-            if (value && !value.startsWith(this.prefix) && value!='-') {
-              // Remove existing prefix before adding a new one
-              const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
-              if (numericPart && !isNaN(Number(numericPart))) {
-              const newValue = this.prefix + value.replace(this.prefix, '');
-              this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
+            this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
+
+              if (value && !value.startsWith(this.prefix) && value != '-') {
+                // Remove existing prefix before adding a new one
+                const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
+                if (numericPart && !isNaN(Number(numericPart))) {
+                  const newValue = this.prefix + value.replace(this.prefix, '');
+                  this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
+                }
               }
-            }
 
-          this.CheckUnNoValidity();
-        });
+              this.CheckUnNoValidity();
+            });
             this.CheckUnNoValidity();
           }
         });
-        
+
       }
 
 
     }
 
-   
+
   }
 
-  CheckUnNoValidity()
-  {
+  CheckUnNoValidity() {
     const regex = /^UN\d{4}$/;
     let isValid = regex.test(this.tcForm!.get('un_no')?.value);
-    if(isValid)
-    {
+    if (isValid) {
       this.QueryAllFilesInGroupAndClassNo();
     }
-    else
-    {
-      
+    else {
+
       this.tcForm!.patchValue({
         class_no: '',
       });
@@ -475,12 +453,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.stopPropagation(event);
   }
 
-  
+
   stopPropagation(event: Event) {
-   // event.stopPropagation(); // Stops event propagation
+    // event.stopPropagation(); // Stops event propagation
   }
-  
- 
+
+
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -489,83 +467,79 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   onTCFormSubmit() {
-     var fileSize = Number(this.tcForm!.get("file_size")?.value);
-     if(fileSize==0)
-     {
+    var fileSize = Number(this.tcForm!.get("file_size")?.value);
+    if (fileSize == 0) {
       this.tcForm!.get("file_size")?.setErrors({ required: true });
-     }
-    
-   //this.tcForm!.get('sotList')?.setErrors(null);
-   //this.tcForm?.get('un_no')?.setErrors({ exited: false });
-    if (this.tcForm?.valid) 
-      {
+    }
+
+    //this.tcForm!.get('sotList')?.setErrors(null);
+    //this.tcForm?.get('un_no')?.setErrors({ exited: false });
+    if (this.tcForm?.valid) {
       // if (!this.sotList.data.length) {
       //   this.tcForm.get('sotList')?.setErrors({ required: true });
       // } else 
-     // {
-        this.trfCleaningSubmitting=true;
-        this.submitForSaving.next( this.trfCleaningSubmitting);
-        this.submitForSaving.subscribe(value=>{
-          if(value!=this.trfCleaningSubmitting)  this.submitForSaving.next( this.trfCleaningSubmitting);
-        });
-        let tc: TariffCleaningItem = new TariffCleaningItem(this.tariffCleaningItem);
-       // tc.guid='';
-        tc.cargo=this.tcForm.value['cargo_name'];
-        tc.alias=this.tcForm.value['cargo_alias'];
-        tc.description=this.tcForm.value['cargo_description'];
-        tc.in_gate_alert=this.tcForm.value['in_gate_alert'];
-        tc.depot_note=this.tcForm.value['depot_note'];;
+      // {
+      this.trfCleaningSubmitting = true;
+      this.submitForSaving.next(this.trfCleaningSubmitting);
+      this.submitForSaving.subscribe(value => {
+        if (value != this.trfCleaningSubmitting) this.submitForSaving.next(this.trfCleaningSubmitting);
+      });
+      let tc: TariffCleaningItem = new TariffCleaningItem(this.tariffCleaningItem);
+      // tc.guid='';
+      tc.cargo = this.tcForm.value['cargo_name'];
+      tc.alias = this.tcForm.value['cargo_alias'];
+      tc.description = this.tcForm.value['cargo_description'];
+      tc.in_gate_alert = this.tcForm.value['in_gate_alert'];
+      tc.depot_note = this.tcForm.value['depot_note'];;
 
-        tc.class_cv=this.tcForm.value['class_no'];
-        tc.cleaning_category_guid=this.tcForm.value['category'];
-        tc.cleaning_method_guid=this.tcForm.value['method'];
-        tc.hazard_level_cv=this.tcForm.value['hazard_level'];
-        tc.ban_type_cv=this.tcForm.value['ban_type'];
-        tc.open_on_gate_cv=this.tcForm.value['open_gate'];
-        tc.flash_point= Number(this.tcForm.value['flash_point']);
-        tc.un_no=this.tcForm.value['un_no'];
-        tc.nature_cv=this.tcForm.value['nature'];
-        tc.remarks=this.tcForm.value['remarks'];
-        tc.cleaning_category=undefined;
-        tc.cleaning_method=undefined;
-            if (tc.guid) {
-               this.tcDS.updateTariffCleaning(tc).subscribe(async result => {
-                console.log(result)
-                var guid = tc.guid;
-                await this.handleSaveSuccess(result?.data?.updateTariffClean,guid!);
-                this.trfCleaningSubmitting=false;
-                this.submitForSaving.next( this.trfCleaningSubmitting);
-        
-              });
-            }
-            else
-            {
-                this.tcDS.addNewTariffCleaning(tc).subscribe(async result => {
-                  console.log(result);
-                  var cargo_name = tc.cargo;
-                  var guid=await this.getTariffCleaningGuid(cargo_name!);
-                 await this.handleSaveSuccess(result?.data?.addTariffCleaning,guid!);
-                  this.trfCleaningSubmitting=false;
-                  this.submitForSaving.next( this.trfCleaningSubmitting);
-        
-                });
-            }
-      
-           
-      
-    } 
+      tc.class_cv = this.tcForm.value['class_no'];
+      tc.cleaning_category_guid = this.tcForm.value['category'];
+      tc.cleaning_method_guid = this.tcForm.value['method'];
+      tc.hazard_level_cv = this.tcForm.value['hazard_level'];
+      tc.ban_type_cv = this.tcForm.value['ban_type'];
+      tc.open_on_gate_cv = this.tcForm.value['open_gate'];
+      tc.flash_point = Number(this.tcForm.value['flash_point']);
+      tc.un_no = this.tcForm.value['un_no'];
+      tc.nature_cv = this.tcForm.value['nature'];
+      tc.remarks = this.tcForm.value['remarks'];
+      tc.cleaning_category = undefined;
+      tc.cleaning_method = undefined;
+      if (tc.guid) {
+        this.tcDS.updateTariffCleaning(tc).subscribe(async result => {
+          console.log(result)
+          var guid = tc.guid;
+          await this.handleSaveSuccess(result?.data?.updateTariffClean, guid!);
+          this.trfCleaningSubmitting = false;
+          this.submitForSaving.next(this.trfCleaningSubmitting);
+
+        });
+      }
+      else {
+        this.tcDS.addNewTariffCleaning(tc).subscribe(async result => {
+          console.log(result);
+          var cargo_name = tc.cargo;
+          var guid = await this.getTariffCleaningGuid(cargo_name!);
+          await this.handleSaveSuccess(result?.data?.addTariffCleaning, guid!);
+          this.trfCleaningSubmitting = false;
+          this.submitForSaving.next(this.trfCleaningSubmitting);
+
+        });
+      }
+
+
+
+    }
     else {
       console.log('Invalid tcForm', this.tcForm?.value);
     }
   }
 
- async handleSaveSuccess(count: any, trfCleaning_guid:String) {
+  async handleSaveSuccess(count: any, trfCleaning_guid: String) {
     if ((count ?? 0) > 0) {
 
-      if(this.selectedFile)
-      {
-        var groupGuid:string =String(trfCleaning_guid);
-         await this.onSubmit(groupGuid,'tariff_cleaning');
+      if (this.selectedFile) {
+        var groupGuid: string = String(trfCleaning_guid);
+        await this.onSubmit(groupGuid, 'tariff_cleaning');
       }
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
@@ -574,7 +548,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         //this.router.navigate(['/admin/tariff/tariff-cleaning']);
         this.router.navigate(['/admin/tariff/tariff-cleaning'], {
           state: this.historyState
-    
+
         }
         );
 
@@ -585,13 +559,13 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   async getTariffCleaningGuid(cargo_name: string): Promise<string> {
     let retval: string = "";
     const where: any = {};
-  
+
     where.cargo = { eq: cargo_name };
-  
+
     try {
       // Use firstValueFrom to convert Observable to Promise
       const result = await firstValueFrom(this.tcDS.SearchTariffCleaning(where, {}));
-  
+
       if (result.length > 0) {
         const r = result[0];
         retval = r.guid!;
@@ -599,13 +573,13 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     } catch (error) {
       console.error("Error fetching tariff cleaning guid:", error);
     }
-  
+
     return retval;
   }
 
   onlyFileSizeValidator(control: AbstractControl): { [key: string]: boolean } | null {
     //const regex = /^(UN)?[0-9-]*$/;
-    if (control.value>20) {
+    if (control.value > 20) {
       return { 'error': true };
     }
     return null;
@@ -616,7 +590,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     if (control.value && !regex.test(control.value)) {
       return { 'invalidCharacter': true };
     }
-   
+
     return null;
   }
 
@@ -631,22 +605,22 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   displayMethodFn(cMethod: CleaningMethodItem): string {
-    return  cMethod && cMethod.name ? `${cMethod.name}` : '';
+    return cMethod && cMethod.name ? `${cMethod.name}` : '';
     //return this.ccDS.displayName(cc);
   }
 
   displayCodeValueFn(cValue: CodeValuesItem): string {
-    return  cValue && cValue.code_val ? `${cValue.code_val}` : '';
+    return cValue && cValue.code_val ? `${cValue.code_val}` : '';
     //return this.ccDS.displayName(cc);
   }
 
-  selectClassNo(value:string):void{
+  selectClassNo(value: string): void {
     var codeValue = new CodeValuesItem();
-    codeValue.code_val=value;
+    codeValue.code_val = value;
     this.classNoControl.setValue(codeValue);
   }
 
- 
+
   addClassNo(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -655,31 +629,30 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent,{
+    const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
         action: 'new',
         langText: this.langText,
-        selectedValue:this.tcForm!.get("class_no")?.value
+        selectedValue: this.tcForm!.get("class_no")?.value
       }
-        
+
     });
 
-   
+
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    
-     
-         if (result) {
-          if(result.selectedValue)
-          {
-          
-            this.tcForm!.patchValue({
-              class_no: result.selectedValue,
-            });
-          }
-      
+
+
+      if (result) {
+        if (result.selectedValue) {
+
+          this.tcForm!.patchValue({
+            class_no: result.selectedValue,
+          });
+        }
+
       }
-      });
-    
+    });
+
   }
 
   previewFile() {
@@ -707,106 +680,99 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     // if (this.tcForm!.get('un_no')?.valid && this.selectedFileChanged) 
     //   {
     //     this.QueryAllFilesInGroupAndClassNo();
-        
+
     // }
   }
 
   onFileSelected(event: Event): void {
-    if(this.tcForm!.value["guid"])
-    {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      const fileSizeInMB = this.selectedFile.size / (1024 * 1024); // Convert bytes to MB
-      this.tcForm?.patchValue({sds_file:this.selectedFile , file_size:fileSizeInMB});
+    if (this.tcForm!.value["guid"]) {
+      const input = event.target as HTMLInputElement;
+      if (input.files && input.files.length > 0) {
+        this.selectedFile = input.files[0];
+        const fileSizeInMB = this.selectedFile.size / (1024 * 1024); // Convert bytes to MB
+        this.tcForm?.patchValue({ sds_file: this.selectedFile, file_size: fileSizeInMB });
         this.tcForm?.get("sds_file")?.updateValueAndValidity();
-      if(fileSizeInMB<=this.maxFileSizeInMB)
-      {
-        
-        this.selectedFileChanged=true;
+        if (fileSizeInMB <= this.maxFileSizeInMB) {
+
+          this.selectedFileChanged = true;
+        }
+
       }
-     
     }
-   }
   }
 
-  
+
 
   async downloadFiles(urls: any[]): Promise<File[]> {
-   
+
     const filePromises = urls.map(async (data) => {
-     
-        let url:String =data.url;
-        const response = await fetch(data.url);
-  
-        if (!response.ok) {
-            throw new Error(`Failed to download file from ${url}. Status: ${response.status}`);
-        }
-  
-        const blob = await response.blob();
-        const fileName = url.split('/').pop() || 'downloaded-file';
-        return new File([blob], fileName, { type: blob.type });
+
+      let url: String = data.url;
+      const response = await fetch(data.url);
+
+      if (!response.ok) {
+        throw new Error(`Failed to download file from ${url}. Status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const fileName = url.split('/').pop() || 'downloaded-file';
+      return new File([blob], fileName, { type: blob.type });
     });
-  
+
     // Wait for all downloads to complete
     const files = await Promise.all(filePromises);
-    
+
     return files;
   }
 
-  async DeleteExistingSDSFiles()
-  {
+  async DeleteExistingSDSFiles() {
 
-    
 
-    if(this.existingSDSFilesUrls)
-    {
+
+    if (this.existingSDSFilesUrls) {
       const urls: string[] = this.existingSDSFilesUrls.map(item => item.url);
       await firstValueFrom(this.fileManagerService.deleteFile(urls));
     }
-      
+
   }
 
- 
- async QueryClassNo()
- {
-  let UnNumber:string='';
-  const unNoControl = this.tcForm!.get('un_no');
+
+  async QueryClassNo() {
+    let UnNumber: string = '';
+    const unNoControl = this.tcForm!.get('un_no');
 
     if (unNoControl) {
       const value = unNoControl.value;
-      UnNumber=value;
-    // console.log('UN Number on blur:', value);
+      UnNumber = value;
+      // console.log('UN Number on blur:', value);
       // Additional logic can be added here
     }
 
 
-    this.tcUNDS.SearchClassNoByUnNumber(UnNumber).subscribe(result=>{
-      this.newUNNo=true;
-      if(result.length>0)
-      {
+    this.tcUNDS.SearchClassNoByUnNumber(UnNumber).subscribe(result => {
+      this.newUNNo = true;
+      if (result.length > 0) {
         var clsNo = this.tcForm?.get("class_no")?.value;
-        this.existingClassNos=result;
-        this.newUNNo=false;
-        if(!clsNo || clsNo.trim()==="") clsNo=this.existingClassNos[0].class;
+        this.existingClassNos = result;
+        this.newUNNo = false;
+        if (!clsNo || clsNo.trim() === "") clsNo = this.existingClassNos[0].class;
         this.tcForm?.patchValue({
           class_no: clsNo
         });
 
-       
+
       }
-      
+
     });
 
 
- }
-  async QueryAllFilesInGroup(groupguid:string)
-  {
-    this.sdsFileLoading=true;
+  }
+  async QueryAllFilesInGroup(groupguid: string) {
+    this.sdsFileLoading = true;
     this.selectedFileLoading.next(this.sdsFileLoading); // Set loading to true
-    let GroupGuid:string=groupguid;
+    let GroupGuid: string = groupguid;
     this.selectedFileLoading.subscribe(value => {
-      if(value!=this.sdsFileLoading) this.selectedFileLoading.next(this.sdsFileLoading);
+      if (value != this.sdsFileLoading) this.selectedFileLoading.next(this.sdsFileLoading);
       console.log('Subject Value:', value); // This should not reset to false after await
     });
     // const unNoControl = this.tcForm!.get('un_no');
@@ -818,76 +784,72 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     //       // Additional logic can be added here
     //     }
 
-   this.fileManagerService.getFileUrlByGroupGuid([GroupGuid]).subscribe({
-    next: async (response) => {
-      console.log('Files retrieved successfully:', response);
-       if(response.length>0)
-      {
-        let files = await this.downloadFiles(response);
-        if(files.length>0)
-        {
-          this.selectedFile =files[0];
-          this.existingSDSFiles=files;
-          this.existingSDSFilesUrls=response;
-          const fileSizeInMB = this.selectedFile.size / (1024 * 1024); // Convert bytes to MB
-          this.tcForm?.patchValue({
-            file_size:fileSizeInMB
-          });
+    this.fileManagerService.getFileUrlByGroupGuid([GroupGuid]).subscribe({
+      next: async (response) => {
+        console.log('Files retrieved successfully:', response);
+        if (response.length > 0) {
+          let files = await this.downloadFiles(response);
+          if (files.length > 0) {
+            this.selectedFile = files[0];
+            this.existingSDSFiles = files;
+            this.existingSDSFilesUrls = response;
+            const fileSizeInMB = this.selectedFile.size / (1024 * 1024); // Convert bytes to MB
+            this.tcForm?.patchValue({
+              file_size: fileSizeInMB
+            });
+          }
         }
-      }
-      this.sdsFileLoading=false;
-      this.selectedFileLoading.next(this.sdsFileLoading); // Set loading to true
-      
-    },
-    error: (error) => {
-      console.error('Error retrieving files:', error);
-      this.selectedFileLoading.next(false);
-    },
-    complete: () => {
-      console.log('File retrieval process completed.');
-      this.selectedFileLoading.next(false);
-    }
-  });
-   
-   
-  }
-  
-  async QueryAllFilesInGroupAndClassNo()
-  {
-    //var retval:any[]=[];
-    if(!this.tcForm!.value["un_no"]) return;
-      //this.QueryAllFilesInGroup();
-      this.QueryClassNo();
-  }
-  
-  
- async onSubmit(groupGuid :string,tableName:string) {
-    if (this.selectedFileChanged) {
-         this.DeleteExistingSDSFiles();
-      
-         var fType ="pdf";
-        switch(this.selectedFile!.type)
-        {
-          case "application/msword":
-            fType="doc"
-            break;
-        }
+        this.sdsFileLoading = false;
+        this.selectedFileLoading.next(this.sdsFileLoading); // Set loading to true
 
-       const uploadMeta ={
-         file:this.selectedFile!,
-         metadata:{
+      },
+      error: (error) => {
+        console.error('Error retrieving files:', error);
+        this.selectedFileLoading.next(false);
+      },
+      complete: () => {
+        console.log('File retrieval process completed.');
+        this.selectedFileLoading.next(false);
+      }
+    });
+
+
+  }
+
+  async QueryAllFilesInGroupAndClassNo() {
+    //var retval:any[]=[];
+    if (!this.tcForm!.value["un_no"]) return;
+    //this.QueryAllFilesInGroup();
+    this.QueryClassNo();
+  }
+
+
+  async onSubmit(groupGuid: string, tableName: string) {
+    if (this.selectedFileChanged) {
+      this.DeleteExistingSDSFiles();
+
+      var fType = "pdf";
+      switch (this.selectedFile!.type) {
+        case "application/msword":
+          fType = "doc"
+          break;
+      }
+
+      const uploadMeta = {
+        file: this.selectedFile!,
+        metadata: {
           TableName: tableName,
           FileType: fType,
           GroupGuid: groupGuid,
           Description: "SDS file"
-         }
-       }
+        }
+      }
 
       //   var metadataJsonString =JSON.stringify(jsonObject);
       //  formData.append('files', this.selectedFile!, this.selectedFile?.name);
       //  formData.append('metadata', metadataJsonString);
-       await (firstValueFrom( this.fileManagerService.uploadFiles([uploadMeta])));
-       // await firstValueFrom( this.httpClient.post(uploadURL,formData));
+      await (firstValueFrom(this.fileManagerService.uploadFiles([uploadMeta])));
+      // await firstValueFrom( this.httpClient.post(uploadURL,formData));
       // this.httpClient.post(uploadURL, formData
       //  ).subscribe({
       //   next: (response) => {
@@ -928,7 +890,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   displayClassNoFn(tr: string): string {
     return tr;
   }
-  
+
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object

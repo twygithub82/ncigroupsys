@@ -95,10 +95,11 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     'approve_part',
     'team'
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
+  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER-ALLOCATION'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order' },
+    { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/repair/job-order' }
   ]
   translatedLangText: any = {}
   langText = {

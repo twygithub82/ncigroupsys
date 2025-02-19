@@ -22,10 +22,6 @@ export const MASTER_ROUTE: Routes = [
     path: "customer/new/:id",
     component: CustomerNewComponent,
   },
-  // {
-  //   path: "billing-branch",
-  //   component: BillingBranchComponent,
-  // },
   {
     path: "billing-branch/new/:id",
     component: BillingBranchNewComponent,

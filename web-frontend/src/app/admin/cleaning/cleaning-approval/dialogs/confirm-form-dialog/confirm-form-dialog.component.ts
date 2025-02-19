@@ -3,7 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MAT_DIALOG_DATA, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogClose, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,9 +15,9 @@ export interface DialogData {
   action: string;
   item: StoringOrderTankItem;
   langText?: any;
-  confirmStatement?:string;
+  confirmStatement?: string;
   index: number;
-  remarks:string;
+  remarks: string;
 }
 
 @Component({
@@ -44,14 +44,14 @@ export class ConfirmationDialogComponent {
   sotItem: StoringOrderTankItem;
   index: number;
   pcForm: UntypedFormGroup;
-  confirmStatement?:string;
+  confirmStatement?: string;
   constructor(
     public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
   ) {
     // Set the defaults
-    this.confirmStatement=data.confirmStatement;
+    this.confirmStatement = data.confirmStatement;
     this.sotItem = data.item;
     this.index = data.index;
     this.pcForm = this.createPackageCleaning();
@@ -69,9 +69,9 @@ export class ConfirmationDialogComponent {
     this.dialogRef.close(returnDialog);
   }
 
-   createPackageCleaning(): UntypedFormGroup {
-      return this.fb.group({
-        remarks:['']
-      });
-    }
+  createPackageCleaning(): UntypedFormGroup {
+    return this.fb.group({
+      remarks: ['']
+    });
+  }
 }

@@ -1,5 +1,5 @@
 import { Direction } from '@angular/cdk/bidi';
-import { CommonModule, DatePipe, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
@@ -22,11 +22,9 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -46,8 +44,6 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 //import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.component";
-import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
 //import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 //import { CleanBillingComponent } from './clean/clean-billing.component';
@@ -123,10 +119,6 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   ];
 
   pageTitle = 'COMMON-FORM.DEPOT'
-  // breadcrumsMiddleList = [
-  //   'MENUITEMS.HOME.TEXT',
-  //   'MENUITEMS.BILLING.TEXT'
-  // ]
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/depot' }

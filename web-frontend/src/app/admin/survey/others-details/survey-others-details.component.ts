@@ -1,56 +1,45 @@
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { MatCardModule } from '@angular/material/card';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { SchedulingItem } from 'app/data-sources/scheduling';
-import { BookingDS, BookingGO, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-survey-others-details',
@@ -96,9 +85,9 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY-DETAILS'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.SURVEY.TEXT',
-    'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.SURVEY.TEXT', route: '/admin/survey/others' },
+    { text: 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY', route: '/admin/survey/others' }
   ]
 
   translatedLangText: any = {};

@@ -3,7 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MAT_DIALOG_DATA, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -73,7 +73,7 @@ export class CancelFormDialogComponent {
       estimate_no: [re.estimate_no],
       sot_guid: [re.sot_guid],
       remarks: [re.remarks, Validators.required],
-      job_no:[re.job_no]
+      job_no: [re.job_no]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {

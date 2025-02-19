@@ -1,5 +1,5 @@
 import { Direction } from '@angular/cdk/bidi';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,10 +18,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -34,16 +33,16 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from '../dialogs/confirm-form-dialog/confirm-form-dialog.component';
 
 export interface DialogData {
   action?: string;
-  selectedValue?:number;
+  selectedValue?: number;
   // item: StoringOrderTankItem;
-   langText?: any;
-   selectedItems:PackageDepotItem[];
+  langText?: any;
+  selectedItems: PackageDepotItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -79,31 +78,31 @@ export interface DialogData {
     MatSortModule,
     MatPaginatorModule,
     MatDividerModule,
-],
+  ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     //  'select',
-      // 'img',
-       'index',
-       'desc',
-       'depot',
-       'package',
-      // 'total',
-      // 'bDate',
-      // 'mobile',
-      // 'actions',
-    ];
+    // 'img',
+    'index',
+    'desc',
+    'depot',
+    'package',
+    // 'total',
+    // 'bDate',
+    // 'mobile',
+    // 'actions',
+  ];
 
   action: string;
   index?: number;
   dialogTitle?: string;
 
-  packageDepotItems?: PackageDepotItem[]=[];
-  packageDepotDS?:PackageDepotDS;
-  CodeValuesDS?:CodeValuesDS;
+  packageDepotItems?: PackageDepotItem[] = [];
+  packageDepotDS?: PackageDepotDS;
+  CodeValuesDS?: CodeValuesDS;
 
-  storageCalCvList:CodeValuesItem[]=[];
+  storageCalCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -112,19 +111,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   pcForm: UntypedFormGroup;
   storageCalControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-  profileNameControl= new UntypedFormControl();
-  customerCodeControl=new UntypedFormControl();
-  branchCodeControl=new UntypedFormControl();
-  custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  ccDS:CustomerCompanyDS;
+  profileNameControl = new UntypedFormControl();
+  customerCodeControl = new UntypedFormControl();
+  branchCodeControl = new UntypedFormControl();
+  custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
+  ccDS: CustomerCompanyDS;
 
   customer_companyList?: CustomerCompanyItem[];
-  branch_companyList?:CustomerCompanyItem[];
-  jobOrderDS : JobOrderDS;
+  branch_companyList?: CustomerCompanyItem[];
+  jobOrderDS: JobOrderDS;
   selectedItems: any;
-  selectedItem:any;
-  igCleanDS:InGateCleaningDS;
-  igCleanItems:any=[];
+  selectedItem: any;
+  igCleanDS: InGateCleaningDS;
+  igCleanItems: any = [];
   totalCost_depot: number = 0;
   totalCost_customer: number = 0;
 
@@ -137,7 +136,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -184,70 +183,70 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    CUSTOMER_COMPANY:"COMMON-FORM.CUSTOMER-COMPANY",
-    ALIAS_NAME:"COMMON-FORM.ALIAS-NAME",
-    AGREEMENT_DUE_DATE:"COMMON-FORM.AGREEMENT-DUE-DATE",
-    BILLING_PROFILE:"COMMON-FORM.BILLING-PROFILE",
-    PACKAGE_DEPOT:"MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
-    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
-    VIEW:'COMMON-FORM.VIEW',
-    DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
-    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
-    PREINSPECTION_COST:"COMMON-FORM.PREINSPECTION-COST",
-    LOLO_COST:"COMMON-FORM.LOLO-COST",
-    STORAGE_COST:"COMMON-FORM.STORAGE-COST",
-    FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
-    STANDARD_COST:"COMMON-FORM.STANDARD-COST",
-    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
-    STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    CUSTOMER_COMPANY: "COMMON-FORM.CUSTOMER-COMPANY",
+    ALIAS_NAME: "COMMON-FORM.ALIAS-NAME",
+    AGREEMENT_DUE_DATE: "COMMON-FORM.AGREEMENT-DUE-DATE",
+    BILLING_PROFILE: "COMMON-FORM.BILLING-PROFILE",
+    PACKAGE_DEPOT: "MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    VIEW: 'COMMON-FORM.VIEW',
+    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST: "COMMON-FORM.LOLO-COST",
+    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
-    CLEANING_APPROVAL:"MENUITEMS.CLEANING.LIST.APPROVAL",
-    KIV:"COMMON-FORM.KIV",
-    NO_ACTION:"COMMON-FORM.NO-ACTION",
-    APPROVE:"COMMON-FORM.APPROVE",
-    APPROVED_DATE:"COMMON-FORM.APPROVED-DATE",
-    DATE:"COMMON-FORM.DATE",
-    FLAMMABLE_NOTIFICATION:"COMMON-FORM.FLAMMABLE-NOTIFICATION",
-    REMARKS_NOTIFICATION:"COMMON-FORM.REMARK-NOTIFICATION",
-    DETAILS:"COMMON-FORM.DETAILS",
-    EIR_NO:"COMMON-FORM.EIR-NO",
-    EIR_DATE:"COMMON-FORM.EIR-DATE",
-    QUOTATION_DATE:"COMMON-FORM.QUOTATION-DATE",
-    CARGO_NAME:"COMMON-FORM.CARGO-NAME",
-    DEPOT_ESTIMATE:"COMMON-FORM.DEPOT-ESTIMATE",
-    CUSTOMER_APPROVAL:"COMMON-FORM.CUSTOMER-APPROVAL",
-    UPDATED_BY:"COMMON-FORM.UPDATED-BY",
-    UPDATED_ON:"COMMON-FORM.UPDATED-ON",
-    APPROVAL:"COMMON-FORM.APPROVAL",
-    JOB_ALLOCATION:"COMMON-FORM.JOB-ALLOCATION",
-    JOB_COMPLETION:"COMMON-FORM.JOB-COMPLETION",
-    BILLING_DETAILS:"COMMON-FORM.BILLING-DETAILS",
-    INOUT_GATE:"COMMON-FORM.INTOUT-GATE",
-    CLEANING_COST_FOR:"COMMON-FORM.CLEANING-COST-FOR",
-    LAST_CARGO_CLEANING_QUOTATION :"COMMON-FORM.LAST-CARGO-CLEANING-QUOTATION",
-    TOTAL_COST:"COMMON-FORM.TOTAL-COST",
-    ROLLBACK:'COMMON-FORM.ROLLBACK',
-    ARE_SURE_ROLLBACK:'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
-    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    BILLING_TO:'COMMON-FORM.BILLING-TO',
-    CLEANING_COST:'COMMON-FORM.CLEANING-COST',
-    BUFFER_COST:'COMMON-FORM.BUFFER-COST'
+    CLEANING_APPROVAL: "MENUITEMS.CLEANING.LIST.APPROVAL",
+    KIV: "COMMON-FORM.KIV",
+    NO_ACTION: "COMMON-FORM.NO-ACTION",
+    APPROVE: "COMMON-FORM.APPROVE",
+    APPROVED_DATE: "COMMON-FORM.APPROVED-DATE",
+    DATE: "COMMON-FORM.DATE",
+    FLAMMABLE_NOTIFICATION: "COMMON-FORM.FLAMMABLE-NOTIFICATION",
+    REMARKS_NOTIFICATION: "COMMON-FORM.REMARK-NOTIFICATION",
+    DETAILS: "COMMON-FORM.DETAILS",
+    EIR_NO: "COMMON-FORM.EIR-NO",
+    EIR_DATE: "COMMON-FORM.EIR-DATE",
+    QUOTATION_DATE: "COMMON-FORM.QUOTATION-DATE",
+    CARGO_NAME: "COMMON-FORM.CARGO-NAME",
+    DEPOT_ESTIMATE: "COMMON-FORM.DEPOT-ESTIMATE",
+    CUSTOMER_APPROVAL: "COMMON-FORM.CUSTOMER-APPROVAL",
+    UPDATED_BY: "COMMON-FORM.UPDATED-BY",
+    UPDATED_ON: "COMMON-FORM.UPDATED-ON",
+    APPROVAL: "COMMON-FORM.APPROVAL",
+    JOB_ALLOCATION: "COMMON-FORM.JOB-ALLOCATION",
+    JOB_COMPLETION: "COMMON-FORM.JOB-COMPLETION",
+    BILLING_DETAILS: "COMMON-FORM.BILLING-DETAILS",
+    INOUT_GATE: "COMMON-FORM.INTOUT-GATE",
+    CLEANING_COST_FOR: "COMMON-FORM.CLEANING-COST-FOR",
+    LAST_CARGO_CLEANING_QUOTATION: "COMMON-FORM.LAST-CARGO-CLEANING-QUOTATION",
+    TOTAL_COST: "COMMON-FORM.TOTAL-COST",
+    ROLLBACK: 'COMMON-FORM.ROLLBACK',
+    ARE_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
+    BILLING_TO: 'COMMON-FORM.BILLING-TO',
+    CLEANING_COST: 'COMMON-FORM.CLEANING-COST',
+    BUFFER_COST: 'COMMON-FORM.BUFFER-COST'
   };
 
-  
+
 
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
-  
+
   constructor(
-  
+
     public dialog: MatDialog,
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -260,67 +259,67 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     super();
     this.selectedItems = data.selectedItems;
     this.pcForm = this.createPackageCleaning();
-    this.igCleanDS=new InGateCleaningDS(this.apollo);
+    this.igCleanDS = new InGateCleaningDS(this.apollo);
     this.packageDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
-    this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    this.ccDS= new CustomerCompanyDS(this.apollo);
-    this.jobOrderDS= new JobOrderDS(this.apollo);
+    this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.jobOrderDS = new JobOrderDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     //this.loadData();
-    
+
   }
 
   ngOnInit() {
-    
+
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
-    if(this.AllowChangingCost())this.initializeValueChanges();
+    if (this.AllowChangingCost()) this.initializeValueChanges();
   }
 
-  createCleaningChargesItem(){
+  createCleaningChargesItem() {
 
-    this.igCleanItems=[
+    this.igCleanItems = [
       {
-        description:this.getDescription(),
-        depotEstimate:this.pcForm?.get('depot_estimate_cost')?.value,
-        customerApproval:this.pcForm?.get('customer_approval_cost')?.value,
+        description: this.getDescription(),
+        depotEstimate: this.pcForm?.get('depot_estimate_cost')?.value,
+        customerApproval: this.pcForm?.get('customer_approval_cost')?.value,
       }
     ]
     this.calculateTotalCost();
   }
 
   calculateTotalCost() {
-    this.totalCost_depot = this.igCleanItems.reduce((acc:number, item:any) => acc + (Number(item.depotEstimate) || 0), 0);
-    this.totalCost_customer = this.igCleanItems.reduce((acc:number, item:any) => acc + (Number(item.customerApproval) || 0), 0);
+    this.totalCost_depot = this.igCleanItems.reduce((acc: number, item: any) => acc + (Number(item.depotEstimate) || 0), 0);
+    this.totalCost_customer = this.igCleanItems.reduce((acc: number, item: any) => acc + (Number(item.customerApproval) || 0), 0);
   }
 
   createPackageCleaning(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      job_no_input:[''],
-      approved_dt:[new Date()],
-      no_action_dt:[new Date()],
-      remarks:[''],
-      tank_no:[''],
-      customer:[''],
-      eir_no:[''],
-      eir_dt:[''],
-      quotation_dt:[''],
-      cargo:[''],
-      job_no:['-'],
-      depot_estimate_cost:[''],
-      customer_approval_cost:['-'],
-      update_by:[''],
-      update_on:[''],
-      status_cv:[''],
-      approve_dt:[''],
-      na_dt:[''],
-      bill_to:this.customerCodeControl,
-      bill_branch:this.branchCodeControl,
-      cleaning_cost:[''],
-      buffer_cost:['']
+      job_no_input: [''],
+      approved_dt: [new Date()],
+      no_action_dt: [new Date()],
+      remarks: [''],
+      tank_no: [''],
+      customer: [''],
+      eir_no: [''],
+      eir_dt: [''],
+      quotation_dt: [''],
+      cargo: [''],
+      job_no: ['-'],
+      depot_estimate_cost: [''],
+      customer_approval_cost: ['-'],
+      update_by: [''],
+      update_on: [''],
+      status_cv: [''],
+      approve_dt: [''],
+      na_dt: [''],
+      bill_to: this.customerCodeControl,
+      bill_branch: this.branchCodeControl,
+      cleaning_cost: [''],
+      buffer_cost: ['']
     });
   }
 
@@ -334,8 +333,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList=[];
-       // this.branchCodeControl.reset('');
+        this.branch_companyList = [];
+        // this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -344,13 +343,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if(!this.customerCodeControl.invalid)
-          {
-            if(this.customerCodeControl.value?.guid)
-            {
+          if (!this.customerCodeControl.invalid) {
+            if (this.customerCodeControl.value?.guid) {
               let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({main_customer_guid:{eq:mainCustomerGuid}}).subscribe(data=>{
-                this.branch_companyList=data;
+              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+                this.branch_companyList = data;
                 this.updateValidators(this.branchCodeControl, this.branch_companyList);
               });
             }
@@ -359,10 +356,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       })
     ).subscribe();
 
-  
+
   }
 
-  
+
   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
     untypedFormControl.setValidators([
       AutocompleteSelectionValidator(validOptions)
@@ -370,20 +367,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   displayDateFromEpoch(epoch: any) {
-    if(epoch)
-    {
-      if(typeof epoch==="string") return epoch;
-    var updatedt= Number(epoch);
-    
-    const date = new Date(updatedt! * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();   
+    if (epoch) {
+      if (typeof epoch === "string") return epoch;
+      var updatedt = Number(epoch);
 
-   // Replace the '/' with '-' to get the required format
- 
+      const date = new Date(updatedt! * 1000);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = date.toLocaleString('en-US', { month: 'short' });
+      const year = date.getFullYear();
 
-    return `${day}/${month}/${year}`;
+      // Replace the '/' with '-' to get the required format
+
+
+      return `${day}/${month}/${year}`;
     }
     return `-`;
 
@@ -394,85 +390,78 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-  loadData()
-  {
+  loadData() {
     //this.queryDepotCost();
 
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-     
+
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-      this.storageCalCvList=data;
-   
+      this.storageCalCvList = data;
 
-    if(this.selectedItems.length==1)
-    {
-      this.selectedItem=this.selectedItems[0];
-      var inGateClnItem = this.selectedItem;
-      this.pcForm.patchValue({
 
-        
-        tank_no:inGateClnItem.storing_order_tank?.tank_no,
-        customer:this.displayCustomerName(inGateClnItem.storing_order_tank?.storing_order?.customer_company),
-         eir_no:inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
-         eir_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
-         quotation_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
-         cargo:inGateClnItem.storing_order_tank?.tariff_cleaning.cargo,
-         job_no:inGateClnItem.job_no,
-         depot_estimate_cost:Number(inGateClnItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
-         customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
-         update_by:inGateClnItem.approve_by,
-         update_on:this.displayDateFromEpoch(inGateClnItem.approve_dt),
-         job_no_input:inGateClnItem.job_no,
-         status_cv:inGateClnItem.status_cv,
-         approve_dt:this.displayDateFromEpoch(inGateClnItem.approve_dt),
-         na_dt:this.displayDateFromEpoch(inGateClnItem.na_dt),
-         remarks:inGateClnItem.remarks,
-         cleaning_cost:inGateClnItem.cleaning_cost,
-         buffer_cost:inGateClnItem.buffer_cost
-      });
-      this.PatchBillingParty(inGateClnItem);
-      this.createCleaningChargesItem();
-    //  this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
+      if (this.selectedItems.length == 1) {
+        this.selectedItem = this.selectedItems[0];
+        var inGateClnItem = this.selectedItem;
+        this.pcForm.patchValue({
 
-    }
-  });
 
-    
-    
+          tank_no: inGateClnItem.storing_order_tank?.tank_no,
+          customer: this.displayCustomerName(inGateClnItem.storing_order_tank?.storing_order?.customer_company),
+          eir_no: inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
+          eir_dt: this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+          quotation_dt: this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+          cargo: inGateClnItem.storing_order_tank?.tariff_cleaning.cargo,
+          job_no: inGateClnItem.job_no,
+          depot_estimate_cost: Number(inGateClnItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
+          customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
+          update_by: inGateClnItem.approve_by,
+          update_on: this.displayDateFromEpoch(inGateClnItem.approve_dt),
+          job_no_input: inGateClnItem.job_no,
+          status_cv: inGateClnItem.status_cv,
+          approve_dt: this.displayDateFromEpoch(inGateClnItem.approve_dt),
+          na_dt: this.displayDateFromEpoch(inGateClnItem.na_dt),
+          remarks: inGateClnItem.remarks,
+          cleaning_cost: inGateClnItem.cleaning_cost,
+          buffer_cost: inGateClnItem.buffer_cost
+        });
+        this.PatchBillingParty(inGateClnItem);
+        this.createCleaningChargesItem();
+        //  this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
+
+      }
+    });
+
+
+
   }
 
   displayCustomerName(cc?: CustomerCompanyItem): string {
     return String(cc?.code ? `${cc.code} (${cc.name})` : '');
-}
+  }
 
- 
-  
-  selectStorageCalculateCV_Description(valCode?:string):CodeValuesItem
-  {
+
+
+  selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
-    if(this.storageCalCvList.length>0)
-    {
-      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode)|| new CodeValuesItem();
-      
+    if (this.storageCalCvList.length > 0) {
+      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
+
       // If no match is found, description will be undefined, so you can handle it accordingly
-      
+
     }
     return valCodeObject;
-    
-  }
-  
 
-  canEdit()
-  {
-    if(this.action!="view")
-    {
-    return true;
+  }
+
+
+  canEdit() {
+    if (this.action != "view") {
+      return true;
     }
-    else
-    {
+    else {
       return false;
     }
   }
@@ -484,7 +473,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
         this.dialogRef.close(count);
-        
+
       });
     }
   }
@@ -494,42 +483,39 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
 
-    var selItem =this.selectedItems[0];
+    var selItem = this.selectedItems[0];
     var st
     delete selItem.storing_order_tank;
     var rep: InGateCleaningItem = new InGateCleaningItem(selItem);
-    rep.action=this.action.toUpperCase();
-    switch(this.action.toUpperCase())
-    {
+    rep.action = this.action.toUpperCase();
+    switch (this.action.toUpperCase()) {
       case "APPROVE":
-        rep.approve_dt=Utility.convertDate(this.pcForm.get("approved_dt")?.value) as number;
-        rep.job_no=this.pcForm.get("job_no_input")?.value;
+        rep.approve_dt = Utility.convertDate(this.pcForm.get("approved_dt")?.value) as number;
+        rep.job_no = this.pcForm.get("job_no_input")?.value;
         break;
       case "KIV":
-        rep.job_no= this.pcForm.get("job_no_input")?.value;
-        rep.remarks=this.pcForm.get("remarks")?.value;
+        rep.job_no = this.pcForm.get("job_no_input")?.value;
+        rep.remarks = this.pcForm.get("remarks")?.value;
         break;
       case "NO_ACTION":
-        rep.action="NA";
-        rep.na_dt=Utility.convertDate(this.pcForm.get("no_action_dt")?.value)as number;
-        rep.remarks=this.pcForm.get("remarks")?.value;
+        rep.action = "NA";
+        rep.na_dt = Utility.convertDate(this.pcForm.get("no_action_dt")?.value) as number;
+        rep.remarks = this.pcForm.get("remarks")?.value;
         break;
       case "COST":
-        rep.action="APPROVE";
+        rep.action = "APPROVE";
         rep.bill_to_guid = this.getBillingParty();
-        rep.cleaning_cost= Number(this.pcForm.get('cleaning_cost')?.value);
-        rep.buffer_cost=Number(this.pcForm.get('buffer_cost')?.value);
-        rep.remarks=this.pcForm.get("remarks")?.value;
+        rep.cleaning_cost = Number(this.pcForm.get('cleaning_cost')?.value);
+        rep.buffer_cost = Number(this.pcForm.get('buffer_cost')?.value);
+        rep.remarks = this.pcForm.get("remarks")?.value;
 
     }
-   
-    if(this.action.toUpperCase()==="NO_ACTION" )
-    {
-      const distinctJobOrders :any[] =[];
-      if(this.selectedItems[0].job_order)
-      {
-      const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
-      distinctJobOrders.push(jobOrder);
+
+    if (this.action.toUpperCase() === "NO_ACTION") {
+      const distinctJobOrders: any[] = [];
+      if (this.selectedItems[0].job_order) {
+        const jobOrder: JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
+        distinctJobOrders.push(jobOrder);
       }
       const repJobOrder = new ClnJobOrderRequest({
         guid: this.selectedItems[0]?.guid,
@@ -537,47 +523,42 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         remarks: this.selectedItems[0]?.remarks,
         job_order: distinctJobOrders
       });
-  
+
       console.log(repJobOrder)
 
-      let abortStatus = ['ASSIGNED','PARTIAL_ASSIGNED'];
-      if(abortStatus.includes(this.selectedItems[0]?.status_cv))
-      {
+      let abortStatus = ['ASSIGNED', 'PARTIAL_ASSIGNED'];
+      if (abortStatus.includes(this.selectedItems[0]?.status_cv)) {
         this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.abortCleaning);
         });
       }
-      else
-      {
+      else {
         delete rep.job_order;
-        this.igCleanDS.updateInGateCleaning(rep).subscribe(result=>{
-            if(result.data.updateCleaning>0)
-            {
-            
-                      console.log('valid');
-                      this.handleSaveSuccess(result.data.updateCleaning);
-      
-            }
-          });
-      }
-    }
-    else
-    {
-      delete rep.job_order;
-      this.igCleanDS.updateInGateCleaning(rep).subscribe(result=>{
-          if(result.data.updateCleaning>0)
-          {
-          
-                    console.log('valid');
-                    this.handleSaveSuccess(result.data.updateCleaning);
-    
+        this.igCleanDS.updateInGateCleaning(rep).subscribe(result => {
+          if (result.data.updateCleaning > 0) {
+
+            console.log('valid');
+            this.handleSaveSuccess(result.data.updateCleaning);
+
           }
         });
+      }
     }
-   
+    else {
+      delete rep.job_order;
+      this.igCleanDS.updateInGateCleaning(rep).subscribe(result => {
+        if (result.data.updateCleaning > 0) {
+
+          console.log('valid');
+          this.handleSaveSuccess(result.data.updateCleaning);
+
+        }
+      });
+    }
+
   }
-  
+
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
@@ -591,34 +572,31 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  
-  getAction():String{
-    let retval="";
-    switch(this.action)
-    {
+
+  getAction(): String {
+    let retval = "";
+    switch (this.action) {
       case "kiv":
-        retval=this.translatedLangText.KIV;
+        retval = this.translatedLangText.KIV;
         break;
       case "approve":
-        retval=this.translatedLangText.APPROVE;
+        retval = this.translatedLangText.APPROVE;
         break;
       case "no_action":
         retval = this.translatedLangText.NO_ACTION;
         break;
       case "view":
-        retval =this.translatedLangText.VIEW;
+        retval = this.translatedLangText.VIEW;
         break;
     }
 
     return retval;
   }
 
-  ShowNoActionDtView()
-  {
-    if(this.action=="view")
-    {
+  ShowNoActionDtView() {
+    if (this.action == "view") {
       var status_cv = this.pcForm.get('status_cv')?.value;
-      var validActions :string[]= ["no_action"];
+      var validActions: string[] = ["no_action"];
       return validActions.includes(status_cv.toLocaleLowerCase());
     }
 
@@ -626,12 +604,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
-  ShowApproveDtView()
-  {
-    if(this.action=="view")
-    {
+  ShowApproveDtView() {
+    if (this.action == "view") {
       var status_cv = this.pcForm.get('status_cv')?.value;
-      var validActions :string[]= ["approve"];
+      var validActions: string[] = ["approve"];
       return validActions.includes(status_cv.toLocaleLowerCase());
     }
 
@@ -639,12 +615,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
-  ShowRemarksView()
-  {
-    if(this.action=="view")
-    {
+  ShowRemarksView() {
+    if (this.action == "view") {
       var status_cv = this.pcForm.get('status_cv')?.value;
-      var validActions :string[]= ["kiv","no_action"];
+      var validActions: string[] = ["kiv", "no_action"];
       return validActions.includes(status_cv.toLocaleLowerCase());
     }
 
@@ -652,203 +626,176 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
-  ShowStatusView()
-  {
-    var validActions :string[]= ["view"];
+  ShowStatusView() {
+    var validActions: string[] = ["view"];
     return validActions.includes(this.action);
   }
 
-  ShowJobNo()
-  {
-     var validActions :string[]= ["kiv","approve"];
-     return validActions.includes(this.action);
-  }
-
-  ShowRemarks()
-  {
-    var validActions :string[]= ["kiv","no_action","approve"];
+  ShowJobNo() {
+    var validActions: string[] = ["kiv", "approve"];
     return validActions.includes(this.action);
   }
 
-  ShowApprovedDate()
-  {
-    var validActions :string[]= ["approve"];
+  ShowRemarks() {
+    var validActions: string[] = ["kiv", "no_action", "approve"];
     return validActions.includes(this.action);
   }
 
-  ShowNoActionDate()
-  {
-    var validActions :string[]= ["no_action"];
+  ShowApprovedDate() {
+    var validActions: string[] = ["approve"];
     return validActions.includes(this.action);
   }
 
-  getDescription()
-  {
-    return `${this.translatedLangText.CLEANING_COST_FOR} ${this.pcForm?.value["cargo"]}` ;
+  ShowNoActionDate() {
+    var validActions: string[] = ["no_action"];
+    return validActions.includes(this.action);
   }
 
-  getNatureInGateAlert()
-  {
-    return `${this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv} - ${this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert}` ;
+  getDescription() {
+    return `${this.translatedLangText.CLEANING_COST_FOR} ${this.pcForm?.value["cargo"]}`;
   }
 
-  getBackgroundColorFromNature()
-  {
-    var color='orange';
-    let natureCv=this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv;
-    switch(natureCv?.toUpperCase())
-    {
-      
+  getNatureInGateAlert() {
+    return `${this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv} - ${this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert}`;
+  }
+
+  getBackgroundColorFromNature() {
+    var color = 'orange';
+    let natureCv = this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv;
+    switch (natureCv?.toUpperCase()) {
+
       case "HAZARDOUS":
-        color='purple';
-      break;
+        color = 'purple';
+        break;
       case "TOXIC":
-        color='green';
-      break;
+        color = 'green';
+        break;
       case "GASES":
-        color='cyan';
-      break;
+        color = 'cyan';
+        break;
     }
 
     return color;
   }
 
-  getTariffCleaningRemarks()
-  {
-    return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks?this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks:"-";
+  getTariffCleaningRemarks() {
+    return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks ? this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks : "-";
   }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
 
-  canRollBack():boolean
-  {
-    var validActions :string[]= ["COMPLETED",'JOB_IN_PROGRESS'];
-    var selItem =this.selectedItems[0];
-    if(validActions.includes(selItem.status_cv))
-    {
-        return (selItem.job_order);
+  canRollBack(): boolean {
+    var validActions: string[] = ["COMPLETED", 'JOB_IN_PROGRESS'];
+    var selItem = this.selectedItems[0];
+    if (validActions.includes(selItem.status_cv)) {
+      return (selItem.job_order);
     }
-    else
-    {
+    else {
       return false;
     }
-    
-    
+
+
   }
 
-   onRollback(event: Event)
-        {
-          this.preventDefault(event);  // Prevents the form submission
-              let tempDirection: Direction;
-              if (localStorage.getItem('isRtl') === 'true') {
-                tempDirection = 'rtl';
-              } else {
-                tempDirection = 'ltr';
+  onRollback(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '800px',
+      height: '250px',
+      data: {
+        action: "EDIT",
+        item: this.selectedItems[0].storing_order_tank,
+        langText: this.translatedLangText,
+        confirmStatement: this.translatedLangText.ARE_SURE_ROLLBACK,
+        index: -1
+
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action == "confirmed") {
+        const distinctJobOrders: any[] = [];
+        const jobOrder: JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
+        distinctJobOrders.push(jobOrder);
+        const clnJobOrder = new ClnJobOrderRequest({
+          guid: this.selectedItems[0]?.guid,
+          sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
+          remarks: result?.remarks,
+          job_order: distinctJobOrders,
+          sot_status: this.selectedItems[0]?.storing_order_tank?.tank_status_cv
+        });
+
+        console.log(clnJobOrder)
+        if (this.selectedItems[0]?.status_cv === "COMPLETED") {
+
+          this.igCleanDS?.rollbackCompletedCleaning(clnJobOrder).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result?.data?.rollbackCompletedCleaning);
+          });
+        }
+        else if (this.selectedItems[0]?.status_cv === "JOB_IN_PROGRESS") {
+          this.jobOrderDS?.rollbackJobInProgressCleaning(clnJobOrder).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result?.data?.rollbackJobInProgressCleaning);
+          });
+        }
+
+      }
+    });
+  }
+
+  PatchBillingParty(clnItem: InGateCleaningItem) {
+
+    if (clnItem.bill_to_guid === clnItem.storing_order_tank?.storing_order?.customer_company?.guid) {
+      this.customerCodeControl.setValue(clnItem.storing_order_tank?.storing_order?.customer_company);
+    }
+    else {
+      this.ccDS.loadItems({ guid: { eq: clnItem.bill_to_guid } }, { code: 'ASC' }).subscribe(data => {
+
+        if (data.length) {
+          if (!data[0].main_customer_guid) {
+            this.customerCodeControl.setValue(data[0]);
+          }
+          else {
+            var branchCompany = data[0];
+            this.ccDS.loadItems({ guid: { eq: branchCompany.main_customer_guid } }, { code: 'ASC' }).subscribe(data => {
+
+              if (data.length) {
+                this.customerCodeControl.setValue(data[0]);
               }
-              const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-                width: '800px',
-                height: '250px',
-                data: {
-                  action: "EDIT",
-                  item: this.selectedItems[0].storing_order_tank,
-                  langText: this.translatedLangText,
-                  confirmStatement:this.translatedLangText.ARE_SURE_ROLLBACK,
-                  index:-1
-                
-                },
-                direction: tempDirection
-              });
-              this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
-                if (result?.action=="confirmed") {
-                  const distinctJobOrders :any[] =[];
-                  const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
-                  distinctJobOrders.push(jobOrder);
-                  const clnJobOrder = new ClnJobOrderRequest({
-                    guid: this.selectedItems[0]?.guid,
-                    sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
-                    remarks: result?.remarks,
-                    job_order: distinctJobOrders,
-                    sot_status:this.selectedItems[0]?.storing_order_tank?.tank_status_cv
-                  });
-              
-                  console.log(clnJobOrder)
-                  if(this.selectedItems[0]?.status_cv==="COMPLETED")
-                    {
-                      
-                      this.igCleanDS?.rollbackCompletedCleaning(clnJobOrder).subscribe(result => {
-                        console.log(result)
-                        this.handleSaveSuccess(result?.data?.rollbackCompletedCleaning);
-                      });
-                   }
-                   else if (this.selectedItems[0]?.status_cv==="JOB_IN_PROGRESS")
-                   {
-                    this.jobOrderDS?.rollbackJobInProgressCleaning(clnJobOrder).subscribe(result => {
-                      console.log(result)
-                      this.handleSaveSuccess(result?.data?.rollbackJobInProgressCleaning);
-                    });
-                   }
-      
-              }
+              this.branchCodeControl.setValue(branchCompany);
             });
-   }
 
-   PatchBillingParty(clnItem :InGateCleaningItem)
-   {
-
-      if(clnItem.bill_to_guid===clnItem.storing_order_tank?.storing_order?.customer_company?.guid)
-      {
-         this.customerCodeControl.setValue(clnItem.storing_order_tank?.storing_order?.customer_company);
-      }
-      else
-      {
-        this.ccDS.loadItems({guid:{eq:clnItem.bill_to_guid} }, { code: 'ASC' }).subscribe(data =>{
-
-            if(data.length)
-            {
-              if(!data[0].main_customer_guid)
-              {
-                  this.customerCodeControl.setValue(data[0]);
-              }
-              else
-              {
-                 var branchCompany = data[0];
-                 this.ccDS.loadItems({guid:{eq:branchCompany.main_customer_guid} }, { code: 'ASC' }).subscribe(data =>{
-                 
-                  if(data.length)
-                  {
-                    this.customerCodeControl.setValue(data[0]);
-                  }
-                   this.branchCodeControl.setValue(branchCompany);
-                });
-
-              }
-            }
+          }
+        }
 
 
-        })
-      }
-   }
+      })
+    }
+  }
 
-   AllowChangingCost():Boolean
-   {
-      return this.action==='cost';
-   }
+  AllowChangingCost(): Boolean {
+    return this.action === 'cost';
+  }
 
-   getBillingParty():string
-   {
-      var retval:string='';
-      if(this.pcForm.get('bill_branch')?.value.code)
-      {
-        retval =this.pcForm.get('bill_branch')?.value.guid;
-      }
-      else
-      {
-        retval =this.pcForm.get('bill_to')?.value.guid;
-      }
+  getBillingParty(): string {
+    var retval: string = '';
+    if (this.pcForm.get('bill_branch')?.value.code) {
+      retval = this.pcForm.get('bill_branch')?.value.guid;
+    }
+    else {
+      retval = this.pcForm.get('bill_to')?.value.guid;
+    }
 
-      return retval;
-   }
-  
+    return retval;
+  }
+
 }

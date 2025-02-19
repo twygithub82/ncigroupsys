@@ -92,8 +92,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.IN-GATE-DETAILS'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.INVENTORY.LIST.IN-GATE'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE', route: '/admin/inventory/in-gate' }
   ]
 
   translatedLangText: any = {};

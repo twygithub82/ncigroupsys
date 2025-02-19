@@ -74,7 +74,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]
 
   translatedLangText: any = {};

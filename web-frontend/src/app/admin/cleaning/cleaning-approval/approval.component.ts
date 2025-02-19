@@ -86,8 +86,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.CLEANING.LIST.APPROVAL'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.CLEANING.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.CLEANING.TEXT', route: '/admin/cleaning/approval' }
   ]
 
   translatedLangText: any = {};

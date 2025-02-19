@@ -79,7 +79,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
   ]
 
   translatedLangText: any = {};

@@ -82,9 +82,6 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   ];
 
   pageTitle = 'MENUITEMS.BILING.LIST.STEAM-BILL'
-  // breadcrumsMiddleList = [
-  //   'MENUITEMS.HOME.TEXT'
-  // ]
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]

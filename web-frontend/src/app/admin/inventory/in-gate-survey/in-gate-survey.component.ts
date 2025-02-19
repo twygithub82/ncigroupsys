@@ -82,7 +82,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]
 
   translatedLangText: any = {};

@@ -82,9 +82,6 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   ];
 
   pageTitle = 'MENUITEMS.BILING.LIST.RESIDUE-BILL'
-  // breadcrumsMiddleList = [
-  //   'MENUITEMS.HOME.TEXT'
-  // ]
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]

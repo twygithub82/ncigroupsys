@@ -1,58 +1,49 @@
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
+import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
+import { BillingDS } from 'app/data-sources/billing';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
-import { GuidSelectionModel } from '@shared/GuidSelectionModel';
-import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { BillingDS, BillingEstimateRequest,BillingItem,BillingInputRequest } from 'app/data-sources/billing';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { report_customer_tank_activity } from 'app/data-sources/reports';
-import { YardDetailPdfComponent } from 'app/document-template/pdf/tank-activity/yard/detail-pdf/yard-detail-pdf.component';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activity/customer-detail-pdf/customer-detail-pdf.component';
+import { Utility } from 'app/utilities/utility';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-report',
@@ -60,7 +51,6 @@ import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activ
   templateUrl: './customer-report.component.html',
   styleUrl: './customer-report.component.scss',
   imports: [
-    BreadcrumbComponent,
     MatTooltipModule,
     MatButtonModule,
     MatIconModule,
@@ -72,7 +62,6 @@ import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activ
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -103,11 +92,6 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     // 'action'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
-  breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
-  ]
-
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -137,31 +121,31 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     RO_NO: 'COMMON-FORM.RO-NO',
-    RELEASE_DATE:'COMMON-FORM.RELEASE-DATE',
-    INVOICE_DATE:'COMMON-FORM.INVOICE-DATE',
-    INVOICE_NO:'COMMON-FORM.INVOICE-NO',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
+    INVOICE_DATE: 'COMMON-FORM.INVOICE-DATE',
+    INVOICE_NO: 'COMMON-FORM.INVOICE-NO',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    INVOICE_DETAILS:'COMMON-FORM.INVOICE-DETAILS',
-    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
+    INVOICE_DETAILS: 'COMMON-FORM.INVOICE-DETAILS',
+    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
-    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE',
+    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
+    CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
-    INVOICED:'COMMON-FORM.INVOICED',
-    CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
-    CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
-    COST:'COMMON-FORM.COST',
-    CONFIRM_REMOVE_ESITMATE:'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
-    DELETE:'COMMON-FORM.DELETE',
-    AV_DATE:'COMMON-FORM.AV-DATE',
-    CLEAN_DATE:'COMMON-FORM.CLEAN-DATE',
-    CAPACITY:'COMMON-FORM.CAPACITY',
-    REPAIR_COMPLETED_DATE:'COMMON-FORM.REPAIR-COMPLETED-DATE',
-    TARE_WEIGHT:'COMMON-FORM.TARE-WEIGHT',
-    CURRENT_STATUS:'COMMON-FORM.CURRENT-STATUS',
-    DETAIL_REPORT:'COMMON-FORM.DETAIL-REPORT',
-    ONE_CONDITION_NEEDED:'COMMON-FORM.ONE-CONDITION-NEEDED',
-  
+    INVOICED: 'COMMON-FORM.INVOICED',
+    CONFIRM_UPDATE_INVOICE: 'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
+    CONFIRM_INVALID_ESTIMATE: 'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
+    COST: 'COMMON-FORM.COST',
+    CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
+    DELETE: 'COMMON-FORM.DELETE',
+    AV_DATE: 'COMMON-FORM.AV-DATE',
+    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
+    CAPACITY: 'COMMON-FORM.CAPACITY',
+    REPAIR_COMPLETED_DATE: 'COMMON-FORM.REPAIR-COMPLETED-DATE',
+    TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
+    CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
+    DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
+    ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
+
   }
 
   invForm?: UntypedFormGroup;
@@ -177,28 +161,28 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   //clnDS:InGateCleaningDS;
-  stmDS:SteamDS;
-  plDS:PackageLabourDS;
-  billDS:BillingDS;
+  stmDS: SteamDS;
+  plDS: PackageLabourDS;
+  billDS: BillingDS;
 
-  distinctCustomerCodes:any;
-  selectedEstimateItem?:SteamItem;
-  selectedEstimateLabourCost?:number;
-  stmEstList:SteamItem[]=[];
+  distinctCustomerCodes: any;
+  selectedEstimateItem?: SteamItem;
+  selectedEstimateLabourCost?: number;
+  stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
-  branch_companyList?:CustomerCompanyItem[];
+  branch_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
-  depotStatusCvList:CodeValuesItem[]=[];
+  depotStatusCvList: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
 
 
-  processType:string="STEAMING";
-  billingParty:string="CUSTOMER";
+  processType: string = "STEAMING";
+  billingParty: string = "CUSTOMER";
 
   pageIndex = 0;
   pageSize = 100;
@@ -210,10 +194,10 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   hasPreviousPage = false;
   selection = new GuidSelectionModel<SteamItem>(true, []);
   //selection = new SelectionModel<InGateCleaningItem>(true, []);
-  invoiceNoControl= new FormControl('', [Validators.required]);
-  invoiceDateControl= new FormControl('', [Validators.required]);
-  invoiceTotalCostControl= new FormControl('0.00');
-  noCond:boolean=false;
+  invoiceNoControl = new FormControl('', [Validators.required]);
+  invoiceDateControl = new FormControl('', [Validators.required]);
+  invoiceTotalCostControl = new FormControl('0.00');
+  noCond: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -232,9 +216,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
-    this.stmDS= new SteamDS(this.apollo);
-    this.plDS=new PackageLabourDS(this.apollo);
-    this.billDS= new BillingDS(this.apollo);
+    this.stmDS = new SteamDS(this.apollo);
+    this.plDS = new PackageLabourDS(this.apollo);
+    this.billDS = new BillingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -248,10 +232,10 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.loadData();
   }
 
-  initInvoiceForm(){
-    this.invForm=this.fb.group({
-      inv_no:[''],
-      inv_dt:['']
+  initInvoiceForm() {
+    this.invForm = this.fb.group({
+      inv_no: [''],
+      inv_dt: ['']
     })
   }
   initSearchForm() {
@@ -259,31 +243,31 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.searchForm = this.fb.group({
       capacity: [''],
       customer_code: this.customerCodeControl,
-      branch_code:this.branchCodeControl,
+      branch_code: this.branchCodeControl,
       last_cargo: this.lastCargoControl,
       eir_no: [''],
       ro_no: [''],
-      eir_dt:[''],
-      eir_dt_start:[''],
-      eir_dt_end:[''],
-      av_dt:[''],
-      av_dt_start:[''],
-      av_dt_end:[''],
-      repair_cmp_dt:[''],
+      eir_dt: [''],
+      eir_dt_start: [''],
+      eir_dt_end: [''],
+      av_dt: [''],
+      av_dt_start: [''],
+      av_dt_end: [''],
+      repair_cmp_dt: [''],
       release_dt_start: [''],
       release_dt_end: [''],
-      clean_dt:[''],
-      clean_dt_start:[''],
-      clean_dt_end:[''],
+      clean_dt: [''],
+      clean_dt_start: [''],
+      clean_dt_end: [''],
       tank_no: [''],
-      inv_no:[''],
+      inv_no: [''],
       job_no: [''],
       purpose: [''],
       tank_status_cv: [''],
       eir_status_cv: [''],
       yard_cv: [''],
-      tare_weight:[''],
-      depot_status_cv:[''],
+      tare_weight: [''],
+      depot_status_cv: [''],
     });
   }
 
@@ -293,7 +277,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList=[];
+        this.branch_companyList = [];
         this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
@@ -303,13 +287,11 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if(!this.customerCodeControl.invalid)
-          {
-            if(this.customerCodeControl.value?.guid)
-            {
+          if (!this.customerCodeControl.invalid) {
+            if (this.customerCodeControl.value?.guid) {
               let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({main_customer_guid:{eq:mainCustomerGuid}}).subscribe(data=>{
-                this.branch_companyList=data;
+              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+                this.branch_companyList = data;
                 this.updateValidators(this.branchCodeControl, this.branch_companyList);
               });
             }
@@ -331,7 +313,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
           this.updateValidators(this.lastCargoControl, this.last_cargoList);
-          
+
         });
       })
     ).subscribe();
@@ -362,7 +344,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.cvDS.connectAlias('depotCv').subscribe(data => {
       this.depotStatusCvList = addDefaultSelectOption(data, 'All');
     });
-   // this.search();
+    // this.search();
   }
   showNotification(
     colorName: string,
@@ -410,149 +392,148 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
   search() {
 
-     var cond_counter=0;
-     var report_type:string ="ALL";
-     const where: any = {};
-        this.selectedEstimateItem=undefined;
-        this.selectedEstimateLabourCost=0;
-        this.stmEstList =[];
-        this.selection.clear();
-        
-        // var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
-        
-        // if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
-        // {
-        //    queryType=2;
-        // }
-    
-        if (this.searchForm!.get('tank_no')?.value) {
-          where.tank_no = {contains: this.searchForm!.get('tank_no')?.value };
-          cond_counter++;
-        }
-    
-        if (this.searchForm!.get('depot_status_cv')?.value) {
-         // if(!where.storing_order_tank) where.storing_order_tank={};
-         report_type="RELEASED";
-         var cond :any = {eq: "RELEASED"};
-         if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
-         {
-          cond = {neq: "RELEASED"};
-          report_type="IN_YARD";
-         }
-          if(where.tank_status_cv)where.tank_status_cv={};
-          where.tank_status_cv=cond;
-          cond_counter++;
-        }
-    
-        if (this.searchForm!.get('customer_code')?.value) {
-          // if(!where.storing_order_tank) where.storing_order_tank={};
-           where.storing_order={customer_company : { code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
-           cond_counter++;
-         }
-        
-        if (this.searchForm!.get('eir_no')?.value) {
-          
-          var cond :any ={eir_no:{contains: this.searchForm!.get('eir_no')?.value }};
-          if(!where.in_gate) {
-            where.in_gate={};
-            where.in_gate.some={};
-            where.in_gate.some.and=[];
-          }
+    var cond_counter = 0;
+    var report_type: string = "ALL";
+    const where: any = {};
+    this.selectedEstimateItem = undefined;
+    this.selectedEstimateLabourCost = 0;
+    this.stmEstList = [];
+    this.selection.clear();
 
-          if(!where.out_gate) {
-            where.out_gate={};
-            where.out_gate.some={};
-            where.out_gate.some.and=[];
-          }
-            where.in_gate.some.and.push(cond);
-            where.out_gate.some.and.push(cond);
-            cond_counter++;
-        }
-    
-        if (this.searchForm!.get('tare_weight')?.value) {
+    // var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
 
-          var cond :any ={eq:Number(this.searchForm!.value['tare_weight'])};
-          if(!where.tank_info) where.tank_info={};
-          if(!where.tank_info.tare_weight) where.tank_info.tare_weight={};
-          where.tank_info.tare_weight=cond;
-          cond_counter++;
-        }
+    // if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
+    // {
+    //    queryType=2;
+    // }
 
-        if (this.searchForm!.get('capacity')?.value) {
+    if (this.searchForm!.get('tank_no')?.value) {
+      where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      cond_counter++;
+    }
 
-          var cond :any ={eq: Number(this.searchForm!.value['capacity'])};
-          if(!where.tank_info) where.tank_info={};
-          if(!where.tank_info.capacity) where.tank_info.capacity={};
-          where.tank_info.capacity=cond;
-          cond_counter++;
-        }
+    if (this.searchForm!.get('depot_status_cv')?.value) {
+      // if(!where.storing_order_tank) where.storing_order_tank={};
+      report_type = "RELEASED";
+      var cond: any = { eq: "RELEASED" };
+      if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
+        cond = { neq: "RELEASED" };
+        report_type = "IN_YARD";
+      }
+      if (where.tank_status_cv) where.tank_status_cv = {};
+      where.tank_status_cv = cond;
+      cond_counter++;
+    }
 
-        if (this.searchForm!.get('av_dt_start')?.value && this.searchForm!.get('av_dt_end')?.value) {
+    if (this.searchForm!.get('customer_code')?.value) {
+      // if(!where.storing_order_tank) where.storing_order_tank={};
+      where.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
+      cond_counter++;
+    }
 
-          var cond :any ={complete_dt:{gte: Utility.convertDate(this.searchForm!.value['av_dt_start']), lte: Utility.convertDate(this.searchForm!.value['av_dt_end'],true)}};
-          if(!where.repair) where.repair={};
-          where.repair={some:cond};
-          cond_counter++;
-        }
-       
+    if (this.searchForm!.get('eir_no')?.value) {
 
-        var date:string=` - ${Utility.convertDateToStr(new Date())}`;
-      if (this.searchForm!.get('release_dt_start')?.value && this.searchForm!.get('release_dt_end')?.value) {
-        var cond :any ={some:{release_order:{release_dt:{gte: Utility.convertDate(this.searchForm!.value['release_dt_start']), lte: Utility.convertDate(this.searchForm!.value['release_dt_end'],true) }}}};
-        date=`${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_end')?.value))}`;
-        if(!where.release_order_sot)where.release_order_sot={};
-        where.release_order_sot = cond;
-        cond_counter++;
-        //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+      var cond: any = { eir_no: { contains: this.searchForm!.get('eir_no')?.value } };
+      if (!where.in_gate) {
+        where.in_gate = {};
+        where.in_gate.some = {};
+        where.in_gate.some.and = [];
       }
 
+      if (!where.out_gate) {
+        where.out_gate = {};
+        where.out_gate.some = {};
+        where.out_gate.some.and = [];
+      }
+      where.in_gate.some.and.push(cond);
+      where.out_gate.some.and.push(cond);
+      cond_counter++;
+    }
 
-      if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
-        var cond :any ={some:{complete_dt:{gte: Utility.convertDate(this.searchForm!.value['clean_dt_start']), lte: Utility.convertDate(this.searchForm!.value['clean_dt_end'],true) }}};
-        if(!where.cleaning)where.cleaning={};
-        where.cleaning = cond;
-        cond_counter++;
-        //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    if (this.searchForm!.get('tare_weight')?.value) {
+
+      var cond: any = { eq: Number(this.searchForm!.value['tare_weight']) };
+      if (!where.tank_info) where.tank_info = {};
+      if (!where.tank_info.tare_weight) where.tank_info.tare_weight = {};
+      where.tank_info.tare_weight = cond;
+      cond_counter++;
+    }
+
+    if (this.searchForm!.get('capacity')?.value) {
+
+      var cond: any = { eq: Number(this.searchForm!.value['capacity']) };
+      if (!where.tank_info) where.tank_info = {};
+      if (!where.tank_info.capacity) where.tank_info.capacity = {};
+      where.tank_info.capacity = cond;
+      cond_counter++;
+    }
+
+    if (this.searchForm!.get('av_dt_start')?.value && this.searchForm!.get('av_dt_end')?.value) {
+
+      var cond: any = { complete_dt: { gte: Utility.convertDate(this.searchForm!.value['av_dt_start']), lte: Utility.convertDate(this.searchForm!.value['av_dt_end'], true) } };
+      if (!where.repair) where.repair = {};
+      where.repair = { some: cond };
+      cond_counter++;
+    }
+
+
+    var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
+    if (this.searchForm!.get('release_dt_start')?.value && this.searchForm!.get('release_dt_end')?.value) {
+      var cond: any = { some: { release_order: { release_dt: { gte: Utility.convertDate(this.searchForm!.value['release_dt_start']), lte: Utility.convertDate(this.searchForm!.value['release_dt_end'], true) } } } };
+      date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_end')?.value))}`;
+      if (!where.release_order_sot) where.release_order_sot = {};
+      where.release_order_sot = cond;
+      cond_counter++;
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+
+    if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
+      var cond: any = { some: { complete_dt: { gte: Utility.convertDate(this.searchForm!.value['clean_dt_start']), lte: Utility.convertDate(this.searchForm!.value['clean_dt_end'], true) } } };
+      if (!where.cleaning) where.cleaning = {};
+      where.cleaning = cond;
+      cond_counter++;
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+    // if (this.searchForm!.get('eir_dt')?.value) {
+    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
+      if (!where.in_gate) {
+        where.in_gate = {};
+        where.in_gate.some = {};
+        where.in_gate.some.and = [];
       }
 
-       // if (this.searchForm!.get('eir_dt')?.value) {
-        if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-          if(!where.in_gate) {
-            where.in_gate={};
-            where.in_gate.some={};
-            where.in_gate.some.and=[];
-          }
+      if (!where.out_gate) {
+        where.out_gate = {};
+        where.out_gate.some = {};
+        where.out_gate.some.and = [];
+      }
 
-          if(!where.out_gate) {
-            where.out_gate={};
-            where.out_gate.some={};
-            where.out_gate.some.and=[];
-          }
+      //var cond :any ={eir_dt:{eq: Utility.convertDate(this.searchForm!.value['eir_dt'])}};
+      var cond: any = { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'], true) } };
 
-          //var cond :any ={eir_dt:{eq: Utility.convertDate(this.searchForm!.value['eir_dt'])}};
-          var cond :any ={eir_dt:{gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'],true)}};
-          
-          where.in_gate.some.and.push(cond);
-          where.out_gate.some.and.push(cond);
-          cond_counter++;
-          
-          //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-        }
-       
-        if (this.searchForm!.get('last_cargo')?.value) {
-          where.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
-          cond_counter++;
-        }
-    
-        this.noCond=(cond_counter===0);
-        if(this.noCond) return;
-        this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-        this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined,report_type);
-    
+      where.in_gate.some.and.push(cond);
+      where.out_gate.some.and.push(cond);
+      cond_counter++;
+
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+    if (this.searchForm!.get('last_cargo')?.value) {
+      where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
+      cond_counter++;
+    }
+
+    this.noCond = (cond_counter === 0);
+    if (this.noCond) return;
+    this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
+
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string,report_type?:string) {
-   // this.selection.clear();
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string) {
+    // this.selection.clear();
     this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
@@ -560,9 +541,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        report_type=this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
+        report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
         this.ProcessReportCustomerTankActivity(report_type!);
-       // this.checkInvoicedAndGetTotalCost();
+        // this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
       });
@@ -609,20 +590,18 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   }
 
   displayReleaseDate(sot: StoringOrderTankItem) {
-    let retval:string="-";
-    if(sot.out_gate?.length)
-    {
-      if(sot.out_gate[0]?.out_gate_survey)
-      {
+    let retval: string = "-";
+    if (sot.out_gate?.length) {
+      if (sot.out_gate[0]?.out_gate_survey) {
         const date = new Date(sot.out_gate[0]?.out_gate_survey?.create_dt! * 1000);
 
         const day = String(date.getDate()).padStart(2, '0');
         const month = date.toLocaleString('en-US', { month: 'short' });
         const year = date.getFullYear();
-    
+
         // Replace the '/' with '-' to get the required format
-    
-    
+
+
         return `${day}/${month}/${year}`;
       }
 
@@ -643,7 +622,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   }
 
   displayDate(input: number | undefined): string | undefined {
-    if(input===null) return "-";
+    if (input === null) return "-";
     return Utility.convertEpochToDateStr(input);
   }
 
@@ -694,30 +673,30 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       tank_status_cv: '',
       eir_status_cv: '',
       ro_no: '',
-      eir_dt:'',
-      av_dt_start:'',
-      av_dt:'',
-      av_dt_end:'',
-      clean_dt:'',
-      clean_dt_start:'',
-      clean_dt_end:'',
-      repair_cmp_dt:'',
+      eir_dt: '',
+      av_dt_start: '',
+      av_dt: '',
+      av_dt_end: '',
+      clean_dt: '',
+      clean_dt_start: '',
+      clean_dt_end: '',
+      repair_cmp_dt: '',
       release_dt_start: '',
       release_dt_end: '',
-      inv_no:'',
+      inv_no: '',
       tare_weight: '',
-      invoiced:null,
-      depot_status_cv:'',
+      invoiced: null,
+      depot_status_cv: '',
     });
 
     this.branchCodeControl.reset('');
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
-    this.noCond=false;
+    this.noCond = false;
   }
 
   isAllSelected() {
-   // this.calculateTotalCost();
+    // this.calculateTotalCost();
     const numSelected = this.selection.selected.length;
     const numRows = this.stmEstList.length;
     return numSelected === numRows;
@@ -746,7 +725,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   //   return retval;
   // }
 
- 
+
   //    handleSaveSuccess(count: any) {
   //      if ((count ?? 0) > 0) {
   //        let successMsg = this.langText.SAVE_SUCCESS;
@@ -754,13 +733,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   //          successMsg = res;
   //          ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
   //          //this.router.navigate(['/admin/master/estimate-template']);
-   
+
   //          // Navigate to the route and pass the JSON object
-           
+
   //        });
   //      }
   //    }
- 
+
 
   // onCancel(event:Event){
   //   event.stopPropagation();
@@ -782,7 +761,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   // }
   //  toggleRow(row:SteamItem)
   //  {
-    
+
   //    this.selection.toggle(row);
   //    this.SelectFirstItem();
   //    this.calculateTotalCost();
@@ -800,7 +779,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   //     if(this.selectedEstimateItem?.bill_to_guid)
   //     {
   //     this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
-      
+
   //     }
   //   }
   //  }
@@ -826,10 +805,10 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   //    return false;
   //  }
 
-   
+
   //  getTotalCost(row:any)
   //  {
-     
+
   //   const customer_company_guid= row.storing_order_tank?.storing_order?.customer_company?.guid;
   //   const where = {
   //     and: [
@@ -846,7 +825,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   //   });
 
   //  }
-   
+
   //  getCustomerLabourPackage(custGuid: string){
 
   //   const customer_company_guid= custGuid;
@@ -867,21 +846,20 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   //       this.calculateTotalCost();
   //     }
   //   });
-   
+
   // }
 
   // calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): number {
-    
+
   //   const total = this.IsApproved(steam)?this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.stmDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
   //     return total.total_mat_cost;
 
   // }
 
-  IsApproved(steam:SteamItem)
-  {
-    const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
+  IsApproved(steam: SteamItem) {
+    const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
     return validStatus.includes(steam!.status_cv!);
-    
+
   }
 
   // checkInvoicedAndGetTotalCost()
@@ -894,78 +872,74 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   //       });    
   // }
 
-  checkInvoiced()
-  {
+  checkInvoiced() {
     this.stmEstList = this.stmEstList?.map(stm => {
-            
-              return { ...stm, invoiced: (stm.customer_billing_guid?true:false) };
-        });
+
+      return { ...stm, invoiced: (stm.customer_billing_guid ? true : false) };
+    });
   }
 
- 
 
-  ProcessReportCustomerTankActivity(report_type:string)
-    {
-      if(this.sotList.length===0) return;
-  
-      var report_customer_tank_acts:report_customer_tank_activity[]=[];
-      
-      this.sotList.map(s=>{
-  
-        if(s)
-        {
-           var repCust :report_customer_tank_activity= report_customer_tank_acts.find(r=>r.code===s.storing_order?.customer_company?.code)||new report_customer_tank_activity();
-           let newCust=false;
-           if(!repCust.code)
-           {
-             repCust.code = s.storing_order?.customer_company?.code;
-             repCust.customer = s.storing_order?.customer_company?.name;
-             newCust=true;
-           }
-           repCust.number_tank ??= 0;
-           repCust.number_tank+=1;
-           if(!repCust.storing_order_tank) repCust.storing_order_tank=[];
-           repCust.storing_order_tank?.push(s);
-           if(newCust)report_customer_tank_acts.push(repCust);
-  
-  
-  
+
+  ProcessReportCustomerTankActivity(report_type: string) {
+    if (this.sotList.length === 0) return;
+
+    var report_customer_tank_acts: report_customer_tank_activity[] = [];
+
+    this.sotList.map(s => {
+
+      if (s) {
+        var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
+        let newCust = false;
+        if (!repCust.code) {
+          repCust.code = s.storing_order?.customer_company?.code;
+          repCust.customer = s.storing_order?.customer_company?.name;
+          newCust = true;
         }
-      });
-  
-      
-        this.onExportDetail(report_customer_tank_acts,report_type);
-      
-  
-    }
-  
-    onExportDetail(repCustomerTankActivity: report_customer_tank_activity[],report_type :string) {
-      //this.preventDefault(event);
-      let cut_off_dt = new Date();
-  
-    
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
+        repCust.number_tank ??= 0;
+        repCust.number_tank += 1;
+        if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
+        repCust.storing_order_tank?.push(s);
+        if (newCust) report_customer_tank_acts.push(repCust);
+
+
+
       }
-  
-      const dialogRef = this.dialog.open(CustomerDetailPdfComponent, {
-        width: '90wv',
-        height: '80vh',
-        data: {
-          report_customer_tank_activity: repCustomerTankActivity,
-          type:report_type
-        },
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-  
-      });
+    });
+
+
+    this.onExportDetail(report_customer_tank_acts, report_type);
+
+
+  }
+
+  onExportDetail(repCustomerTankActivity: report_customer_tank_activity[], report_type: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-   
-  
- 
+
+    const dialogRef = this.dialog.open(CustomerDetailPdfComponent, {
+      width: '90wv',
+      height: '80vh',
+      data: {
+        report_customer_tank_activity: repCustomerTankActivity,
+        type: report_type
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    });
+  }
+
+
+
 }

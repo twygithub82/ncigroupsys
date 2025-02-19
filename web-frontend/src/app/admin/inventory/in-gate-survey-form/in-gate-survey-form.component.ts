@@ -98,8 +98,8 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY-FORM'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY', route: '/admin/inventory/in-gate-survey' }
   ]
 
   translatedLangText: any = {};

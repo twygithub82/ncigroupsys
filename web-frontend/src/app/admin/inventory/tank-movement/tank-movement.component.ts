@@ -83,7 +83,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]
 
   translatedLangText: any = {};

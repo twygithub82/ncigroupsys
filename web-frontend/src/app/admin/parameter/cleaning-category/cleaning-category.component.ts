@@ -1,54 +1,43 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator,PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem,StoringOrderGO } from 'app/data-sources/storing-order';
-import {CleaningCategoryDS} from 'app/data-sources/cleaning-category';
-import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { Apollo } from 'apollo-angular';
+import { CleaningCategoryDS } from 'app/data-sources/cleaning-category';
+import { CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { Utility } from 'app/utilities/utility';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import {GraphqlNotificationService} from '../../../services/global-notification.service'
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
-import {CleaningCategoryItem} from 'app/data-sources/cleaning-category'
-import { sequence } from '@angular/animations';
-import { FormDialogComponent } from './form-dialog/form-dialog.component'
-import { TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 //import {messageReceived}  from '../../../data-sources/message-received';
 
 @Component({
@@ -65,13 +54,10 @@ import { TariffDepotItem } from 'app/data-sources/tariff-depot';
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -85,22 +71,22 @@ import { TariffDepotItem } from 'app/data-sources/tariff-depot';
     MatDividerModule,
   ]
 })
-export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter implements OnInit{
+export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-     'category_name',
-     'category_description',
-     'category_cost',
-     'update_date'
+    'category_name',
+    'category_description',
+    'category_cost',
+    'update_date'
     //'last_cargo',
-   // 'so_no',
+    // 'so_no',
     //'customer_code'
-    
+
   ];
 
   pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-CATEGORY'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.CLEANING-MANAGEMENT.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.CLEANING-MANAGEMENT.TEXT', route: '/admin/parameter/cleaning-category' }
   ]
 
   translatedLangText: any = {};
@@ -124,15 +110,15 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
-    CATEGORY_NAME:"COMMON-FORM.CATEGORY-NAME",
-    CATEGORY_DESCRIPTION:"COMMON-FORM.CATEGORY-DESCRIPTION",
-    CATEGORY_COST:"COMMON-FORM.CARGO-COST",
+    CATEGORY_NAME: "COMMON-FORM.CATEGORY-NAME",
+    CATEGORY_DESCRIPTION: "COMMON-FORM.CATEGORY-DESCRIPTION",
+    CATEGORY_COST: "COMMON-FORM.CARGO-COST",
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
-    MIN_COST:'COMMON-FORM.PACKAGE-MIN-COST',
-    MAX_COST:'COMMON-FORM.PACKAGE-MAX-COST',
-    LAST_UPDATED:'COMMON-FORM.LAST-UPDATED',
+    MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    LAST_UPDATED: 'COMMON-FORM.LAST-UPDATED',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
   }
 
@@ -146,12 +132,12 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   last_cargoList?: TariffCleaningItem[];
   soStatusCvList: CodeValuesItem[] = [];
 
-  catList:CleaningCategoryItem[]=[];
+  catList: CleaningCategoryItem[] = [];
   soList: StoringOrderItem[] = [];
   // sotDS: StoringOrderTankDS;
   // ccDS: CustomerCompanyDS;
   // soDS: StoringOrderDS;
-  catDS :CleaningCategoryDS;
+  catDS: CleaningCategoryDS;
 
   pageIndex = 0;
   pageSize = 10;
@@ -162,7 +148,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -170,7 +156,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-   // private graphqlNotificationService: GraphqlNotificationService
+    // private graphqlNotificationService: GraphqlNotificationService
   ) {
     super();
     this.translateLangText();
@@ -210,15 +196,14 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       description: [''],
       min_cost: [''],
       max_cost: [''],
-    
+
     });
   }
 
   displayLastUpdated(r: CleaningCategoryItem) {
-    var updatedt= r.update_dt;
-    if(updatedt===null)
-    {
-      updatedt= r.create_dt;
+    var updatedt = r.update_dt;
+    if (updatedt === null) {
+      updatedt = r.create_dt;
     }
     return this.displayDate(updatedt);
 
@@ -228,7 +213,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
-  
+
   canCancelSelectedRows(): boolean {
     return false;
     // return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
@@ -324,7 +309,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
     var order = this.lastOrderBy;
 
-    
+
 
     if (this.searchForm!.value['name']) {
       where.name = { contains: this.searchForm!.value['name'] };
@@ -334,87 +319,85 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       where.description = { contains: this.searchForm!.value['description'] };
     }
 
-    if(this.searchForm!.value['min_cost']){
-      where.cost ={gte: Number(this.searchForm!.value['min_cost'])}
+    if (this.searchForm!.value['min_cost']) {
+      where.cost = { gte: Number(this.searchForm!.value['min_cost']) }
     }
 
-    if(this.searchForm!.value['max_cost']){
-      where.cost ={ngt: Number(this.searchForm!.value['max_cost'])}
+    if (this.searchForm!.value['max_cost']) {
+      where.cost = { ngt: Number(this.searchForm!.value['max_cost']) }
     }
 
     // TODO :: search criteria
-    this.previous_endCursor=this.endCursor;
-    this.subs.sink = this.catDS.loadItems(where,order).subscribe(data => {
+    this.previous_endCursor = this.endCursor;
+    this.subs.sink = this.catDS.loadItems(where, order).subscribe(data => {
       this.catList = data;
       this.endCursor = this.catDS.pageInfo?.endCursor;
       this.startCursor = this.catDS.pageInfo?.startCursor;
       this.hasNextPage = this.catDS.pageInfo?.hasNextPage ?? false;
       this.hasPreviousPage = this.catDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex=0;
-      this.paginator.pageIndex=this.pageIndex;
-      if(!this.hasPreviousPage)
-        this.previous_endCursor=undefined;
+      this.pageIndex = 0;
+      this.paginator.pageIndex = this.pageIndex;
+      if (!this.hasPreviousPage)
+        this.previous_endCursor = undefined;
     });
   }
-  
-  searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
-    previousPageIndex?:number)
-    {
-      this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.catDS.search(where,order,first,after,last,before).subscribe(data => {
-        this.catList=data;
-        this.endCursor = this.catDS.pageInfo?.endCursor;
-        this.startCursor = this.catDS.pageInfo?.startCursor;
-        this.hasNextPage = this.catDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.catDS.pageInfo?.hasPreviousPage ?? false;
-        this.pageIndex=pageIndex;
-        this.paginator.pageIndex=this.pageIndex;
-        if(!this.hasPreviousPage)
-          this.previous_endCursor=undefined;
-        
-     });
+
+  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number) {
+    this.previous_endCursor = this.endCursor;
+    this.subs.sink = this.catDS.search(where, order, first, after, last, before).subscribe(data => {
+      this.catList = data;
+      this.endCursor = this.catDS.pageInfo?.endCursor;
+      this.startCursor = this.catDS.pageInfo?.startCursor;
+      this.hasNextPage = this.catDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.catDS.pageInfo?.hasPreviousPage ?? false;
+      this.pageIndex = pageIndex;
+      this.paginator.pageIndex = this.pageIndex;
+      if (!this.hasPreviousPage)
+        this.previous_endCursor = undefined;
+
+    });
+  }
+
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+    let order: any | undefined = this.lastOrderBy;
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursor;
+      }
+      else if (pageIndex == this.pageIndex) {
+
+        first = pageSize;
+        after = this.previous_endCursor;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
+      }
     }
 
-    onPageEvent(event: PageEvent) {
-      const { pageIndex, pageSize,previousPageIndex } = event;
-      let first : number| undefined = undefined;
-      let after: string | undefined = undefined;
-      let last: number | undefined = undefined;
-      let before: string | undefined = undefined;
-      let order:any|undefined=this.lastOrderBy;
-      // Check if the page size has changed
-      if (this.pageSize !== pageSize) {
-        // Reset pagination if page size has changed
-        this.pageIndex = 0;
-        first = pageSize;
-        after = undefined;
-        last = undefined;
-        before = undefined;
-      } else {
-        if (pageIndex > this.pageIndex && this.hasNextPage) {
-          // Navigate forward
-          first = pageSize;
-          after = this.endCursor;
-        } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-          // Navigate backward
-          last = pageSize;
-          before = this.startCursor;
-        }
-        else if (pageIndex==this.pageIndex)
-        {
-          
-            first = pageSize;
-            after = this.previous_endCursor;
-       
-            
-            //this.paginator.pageIndex=this.pageIndex;
-            
-        }
-      }
-  
-        this.searchData(this.lastSearchCriteria,order,first,after,last,before,pageIndex,previousPageIndex);
-      //}
-    }
+    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
+    //}
+  }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -425,78 +408,78 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   addCall() {
     // this.preventDefault(event);  // Prevents the form submission
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
-      var row =new CleaningCategoryItem();
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    var row = new CleaningCategoryItem();
     //  rows.push(row);
-     const dialogRef = this.dialog.open(FormDialogComponent,{
-       width: '600px',
-       data: {
-         action: 'new',
-         langText: this.langText,
-         selectedItem:row
-       }
-         
-     });
- 
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-          if (result>0) {
-               this.handleSaveSuccess(result);
-               //this.search();
-               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-        
-          }
-       });
-    
-   }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '600px',
+      data: {
+        action: 'new',
+        langText: this.langText,
+        selectedItem: row
+      }
+
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+        this.handleSaveSuccess(result);
+        //this.search();
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+
+      }
+    });
+
+  }
   editCall(row: CleaningCategoryItem) {
     // this.preventDefault(event);  // Prevents the form submission
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
-     const dialogRef = this.dialog.open(FormDialogComponent,{
-       width: '600px',
-       data: {
-         action: 'new',
-         langText: this.langText,
-         selectedItem:row
-       }
-         
-     });
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '600px',
+      data: {
+        action: 'new',
+        langText: this.langText,
+        selectedItem: row
+      }
 
-     
- 
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-          if (result>0) {
-           
-               this.handleSaveSuccess(result);
-               //this.search();
-               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-             
-       }
-       });
-    
-   }
+    });
 
 
- 
 
-   handleSaveSuccess(count: any) {
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+
+        this.handleSaveSuccess(result);
+        //this.search();
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+
+      }
+    });
+
+  }
+
+
+
+
+  handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        
+
       });
     }
   }

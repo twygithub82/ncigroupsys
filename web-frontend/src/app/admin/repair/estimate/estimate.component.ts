@@ -98,7 +98,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.ESTIMATE'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]
 
   translatedLangText: any = {};
@@ -658,8 +658,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  
-  
+
+
   calculateNetCost(repair: RepairItem): any {
     const total = this.repairDS.getTotal(repair?.repair_part)
     const labourDiscount = repair.labour_cost_discount;
