@@ -89,11 +89,11 @@ import { StorageBillingComponent } from './storage/storage-billing.component';
     PreinspectionBillingComponent,
     StorageBillingComponent,
     GateBillingComponent
-   
-]
+
+  ]
 })
 export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
- // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
+  // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
   // displayedColumns = [
   //   'tank_no',
   //   'customer',
@@ -123,9 +123,13 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   ];
 
   pageTitle = 'COMMON-FORM.DEPOT'
+  // breadcrumsMiddleList = [
+  //   'MENUITEMS.HOME.TEXT',
+  //   'MENUITEMS.BILLING.TEXT'
+  // ]
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.BILLING.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/depot' }
   ]
 
   translatedLangText: any = {};
@@ -174,15 +178,15 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    METHOD:"COMMON-FORM.METHOD",
+    METHOD: "COMMON-FORM.METHOD",
     QC: 'COMMON-FORM.QC',
-    BAY_OVERVIEW:"COMMON-FORM.BAY-OVERVIEW",
-    CLEANING:"COMMON-FORM.CLEANING",
-    PRE_INSPECTION:"MENUITEMS.BILLING.LIST.PRE-INSPECTION",
-    LOLO:"MENUITEMS.BILLING.LIST.LOLO",
-    STORAGE:"MENUITEMS.BILLING.LIST.STORAGE",
-    IN_GATE_OUT_GATE:'COMMON-FORM.IN-GATE-OUT-GATE'
-   
+    BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
+    CLEANING: "COMMON-FORM.CLEANING",
+    PRE_INSPECTION: "MENUITEMS.BILLING.LIST.PRE-INSPECTION",
+    LOLO: "MENUITEMS.BILLING.LIST.LOLO",
+    STORAGE: "MENUITEMS.BILLING.LIST.STORAGE",
+    IN_GATE_OUT_GATE: 'COMMON-FORM.IN-GATE-OUT-GATE'
+
   }
 
   filterCleanForm?: UntypedFormGroup;
@@ -197,7 +201,7 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   cleanDS: InGateCleaningDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
-  cmDS:CleaningMethodDS;
+  cmDS: CleaningMethodDS;
 
   availableProcessStatus: string[] = [
     'APPROVED',
@@ -208,13 +212,13 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     'CANCELED'
   ]
 
-  cleanMethodList:CleaningMethodItem[]=[];
+  cleanMethodList: CleaningMethodItem[] = [];
   clnEstList: InGateCleaningItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  processStatusCvList:CodeValuesItem[]=[];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -260,9 +264,9 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.cleanDS = new InGateCleaningDS(this.apollo);
-    this.ttDS= new TimeTableDS(this.apollo);
+    this.ttDS = new TimeTableDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
-    this.cmDS=new CleaningMethodDS(this.apollo);
+    this.cmDS = new CleaningMethodDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -282,8 +286,8 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   initSearchForm() {
     this.filterCleanForm = this.fb.group({
       filterClean: [''],
-      cleanMethod:[''],
-      status_cv: [['APPROVED','ASSIGNED']],
+      cleanMethod: [''],
+      status_cv: [['APPROVED', 'ASSIGNED']],
       customer: [''],
     });
     this.filterJobOrderForm = this.fb.group({
@@ -332,8 +336,8 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   }
 
   public loadData() {
-   // this.onFilterCleaning();
-  //  this.onFilterJobOrder();
+    // this.onFilterCleaning();
+    //  this.onFilterJobOrder();
 
     const queries = [
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
@@ -404,20 +408,20 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
 
 
     const where: any = {
-      and:[
+      and: [
         //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
-        {storing_order_tank:{tank_status_cv:{in:["CLEANING"]}}}
+        { storing_order_tank: { tank_status_cv: { in: ["CLEANING"] } } }
       ]
     };
 
- 
+
     // or: [
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }
     // ]
     if (this.filterCleanForm!.get('cleanMethod')?.value) {
       where.and.push({
-        storing_order_tank: { tariff_cleaning:{cleaning_method:{ name: { eq: (this.filterCleanForm!.get('cleanMethod')?.value).name } }}}
+        storing_order_tank: { tariff_cleaning: { cleaning_method: { name: { eq: (this.filterCleanForm!.get('cleanMethod')?.value).name } } } }
       });
     }
     if (this.filterCleanForm!.get('filterClean')?.value) {
@@ -432,9 +436,9 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
       });
     }
 
-    if (this.filterCleanForm?.get('status_cv')?.value.length>0) {
+    if (this.filterCleanForm?.get('status_cv')?.value.length > 0) {
       where.and.push({
-        status_cv: { in: this.filterCleanForm!.get('status_cv')?.value} 
+        status_cv: { in: this.filterCleanForm!.get('status_cv')?.value }
       });
     }
 
@@ -468,11 +472,11 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
         this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
         this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
-        this.pageIndexClean=pageIndex;
-        this.paginator.pageIndex=this.pageIndexClean;
+        this.pageIndexClean = pageIndex;
+        this.paginator.pageIndex = this.pageIndexClean;
         //this.selection.clear();
-        if(!this.hasPreviousPageClean)
-          this.previous_endCursorClean=undefined;
+        if (!this.hasPreviousPageClean)
+          this.previous_endCursorClean = undefined;
         // this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
         // this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
         // this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
@@ -491,11 +495,11 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
         this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
         this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
-        this.pageIndexJobOrder=pageIndex;
-        this.paginator.pageIndex=this.pageIndexJobOrder;
+        this.pageIndexJobOrder = pageIndex;
+        this.paginator.pageIndex = this.pageIndexJobOrder;
         //this.selection.clear();
-        if(!this.hasPreviousPageJobOrder)
-          this.previous_endCursorJobOrder=undefined;
+        if (!this.hasPreviousPageJobOrder)
+          this.previous_endCursorJobOrder = undefined;
         // this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
         // this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
         // this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
@@ -506,26 +510,26 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     this.pageIndexJobOrder = pageIndex;
   }
 
-  
+
   onPageEventClean(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-   // let order:any|undefined=this.lastOrderBy;
+    // let order:any|undefined=this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSizeClean !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndexClean = 0;
-      this.pageSizeClean=pageSize;
+      this.pageSizeClean = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
       //if (pageIndex > this.pageIndex && this.hasNextPage) {
-        if (pageIndex > this.pageIndexClean ) {
+      if (pageIndex > this.pageIndexClean) {
         // Navigate forward
         first = pageSize;
         after = this.endCursorClean;
@@ -534,15 +538,14 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
         last = pageSize;
         before = this.startCursorClean;
       }
-      else if (pageIndex==this.pageIndexClean)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursorClean;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndexClean) {
+
+        first = pageSize;
+        after = this.previous_endCursorClean;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
 
@@ -580,24 +583,24 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   }
 
   onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-   // let order:any|undefined=this.lastOrderBy;
+    // let order:any|undefined=this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSizeClean !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndexClean = 0;
-      this.pageSizeClean=pageSize;
+      this.pageSizeClean = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
       //if (pageIndex > this.pageIndex && this.hasNextPage) {
-        if (pageIndex > this.pageIndexJobOrder ) {
+      if (pageIndex > this.pageIndexJobOrder) {
         // Navigate forward
         first = pageSize;
         after = this.endCursorJobOrder;
@@ -606,18 +609,17 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
         last = pageSize;
         before = this.startCursorJobOrder;
       }
-      else if (pageIndex==this.pageIndexJobOrder)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursorJobOrder;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndexJobOrder) {
+
+        first = pageSize;
+        after = this.previous_endCursorJobOrder;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
-    
+
     this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
@@ -665,7 +667,7 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   }
 
   displayCleanMethodFn(cm: CleaningMethodItem): string {
-    return cm  ? `${cm.description} `: '';
+    return cm ? `${cm.description} ` : '';
   }
   initializeFilterCustomerCompany() {
     this.filterCleanForm!.get('customer')!.valueChanges.pipe(
@@ -683,8 +685,8 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
         });
       })
     ).subscribe();
-  
-  
+
+
     this.filterCleanForm!.get('cleanMethod')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -772,7 +774,7 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   resetForm() {
     this.filterCleanForm?.patchValue({
       filterRepair: '',
-      cleanMethod:''
+      cleanMethod: ''
     });
   }
 
@@ -793,19 +795,18 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayTankStatus(status:string):string{
-    var retval:string="-";
+  displayTankStatus(status: string): string {
+    var retval: string = "-";
 
-    retval= this.processStatusCvList!
-    .filter(item => item.code_val === status)
-    .map(item => item.description)[0]!; // Returns the description of the first match
+    retval = this.processStatusCvList!
+      .filter(item => item.code_val === status)
+      .map(item => item.description)[0]!; // Returns the description of the first match
 
-    if(retval==="") retval="-"
+    if (retval === "") retval = "-"
     return retval;
   }
 
-  popupDialogForm(row:InGateCleaningItem, action:string)
-  {
+  popupDialogForm(row: InGateCleaningItem, action: string) {
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
     //   tempDirection = 'rtl';
@@ -816,10 +817,10 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     // if(row.status_cv==='QC_COMPLETED') action='view';
     // var rows :InGateCleaningItem[] =[] ;
     // rows.push(row);
-    
+
 
     // const dialogRef = this.dialog.open(FormDialogComponent,{
-      
+
     //   width: '1000px',
     //   data: {
     //     action: action,
@@ -829,182 +830,177 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     //   position: {
     //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
     //   }
-        
+
     // });
 
     // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     //      if (result) {
     //       if(result>0)
     //         {
-             
+
     //           this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
     //         }
     //   }
     //   });
-   
-   }
 
-    toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-       this.stopPropagation(event);  // Prevents the form submission
-       if (!isStarted) {
-         const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-         console.log(param)
-         const firstValidRepairPart = jobOrderItem.cleaning?.find(
-           (cleaning) => cleaning?.guid !== null
-         );
-         this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
-           if (result.data.startJobTimer > 0) {
-             var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-             this.UpdateCleaningStatusInProgress(item.guid!);
-           }
-         });
-       } else {
-         const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-         if (found?.length) {
-           const newParam = new TimeTableItem(found[0]);
-           newParam.stop_time = Utility.convertDate(new Date()) as number;
-           newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-           const param = [newParam];
-           console.log(param)
-           this.ttDS.stopJobTimer(param).subscribe(result => {
-            if(result.data.stopJobTimer)
-            {
-              this.completeJob( jobOrderItem) 
+  }
+
+  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
+    this.stopPropagation(event);  // Prevents the form submission
+    if (!isStarted) {
+      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
+      console.log(param)
+      const firstValidRepairPart = jobOrderItem.cleaning?.find(
+        (cleaning) => cleaning?.guid !== null
+      );
+      this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
+        if (result.data.startJobTimer > 0) {
+          var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+          this.UpdateCleaningStatusInProgress(item.guid!);
+        }
+      });
+    } else {
+      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      if (found?.length) {
+        const newParam = new TimeTableItem(found[0]);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          if (result.data.stopJobTimer) {
+            this.completeJob(jobOrderItem)
+          }
+
+        });
+      }
+    }
+  }
+
+  completeJob(jobOrderItem: JobOrderItem) {
+
+    const newParam = new UpdateJobOrderRequest({
+      guid: jobOrderItem?.guid,
+      remarks: jobOrderItem?.remarks,
+      start_dt: jobOrderItem?.start_dt,
+      complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+    });
+    const param = [newParam];
+    console.log(param)
+    this.joDS.completeJobOrder(param).subscribe(result => {
+      console.log(result)
+      if (result?.data?.completeJobOrder! > 0) {
+        var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+        this.UpdateCleaningStatusCompleted(item.guid!);
+      }
+    });
+  }
+
+  UpdateCleaningStatusInProgress(clean_guid: string) {
+
+
+    const where: any = {
+      and: []
+    };
+
+
+    where.and.push({
+      guid: { eq: clean_guid }
+    });
+
+
+    this.subs.sink = this.cleanDS.search(where)
+      .subscribe(data => {
+        if (data.length > 0) {
+          var cln = data[0];
+          var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+          rep.action = 'IN_PROGRESS';
+          delete rep.storing_order_tank;
+          delete rep.job_order;
+          delete rep.customer_company;
+          this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+
+            console.log(result);
+
+          });
+          //  this.clnDS.
+        }
+      });
+  }
+
+  UpdateCleaningStatusCompleted(clean_guid: string) {
+
+
+    const where: any = {
+      and: []
+    };
+
+    where.and.push({
+      job_order: { status_cv: { eq: 'COMPLETED' } }
+    });
+
+    where.and.push({
+      guid: { eq: clean_guid }
+    });
+
+
+    this.subs.sink = this.cleanDS.search(where)
+      .subscribe(data => {
+        if (data.length > 0) {
+          var cln = data[0];
+          var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+          rep.action = 'COMPLETE';
+          delete rep.storing_order_tank;
+          delete rep.job_order;
+          delete rep.customer_company;
+          this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+            console.log(result);
+            if (result.data.updateCleaning > 0) {
+              this.onFilterCleaning();
             }
 
-           });
-         }
-       }
-     }
-   
-     completeJob(jobOrderItem: JobOrderItem) {
-       
-       const newParam = new UpdateJobOrderRequest({
-         guid: jobOrderItem?.guid,
-         remarks: jobOrderItem?.remarks,
-         start_dt: jobOrderItem?.start_dt,
-         complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-       });
-       const param = [newParam];
-       console.log(param)
-       this.joDS.completeJobOrder(param).subscribe(result => {
-         console.log(result)
-         if (result?.data?.completeJobOrder! > 0) {
-           var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-           this.UpdateCleaningStatusCompleted(item.guid!);
-         }
-       });
-     }
 
-     UpdateCleaningStatusInProgress(clean_guid: string) {
-
-
-      const where: any = {
-        and: []
-      };
-  
-  
-      where.and.push({
-        guid: { eq: clean_guid }
+          });
+          //  this.clnDS.
+        }
       });
-  
-  
-      this.subs.sink = this.cleanDS.search(where)
-        .subscribe(data => {
-          if (data.length > 0) {
-            var cln = data[0];
-            var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-            rep.action = 'IN_PROGRESS';
-            delete rep.storing_order_tank;
-            delete rep.job_order;
-            delete rep.customer_company;
-            this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-  
-              console.log(result);
-  
-            });
-            //  this.clnDS.
-          }
-        });
-    }
+  }
 
-    UpdateCleaningStatusCompleted(clean_guid: string) {
-
-
-      const where: any = {
-        and: []
-      };
-  
-      where.and.push({
-        job_order: { status_cv: { eq: 'COMPLETED' } }
-      });
-  
-      where.and.push({
-        guid: { eq: clean_guid }
-      });
-  
-  
-      this.subs.sink = this.cleanDS.search(where)
-        .subscribe(data => {
-          if (data.length > 0) {
-            var cln = data[0];
-            var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-            rep.action = 'COMPLETE';
-            delete rep.storing_order_tank;
-            delete rep.job_order;
-            delete rep.customer_company;
-            this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-              console.log(result); 
-              if(result.data.updateCleaning>0)
-              {
-                 this.onFilterCleaning();
-              }
-              
-  
-            });
-            //  this.clnDS.
-          }
-        });
-    }
-
-     // isStarted(jobOrderItem: JobOrderItem | undefined) {
+  // isStarted(jobOrderItem: JobOrderItem | undefined) {
   //   return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
   // }
 
-  isStarted(cleanItem:InGateCleaningItem | undefined) {
+  isStarted(cleanItem: InGateCleaningItem | undefined) {
 
-    if(cleanItem?.job_order)
-      {
-        let jobOrderItem = cleanItem?.job_order;
-        return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-      }
-      return false;
+    if (cleanItem?.job_order) {
+      let jobOrderItem = cleanItem?.job_order;
+      return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+    }
+    return false;
 
-    
+
   }
 
-  canStartJob(cleanItem:InGateCleaningItem | undefined) {
-    if(cleanItem?.job_order)
-    {
+  canStartJob(cleanItem: InGateCleaningItem | undefined) {
+    if (cleanItem?.job_order) {
       return this.joDS.canStartJob(cleanItem?.job_order);
     }
     return false;
-    
+
   }
 
   canCompleteJob(jobOrderItem: JobOrderItem | undefined, isStarted: boolean | undefined): boolean {
     return this.joDS.canCompleteJob(jobOrderItem) && !isStarted;
   }
 
-  canShowAction(cleanItem:InGateCleaningItem)
-  {
-    return cleanItem.status_cv=='JOB_IN_PROGRESS';
+  canShowAction(cleanItem: InGateCleaningItem) {
+    return cleanItem.status_cv == 'JOB_IN_PROGRESS';
 
 
   }
 
-  sortList( itemList:any[]) {
-    itemList.sort((a:any, b:any) => {
+  sortList(itemList: any[]) {
+    itemList.sort((a: any, b: any) => {
       const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       return numA - numB;
@@ -1021,9 +1017,9 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
   onRefreshMainTab() {
     // Logic to refresh the content of the main tab
     console.log('Refreshing main tab content...');
-    this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
+    this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
-  
+
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
     // if(event.index===1)

@@ -1,5 +1,5 @@
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject, OnInit,ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TranslateModule,TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -22,18 +22,18 @@ import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
+import { CustomerCompanyCleaningCategoryDS, CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
+import { PackageDepotDS, PackageDepotItem, PackageDepotGO } from 'app/data-sources/package-depot';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
-import {BillingItem,BillingDS,BillingGo} from 'app/data-sources/billing'
+import { BillingItem, BillingDS, BillingGo } from 'app/data-sources/billing'
 import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -41,11 +41,11 @@ import { Direction } from '@angular/cdk/bidi';
 
 export interface DialogData {
   action?: string;
-  selectedValue?:number;
-  
+  selectedValue?: number;
+
   // item: StoringOrderTankItem;
-   langText?: any;
-   selectedItems:BillingItem[];
+  langText?: any;
+  selectedItems: BillingItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -71,56 +71,49 @@ export interface DialogData {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
     MatTabsModule,
-    MatTabGroup,
-    MatTabHeader,
-    MatTabBody,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    
   ],
 })
 export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     //  'select',
-      // 'img',
-      'inv_dt',
-      'inv_no',
-       'cust_code',
-       'cust_name',
-      
-       
-      // 'bDate',
-      // 'mobile',
-      // 'actions',
-    ];
+    // 'img',
+    'inv_dt',
+    'inv_no',
+    'cust_code',
+    'cust_name',
+
+
+    // 'bDate',
+    // 'mobile',
+    // 'actions',
+  ];
 
   action: string;
   index?: number;
   dialogTitle?: string;
-  distinctCustomerCodes:any;
+  distinctCustomerCodes: any;
 
 
   customer_companyList?: CustomerCompanyItem[];
-  branch_companyList?:CustomerCompanyItem[];
+  branch_companyList?: CustomerCompanyItem[];
 
-  packageDepotItems?: PackageDepotItem[]=[];
-  packageDepotDS?:PackageDepotDS;
-  CodeValuesDS?:CodeValuesDS;
-  ccDS:CustomerCompanyDS;
-  curDS:CurrencyDS;
-  billDS?:BillingDS;
+  packageDepotItems?: PackageDepotItem[] = [];
+  packageDepotDS?: PackageDepotDS;
+  CodeValuesDS?: CodeValuesDS;
+  ccDS: CustomerCompanyDS;
+  curDS: CurrencyDS;
+  billDS?: BillingDS;
 
-  storageCalCvList:CodeValuesItem[]=[];
+  storageCalCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -133,8 +126,8 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
   branchCodeControl = new UntypedFormControl();
   currencyControl = new UntypedFormControl();
 
-  profileNameControl= new UntypedFormControl();
-  custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
+  profileNameControl = new UntypedFormControl();
+  custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
 
   translatedLangText: any = {};
   langText = {
@@ -143,7 +136,7 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -191,46 +184,46 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    CUSTOMER_COMPANY:"COMMON-FORM.CUSTOMER-COMPANY",
-    ALIAS_NAME:"COMMON-FORM.ALIAS-NAME",
-    AGREEMENT_DUE_DATE:"COMMON-FORM.AGREEMENT-DUE-DATE",
-    BILLING_PROFILE:"COMMON-FORM.BILLING-PROFILE",
-    PACKAGE_DEPOT:"MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
-    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
-    VIEW:'COMMON-FORM.VIEW',
-    DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
-    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
-    PREINSPECTION_COST:"COMMON-FORM.PREINSPECTION-COST",
-    LOLO_COST:"COMMON-FORM.LOLO-COST",
-    STORAGE_COST:"COMMON-FORM.STORAGE-COST",
-    FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
-    STANDARD_COST:"COMMON-FORM.STANDARD-COST",
-    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
-    STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    CUSTOMER_COMPANY: "COMMON-FORM.CUSTOMER-COMPANY",
+    ALIAS_NAME: "COMMON-FORM.ALIAS-NAME",
+    AGREEMENT_DUE_DATE: "COMMON-FORM.AGREEMENT-DUE-DATE",
+    BILLING_PROFILE: "COMMON-FORM.BILLING-PROFILE",
+    PACKAGE_DEPOT: "MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    VIEW: 'COMMON-FORM.VIEW',
+    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST: "COMMON-FORM.LOLO-COST",
+    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
-    INVOICES:'MENUITEMS.BILLING.LIST.INVOICES',
-    INVOICE_NO:'COMMON-FORM.INVOICE-NO',
-    INVOICE_DATE:'COMMON-FORM.INVOICE-DATE',
-    CURRENCY:'COMMON-FORM.CURRENCY',
-    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    CONVERSION_CURRENCY:'COMMON-FORM.CONVERSION-CURRENCY',
-    CONFIRM_INVALID_INVOICE:'COMMON-FORM.CONFIRM-INVALID-INVOICE',
-    BILLING_CURRENCY:'COMMON-FORM.BILLING-CURRENCY'
-    
+    INVOICES: 'MENUITEMS.BILLING.LIST.INVOICES',
+    INVOICE_NO: 'COMMON-FORM.INVOICE-NO',
+    INVOICE_DATE: 'COMMON-FORM.INVOICE-DATE',
+    CURRENCY: 'COMMON-FORM.CURRENCY',
+    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
+    CONVERSION_CURRENCY: 'COMMON-FORM.CONVERSION-CURRENCY',
+    CONFIRM_INVALID_INVOICE: 'COMMON-FORM.CONFIRM-INVALID-INVOICE',
+    BILLING_CURRENCY: 'COMMON-FORM.BILLING-CURRENCY'
+
   };
 
-  currencyList?:CurrencyItem[]=[];
+  currencyList?: CurrencyItem[] = [];
   selectedItems: BillingItem[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
-  
+
   constructor(
     public dialogRef: MatDialogRef<UpdateInvoicesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -244,12 +237,12 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     super();
     this.selectedItems = data.selectedItems;
     this.pcForm = this.createInvoiceUpdateGroup();
-    this.curDS=new CurrencyDS(this.apollo);
+    this.curDS = new CurrencyDS(this.apollo);
     this.packageDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
-    this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    this.ccDS=new CustomerCompanyDS(this.apollo);
-    this.billDS=new BillingDS(this.apollo);
+    this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.billDS = new BillingDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
@@ -259,12 +252,12 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
   createInvoiceUpdateGroup(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      invoice_no:[''],
-      bill_to_customer_company:this.customerCodeControl,
-      branch_code:this.branchCodeControl,
-      invoice_dt:[''],
-      currency:[''],
-      remarks:[''],
+      invoice_no: [''],
+      bill_to_customer_company: this.customerCodeControl,
+      branch_code: this.branchCodeControl,
+      invoice_dt: [''],
+      currency: [''],
+      remarks: [''],
     });
     this.customerCodeControl.reset('');
     this.branchCodeControl.reset('');
@@ -277,23 +270,21 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList=[];
+        this.branch_companyList = [];
         //this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
           searchCriteria = value.code;
         }
-       this.ccDS?.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.ccDS?.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if(!this.customerCodeControl.invalid)
-          {
-            if(this.customerCodeControl.value?.guid)
-            {
+          if (!this.customerCodeControl.invalid) {
+            if (this.customerCodeControl.value?.guid) {
               let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS!.loadItems({main_customer_guid:{eq:mainCustomerGuid}}).subscribe(data=>{
-                this.branch_companyList=data;
+              this.ccDS!.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+                this.branch_companyList = data;
                 this.updateValidators(this.branchCodeControl, this.branch_companyList);
               });
             }
@@ -302,10 +293,9 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
       })
     ).subscribe();
 
-   
+
   }
-  profileChanged()
-  {
+  profileChanged() {
     // if(this.profileNameControl.value)
     // {
     //   const selectedProfile:PackageDepotItem= this.profileNameControl.value;
@@ -323,32 +313,31 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     //     //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
     //   });
     //   this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
-    
+
 
     // }
   }
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
-}
+  }
 
-displayDate(input: number | undefined): string | undefined {
-  return Utility.convertEpochToDateStr(input);
-}
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
+  }
 
   displayDateFromEpoch(epoch: any) {
-    if(epoch)
-    {
-    var updatedt= Number(epoch);
-    
-    const date = new Date(updatedt! * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();   
+    if (epoch) {
+      var updatedt = Number(epoch);
 
-   // Replace the '/' with '-' to get the required format
- 
+      const date = new Date(updatedt! * 1000);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = date.toLocaleString('en-US', { month: 'short' });
+      const year = date.getFullYear();
 
-    return `${day}/${month}/${year}`;
+      // Replace the '/' with '-' to get the required format
+
+
+      return `${day}/${month}/${year}`;
     }
     return `-`;
 
@@ -359,62 +348,56 @@ displayDate(input: number | undefined): string | undefined {
     });
   }
 
-  loadData()
-  {
-    this.distinctCustomerCodes= [... new Set(this.selectedItems.map(item=>item.customer_company?.code))];
+  loadData() {
+    this.distinctCustomerCodes = [... new Set(this.selectedItems.map(item => item.customer_company?.code))];
 
-    this.curDS.search({},{sequence:'ASC'},100).subscribe(data=>{
-      this.currencyList=data;
-   
+    this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
+      this.currencyList = data;
 
-      if(this.selectedItems.length===1)
-      {
+
+      if (this.selectedItems.length === 1) {
         var selItm = this.selectedItems[0];
         this.pcForm.patchValue(
           {
-            invoice_no:selItm.invoice_no,
+            invoice_no: selItm.invoice_no,
             currency: this.getCurrency(selItm.currency?.guid!),
-          //  bill_to_customer_company:this.customerCodeControl,
-            invoice_dt:Utility.convertDate(selItm.invoice_dt),
-            remarks:selItm.remarks,
+            //  bill_to_customer_company:this.customerCodeControl,
+            invoice_dt: Utility.convertDate(selItm.invoice_dt),
+            remarks: selItm.remarks,
           }
         );
         this.customerCodeControl.setValue(selItm.customer_company);
         // this.currencyControl.setValue(selItm.currency);
       }
     });
-    
+
   }
 
-  queryDepotCost()
-  {
+  queryDepotCost() {
     // const where:any={ customer_company: { guid: { eq: this.selectedItem.guid } } };
-    
+
     // this.packageDepotDS?.SearchPackageDepot(where,{},50).subscribe((data:PackageDepotItem[])=>{
     //   this.packageDepotItems=data;
 
     // });
   }
-  
-  selectStorageCalculateCV_Description(valCode?:string):CodeValuesItem
-  {
+
+  selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
-    if(this.storageCalCvList.length>0)
-    {
-      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode)|| new CodeValuesItem();
-      
+    if (this.storageCalCvList.length > 0) {
+      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
+
       // If no match is found, description will be undefined, so you can handle it accordingly
-      
+
     }
     return valCodeObject;
-    
+
   }
-  
 
-  
 
-  canEdit()
-  {
+
+
+  canEdit() {
     return true;
   }
 
@@ -424,7 +407,7 @@ displayDate(input: number | undefined): string | undefined {
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        
+
       });
     }
   }
@@ -433,115 +416,100 @@ displayDate(input: number | undefined): string | undefined {
 
     if (!this.pcForm?.valid) return;
 
-    var bExec:boolean= true;
+    var bExec: boolean = true;
 
-    if(this.pcForm.get('invoice_no')?.value)
-    {
-      var invNo :string =this.pcForm!.get('invoice_no')?.value;
-       var where={invoice_no:{eq:invNo}};
-      this.billDS?.searchResidueBilling(where).subscribe(b=>{
-        if(b.length)
-        {
-            var existInvNo = (this.selectedItems.length===1?this.selectedItems[0].invoice_no:"");
-            var item:any = b[0];
-            if(item.invoice_no!=existInvNo)
-            {
-              this.ConfirmInvalidEstimate();
-            }
-            else
-            {
-              this.UpdateInvoices();
-            }
+    if (this.pcForm.get('invoice_no')?.value) {
+      var invNo: string = this.pcForm!.get('invoice_no')?.value;
+      var where = { invoice_no: { eq: invNo } };
+      this.billDS?.searchResidueBilling(where).subscribe(b => {
+        if (b.length) {
+          var existInvNo = (this.selectedItems.length === 1 ? this.selectedItems[0].invoice_no : "");
+          var item: any = b[0];
+          if (item.invoice_no != existInvNo) {
+            this.ConfirmInvalidEstimate();
+          }
+          else {
+            this.UpdateInvoices();
+          }
         }
-        else
-        {
+        else {
           this.UpdateInvoices();
         }
 
       })
-   }
-   else
-   {
-    this.UpdateInvoices();
-   }
+    }
+    else {
+      this.UpdateInvoices();
+    }
   }
 
-    ConfirmInvalidEstimate()
-      {
-        //event.preventDefault(); // Prevents the form submission
-    
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          data: {
-            headerText: this.translatedLangText.CONFIRM_INVALID_INVOICE,
-            action: 'confirm_only',
-          },
-          direction: tempDirection
-        });
-        dialogRef.afterClosed();
+  ConfirmInvalidEstimate() {
+    //event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_INVALID_INVOICE,
+        action: 'confirm_only',
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed();
+  }
+
+  UpdateInvoices() {
+    var billInvoices: BillingGo[] = [];
+    this.selectedItems.forEach(b => {
+
+      b.currency_guid = b.currency?.guid;
+      var updBilling: BillingGo = new BillingGo(b);
+
+      if (this.pcForm.get('bill_to_customer_company')?.value) {
+        updBilling.bill_to_guid = this.pcForm.get('bill_to_customer_company')?.value.guid;
       }
 
-  UpdateInvoices()
-  {
-    var billInvoices:BillingGo[]=[];
-    this.selectedItems.forEach(b=>{
+      if (this.pcForm.get('currency')?.value) {
+        updBilling.currency_guid = this.pcForm.get('currency')?.value.guid;
+      }
 
-        b.currency_guid = b.currency?.guid;
-        var updBilling:BillingGo = new BillingGo(b);
-        
-        if(this.pcForm.get('bill_to_customer_company')?.value)
-        {
-          updBilling.bill_to_guid = this.pcForm.get('bill_to_customer_company')?.value.guid;
-        }
 
-        if(this.pcForm.get('currency')?.value)
-          {
-            updBilling.currency_guid = this.pcForm.get('currency')?.value.guid;
-          }
+      if (this.pcForm.get('branch_code')?.value) {
+        updBilling.bill_to_guid = this.pcForm.get('branch_code')?.value.guid;
+      }
 
-          
-        if(this.pcForm.get('branch_code')?.value)
-        {
-          updBilling.bill_to_guid = this.pcForm.get('branch_code')?.value.guid;
-        }
+      if (this.pcForm.get('invoice_no')?.value) {
+        updBilling.invoice_no = this.pcForm.get('invoice_no')?.value;
+      }
 
-        if(this.pcForm.get('invoice_no')?.value)
-        {
-          updBilling.invoice_no = this.pcForm.get('invoice_no')?.value;
-        }
+      if (this.pcForm.get('invoice_dt')?.value) {
+        updBilling.invoice_dt = Number(Utility.convertDate(this.pcForm!.get('invoice_dt')?.value));
+        let invoiceDate: Date = new Date(this.pcForm!.get('invoice_dt')?.value);
+        let invoiceDue: Date = new Date(invoiceDate);
+        invoiceDue.setMonth(invoiceDate.getMonth() + 1);
+        updBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
+      }
 
-        if(this.pcForm.get('invoice_dt')?.value)
-        {
-          updBilling.invoice_dt = Number(Utility.convertDate(this.pcForm!.get('invoice_dt')?.value));
-          let invoiceDate: Date = new Date (this.pcForm!.get('invoice_dt')?.value);
-          let invoiceDue:Date =new Date(invoiceDate);
-          invoiceDue.setMonth(invoiceDate.getMonth()+1);
-          updBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
-        }
-
-        if(this.pcForm.get('remarks')?.value)
-        {
-          updBilling.remarks = this.pcForm.get('remarks')?.value;
-        }
-        billInvoices.push(updBilling);
+      if (this.pcForm.get('remarks')?.value) {
+        updBilling.remarks = this.pcForm.get('remarks')?.value;
+      }
+      billInvoices.push(updBilling);
     });
 
-    this.billDS?.updateBillingInvoices(billInvoices).subscribe(result=>{
-        if(result.data.updateBillingInvoices>0)
-        {
-         
-                  console.log('valid');
-                  this.dialogRef.close(result.data.updateBillingInvoices);
-  
-        }
-      });
+    this.billDS?.updateBillingInvoices(billInvoices).subscribe(result => {
+      if (result.data.updateBillingInvoices > 0) {
+
+        console.log('valid');
+        this.dialogRef.close(result.data.updateBillingInvoices);
+
+      }
+    });
   }
-  
+
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
@@ -564,30 +532,27 @@ displayDate(input: number | undefined): string | undefined {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  getCurrency(guid:string):CurrencyItem|undefined
-    {
-      if(this.currencyList?.length!>0 && guid)
-      {
-        const curItm= this.currencyList?.filter((x: any) => x.guid === guid).map(item => {
-          return item;});
-          if(curItm?.length!>0)
-            return curItm![0];
-          else
-            return undefined;
-  
-      }
-      return undefined;
-      
+  getCurrency(guid: string): CurrencyItem | undefined {
+    if (this.currencyList?.length! > 0 && guid) {
+      const curItm = this.currencyList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;
+      });
+      if (curItm?.length! > 0)
+        return curItm![0];
+      else
+        return undefined;
+
+    }
+    return undefined;
+
+  }
+
+  CustomerCompanyRequired() {
+    if (this.distinctCustomerCodes?.length) {
+      return this.distinctCustomerCodes.length > 1;
     }
 
-    CustomerCompanyRequired()
-    {
-      if(this.distinctCustomerCodes?.length)
-      {
-         return this.distinctCustomerCodes.length>1;
-      }
- 
-      return false;
-    }
-  
+    return false;
+  }
+
 }

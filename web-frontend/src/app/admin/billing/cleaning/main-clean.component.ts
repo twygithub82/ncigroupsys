@@ -116,9 +116,13 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
   ];
 
   pageTitle = 'COMMON-FORM.CLEANING'
+  // breadcrumsMiddleList = [
+  //   'MENUITEMS.HOME.TEXT',
+  //   'MENUITEMS.BILLING.TEXT'
+  // ]
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.BILLING.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/clean' }
   ]
 
   translatedLangText: any = {};

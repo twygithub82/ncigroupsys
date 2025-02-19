@@ -90,11 +90,6 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     // 'action'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
-  breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
-  ]
-
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -681,174 +676,165 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     });
   }
 
-    delete(event:Event){
-   
-       event.preventDefault(); // Prevents the form submission
-   
-       let tempDirection: Direction;
-       if (localStorage.getItem('isRtl') === 'true') {
-         tempDirection = 'rtl';
-       } else {
-         tempDirection = 'ltr';
-       }
-       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-         data: {
-           headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
-           action: 'delete',
-         },
-         direction: tempDirection
-       });
-       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result.action === 'confirmed') {
-           const guids=this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
-           this.RemoveEstimatesFromInvoice(event,guids!);
-         }
-       });
-     }
-     RemoveEstimatesFromInvoice(event:Event, processGuid:string[])
-     {
-       var updateBilling: any=null;
-       let billingEstimateRequests:BillingEstimateRequest[]=[];
-       processGuid.forEach(g=>{
-         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-         billingEstReq.action="CANCEL";
-         billingEstReq.billing_party=this.billingParty;
-         billingEstReq.process_guid=g;
-         billingEstReq.process_type=this.processType;
-         billingEstimateRequests.push(billingEstReq);
-       });
-      
-       this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-         if(result.data.updateBilling)
-         {
-           this.handleSaveSuccess(result.data.updateBilling);
-           this.onCancel(event);
-           this.search();
-         }
-       })
-   
-     }
-  
-    ConfirmInvalidEstimate(event:Event)
-    {
-      event.preventDefault(); // Prevents the form submission
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
+  delete(event: Event) {
+
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        action: 'delete',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        const guids = this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
+        this.RemoveEstimatesFromInvoice(event, guids!);
       }
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
-          action: 'confirm_only',
-        },
-        direction: tempDirection
-      });
-      dialogRef.afterClosed();
-    }
-    ConfirmUpdateBilling(event:Event, billingItem:BillingItem)
-    {
-      event.preventDefault(); // Prevents the form submission
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
+    });
+  }
+  RemoveEstimatesFromInvoice(event: Event, processGuid: string[]) {
+    var updateBilling: any = null;
+    let billingEstimateRequests: BillingEstimateRequest[] = [];
+    processGuid.forEach(g => {
+      var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
+      billingEstReq.action = "CANCEL";
+      billingEstReq.billing_party = this.billingParty;
+      billingEstReq.process_guid = g;
+      billingEstReq.process_type = this.processType;
+      billingEstimateRequests.push(billingEstReq);
+    });
+
+    this.billDS._updateBilling(updateBilling, billingEstimateRequests).subscribe(result => {
+      if (result.data.updateBilling) {
+        this.handleSaveSuccess(result.data.updateBilling);
+        this.onCancel(event);
+        this.search();
       }
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          headerText: this.translatedLangText.CONFIRM_UPDATE_INVOICE,
-          action: 'new',
-        },
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        if (result.action === 'confirmed') {
-          this.UpdateBilling(event,billingItem);
-        }
-      });
+    })
+
+  }
+
+  ConfirmInvalidEstimate(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-  
-    UpdateBilling(event:Event, billingItem:BillingItem)
-    {
-      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
-      let invoiceDue:Date =new Date(invoiceDate);
-      invoiceDue.setMonth(invoiceDate.getMonth()+1);
-      var updateBilling : BillingInputRequest=new BillingInputRequest();
-      updateBilling.bill_to_guid=billingItem.bill_to_guid;
-      updateBilling.guid=billingItem.guid;
-      updateBilling.currency_guid=billingItem.currency_guid;
-      updateBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
-      updateBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
-      updateBilling.status_cv=billingItem.status_cv;
-      updateBilling.invoice_no=`${this.invoiceNoControl.value}`;
-      
-      let billingEstimateRequests:any= billingItem.residue?.map(cln => {
-        var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-        billingEstReq.action="";
-        billingEstReq.billing_party=this.billingParty;
-        billingEstReq.process_guid=cln.guid;
-        billingEstReq.process_type=this.processType;
-        return billingEstReq;
-        //return { ...cln, action:'' };
-        });
-      const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
-      this.selection.selected.forEach(cln=>{
-        if(!existingGuids.has(cln.guid))
-        {
-          var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-          billingEstReq.action="NEW";
-          billingEstReq.billing_party=this.billingParty;
-          billingEstReq.process_guid=cln.guid;
-          billingEstReq.process_type=this.processType;
-          billingEstimateRequests.push(billingEstReq);
-        }
-      })
-      this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-        if(result.data.updateBilling)
-        {
-          this.handleSaveSuccess(result.data.updateBilling);
-          this.onCancel(event);
-          this.search();
-        }
-      })
-  
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_INVALID_ESTIMATE,
+        action: 'confirm_only',
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed();
+  }
+  ConfirmUpdateBilling(event: Event, billingItem: BillingItem) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-  
-    SaveNewBilling(event:Event)
-    {
-      let invoiceDate: Date = new Date (this.invoiceDateControl.value!);
-      let invoiceDue:Date =new Date(invoiceDate);
-      invoiceDue.setMonth(invoiceDate.getMonth()+1);
-      var newBilling : BillingInputRequest=new BillingInputRequest();
-      newBilling.bill_to_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid;
-      newBilling.currency_guid=this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.currency_guid;
-      newBilling.invoice_dt=Number(Utility.convertDate(invoiceDate));
-      newBilling.invoice_due=Number(Utility.convertDate(invoiceDue));
-      newBilling.invoice_no=`${this.invoiceNoControl.value}`;
-      newBilling.status_cv='PENDING';
-      var billingEstimateRequests:BillingEstimateRequest[]=[];
-      this.selection.selected.map(c=>{
-        var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-  
-        billingEstReq.action="NEW";
-        billingEstReq.billing_party=this.billingParty;
-        billingEstReq.process_guid=c.guid;
-        billingEstReq.process_type=this.processType;
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_UPDATE_INVOICE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.UpdateBilling(event, billingItem);
+      }
+    });
+  }
+
+  UpdateBilling(event: Event, billingItem: BillingItem) {
+    let invoiceDate: Date = new Date(this.invoiceDateControl.value!);
+    let invoiceDue: Date = new Date(invoiceDate);
+    invoiceDue.setMonth(invoiceDate.getMonth() + 1);
+    var updateBilling: BillingInputRequest = new BillingInputRequest();
+    updateBilling.bill_to_guid = billingItem.bill_to_guid;
+    updateBilling.guid = billingItem.guid;
+    updateBilling.currency_guid = billingItem.currency_guid;
+    updateBilling.invoice_dt = Number(Utility.convertDate(invoiceDate));
+    updateBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
+    updateBilling.status_cv = billingItem.status_cv;
+    updateBilling.invoice_no = `${this.invoiceNoControl.value}`;
+
+    let billingEstimateRequests: any = billingItem.residue?.map(cln => {
+      var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
+      billingEstReq.action = "";
+      billingEstReq.billing_party = this.billingParty;
+      billingEstReq.process_guid = cln.guid;
+      billingEstReq.process_type = this.processType;
+      return billingEstReq;
+      //return { ...cln, action:'' };
+    });
+    const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
+    this.selection.selected.forEach(cln => {
+      if (!existingGuids.has(cln.guid)) {
+        var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
+        billingEstReq.action = "NEW";
+        billingEstReq.billing_party = this.billingParty;
+        billingEstReq.process_guid = cln.guid;
+        billingEstReq.process_type = this.processType;
         billingEstimateRequests.push(billingEstReq);
-      });
-      this.billDS.addBilling(newBilling,billingEstimateRequests).subscribe(result=>{
-        if(result.data.addBilling)
-        {
-          this.handleSaveSuccess(result.data.addBilling);
-          this.onCancel(event);
-          this.search();
-        }
-      })
-    }
+      }
+    })
+    this.billDS._updateBilling(updateBilling, billingEstimateRequests).subscribe(result => {
+      if (result.data.updateBilling) {
+        this.handleSaveSuccess(result.data.updateBilling);
+        this.onCancel(event);
+        this.search();
+      }
+    })
+
+  }
+
+  SaveNewBilling(event: Event) {
+    let invoiceDate: Date = new Date(this.invoiceDateControl.value!);
+    let invoiceDue: Date = new Date(invoiceDate);
+    invoiceDue.setMonth(invoiceDate.getMonth() + 1);
+    var newBilling: BillingInputRequest = new BillingInputRequest();
+    newBilling.bill_to_guid = this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid;
+    newBilling.currency_guid = this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.currency_guid;
+    newBilling.invoice_dt = Number(Utility.convertDate(invoiceDate));
+    newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
+    newBilling.invoice_no = `${this.invoiceNoControl.value}`;
+    newBilling.status_cv = 'PENDING';
+    var billingEstimateRequests: BillingEstimateRequest[] = [];
+    this.selection.selected.map(c => {
+      var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
+
+      billingEstReq.action = "NEW";
+      billingEstReq.billing_party = this.billingParty;
+      billingEstReq.process_guid = c.guid;
+      billingEstReq.process_type = this.processType;
+      billingEstimateRequests.push(billingEstReq);
+    });
+    this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {
+      if (result.data.addBilling) {
+        this.handleSaveSuccess(result.data.addBilling);
+        this.onCancel(event);
+        this.search();
+      }
+    })
+  }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -962,10 +948,9 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     billingEstReq.process_type = this.processType;
     let billingEstimateRequests: BillingEstimateRequest[] = [];
     billingEstimateRequests.push(billingEstReq);
-   
-    this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-      if(result.data.updateBilling)
-      {
+
+    this.billDS._updateBilling(updateBilling, billingEstimateRequests).subscribe(result => {
+      if (result.data.updateBilling) {
         this.handleSaveSuccess(result.data.updateBilling);
         this.onCancel(event);
         this.search();

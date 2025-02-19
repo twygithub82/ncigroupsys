@@ -84,8 +84,11 @@ export class SteamMonthlyComponent extends UnsubscribeOnDestroyAdapter implement
   ];
 
   pageTitle = 'MENUITEMS.ADMIN-REPORTS.LIST.STEAM-MONTHLY'
+  // breadcrumsMiddleList = [
+  //   'MENUITEMS.HOME.TEXT'
+  // ]
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]
 
   translatedLangText: any = {};
