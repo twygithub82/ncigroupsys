@@ -968,7 +968,8 @@
     "APPROVAL-REFERENCE-S": "App. Ref.",
     "RELEASE-BOOKING-S": "Rel. Booking",
     "RELEASE-DATE-S": "Rel. Date",
-    "RELEASE-REFERENCE-S": "Rel. Ref."
+    "RELEASE-REFERENCE-S": "Rel. Ref.",
+    "CODE": "Code"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
