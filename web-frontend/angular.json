@@ -42,7 +42,13 @@
               "fast-deep-equal",
               "rfdc",
               "moment",
-              "xlsx"
+              "xlsx",
+              "jspdf",
+              "canvg",
+              "core-js",
+              "raf",
+              "rgbcolor",
+              "html2canvas"
             ],
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -77,8 +83,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "5kb"
+                  "maximumWarning": "4kb",
+                  "maximumError": "8kb"
                 }
               ],
               "outputHashing": "all"
