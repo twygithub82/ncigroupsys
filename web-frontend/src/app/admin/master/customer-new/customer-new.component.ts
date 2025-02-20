@@ -117,29 +117,11 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     HAULIER: 'COMMON-FORM.HAULIER',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
     UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    REPAIR: 'COMMON-FORM.REPAIR',
-    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
-    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
-    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
-    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
-    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
@@ -163,42 +145,12 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
     MUST_MORE_THAN_ZERO: 'COMMON-FORM.MUST-MORE-THAN-ZERO',
     OWNER: 'COMMON-FORM.OWNER',
-    EIR_NO: 'COMMON-FORM.EIR-NO',
-    EIR_DATE: 'COMMON-FORM.EIR-DATE',
     LAST_TEST: 'COMMON-FORM.LAST-TEST',
     GROUP: 'COMMON-FORM.GROUP',
     SUBGROUP: 'COMMON-FORM.SUBGROUP',
     DAMAGE: 'COMMON-FORM.DAMAGE',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
-    QTY: 'COMMON-FORM.QTY',
-    HOUR: 'COMMON-FORM.HOUR',
-    PRICE: 'COMMON-FORM.PRICE',
-    MATERIAL: 'COMMON-FORM.MATERIAL',
     TEMPLATE: 'COMMON-FORM.TEMPLATE',
-    PART_DETAILS: 'COMMON-FORM.PART-DETAILS',
-    GROUP_NAME: 'COMMON-FORM.GROUP-NAME',
-    SUBGROUP_NAME: 'COMMON-FORM.SUBGROUP-NAME',
-    LOCATION: 'COMMON-FORM.LOCATION',
-    PART_NAME: 'COMMON-FORM.PART-NAME',
-    DIMENSION: 'COMMON-FORM.DIMENSION',
-    LENGTH: 'COMMON-FORM.LENGTH',
-    PREFIX_DESC: 'COMMON-FORM.PREFIX-DESC',
-    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
-    IQ: 'COMMON-FORM.IQ',
-    ESTIMATE_DETAILS: 'COMMON-FORM.ESTIMATE-DETAILS',
-    ESTIMATE_SUMMARY: 'COMMON-FORM.ESTIMATE-SUMMARY',
-    LABOUR: 'COMMON-FORM.LABOUR',
-    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
-    LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
-    MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
-    NET_COST: 'COMMON-FORM.NET-COST',
-    CONVERTED_TO: 'COMMON-FORM.CONVERTED-TO',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
-    SURVEYOR_NAME: 'COMMON-FORM.SURVEYOR-NAME',
-    INTERNAL_QC_BY: 'COMMON-FORM.INTERNAL-QC-BY',
-    RATE: "COMMON-FORM.RATE",
-    TOTAL: "COMMON-FORM.TOTAL",
-    NO_PARTS: "COMMON-FORM.NO-PARTS",
     NO_CONTACT_PERSON: "COMMON-FORM.NO-CONTACT-PERSON",
     PART: 'COMMON-FORM.PART',
     CONTACT_PERSON: "COMMON-FORM.CONTACT-PERSON",
@@ -209,7 +161,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     COUNTRY: "COMMON-FORM.COUNTRY",
     FAX_NO: "COMMON-FORM.FAX-NO",
     EMAIL: "COMMON-FORM.EMAIL",
-    PHONE: "COMMON-FORM.PHONE",
+    CONTACT_NO: "COMMON-FORM.CONTACT-NO",
     WEB: "COMMON-FORM.WEB",
     CONVERSION_CURRENCY: "COMMON-FORM.CONVERSION-CURRENCY",
     PERSON_IN_CHARGE: "COMMON-FORM.PERSON-IN-CHARGE",
@@ -228,8 +180,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     NAME: "COMMON-FORM.NAME",
     INVALID_FORMAT: "COMMON-FORM.INVALID-FORMAT",
     ADD: "COMMON-FORM.ADD",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
-
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    MIN_3_ALPHA: 'COMMON-FORM.MIN-3-ALPHA',
+    ONLY_ALPHA_NUMERIC: 'COMMON-FORM.ONLY-ALPHA-NUMERIC',
+    S_N: 'COMMON-FORM.S_N'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -287,7 +241,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   currencyList?: CurrencyItem[] = [];
   phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   constructor(
-
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -300,15 +253,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     super();
     this.translateLangText();
     this.initCCForm();
-    // this.soDS = new StoringOrderDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.curDS = new CurrencyDS(this.apollo);
-    // this.igDS = new InGateDS(this.apollo);
-    // this.trLabourDS = new TariffLabourDS(this.apollo);
-    // this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -321,7 +269,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
-
   }
 
   SetCostDecimal() {
@@ -330,13 +277,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         // Ensure the value has two decimal places
         const formattedValue = parseFloat(value).toFixed(2);
         this.ccForm?.get('material_discount_amount')?.setValue(formattedValue, { emitEvent: false });
-        // this.ccForm.get('material_discount_amount').setValue(formattedValue, { emitEvent: false });
       }
-
     });
-  }
-  calculateCostSummary() {
-
   }
 
   GetNetCost(): string {
@@ -347,15 +289,18 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   initializeValueChange() {
-
-
   }
 
   initCCForm() {
     this.ccForm = this.fb.group({
       guid: [''],
       customer_company_guid: [''],
-      customer_code: [''],
+      customer_code: ['', [
+        Validators.required,
+        Validators.minLength(3), // Minimum 3 characters
+        Validators.maxLength(6), // Maximum 6 characters
+        Validators.pattern('^[A-Za-z0-9]+$') // Only alphabets
+      ]],
       customer_name: [''],
       customer_type: [''],
       billing_branches: [''],
@@ -624,8 +569,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         });
         data.unshift(newItem);
         this.updateData(data);
-
-        this.calculateCostSummary();
       }
     });
   }
@@ -687,23 +630,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        // if (result.item.guid) {
-        //   const data: any[] = [...this.repList.data];
-        //   const updatedItem = {
-        //     ...result.item,
-        //     delete_dt: Utility.getDeleteDtEpoch(),
-        //     actions: Array.isArray(data[index].actions!)
-        //       ? [...new Set([...data[index].actions!, 'delete'])]
-        //       : ['delete']
-        //   };
-        //   data[result.index] = updatedItem;
-        //   this.updateData(data); // Refresh the data source
-        // } else {
         const data = [...this.repList.data];
         data.splice(index, 1);
         this.updateData(data); // Refresh the data source
-        // }
-        this.calculateCostSummary();
       }
     });
   }
@@ -825,117 +754,25 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       if (!this.repList.data.length) {
         this.ccForm.get('repList')?.setErrors({ required: true });
       } else {
-
-        var customerCode = this.ccForm?.get("customer_code")?.value;
+        var customerCode = this.ccForm?.get("customer_code")?.value?.toUpperCase();
         const where: any = {};
         where.code = { eq: customerCode };
         this.ccDS.search(where).subscribe(result => {
-
           if (result.length == 0 && this.customer_guid == undefined) {
             this.insertNewCustomer();
-
           }
           else if (result.length > 0) {
             if (this.customer_guid == undefined) {
               this.ccForm?.get('customer_code')?.setErrors({ existed: true });
             }
             else {
-
               this.updateExistCustomer();
-
             }
-
-
           }
           else if (result.length == 0 && this.selectedTempEst != undefined) {
             this.updateExistCustomer();
           }
         });
-        // var tempName = this.ccForm?.get("template_name")?.value;
-        // const where: any = {};
-        // where.template_name = { eq: tempName };
-        // this.estTempDS.SearchEstimateTemplateOnly(where).subscribe(result => {
-
-        //   if (result.length == 0 && this.selectedTempEst == undefined) {
-
-        //     let temp: MasterTemplateItem = new MasterTemplateItem();
-        //     temp.labour_cost_discount = this.ccForm?.get("labour_discount")?.value;
-        //     temp.material_cost_discount = this.ccForm?.get("material_discount")?.value;
-        //     temp.template_name = this.ccForm?.get("template_name")?.value;
-        //     delete temp.totalMaterialCost;
-        //     temp.type_cv = "GENERAL";
-        //     if (this.ccForm?.get("customer_code")?.value?.length > 0) {
-
-        //       temp.type_cv = "EXCLUSIVE";
-        //       var customerCodes: CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
-        //       temp.template_est_customer = [];
-        //       customerCodes.forEach(data => {
-        //         var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
-        //         custItem.action = "NEW";
-        //         custItem.customer_company_guid = data.guid;
-        //         custItem.customer_company = undefined;
-        //         custItem.guid = "";
-        //         temp.template_est_customer?.push(custItem)
-        //       });
-        //     }
-        //     if (this.repList.data.length) {
-        //       temp.template_est_part = [];
-        //       this.repList.data.forEach(data => {
-        //         var repEstItem: any = data;
-        //         var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
-        //         tempEstPartItem.action = "NEW";
-        //         tempEstPartItem.guid = "";
-        //         tempEstPartItem.tariff_repair_guid = data.tariff_repair_guid;
-        //         tempEstPartItem.hour = repEstItem.hour;
-        //         tempEstPartItem.quantity = repEstItem.quantity;
-        //         tempEstPartItem.location_cv = repEstItem.location_cv;
-        //         tempEstPartItem.remarks = repEstItem.remarks;
-        //         tempEstPartItem.description = repEstItem.description;
-        //         tempEstPartItem.tep_damage_repair = [];
-        //         let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!;
-        //         dmg.forEach(d => {
-        //           let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-        //           tepDamageRepairItm.code_cv = d.code_cv;
-        //           tepDamageRepairItm.code_type = d.code_type;
-        //           tepDamageRepairItm.action = "NEW";
-        //           tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
-        //         });
-        //         temp.template_est_part?.push(tempEstPartItem);
-        //         // data.
-        //         // tempEstPartItem.tep_damage_repair?.push()
-        //         // temp.template_est_part?.push()
-        //       });
-        //     }
-
-        //     this.estTempDS.AddMasterTemplate(temp).subscribe(result => {
-        //       var count = result.data.addTemplateEstimation;
-        //       if (count > 0) {
-        //         this.handleSaveSuccess(count);
-        //       }
-        //     });
-
-        //   }
-        //   else if (result.length > 0) {
-        //     if (this.selectedTempEst == undefined) {
-        //       this.ccForm?.get('template_name')?.setErrors({ existed: true });
-        //     }
-        //     else {
-
-        //       this.updateExistTemplate();
-
-        //     }
-
-
-        //   }
-        //   else if(result.length==0 && this.selectedTempEst!=undefined)
-        //   {
-        //     this.updateExistTemplate();
-        //   }
-
-
-        // });
-
-
       }
     } else {
       console.log('Invalid soForm', this.ccForm?.value);

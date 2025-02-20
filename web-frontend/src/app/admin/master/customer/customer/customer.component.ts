@@ -77,9 +77,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     MatAutocompleteModule,
     MatDividerModule,
   ]
-
 })
-
 
 export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
@@ -101,9 +99,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   CodeValuesDS?: CodeValuesDS;
 
   ccDS: CustomerCompanyDS;
-  // tariffResidueDS:TariffResidueDS;
-  // packResidueDS:PackageResidueDS;
-  // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
 
   packResidueItems: PackageResidueItem[] = [];
@@ -194,7 +189,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL: 'COMMON-FORM.EMAIL',
-    CONTACT_NO: 'COMMON-FORM.CONTACT_NO',
+    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
@@ -237,10 +232,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.tariffResidueDS = new TariffResidueDS(this.apollo);
-    // this.packResidueDS= new PackageResidueDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
-
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -267,12 +259,10 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         this.paginator.pageIndex = this.pageIndex;
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
-
     }
     else {
       this.search();
     }
-
   }
 
   initPcForm() {
@@ -464,7 +454,9 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   search() {
-    const where: any = {};
+    const where: any = {
+      type_cv: { neq: "SURVEYOR" }
+    };
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
         const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
@@ -501,7 +493,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       where.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
     }
 
-
     this.lastSearchCriteria = where;
     this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.customer_companyList = data;
@@ -524,12 +515,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
     if (this.storageCalCvList.length > 0) {
       valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
-
-      // If no match is found, description will be undefined, so you can handle it accordingly
-
     }
     return valCodeObject.description || '-';
-
   }
 
   handleSaveSuccess(count: any) {
@@ -538,7 +525,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
       });
     }
   }
@@ -571,13 +557,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         before = this.startCursor;
       }
       else if (pageIndex == this.pageIndex) {
-
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
 
@@ -585,10 +566,13 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     //}
   }
 
-  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number) {
+  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number, previousPageIndex?: number) {
+    if (where === null || where === undefined) {
+      where = {}
+    }
+    where.type_cv = { neq: "SURVEYOR" };
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.ccDS.search(where, order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.ccDS.search(this.ccDS.addDeleteDtCriteria(where), order, first, after, last, before).subscribe(data => {
       this.customer_companyList = data;
       this.endCursor = this.ccDS.pageInfo?.endCursor;
       this.startCursor = this.ccDS.pageInfo?.startCursor;
@@ -624,6 +608,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   }
   public loadData() {
+    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 50).subscribe(data => {
+    });
   }
   showNotification(
     colorName: string,

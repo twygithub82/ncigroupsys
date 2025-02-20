@@ -973,10 +973,12 @@
     "RELEASE-DATE-S": "Rel. Date",
     "RELEASE-REFERENCE-S": "Rel. Ref.",
     "CODE": "Code",
-    "CONTACT_NO": "Contact No.",
+    "CONTACT-NO": "Contact No.",
     "CATEGORY": "Category",
-    "RELEASE-REFERENCE-S": "Rel. Ref.",
-    "REPORT-TYPE":"Report Type"
+    "REPORT-TYPE":"Report Type",
+    "MIN-3-ALPHA": "Min 3 alphabet",
+    "ONLY-ALPHA-NUMERIC": "Only alpha numeric",
+    "S_N": "S/N"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
