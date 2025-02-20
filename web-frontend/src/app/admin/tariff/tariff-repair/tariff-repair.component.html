@@ -29,12 +29,6 @@
                       <mat-icon class="col-white">brush</mat-icon>
                     </button>
                   </div>
-                  <!-- <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
-                      <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
-                        [disabled]="canCancelSelectedRows()">
-                        <mat-icon class="col-white">cancel</mat-icon>
-                      </button>
-                    </div> -->
                   <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
@@ -128,36 +122,7 @@
                       </mat-form-field>
                     </div>
                   </div>
-                  <!-- <div class="row">
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.MIN_LENGTH}}</mat-label>
-                        <input matInput formControlName="min_len" type="number">
-
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.MAX_LENGTH }}</mat-label>
-                        <input matInput formControlName="max_len" type="number">
-
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.MIN_LABOUR}}</mat-label>
-                        <input matInput formControlName="min_labour" type="number">
-
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.MAX_LABOUR }}</mat-label>
-                        <input matInput formControlName="max_labour" type="number">
-
-                      </mat-form-field>
-                    </div>
-                  </div>-->
+                 
                   <div class="row">
                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm5 mb-1">
                       <mat-form-field class="example-full-width">
@@ -217,16 +182,14 @@
                       }}:</span>{{row.part_name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="dimension">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DIMENSION
-                    }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.DIMENSION
-                      }}:</span>{{row.dimension}}</mat-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.DIMENSION}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-1'">
+                    <span class="mobile-label">{{this.translatedLangText.DIMENSION}}:</span>{{row.dimension}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LENGTH
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.LENGTH
                     }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-1'">
                     <span class="mobile-label">{{this.translatedLangText.LENGTH }}:</span>{{row.length}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="email">
