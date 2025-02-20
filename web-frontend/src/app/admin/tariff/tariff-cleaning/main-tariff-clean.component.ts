@@ -22,7 +22,6 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Observable, fromEvent } from 'rxjs';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 //import { Apollo } from 'apollo-angular';
@@ -31,23 +30,29 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { Utility } from 'app/utilities/utility';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
-import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
-import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import {TariffCleaningComponent} from './cleaning/tariff-cleaning.component';
-import { TariffBufferComponent } from './buffer/tariff-buffer.component';
-import {TariffResidueComponent} from './residue/tariff-residue.component';
-import { TranslateService } from '@ngx-translate/core';
+//import { FormDialogComponent } from './form-dialog/form-dialog.component';
+//import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { TariffCleaningComponent } from './cleaning/tariff-cleaning.component';
+import { TariffResidueComponent } from './residue/tariff-residue.component';
+// import { CleanBillingComponent } from './clean/clean-billing.component';
+// import { ResidueBillingComponent } from './residue/residue-billing.component';
+// import { SteamBillingComponent } from './steam/steam-billing.component';
+//import { FormDialogComponent } from './form-dialog/form-dialog.component';
+//import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
+import { TariffBufferComponent } from './buffer/tariff-buffer.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MatCardModule } from '@angular/material/card';
+// import { CleanBillingComponent } from './clean/clean-billing.component';
+// import { ResidueBillingComponent } from './residue/residue-billing.component';
+// import { SteamBillingComponent } from './steam/steam-billing.component';
 @Component({
   selector: 'app-tariff-main-clean',
   standalone: true,
