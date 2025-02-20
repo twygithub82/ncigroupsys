@@ -26,7 +26,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { Utility } from 'app/utilities/utility';
 // import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
@@ -41,8 +40,6 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 //import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { ExampleDataSource } from 'app/advance-table/advance-table.component';
-import { AdvanceTableService } from 'app/advance-table/advance-table.service';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageDepotItem } from 'app/data-sources/package-depot';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
@@ -161,12 +158,9 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   hasPreviousPage = false;
 
   searchField: string = "";
-  exampleDatabase?: AdvanceTableService;
-  dataSource!: ExampleDataSource;
   selection = new SelectionModel<PackageDepotItem>(true, []);
 
   id?: number;
-  advanceTable?: AdvanceTable;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
@@ -457,7 +451,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
 
 
-  deleteItem(row: AdvanceTable) {
+  deleteItem(row: any) {
 
   }
   private refreshTable() {
@@ -859,7 +853,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

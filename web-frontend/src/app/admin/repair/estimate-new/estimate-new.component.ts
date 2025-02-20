@@ -31,7 +31,6 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
@@ -898,7 +897,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

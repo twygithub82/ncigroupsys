@@ -1,72 +1,62 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
+import { CommonModule, DatePipe, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company'
-import { MatRadioModule } from '@angular/material/radio';
-import { Apollo } from 'apollo-angular';
-import { MatDividerModule } from '@angular/material/divider';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Observable, of, Subscription } from 'rxjs';
-import { TankDS, TankItem } from 'app/data-sources/tank';
-import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
-import { ComponentUtil } from 'app/utilities/component-util';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
-import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
-import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
+import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest, SteamJobOrderRequest } from 'app/data-sources/job-order';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
-import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
-import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
-import { UserDS, UserItem } from 'app/data-sources/user';
+import { PackageLabourItem } from 'app/data-sources/package-labour';
+import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { ResidueDS, ResidueGO, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
-import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
-import { TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { RepairItem } from 'app/data-sources/repair';
+import { RepairPartItem } from 'app/data-sources/repair-part';
+import { ResidueItem } from 'app/data-sources/residue';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
+import { SteamPartItem } from 'app/data-sources/steam-part';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest, ResJobOrderRequest, SteamJobOrderRequest } from 'app/data-sources/job-order';
-import { SteamDS,SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
-import {SteamPartItem} from 'app/data-sources/steam-part';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { UserDS, UserItem } from 'app/data-sources/user';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { NgScrollbar } from 'ngx-scrollbar';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -88,37 +78,32 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    NgScrollbar,
     NgClass,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
     MatLabel,
     MatTableModule,
     MatPaginatorModule,
-    FeatherIconsComponent,
     MatProgressSpinnerModule,
-    RouterLink,
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
-    MatCardModule,
-    TlxFormFieldComponent
+    MatCardModule
   ]
 })
 export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
     // 'group_name_cv',
-     'desc',
+    'desc',
     //  'qty',
     //  'unit_price',
     //  'cost',
-     'approve_part',
-     'team',
+    'approve_part',
+    'team',
     //"actions"
-   
+
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
@@ -215,13 +200,13 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
-    BILLING_PROFILE:'COMMON-FORM.BILLING-PROFILE',
-    BILLING_TO:'COMMON-FORM.BILLING-TO',
-    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    DEPOT_REFERENCE:'COMMON-FORM.DEPOT-REFERENCE',
-    QUANTITY:'COMMON-FORM.QTY',
-    UNIT_PRICE:'COMMON-FORM.UNIT-PRICE',
-    COST:'COMMON-FORM.COST',
+    BILLING_PROFILE: 'COMMON-FORM.BILLING-PROFILE',
+    BILLING_TO: 'COMMON-FORM.BILLING-TO',
+    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
+    DEPOT_REFERENCE: 'COMMON-FORM.DEPOT-REFERENCE',
+    QUANTITY: 'COMMON-FORM.QTY',
+    UNIT_PRICE: 'COMMON-FORM.UNIT-PRICE',
+    COST: 'COMMON-FORM.COST',
     APPROVE: 'COMMON-FORM.APPROVE',
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
@@ -233,8 +218,8 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     QC: 'COMMON-FORM.QC',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    METHOD:"COMMON-FORM.METHOD",
-    RESIDUE_DISPOSAL:'COMMON-FORM.RESIDUE-DISPOSAL',
+    METHOD: "COMMON-FORM.METHOD",
+    RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     ABORT: 'COMMON-FORM.ABORT'
 
@@ -249,14 +234,14 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
-  steamItem?:SteamItem;
+  steamItem?: SteamItem;
   repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
   yesnoCvList: CodeValuesItem[] = []
-   soTankStatusCvList: CodeValuesItem[] = []
+  soTankStatusCvList: CodeValuesItem[] = []
   purposeOptionCvList: CodeValuesItem[] = []
   testTypeCvList: CodeValuesItem[] = []
   testClassCvList: CodeValuesItem[] = []
@@ -266,10 +251,10 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   unitTypeCvList: CodeValuesItem[] = []
   templateList: MasterTemplateItem[] = []
   surveyorList: UserItem[] = []
-  billingBranchList:CustomerCompanyItem[]=[];
-  packResidueList:PackageResidueItem[]=[];
-  displayPackResidueList:PackageResidueItem[]=[];
-  deList:ResiduePartItem[]=[];
+  billingBranchList: CustomerCompanyItem[] = [];
+  packResidueList: PackageResidueItem[] = [];
+  displayPackResidueList: PackageResidueItem[] = [];
+  deList: ResiduePartItem[] = [];
   oldJobOrderList?: (JobOrderItem | undefined)[] = [];
 
   customerCodeControl = new UntypedFormControl();
@@ -278,17 +263,17 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   ttDS: TimeTableDS;
-   igDS: InGateDS;
-   jobOrderDS:JobOrderDS;
+  igDS: InGateDS;
+  jobOrderDS: JobOrderDS;
   // plDS: PackageLabourDS;
   // repairEstDS: RepairDS;
   // repairEstPartDS: RepairPartDS;
-  steamDs:SteamDS;
-  teamDS:TeamDS;
+  steamDs: SteamDS;
+  teamDS: TeamDS;
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
-  
-  packResidueDS:PackageResidueDS;
+
+  packResidueDS: PackageResidueDS;
 
   userDS: UserDS;
   isOwner = false;
@@ -296,12 +281,12 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   isDuplicate = false;
 
   historyState: any = {};
-  updateSelectedItem:any=undefined;
+  updateSelectedItem: any = undefined;
   teamList?: TeamItem[];
 
   repSelection = new SelectionModel<ResiduePartItem>(true, []);
   cleaningTotalHours: number | undefined;
-  
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -325,11 +310,11 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
-    this.packResidueDS= new PackageResidueDS(this.apollo);
-    this.steamDs=new SteamDS(this.apollo);
-    this.teamDS=new TeamDS(this.apollo);
-    this.jobOrderDS=new JobOrderDS(this.apollo);
-    this.ttDS=new TimeTableDS(apollo);
+    this.packResidueDS = new PackageResidueDS(this.apollo);
+    this.steamDs = new SteamDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
+    this.jobOrderDS = new JobOrderDS(this.apollo);
+    this.ttDS = new TimeTableDS(apollo);
 
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -347,9 +332,9 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     console.log('initForm');
     this.steamEstForm = this.fb.group({
       guid: [''],
-      customer_code:[''],
-      billing_branch:[''],
-      job_no:[''],
+      customer_code: [''],
+      billing_branch: [''],
+      job_no: [''],
       est_template: [''],
       is_default_template: [''],
       remarks: [''],
@@ -358,17 +343,17 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       material_cost_discount: [0],
       last_test: [''],
       next_test: [''],
-      desc:[''],
-      qty:[''],
-      unit_price:[''],
+      desc: [''],
+      qty: [''],
+      unit_price: [''],
       deList: [''],
-      team_allocation:[''],
-      
+      team_allocation: [''],
+
     });
   }
 
   initializeValueChanges() {
-   
+
 
     console.log('initializeValueChanges');
     this.steamEstForm?.get('desc')?.valueChanges.pipe(
@@ -376,13 +361,12 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       debounceTime(300),
       tap(value => {
         var desc_value = this.steamEstForm?.get("desc")?.value;
-        this.displayPackResidueList= this.packResidueList.filter(data=> data.description && data.description.includes(desc_value));
-        if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
-        else if(typeof desc_value==='object')
-        {
+        this.displayPackResidueList = this.packResidueList.filter(data => data.description && data.description.includes(desc_value));
+        if (!desc_value) this.displayPackResidueList = [...this.packResidueList];
+        else if (typeof desc_value === 'object') {
           this.steamEstForm?.patchValue({
 
-             unit_price: desc_value?.cost.toFixed(2)
+            unit_price: desc_value?.cost.toFixed(2)
           });
         }
 
@@ -403,9 +387,9 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
-     this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.getCodeValuesByType(queries);
 
-    
+
     this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
       this.soTankStatusCvList = data;
     });
@@ -435,13 +419,13 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     //this.getSurveyorList();
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
-   //this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
+    //this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
 
-   this.subs.sink = this.teamDS.getTeamListByDepartment(["REPAIR"]).subscribe(data => {
-    if (data?.length) {
-      this.teamList = data;
-    }
-  });
+    this.subs.sink = this.teamDS.getTeamListByDepartment(["REPAIR"]).subscribe(data => {
+      if (data?.length) {
+        this.teamList = data;
+      }
+    });
 
     this.route.data.subscribe(routeData => {
       this.isDuplicate = routeData['action'] === 'duplicate';
@@ -482,20 +466,18 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     return this.prDS.getCustomerPackageCost(where);
   }
 
- 
+
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
- 
 
 
-  checkCompulsoryEst(fields:string[])
-  {
-    fields.forEach(name=>{
-    if( !this.steamEstForm?.get(name)?.value)
-      {
+
+  checkCompulsoryEst(fields: string[]) {
+    fields.forEach(name => {
+      if (!this.steamEstForm?.get(name)?.value) {
         this.steamEstForm?.get(name)?.setErrors({ required: true });
         this.steamEstForm?.get(name)?.markAsTouched(); // Trigger validation display
       }
@@ -637,7 +619,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
@@ -653,7 +635,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     // Add any additional logic if needed
   }
 
-  
+
 
   updateData(newData: ResiduePartItem[] | undefined): void {
     if (newData?.length) {
@@ -661,13 +643,12 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         ...row,
         index: index
       }));
-      
+
       //this.calculateCost();
     }
-    else
-    {
-      this.deList=[];
-      
+    else {
+      this.deList = [];
+
     }
   }
 
@@ -877,7 +858,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     return "";
   }
 
-  
+
 
   canExport(): boolean {
     return !!this.repair_guid;
@@ -887,10 +868,9 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
   }
 
-  getPackageSteam()
-  {
-       this.packResidueList=this.steamItem?.steaming_part!;
-      this.displayPackResidueList=this.steamItem?.steaming_part!;
+  getPackageSteam() {
+    this.packResidueList = this.steamItem?.steaming_part!;
+    this.displayPackResidueList = this.steamItem?.steaming_part!;
     // let where:any={};
     // let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
     // where.customer_company_guid = {eq:custCompanyGuid};
@@ -903,27 +883,24 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
-  loadBillingBranch()
-  {
-    let where:any={};
-    let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
-    if(custCompanyGuid)
-    {
-      where.main_customer_guid = {eq:custCompanyGuid};
+  loadBillingBranch() {
+    let where: any = {};
+    let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    if (custCompanyGuid) {
+      where.main_customer_guid = { eq: custCompanyGuid };
 
-      this.ccDS.search(where,{}).subscribe(data=>{
-        var def =this.createDefaultCustomerCompany("---","");
+      this.ccDS.search(where, {}).subscribe(data => {
+        var def = this.createDefaultCustomerCompany("---", "");
 
-        this.billingBranchList=[def, ...data];;
+        this.billingBranchList = [def, ...data];;
 
         this.patchSteamEstForm(this.steamItem!);
-       // console.log('loadBillingBranch-1');
+        // console.log('loadBillingBranch-1');
       });
     }
-    else
-    {
-      var def =this.createDefaultCustomerCompany("---","");
-      this.billingBranchList=[];
+    else {
+      var def = this.createDefaultCustomerCompany("---", "");
+      this.billingBranchList = [];
       this.billingBranchList.push(def);
       this.patchSteamEstForm(this.steamItem!);
       //console.log('loadBillingBranch-2');
@@ -931,58 +908,52 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
-  loadHistoryState()
-  {
+  loadHistoryState() {
     this.historyState = history.state;
 
     if (this.historyState.selectedRow != null) {
 
-      this.steamItem=this.historyState.selectedRow;
+      this.steamItem = this.historyState.selectedRow;
       this.sotItem = this.steamItem?.storing_order_tank;
-      
+
       this.getPackageSteam();
       this.loadBillingBranch();
-      
-      
+
+
     }
   }
 
-  patchSteamEstForm(steam:SteamItem)
-  {
-    let billingGuid= "";
-    if(steam)
-    {
-      billingGuid=steam.bill_to_guid!;
+  patchSteamEstForm(steam: SteamItem) {
+    let billingGuid = "";
+    if (steam) {
+      billingGuid = steam.bill_to_guid!;
     }
     this.populateSteamPartList(steam);
     this.steamEstForm?.patchValue({
 
-      customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no: steam.job_no?steam.job_no:this.sotItem?.job_no,
-       billing_branch:this.getBillingBranch(billingGuid),
-       remarks:steam?.remarks
+      customer_code: this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
+      job_no: steam.job_no ? steam.job_no : this.sotItem?.job_no,
+      billing_branch: this.getBillingBranch(billingGuid),
+      remarks: steam?.remarks
 
     });
   }
 
-  getBillingBranch(billingGuid:string):string
-  {
-    let ccItem:CustomerCompanyItem= this.billingBranchList[0] ;
-     let ccItems=this.billingBranchList.filter(data=>data.guid==billingGuid);
+  getBillingBranch(billingGuid: string): string {
+    let ccItem: CustomerCompanyItem = this.billingBranchList[0];
+    let ccItems = this.billingBranchList.filter(data => data.guid == billingGuid);
 
-     if(ccItems.length>0)
-     {
-       ccItem=ccItems[0]!;
-     }
+    if (ccItems.length > 0) {
+      ccItem = ccItems[0]!;
+    }
 
-     return this.ccDS.displayName(ccItem);
+    return this.ccDS.displayName(ccItem);
 
   }
-  createDefaultCustomerCompany(code:string, name:string):CustomerCompanyItem
-  {
-    let ccItem:CustomerCompanyItem=new CustomerCompanyItem();
-    ccItem.code=code;
-    ccItem.name=name;
+  createDefaultCustomerCompany(code: string, name: string): CustomerCompanyItem {
+    let ccItem: CustomerCompanyItem = new CustomerCompanyItem();
+    ccItem.code = code;
+    ccItem.name = name;
     return ccItem
 
   }
@@ -991,20 +962,20 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     return cc && cc.tariff_steaming ? cc.tariff_steaming.description : '';
   }
 
-  
 
-  resetValue(){
+
+  resetValue() {
 
     this.steamEstForm?.patchValue({
-      desc:'',
-      qty:'',
-      unit_price:''
-    },{emitEvent:false});
+      desc: '',
+      qty: '',
+      unit_price: ''
+    }, { emitEvent: false });
     this.steamEstForm?.get('desc')?.setErrors(null);
     this.steamEstForm?.get('qty')?.setErrors(null);
     this.steamEstForm?.get('unit_price')?.setErrors(null);
-    this.displayPackResidueList=[...this.packResidueList];
-  
+    this.displayPackResidueList = [...this.packResidueList];
+
   }
 
   GoBackPrevious(event: Event) {
@@ -1017,15 +988,14 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     );
   }
 
-  populateSteamPartList(steam:SteamItem){
+  populateSteamPartList(steam: SteamItem) {
 
-    if(steam)
-    {
+    if (steam) {
       steam.steaming_part = this.filterDeleted(steam.steaming_part);
-      
-      var dataList = steam.steaming_part?.map(data=>new SteamPartItem(data) );
 
-      
+      var dataList = steam.steaming_part?.map(data => new SteamPartItem(data));
+
+
 
       this.oldJobOrderList = steam.steaming_part?.filter((item, index, self) => {
         const jobOrder = item.job_order;
@@ -1043,17 +1013,15 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       this.updateData(dataList);
     }
   }
-  
+
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 
-  resetSelectedItemForUpdating()
-  {
-    if(this.updateSelectedItem)
-    {
-      this.updateSelectedItem.item.edited=false;
-      this.updateSelectedItem=null;
+  resetSelectedItemForUpdating() {
+    if (this.updateSelectedItem) {
+      this.updateSelectedItem.item.edited = false;
+      this.updateSelectedItem = null;
       this.resetValue();
     }
   }
@@ -1161,14 +1129,14 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   }
 
   toggleRep(row: SteamPartItem) {
-    
-    if (!this.jobOrderDS.canJobAllocate(row?.job_order)) 
-        return;
+
+    if (!this.jobOrderDS.canJobAllocate(row?.job_order))
+      return;
     this.repSelection.toggle(row);
   }
 
-   /** Whether the number of selected elements matches the total number of rows. */
-   isAllSelected() {
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
     const numSelected = this.repSelection.selected.length;
     const numRows = this.deList.length;
     return numSelected === numRows;
@@ -1177,14 +1145,13 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   masterToggle() {
     this.isAllSelected()
       ? this.repSelection.clear()
-      : this.deList.forEach((row) =>{
-          if(row.approve_part==null || row.approve_part)
-          {
-            this.repSelection.select(row)
-          }
+      : this.deList.forEach((row) => {
+        if (row.approve_part == null || row.approve_part) {
+          this.repSelection.select(row)
         }
-        );
- }
+      }
+      );
+  }
 
   assignTeam(event: Event) {
     const selectedRep = this.repSelection.selected;
@@ -1219,7 +1186,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     // this.repSelection.clear();
     // selectedTeam?.setValue('')
     // this.residueEstForm?.get('deList')?.setErrors(null);
-    
+
   }
   isAssignEnabled() {
     return this.repSelection.hasValue() && this.steamEstForm?.get('team_allocation')?.value;
@@ -1228,14 +1195,14 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
 
   onApprove(event: Event) {
     event.preventDefault();
-    const bill_to =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
-   
+    const bill_to = (this.steamEstForm?.get("billing_branch")?.value ? this.sotItem?.storing_order?.customer_company?.guid : this.steamEstForm?.get("billing_branch")?.value?.guid);
+
     if (bill_to) {
       let re: ResidueItem = new ResidueItem();
       re.guid = this.steamItem?.guid;
       re.sot_guid = this.steamItem?.sot_guid;
       re.bill_to_guid = bill_to;
-   re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
+      re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
         return new ResiduePartItem({
           ...rep,
           tariff_residue: undefined,
@@ -1296,14 +1263,14 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
           part.job_order?.team?.description === jo?.team?.description)
         );
         const partList = filteredParts.map(part => part.guid);
-        const totalApproveHours =3;
+        const totalApproveHours = 3;
 
         const joRequest = new JobOrderRequest();
-        joRequest.guid = (jo.status_cv==="CANCELED")?'':jo.guid;
+        joRequest.guid = (jo.status_cv === "CANCELED") ? '' : jo.guid;
         joRequest.job_type_cv = jo.job_type_cv ?? 'STEAM';
         joRequest.remarks = jo.remarks;
         joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
-        joRequest.status_cv = (jo.status_cv==="CANCELED")?'':jo.status_cv;
+        joRequest.status_cv = (jo.status_cv === "CANCELED") ? '' : jo.status_cv;
         joRequest.team_guid = jo.team_guid;
         joRequest.total_hour = jo.total_hour ?? totalApproveHours;
         joRequest.working_hour = jo.working_hour ?? 0;
@@ -1312,7 +1279,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         finalJobOrder.push(joRequest);
       }
     });
-    
+
     console.log(finalJobOrder);
     // const without4x = this.repList.filter(part =>
     //   !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair)
@@ -1326,10 +1293,10 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         });
       }
 
-      var act="PARTIAL_ASSIGN";
-      if(this.isAllAssignedToTeam()) {
+      var act = "PARTIAL_ASSIGN";
+      if (this.isAllAssignedToTeam()) {
         console.log("all parts are assigned");
-        act="ASSIGN";
+        act = "ASSIGN";
         // var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
         //   guid: this.residueItem!.guid,
         //   sot_guid: this.sotItem!.guid,
@@ -1342,20 +1309,20 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         //     this.handleSaveSuccess(result.data.updateResidueStatus);
         //   }
         // });
-      } 
+      }
       var steamStatusReq: SteamStatusRequest = new SteamStatusRequest({
-          guid: this.steamItem!.guid,
-          sot_guid: this.sotItem!.guid,
-          action:act
-        });
-        console.log(steamStatusReq);
-        this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
-          console.log(result)
-          if (result.data.updateSteamingStatus > 0) {
-            this.startJobOrders(this.steamItem?.guid!);
-           // this.handleSaveSuccess(result.data.updateSteamingStatus);
-          }
-        });
+        guid: this.steamItem!.guid,
+        sot_guid: this.sotItem!.guid,
+        action: act
+      });
+      console.log(steamStatusReq);
+      this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
+        console.log(result)
+        if (result.data.updateSteamingStatus > 0) {
+          this.startJobOrders(this.steamItem?.guid!);
+          // this.handleSaveSuccess(result.data.updateSteamingStatus);
+        }
+      });
     });
   }
 
@@ -1364,58 +1331,53 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   isAllAssignedToTeam(): boolean {
 
     return this.deList.every(
-      (data) =>
-        { 
-          //  let bRet=!data.approve_part?true:data.approve_part;
-          //  if(bRet)
-          //  {
-          //     if(!data.job_order?.team_guid)
-          //     {
-          //        return false;
-          //     }
-          //  }
-          //  return bRet;
+      (data) => {
+        //  let bRet=!data.approve_part?true:data.approve_part;
+        //  if(bRet)
+        //  {
+        //     if(!data.job_order?.team_guid)
+        //     {
+        //        return false;
+        //     }
+        //  }
+        //  return bRet;
 
-          let bRet=data.approve_part==null?true:data.approve_part;
-          if(bRet)
-          {
-             if(!data.job_order?.team_guid)
-             {
-                return false;
-             }
+        let bRet = data.approve_part == null ? true : data.approve_part;
+        if (bRet) {
+          if (!data.job_order?.team_guid) {
+            return false;
           }
-          return true;
         }
+        return true;
+      }
 
     );
 
     // let retval = true;
-  
+
     // this.deList.forEach((data) => {
     //   if (!data.job_order?.team?.description && data.approve_part) {
     //     retval = false;
     //   }
     // });
-  
+
     // return retval;
   }
 
-  updateJobProcessStatus(residueGuid:string, job_type:string,process_status:string)
-  {
-    
-         var updateJobProcess :JobProcessRequest= new JobProcessRequest();
-         updateJobProcess.guid=residueGuid;
-         updateJobProcess.job_type_cv=job_type;
-         updateJobProcess.process_status=process_status;
+  updateJobProcessStatus(residueGuid: string, job_type: string, process_status: string) {
 
-         this.jobOrderDS?.updateJobProcessStatus(updateJobProcess).subscribe(result=>{
-          if(result.data.updateJobProcessStatus>0)
-          {
-            this.handleSaveSuccess(result.data.updateJobProcessStatus);
-          }
+    var updateJobProcess: JobProcessRequest = new JobProcessRequest();
+    updateJobProcess.guid = residueGuid;
+    updateJobProcess.job_type_cv = job_type;
+    updateJobProcess.process_status = process_status;
 
-         });
-     
+    this.jobOrderDS?.updateJobProcessStatus(updateJobProcess).subscribe(result => {
+      if (result.data.updateJobProcessStatus > 0) {
+        this.handleSaveSuccess(result.data.updateJobProcessStatus);
+      }
+
+    });
+
 
   }
 
@@ -1453,158 +1415,151 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         const steamJobOrder = new SteamJobOrderRequest({
           guid: this.steamItem?.guid,
           sot_guid: this.steamItem?.sot_guid,
-         // estimate_no: this.steamItem?.estimate_no,
+          // estimate_no: this.steamItem?.estimate_no,
           remarks: result.item[0]?.remarks,
           job_order: distinctJobOrders,
-          sot_status:this.steamItem?.storing_order_tank?.status_cv,
+          sot_status: this.steamItem?.storing_order_tank?.status_cv,
         });
 
         console.log(steamJobOrder)
-         this.steamDs.abortSteaming(steamJobOrder).subscribe(result => {
-           console.log(result)
-           this.handleCancelSuccess(result?.data?.abortSteaming)
-         });
+        this.steamDs.abortSteaming(steamJobOrder).subscribe(result => {
+          console.log(result)
+          this.handleCancelSuccess(result?.data?.abortSteaming)
+        });
       }
     });
   }
 
-  canToggleJob(jobOrderItem:JobOrderItem | undefined) {
+  canToggleJob(jobOrderItem: JobOrderItem | undefined) {
     var retval
-    retval= (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid===null);
+    retval = (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid === null);
     return retval;
   }
 
-  canRollBack():boolean
-  {
-    var validActions :string[]= ["COMPLETED"];
-    var selItem =this.steamItem!;
-    if(validActions.includes(selItem.status_cv!))
-    {
-        return (selItem.steaming_part?.length!>0);
+  canRollBack(): boolean {
+    var validActions: string[] = ["COMPLETED"];
+    var selItem = this.steamItem!;
+    if (validActions.includes(selItem.status_cv!)) {
+      return (selItem.steaming_part?.length! > 0);
     }
-    else
-    {
+    else {
       return false;
     }
-    
-    
+
+
   }
 
 
-   rollbackJobs(event: Event) {
-      this.preventDefault(event);
-      console.log(this.steamItem);
-  
-       const distinctJobOrders = this.deList
-                .filter((item, index, self) =>
-                  index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
-                    (t.job_order?.team?.guid === item?.job_order?.team_guid ||
-                      t.job_order?.team?.description === item?.job_order?.team?.description))
-                )
-                .filter(item => item.job_order !== null && item.job_order !== undefined)
-                .map(item => new JobOrderGO(item.job_order!));
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-      const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-        width: '1000px',
-        data: {
-          action: 'rollback',
-          dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-          item: [this.steamItem],
-          translatedLangText: this.translatedLangText
-        },
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        if (result?.action === 'confirmed') {
-          const steamingJobOrder = result.item.map((item: any) => {
-            const residueJobOrder = {
-              guid: item?.guid,
-              remarks: item.remarks,
-              sot_guid: item.sot_guid,
-              sot_status:this.steamItem?.storing_order_tank?.tank_status_cv,
-              job_order:distinctJobOrders
-            }
-            return residueJobOrder
-          });
-          console.log(steamingJobOrder);
-          if(this.steamItem?.status_cv=="COMPLETED")
-          {
+  rollbackJobs(event: Event) {
+    this.preventDefault(event);
+    console.log(this.steamItem);
+
+    const distinctJobOrders = this.deList
+      .filter((item, index, self) =>
+        index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+          (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+            t.job_order?.team?.description === item?.job_order?.team?.description))
+      )
+      .filter(item => item.job_order !== null && item.job_order !== undefined)
+      .map(item => new JobOrderGO(item.job_order!));
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        item: [this.steamItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const steamingJobOrder = result.item.map((item: any) => {
+          const residueJobOrder = {
+            guid: item?.guid,
+            remarks: item.remarks,
+            sot_guid: item.sot_guid,
+            sot_status: this.steamItem?.storing_order_tank?.tank_status_cv,
+            job_order: distinctJobOrders
+          }
+          return residueJobOrder
+        });
+        console.log(steamingJobOrder);
+        if (this.steamItem?.status_cv == "COMPLETED") {
           this.steamDs.rollbackCompletedSteaming(steamingJobOrder).subscribe(result => {
             this.handleRollbackSuccess(result?.data?.rollbackCompletedSteaming)
           });
-         }
-         else if(this.steamItem?.status_cv=="JOB_IN_PROGRESS")
-          {
-            this.jobOrderDS.rollbackJobInProgressResidue(steamingJobOrder).subscribe(result => {
-              this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
-            });
-          }
-         
         }
-      });
-    }
-  
-
-    startJobOrders(steamGuid:string)
-    {
-
-      var where :any={steaming_part:{some:{steaming_guid:{eq:steamGuid}}}};
-      
-      this.jobOrderDS.searchJobOrder(where).subscribe(data=>{
-        if(data.length>0)
-        {
-            data.map(jobOrderItem=>{
-              this.toggleJobState(false,jobOrderItem);
-            });
-        }
-      });
-
-    }
-
-     toggleJobState( isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-        //this.stopPropagation(event);  // Prevents the form submission
-        if (!isStarted) {
-          const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-          const firstValidRepairPart = jobOrderItem.steaming_part?.find(
-            (steamPart) => steamPart.steaming_guid !== null
-          );
-          this.ttDS.startJobTimer(param, firstValidRepairPart?.steaming_guid!).subscribe(result => {
-            console.log(result)
-             if ((result?.data?.startJobTimer ?? 0) > 0) {
-                  const firstJobPart = jobOrderItem?.steaming_part?.[0];
-                  if (firstJobPart?.steaming?.status_cv === 'ASSIGNED') {
-                    const steamStatusReq: SteamStatusRequest = new SteamStatusRequest({
-                      guid: firstJobPart!.steaming.guid,
-                      sot_guid: jobOrderItem?.sot_guid,
-                      action: "IN_PROGRESS",
-                      
-                    });
-                    console.log(steamStatusReq);
-                    this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
-                      console.log(result);
-                      this.handleSaveSuccess(result.data.updateSteamingStatus);
-                    });
-                  }
-                }
+        else if (this.steamItem?.status_cv == "JOB_IN_PROGRESS") {
+          this.jobOrderDS.rollbackJobInProgressResidue(steamingJobOrder).subscribe(result => {
+            this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
           });
-        } else {
-          const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time && !x?.delete_dt);
-          if (found?.length) {
-            const newParam = new TimeTableItem(found[0]);
-            newParam.stop_time = Utility.convertDate(new Date()) as number;
-            newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-            const param = [newParam];
-            console.log(param)
-            this.ttDS.stopJobTimer(param).subscribe(result => {
-              console.log(result)
+        }
+
+      }
+    });
+  }
+
+
+  startJobOrders(steamGuid: string) {
+
+    var where: any = { steaming_part: { some: { steaming_guid: { eq: steamGuid } } } };
+
+    this.jobOrderDS.searchJobOrder(where).subscribe(data => {
+      if (data.length > 0) {
+        data.map(jobOrderItem => {
+          this.toggleJobState(false, jobOrderItem);
+        });
+      }
+    });
+
+  }
+
+  toggleJobState(isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
+    //this.stopPropagation(event);  // Prevents the form submission
+    if (!isStarted) {
+      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
+      const firstValidRepairPart = jobOrderItem.steaming_part?.find(
+        (steamPart) => steamPart.steaming_guid !== null
+      );
+      this.ttDS.startJobTimer(param, firstValidRepairPart?.steaming_guid!).subscribe(result => {
+        console.log(result)
+        if ((result?.data?.startJobTimer ?? 0) > 0) {
+          const firstJobPart = jobOrderItem?.steaming_part?.[0];
+          if (firstJobPart?.steaming?.status_cv === 'ASSIGNED') {
+            const steamStatusReq: SteamStatusRequest = new SteamStatusRequest({
+              guid: firstJobPart!.steaming.guid,
+              sot_guid: jobOrderItem?.sot_guid,
+              action: "IN_PROGRESS",
+
+            });
+            console.log(steamStatusReq);
+            this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
+              console.log(result);
+              this.handleSaveSuccess(result.data.updateSteamingStatus);
             });
           }
         }
+      });
+    } else {
+      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time && !x?.delete_dt);
+      if (found?.length) {
+        const newParam = new TimeTableItem(found[0]);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          console.log(result)
+        });
       }
+    }
+  }
 }

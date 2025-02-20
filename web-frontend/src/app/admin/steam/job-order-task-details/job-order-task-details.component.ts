@@ -1,69 +1,55 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
+import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company'
-import { MatRadioModule } from '@angular/material/radio';
-import { Apollo } from 'apollo-angular';
-import { MatDividerModule } from '@angular/material/divider';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Observable, of, Subscription } from 'rxjs';
-import { TankDS, TankItem } from 'app/data-sources/tank';
-import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
-import { ComponentUtil } from 'app/utilities/component-util';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
-import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, SteamJobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
-import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
-import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
-import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
-import { UserDS, UserItem } from 'app/data-sources/user';
-import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, SteamJobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { SteamItem, SteamDS, SteamStatusRequest } from 'app/data-sources/steam';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
+import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
+import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { Observable, Subscription } from 'rxjs';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
 @Component({
   selector: 'job-order-task-details',
@@ -279,7 +265,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
 
   teamDS: TeamDS;
   joDS: JobOrderDS;
-  joTimeTblDS:JobOrderDS;
+  joTimeTblDS: JobOrderDS;
   ttDS: TimeTableDS;
   isOwner = false;
 
@@ -308,7 +294,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     this.rpDmgRepairDS = new RPDamageRepairDS(this.apollo);
     this.teamDS = new TeamDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
-    this.joTimeTblDS= new JobOrderDS(this.apollo);
+    this.joTimeTblDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
     this.steamDS = new SteamDS(this.apollo);
   }
@@ -445,7 +431,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
         if (jo?.length) {
           console.log(jo)
           this.jobOrderItem = jo[0];
-          this.jobOrderItem.time_table=this.jobOrderItem.time_table?.filter(d=>d.delete_dt==null || d.delete_dt==0);
+          this.jobOrderItem.time_table = this.jobOrderItem.time_table?.filter(d => d.delete_dt == null || d.delete_dt == 0);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
@@ -470,13 +456,12 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     }
   }
 
-  refreshTime_table(job_order_guid:string)
-  {
+  refreshTime_table(job_order_guid: string) {
     this.subs.sink = this.joTimeTblDS.getJobOrderByID(job_order_guid).subscribe(jo => {
       if (jo?.length) {
         console.log(jo)
         this.jobOrderItem = jo[0];
-        this.jobOrderItem.time_table=this.jobOrderItem.time_table?.filter(d=>d.delete_dt==null || d.delete_dt==0);
+        this.jobOrderItem.time_table = this.jobOrderItem.time_table?.filter(d => d.delete_dt == null || d.delete_dt == 0);
       }
     });
 
@@ -544,7 +529,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
@@ -854,7 +839,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
               guid: firstJobPart!.steaming.guid,
               sot_guid: this.jobOrderItem?.sot_guid,
               action: "IN_PROGRESS",
-              
+
             });
             console.log(steamStatusReq);
             this.steamDS.updateSteamStatus(steamStatusReq).subscribe(result => {
@@ -1041,20 +1026,23 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     };
 
     where.and.push({
-      steaming_part: { all:{ or:[
-        { 
-        job_order: { 
-          status_cv: { eq: 'COMPLETED' } }
-         } ,
-         {
-          approve_part:{eq:false}
-         },
-         {delete_dt:{neq:0}},
-         {delete_dt:{neq:null}},
-      ]
+      steaming_part: {
+        all: {
+          or: [
+            {
+              job_order: {
+                status_cv: { eq: 'COMPLETED' }
+              }
+            },
+            {
+              approve_part: { eq: false }
+            },
+            { delete_dt: { neq: 0 } },
+            { delete_dt: { neq: null } },
+          ]
         }
-    }
-  });
+      }
+    });
 
     where.and.push({
       guid: { eq: steam_guid }
@@ -1082,58 +1070,56 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
   }
 
   canRollbackJob() {
-    return this.joDS.canRollbackJobWithCompleted(this.jobOrderItem) &&!this.isStarted();
+    return this.joDS.canRollbackJobWithCompleted(this.jobOrderItem) && !this.isStarted();
     //(this.jobOrderItem?.status_cv=='COMPLETED'|| this.joDS.canRollbackJob(this.jobOrderItem)) && this.steamDS.canRollbackJobInProgress(this.steamItem) && !this.isStarted();
   }
 
-   rollbackJob(event: Event) {
-        this.preventDefault(event);  // Prevents the form submission
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-          width: '1000px',
-          data: {
-            action: 'rollback',
-            dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-            item: [this.steamItem],
-            translatedLangText: this.translatedLangText
-          },
-          direction: tempDirection
+  rollbackJob(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        item: [this.steamItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const stmJobOrder = new SteamJobOrderRequest({
+          guid: this.steamItem?.guid,
+          sot_guid: this.steamItem?.sot_guid,
+          job_order: [new JobOrderGO({ ...this.jobOrderItem, remarks: result.remarks })],
+          sot_status: this.sotItem?.tank_status_cv,
+          remarks: result.item[0].remarks
         });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-            const stmJobOrder = new SteamJobOrderRequest({
-              guid: this.steamItem?.guid,
-              sot_guid: this.steamItem?.sot_guid,
-              job_order: [new JobOrderGO({...this.jobOrderItem, remarks: result.remarks})],
-              sot_status: this.sotItem?.tank_status_cv,
-              remarks:result.item[0].remarks
-            });
-    
-            console.log(stmJobOrder)
-            if(this.jobOrderItem?.status_cv==='JOB_IN_PROGRESS')
-            {
-            this.joDS.rollbackJobInProgressSteaming([stmJobOrder]).subscribe(result => {
-              console.log(result)
-              if ((result?.data?.rollbackJobInProgressSteaming ?? 0) > 0) {
-                this.handleSaveSuccess(result?.data?.rollbackJobInProgressSteaming);
-              }
-            });
-           }
-           else if(this.jobOrderItem?.status_cv==='COMPLETED')
-            {
-              this.steamDS.rollbackCompletedSteaming([stmJobOrder]).subscribe(result => {
-                console.log(result)
-                if ((result?.data?.rollbackCompletedSteaming ?? 0) > 0) {
-                  this.handleSaveSuccess(result?.data?.rollbackCompletedSteaming);
-                }
-              });
+
+        console.log(stmJobOrder)
+        if (this.jobOrderItem?.status_cv === 'JOB_IN_PROGRESS') {
+          this.joDS.rollbackJobInProgressSteaming([stmJobOrder]).subscribe(result => {
+            console.log(result)
+            if ((result?.data?.rollbackJobInProgressSteaming ?? 0) > 0) {
+              this.handleSaveSuccess(result?.data?.rollbackJobInProgressSteaming);
             }
-          }
-        });
+          });
+        }
+        else if (this.jobOrderItem?.status_cv === 'COMPLETED') {
+          this.steamDS.rollbackCompletedSteaming([stmJobOrder]).subscribe(result => {
+            console.log(result)
+            if ((result?.data?.rollbackCompletedSteaming ?? 0) > 0) {
+              this.handleSaveSuccess(result?.data?.rollbackCompletedSteaming);
+            }
+          });
+        }
       }
+    });
+  }
 }

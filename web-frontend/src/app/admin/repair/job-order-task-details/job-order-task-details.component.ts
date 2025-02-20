@@ -31,7 +31,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Apollo } from 'apollo-angular';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
@@ -491,7 +490,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

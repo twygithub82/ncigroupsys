@@ -26,7 +26,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { Utility } from 'app/utilities/utility';
 // import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
@@ -40,8 +39,6 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 //import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { ExampleDataSource } from 'app/advance-table/advance-table.component';
-import { AdvanceTableService } from 'app/advance-table/advance-table.service';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
@@ -128,13 +125,9 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
   hasNextPage = false;
   hasPreviousPage = false;
 
-
-  exampleDatabase?: AdvanceTableService;
-  dataSource!: ExampleDataSource;
   selection = new SelectionModel<TariffResidueItem>(true, []);
 
   id?: number;
-  advanceTable?: AdvanceTable;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
@@ -235,7 +228,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
@@ -327,31 +319,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-
-
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: this.advanceTable,
-    //     action: 'add',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // After dialog is closed we're doing frontend updates
-    //     // For add we're just pushing a new row inside DataService
-    //     this.exampleDatabase?.dataChange.value.unshift(
-    //       this.advanceTableService.getDialogData()
-    //     );
-    //     this.refreshTable();
-    //     this.showNotification(
-    //       'snackbar-success',
-    //       'Add Record Successfully...!!!',
-    //       'bottom',
-    //       'center'
-    //     );
-    //   }
-    // });
   }
 
   preventDefault(event: Event) {
@@ -695,7 +662,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

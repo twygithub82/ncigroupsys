@@ -26,7 +26,6 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { Utility } from 'app/utilities/utility';
 // import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
@@ -41,8 +40,6 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 //import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { ExampleDataSource } from 'app/advance-table/advance-table.component';
-import { AdvanceTableService } from 'app/advance-table/advance-table.service';
 import { CustomerCompanyCleaningCategoryDS, CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -141,13 +138,9 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   hasNextPage = false;
   hasPreviousPage = false;
 
-
-  exampleDatabase?: AdvanceTableService;
-  dataSource!: ExampleDataSource;
   selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
 
   id?: number;
-  advanceTable?: AdvanceTable;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
@@ -370,7 +363,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-  deleteItem(row: AdvanceTable) {
+  deleteItem(row: any) {
     // this.id = row.id;
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
@@ -642,7 +635,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

@@ -31,7 +31,6 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { ContactPersonItem, ContactPersonItemAction } from 'app/data-sources/contact-person';
@@ -804,7 +803,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

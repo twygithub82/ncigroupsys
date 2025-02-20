@@ -24,15 +24,12 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 // import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { ExampleDataSource } from 'app/advance-table/advance-table.component';
-import { AdvanceTableService } from 'app/advance-table/advance-table.service';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { ExclusiveSteamingItem, PackageSteamingExclusiveDS } from 'app/data-sources/exclusive-steam';
@@ -116,13 +113,9 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   hasNextPage = false;
   hasPreviousPage = false;
 
-
-  exampleDatabase?: AdvanceTableService;
-  dataSource!: ExampleDataSource;
   selection = new SelectionModel<PackageSteamingItem>(true, []);
 
   id?: number;
-  advanceTable?: AdvanceTable;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
 
@@ -672,7 +665,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

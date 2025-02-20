@@ -24,9 +24,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { HttpClientModule } from '@angular/common/http';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
@@ -435,7 +433,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       });
     }
   }
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

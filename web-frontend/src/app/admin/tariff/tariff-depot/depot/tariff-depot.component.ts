@@ -24,7 +24,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { Utility } from 'app/utilities/utility';
 // import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
@@ -37,8 +36,6 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 //import { ComponentUtil } from 'app/utilities/component-util';
 //import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { ExampleDataSource } from 'app/advance-table/advance-table.component';
-import { AdvanceTableService } from 'app/advance-table/advance-table.service';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
@@ -131,13 +128,9 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   hasNextPage = false;
   hasPreviousPage = false;
 
-
-  exampleDatabase?: AdvanceTableService;
-  dataSource!: ExampleDataSource;
   selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
 
   id?: number;
-  advanceTable?: AdvanceTable;
   tdForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
@@ -234,7 +227,6 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
@@ -362,7 +354,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-  deleteItem(row: AdvanceTable) {
+  deleteItem(row: any) {
     // this.id = row.id;
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
@@ -703,7 +695,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

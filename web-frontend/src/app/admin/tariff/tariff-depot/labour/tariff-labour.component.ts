@@ -24,19 +24,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { ExampleDataSource } from 'app/advance-table/advance-table.component';
 import { TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
@@ -110,13 +101,9 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
   hasNextPage = false;
   hasPreviousPage = false;
 
-
-  // exampleDatabase?: AdvanceTableService;
-  dataSource!: ExampleDataSource;
   selection = new SelectionModel<TariffBufferItem>(true, []);
 
   id?: number;
-  // advanceTable?: AdvanceTable;
   dbMasterLabourCost?: TariffLabourItem;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
@@ -213,7 +200,6 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
@@ -323,7 +309,7 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
 
 
 
-  deleteItem(row: AdvanceTable) {
+  deleteItem(row: any) {
     // this.id = row.id;
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
@@ -581,7 +567,7 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
