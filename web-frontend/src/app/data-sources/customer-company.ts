@@ -133,7 +133,7 @@ export const SEARCH_COMPANY_QUERY = gql`
         website
         main_customer_guid
         remarks
-         cc_contact_person {
+        cc_contact_person {
           create_by
           create_dt
           customer_guid
@@ -152,18 +152,22 @@ export const SEARCH_COMPANY_QUERY = gql`
         }
         currency_guid
         currency {
-            create_by
-            create_dt
-            currency_code
-            currency_name
-            delete_dt
-            guid
-            is_active
-            rate
-            sequence
-            update_by
-            update_dt
-         }
+          create_by
+          create_dt
+          currency_code
+          currency_name
+          delete_dt
+          guid
+          is_active
+          rate
+          sequence
+          update_by
+          update_dt
+        }
+        tank {
+          guid
+          unit_type
+        }
       }
       pageInfo {
         endCursor

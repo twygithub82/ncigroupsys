@@ -969,7 +969,9 @@
     "RELEASE-BOOKING-S": "Rel. Booking",
     "RELEASE-DATE-S": "Rel. Date",
     "RELEASE-REFERENCE-S": "Rel. Ref.",
-    "CODE": "Code"
+    "CODE": "Code",
+    "CONTACT_NO": "Contact No.",
+    "CATEGORY": "Category"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -81,18 +81,14 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 })
 
 
-export class CustomerComponent extends UnsubscribeOnDestroyAdapter
-  implements OnInit {
+export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    // 'select',
-    //'desc',
-    'fName',
-    'lName',
+    'customer_code',
+    'customer_name',
     'mobile',
-    // 'gender',
-    'bDate',
     'email',
-    // 'actions',
+    'category',
+    'last_update_dt',
   ];
 
   customerCodeControl = new UntypedFormControl();
@@ -198,7 +194,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL: 'COMMON-FORM.EMAIL',
-    PHONE: 'COMMON-FORM.PHONE',
+    CONTACT_NO: 'COMMON-FORM.CONTACT_NO',
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
@@ -222,7 +218,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter
     FAX_NO: "COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    CODE: 'COMMON-FORM.CODE'
+    CODE: 'COMMON-FORM.CODE',
+    CATEGORY: 'COMMON-FORM.CATEGORY'
   }
 
   constructor(
@@ -466,15 +463,10 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
     const where: any = {};
-
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
-
-
         const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         var guids = customerCodes.map(cc => cc.guid);
         where.guid = { in: guids };
@@ -513,6 +505,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter
     this.lastSearchCriteria = where;
     this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.customer_companyList = data;
+      console.log(data)
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
       this.endCursor = this.ccDS.pageInfo?.endCursor;
@@ -631,24 +624,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter
 
   }
   public loadData() {
-
-    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
-      // this.customer_companyList1 = data
-    });
-
-    // this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});
-
-    // const queries = [
-    //   { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
-
-    // ];
-    // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
-    //   this.handledItemCvList=data;
-    // });
-
-
-
   }
   showNotification(
     colorName: string,
