@@ -159,17 +159,6 @@ export const ROUTES: RouteInfo[] = [
     badgeClass: "",
     submenu: [
       {
-        path: "admin/master/estimate-template",
-        title: "MENUITEMS.MASTER.LIST.ESTIMATE-TEMPLATE",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
-      },
-      {
         path: "admin/master/customer",
         title: "MENUITEMS.MASTER.LIST.CUSTOMER",
         iconType: "",
@@ -179,6 +168,17 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: []
+      },
+      {
+        path: "admin/master/estimate-template",
+        title: "MENUITEMS.MASTER.LIST.ESTIMATE-TEMPLATE",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
       },
       {
         path: "admin/master/billing-branch",
