@@ -39,20 +39,15 @@ import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-//import { FormDialogComponent } from './form-dialog/form-dialog.component';
-// import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.component";
-// import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
-//import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
-//import { TankActivitiyComponent } from './tank-activity/tank-activity.component';
-// import { CleanBillingComponent } from './clean/clean-billing.component';
-// import { ResidueBillingComponent } from './residue/residue-billing.component';
-// import { SteamBillingComponent } from './steam/steam-billing.component';
+import { DailyInventoryReportComponent } from './daily/daily-inventory.component';
+import {CleaningInventoryComponent} from './cleaning/cleaning-inventory.component';
+
 @Component({
-  selector: 'app-main-tank-activity',
+  selector: 'app-main-inventory',
   standalone: true,
-  templateUrl: './main-tank-activity.component.html',
-  styleUrl: './main-tank-activity.component.scss',
+  templateUrl: './main-inventory.component.html',
+  styleUrl: './main-inventory.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -77,12 +72,13 @@ import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
-    MatTabsModule
-
-
+    MatTabsModule,
+    DailyInventoryReportComponent,
+    CleaningInventoryComponent
+    
   ]
 })
-export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class MainInventoryComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
   // displayedColumns = [
   //   'tank_no',
@@ -112,10 +108,10 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.REPORTS.LIST.TANK-ACTIVITY'
+  pageTitle = 'MENUITEMS.REPORTS.LIST.INVENTORY'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/tank-activity' }
+    { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/inventory' }
   ]
 
   translatedLangText: any = {};
@@ -171,6 +167,9 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
     CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
     STEAM_BILLING: "MENUITEMS.BILLING.LIST.STEAM-BILL",
     RESIDUE_BILLING: "MENUITEMS.BILLING.LIST.RESIDUE-DISPOSAL-BILL",
+    CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
+    DAILY_INVENTORY: 'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY',
+    CLEANING_INVENTORY: 'MENUITEMS.REPORTS.LIST.CLEANING-INVENTORY',
 
   }
 

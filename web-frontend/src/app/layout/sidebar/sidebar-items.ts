@@ -1056,8 +1056,8 @@ export const ROUTES: RouteInfo[] = [
         visible: true
       },
       {
-        path: "admin/steam/approval",
-        title: "MENUITEMS.STEAM.LIST.STEAM-APPROVAL",
+        path: "admin/reports/inventory",
+        title: "MENUITEMS.REPORTS.LIST.INVENTORY",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -1065,7 +1065,19 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: false
+        visible: true
+      },
+      {
+        path: "admin/reports/pending",
+        title: "MENUITEMS.REPORTS.LIST.PENDING",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: true
       },
       {
         path: "admin/steam/job-order",

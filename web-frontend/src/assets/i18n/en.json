@@ -266,13 +266,15 @@
       "TEXT": "Reports",
       "LIST": {
         "TANK-ACTIVITY": "Tank Activity",
+        "INVENTORY":"Inventory",
         "DAILY-INVENTORY": "Daily Inventory",
         "STATUS": "Status",
         "CLEANING-INVENTORY": "Cleaning Inventory",
         "LOCATION-TRANSFER": "Location Transfer",
         "TANK-SURVEY": "Tank Survey",
         "PERIODIC-TEST-DUE": "Periodic Test Due",
-        "ESTIMATE-PENDING": "Estimate Pending"
+        "PENDING-ESTIMATE": "Estimate Pending",
+        "PENDING": "Pending"
       }
     },
     "ADMIN-REPORTS": {
@@ -944,6 +946,7 @@
     "CUSTOMER-REPORT": "Customer Report",
     "YARD-REPORT": "Yard Report",
     "INVENTORY-TYPE": "Inventory Type",
+    "INVENTORY-DATE": "Inventory Date",
     "SUMMARY-REPORT": "Summary Report",
     "DETAIL-REPORT": "Detail Report",
     "TANK-ACTIVITY": "Tank Activity",
@@ -968,7 +971,8 @@
     "APPROVAL-REFERENCE-S": "App. Ref.",
     "RELEASE-BOOKING-S": "Rel. Booking",
     "RELEASE-DATE-S": "Rel. Date",
-    "RELEASE-REFERENCE-S": "Rel. Ref."
+    "RELEASE-REFERENCE-S": "Rel. Ref.",
+    "REPORT-TYPE":"Report Type"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

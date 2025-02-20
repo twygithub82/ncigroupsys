@@ -22,37 +22,31 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Observable, fromEvent } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-//import { Apollo } from 'apollo-angular';
-//import { CodeValuesItem } from 'app/data-sources/code-values';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { Utility } from 'app/utilities/utility';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
-import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
-import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import {TariffCleaningComponent} from './cleaning/tariff-cleaning.component';
-import { TariffBufferComponent } from './buffer/tariff-buffer.component';
-import {TariffResidueComponent} from './residue/tariff-residue.component';
-import { TranslateService } from '@ngx-translate/core';
-import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
+import { EstimatePendingComponent } from './estimate/estimate-pending.component';
+
 @Component({
-  selector: 'app-tariff-main-clean',
+  selector: 'app-pending-report',
   standalone: true,
-  templateUrl: './main-tariff-clean.component.html',
-  styleUrl: './main-tariff-clean.component.scss',
+  templateUrl: './main-pending.component.html',
+  styleUrl: './main-pending.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -65,7 +59,7 @@ import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-   // TranslateModule,
+    TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatInputModule,
@@ -76,15 +70,12 @@ import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-   // MatCardModule,
+    MatCardModule,
     MatTabsModule,
-    TariffCleaningComponent,
-    TariffBufferComponent,
-    TariffResidueComponent
-  
+    EstimatePendingComponent
   ]
 })
-export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
   // displayedColumns = [
   //   'tank_no',
@@ -114,10 +105,10 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     'status_cv'
   ];
 
-  pageTitle = 'COMMON-FORM.CLEANING'
+  pageTitle = 'MENUITEMS.REPORTS.LIST.PENDING'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.TARIFF.TEXT', route: '/admin/tariff/tariff-cleaning' }
+    { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/pending' }
   ]
 
   translatedLangText: any = {};
@@ -173,25 +164,17 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
     STEAM_BILLING: "MENUITEMS.BILLING.LIST.STEAM-BILL",
     RESIDUE_BILLING: "MENUITEMS.BILLING.LIST.RESIDUE-DISPOSAL-BILL",
-    TARIFF_CLEANING: 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING',
-    TARIFF_BUFFER: 'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
-    TARIFF_RESIDUE: 'MENUITEMS.TARIFF.LIST.TARIFF-RESIDUE'
+    CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
+    YARD_REPORT: 'COMMON-FORM.YARD-REPORT',
+    YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
+    PENDING_ESTIMATE: "MENUITEMS.REPORTS.LIST.PENDING-ESTIMATE",
 
   }
 
   filterCleanForm?: UntypedFormGroup;
   filterJobOrderForm?: UntypedFormGroup;
 
-  // cvDS: CodeValuesDS;
-  // soDS: StoringOrderDS;
-  // sotDS: StoringOrderTankDS;
-  // ccDS: CustomerCompanyDS;
-  // tcDS: TariffCleaningDS;
-  // igDS: InGateDS;
-  // cleanDS: InGateCleaningDS;
-  // joDS: JobOrderDS;
-  // ttDS: TimeTableDS;
-  // cmDS:CleaningMethodDS;
+
 
   availableProcessStatus: string[] = [
     'APPROVED',
@@ -202,7 +185,7 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     'CANCELED'
   ]
 
-  cleanMethodList: CleaningMethodItem[] = [];
+  //cleanMethodList:CleaningMethodItem[]=[];
   clnEstList: InGateCleaningItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
@@ -245,19 +228,8 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
   ) {
     super();
     this.translateLangText();
-    // this.initSearchForm();
-    // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
-    // this.soDS = new StoringOrderDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.cvDS = new CodeValuesDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.tcDS = new TariffCleaningDS(this.apollo);
-    // this.igDS = new InGateDS(this.apollo);
-    // this.cleanDS = new InGateCleaningDS(this.apollo);
-    // this.ttDS= new TimeTableDS(this.apollo);
-    // this.joDS = new JobOrderDS(this.apollo);
-    // this.cmDS=new CleaningMethodDS(this.apollo);
   }
+
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
@@ -295,59 +267,11 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   cancelSelectedRows(row: StoringOrderItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     item: [...row],
-    //     langText: this.langText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-    //     this.soDS.cancelStoringOrder(so).subscribe(result => {
-    //       if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-    //         let successMsg = this.langText.CANCELED_SUCCESS;
-    //         this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-    //           successMsg = res;
-    //           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-    //           this.refreshTable();
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
+
   }
 
   public loadData() {
-    // this.onFilterCleaning();
-    //  this.onFilterJobOrder();
 
-    // const queries = [
-    //   { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
-    //   { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
-    //   { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //   { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
-    // ];
-    // this.cvDS.getCodeValuesByType(queries);
-    // this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-    //   this.soStatusCvList = addDefaultSelectOption(data, 'All');
-    // });
-    // this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-    //   this.purposeOptionCvList = data;
-    // });
-    // this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-    //   this.tankStatusCvList = data;
-    // });
-    // this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-    //   this.processStatusCvList = data;
-    // });
   }
 
   showNotification(
@@ -366,20 +290,7 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
 
   // export table data in excel file
   exportExcel() {
-    // key name with space add in brackets
-    // const exportData: Partial<TableElement>[] =
-    //   this.dataSource.filteredData.map((x) => ({
-    //     'First Name': x.fName,
-    //     'Last Name': x.lName,
-    //     Email: x.email,
-    //     Gender: x.gender,
-    //     'Birth Date': formatDate(new Date(x.bDate), 'yyyy-MM-dd', 'en') || '',
-    //     Mobile: x.mobile,
-    //     Address: x.address,
-    //     Country: x.country,
-    //   }));
 
-    // TableExportUtil.exportToExcel(exportData, 'excel');
   }
 
   // context menu
@@ -397,43 +308,6 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
   onFilterCleaning() {
 
 
-    // const where: any = {
-    //   and:[
-    //     //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
-    //     {storing_order_tank:{tank_status_cv:{in:["CLEANING"]}}}
-    //   ]
-    // };
-
-
-    // // or: [
-    // //   { storing_order_tank: { tank_no: { contains: "" } } },
-    // //   { estimate_no: { contains: "" } }
-    // // ]
-    // if (this.filterCleanForm!.get('cleanMethod')?.value) {
-    //   where.and.push({
-    //     storing_order_tank: { tariff_cleaning:{cleaning_method:{ name: { eq: (this.filterCleanForm!.get('cleanMethod')?.value).name } }}}
-    //   });
-    // }
-    // if (this.filterCleanForm!.get('filterClean')?.value) {
-    //   where.and.push({
-    //     storing_order_tank: { tank_no: { contains: this.filterCleanForm!.get('filterClean')?.value } }
-    //   });
-    // }
-
-    // if (this.filterCleanForm!.get('customer')?.value) {
-    //   where.and.push({
-    //     customer_company: { code: { eq: (this.filterCleanForm!.get('customer')?.value).code } }
-    //   });
-    // }
-
-    // if (this.filterCleanForm?.get('status_cv')?.value.length>0) {
-    //   where.and.push({
-    //     status_cv: { in: this.filterCleanForm!.get('status_cv')?.value} 
-    //   });
-    // }
-
-    // this.lastSearchCriteriaClean = this.cleanDS.addDeleteDtCriteria(where);
-    // this.performSearchClean(this.pageSizeClean, this.pageIndexClean, this.pageSizeClean, undefined, undefined, undefined, () => { });
   }
 
   onFilterJobOrder() {
@@ -441,63 +315,15 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
       job_type_cv: { eq: "REPAIR" }
     };
 
-    // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
-    //   where.so_no = { contains: this.filterRepairForm!.get('filterJobOrder')?.value };
-    // }
 
-    // TODO:: Get login user team
-    // if (false) {
-    //   where.team_guid = { eq: "" }
-    // }
-
-    // this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    // this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
   performSearchClean(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    // this.subs.sink = this.cleanDS.search(this.lastSearchCriteriaClean, this.lastOrderByClean, first, after, last, before)
-    //   .subscribe(data => {
-    //     this.clnEstList = data;
-    //     this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
-    //     this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
-    //     this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
-    //     this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
-    //     this.pageIndexClean=pageIndex;
-    //     this.paginator.pageIndex=this.pageIndexClean;
-    //     //this.selection.clear();
-    //     if(!this.hasPreviousPageClean)
-    //       this.previous_endCursorClean=undefined;
-    //     // this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
-    //     // this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
-    //     // this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
-    //     // this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
-    //   });
 
-    // this.pageSizeClean = pageSize;
-    // this.pageIndexClean = pageIndex;
   }
 
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    // this.subs.sink = this.joDS.searchJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
-    //   .subscribe(data => {
-    //     this.jobOrderList = data;
-    //     this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
-    //     this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
-    //     this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
-    //     this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
-    //     this.pageIndexJobOrder=pageIndex;
-    //     this.paginator.pageIndex=this.pageIndexJobOrder;
-    //     //this.selection.clear();
-    //     if(!this.hasPreviousPageJobOrder)
-    //       this.previous_endCursorJobOrder=undefined;
-    //     // this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
-    //     // this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
-    //     // this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
-    //     // this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
-    //   });
 
-    // this.pageSizeJobOrder = pageSize;
-    // this.pageIndexJobOrder = pageIndex;
   }
 
 

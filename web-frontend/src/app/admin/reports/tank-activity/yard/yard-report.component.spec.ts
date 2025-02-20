@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SteamBillingComponent } from './steam-billing.component';
+import { TankActivitiyYardReportComponent } from './yard-report.component';
 
-describe('SteamBillingComponent', () => {
-  let component: SteamBillingComponent;
-  let fixture: ComponentFixture<SteamBillingComponent>;
+describe('TankActivitiyYardReportComponent', () => {
+  let component: TankActivitiyYardReportComponent;
+  let fixture: ComponentFixture<TankActivitiyYardReportComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SteamBillingComponent]
+      imports: [TankActivitiyYardReportComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(SteamBillingComponent);
+    fixture = TestBed.createComponent(TankActivitiyYardReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
