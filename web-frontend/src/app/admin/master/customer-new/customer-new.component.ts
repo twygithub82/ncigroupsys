@@ -1,65 +1,53 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
+import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { Apollo } from 'apollo-angular';
+import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { ContactPersonItem, ContactPersonItemAction } from 'app/data-sources/contact-person';
+import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { MasterTemplateItem, TemplateEstPartItem, TepDamageRepairItem } from 'app/data-sources/master-template';
+import { RepairPartItem } from 'app/data-sources/repair-part';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TankDS, TankItem } from 'app/data-sources/tank';
+import { TariffLabourItem } from 'app/data-sources/tariff-labour';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
-import { MatRadioModule } from '@angular/material/radio';
-import { Apollo } from 'apollo-angular';
-import { MatDividerModule } from '@angular/material/divider';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { TankDS, TankItem } from 'app/data-sources/tank';
-import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
-import { ComponentUtil } from 'app/utilities/component-util';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { MatCardModule } from '@angular/material/card';
-import { InGateDS } from 'app/data-sources/in-gate';
-import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { RepairPartItem } from 'app/data-sources/repair-part';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour';
-import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstimateCustomerItem, TemplateEstPartItem, TepDamageRepairItem } from 'app/data-sources/master-template';
-import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
-import { elements } from 'chart.js';
-import { ContactPersonItem, ContactPersonItemAction } from 'app/data-sources/contact-person';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
-import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 
 @Component({
   selector: 'app-customer-new',
@@ -81,23 +69,18 @@ import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    NgScrollbar,
     NgClass,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
     MatLabel,
     MatTableModule,
     MatPaginatorModule,
-    FeatherIconsComponent,
     MatProgressSpinnerModule,
-    RouterLink,
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    TlxFormFieldComponent,
   ]
 })
 export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -109,16 +92,16 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     'repair',
     'description',
     'quantity',
-   // 'hour',
-   // 'price',
-   // 'material',
+    // 'hour',
+    // 'price',
+    // 'material',
     'actions'
   ];
   pageTitleNew = 'MENUITEMS.MASTER.LIST.CUSTOMER-NEW'
   pageTitleEdit = 'MENUITEMS.MASTER.LIST.CUSTOMER-EDIT'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.MASTER.LIST.CUSTOMER'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.MASTER.LIST.CUSTOMER', route: '/admin/master/customer' }
   ]
   translatedLangText: any = {}
   langText = {
@@ -127,8 +110,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     HEADER: 'COMMON-FORM.HEADER',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_DETAILS:'COMMON-FORM.CUSTOMER-DETAILS',
-    ALIAS_NAME:'COMMON-FORM.ALIAS-NAME',
+    CUSTOMER_DETAILS: 'COMMON-FORM.CUSTOMER-DETAILS',
+    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -218,35 +201,35 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     NO_PARTS: "COMMON-FORM.NO-PARTS",
     NO_CONTACT_PERSON: "COMMON-FORM.NO-CONTACT-PERSON",
     PART: 'COMMON-FORM.PART',
-    CONTACT_PERSON:"COMMON-FORM.CONTACT-PERSON",
-    JOB_TITLE:"COMMON-FORM.JOB-TITLE",
-    DEPARTMENT:"COMMON-FORM.DEPARTMENT",
-    DID:"COMMON-FORM.DID",
-    MOBILE_NO:"COMMON-FORM.MOBILE-NO",
-    COUNTRY:"COMMON-FORM.COUNTRY",
-    FAX_NO:"COMMON-FORM.FAX-NO",
-    EMAIL:"COMMON-FORM.EMAIL",
-    PHONE:"COMMON-FORM.PHONE",
-    WEB:"COMMON-FORM.WEB",
-    CONVERSION_CURRENCY:"COMMON-FORM.CONVERSION-CURRENCY",
-    PERSON_IN_CHARGE:"COMMON-FORM.PERSON-IN-CHARGE",
-    DEFAULT_PROFILE:"COMMON-FORM.DEFAULT-PROFILE",
-    COMPANY_NAME:"COMMON-FORM.COMPANY-NAME",
-    CUSTOMER_NAME:"COMMON-FORM.CUSTOMER-NAME",
-    CUSTOMER_COMPANY:"COMMON-FORM.CUSTOMER-COMPANY",
-    CUSTOMER_TYPE:"COMMON-FORM.CUSTOMER-TYPE",
-    ADDRESS_LINE1:"COMMON-FORM.ADDRESS-LINE1",
-    ADDRESS_LINE2:"COMMON-FORM.ADDRESS-LINE2",
-    POSTAL_CODE:"COMMON-FORM.POSTAL-CODE",
-    CITY_NAME:"COMMON-FORM.CITY-NAME",
-    CONTACT_PERSON_DETAILS:"COMMON-FORM.CONTACT-PERSON-DETAILS",
-    BILLING_BRANCH:"COMMON-FORM.BILLING-BRANCH",
-    SALUTATION:"COMMON-FORM.SALUTATION",
-    NAME:"COMMON-FORM.NAME",
-    INVALID_FORMAT:"COMMON-FORM.INVALID-FORMAT",
-    ADD:"COMMON-FORM.ADD",
+    CONTACT_PERSON: "COMMON-FORM.CONTACT-PERSON",
+    JOB_TITLE: "COMMON-FORM.JOB-TITLE",
+    DEPARTMENT: "COMMON-FORM.DEPARTMENT",
+    DID: "COMMON-FORM.DID",
+    MOBILE_NO: "COMMON-FORM.MOBILE-NO",
+    COUNTRY: "COMMON-FORM.COUNTRY",
+    FAX_NO: "COMMON-FORM.FAX-NO",
+    EMAIL: "COMMON-FORM.EMAIL",
+    PHONE: "COMMON-FORM.PHONE",
+    WEB: "COMMON-FORM.WEB",
+    CONVERSION_CURRENCY: "COMMON-FORM.CONVERSION-CURRENCY",
+    PERSON_IN_CHARGE: "COMMON-FORM.PERSON-IN-CHARGE",
+    DEFAULT_PROFILE: "COMMON-FORM.DEFAULT-PROFILE",
+    COMPANY_NAME: "COMMON-FORM.COMPANY-NAME",
+    CUSTOMER_NAME: "COMMON-FORM.CUSTOMER-NAME",
+    CUSTOMER_COMPANY: "COMMON-FORM.CUSTOMER-COMPANY",
+    CUSTOMER_TYPE: "COMMON-FORM.CUSTOMER-TYPE",
+    ADDRESS_LINE1: "COMMON-FORM.ADDRESS-LINE1",
+    ADDRESS_LINE2: "COMMON-FORM.ADDRESS-LINE2",
+    POSTAL_CODE: "COMMON-FORM.POSTAL-CODE",
+    CITY_NAME: "COMMON-FORM.CITY-NAME",
+    CONTACT_PERSON_DETAILS: "COMMON-FORM.CONTACT-PERSON-DETAILS",
+    BILLING_BRANCH: "COMMON-FORM.BILLING-BRANCH",
+    SALUTATION: "COMMON-FORM.SALUTATION",
+    NAME: "COMMON-FORM.NAME",
+    INVALID_FORMAT: "COMMON-FORM.INVALID-FORMAT",
+    ADD: "COMMON-FORM.ADD",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
-    
+
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -261,7 +244,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   selectedTempEst?: MasterTemplateItem;
   sotItem?: StoringOrderTankItem;
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  
+
 
   repList = new MatTableDataSource<ContactPersonItemAction>();
   sotSelection = new SelectionModel<RepairPartItem>(true, []);
@@ -277,32 +260,32 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   partLocationCvList: CodeValuesItem[] = [];
   damageCodeCvList: CodeValuesItem[] = [];
   repairCodeCvList: CodeValuesItem[] = [];
-  satulationCvList:CodeValuesItem[]=[];
+  satulationCvList: CodeValuesItem[] = [];
 
-  tankItemList?:TankItem[]=[];
+  tankItemList?: TankItem[] = [];
   customerTypeControl = new UntypedFormControl();
   customerCodeControl = new UntypedFormControl();
-  
+
 
   // soDS: StoringOrderDS;
   // sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
-  curDS:CurrencyDS;
+  curDS: CurrencyDS;
   // igDS: InGateDS;
   // trLabourDS: TariffLabourDS;
   // estTempDS: MasterEstimateTemplateDS
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
-  billingBranchesControl= new UntypedFormControl();
-  profileControl=new UntypedFormControl();
-  customerTypeCvList: CodeValuesItem[]=[];
+  billingBranchesControl = new UntypedFormControl();
+  profileControl = new UntypedFormControl();
+  customerTypeCvList: CodeValuesItem[] = [];
   selectedCustomerCmp?: CustomerCompanyItem;
-  billingBranch?:CustomerCompanyItem[]=[];
-  currencyList?:CurrencyItem[]=[];
-  phone_regex:any =/^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
+  billingBranch?: CustomerCompanyItem[] = [];
+  currencyList?: CurrencyItem[] = [];
+  phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   constructor(
 
     public httpClient: HttpClient,
@@ -322,7 +305,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
-    this.curDS= new CurrencyDS(this.apollo);
+    this.curDS = new CurrencyDS(this.apollo);
     // this.igDS = new InGateDS(this.apollo);
     // this.trLabourDS = new TariffLabourDS(this.apollo);
     // this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
@@ -353,7 +336,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
   calculateCostSummary() {
-  
+
   }
 
   GetNetCost(): string {
@@ -364,7 +347,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   initializeValueChange() {
-  
+
 
   }
 
@@ -375,127 +358,122 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       customer_code: [''],
       customer_name: [''],
       customer_type: [''],
-      billing_branches:[''],
-      phone:    ['',[Validators.required,
-        Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
-      email: ['',[Validators.required, Validators.email]],
+      billing_branches: [''],
+      phone: ['', [Validators.required,
+      Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
+      email: ['', [Validators.required, Validators.email]],
       web: [''],
       currency: [''],
-      default_profile:[''],
+      default_profile: [''],
       address1: [''],
       address2: [''],
       postal_code: [''],
       city_name: [''],
       country: ['Singapore'],
-      remarks:[''],
-      repList:[]
+      remarks: [''],
+      repList: []
     });
   }
 
   initializeFilter() {
   }
 
-SortRepairEstPart(items:TemplateEstPartItem[]):TemplateEstPartItem[]{
-var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_dt!);
+  SortRepairEstPart(items: TemplateEstPartItem[]): TemplateEstPartItem[] {
+    var retval: TemplateEstPartItem[] = items.sort((a, b) => b.create_dt! - a.create_dt!);
 
-  return retval;
-}
-
-PatchCustomerCompanyData()
-{
-  if(this.historyState.customerCompany.customerCompanyData)
-  {
-    
-    var cust:CustomerCompanyItem=this.historyState.customerCompany.customerCompanyData;
-    var contactPsn:ContactPersonItem[]=this.historyState.customerCompany.contactPerson;
-    this.ccForm?.patchValue({
-
-      address1:cust.address_line1,
-      address2:cust.address_line2,
-      customer_code:cust.code,
-      customer_name:cust.name,
-      city_name:cust.city,
-      billing_branches:this.getBillingBranches(cust.guid!),
-      country:cust.country,
-      email:cust.email,
-      remarks:cust.remarks,
-      web:cust.website,
-      phone:cust.phone,
-      postal_code:cust.postal,
-      default_profile:this.getDefaultTank(cust.def_tank_guid!),
-      customer_type:this.getCustomerTypeCvObject(cust.type_cv!)
-
-    });
-    var existContact = contactPsn?.map((row) => ({
-      ...row
-    }));
-    this.customer_guid=cust.guid;
-    this.updateData(existContact!);
-    this.refreshBillingBranches();
+    return retval;
   }
 
-}
-PatchSelectedRowValue(){
-  this.historyState = history.state;
+  PatchCustomerCompanyData() {
+    if (this.historyState.customerCompany.customerCompanyData) {
 
-  if (this.historyState.selectedRow != null) {
-
-    this.selectedCustomerCmp = this.historyState.selectedRow;
-
-    // if(this.customer_companyList)
-    //   {
-    //     this.customer_companyList = this.customer_companyList.filter(data=>data.guid!==this.selectedCustomerCmp?.guid);
-    //   }
-
-    if(this.historyState.customerCompany)
-    {
-        this.PatchCustomerCompanyData();
-    }
-    else
-    {
-      const contactPerson = this.selectedCustomerCmp?.cc_contact_person?.filter(value => value.delete_dt == null);
-      this.selectedCustomerCmp!.cc_contact_person = contactPerson;
+      var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
+      var contactPsn: ContactPersonItem[] = this.historyState.customerCompany.contactPerson;
       this.ccForm?.patchValue({
-        guid: this.selectedCustomerCmp?.guid,
-        customer_code: this.selectedCustomerCmp?.code,
-        customer_name: this.selectedCustomerCmp?.name,
-        customer_type: this.getCustomerTypeCvObject(this.selectedCustomerCmp?.type_cv!),
-        phone: this.selectedCustomerCmp?.phone,
-        email: this.selectedCustomerCmp?.email,
-        web: this.selectedCustomerCmp?.website,
-        billing_branches:this.getBillingBranches(this.selectedCustomerCmp?.guid!),
-        currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
-        default_profile:this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
-        address1: this.selectedCustomerCmp?.address_line1,
-        address2: this.selectedCustomerCmp?.address_line2,
-        postal_code: this.selectedCustomerCmp?.postal,
-        city_name: this.selectedCustomerCmp?.city,
-        country: this.selectedCustomerCmp?.country,
-        remarks:this.selectedCustomerCmp?.remarks,
-      });
 
-      var existContact = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
-        ...row,
-      action:''
+        address1: cust.address_line1,
+        address2: cust.address_line2,
+        customer_code: cust.code,
+        customer_name: cust.name,
+        city_name: cust.city,
+        billing_branches: this.getBillingBranches(cust.guid!),
+        country: cust.country,
+        email: cust.email,
+        remarks: cust.remarks,
+        web: cust.website,
+        phone: cust.phone,
+        postal_code: cust.postal,
+        default_profile: this.getDefaultTank(cust.def_tank_guid!),
+        customer_type: this.getCustomerTypeCvObject(cust.type_cv!)
+
+      });
+      var existContact = contactPsn?.map((row) => ({
+        ...row
       }));
+      this.customer_guid = cust.guid;
       this.updateData(existContact!);
       this.refreshBillingBranches();
     }
-  }
-  else if(this.historyState.customerCompany) // New Customer Company and New Billing Branch
-  {
-    this.PatchCustomerCompanyData();
-  }
-  else
-  {
-    this.refreshBillingBranches();
-  }
 
-}
+  }
+  PatchSelectedRowValue() {
+    this.historyState = history.state;
+
+    if (this.historyState.selectedRow != null) {
+
+      this.selectedCustomerCmp = this.historyState.selectedRow;
+
+      // if(this.customer_companyList)
+      //   {
+      //     this.customer_companyList = this.customer_companyList.filter(data=>data.guid!==this.selectedCustomerCmp?.guid);
+      //   }
+
+      if (this.historyState.customerCompany) {
+        this.PatchCustomerCompanyData();
+      }
+      else {
+        const contactPerson = this.selectedCustomerCmp?.cc_contact_person?.filter(value => value.delete_dt == null);
+        this.selectedCustomerCmp!.cc_contact_person = contactPerson;
+        this.ccForm?.patchValue({
+          guid: this.selectedCustomerCmp?.guid,
+          customer_code: this.selectedCustomerCmp?.code,
+          customer_name: this.selectedCustomerCmp?.name,
+          customer_type: this.getCustomerTypeCvObject(this.selectedCustomerCmp?.type_cv!),
+          phone: this.selectedCustomerCmp?.phone,
+          email: this.selectedCustomerCmp?.email,
+          web: this.selectedCustomerCmp?.website,
+          billing_branches: this.getBillingBranches(this.selectedCustomerCmp?.guid!),
+          currency: this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
+          default_profile: this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
+          address1: this.selectedCustomerCmp?.address_line1,
+          address2: this.selectedCustomerCmp?.address_line2,
+          postal_code: this.selectedCustomerCmp?.postal,
+          city_name: this.selectedCustomerCmp?.city,
+          country: this.selectedCustomerCmp?.country,
+          remarks: this.selectedCustomerCmp?.remarks,
+        });
+
+        var existContact = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
+          ...row,
+          action: ''
+        }));
+        this.updateData(existContact!);
+        this.refreshBillingBranches();
+      }
+    }
+    else if (this.historyState.customerCompany) // New Customer Company and New Billing Branch
+    {
+      this.PatchCustomerCompanyData();
+    }
+    else {
+      this.refreshBillingBranches();
+    }
+
+  }
 
 
   public loadData() {
-  
+
     this.initializeFilterCustomerCompany();
 
     this.customer_guid = this.route.snapshot.paramMap.get('id');
@@ -503,24 +481,22 @@ PatchSelectedRowValue(){
       this.customer_guid = undefined;
     }
 
-    this.curDS.search({},{sequence:'ASC'},100).subscribe(data=>{
-      this.currencyList=data;
+    this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
+      this.currencyList = data;
 
-      
-      if(this.historyState.customerCompany)
-      {
-        var cust:CustomerCompanyItem=this.historyState.customerCompany.customerCompanyData;
+
+      if (this.historyState.customerCompany) {
+        var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
         this.ccForm?.patchValue({
-          currency:this.getCurrency(cust.currency_guid!),
+          currency: this.getCurrency(cust.currency_guid!),
         })
       }
-      else if(this.selectedCustomerCmp)
-      {
+      else if (this.selectedCustomerCmp) {
         this.ccForm?.patchValue({
-          currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
+          currency: this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
         })
       }
-  
+
     });
 
 
@@ -528,24 +504,22 @@ PatchSelectedRowValue(){
       this.tankItemList = data;
 
 
-      if(this.historyState.customerCompany)
-        {
-          var cust:CustomerCompanyItem=this.historyState.customerCompany.customerCompanyData;
-          this.ccForm?.patchValue({
-            default_profile:this.getDefaultTank(cust.def_tank_guid!),
-          })
-        }
-        else if(this.selectedCustomerCmp)
-        {
-          this.ccForm?.patchValue({
-            default_profile:this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
-          })
-        }
+      if (this.historyState.customerCompany) {
+        var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
+        this.ccForm?.patchValue({
+          default_profile: this.getDefaultTank(cust.def_tank_guid!),
+        })
+      }
+      else if (this.selectedCustomerCmp) {
+        this.ccForm?.patchValue({
+          default_profile: this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
+        })
+      }
     })
 
 
     const queries = [
-      
+
       { alias: 'customerTypeCv', codeValType: 'CUSTOMER_TYPE' },
       { alias: 'satulationCv', codeValType: 'PERSON_TITLE' },
     ];
@@ -553,25 +527,25 @@ PatchSelectedRowValue(){
 
     this.cvDS.connectAlias('customerTypeCv').subscribe(data => {
       this.customerTypeCvList = data;
-      this.customerTypeCvList= this.customerTypeCvList
-     // .filter(data => data.code_val !== "BRANCH") // Filters out items where data.value is not "branch"
-      .map(data => {
-        // You can apply a transformation here if needed
-        return data;  // Or transform data in some way
-      });
-      if(this.customerTypeCvList.length>0) 
-            this.PatchSelectedRowValue();
-      });
-
-      this.cvDS.connectAlias('satulationCv').subscribe(data => {
-        this.satulationCvList = data;
-  
-      
+      this.customerTypeCvList = this.customerTypeCvList
+        // .filter(data => data.code_val !== "BRANCH") // Filters out items where data.value is not "branch"
+        .map(data => {
+          // You can apply a transformation here if needed
+          return data;  // Or transform data in some way
         });
-  
+      if (this.customerTypeCvList.length > 0)
+        this.PatchSelectedRowValue();
+    });
+
+    this.cvDS.connectAlias('satulationCv').subscribe(data => {
+      this.satulationCvList = data;
+
+
+    });
+
   }
 
-  
+
   GetRepairOrDamage(repairDamageList: TepDamageRepairItem[], codeType: Number): any[] {
     var retval: any[] = [];
     var result = repairDamageList.filter((item) => item.code_type == codeType)
@@ -591,7 +565,7 @@ PatchSelectedRowValue(){
       }) ?? [];
     return retval.sort((a, b) => (a.code_cv ?? 0) - (b.code_cv ?? 0));
   }
- 
+
 
   populateSOT(rep: any[]) {
     if (rep?.length) {
@@ -617,7 +591,7 @@ PatchSelectedRowValue(){
     });
   }
 
-addContactPerson(event: Event, row?: ContactPersonItem) {
+  addContactPerson(event: Event, row?: ContactPersonItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -626,15 +600,15 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       tempDirection = 'ltr';
     }
     const cntPerson = row ?? new ContactPersonItem();
-    
+
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width:'1000px',
+      width: '1000px',
       data: {
         item: row ? row : cntPerson,
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          satulationCvList:this.satulationCvList
+          satulationCvList: this.satulationCvList
         },
         index: -1,
         customer_company_guid: '' //this.sotItem?.storing_order?.customer_company_guid
@@ -646,7 +620,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         const data: any = [...this.repList.data];
         const newItem = new ContactPersonItemAction({
           ...result.item,
-          action:"NEW"
+          action: "NEW"
         });
         data.unshift(newItem);
         this.updateData(data);
@@ -656,7 +630,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     });
   }
 
-  
+
   editContactPerson(event: Event, row: ContactPersonItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -671,7 +645,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         action: 'edit',
         translatedLangText: this.translatedLangText,
         populateData: {
-          satulationCvList:this.satulationCvList
+          satulationCvList: this.satulationCvList
         },
         index: index,
         customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
@@ -683,7 +657,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         const data: any[] = [...this.repList.data];
         const updatedItem = new ContactPersonItemAction({
           ...result.item,
-          action:"EDIT"
+          action: "EDIT"
         });
         if (result.index >= 0) {
           data[result.index] = updatedItem;
@@ -725,9 +699,9 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         //   data[result.index] = updatedItem;
         //   this.updateData(data); // Refresh the data source
         // } else {
-          const data = [...this.repList.data];
-          data.splice(index, 1);
-          this.updateData(data); // Refresh the data source
+        const data = [...this.repList.data];
+        data.splice(index, 1);
+        this.updateData(data); // Refresh the data source
         // }
         this.calculateCostSummary();
       }
@@ -829,7 +803,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
@@ -858,8 +832,8 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         this.ccDS.search(where).subscribe(result => {
 
           if (result.length == 0 && this.customer_guid == undefined) {
-              this.insertNewCustomer();
-            
+            this.insertNewCustomer();
+
           }
           else if (result.length > 0) {
             if (this.customer_guid == undefined) {
@@ -871,13 +845,12 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
 
             }
 
-          
+
           }
-          else if(result.length==0 && this.selectedTempEst!=undefined)
-          {
+          else if (result.length == 0 && this.selectedTempEst != undefined) {
             this.updateExistCustomer();
           }
-    });
+        });
         // var tempName = this.ccForm?.get("template_name")?.value;
         // const where: any = {};
         // where.template_name = { eq: tempName };
@@ -952,7 +925,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
 
         //     }
 
-          
+
         //   }
         //   else if(result.length==0 && this.selectedTempEst!=undefined)
         //   {
@@ -971,50 +944,46 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
 
   insertNewCustomer() {
 
-    var cust:CustomerCompanyItem=new CustomerCompanyItem();
-    cust.address_line1=this.ccForm?.get("address1")?.value;
-    cust.address_line2=this.ccForm?.get("address2")?.value;
-    cust.code=this.ccForm?.get("customer_code")?.value;
-    cust.name=this.ccForm?.get("customer_name")?.value;
-    cust.city=this.ccForm?.get("city_name")?.value;
-    cust.country=this.ccForm?.get("country")?.value;
-    cust.currency=this.ccForm?.get("currency")?.value;
-    cust.email=this.ccForm?.get("email")?.value;
-    cust.remarks=this.ccForm?.get("remarks")?.value;
-    cust.website=this.ccForm?.get("web")?.value;
-    
-    cust.phone=this.ccForm?.get("phone")?.value;
-    cust.postal=this.ccForm?.get("postal_code")?.value;
-    if(this.ccForm?.get("default_profile")?.value)
-    {
-      let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
-      cust.def_tank_guid=defTank.guid;
+    var cust: CustomerCompanyItem = new CustomerCompanyItem();
+    cust.address_line1 = this.ccForm?.get("address1")?.value;
+    cust.address_line2 = this.ccForm?.get("address2")?.value;
+    cust.code = this.ccForm?.get("customer_code")?.value;
+    cust.name = this.ccForm?.get("customer_name")?.value;
+    cust.city = this.ccForm?.get("city_name")?.value;
+    cust.country = this.ccForm?.get("country")?.value;
+    cust.currency = this.ccForm?.get("currency")?.value;
+    cust.email = this.ccForm?.get("email")?.value;
+    cust.remarks = this.ccForm?.get("remarks")?.value;
+    cust.website = this.ccForm?.get("web")?.value;
+
+    cust.phone = this.ccForm?.get("phone")?.value;
+    cust.postal = this.ccForm?.get("postal_code")?.value;
+    if (this.ccForm?.get("default_profile")?.value) {
+      let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+      cust.def_tank_guid = defTank.guid;
     }
-    if(this.ccForm?.get("currency")?.value)
-    {
-      cust.currency_guid= cust.currency?.guid;
+    if (this.ccForm?.get("currency")?.value) {
+      cust.currency_guid = cust.currency?.guid;
     }
-    else
-    {
-      cust.currency_guid="-";
-      
+    else {
+      cust.currency_guid = "-";
+
     }
     delete cust.currency;
-    cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
+    cust.type_cv = (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
 
-    var contactPerson =  this.repList.data.map((row) => ({
+    var contactPerson = this.repList.data.map((row) => ({
       ...row,
-      title_cv : row.title_cv,
-      action:'NEW'
+      title_cv: row.title_cv,
+      action: 'NEW'
     }));
 
-    
-    var billingBranches:BillingBranchesItem[]=[]; 
-    if(this.ccForm?.get("billing_branches")?.value)
-    {
-   
+
+    var billingBranches: BillingBranchesItem[] = [];
+    if (this.ccForm?.get("billing_branches")?.value) {
+
     }
-    this.ccDS.AddCustomerCompany(cust,contactPerson,billingBranches).subscribe(result => {
+    this.ccDS.AddCustomerCompany(cust, contactPerson, billingBranches).subscribe(result => {
 
 
       var count = result.data.addCustomerCompany;
@@ -1022,167 +991,155 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         this.handleSaveSuccess(count);
       }
     });
-  
+
   }
 
   updateExistCustomer() {
 
-    if(this.selectedCustomerCmp)
-    {
+    if (this.selectedCustomerCmp) {
       var selectedCusCmp = new CustomerCompanyItem(this.selectedCustomerCmp);
 
-      selectedCusCmp.address_line1=this.ccForm?.get("address1")?.value;
-      selectedCusCmp.address_line2=this.ccForm?.get("address2")?.value;
-      selectedCusCmp.code=this.ccForm?.get("customer_code")?.value;
-      selectedCusCmp.name=this.ccForm?.get("customer_name")?.value;
-      selectedCusCmp.city=this.ccForm?.get("city_name")?.value;
-      selectedCusCmp.country=this.ccForm?.get("country")?.value;
-      selectedCusCmp.currency=this.ccForm?.get("currency")?.value;
-      selectedCusCmp.email=this.ccForm?.get("email")?.value;
-      selectedCusCmp.remarks=this.ccForm?.get("remarks")?.value;
-      selectedCusCmp.website=this.ccForm?.get("web")?.value;
-      
-      
-      selectedCusCmp.phone=this.ccForm?.get("phone")?.value;
-      selectedCusCmp.postal=this.ccForm?.get("postal_code")?.value;
+      selectedCusCmp.address_line1 = this.ccForm?.get("address1")?.value;
+      selectedCusCmp.address_line2 = this.ccForm?.get("address2")?.value;
+      selectedCusCmp.code = this.ccForm?.get("customer_code")?.value;
+      selectedCusCmp.name = this.ccForm?.get("customer_name")?.value;
+      selectedCusCmp.city = this.ccForm?.get("city_name")?.value;
+      selectedCusCmp.country = this.ccForm?.get("country")?.value;
+      selectedCusCmp.currency = this.ccForm?.get("currency")?.value;
+      selectedCusCmp.email = this.ccForm?.get("email")?.value;
+      selectedCusCmp.remarks = this.ccForm?.get("remarks")?.value;
+      selectedCusCmp.website = this.ccForm?.get("web")?.value;
 
-      
-      if(this.ccForm?.get("default_profile")?.value)
-        {
-          let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
-          selectedCusCmp.def_tank_guid=defTank.guid;
-        }
 
-      if(this.ccForm?.get("currency")?.value)
-      {
-        let currency=this.ccForm?.get("currency")?.value;
-        selectedCusCmp.currency_guid= currency?.guid;
+      selectedCusCmp.phone = this.ccForm?.get("phone")?.value;
+      selectedCusCmp.postal = this.ccForm?.get("postal_code")?.value;
+
+
+      if (this.ccForm?.get("default_profile")?.value) {
+        let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+        selectedCusCmp.def_tank_guid = defTank.guid;
       }
-      else
-      {
-        selectedCusCmp.currency_guid="-";
-        
+
+      if (this.ccForm?.get("currency")?.value) {
+        let currency = this.ccForm?.get("currency")?.value;
+        selectedCusCmp.currency_guid = currency?.guid;
+      }
+      else {
+        selectedCusCmp.currency_guid = "-";
+
       }
       delete selectedCusCmp.currency;
-      selectedCusCmp.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
+      selectedCusCmp.type_cv = (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
 
-      var existContactPerson =  selectedCusCmp?.cc_contact_person?.map((row) => ({
+      var existContactPerson = selectedCusCmp?.cc_contact_person?.map((row) => ({
         ...row,
-        title_cv : row.title_cv,
-        action:'CANCEL'
+        title_cv: row.title_cv,
+        action: 'CANCEL'
       }));
 
-      var updContactPerson =  this.repList.data.map((row) => ({
+      var updContactPerson = this.repList.data.map((row) => ({
         ...row,
-        title_cv : row.title_cv
-        
+        title_cv: row.title_cv
+
       }));
 
-      updContactPerson.forEach(data=>{
+      updContactPerson.forEach(data => {
 
-        var matchContact= existContactPerson?.filter(d=>d.guid===data.guid);
-        let Cnt :any = new ContactPersonItem();
+        var matchContact = existContactPerson?.filter(d => d.guid === data.guid);
+        let Cnt: any = new ContactPersonItem();
 
-        if(matchContact?.length!>0)
-        {
-          Cnt=matchContact![0];
-          Cnt.action=data.action;
-         
-        }
-        else
-        {
-         
-          Cnt.action="NEW";
+        if (matchContact?.length! > 0) {
+          Cnt = matchContact![0];
+          Cnt.action = data.action;
 
         }
-        Cnt.did=data.did;
-        Cnt.email=data.email;
-        Cnt.job_title=data.job_title;
-        Cnt.name=data.name;
-        Cnt.phone=data.phone;
-        Cnt.title_cv=data.title_cv;
-        Cnt.department=data.department;
-        
-        if(Cnt.action==="NEW")
-        {
+        else {
+
+          Cnt.action = "NEW";
+
+        }
+        Cnt.did = data.did;
+        Cnt.email = data.email;
+        Cnt.job_title = data.job_title;
+        Cnt.name = data.name;
+        Cnt.phone = data.phone;
+        Cnt.title_cv = data.title_cv;
+        Cnt.department = data.department;
+
+        if (Cnt.action === "NEW") {
           existContactPerson?.push(Cnt);
         }
-      
+
 
       });
 
 
-      
-
-      var billingBranches:BillingBranchesItem[]=[]; 
-      if(this.ccForm?.get("billing_branches")?.value)
-      {
-           
-         
-            var b =this.ccForm?.get("billing_branches")?.value as CustomerCompanyItem;
-            let billing_branch = new BillingBranchesItem();
-            billing_branch.branchCustomer= new BillingCustomerItem(b);
-
-            if(b.main_customer_guid!==this.selectedCustomerCmp.guid)
-            {
-              billing_branch.branchCustomer.action=b.guid==""?"NEW":"EDIT";
-              billing_branch.branchCustomer.main_customer_guid= this.selectedCustomerCmp?.guid;
-
-              
-            }
-            else
-            {
-              billing_branch.branchCustomer.action="";
-            }
-            
-
-            delete billing_branch.branchCustomer.update_by;
-            delete billing_branch.branchCustomer.update_dt;
-            delete billing_branch.branchCustomer.create_by;
-            delete billing_branch.branchCustomer.create_dt;
-            delete billing_branch.branchCustomer.delete_dt;
-            delete billing_branch.branchCustomer.cc_contact_person;
-            delete billing_branch.branchCustomer.currency;
-
-            billing_branch.branchContactPerson=[];
-            b.cc_contact_person?.forEach(p=>{
-
-              let person = new BillingContactPersonItem(p);
-              person.action=p.guid==""?"NEW":"";
-              billing_branch.branchContactPerson?.push(person);
-            }); 
 
 
-            //check and remove the existing Billing branch if new billing branch selected.
-            var existingBillingBranchCust= this.getBillingBranches(selectedCusCmp?.guid!);
-            if(existingBillingBranchCust)
-            {
-              if(existingBillingBranchCust?.guid!==billing_branch?.branchCustomer.guid!)
-              {
-                let exist_billing_branch = new BillingBranchesItem();
-                exist_billing_branch.branchCustomer= new BillingCustomerItem(existingBillingBranchCust);
-                exist_billing_branch.branchCustomer.action="EDIT";
-                exist_billing_branch.branchCustomer.main_customer_guid="";
+      var billingBranches: BillingBranchesItem[] = [];
+      if (this.ccForm?.get("billing_branches")?.value) {
 
-                delete exist_billing_branch.branchCustomer.update_by;
-                delete exist_billing_branch.branchCustomer.update_dt;
-                delete exist_billing_branch.branchCustomer.create_by;
-                delete exist_billing_branch.branchCustomer.create_dt;
-                delete exist_billing_branch.branchCustomer.delete_dt;
-                delete exist_billing_branch.branchCustomer.cc_contact_person;
-                delete exist_billing_branch.branchCustomer.currency;
-    
-                billingBranches.push(exist_billing_branch);
-              }
-            }
 
-            billingBranches.push(billing_branch);
+        var b = this.ccForm?.get("billing_branches")?.value as CustomerCompanyItem;
+        let billing_branch = new BillingBranchesItem();
+        billing_branch.branchCustomer = new BillingCustomerItem(b);
 
-         
+        if (b.main_customer_guid !== this.selectedCustomerCmp.guid) {
+          billing_branch.branchCustomer.action = b.guid == "" ? "NEW" : "EDIT";
+          billing_branch.branchCustomer.main_customer_guid = this.selectedCustomerCmp?.guid;
+
+
+        }
+        else {
+          billing_branch.branchCustomer.action = "";
+        }
+
+
+        delete billing_branch.branchCustomer.update_by;
+        delete billing_branch.branchCustomer.update_dt;
+        delete billing_branch.branchCustomer.create_by;
+        delete billing_branch.branchCustomer.create_dt;
+        delete billing_branch.branchCustomer.delete_dt;
+        delete billing_branch.branchCustomer.cc_contact_person;
+        delete billing_branch.branchCustomer.currency;
+
+        billing_branch.branchContactPerson = [];
+        b.cc_contact_person?.forEach(p => {
+
+          let person = new BillingContactPersonItem(p);
+          person.action = p.guid == "" ? "NEW" : "";
+          billing_branch.branchContactPerson?.push(person);
+        });
+
+
+        //check and remove the existing Billing branch if new billing branch selected.
+        var existingBillingBranchCust = this.getBillingBranches(selectedCusCmp?.guid!);
+        if (existingBillingBranchCust) {
+          if (existingBillingBranchCust?.guid !== billing_branch?.branchCustomer.guid!) {
+            let exist_billing_branch = new BillingBranchesItem();
+            exist_billing_branch.branchCustomer = new BillingCustomerItem(existingBillingBranchCust);
+            exist_billing_branch.branchCustomer.action = "EDIT";
+            exist_billing_branch.branchCustomer.main_customer_guid = "";
+
+            delete exist_billing_branch.branchCustomer.update_by;
+            delete exist_billing_branch.branchCustomer.update_dt;
+            delete exist_billing_branch.branchCustomer.create_by;
+            delete exist_billing_branch.branchCustomer.create_dt;
+            delete exist_billing_branch.branchCustomer.delete_dt;
+            delete exist_billing_branch.branchCustomer.cc_contact_person;
+            delete exist_billing_branch.branchCustomer.currency;
+
+            billingBranches.push(exist_billing_branch);
+          }
+        }
+
+        billingBranches.push(billing_branch);
+
+
 
       }
 
-      
+
       delete selectedCusCmp.update_by;
       delete selectedCusCmp.update_dt;
       delete selectedCusCmp.create_by;
@@ -1191,11 +1148,11 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       delete selectedCusCmp.cc_contact_person;
 
 
-      var existContactPersons=existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
+      var existContactPersons = existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
 
-      this.ccDS.UpdateCustomerCompany(selectedCusCmp,existContactPersons,billingBranches).subscribe(result => {
-  
-  
+      this.ccDS.UpdateCustomerCompany(selectedCusCmp, existContactPersons, billingBranches).subscribe(result => {
+
+
         var count = result.data.updateCustomerCompany;
         if (count > 0) {
           this.handleSaveSuccess(count);
@@ -1203,11 +1160,10 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       });
 
     }
-    else
-    {
+    else {
       this.insertNewCustomer();
     }
-  
+
   }
 
   updateData(newData: any[]): void {
@@ -1303,7 +1259,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 
-  
+
   getLastAction(actions: string[]): string {
     return actions[actions.length - 1];
   }
@@ -1325,10 +1281,10 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     }
   }
 
-  getGroupNameDescription(code_val:string): string | undefined{
+  getGroupNameDescription(code_val: string): string | undefined {
     return this.cvDS.getCodeDescription(code_val, this.groupNameCvList);
   }
-  getSubGroupNameDescription(code_val:string): string | undefined{
+  getSubGroupNameDescription(code_val: string): string | undefined {
     return this.cvDS.getCodeDescription(code_val, this.allSubGroupNameCvList);
   }
   getYesNoDescription(codeValType: string): string | undefined {
@@ -1339,8 +1295,8 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     return this.cvDS.getCodeDescription(codeValType, this.soTankStatusCvList);
   }
 
-  getCustomerTypeCvObject(codeValType:string):CodeValuesItem |undefined{
-    return this.cvDS.getCodeObject(codeValType,this.customerTypeCvList);
+  getCustomerTypeCvObject(codeValType: string): CodeValuesItem | undefined {
+    return this.cvDS.getCodeObject(codeValType, this.customerTypeCvList);
   }
 
   displayDateTime(input: number | undefined): string | undefined {
@@ -1355,57 +1311,54 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
 
-    if(!this.ccForm?.get("customer_code")?.value!)
-    {
+    if (!this.ccForm?.get("customer_code")?.value!) {
 
       return;
     }
-    
-    var updContactPerson =  this.repList.data.map((row) => ({
+
+    var updContactPerson = this.repList.data.map((row) => ({
       ...row,
-      title_cv : row.title_cv
-      
+      title_cv: row.title_cv
+
     }));
 
-    let billingBranches=   this.billingBranch?.map(row => ({ ...row }));
+    let billingBranches = this.billingBranch?.map(row => ({ ...row }));
 
-    var cust:CustomerCompanyItem=new CustomerCompanyItem();
-    cust.guid=this.selectedCustomerCmp?.guid;
-    cust.address_line1=this.ccForm?.get("address1")?.value;
-    cust.address_line2=this.ccForm?.get("address2")?.value;
-    cust.code=this.ccForm?.get("customer_code")?.value;
-    cust.name=this.ccForm?.get("customer_name")?.value;
-    cust.city=this.ccForm?.get("city_name")?.value;
-    cust.country=this.ccForm?.get("country")?.value;
-    cust.currency=this.ccForm?.get("currency")?.value;
-    cust.email=this.ccForm?.get("email")?.value;
-    cust.remarks=this.ccForm?.get("remarks")?.value;
-    cust.website=this.ccForm?.get("web")?.value;
-    
-    cust.phone=this.ccForm?.get("phone")?.value;
-    cust.postal=this.ccForm?.get("postal_code")?.value;
-    if(this.ccForm?.get("default_profile")?.value)
-    {
-      let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
-      cust.def_tank_guid=defTank.guid;
+    var cust: CustomerCompanyItem = new CustomerCompanyItem();
+    cust.guid = this.selectedCustomerCmp?.guid;
+    cust.address_line1 = this.ccForm?.get("address1")?.value;
+    cust.address_line2 = this.ccForm?.get("address2")?.value;
+    cust.code = this.ccForm?.get("customer_code")?.value;
+    cust.name = this.ccForm?.get("customer_name")?.value;
+    cust.city = this.ccForm?.get("city_name")?.value;
+    cust.country = this.ccForm?.get("country")?.value;
+    cust.currency = this.ccForm?.get("currency")?.value;
+    cust.email = this.ccForm?.get("email")?.value;
+    cust.remarks = this.ccForm?.get("remarks")?.value;
+    cust.website = this.ccForm?.get("web")?.value;
+
+    cust.phone = this.ccForm?.get("phone")?.value;
+    cust.postal = this.ccForm?.get("postal_code")?.value;
+    if (this.ccForm?.get("default_profile")?.value) {
+      let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+      cust.def_tank_guid = defTank.guid;
     }
-    if(this.ccForm?.get("currency")?.value)
-    {
-      cust.currency_guid= cust.currency?.guid;
+    if (this.ccForm?.get("currency")?.value) {
+      cust.currency_guid = cust.currency?.guid;
     }
-   
-    
-    cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
 
 
-    let custCmp:any={
-      customerCompanyData :cust,
-      contactPerson:updContactPerson,
-      billingBranches:billingBranches,
-      newBillingBranchCode:''
-    } ;
-    this.historyState.customerCompany=custCmp;
-    
+    cust.type_cv = (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
+
+
+    let custCmp: any = {
+      customerCompanyData: cust,
+      contactPerson: updContactPerson,
+      billingBranches: billingBranches,
+      newBillingBranchCode: ''
+    };
+    this.historyState.customerCompany = custCmp;
+
     this.router.navigate(['/admin/master/billing-branch/new/ '], {
       state: this.historyState
 
@@ -1430,7 +1383,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     return retval;
   }
 
-  
+
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
 
@@ -1454,67 +1407,65 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     });
   }
 
-  
+
   resetForm() {
     this.initCCForm();
-    
+
 
   }
 
-  getCurrency(guid:string):CurrencyItem|undefined
-  {
-    if(this.currencyList?.length!>0 && guid)
-    {
-      const curItm= this.currencyList?.filter((x: any) => x.guid === guid).map(item => {
-        return item;});
-        if(curItm?.length!>0)
-          return curItm![0];
-        else
-          return undefined;
+  getCurrency(guid: string): CurrencyItem | undefined {
+    if (this.currencyList?.length! > 0 && guid) {
+      const curItm = this.currencyList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;
+      });
+      if (curItm?.length! > 0)
+        return curItm![0];
+      else
+        return undefined;
 
     }
     return undefined;
-    
+
   }
 
-  getDefaultTank(guid:string):TankItem|undefined
-  {
-    if(this.tankItemList?.length!>0)
-    {
-      const tnkItm= this.tankItemList?.filter((x: any) => x.guid === guid).map(item => {
-        return item;});
-        if(tnkItm?.length!>0)
-          return tnkItm![0];
-        else
-          return undefined;
+  getDefaultTank(guid: string): TankItem | undefined {
+    if (this.tankItemList?.length! > 0) {
+      const tnkItm = this.tankItemList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;
+      });
+      if (tnkItm?.length! > 0)
+        return tnkItm![0];
+      else
+        return undefined;
 
     }
     return undefined;
-    
+
   }
 
-  getBillingBranches(guid:string):CustomerCompanyItem|undefined{
-    if(this.customer_companyList?.length)
-    {
-      const custCmp= this.customer_companyList?.filter((x: any) => x.main_customer_guid === guid).map(item => {
-        return item;});
-        if(custCmp?.length!>0)
-          return custCmp[0];
-        else
-          return undefined;
+  getBillingBranches(guid: string): CustomerCompanyItem | undefined {
+    if (this.customer_companyList?.length) {
+      const custCmp = this.customer_companyList?.filter((x: any) => x.main_customer_guid === guid).map(item => {
+        return item;
+      });
+      if (custCmp?.length! > 0)
+        return custCmp[0];
+      else
+        return undefined;
     }
     return undefined;
   }
 
-  getBillingBranchesCode(code:string):CustomerCompanyItem|undefined{
-    if(this.customer_companyList?.length)
-    {
-      const custCmp= this.customer_companyList?.filter((x: any) => x.code === code).map(item => {
-        return item;});
-        if(custCmp?.length!>0)
-          return custCmp[0];
-        else
-          return undefined;
+  getBillingBranchesCode(code: string): CustomerCompanyItem | undefined {
+    if (this.customer_companyList?.length) {
+      const custCmp = this.customer_companyList?.filter((x: any) => x.code === code).map(item => {
+        return item;
+      });
+      if (custCmp?.length! > 0)
+        return custCmp[0];
+      else
+        return undefined;
     }
     return undefined;
   }
@@ -1526,7 +1477,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if(value===undefined) return;
+        if (value === undefined) return;
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -1539,50 +1490,44 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     ).subscribe();
   }
 
-  refreshBillingBranches()
-  {
+  refreshBillingBranches() {
 
-     let selGuid:string| undefined = undefined;
-    let selBillingCode:string| undefined = undefined;
-    if(this.historyState.customerCompany)
-    {
-      selGuid=this.historyState.customerCompany.customerCompanyData.guid;
-      selBillingCode=this.historyState.customerCompany.newBillingBranchCode;
+    let selGuid: string | undefined = undefined;
+    let selBillingCode: string | undefined = undefined;
+    if (this.historyState.customerCompany) {
+      selGuid = this.historyState.customerCompany.customerCompanyData.guid;
+      selBillingCode = this.historyState.customerCompany.newBillingBranchCode;
 
     }
-    else if(this.selectedCustomerCmp)
-    {
-      selGuid=this.selectedCustomerCmp.guid!;
+    else if (this.selectedCustomerCmp) {
+      selGuid = this.selectedCustomerCmp.guid!;
     }
 
 
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
-   
+
       if (data.length) {
-        if(this.selectedCustomerCmp)
-        {
+        if (this.selectedCustomerCmp) {
           data = data.filter(item => item.guid !== this.selectedCustomerCmp?.guid);
 
-        
+
         }
 
 
         this.customer_companyList = data
-    
-        if(selBillingCode)
-        {
+
+        if (selBillingCode) {
           this.ccForm?.patchValue({
-            billing_branches:this.getBillingBranchesCode(selBillingCode),
+            billing_branches: this.getBillingBranchesCode(selBillingCode),
           })
         }
-        else if(selGuid!)
-        {
+        else if (selGuid!) {
           this.ccForm?.patchValue({
-            billing_branches:this.getBillingBranches(selGuid),
+            billing_branches: this.getBillingBranches(selGuid),
           })
         }
 
-      
+
       }
     });
   }

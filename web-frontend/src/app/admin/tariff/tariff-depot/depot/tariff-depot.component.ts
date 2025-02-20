@@ -1,84 +1,65 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild,HostListener } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl,AbstractControl,Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { Utility } from 'app/utilities/utility';
 // import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
-import { MatRadioModule } from '@angular/material/radio';
-import { Apollo } from 'apollo-angular';
 import { MatDividerModule } from '@angular/material/divider';
+import { Apollo } from 'apollo-angular';
+import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 //import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 //import { Observable, Subscription } from 'rxjs';
 //import { TankDS, TankItem } from 'app/data-sources/tank';
 //import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
 //import { ComponentUtil } from 'app/utilities/component-util';
-import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 //import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-import {ExampleDataSource} from 'app/advance-table/advance-table.component';
-import { AdvanceTableService } from 'app/advance-table/advance-table.service';
-import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
-import {SearchCriteriaService} from 'app/services/search-criteria.service';
-import { FormDialogComponent_View } from './form-dialog-view/form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
+import { TankDS, TankItem } from 'app/data-sources/tank';
+import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { SearchCriteriaService } from 'app/services/search-criteria.service';
+import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
-import { ComponentUtil } from 'app/utilities/component-util';
-import {TankDS, TankItem} from 'app/data-sources/tank';
-import {TariffDepotDS,TariffDepotItem} from 'app/data-sources/tariff-depot';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { FormDialogComponent_View } from './form-dialog-view/form-dialog.component';
 @Component({
   selector: 'app-tariff-depot',
   standalone: true,
   templateUrl: './tariff-depot.component.html',
   styleUrl: './tariff-depot.component.scss',
   imports: [
-    BreadcrumbComponent,
     MatTooltipModule,
     MatButtonModule,
     MatIconModule,
     MatTableModule,
     MatSortModule,
-    NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -93,24 +74,18 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
   ]
 })
 export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
-implements OnInit {
+  implements OnInit {
   displayedColumns = [
-   // 'select',
+    // 'select',
     // 'img',
-     'fName',
-     'lName',
+    'fName',
+    'lName',
     // 'email',
     // 'gender',
     // 'bDate',
-     'mobile',
+    'mobile',
     // 'actions',
   ];
-
-  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-DEPOT'
-  breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.TARIFF.TEXT'
-  ]
 
   PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
   PROCEDURE_DESCRIPTION = 'COMMON-FORM.DESCRIPTION'
@@ -126,13 +101,13 @@ implements OnInit {
   PROCEDURE_STEP_DURATION_TOOLTIP = 'COMMON-FORM.STEP-DURATION-TOOLTIP'
   CLEANING_GROUP_NAME = 'COMMON-FORM.GROUP-NAME'
   CLEANING_BAY = 'COMMON-FORM.BAY'
-  
+
   CLEANING_LAST_UPDATED_DT = 'COMMON-FORM.LAST-UPDATED'
 
   unit_type_control = new UntypedFormControl();
-  
-  tnkDS :TankDS;
-  tfDepotDS:TariffDepotDS
+
+  tnkDS: TankDS;
+  tfDepotDS: TariffDepotDS
   //ccDS: CustomerCompanyDS;
   //clnCatDS:CleaningCategoryDS;
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
@@ -140,8 +115,8 @@ implements OnInit {
   //custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   //customer_companyList?: CustomerCompanyItem[];
   //cleaning_categoryList?: CleaningCategoryItem[];
-  tariffDepotItems:TariffDepotItem[]=[];
-  tankItemList:TankItem[]=[];
+  tariffDepotItems: TariffDepotItem[] = [];
+  tankItemList: TankItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -152,14 +127,10 @@ implements OnInit {
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  
 
-   exampleDatabase?: AdvanceTableService;
-   dataSource!: ExampleDataSource;
   selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
-  
+
   id?: number;
-  advanceTable?: AdvanceTable;
   tdForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
@@ -168,7 +139,7 @@ implements OnInit {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -200,7 +171,7 @@ implements OnInit {
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
-    SEARCH:'COMMON-FORM.SEARCH',
+    SEARCH: 'COMMON-FORM.SEARCH',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
@@ -217,46 +188,45 @@ implements OnInit {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME:'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS:'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST :'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
-    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
-    PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
-    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
-    VIEW:'COMMON-FORM.VIEW',
-    ASSIGNED:'COMMON-FORM.ASSIGNED',
+    CARGO_ALERT: 'COMMON-FORM.CARGO-ALERT',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    VIEW: 'COMMON-FORM.VIEW',
+    ASSIGNED: 'COMMON-FORM.ASSIGNED',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-     }
-  
+  }
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-   // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
@@ -266,7 +236,7 @@ implements OnInit {
     this.initTdForm();
 
     this.tnkDS = new TankDS(this.apollo);
-    this.tfDepotDS= new TariffDepotDS(this.apollo);
+    this.tfDepotDS = new TariffDepotDS(this.apollo);
     // this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
@@ -284,11 +254,11 @@ implements OnInit {
 
   initTdForm() {
     this.tdForm = this.fb.group({
-      guid: [{value:''}],
+      guid: [{ value: '' }],
       profile_name: [''],
-      description:[''],
-      unit_type:this.unit_type_control
-      
+      description: [''],
+      unit_type: this.unit_type_control
+
     });
   }
 
@@ -341,41 +311,38 @@ implements OnInit {
     event.preventDefault(); // Prevents the form submission
   }
 
-  adjustCost()
-  {
+  adjustCost() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent_View,{
+    const dialogRef = this.dialog.open(FormDialogComponent_View, {
       width: '600px',
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItems:this.selection.selected
+        selectedItems: this.selection.selected
       }
-        
+
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          if(result.selectedValue>0)
-          {
-            this.handleSaveSuccess(result.selectedValue);
-            this.search();
-          }
+      if (result) {
+        if (result.selectedValue > 0) {
+          this.handleSaveSuccess(result.selectedValue);
+          this.search();
+        }
       }
-      });
+    });
   }
-  
+
 
   displayLastUpdated(r: any) {
-    var updatedt= r.update_dt;
-    if(updatedt===null)
-    {
-      updatedt= r.create_dt;
+    var updatedt = r.update_dt;
+    if (updatedt === null) {
+      updatedt = r.create_dt;
     }
     return this.displayDate(updatedt);
 
@@ -386,8 +353,8 @@ implements OnInit {
     return Utility.convertEpochToDateStr(input);
   }
 
- 
-  deleteItem(row: AdvanceTable) {
+
+  deleteItem(row: any) {
     // this.id = row.id;
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
@@ -443,45 +410,41 @@ implements OnInit {
 
 
 
-  search()
-  {
+  search() {
     const where: any = {};
 
     if (this.unit_type_control.value) {
-      if(this.unit_type_control.value.length>0)
-        {
-         
-        
-          const tnkItems :TankItem[] = this.unit_type_control.value;
-          var guids = tnkItems.map(t=>t.guid);
-          where.tanks = { some:{guid: {in:guids} }};
-        }
-    }
+      if (this.unit_type_control.value.length > 0) {
 
-  
 
-    if (this.tdForm!.value["description"])
-    {
-      let desc = this.tdForm!.value["description"];
-      where.description ={contains:desc}
-    }
-
-    if (this.tdForm!.value["profile_name"])
-      {
-        let name = this.tdForm!.value["profile_name"];
-      where.profile_name ={contains:name}
+        const tnkItems: TankItem[] = this.unit_type_control.value;
+        var guids = tnkItems.map(t => t.guid);
+        where.tanks = { some: { guid: { in: guids } } };
       }
-      this.lastSearchCriteria=where;
-    this.subs.sink = this.tfDepotDS.SearchTariffDepot(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.tariffDepotItems=data;
-       this.previous_endCursor=undefined;
-       this.endCursor = this.tfDepotDS.pageInfo?.endCursor;
-       this.startCursor = this.tfDepotDS.pageInfo?.startCursor;
-       this.hasNextPage = this.tfDepotDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.tfDepotDS.pageInfo?.hasPreviousPage ?? false;
-       this.pageIndex=0;
-       this.paginator.pageIndex=0;
-       
+    }
+
+
+
+    if (this.tdForm!.value["description"]) {
+      let desc = this.tdForm!.value["description"];
+      where.description = { contains: desc }
+    }
+
+    if (this.tdForm!.value["profile_name"]) {
+      let name = this.tdForm!.value["profile_name"];
+      where.profile_name = { contains: name }
+    }
+    this.lastSearchCriteria = where;
+    this.subs.sink = this.tfDepotDS.SearchTariffDepot(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+      this.tariffDepotItems = data;
+      this.previous_endCursor = undefined;
+      this.endCursor = this.tfDepotDS.pageInfo?.endCursor;
+      this.startCursor = this.tfDepotDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tfDepotDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tfDepotDS.pageInfo?.hasPreviousPage ?? false;
+      this.pageIndex = 0;
+      this.paginator.pageIndex = 0;
+
     });
   }
   handleSaveSuccess(count: any) {
@@ -490,23 +453,23 @@ implements OnInit {
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        
+
       });
     }
   }
 
   onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-    let order:any|undefined=this.lastOrderBy;
+    let order: any | undefined = this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
-      this.pageSize=pageSize;
+      this.pageSize = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
@@ -521,43 +484,40 @@ implements OnInit {
         last = pageSize;
         before = this.startCursor;
       }
-      else if (pageIndex==this.pageIndex)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursor;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndex) {
+
+        first = pageSize;
+        after = this.previous_endCursor;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
 
-      this.searchData(this.lastSearchCriteria,order,first,after,last,before,pageIndex,previousPageIndex);
+    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
     //}
   }
 
-   searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
-    previousPageIndex?:number)
-    {
-      this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.tfDepotDS.SearchTariffDepot(where,order,first,after,last,before).subscribe(data => {
-        this.tariffDepotItems=data;
-        this.endCursor = this.tfDepotDS.pageInfo?.endCursor;
-        this.startCursor = this.tfDepotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.tfDepotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.tfDepotDS.pageInfo?.hasPreviousPage ?? false;
-        this.pageIndex=pageIndex;
-        this.paginator.pageIndex=this.pageIndex;
-        if(!this.hasPreviousPage)
-          this.previous_endCursor=undefined;
-        
-     });
-    }
-  
-  storeSearchCriteria(where :any, order:any, first:any, after:any, last:any,before:any, pageIndex:number,
-    previousPageIndex?:number,length?:number,hasNextPage?:boolean, hasPreviousPage?:boolean)
-  {
+  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number) {
+    this.previous_endCursor = this.endCursor;
+    this.subs.sink = this.tfDepotDS.SearchTariffDepot(where, order, first, after, last, before).subscribe(data => {
+      this.tariffDepotItems = data;
+      this.endCursor = this.tfDepotDS.pageInfo?.endCursor;
+      this.startCursor = this.tfDepotDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tfDepotDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tfDepotDS.pageInfo?.hasPreviousPage ?? false;
+      this.pageIndex = pageIndex;
+      this.paginator.pageIndex = this.pageIndex;
+      if (!this.hasPreviousPage)
+        this.previous_endCursor = undefined;
+
+    });
+  }
+
+  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
     const sCriteria: any = {};
     sCriteria.where = where;
     sCriteria.order = order;
@@ -565,12 +525,12 @@ implements OnInit {
     sCriteria.after = after;
     sCriteria.last = last;
     sCriteria.before = before;
-    sCriteria.pageIndex= pageIndex;
-    sCriteria.previousPageIndex=previousPageIndex;
+    sCriteria.pageIndex = pageIndex;
+    sCriteria.previousPageIndex = previousPageIndex;
     sCriteria.length = length;
-    sCriteria.hasNextPage=hasNextPage;
-    sCriteria.hasPreviousPage=hasPreviousPage;
-    
+    sCriteria.hasNextPage = hasNextPage;
+    sCriteria.hasPreviousPage = hasPreviousPage;
+
     this.searchCriteriaService.setCriteria(sCriteria);
   }
 
@@ -596,8 +556,8 @@ implements OnInit {
 
   public loadData() {
 
-    this.subs.sink = this.tnkDS.loadItems().subscribe(data=>{
-      this.tankItemList =data;
+    this.subs.sink = this.tnkDS.loadItems().subscribe(data => {
+      this.tankItemList = data;
 
     });
     this.search();
@@ -613,7 +573,7 @@ implements OnInit {
 
     // });
 
-  
+
   }
   showNotification(
     colorName: string,
@@ -632,7 +592,7 @@ implements OnInit {
   // export table data in excel file
   exportExcel() {
     // key name with space add in brackets
-   // const exportData: Partial<TableElement>[] =
+    // const exportData: Partial<TableElement>[] =
     //   this.dataSource.filteredData.map((x) => ({
     //     'First Name': x.fName,
     //     'Last Name': x.lName,
@@ -649,93 +609,93 @@ implements OnInit {
 
   addCall() {
     // this.preventDefault(event);  // Prevents the form submission
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
-     const dialogRef = this.dialog.open(FormDialogComponent_New,{
-       width: '600px',
-       height:'auto',
-       data: {
-         action: 'view',
-         langText: this.langText,
-         selectedItem:null
-       }
-         
-     });
-
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result>0) {
-           this.handleSaveSuccess(result);
-           
-           //this.search();
-           if(this.tariffDepotItems.length>0)
-               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-    
+    const dialogRef = this.dialog.open(FormDialogComponent_New, {
+      width: '600px',
+      height: 'auto',
+      data: {
+        action: 'view',
+        langText: this.langText,
+        selectedItem: null
       }
-   });
+
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+        this.handleSaveSuccess(result);
+
+        //this.search();
+        if (this.tariffDepotItems.length > 0)
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+
+      }
+    });
+  }
+
+  editCall(row: TariffDepotItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
 
-    editCall(row: TariffDepotItem) {
-      // this.preventDefault(event);  // Prevents the form submission
-       let tempDirection: Direction;
-       if (localStorage.getItem('isRtl') === 'true') {
-         tempDirection = 'rtl';
-       } else {
-         tempDirection = 'ltr';
-       }
-     
-       const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
-         width: '600px',
-         data: {
-           action: 'edit',
-           langText: this.langText,
-           selectedItem:row
-         }
-           
-       });
-   
-       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-            if (result>0) {
-            // if(result.selectedValue>0)
-               //{
-                 this.handleSaveSuccess(result);
-                 //this.search();
-                 this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-               //}
-         }
-         });
-      
-     }
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
+      width: '600px',
+      data: {
+        action: 'edit',
+        langText: this.langText,
+        selectedItem: row
+      }
+
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+        // if(result.selectedValue>0)
+        //{
+        this.handleSaveSuccess(result);
+        //this.search();
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        //}
+      }
+    });
+
+  }
 
   viewCall(row: TariffDepotItem) {
     // this.preventDefault(event);  // Prevents the form submission
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
-     const dialogRef = this.dialog.open(FormDialogComponent_View,{
-       width: '600px',
-       height:'auto',
-       data: {
-         action: 'view',
-         langText: this.langText,
-         selectedItem:row
-       }
-         
-     });
-    }
-     
+    const dialogRef = this.dialog.open(FormDialogComponent_View, {
+      width: '600px',
+      height: 'auto',
+      data: {
+        action: 'view',
+        langText: this.langText,
+        selectedItem: row
+      }
+
+    });
+  }
+
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
@@ -780,7 +740,7 @@ implements OnInit {
   resetForm() {
     this.initTdForm();
     this.unit_type_control.reset();
-   //this.customerCodeControl.reset('');
-   
+    //this.customerCodeControl.reset('');
+
   }
 }

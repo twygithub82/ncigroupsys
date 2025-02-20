@@ -1,8 +1,8 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 
 export interface DialogData {
   action: string;

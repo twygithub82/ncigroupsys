@@ -1,61 +1,47 @@
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
+import { CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { Utility } from 'app/utilities/utility';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
-import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
-import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { JobOrderItem } from 'app/data-sources/job-order';
+import { RepairItem } from 'app/data-sources/repair';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 //import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.component";
-import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
-import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 //import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ExclusiveSteamComponent } from './exclusive-steam/exclusive-steam.component';
 import { PackageSteamComponent } from './steam/package-steam.component';
 
@@ -72,15 +58,11 @@ import { PackageSteamComponent } from './steam/package-steam.component';
     MatIconModule,
     MatTableModule,
     MatSortModule,
-    NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -96,11 +78,11 @@ import { PackageSteamComponent } from './steam/package-steam.component';
     MatTabsModule,
     ExclusiveSteamComponent,
     PackageSteamComponent
-   
-]
+
+  ]
 })
 export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
- // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
+  // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
   // displayedColumns = [
   //   'tank_no',
   //   'customer',
@@ -131,8 +113,8 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-STEAMING'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.PACKAGE.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.PACKAGE.TEXT', route: '/admin/package/package-steaming' }
   ]
 
   translatedLangText: any = {};
@@ -181,17 +163,17 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    METHOD:"COMMON-FORM.METHOD",
+    METHOD: "COMMON-FORM.METHOD",
     QC: 'COMMON-FORM.QC',
-    BAY_OVERVIEW:"COMMON-FORM.BAY-OVERVIEW",
-    CLEANING:"COMMON-FORM.CLEANING",
-    CLEANING_BILLING:"MENUITEMS.BILLING.LIST.CLEANING-BILL",
-    STEAM_BILLING:"MENUITEMS.BILLING.LIST.STEAM-BILL",
-    RESIDUE_BILLING:"MENUITEMS.BILLING.LIST.RESIDUE-DISPOSAL-BILL",
-    PACKAGE_EXCLUSIVE:'MENUITEMS.PACKAGE.LIST.EXCLUSIVE-STEAMING',
-    PACKAGE_STEAMING:'MENUITEMS.PACKAGE.LIST.PACKAGE-STEAMING',
-   
-   
+    BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
+    CLEANING: "COMMON-FORM.CLEANING",
+    CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
+    STEAM_BILLING: "MENUITEMS.BILLING.LIST.STEAM-BILL",
+    RESIDUE_BILLING: "MENUITEMS.BILLING.LIST.RESIDUE-DISPOSAL-BILL",
+    PACKAGE_EXCLUSIVE: 'MENUITEMS.PACKAGE.LIST.EXCLUSIVE-STEAMING',
+    PACKAGE_STEAMING: 'MENUITEMS.PACKAGE.LIST.PACKAGE-STEAMING',
+
+
   }
 
   filterCleanForm?: UntypedFormGroup;
@@ -217,13 +199,13 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     'CANCELED'
   ]
 
-  cleanMethodList:CleaningMethodItem[]=[];
+  cleanMethodList: CleaningMethodItem[] = [];
   clnEstList: InGateCleaningItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  processStatusCvList:CodeValuesItem[]=[];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -291,8 +273,8 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
   initSearchForm() {
     this.filterCleanForm = this.fb.group({
       filterClean: [''],
-      cleanMethod:[''],
-      status_cv: [['APPROVED','ASSIGNED']],
+      cleanMethod: [''],
+      status_cv: [['APPROVED', 'ASSIGNED']],
       customer: [''],
     });
     this.filterJobOrderForm = this.fb.group({
@@ -342,7 +324,7 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
 
   public loadData() {
     // this.onFilterCleaning();
-  //  this.onFilterJobOrder();
+    //  this.onFilterJobOrder();
 
     // const queries = [
     //   { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
@@ -419,7 +401,7 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     //   ]
     // };
 
- 
+
     // // or: [
     // //   { storing_order_tank: { tank_no: { contains: "" } } },
     // //   { estimate_no: { contains: "" } }
@@ -515,26 +497,26 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     // this.pageIndexJobOrder = pageIndex;
   }
 
-  
+
   onPageEventClean(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-   // let order:any|undefined=this.lastOrderBy;
+    // let order:any|undefined=this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSizeClean !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndexClean = 0;
-      this.pageSizeClean=pageSize;
+      this.pageSizeClean = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
       //if (pageIndex > this.pageIndex && this.hasNextPage) {
-        if (pageIndex > this.pageIndexClean ) {
+      if (pageIndex > this.pageIndexClean) {
         // Navigate forward
         first = pageSize;
         after = this.endCursorClean;
@@ -543,15 +525,14 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
         last = pageSize;
         before = this.startCursorClean;
       }
-      else if (pageIndex==this.pageIndexClean)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursorClean;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndexClean) {
+
+        first = pageSize;
+        after = this.previous_endCursorClean;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
 
@@ -589,24 +570,24 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-   // let order:any|undefined=this.lastOrderBy;
+    // let order:any|undefined=this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSizeClean !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndexClean = 0;
-      this.pageSizeClean=pageSize;
+      this.pageSizeClean = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
       //if (pageIndex > this.pageIndex && this.hasNextPage) {
-        if (pageIndex > this.pageIndexJobOrder ) {
+      if (pageIndex > this.pageIndexJobOrder) {
         // Navigate forward
         first = pageSize;
         after = this.endCursorJobOrder;
@@ -615,18 +596,17 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
         last = pageSize;
         before = this.startCursorJobOrder;
       }
-      else if (pageIndex==this.pageIndexJobOrder)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursorJobOrder;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndexJobOrder) {
+
+        first = pageSize;
+        after = this.previous_endCursorJobOrder;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
-    
+
     this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
@@ -674,7 +654,7 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   displayCleanMethodFn(cm: CleaningMethodItem): string {
-    return cm  ? `${cm.description} `: '';
+    return cm ? `${cm.description} ` : '';
   }
   initializeFilterCustomerCompany() {
     // this.filterCleanForm!.get('customer')!.valueChanges.pipe(
@@ -692,8 +672,8 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     //     });
     //   })
     // ).subscribe();
-  
-  
+
+
     // this.filterCleanForm!.get('cleanMethod')!.valueChanges.pipe(
     //   startWith(''),
     //   debounceTime(300),
@@ -781,7 +761,7 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
   resetForm() {
     this.filterCleanForm?.patchValue({
       filterRepair: '',
-      cleanMethod:''
+      cleanMethod: ''
     });
   }
 
@@ -802,19 +782,18 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayTankStatus(status:string):string{
-    var retval:string="-";
+  displayTankStatus(status: string): string {
+    var retval: string = "-";
 
-    retval= this.processStatusCvList!
-    .filter(item => item.code_val === status)
-    .map(item => item.description)[0]!; // Returns the description of the first match
+    retval = this.processStatusCvList!
+      .filter(item => item.code_val === status)
+      .map(item => item.description)[0]!; // Returns the description of the first match
 
-    if(retval==="") retval="-"
+    if (retval === "") retval = "-"
     return retval;
   }
 
-  popupDialogForm(row:InGateCleaningItem, action:string)
-  {
+  popupDialogForm(row: InGateCleaningItem, action: string) {
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
     //   tempDirection = 'rtl';
@@ -825,10 +804,10 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     // if(row.status_cv==='QC_COMPLETED') action='view';
     // var rows :InGateCleaningItem[] =[] ;
     // rows.push(row);
-    
+
 
     // const dialogRef = this.dialog.open(FormDialogComponent,{
-      
+
     //   width: '1000px',
     //   data: {
     //     action: action,
@@ -838,182 +817,180 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     //   position: {
     //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
     //   }
-        
+
     // });
 
     // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     //      if (result) {
     //       if(result>0)
     //         {
-             
+
     //           this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
     //         }
     //   }
     //   });
-   
-   }
 
-    toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-      //  this.stopPropagation(event);  // Prevents the form submission
-      //  if (!isStarted) {
-      //    const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-      //    console.log(param)
-      //    const firstValidRepairPart = jobOrderItem.cleaning?.find(
-      //      (cleaning) => cleaning?.guid !== null
-      //    );
-      //    this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
-      //      if (result.data.startJobTimer > 0) {
-      //        var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-      //        this.UpdateCleaningStatusInProgress(item.guid!);
-      //      }
-      //    });
-      //  } else {
-      //    const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-      //    if (found?.length) {
-      //      const newParam = new TimeTableItem(found[0]);
-      //      newParam.stop_time = Utility.convertDate(new Date()) as number;
-      //      newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-      //      const param = [newParam];
-      //      console.log(param)
-      //      this.ttDS.stopJobTimer(param).subscribe(result => {
-      //       if(result.data.stopJobTimer)
-      //       {
-      //         this.completeJob( jobOrderItem) 
-      //       }
+  }
 
-      //      });
-      //    }
-      //  }
-     }
-   
-     completeJob(jobOrderItem: JobOrderItem) {
-       
-      //  const newParam = new UpdateJobOrderRequest({
-      //    guid: jobOrderItem?.guid,
-      //    remarks: jobOrderItem?.remarks,
-      //    start_dt: jobOrderItem?.start_dt,
-      //    complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-      //  });
-      //  const param = [newParam];
-      //  console.log(param)
-      //  this.joDS.completeJobOrder(param).subscribe(result => {
-      //    console.log(result)
-      //    if (result?.data?.completeJobOrder! > 0) {
-      //      var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-      //      this.UpdateCleaningStatusCompleted(item.guid!);
-      //    }
-      //  });
-     }
+  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
+    //  this.stopPropagation(event);  // Prevents the form submission
+    //  if (!isStarted) {
+    //    const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
+    //    console.log(param)
+    //    const firstValidRepairPart = jobOrderItem.cleaning?.find(
+    //      (cleaning) => cleaning?.guid !== null
+    //    );
+    //    this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
+    //      if (result.data.startJobTimer > 0) {
+    //        var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+    //        this.UpdateCleaningStatusInProgress(item.guid!);
+    //      }
+    //    });
+    //  } else {
+    //    const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+    //    if (found?.length) {
+    //      const newParam = new TimeTableItem(found[0]);
+    //      newParam.stop_time = Utility.convertDate(new Date()) as number;
+    //      newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+    //      const param = [newParam];
+    //      console.log(param)
+    //      this.ttDS.stopJobTimer(param).subscribe(result => {
+    //       if(result.data.stopJobTimer)
+    //       {
+    //         this.completeJob( jobOrderItem) 
+    //       }
 
-     UpdateCleaningStatusInProgress(clean_guid: string) {
+    //      });
+    //    }
+    //  }
+  }
 
+  completeJob(jobOrderItem: JobOrderItem) {
 
-      // const where: any = {
-      //   and: []
-      // };
-  
-  
-      // where.and.push({
-      //   guid: { eq: clean_guid }
-      // });
-  
-  
-      // this.subs.sink = this.cleanDS.search(where)
-      //   .subscribe(data => {
-      //     if (data.length > 0) {
-      //       var cln = data[0];
-      //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-      //       rep.action = 'IN_PROGRESS';
-      //       delete rep.storing_order_tank;
-      //       delete rep.job_order;
-      //       delete rep.customer_company;
-      //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-  
-      //         console.log(result);
-  
-      //       });
-      //       //  this.clnDS.
-      //     }
-      //   });
-    }
+    //  const newParam = new UpdateJobOrderRequest({
+    //    guid: jobOrderItem?.guid,
+    //    remarks: jobOrderItem?.remarks,
+    //    start_dt: jobOrderItem?.start_dt,
+    //    complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+    //  });
+    //  const param = [newParam];
+    //  console.log(param)
+    //  this.joDS.completeJobOrder(param).subscribe(result => {
+    //    console.log(result)
+    //    if (result?.data?.completeJobOrder! > 0) {
+    //      var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+    //      this.UpdateCleaningStatusCompleted(item.guid!);
+    //    }
+    //  });
+  }
 
-    UpdateCleaningStatusCompleted(clean_guid: string) {
+  UpdateCleaningStatusInProgress(clean_guid: string) {
 
 
-      // const where: any = {
-      //   and: []
-      // };
-  
-      // where.and.push({
-      //   job_order: { status_cv: { eq: 'COMPLETED' } }
-      // });
-  
-      // where.and.push({
-      //   guid: { eq: clean_guid }
-      // });
-  
-  
-      // this.subs.sink = this.cleanDS.search(where)
-      //   .subscribe(data => {
-      //     if (data.length > 0) {
-      //       var cln = data[0];
-      //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-      //       rep.action = 'COMPLETE';
-      //       delete rep.storing_order_tank;
-      //       delete rep.job_order;
-      //       delete rep.customer_company;
-      //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-      //         console.log(result); 
-      //         if(result.data.updateCleaning>0)
-      //         {
-      //            this.onFilterCleaning();
-      //         }
-              
-  
-      //       });
-      //       //  this.clnDS.
-      //     }
-      //   });
-    }
+    // const where: any = {
+    //   and: []
+    // };
 
-     // isStarted(jobOrderItem: JobOrderItem | undefined) {
+
+    // where.and.push({
+    //   guid: { eq: clean_guid }
+    // });
+
+
+    // this.subs.sink = this.cleanDS.search(where)
+    //   .subscribe(data => {
+    //     if (data.length > 0) {
+    //       var cln = data[0];
+    //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+    //       rep.action = 'IN_PROGRESS';
+    //       delete rep.storing_order_tank;
+    //       delete rep.job_order;
+    //       delete rep.customer_company;
+    //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+
+    //         console.log(result);
+
+    //       });
+    //       //  this.clnDS.
+    //     }
+    //   });
+  }
+
+  UpdateCleaningStatusCompleted(clean_guid: string) {
+
+
+    // const where: any = {
+    //   and: []
+    // };
+
+    // where.and.push({
+    //   job_order: { status_cv: { eq: 'COMPLETED' } }
+    // });
+
+    // where.and.push({
+    //   guid: { eq: clean_guid }
+    // });
+
+
+    // this.subs.sink = this.cleanDS.search(where)
+    //   .subscribe(data => {
+    //     if (data.length > 0) {
+    //       var cln = data[0];
+    //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+    //       rep.action = 'COMPLETE';
+    //       delete rep.storing_order_tank;
+    //       delete rep.job_order;
+    //       delete rep.customer_company;
+    //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+    //         console.log(result); 
+    //         if(result.data.updateCleaning>0)
+    //         {
+    //            this.onFilterCleaning();
+    //         }
+
+
+    //       });
+    //       //  this.clnDS.
+    //     }
+    //   });
+  }
+
+  // isStarted(jobOrderItem: JobOrderItem | undefined) {
   //   return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
   // }
 
-  isStarted(cleanItem:InGateCleaningItem | undefined) {
+  isStarted(cleanItem: InGateCleaningItem | undefined) {
 
-    if(cleanItem?.job_order)
-      {
-        let jobOrderItem = cleanItem?.job_order;
-        return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-      }
-      return false;
+    if (cleanItem?.job_order) {
+      let jobOrderItem = cleanItem?.job_order;
+      return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+    }
+    return false;
 
-    
+
   }
 
-  canStartJob(cleanItem:InGateCleaningItem | undefined) {
+  canStartJob(cleanItem: InGateCleaningItem | undefined) {
     // if(cleanItem?.job_order)
     // {
     //   return this.joDS.canStartJob(cleanItem?.job_order);
     // }
     return false;
-    
+
   }
 
   canCompleteJob(jobOrderItem: JobOrderItem | undefined, isStarted: boolean | undefined): boolean {
     return false; //this.joDS.canCompleteJob(jobOrderItem) && !isStarted;
   }
 
-  canShowAction(cleanItem:InGateCleaningItem)
-  {
-    return cleanItem.status_cv=='JOB_IN_PROGRESS';
+  canShowAction(cleanItem: InGateCleaningItem) {
+    return cleanItem.status_cv == 'JOB_IN_PROGRESS';
 
 
   }
 
-  sortList( itemList:any[]) {
-    itemList.sort((a:any, b:any) => {
+  sortList(itemList: any[]) {
+    itemList.sort((a: any, b: any) => {
       const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       return numA - numB;
@@ -1030,9 +1007,9 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
   onRefreshMainTab() {
     // Logic to refresh the content of the main tab
     console.log('Refreshing main tab content...');
-    this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
+    this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
-  
+
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
     // if(event.index===1)

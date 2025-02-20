@@ -1,79 +1,72 @@
+import { Direction } from '@angular/cdk/bidi';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, UntypedFormArray, FormBuilder } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, Subscription, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FileManagerService } from '@core/service/filemanager.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
 import { Apollo } from 'apollo-angular';
+import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateGO, InGateItem } from 'app/data-sources/in-gate';
-import { MatCardModule } from '@angular/material/card';
-import { TankDS, TankItem } from 'app/data-sources/tank';
-import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
-import { InGateSurveyDS, InGateSurveyGO, InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { MatRadioModule } from '@angular/material/radio';
-import { Moment } from 'moment';
-import * as moment from 'moment';
-import { testTypeMapping } from 'environments/environment.development';
-import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { FileManagerService } from '@core/service/filemanager.service';
-import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
-import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
-import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
-import { MatTabsModule } from '@angular/material/tabs';
-import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
+import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { InGateSurveyDS, InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { JobOrderDS } from 'app/data-sources/job-order';
-import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
+import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-survey';
+import { PackageBufferDS } from 'app/data-sources/package-buffer';
+import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
-import { BookingDS, BookingItem } from 'app/data-sources/booking';
+import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
-import { RepairFormDialogComponent } from './repair-form-dialog/repair-form-dialog.component';
-import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
-import { BreakpointObserver } from '@angular/cdk/layout';
+import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
-import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-survey';
-import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TransferDS, TransferItem } from 'app/data-sources/transfer';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 import { SteamHeatingPdfComponent } from 'app/document-template/pdf/steam-heating-pdf/steam-heating-pdf.component';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import * as moment from 'moment';
+import { Moment } from 'moment';
+import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
+import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
+import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -177,8 +170,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT-DETAILS'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT', route: '/admin/inventory/tank-movement' }
   ]
 
   translatedLangText: any = {};

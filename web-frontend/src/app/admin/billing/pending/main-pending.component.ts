@@ -1,58 +1,48 @@
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { Utility } from 'app/utilities/utility';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
-import { ComponentUtil } from 'app/utilities/component-util';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { RepairItem } from 'app/data-sources/repair';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { MatCardModule } from '@angular/material/card';
-import { RepairDS, RepairItem } from 'app/data-sources/repair';
-import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
-import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
-import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 //import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.component";
-import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 //import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
@@ -69,15 +59,11 @@ import { PendingContentComponent } from './content/pending-content.component';
     MatIconModule,
     MatTableModule,
     MatSortModule,
-    NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -91,14 +77,12 @@ import { PendingContentComponent } from './content/pending-content.component';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    JobOrderQCComponent,
-    JobOrderTaskComponent,
     PendingContentComponent
-   
-]
+
+  ]
 })
 export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
- // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
+  // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
   // displayedColumns = [
   //   'tank_no',
   //   'customer',
@@ -129,8 +113,8 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
 
   pageTitle = 'MENUITEMS.BILLING.LIST.PENDING'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.BILLING.TEXT'
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/clean' }
   ]
 
   translatedLangText: any = {};
@@ -179,14 +163,14 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    METHOD:"COMMON-FORM.METHOD",
+    METHOD: "COMMON-FORM.METHOD",
     QC: 'COMMON-FORM.QC',
-    BAY_OVERVIEW:"COMMON-FORM.BAY-OVERVIEW",
-    CLEANING:"COMMON-FORM.CLEANING",
-    INVOICES:"MENUITEMS.BILLING.LIST.INVOICES",
-    CUSTOMER_INVOICE:"MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE",
-    
-   
+    BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
+    CLEANING: "COMMON-FORM.CLEANING",
+    INVOICES: "MENUITEMS.BILLING.LIST.INVOICES",
+    CUSTOMER_INVOICE: "MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE",
+
+
   }
 
   filterCleanForm?: UntypedFormGroup;
@@ -201,7 +185,7 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
   cleanDS: InGateCleaningDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
-  cmDS:CleaningMethodDS;
+  cmDS: CleaningMethodDS;
 
   availableProcessStatus: string[] = [
     'APPROVED',
@@ -212,13 +196,13 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     'CANCELED'
   ]
 
-  cleanMethodList:CleaningMethodItem[]=[];
+  cleanMethodList: CleaningMethodItem[] = [];
   clnEstList: InGateCleaningItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  processStatusCvList:CodeValuesItem[]=[];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -264,9 +248,9 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.cleanDS = new InGateCleaningDS(this.apollo);
-    this.ttDS= new TimeTableDS(this.apollo);
+    this.ttDS = new TimeTableDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
-    this.cmDS=new CleaningMethodDS(this.apollo);
+    this.cmDS = new CleaningMethodDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -286,8 +270,8 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
   initSearchForm() {
     this.filterCleanForm = this.fb.group({
       filterClean: [''],
-      cleanMethod:[''],
-      status_cv: [['APPROVED','ASSIGNED']],
+      cleanMethod: [''],
+      status_cv: [['APPROVED', 'ASSIGNED']],
       customer: [''],
     });
     this.filterJobOrderForm = this.fb.group({
@@ -336,8 +320,8 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   public loadData() {
-   // this.onFilterCleaning();
-  //  this.onFilterJobOrder();
+    // this.onFilterCleaning();
+    //  this.onFilterJobOrder();
 
     const queries = [
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
@@ -408,20 +392,20 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
 
 
     const where: any = {
-      and:[
+      and: [
         //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
-        {storing_order_tank:{tank_status_cv:{in:["CLEANING"]}}}
+        { storing_order_tank: { tank_status_cv: { in: ["CLEANING"] } } }
       ]
     };
 
- 
+
     // or: [
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }
     // ]
     if (this.filterCleanForm!.get('cleanMethod')?.value) {
       where.and.push({
-        storing_order_tank: { tariff_cleaning:{cleaning_method:{ name: { eq: (this.filterCleanForm!.get('cleanMethod')?.value).name } }}}
+        storing_order_tank: { tariff_cleaning: { cleaning_method: { name: { eq: (this.filterCleanForm!.get('cleanMethod')?.value).name } } } }
       });
     }
     if (this.filterCleanForm!.get('filterClean')?.value) {
@@ -436,9 +420,9 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
       });
     }
 
-    if (this.filterCleanForm?.get('status_cv')?.value.length>0) {
+    if (this.filterCleanForm?.get('status_cv')?.value.length > 0) {
       where.and.push({
-        status_cv: { in: this.filterCleanForm!.get('status_cv')?.value} 
+        status_cv: { in: this.filterCleanForm!.get('status_cv')?.value }
       });
     }
 
@@ -472,11 +456,11 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
         this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
         this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
-        this.pageIndexClean=pageIndex;
-        this.paginator.pageIndex=this.pageIndexClean;
+        this.pageIndexClean = pageIndex;
+        this.paginator.pageIndex = this.pageIndexClean;
         //this.selection.clear();
-        if(!this.hasPreviousPageClean)
-          this.previous_endCursorClean=undefined;
+        if (!this.hasPreviousPageClean)
+          this.previous_endCursorClean = undefined;
         // this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
         // this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
         // this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
@@ -495,11 +479,11 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
         this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
         this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
-        this.pageIndexJobOrder=pageIndex;
-        this.paginator.pageIndex=this.pageIndexJobOrder;
+        this.pageIndexJobOrder = pageIndex;
+        this.paginator.pageIndex = this.pageIndexJobOrder;
         //this.selection.clear();
-        if(!this.hasPreviousPageJobOrder)
-          this.previous_endCursorJobOrder=undefined;
+        if (!this.hasPreviousPageJobOrder)
+          this.previous_endCursorJobOrder = undefined;
         // this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
         // this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
         // this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
@@ -510,26 +494,26 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     this.pageIndexJobOrder = pageIndex;
   }
 
-  
+
   onPageEventClean(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-   // let order:any|undefined=this.lastOrderBy;
+    // let order:any|undefined=this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSizeClean !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndexClean = 0;
-      this.pageSizeClean=pageSize;
+      this.pageSizeClean = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
       //if (pageIndex > this.pageIndex && this.hasNextPage) {
-        if (pageIndex > this.pageIndexClean ) {
+      if (pageIndex > this.pageIndexClean) {
         // Navigate forward
         first = pageSize;
         after = this.endCursorClean;
@@ -538,15 +522,14 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
         last = pageSize;
         before = this.startCursorClean;
       }
-      else if (pageIndex==this.pageIndexClean)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursorClean;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndexClean) {
+
+        first = pageSize;
+        after = this.previous_endCursorClean;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
 
@@ -584,24 +567,24 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-   // let order:any|undefined=this.lastOrderBy;
+    // let order:any|undefined=this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSizeClean !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndexClean = 0;
-      this.pageSizeClean=pageSize;
+      this.pageSizeClean = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
       //if (pageIndex > this.pageIndex && this.hasNextPage) {
-        if (pageIndex > this.pageIndexJobOrder ) {
+      if (pageIndex > this.pageIndexJobOrder) {
         // Navigate forward
         first = pageSize;
         after = this.endCursorJobOrder;
@@ -610,18 +593,17 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
         last = pageSize;
         before = this.startCursorJobOrder;
       }
-      else if (pageIndex==this.pageIndexJobOrder)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursorJobOrder;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndexJobOrder) {
+
+        first = pageSize;
+        after = this.previous_endCursorJobOrder;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
-    
+
     this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
@@ -669,7 +651,7 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   displayCleanMethodFn(cm: CleaningMethodItem): string {
-    return cm  ? `${cm.description} `: '';
+    return cm ? `${cm.description} ` : '';
   }
   initializeFilterCustomerCompany() {
     this.filterCleanForm!.get('customer')!.valueChanges.pipe(
@@ -687,8 +669,8 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
         });
       })
     ).subscribe();
-  
-  
+
+
     this.filterCleanForm!.get('cleanMethod')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -776,7 +758,7 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
   resetForm() {
     this.filterCleanForm?.patchValue({
       filterRepair: '',
-      cleanMethod:''
+      cleanMethod: ''
     });
   }
 
@@ -797,19 +779,18 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayTankStatus(status:string):string{
-    var retval:string="-";
+  displayTankStatus(status: string): string {
+    var retval: string = "-";
 
-    retval= this.processStatusCvList!
-    .filter(item => item.code_val === status)
-    .map(item => item.description)[0]!; // Returns the description of the first match
+    retval = this.processStatusCvList!
+      .filter(item => item.code_val === status)
+      .map(item => item.description)[0]!; // Returns the description of the first match
 
-    if(retval==="") retval="-"
+    if (retval === "") retval = "-"
     return retval;
   }
 
-  popupDialogForm(row:InGateCleaningItem, action:string)
-  {
+  popupDialogForm(row: InGateCleaningItem, action: string) {
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
     //   tempDirection = 'rtl';
@@ -820,10 +801,10 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     // if(row.status_cv==='QC_COMPLETED') action='view';
     // var rows :InGateCleaningItem[] =[] ;
     // rows.push(row);
-    
+
 
     // const dialogRef = this.dialog.open(FormDialogComponent,{
-      
+
     //   width: '1000px',
     //   data: {
     //     action: action,
@@ -833,182 +814,177 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     //   position: {
     //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
     //   }
-        
+
     // });
 
     // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     //      if (result) {
     //       if(result>0)
     //         {
-             
+
     //           this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
     //         }
     //   }
     //   });
-   
-   }
 
-    toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-       this.stopPropagation(event);  // Prevents the form submission
-       if (!isStarted) {
-         const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-         console.log(param)
-         const firstValidRepairPart = jobOrderItem.cleaning?.find(
-           (cleaning) => cleaning?.guid !== null
-         );
-         this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
-           if (result.data.startJobTimer > 0) {
-             var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-             this.UpdateCleaningStatusInProgress(item.guid!);
-           }
-         });
-       } else {
-         const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-         if (found?.length) {
-           const newParam = new TimeTableItem(found[0]);
-           newParam.stop_time = Utility.convertDate(new Date()) as number;
-           newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-           const param = [newParam];
-           console.log(param)
-           this.ttDS.stopJobTimer(param).subscribe(result => {
-            if(result.data.stopJobTimer)
-            {
-              this.completeJob( jobOrderItem) 
+  }
+
+  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
+    this.stopPropagation(event);  // Prevents the form submission
+    if (!isStarted) {
+      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
+      console.log(param)
+      const firstValidRepairPart = jobOrderItem.cleaning?.find(
+        (cleaning) => cleaning?.guid !== null
+      );
+      this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
+        if (result.data.startJobTimer > 0) {
+          var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+          this.UpdateCleaningStatusInProgress(item.guid!);
+        }
+      });
+    } else {
+      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      if (found?.length) {
+        const newParam = new TimeTableItem(found[0]);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          if (result.data.stopJobTimer) {
+            this.completeJob(jobOrderItem)
+          }
+
+        });
+      }
+    }
+  }
+
+  completeJob(jobOrderItem: JobOrderItem) {
+
+    const newParam = new UpdateJobOrderRequest({
+      guid: jobOrderItem?.guid,
+      remarks: jobOrderItem?.remarks,
+      start_dt: jobOrderItem?.start_dt,
+      complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+    });
+    const param = [newParam];
+    console.log(param)
+    this.joDS.completeJobOrder(param).subscribe(result => {
+      console.log(result)
+      if (result?.data?.completeJobOrder! > 0) {
+        var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+        this.UpdateCleaningStatusCompleted(item.guid!);
+      }
+    });
+  }
+
+  UpdateCleaningStatusInProgress(clean_guid: string) {
+
+
+    const where: any = {
+      and: []
+    };
+
+
+    where.and.push({
+      guid: { eq: clean_guid }
+    });
+
+
+    this.subs.sink = this.cleanDS.search(where)
+      .subscribe(data => {
+        if (data.length > 0) {
+          var cln = data[0];
+          var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+          rep.action = 'IN_PROGRESS';
+          delete rep.storing_order_tank;
+          delete rep.job_order;
+          delete rep.customer_company;
+          this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+
+            console.log(result);
+
+          });
+          //  this.clnDS.
+        }
+      });
+  }
+
+  UpdateCleaningStatusCompleted(clean_guid: string) {
+
+
+    const where: any = {
+      and: []
+    };
+
+    where.and.push({
+      job_order: { status_cv: { eq: 'COMPLETED' } }
+    });
+
+    where.and.push({
+      guid: { eq: clean_guid }
+    });
+
+
+    this.subs.sink = this.cleanDS.search(where)
+      .subscribe(data => {
+        if (data.length > 0) {
+          var cln = data[0];
+          var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+          rep.action = 'COMPLETE';
+          delete rep.storing_order_tank;
+          delete rep.job_order;
+          delete rep.customer_company;
+          this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+            console.log(result);
+            if (result.data.updateCleaning > 0) {
+              this.onFilterCleaning();
             }
 
-           });
-         }
-       }
-     }
-   
-     completeJob(jobOrderItem: JobOrderItem) {
-       
-       const newParam = new UpdateJobOrderRequest({
-         guid: jobOrderItem?.guid,
-         remarks: jobOrderItem?.remarks,
-         start_dt: jobOrderItem?.start_dt,
-         complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-       });
-       const param = [newParam];
-       console.log(param)
-       this.joDS.completeJobOrder(param).subscribe(result => {
-         console.log(result)
-         if (result?.data?.completeJobOrder! > 0) {
-           var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-           this.UpdateCleaningStatusCompleted(item.guid!);
-         }
-       });
-     }
 
-     UpdateCleaningStatusInProgress(clean_guid: string) {
-
-
-      const where: any = {
-        and: []
-      };
-  
-  
-      where.and.push({
-        guid: { eq: clean_guid }
+          });
+          //  this.clnDS.
+        }
       });
-  
-  
-      this.subs.sink = this.cleanDS.search(where)
-        .subscribe(data => {
-          if (data.length > 0) {
-            var cln = data[0];
-            var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-            rep.action = 'IN_PROGRESS';
-            delete rep.storing_order_tank;
-            delete rep.job_order;
-            delete rep.customer_company;
-            this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-  
-              console.log(result);
-  
-            });
-            //  this.clnDS.
-          }
-        });
-    }
+  }
 
-    UpdateCleaningStatusCompleted(clean_guid: string) {
-
-
-      const where: any = {
-        and: []
-      };
-  
-      where.and.push({
-        job_order: { status_cv: { eq: 'COMPLETED' } }
-      });
-  
-      where.and.push({
-        guid: { eq: clean_guid }
-      });
-  
-  
-      this.subs.sink = this.cleanDS.search(where)
-        .subscribe(data => {
-          if (data.length > 0) {
-            var cln = data[0];
-            var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-            rep.action = 'COMPLETE';
-            delete rep.storing_order_tank;
-            delete rep.job_order;
-            delete rep.customer_company;
-            this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-              console.log(result); 
-              if(result.data.updateCleaning>0)
-              {
-                 this.onFilterCleaning();
-              }
-              
-  
-            });
-            //  this.clnDS.
-          }
-        });
-    }
-
-     // isStarted(jobOrderItem: JobOrderItem | undefined) {
+  // isStarted(jobOrderItem: JobOrderItem | undefined) {
   //   return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
   // }
 
-  isStarted(cleanItem:InGateCleaningItem | undefined) {
+  isStarted(cleanItem: InGateCleaningItem | undefined) {
 
-    if(cleanItem?.job_order)
-      {
-        let jobOrderItem = cleanItem?.job_order;
-        return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-      }
-      return false;
+    if (cleanItem?.job_order) {
+      let jobOrderItem = cleanItem?.job_order;
+      return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+    }
+    return false;
 
-    
+
   }
 
-  canStartJob(cleanItem:InGateCleaningItem | undefined) {
-    if(cleanItem?.job_order)
-    {
+  canStartJob(cleanItem: InGateCleaningItem | undefined) {
+    if (cleanItem?.job_order) {
       return this.joDS.canStartJob(cleanItem?.job_order);
     }
     return false;
-    
+
   }
 
   canCompleteJob(jobOrderItem: JobOrderItem | undefined, isStarted: boolean | undefined): boolean {
     return this.joDS.canCompleteJob(jobOrderItem) && !isStarted;
   }
 
-  canShowAction(cleanItem:InGateCleaningItem)
-  {
-    return cleanItem.status_cv=='JOB_IN_PROGRESS';
+  canShowAction(cleanItem: InGateCleaningItem) {
+    return cleanItem.status_cv == 'JOB_IN_PROGRESS';
 
 
   }
 
-  sortList( itemList:any[]) {
-    itemList.sort((a:any, b:any) => {
+  sortList(itemList: any[]) {
+    itemList.sort((a: any, b: any) => {
       const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       return numA - numB;
@@ -1025,9 +1001,9 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
   onRefreshMainTab() {
     // Logic to refresh the content of the main tab
     console.log('Refreshing main tab content...');
-    this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
+    this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
-  
+
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
     // if(event.index===1)

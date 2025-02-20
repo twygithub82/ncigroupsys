@@ -13,7 +13,16 @@
           </a>
         </li>
         @for (item of items; track item) {
-          <li class="breadcrumb-item">{{item | translate}}</li>
+        @if (isString(item)) {
+        <li class="breadcrumb-item">{{item | translate}}</li>
+        }
+        @else {
+        <li class="breadcrumb-item">
+          <a [routerLink]="item.route">
+            {{item.text | translate}}
+          </a>
+        </li>
+        }
         }
         <li class="breadcrumb-item active">{{active_item | translate}}</li>
       </ul>

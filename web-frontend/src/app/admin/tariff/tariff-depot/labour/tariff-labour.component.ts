@@ -1,60 +1,38 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild,HostListener } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl,AbstractControl,Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
-import { MatRadioModule } from '@angular/material/radio';
-import { Apollo } from 'apollo-angular';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { Utility } from 'app/utilities/utility';
 import { MatDividerModule } from '@angular/material/divider';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
-import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-import {ExampleDataSource} from 'app/advance-table/advance-table.component';
-import { AdvanceTableService } from 'app/advance-table/advance-table.service';
-import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
-import { TariffBufferDS,TariffBufferItem } from 'app/data-sources/tariff-buffer';
-import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour';
-import {SearchCriteriaService} from 'app/services/search-criteria.service';
-import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
+import { Apollo } from 'apollo-angular';
+import { CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { TariffBufferItem } from 'app/data-sources/tariff-buffer';
+import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour';
+import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 
 @Component({
   selector: 'app-tariff-labour',
@@ -62,21 +40,16 @@ import { ComponentUtil } from 'app/utilities/component-util';
   templateUrl: './tariff-labour.component.html',
   styleUrl: './tariff-labour.component.scss',
   imports: [
-    BreadcrumbComponent,
     MatTooltipModule,
     MatButtonModule,
     MatIconModule,
     MatTableModule,
     MatSortModule,
-    NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -91,34 +64,28 @@ import { ComponentUtil } from 'app/utilities/component-util';
   ]
 })
 export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
-implements OnInit {
+  implements OnInit {
   displayedColumns = [
     'select',
     // 'img',
-     'fName',
-     'lName',
-     'email',
+    'fName',
+    'lName',
+    'email',
     //  'gender',
     // 'bDate',
     // 'mobile',
     // 'actions',
   ];
 
-  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-LABOUR'
-  breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.TARIFF.TEXT'
-  ]
-
   customerCodeControl = new UntypedFormControl();
-  categoryControl= new UntypedFormControl();
+  categoryControl = new UntypedFormControl();
 
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  tariffLabourDS : TariffLabourDS;
+  tariffLabourDS: TariffLabourDS;
 
-  tariffLabourItems : TariffLabourItem[]=[];
+  tariffLabourItems: TariffLabourItem[] = [];
 
   // custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   // customer_companyList1?: CustomerCompanyItem[];
@@ -133,15 +100,11 @@ implements OnInit {
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  
 
-  // exampleDatabase?: AdvanceTableService;
-   dataSource!: ExampleDataSource;
   selection = new SelectionModel<TariffBufferItem>(true, []);
-  
+
   id?: number;
- // advanceTable?: AdvanceTable;
-  dbMasterLabourCost?:TariffLabourItem;
+  dbMasterLabourCost?: TariffLabourItem;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
@@ -150,7 +113,7 @@ implements OnInit {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -198,46 +161,45 @@ implements OnInit {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME:'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS:'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST :'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
-    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
-    PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    DESCRIPTION : 'COMMON-FORM.DESCRIPTION',
-    COST : 'COMMON-FORM.COST',
-    COST_DETAILS : 'COMMON-FORM.COST-DETAILS',
-    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
+    CARGO_ALERT: 'COMMON-FORM.CARGO-ALERT',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    COST: 'COMMON-FORM.COST',
+    COST_DETAILS: 'COMMON-FORM.COST-DETAILS',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
-     }
-  
+  }
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-   // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
@@ -248,7 +210,7 @@ implements OnInit {
     // this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    this.tariffLabourDS= new TariffLabourDS(this.apollo);
+    this.tariffLabourDS = new TariffLabourDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -266,15 +228,15 @@ implements OnInit {
       this.translatedLangText = translations;
     });
   }
-  
+
   initTcForm() {
     this.pcForm = this.fb.group({
-      guid: [{value:''}],
+      guid: [{ value: '' }],
       // customer_code: this.customerCodeControl,
       // cleaning_category:this.categoryControl,
-      description : [''],
-      cost:[''],
-      remarks:[''],
+      description: [''],
+      cost: [''],
+      remarks: [''],
       lastUpdated: ['']
     });
   }
@@ -293,7 +255,7 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-   
+
   }
 
   preventDefault(event: Event) {
@@ -301,14 +263,13 @@ implements OnInit {
   }
 
   displayLastUpdated() {
-    if(this.dbMasterLabourCost===null) return '';
-    var updatedt= this.dbMasterLabourCost?.update_dt;
-    if(updatedt===null)
-    {
-      updatedt= this.dbMasterLabourCost?.create_dt;
+    if (this.dbMasterLabourCost === null) return '';
+    var updatedt = this.dbMasterLabourCost?.update_dt;
+    if (updatedt === null) {
+      updatedt = this.dbMasterLabourCost?.create_dt;
     }
     const date = new Date(updatedt! * 1000);
-    
+
     return this.displayDate(updatedt);
 
   }
@@ -317,39 +278,38 @@ implements OnInit {
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
-  adjustCost()
-  {
+  adjustCost() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       width: '600px',
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItem:this.dbMasterLabourCost
+        selectedItem: this.dbMasterLabourCost
       }
-        
+
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result>0) {
-          //if(result.selectedValue>0)
-          //{
-            this.handleSaveSuccess(result);
-            this.loadData();
-            
-         // }
+      if (result > 0) {
+        //if(result.selectedValue>0)
+        //{
+        this.handleSaveSuccess(result);
+        this.loadData();
+
+        // }
       }
-      });
+    });
   }
 
- 
-  
-  deleteItem(row: AdvanceTable) {
+
+
+  deleteItem(row: any) {
     // this.id = row.id;
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
@@ -396,49 +356,45 @@ implements OnInit {
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-     this.isAllSelected()
-       ? this.selection.clear()
-       : this.tariffLabourItems.forEach((row) =>
-           this.selection.select(row)
-         );
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.tariffLabourItems.forEach((row) =>
+        this.selection.select(row)
+      );
   }
 
 
 
-  search()
-  {
+  search() {
     const where: any = {};
 
-    if (this.pcForm!.value["description"])
-      {
-        const description :Text = this.pcForm!.value["description"];
-        where.description ={contains:description}
-      }
-
-    if (this.pcForm!.value["min_cost"])
-    {
-      const minCost :number = Number(this.pcForm!.value["min_cost"]);
-      where.cost ={gte:minCost}
+    if (this.pcForm!.value["description"]) {
+      const description: Text = this.pcForm!.value["description"];
+      where.description = { contains: description }
     }
 
-    if (this.pcForm!.value["max_cost"])
-      {
-        const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-        where.cost ={ngte:maxCost}
-      }
-      this.lastSearchCriteria=where;
-    this.subs.sink = this.tariffLabourDS.SearchTariffLabour(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.tariffLabourItems=data;
-       this.previous_endCursor=undefined;
-       this.endCursor = this.tariffLabourDS.pageInfo?.endCursor;
-       this.startCursor = this.tariffLabourDS.pageInfo?.startCursor;
-       this.hasNextPage = this.tariffLabourDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.tariffLabourDS.pageInfo?.hasPreviousPage ?? false;
-       this.pageIndex=0;
-       this.paginator.pageIndex=0;
-       this.selection.clear();
-       if(!this.hasPreviousPage)
-        this.previous_endCursor=undefined;
+    if (this.pcForm!.value["min_cost"]) {
+      const minCost: number = Number(this.pcForm!.value["min_cost"]);
+      where.cost = { gte: minCost }
+    }
+
+    if (this.pcForm!.value["max_cost"]) {
+      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+      where.cost = { ngte: maxCost }
+    }
+    this.lastSearchCriteria = where;
+    this.subs.sink = this.tariffLabourDS.SearchTariffLabour(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+      this.tariffLabourItems = data;
+      this.previous_endCursor = undefined;
+      this.endCursor = this.tariffLabourDS.pageInfo?.endCursor;
+      this.startCursor = this.tariffLabourDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tariffLabourDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tariffLabourDS.pageInfo?.hasPreviousPage ?? false;
+      this.pageIndex = 0;
+      this.paginator.pageIndex = 0;
+      this.selection.clear();
+      if (!this.hasPreviousPage)
+        this.previous_endCursor = undefined;
     });
   }
   handleSaveSuccess(count: any) {
@@ -447,23 +403,23 @@ implements OnInit {
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        
+
       });
     }
   }
 
   onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-    let order:any|undefined=this.lastOrderBy;
+    let order: any | undefined = this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
-      this.pageSize=pageSize;
+      this.pageSize = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
@@ -478,43 +434,40 @@ implements OnInit {
         last = pageSize;
         before = this.startCursor;
       }
-      else if (pageIndex==this.pageIndex)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursor;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndex) {
+
+        first = pageSize;
+        after = this.previous_endCursor;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
 
-      this.searchData(this.lastSearchCriteria,order,first,after,last,before,pageIndex,previousPageIndex);
+    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
     //}
   }
 
-   searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
-    previousPageIndex?:number)
-    {
-      this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.tariffLabourDS.SearchTariffLabour(where,order,first,after,last,before).subscribe(data => {
-        this.tariffLabourItems=data;
-        this.endCursor = this.tariffLabourDS.pageInfo?.endCursor;
-        this.startCursor = this.tariffLabourDS.pageInfo?.startCursor;
-        this.hasNextPage = this.tariffLabourDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.tariffLabourDS.pageInfo?.hasPreviousPage ?? false;
-        this.pageIndex=pageIndex;
-        this.paginator.pageIndex=this.pageIndex;
-        this.selection.clear();
-        if(!this.hasPreviousPage)
-          this.previous_endCursor=undefined;
-     });
-    }
-  
-  storeSearchCriteria(where :any, order:any, first:any, after:any, last:any,before:any, pageIndex:number,
-    previousPageIndex?:number,length?:number,hasNextPage?:boolean, hasPreviousPage?:boolean)
-  {
+  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number) {
+    this.previous_endCursor = this.endCursor;
+    this.subs.sink = this.tariffLabourDS.SearchTariffLabour(where, order, first, after, last, before).subscribe(data => {
+      this.tariffLabourItems = data;
+      this.endCursor = this.tariffLabourDS.pageInfo?.endCursor;
+      this.startCursor = this.tariffLabourDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tariffLabourDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tariffLabourDS.pageInfo?.hasPreviousPage ?? false;
+      this.pageIndex = pageIndex;
+      this.paginator.pageIndex = this.pageIndex;
+      this.selection.clear();
+      if (!this.hasPreviousPage)
+        this.previous_endCursor = undefined;
+    });
+  }
+
+  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
     const sCriteria: any = {};
     sCriteria.where = where;
     sCriteria.order = order;
@@ -522,12 +475,12 @@ implements OnInit {
     sCriteria.after = after;
     sCriteria.last = last;
     sCriteria.before = before;
-    sCriteria.pageIndex= pageIndex;
-    sCriteria.previousPageIndex=previousPageIndex;
+    sCriteria.pageIndex = pageIndex;
+    sCriteria.previousPageIndex = previousPageIndex;
     sCriteria.length = length;
-    sCriteria.hasNextPage=hasNextPage;
-    sCriteria.hasPreviousPage=hasPreviousPage;
-    
+    sCriteria.hasNextPage = hasNextPage;
+    sCriteria.hasPreviousPage = hasPreviousPage;
+
     this.searchCriteriaService.setCriteria(sCriteria);
   }
 
@@ -550,23 +503,22 @@ implements OnInit {
     // );
   }
   public loadData() {
-    this.dbMasterLabourCost=undefined;
+    this.dbMasterLabourCost = undefined;
 
-    this.tariffLabourDS.SearchTariffLabour().subscribe(data=>{
+    this.tariffLabourDS.SearchTariffLabour().subscribe(data => {
 
-       if(this.tariffLabourDS.totalCount>0)
-       {
-        this.dbMasterLabourCost=data[0];
-        
-         this.pcForm!.patchValue({
+      if (this.tariffLabourDS.totalCount > 0) {
+        this.dbMasterLabourCost = data[0];
+
+        this.pcForm!.patchValue({
           description: this.dbMasterLabourCost.description,
           cost: this.dbMasterLabourCost.cost,
           remarks: this.dbMasterLabourCost.remarks,
-          lastUpdated : this.displayLastUpdated()
+          lastUpdated: this.displayLastUpdated()
 
         });
 
-       }
+      }
     });
     // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
     //  // this.customer_companyList1 = data
@@ -580,7 +532,7 @@ implements OnInit {
 
     // });
 
-  
+
   }
   showNotification(
     colorName: string,
@@ -599,7 +551,7 @@ implements OnInit {
   // export table data in excel file
   exportExcel() {
     // key name with space add in brackets
-   // const exportData: Partial<TableElement>[] =
+    // const exportData: Partial<TableElement>[] =
     //   this.dataSource.filteredData.map((x) => ({
     //     'First Name': x.fName,
     //     'Last Name': x.lName,
@@ -615,7 +567,7 @@ implements OnInit {
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';

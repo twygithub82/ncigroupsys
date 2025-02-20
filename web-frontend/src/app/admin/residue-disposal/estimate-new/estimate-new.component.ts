@@ -1,67 +1,58 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
+import { CommonModule, DatePipe, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company'
-import { MatRadioModule } from '@angular/material/radio';
-import { Apollo } from 'apollo-angular';
-import { MatDividerModule } from '@angular/material/divider';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Observable, of, Subscription } from 'rxjs';
-import { TankDS, TankItem } from 'app/data-sources/tank';
-import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
-import { ComponentUtil } from 'app/utilities/component-util';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
-import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
-import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
-import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
-import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
-import { UserDS, UserItem } from 'app/data-sources/user';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { ResidueDS, ResidueItem,ResidueGO,ResidueStatusRequest } from 'app/data-sources/residue';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
+import { ResidueDS, ResidueGO, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { UserDS, UserItem } from 'app/data-sources/user';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { NgScrollbar } from 'ngx-scrollbar';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
 
 @Component({
@@ -84,36 +75,31 @@ import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    NgScrollbar,
     NgClass,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
     MatLabel,
     MatTableModule,
     MatPaginatorModule,
-    FeatherIconsComponent,
     MatProgressSpinnerModule,
-    RouterLink,
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    TlxFormFieldComponent
   ]
 })
 export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
     // 'group_name_cv',
-     'desc',
-     'qty',
-     'unit_price',
-     'cost',
-     'approve_part',
-     "actions"
-   
+    'desc',
+    'qty',
+    'unit_price',
+    'cost',
+    'approve_part',
+    "actions"
+
   ];
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
@@ -150,8 +136,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
-    ARE_YOU_SURE_UNO:'COMMON-FORM.ARE-YOU-SURE-UNDO',
-    UNDO:'COMMON-FORM.UNDO',
+    ARE_YOU_SURE_UNO: 'COMMON-FORM.ARE-YOU-SURE-UNDO',
+    UNDO: 'COMMON-FORM.UNDO',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
     INVALID: 'COMMON-FORM.INVALID',
@@ -212,13 +198,13 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
-    BILLING_PROFILE:'COMMON-FORM.BILLING-PROFILE',
-    BILLING_TO:'COMMON-FORM.BILLING-TO',
-    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    JOB_REFERENCE:'COMMON-FORM.JOB-REFERENCE',
-    QUANTITY:'COMMON-FORM.QTY',
-    UNIT_PRICE:'COMMON-FORM.UNIT-PRICE',
-    COST:'COMMON-FORM.COST',
+    BILLING_PROFILE: 'COMMON-FORM.BILLING-PROFILE',
+    BILLING_TO: 'COMMON-FORM.BILLING-TO',
+    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
+    JOB_REFERENCE: 'COMMON-FORM.JOB-REFERENCE',
+    QUANTITY: 'COMMON-FORM.QTY',
+    UNIT_PRICE: 'COMMON-FORM.UNIT-PRICE',
+    COST: 'COMMON-FORM.COST',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     APPROVE: 'COMMON-FORM.APPROVE',
@@ -234,7 +220,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
-  residueItem?:ResidueItem;
+  residueItem?: ResidueItem;
   repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
@@ -251,10 +237,10 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   unitTypeCvList: CodeValuesItem[] = []
   templateList: MasterTemplateItem[] = []
   surveyorList: UserItem[] = []
-  billingBranchList:CustomerCompanyItem[]=[];
-  packResidueList:PackageResidueItem[]=[];
-  displayPackResidueList:PackageResidueItem[]=[];
-  deList:any[]=[];
+  billingBranchList: CustomerCompanyItem[] = [];
+  packResidueList: PackageResidueItem[] = [];
+  displayPackResidueList: PackageResidueItem[] = [];
+  deList: any[] = [];
   reSelection = new SelectionModel<ResidueItem>(true, []);
 
   customerCodeControl = new UntypedFormControl();
@@ -266,12 +252,12 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   plDS: PackageLabourDS;
   repairEstDS: RepairDS;
   repairEstPartDS: RepairPartDS;
-  residueDS:ResidueDS;
-  
+  residueDS: ResidueDS;
+
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
-  
-  packResidueDS:PackageResidueDS;
+
+  packResidueDS: PackageResidueDS;
 
   userDS: UserDS;
   isOwner = false;
@@ -279,7 +265,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   isDuplicate = false;
 
   historyState: any = {};
-  updateSelectedItem:any=undefined;
+  updateSelectedItem: any = undefined;
 
   constructor(
     public httpClient: HttpClient,
@@ -304,8 +290,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
-    this.packResidueDS= new PackageResidueDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
+    this.packResidueDS = new PackageResidueDS(this.apollo);
+    this.residueDS = new ResidueDS(this.apollo);
 
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -322,23 +308,23 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   initForm() {
     this.residueEstForm = this.fb.group({
       guid: [''],
-      customer_code:[''],
-      billing_branch:[''],
-      job_no:[''],
-    
+      customer_code: [''],
+      billing_branch: [''],
+      job_no: [''],
+
       remarks: [''],
       last_test: [''],
       next_test: [''],
-      desc:[''],
-      qty:[''],
-      unit_price:[''],
-   
+      desc: [''],
+      qty: [''],
+      unit_price: [''],
+
       deList: ['']
     });
   }
 
   initializeValueChanges() {
-   
+
 
 
     this.residueEstForm?.get('desc')?.valueChanges.pipe(
@@ -346,13 +332,12 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       debounceTime(300),
       tap(value => {
         var desc_value = this.residueEstForm?.get("desc")?.value;
-        this.displayPackResidueList= this.packResidueList.filter(data=> data.tariff_residue?.description && data.tariff_residue?.description.includes(desc_value));
-        if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
-        else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
-        {
+        this.displayPackResidueList = this.packResidueList.filter(data => data.tariff_residue?.description && data.tariff_residue?.description.includes(desc_value));
+        if (!desc_value) this.displayPackResidueList = [...this.packResidueList];
+        else if (typeof desc_value === 'object' && this.updateSelectedItem === undefined) {
           this.residueEstForm?.patchValue({
 
-             unit_price: desc_value?.cost.toFixed(2)
+            unit_price: desc_value?.cost.toFixed(2)
           });
         }
 
@@ -589,57 +574,49 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
 
-  checkCompulsoryEst(fields:string[])
-  {
-    fields.forEach(name=>{
-    if( !this.residueEstForm?.get(name)?.value)
-      {
+  checkCompulsoryEst(fields: string[]) {
+    fields.forEach(name => {
+      if (!this.residueEstForm?.get(name)?.value) {
         this.residueEstForm?.get(name)?.setErrors({ required: true });
         this.residueEstForm?.get(name)?.markAsTouched(); // Trigger validation display
       }
     });
   }
 
-  checkDuplicationEst(item:PackageResidueItem ,index:number=-1)
-  {
-    var existItems = this.deList.filter(data=>data.description===item?.description)
-    if(existItems.length>0)
-    {
-      if(index==-1 || index!=existItems[0].index)
-      {
+  checkDuplicationEst(item: PackageResidueItem, index: number = -1) {
+    var existItems = this.deList.filter(data => data.description === item?.description)
+    if (existItems.length > 0) {
+      if (index == -1 || index != existItems[0].index) {
         this.residueEstForm?.get("desc")?.setErrors({ duplicated: true });
       }
     }
   }
 
   addEstDetails(event: Event) {
-    
-    this.preventDefault(event);  // Prevents the form submission
-    
-    var descObject :PackageResidueItem;
 
-    if(typeof this.residueEstForm?.get("desc")?.value==="object")
-    {
+    this.preventDefault(event);  // Prevents the form submission
+
+    var descObject: PackageResidueItem;
+
+    if (typeof this.residueEstForm?.get("desc")?.value === "object") {
       descObject = new PackageResidueItem(this.residueEstForm?.get("desc")?.value);
       descObject.description = descObject.tariff_residue?.description;
     }
-    else
-    {
+    else {
       descObject = new PackageResidueItem();
-      descObject.description= this.residueEstForm?.get("desc")?.value;
-      descObject.cost= Number(this.residueEstForm?.get("unit_price")?.value);
+      descObject.description = this.residueEstForm?.get("desc")?.value;
+      descObject.cost = Number(this.residueEstForm?.get("unit_price")?.value);
     }
 
 
-    this.checkCompulsoryEst(["desc","qty","unit_price"]);
-    var index :number =-1;
-    if(this.updateSelectedItem)
-    {
+    this.checkCompulsoryEst(["desc", "qty", "unit_price"]);
+    var index: number = -1;
+    if (this.updateSelectedItem) {
       index = this.updateSelectedItem.index;
     }
-    this.checkDuplicationEst(descObject,index);
-    if(!this.residueEstForm?.valid)return;
-    
+    this.checkDuplicationEst(descObject, index);
+    if (!this.residueEstForm?.valid) return;
+
 
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -648,34 +625,30 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       tempDirection = 'ltr';
     }
 
-    
+
     let residuePartItem = new ResiduePartItem();
-    if(index==-1)
-    {
-      residuePartItem.action="NEW";
+    if (index == -1) {
+      residuePartItem.action = "NEW";
     }
-    else
-    {
+    else {
       residuePartItem = this.deList[index];
-      residuePartItem.action = residuePartItem.guid?"EDIT":"NEW";
+      residuePartItem.action = residuePartItem.guid ? "EDIT" : "NEW";
     }
 
-    residuePartItem.cost= Number(this.residueEstForm?.get("unit_price")?.value);
-    residuePartItem.description= descObject.description;
-    residuePartItem.quantity=this.residueEstForm?.get("qty")?.value;
+    residuePartItem.cost = Number(this.residueEstForm?.get("unit_price")?.value);
+    residuePartItem.description = descObject.description;
+    residuePartItem.quantity = this.residueEstForm?.get("qty")?.value;
     residuePartItem.residue_guid = this.historyState.selectedResidue?.guid;
-    residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
+    residuePartItem.tariff_residue_guid = descObject.tariff_residue?.guid;
 
-    if(index===-1)
-    {
-      var newData =[...this.deList,residuePartItem];
+    if (index === -1) {
+      var newData = [...this.deList, residuePartItem];
       this.updateData(newData);
     }
-  this.resetSelectedItemForUpdating();
+    this.resetSelectedItemForUpdating();
   }
 
-  CancelEditEstDetails(event: Event)
-  {
+  CancelEditEstDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     this.resetSelectedItemForUpdating();
     // this.updateSelectedItem=undefined;
@@ -685,84 +658,81 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   editEstDetails(event: Event, row: ResiduePartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
-    if(row.delete_dt) return;
-    var itm =this.deList[index];
+    if (row.delete_dt) return;
+    var itm = this.deList[index];
     var IsEditedRow = itm.edited;
-  
+
 
     this.resetSelectedItemForUpdating();
 
-    if(IsEditedRow) return;
+    if (IsEditedRow) return;
 
-    
-    this.updateSelectedItem ={
-      item:this.deList[index],
-      index:index,
-      action:"update",
-      
+
+    this.updateSelectedItem = {
+      item: this.deList[index],
+      index: index,
+      action: "update",
+
     }
-    this.updateSelectedItem.item.edited=true;
+    this.updateSelectedItem.item.edited = true;
 
-    var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
-    var descValue:any;
-    if(descValues.length>0)
-    {
+    var descValues = this.packResidueList.filter(data => data.tariff_residue?.description === row.description);
+    var descValue: any;
+    if (descValues.length > 0) {
       descValue = descValues[0];
     }
-    else
-    {
+    else {
       descValue = new PackageResidueItem();
-      descValue.guid=row.guid;
-      descValue.description= row.description;
-      descValue.tariff_residue= new TariffResidueItem();
-      descValue.tariff_residue.description= row.description;
-      descValue.cost= Number(row.cost);
-      
+      descValue.guid = row.guid;
+      descValue.description = row.description;
+      descValue.tariff_residue = new TariffResidueItem();
+      descValue.tariff_residue.description = row.description;
+      descValue.cost = Number(row.cost);
+
     }
     this.residueEstForm?.patchValue({
-       desc:descValue,
-       qty:row.quantity,
-       unit_price:row.cost
+      desc: descValue,
+      qty: row.quantity,
+      unit_price: row.cost
     });
 
-   
-    
+
+
   }
 
-  undeleteItem(event: Event, row: ResiduePartItem, index: number)
-  {
-    
+  undeleteItem(event: Event, row: ResiduePartItem, index: number) {
 
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
-     const dialogRef = this.dialog.open(UndeleteDialogComponent, {
-       width: '1000px',
-       data: {
-         item: row,
-         langText: this.langText,
-         index: index
-       },
-       direction: tempDirection
-     });
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-       if (result?.action === 'confirmed') {
-         if (result.item.guid) {
-           const data: any[] = [...this.deList];
-           const updatedItem = {
-             ...result.item,
-             delete_dt: null,
-             action: ''
-           };
-           data[result.index] = updatedItem;
-           this.updateData(data); // Refresh the data source
-         } 
-         this.resetSelectedItemForUpdating();
-       }
-     });
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(UndeleteDialogComponent, {
+      width: '1000px',
+      data: {
+        item: row,
+        langText: this.langText,
+        index: index
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        if (result.item.guid) {
+          const data: any[] = [...this.deList];
+          const updatedItem = {
+            ...result.item,
+            delete_dt: null,
+            action: ''
+          };
+          data[result.index] = updatedItem;
+          this.updateData(data); // Refresh the data source
+        }
+        this.resetSelectedItemForUpdating();
+      }
+    });
 
   }
   deleteItem(event: Event, row: ResiduePartItem, index: number) {
@@ -868,19 +838,18 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
         const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
         console.log(reList);
 
-        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-        residueStatus.action="CANCEL";
+        let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action = "CANCEL";
         residueStatus.guid = this.residueItem?.guid;
-        residueStatus.sot_guid= this.residueItem?.sot_guid;
-        residueStatus.remarks=reList[0].remarks;
-         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+        residueStatus.sot_guid = this.residueItem?.sot_guid;
+        residueStatus.remarks = reList[0].remarks;
+        this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
 
           this.handleCancelSuccess(result?.data?.updateResidueStatus);
-          if(result?.data?.updateResidueStatus>0)
-            {
-              this.GoBackPrevious(event);
-            }
-         });
+          if (result?.data?.updateResidueStatus > 0) {
+            this.GoBackPrevious(event);
+          }
+        });
         // this.residueDS.cancelResidue(reList).subscribe(result => {
         //   this.handleCancelSuccess(result?.data?.cancelResidue)
         // });
@@ -896,10 +865,10 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       // this.toggleRow(row);
       selectedList.push(this.residueItem!);
     }
-    this.rollbackSelectedRows(event,selectedList)
+    this.rollbackSelectedRows(event, selectedList)
   }
 
-  rollbackSelectedRows(event: Event,row: ResidueItem[]) {
+  rollbackSelectedRows(event: Event, row: ResidueItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -927,15 +896,14 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
             guid: item.guid,
             remarks: item.remarks,
             sot_guid: item.sot_guid,
-            is_approved:item?.status_cv=="APPROVED"
+            is_approved: item?.status_cv == "APPROVED"
           }
           return ResidueEstimateRequestInput;
         });
         console.log(reList);
         this.residueDS.rollbackResidue(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
           this.handleRollbackSuccess(result?.data?.rollbackResidue)
-          if(result?.data?.rollbackResidue>0)
-          {
+          if (result?.data?.rollbackResidue > 0) {
             this.GoBackPrevious(event);
           }
           //this.performSearch(this.pageSize, 0, this.pageSize);
@@ -973,7 +941,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: any) {
     this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
@@ -996,70 +964,65 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.residueEstForm!.get('unit_price')?.setErrors(null);
     this.residueEstForm!.get('deList')?.setErrors(null);
 
-    if(!this.deList.length){
+    if (!this.deList.length) {
       this.residueEstForm?.get('deList')?.setErrors({ required: true });
     }
-    if(!this.residueEstForm?.valid) return;
+    if (!this.residueEstForm?.valid) return;
 
 
-    if(this.historyState.action==="NEW" ||this.historyState.action==="DUPLICATE")
-    {
-       var newResidueItem :ResidueItem =new ResidueItem();
-       var billGuid:string =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
-       newResidueItem.bill_to_guid= billGuid;
-       newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
-       newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-       newResidueItem.status_cv="PENDING";
-       newResidueItem.sot_guid=this.sotItem?.guid;
-       newResidueItem.residue_part= [];
-       this.deList.forEach(data=>{
-          var residuePart : ResiduePartItem = new ResiduePartItem(data);
-          newResidueItem.residue_part?.push(residuePart);
+    if (this.historyState.action === "NEW" || this.historyState.action === "DUPLICATE") {
+      var newResidueItem: ResidueItem = new ResidueItem();
+      var billGuid: string = (this.residueEstForm?.get("billing_branch")?.value ? this.sotItem?.storing_order?.customer_company?.guid : this.residueEstForm?.get("billing_branch")?.value?.guid);
+      newResidueItem.bill_to_guid = billGuid;
+      newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
+      newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
+      newResidueItem.status_cv = "PENDING";
+      newResidueItem.sot_guid = this.sotItem?.guid;
+      newResidueItem.residue_part = [];
+      this.deList.forEach(data => {
+        var residuePart: ResiduePartItem = new ResiduePartItem(data);
+        newResidueItem.residue_part?.push(residuePart);
 
-       });
+      });
 
-       delete newResidueItem.customer_company;
-      
-       this.residueDS.addResidue(newResidueItem).subscribe(result=>{
+      delete newResidueItem.customer_company;
 
-          if(result.data.addResidue>0)
-          {
-            this.handleSaveSuccess(result.data.addResidue);
-          }
-       });
+      this.residueDS.addResidue(newResidueItem).subscribe(result => {
+
+        if (result.data.addResidue > 0) {
+          this.handleSaveSuccess(result.data.addResidue);
+        }
+      });
     }
-    else if(this.historyState.action==="UPDATE")
-    {
-      var updResidueItem :ResidueItem =new ResidueItem(this.residueItem);
-      var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
-      if(!this.residueEstForm.get("billing_branch")?.value?.guid)
-      {
-        billGuid="";
+    else if (this.historyState.action === "UPDATE") {
+      var updResidueItem: ResidueItem = new ResidueItem(this.residueItem);
+      var billGuid: string = (this.residueEstForm.get("billing_branch")?.value ? this.residueEstForm.get("billing_branch")?.value?.guid : this.sotItem?.storing_order?.customer_company?.guid);
+      if (!this.residueEstForm.get("billing_branch")?.value?.guid) {
+        billGuid = "";
       }
-      updResidueItem.bill_to_guid= billGuid;
+      updResidueItem.bill_to_guid = billGuid;
       updResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
       updResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-      updResidueItem.sot_guid=this.sotItem?.guid;
-      updResidueItem.residue_part= [];
-      this.deList.forEach(data=>{
-         var residuePart : ResiduePartItem = new ResiduePartItem(data);
-         updResidueItem.residue_part?.push(residuePart);
+      updResidueItem.sot_guid = this.sotItem?.guid;
+      updResidueItem.residue_part = [];
+      this.deList.forEach(data => {
+        var residuePart: ResiduePartItem = new ResiduePartItem(data);
+        updResidueItem.residue_part?.push(residuePart);
 
       });
 
       delete updResidueItem.customer_company;
       delete updResidueItem.storing_order_tank;
 
-      this.residueDS.updateResidue(updResidueItem).subscribe(result=>{
+      this.residueDS.updateResidue(updResidueItem).subscribe(result => {
 
-        if(result.data.updateResidue>0)
-        {
+        if (result.data.updateResidue > 0) {
           this.handleSaveSuccess(result.data.updateResidue);
         }
-     });
+      });
 
     }
-   
+
   }
 
   updateData(newData: ResiduePartItem[] | undefined): void {
@@ -1068,25 +1031,24 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
         ...row,
         index: index
       }));
-      
+
       //this.calculateCost();
     }
-    else
-    {
-      this.deList=[];
-      
+    else {
+      this.deList = [];
+
     }
   }
 
   handleRollback(event: Event, row: any, index: number): void {
     this.stopEventTrigger(event);
     this.preventDefault(event);
-     //this.rollbackSelectedRows(event, row, index);
-   }
+    //this.rollbackSelectedRows(event, row, index);
+  }
 
   handleDelete(event: Event, row: any, index: number): void {
-   this.stopEventTrigger(event);
-   this.preventDefault(event);
+    this.stopEventTrigger(event);
+    this.preventDefault(event);
     this.deleteItem(event, row, index);
   }
 
@@ -1418,89 +1380,81 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
   }
 
-  getPackageResidue()
-  {
-    let where:any={};
-    let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
-    where.customer_company_guid = {eq:custCompanyGuid};
+  getPackageResidue() {
+    let where: any = {};
+    let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    where.customer_company_guid = { eq: custCompanyGuid };
 
-    this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
+    this.packResidueDS.SearchPackageResidue(where, {}).subscribe(data => {
 
-      this.packResidueList=data;
-      this.displayPackResidueList=data;
+      this.packResidueList = data;
+      this.displayPackResidueList = data;
       this.populateResiduePartList(this.residueItem!);
     });
 
   }
 
-  loadBillingBranch()
-  {
-    let where:any={};
-    let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
-    where.main_customer_guid = {eq:custCompanyGuid};
+  loadBillingBranch() {
+    let where: any = {};
+    let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    where.main_customer_guid = { eq: custCompanyGuid };
 
-    this.ccDS.search(where,{}).subscribe(data=>{
-      var def =this.createDefaultCustomerCompany("--Select--","");
+    this.ccDS.search(where, {}).subscribe(data => {
+      var def = this.createDefaultCustomerCompany("--Select--", "");
 
-      this.billingBranchList=[def, ...data];;
+      this.billingBranchList = [def, ...data];;
 
       this.patchResidueEstForm(this.residueItem!);
     });
 
   }
 
-  loadHistoryState()
-  {
+  loadHistoryState() {
     this.historyState = history.state;
 
     if (this.historyState.selectedRow != null) {
 
-      this.isDuplicate = this.historyState.action==='DUPLICATE';
+      this.isDuplicate = this.historyState.action === 'DUPLICATE';
       this.sotItem = this.historyState.selectedRow;
-      this.residueItem=this.historyState.selectedResidue;
+      this.residueItem = this.historyState.selectedResidue;
       this.getPackageResidue();
       this.loadBillingBranch();
-      
-      
+
+
     }
   }
 
-  patchResidueEstForm(residue:ResidueItem)
-  {
-    let billingGuid= "";
-    if(residue)
-    {
-      billingGuid=residue.bill_to_guid!;
+  patchResidueEstForm(residue: ResidueItem) {
+    let billingGuid = "";
+    if (residue) {
+      billingGuid = residue.bill_to_guid!;
     }
-    
+
     this.residueEstForm?.patchValue({
 
-      customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no: residue?.job_no?residue.job_no:this.sotItem?.job_no,
-       billing_branch:this.getBillingBranch(billingGuid),
-       remarks:residue?.remarks
+      customer_code: this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
+      job_no: residue?.job_no ? residue.job_no : this.sotItem?.job_no,
+      billing_branch: this.getBillingBranch(billingGuid),
+      remarks: residue?.remarks
 
     });
   }
 
-  getBillingBranch(billingGuid:string):CustomerCompanyItem
-  {
-    let ccItem:CustomerCompanyItem= this.billingBranchList[0] ;
-     let ccItems=this.billingBranchList.filter(data=>data.guid==billingGuid);
+  getBillingBranch(billingGuid: string): CustomerCompanyItem {
+    let ccItem: CustomerCompanyItem = this.billingBranchList[0];
+    let ccItems = this.billingBranchList.filter(data => data.guid == billingGuid);
 
-     if(ccItems.length>0)
-     {
-       ccItem=ccItems[0]!;
-     }
+    if (ccItems.length > 0) {
+      ccItem = ccItems[0]!;
+    }
 
-     return ccItem;
+    return ccItem;
 
   }
-  createDefaultCustomerCompany(code:string, name:string):CustomerCompanyItem
-  {
-    let ccItem:CustomerCompanyItem=new CustomerCompanyItem();
-    ccItem.code=code;
-    ccItem.name=name;
+  createDefaultCustomerCompany(code: string, name: string): CustomerCompanyItem {
+    let ccItem: CustomerCompanyItem = new CustomerCompanyItem();
+    ccItem.code = code;
+    ccItem.name = name;
     return ccItem
 
   }
@@ -1509,20 +1463,20 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return cc && cc.tariff_residue ? cc.tariff_residue.description : '';
   }
 
-  
 
-  resetValue(){
+
+  resetValue() {
 
     this.residueEstForm?.patchValue({
-      desc:'',
-      qty:'',
-      unit_price:''
-    },{emitEvent:false});
+      desc: '',
+      qty: '',
+      unit_price: ''
+    }, { emitEvent: false });
     this.residueEstForm?.get('desc')?.setErrors(null);
     this.residueEstForm?.get('qty')?.setErrors(null);
     this.residueEstForm?.get('unit_price')?.setErrors(null);
-    this.displayPackResidueList=[...this.packResidueList];
-  
+    this.displayPackResidueList = [...this.packResidueList];
+
   }
 
   GoBackPrevious(event: Event) {
@@ -1535,49 +1489,45 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     );
   }
 
-  populateResiduePartList(residue:ResidueItem){
+  populateResiduePartList(residue: ResidueItem) {
 
-    if(residue)
-    {
-      var dataList = residue.residue_part?.map(data=>
-        {
-          if (this.isDuplicate && data.description) {
-            data.action='NEW';
-            // Filter packResidueList for matching tariff_residue_guid
-            const packResidue = this.packResidueList.find(res => res.tariff_residue?.guid === data.tariff_residue_guid);
-            if (packResidue) {
-                data.cost = packResidue.cost;
-            }
+    if (residue) {
+      var dataList = residue.residue_part?.map(data => {
+        if (this.isDuplicate && data.description) {
+          data.action = 'NEW';
+          // Filter packResidueList for matching tariff_residue_guid
+          const packResidue = this.packResidueList.find(res => res.tariff_residue?.guid === data.tariff_residue_guid);
+          if (packResidue) {
+            data.cost = packResidue.cost;
           }
-          
-          return new ResidueEstPartGO(data)
+        }
 
-        } );
+        return new ResidueEstPartGO(data)
+
+      });
       this.updateData(dataList);
     }
   }
-  
-  resetSelectedItemForUpdating()
-  {
-    if(this.updateSelectedItem)
-    {
-      this.updateSelectedItem.item.edited=false;
-      this.updateSelectedItem=null;
-     
+
+  resetSelectedItemForUpdating() {
+    if (this.updateSelectedItem) {
+      this.updateSelectedItem.item.edited = false;
+      this.updateSelectedItem = null;
+
     }
     this.resetValue();
   }
 
   getTotalCost(): number {
     return this.deList.reduce((acc, row) => {
-      if (row.delete_dt===null) {
+      if (row.delete_dt === null) {
         return acc + ((row.quantity || 0) * (row.cost || 0));
       }
       return acc; // If row is approved, keep the current accumulator value
     }, 0);
   }
 
-  getFooterBackgroundColor():string{
+  getFooterBackgroundColor(): string {
     return 'light-green';
   }
 
@@ -1585,7 +1535,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      
+
     }
   }
 
@@ -1593,23 +1543,22 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-     
-     
+
+
     }
   }
 
-  isAllowToSaveSubmit()
-  {
-     var NoDel=this.deList.filter(d=>d.action!='cancel');
-     return (NoDel.length);
+  isAllowToSaveSubmit() {
+    var NoDel = this.deList.filter(d => d.action != 'cancel');
+    return (NoDel.length);
   }
 
   IsApprovePart(rep: ResiduePartItem) {
     return rep.approve_part;
   }
 
-  approveRow(event:Event) {
-   // const found = this.reSelection.selected.some(x => x.guid === row.guid);
+  approveRow(event: Event) {
+    // const found = this.reSelection.selected.some(x => x.guid === row.guid);
     // let selectedList = [...this.reSelection.selected];
     // if (!found) {
     //   // this.toggleRow(row);
@@ -1618,50 +1567,50 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.onApprove(this.residueItem!);
   }
 
-   onApprove(row: ResidueItem) {
+  onApprove(row: ResidueItem) {
     //  event.preventDefault();
-   //   const bill_to =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
-     
-     // if (bill_to) {
-        let re: ResidueItem = new ResidueItem(row);
-        // re.guid = this.residueItem?.guid;
-        // re.sot_guid = this.residueItem?.sot_guid;
-        // re.bill_to_guid = bill_to;
-        // re.status_cv=this.residueItem?.status_cv;
-        // this.deList?.forEach((rep: ResiduePartItem) => {
-        //   rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
-        //   rep.approve_qty = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
-        //   rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
-        //   rep.approve_cost = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
-        // })
-  
-        // re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
-        //   return new ResiduePartItem({
-        //     ...rep,
-        //     tariff_residue: undefined,
-        //     approve_part: rep.approve_part,
-        //      approve_qty:rep.approve_qty,
-        //      approve_cost:rep.approve_cost
-        //   })
-        // });
-        
-        // console.log(re)
-        // this.residueDS.approveResidue(re).subscribe(result => {
-        //   console.log(result)
-        //   this.handleSaveSuccess(result?.data?.approveResidue);
-        // });
-    //  }
-      // } else {
-      //   bill_to?.setErrors({ required: true })
-      //   bill_to?.markAsTouched();
-      //   bill_to?.updateValueAndValidity();
-      // }
-    }
+    //   const bill_to =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
 
-    toggleApprovePart(event:Event,rep: ResiduePartItem) {
-      event.stopPropagation(); // Prevents click event from bubbling up
-      if (!this.residueDS.canApprove(this.residueItem!)) return;
-      rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
-    }
-  
+    // if (bill_to) {
+    let re: ResidueItem = new ResidueItem(row);
+    // re.guid = this.residueItem?.guid;
+    // re.sot_guid = this.residueItem?.sot_guid;
+    // re.bill_to_guid = bill_to;
+    // re.status_cv=this.residueItem?.status_cv;
+    // this.deList?.forEach((rep: ResiduePartItem) => {
+    //   rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
+    //   rep.approve_qty = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
+    //   rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
+    //   rep.approve_cost = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
+    // })
+
+    // re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
+    //   return new ResiduePartItem({
+    //     ...rep,
+    //     tariff_residue: undefined,
+    //     approve_part: rep.approve_part,
+    //      approve_qty:rep.approve_qty,
+    //      approve_cost:rep.approve_cost
+    //   })
+    // });
+
+    // console.log(re)
+    // this.residueDS.approveResidue(re).subscribe(result => {
+    //   console.log(result)
+    //   this.handleSaveSuccess(result?.data?.approveResidue);
+    // });
+    //  }
+    // } else {
+    //   bill_to?.setErrors({ required: true })
+    //   bill_to?.markAsTouched();
+    //   bill_to?.updateValueAndValidity();
+    // }
+  }
+
+  toggleApprovePart(event: Event, rep: ResiduePartItem) {
+    event.stopPropagation(); // Prevents click event from bubbling up
+    if (!this.residueDS.canApprove(this.residueItem!)) return;
+    rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
+  }
+
 }

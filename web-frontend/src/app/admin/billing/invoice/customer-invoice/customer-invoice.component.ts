@@ -1,58 +1,50 @@
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { Apollo } from 'apollo-angular';
+import { BillingDS, BillingItem, BillingSOTItem, report_billing_customer, report_billing_item } from 'app/data-sources/billing';
+import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
-import {BillingDS,BillingItem,BillingSOTItem,report_billing_customer,report_billing_item}from 'app/data-sources/billing';
-import {InGateCleaningItem} from 'app/data-sources/in-gate-cleaning';
-import { RepairPartItem } from 'app/data-sources/repair-part';
-import {RepairDS, RepairItem}from 'app/data-sources/repair';
-import { ResidueItem } from 'app/data-sources/residue';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { ResidueItem } from 'app/data-sources/residue';
 import { SteamItem } from 'app/data-sources/steam';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerInvoicesPdfComponent } from 'app/document-template/pdf/customer-invoices-pdf/customer-invoices-pdf.component';
+import { Utility } from 'app/utilities/utility';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 
 
@@ -62,7 +54,6 @@ import { CustomerInvoicesPdfComponent } from 'app/document-template/pdf/customer
   templateUrl: './customer-invoice.component.html',
   styleUrl: './customer-invoice.component.scss',
   imports: [
-    BreadcrumbComponent,
     MatTooltipModule,
     MatButtonModule,
     MatIconModule,
@@ -99,11 +90,6 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     'tank_status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
-  breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
-  ]
-
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -133,11 +119,11 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     RO_NO: 'COMMON-FORM.RO-NO',
-    RELEASE_DATE:'COMMON-FORM.RELEASE-DATE',
-    INVOICE_DATE:'COMMON-FORM.INVOICE-DATE',
-    INVOICE_NO:'COMMON-FORM.INVOICE-NO',
-    BILLING_CURRENCY:'COMMON-FORM.BILLING-CURRENCY',
-    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
+    INVOICE_DATE: 'COMMON-FORM.INVOICE-DATE',
+    INVOICE_NO: 'COMMON-FORM.INVOICE-NO',
+    BILLING_CURRENCY: 'COMMON-FORM.BILLING-CURRENCY',
+    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
   }
 
   searchForm?: UntypedFormGroup;
@@ -151,9 +137,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   curDS: CurrencyDS;
-  billDS:BillingDS;
-  repDS:RepairDS;
-  pdDS:PackageDepotDS;
+  billDS: BillingDS;
+  repDS: RepairDS;
+  pdDS: PackageDepotDS;
 
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
@@ -164,10 +150,10 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
 
-  currencyList:CurrencyItem[]=[];
-  branch_companyList:CustomerCompanyItem[]=[]
+  currencyList: CurrencyItem[] = [];
+  branch_companyList: CustomerCompanyItem[] = []
 
-  billList:BillingItem[]=[];
+  billList: BillingItem[] = [];
 
   pageIndex = 0;
   pageSize = 100;
@@ -194,10 +180,10 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
-    this.curDS=new CurrencyDS(this.apollo);
-    this.billDS=new BillingDS(this.apollo);
-    this.repDS=new RepairDS(this.apollo);
-    this.pdDS=new PackageDepotDS(this.apollo);
+    this.curDS = new CurrencyDS(this.apollo);
+    this.billDS = new BillingDS(this.apollo);
+    this.repDS = new RepairDS(this.apollo);
+    this.pdDS = new PackageDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -214,24 +200,24 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
   initSearchForm() {
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
-      branch_code:this.branchCodeControl,
+      branch_code: this.branchCodeControl,
       last_cargo: this.lastCargoControl,
-      currency:[''],
+      currency: [''],
       eir_no: [''],
       ro_no: [''],
-      eir_dt:[''],
-      release_dt:[''],
+      eir_dt: [''],
+      release_dt: [''],
       inv_dt_start: [''],
       inv_dt_end: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
       tank_no: [''],
-      inv_no:[''],
+      inv_no: [''],
       job_no: [''],
       purpose: [''],
       tank_status_cv: [''],
       eir_status_cv: [''],
-      
+
     });
   }
 
@@ -241,7 +227,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList=[];
+        this.branch_companyList = [];
         this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
@@ -251,13 +237,11 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if(!this.customerCodeControl.invalid)
-          {
-            if(this.customerCodeControl.value?.guid)
-            {
+          if (!this.customerCodeControl.invalid) {
+            if (this.customerCodeControl.value?.guid) {
               let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({main_customer_guid:{eq:mainCustomerGuid}}).subscribe(data=>{
-                this.branch_companyList=data;
+              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+                this.branch_companyList = data;
                 this.updateValidators(this.branchCodeControl, this.branch_companyList);
               });
             }
@@ -267,7 +251,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     ).subscribe();
 
 
-   
+
 
     this.searchForm!.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
@@ -309,8 +293,8 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
       this.yardCvList = addDefaultSelectOption(data, 'All');
     });
 
-    this.curDS.search({},{sequence:'ASC'},100).subscribe(data=>{
-      this.currencyList=data;
+    this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
+      this.currencyList = data;
     });
     //this.search();
   }
@@ -359,7 +343,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
 
-  
+
 
   search1() {
     const where: any = {};
@@ -385,7 +369,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     }
 
 
-   
+
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
@@ -511,9 +495,9 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     this.searchForm?.patchValue({
       currency: '',
       eir_no: '',
-      eir_dt:'',
-      inv_dt_start:'',
-      inv_dt_end:'',
+      eir_dt: '',
+      inv_dt_start: '',
+      inv_dt_end: '',
       tank_no: '',
       job_no: '',
       inv_no: '',
@@ -523,569 +507,762 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.customerCodeControl.reset('');
     this.branchCodeControl.reset('');
- 
+
   }
 
   searchBilling() {
-      const where: any ={};
-      
-         where.and=[];
-  
-         const itm:any={or:[]};
-         itm.or.push({cleaning:{any:true }});
-         itm.or.push({repair_customer:{any: true }});
-         itm.or.push({repair_owner:{any: true }});
-         itm.or.push({residue:{any: true }});
-         itm.or.push({steaming:{any: true }});
-         itm.or.push({gateio_billing_sot:{any: true }});
-         itm.or.push({lolo_billing_sot:{any: true }});
-         itm.or.push({preinsp_billing_sot:{any: true }});
-         itm.or.push({storage_billing_sot:{any: true }});
-         where.and.push(itm);
-  
-  
-         where.guid={neq:null};
-         if (this.searchForm!.get('tank_no')?.value) {
-          const itm:any={or:[]};
-          
-          itm.or.push({cleaning:{some:{storing_order_tank:{tank_no:{contains: this.searchForm!.get('tank_no')?.value}}}}});
-          itm.or.push({repair_customer:{some:{storing_order_tank:{tank_no:{contains: this.searchForm!.get('tank_no')?.value}}}}});
-          itm.or.push({repair_owner:{some:{storing_order_tank:{tank_no:{contains: this.searchForm!.get('tank_no')?.value}}}}});
-          itm.or.push({residue:{some:{storing_order_tank:{tank_no:{contains: this.searchForm!.get('tank_no')?.value}}}}});
-          itm.or.push({steaming:{some:{storing_order_tank:{tank_no:{contains: this.searchForm!.get('tank_no')?.value}}}}});
-          itm.or.push({gateio_billing_sot:{some:{storing_order_tank:{tank_no:{contains: this.searchForm!.get('tank_no')?.value}}}}});
-          itm.or.push({lolo_billing_sot:{some:{storing_order_tank:{tank_no:{contains: this.searchForm!.get('tank_no')?.value}}}}});
-          itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:{tank_no:{contains: this.searchForm!.get('tank_no')?.value}}}}});
-          itm.or.push({storage_billing_sot:{some:{storing_order_tank:{tank_no:{contains: this.searchForm!.get('tank_no')?.value}}}}});
-          where.and.push(itm);
-          // where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
-         }
-     
-         if(this.searchForm!.get('inv_no')?.value)
-           {
-             where.invoice_no={contains: this.searchForm!.get('inv_no')?.value};
-           }
-     
-         if (this.searchForm!.get('customer_code')?.value) {
-           if(!where.customer_company) where.customer_company={};
-           where.customer_company = { code:{eq: this.searchForm!.get('customer_code')?.value.code }};
-           // where.storing_order_tank={customer_company:{code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
-         }
-     
-         if(this.searchForm!.get('branch_code')?.value)
-         {
-  
-          const itm:any={or:[]};
-          
-          itm.or.push({cleaning:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-          itm.or.push({repair_customer:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-          itm.or.push({repair_owner:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-          itm.or.push({residue:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-          itm.or.push({steaming:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-          itm.or.push({gateio_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-          itm.or.push({lolo_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-          itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-          itm.or.push({storage_billing_sot:{some:{storing_order_tank:{storing_order:{eq: this.searchForm!.get('branch_code')?.value.guid}}}}});
-          where.and.push(itm);
-         }
-     
-         if (this.searchForm!.get('eir_dt')?.value) {
-          //  if(!where.storing_order_tank) where.storing_order_tank={};
-          //  where.storing_order_tank.in_gate = { some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-          //      {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}};
-  
-           const itm:any={or:[]};
-          
-           itm.or.push({cleaning:{some:{storing_order_tank:{in_gate:{some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}});
-           itm.or.push({repair_customer:{some:{storing_order_tank:{in_gate:{some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}});
-           itm.or.push({repair_owner:{some:{storing_order_tank:{in_gate:{some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}});
-           itm.or.push({residue:{some:{storing_order_tank:{in_gate:{some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}});
-           itm.or.push({steaming:{some:{storing_order_tank:{in_gate:{some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}});
-           itm.or.push({gateio_billing_sot:{some:{storing_order_tank:{in_gate:{some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}});
-           itm.or.push({lolo_billing_sot:{some:{storing_order_tank:{in_gate:{some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}});
-           itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:{in_gate:{some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}});
-           itm.or.push({storage_billing_sot:{some:{storing_order_tank:{in_gate:{some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}});
-  
-           where.and.push(itm);
-         }
-         if (this.searchForm!.get('eir_no')?.value) {
-          //  if(!where.storing_order_tank) where.storing_order_tank={};
-          //  where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
-  
-           const itm:any={or:[]};
-          
-           itm.or.push({cleaning:{some:{storing_order_tank:{in_gate:{some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}}}}});
-           itm.or.push({repair_customer:{some:{storing_order_tank:{in_gate:{some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}}}}});
-           itm.or.push({repair_owner:{some:{storing_order_tank:{in_gate:{some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}}}}});
-           itm.or.push({residue:{some:{storing_order_tank:{in_gate:{some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}}}}});
-           itm.or.push({steaming:{some:{storing_order_tank:{in_gate:{some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}}}}});
-           itm.or.push({gateio_billing_sot:{some:{storing_order_tank:{in_gate:{some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}}}}});
-           itm.or.push({lolo_billing_sot:{some:{storing_order_tank:{in_gate:{some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}}}}});
-           itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:{in_gate:{some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}}}}});
-           itm.or.push({storage_billing_sot:{some:{storing_order_tank:{in_gate:{some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}}}}}});
-  
-           where.and.push(itm);
-         }
-     
-         if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-           //if(!where.gateio_billing) where.gateio_billing={};
-           where.invoice_dt={gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'],true) };
-           //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-         }
-     
-        //  if (this.searchForm!.get('cutoff_dt')?.value) {
-           
-        //    where.create_dt={lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) };
-        //    //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-        //  }
-     
-         if (this.searchForm!.get('release_dt')?.value) {
-          //  if(!where.storing_order_tank) where.storing_order_tank={};
-          //  where.storing_order_tank.out_gate={some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-          //  {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}};
-           //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-  
-           const itm:any={or:[]};
-          
-           itm.or.push({cleaning:{some:{storing_order_tank:{out_gate:{some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}}});
-           itm.or.push({repair_customer:{some:{storing_order_tank:{out_gate:{some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}}});
-           itm.or.push({repair_owner:{some:{storing_order_tank:{out_gate:{some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}}});
-           itm.or.push({residue:{some:{storing_order_tank:{out_gate:{some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}}});
-           itm.or.push({steaming:{some:{storing_order_tank:{out_gate:{some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}}});
-           itm.or.push({gateio_billing_sot:{some:{storing_order_tank:{out_gate:{some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}}});
-           itm.or.push({lolo_billing_sot:{some:{storing_order_tank:{out_gate:{some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}}});
-           itm.or.push({preinsp_billing_sot:{some:{storing_order_tank:{out_gate:{some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}}});
-           itm.or.push({storage_billing_sot:{some:{storing_order_tank:{out_gate:{some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-           {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}}}}}});
-  
-           where.and.push(itm);
-         }
-     
-        
-         this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
-         this.performBillingSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    const where: any = {};
+
+    where.and = [];
+
+    const itm: any = { or: [] };
+    itm.or.push({ cleaning: { any: true } });
+    itm.or.push({ repair_customer: { any: true } });
+    itm.or.push({ repair_owner: { any: true } });
+    itm.or.push({ residue: { any: true } });
+    itm.or.push({ steaming: { any: true } });
+    itm.or.push({ gateio_billing_sot: { any: true } });
+    itm.or.push({ lolo_billing_sot: { any: true } });
+    itm.or.push({ preinsp_billing_sot: { any: true } });
+    itm.or.push({ storage_billing_sot: { any: true } });
+    where.and.push(itm);
+
+
+    where.guid = { neq: null };
+    if (this.searchForm!.get('tank_no')?.value) {
+      const itm: any = { or: [] };
+
+      itm.or.push({ cleaning: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ repair_customer: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ repair_owner: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ residue: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ steaming: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ gateio_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ lolo_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ preinsp_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ storage_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      where.and.push(itm);
+      // where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
     }
 
-    performBillingSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-      this.subs.sink = this.billDS.searchBillingWithBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-        .subscribe(data => {
-          this.billList = data;
-          
-          this.export_report();
-        });
-  
-      // this.pageSize = pageSize;
-      // this.pageIndex = pageIndex;
+    if (this.searchForm!.get('inv_no')?.value) {
+      where.invoice_no = { contains: this.searchForm!.get('inv_no')?.value };
     }
-  export_report()
-  {
-    if(!this.billList.length) return;
 
-     var repCustomers : report_billing_customer[]=[]
-     // var rpItems:report_billing_item[]=[];
+    if (this.searchForm!.get('customer_code')?.value) {
+      if (!where.customer_company) where.customer_company = {};
+      where.customer_company = { code: { eq: this.searchForm!.get('customer_code')?.value.code } };
+      // where.storing_order_tank={customer_company:{code:{eq: this.searchForm!.get('customer_code')?.value.code }}};
+    }
 
-      this.billList.forEach(b=>{
-         var repCusts = repCustomers.filter(c=>c.guid===b.bill_to_guid);
-         var repCust : report_billing_customer=new report_billing_customer();
-         var newCust:boolean=true;
-         if(repCusts.length>0)
-         {
-          repCust= repCusts[0];
-          newCust=false;
-         }
-         else
-         {
-          repCust.guid=b.customer_company?.guid;
-          repCust.items=[];
-         }
-         repCust.customer=this.ccDS.displayName(b.customer_company);
-         if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-            repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
-         }
-         let rpBillingItm =this.createReportBillingItem(b,repCust.items!);
-         repCust.items=rpBillingItm;
+    if (this.searchForm!.get('branch_code')?.value) {
 
-         if(newCust) repCustomers.push(repCust);
-        
+      const itm: any = { or: [] };
+
+      itm.or.push({ cleaning: { some: { storing_order_tank: { storing_order: { eq: this.searchForm!.get('branch_code')?.value.guid } } } } });
+      itm.or.push({ repair_customer: { some: { storing_order_tank: { storing_order: { eq: this.searchForm!.get('branch_code')?.value.guid } } } } });
+      itm.or.push({ repair_owner: { some: { storing_order_tank: { storing_order: { eq: this.searchForm!.get('branch_code')?.value.guid } } } } });
+      itm.or.push({ residue: { some: { storing_order_tank: { storing_order: { eq: this.searchForm!.get('branch_code')?.value.guid } } } } });
+      itm.or.push({ steaming: { some: { storing_order_tank: { storing_order: { eq: this.searchForm!.get('branch_code')?.value.guid } } } } });
+      itm.or.push({ gateio_billing_sot: { some: { storing_order_tank: { storing_order: { eq: this.searchForm!.get('branch_code')?.value.guid } } } } });
+      itm.or.push({ lolo_billing_sot: { some: { storing_order_tank: { storing_order: { eq: this.searchForm!.get('branch_code')?.value.guid } } } } });
+      itm.or.push({ preinsp_billing_sot: { some: { storing_order_tank: { storing_order: { eq: this.searchForm!.get('branch_code')?.value.guid } } } } });
+      itm.or.push({ storage_billing_sot: { some: { storing_order_tank: { storing_order: { eq: this.searchForm!.get('branch_code')?.value.guid } } } } });
+      where.and.push(itm);
+    }
+
+    if (this.searchForm!.get('eir_dt')?.value) {
+      //  if(!where.storing_order_tank) where.storing_order_tank={};
+      //  where.storing_order_tank.in_gate = { some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
+      //      {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}};
+
+      const itm: any = { or: [] };
+
+      itm.or.push({
+        cleaning: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
       });
-      repCustomers.map(c=>{
-       
-          c.items?.map(i=>{
-             var total:number=0;
-             total = Number(i.clean_cost||0)+Number(i.gateio_cost||0)+Number(i.lolo_cost||0)+Number(i.preins_cost||0)
-                    +Number(i.storage_cost||0)+Number(i.repair_cost||0)+Number(i.residue_cost||0)+Number(i.steam_cost||0) ;
-            i.total= total.toFixed(2);
+      itm.or.push({
+        repair_customer: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        repair_owner: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        residue: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        steaming: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        gateio_billing_sot: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        lolo_billing_sot: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        preinsp_billing_sot: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        storage_billing_sot: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
 
-          });
+      where.and.push(itm);
+    }
+    if (this.searchForm!.get('eir_no')?.value) {
+      //  if(!where.storing_order_tank) where.storing_order_tank={};
+      //  where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
+
+      const itm: any = { or: [] };
+
+      itm.or.push({ cleaning: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ repair_customer: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ repair_owner: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ residue: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ steaming: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ gateio_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ lolo_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ preinsp_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ storage_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+
+      where.and.push(itm);
+    }
+
+    if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+      //if(!where.gateio_billing) where.gateio_billing={};
+      where.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+    //  if (this.searchForm!.get('cutoff_dt')?.value) {
+
+    //    where.create_dt={lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) };
+    //    //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    //  }
+
+    if (this.searchForm!.get('release_dt')?.value) {
+      //  if(!where.storing_order_tank) where.storing_order_tank={};
+      //  where.storing_order_tank.out_gate={some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
+      //  {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}};
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+
+      const itm: any = { or: [] };
+
+      itm.or.push({
+        cleaning: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        repair_customer: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        repair_owner: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        residue: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        steaming: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        gateio_billing_sot: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        lolo_billing_sot: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        preinsp_billing_sot: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        storage_billing_sot: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      where.and.push(itm);
+    }
+
+
+    this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
+    this.performBillingSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  performBillingSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.subs.sink = this.billDS.searchBillingWithBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.billList = data;
+
+        this.export_report();
+      });
+
+    // this.pageSize = pageSize;
+    // this.pageIndex = pageIndex;
+  }
+  export_report() {
+    if (!this.billList.length) return;
+
+    var repCustomers: report_billing_customer[] = []
+    // var rpItems:report_billing_item[]=[];
+
+    this.billList.forEach(b => {
+      var repCusts = repCustomers.filter(c => c.guid === b.bill_to_guid);
+      var repCust: report_billing_customer = new report_billing_customer();
+      var newCust: boolean = true;
+      if (repCusts.length > 0) {
+        repCust = repCusts[0];
+        newCust = false;
+      }
+      else {
+        repCust.guid = b.customer_company?.guid;
+        repCust.items = [];
+      }
+      repCust.customer = this.ccDS.displayName(b.customer_company);
+      if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+        repCust.invoice_period = `${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
+      }
+      let rpBillingItm = this.createReportBillingItem(b, repCust.items!);
+      repCust.items = rpBillingItm;
+
+      if (newCust) repCustomers.push(repCust);
+
+    });
+    repCustomers.map(c => {
+
+      c.items?.map(i => {
+        var total: number = 0;
+        total = Number(i.clean_cost || 0) + Number(i.gateio_cost || 0) + Number(i.lolo_cost || 0) + Number(i.preins_cost || 0)
+          + Number(i.storage_cost || 0) + Number(i.repair_cost || 0) + Number(i.residue_cost || 0) + Number(i.steam_cost || 0);
+        i.total = total.toFixed(2);
 
       });
+
+    });
     this.onExport(repCustomers);
 
   }
 
-  createReportBillingItem(b:BillingItem,rbItm:report_billing_item[]):report_billing_item[]
-  {
-    var repBillItems:report_billing_item[]=rbItm;
-    var repBillingItm:report_billing_item= new report_billing_item();
+  createReportBillingItem(b: BillingItem, rbItm: report_billing_item[]): report_billing_item[] {
+    var repBillItems: report_billing_item[] = rbItm;
+    var repBillingItm: report_billing_item = new report_billing_item();
 
-    var sot_guids:string[]=[];
-    if(b.cleaning?.length!>0) this.calculateCleaningCost(b.cleaning!,repBillItems);
-    if(b.gateio_billing_sot?.length!>0) this.calculateGateInOutCost(b.gateio_billing_sot!,repBillItems);
-    if(b.lolo_billing_sot?.length!>0) this.calculateLOLOCost(b.lolo_billing_sot!,repBillItems);
-    if(b.preinsp_billing_sot?.length!>0)this.calculatePreInspectionCost(b.preinsp_billing_sot!,repBillItems);
-    if(b.repair_customer?.length!>0) this.calculateRepairCost(b.repair_customer!,repBillItems);
-    if(b.repair_owner?.length!>0) this.calculateRepairCost(b.repair_owner!,repBillItems,1);
-    if(b.residue?.length!>0) this.calculateResidueCost(b.residue!,repBillItems);
-    if(b.storage_billing_sot?.length!>0)this.calculateStorageCost(b.storage_billing_sot!,repBillItems);
-    if(b.steaming?.length!>0) this.calculateSteamingCost(b.steaming!,repBillItems);
-    
-    
-     // repBillingItm.job_no = b.
-      //repBillingItm.clean_cost =this.calculateCleaningCost(b.cleaning!);
+    var sot_guids: string[] = [];
+    if (b.cleaning?.length! > 0) this.calculateCleaningCost(b.cleaning!, repBillItems);
+    if (b.gateio_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gateio_billing_sot!, repBillItems);
+    if (b.lolo_billing_sot?.length! > 0) this.calculateLOLOCost(b.lolo_billing_sot!, repBillItems);
+    if (b.preinsp_billing_sot?.length! > 0) this.calculatePreInspectionCost(b.preinsp_billing_sot!, repBillItems);
+    if (b.repair_customer?.length! > 0) this.calculateRepairCost(b.repair_customer!, repBillItems);
+    if (b.repair_owner?.length! > 0) this.calculateRepairCost(b.repair_owner!, repBillItems, 1);
+    if (b.residue?.length! > 0) this.calculateResidueCost(b.residue!, repBillItems);
+    if (b.storage_billing_sot?.length! > 0) this.calculateStorageCost(b.storage_billing_sot!, repBillItems);
+    if (b.steaming?.length! > 0) this.calculateSteamingCost(b.steaming!, repBillItems);
+
+
+    // repBillingItm.job_no = b.
+    //repBillingItm.clean_cost =this.calculateCleaningCost(b.cleaning!);
 
     return repBillItems;
 
   }
 
-  distinctSOT(estimate:any[],sot_guids:string[]):string[]
-  {
+  distinctSOT(estimate: any[], sot_guids: string[]): string[] {
     //var sGuids:string[]=sot_guids;
 
-   var distinctSotGuids= [... new Set(estimate.map(item=>item.storing_order_tank?.guid))];
-   const sGuids = [...new Set([...sot_guids, ...distinctSotGuids])];
+    var distinctSotGuids = [... new Set(estimate.map(item => item.storing_order_tank?.guid))];
+    const sGuids = [...new Set([...sot_guids, ...distinctSotGuids])];
 
     return sGuids;
 
   }
-  calculateCleaningCost(items:InGateCleaningItem[],rep_bill_items:report_billing_item[])
-  {
-     var retval :string ="";
+  calculateCleaningCost(items: InGateCleaningItem[], rep_bill_items: report_billing_item[]) {
+    var retval: string = "";
 
-      if(items.length>0)
-      {
-        var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-        if(itms.length>0)
-        { 
+    if (items.length > 0) {
+      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+      if (itms.length > 0) {
 
-          itms.forEach(c=>{
-             let newItem=false;
-            let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
+        itms.forEach(c => {
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
 
-            if(!rep_bill_item)
-            {
-              newItem=true;
-              rep_bill_item= new report_billing_item();
-              rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-            }
-            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-            rep_bill_item.clean_est_no +=1;
-            rep_bill_item.clean_cost = Number(Number( rep_bill_item?.clean_cost||0)+ (c.cleaning_cost||0)+ (c.buffer_cost||0)).toFixed(2);
-            if(newItem)rep_bill_items.push(rep_bill_item);
-            
-          });
-        }
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = new report_billing_item();
+            rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
+          if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
+          if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
+          if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
+          rep_bill_item.clean_est_no += 1;
+          rep_bill_item.clean_cost = Number(Number(rep_bill_item?.clean_cost || 0) + (c.cleaning_cost || 0) + (c.buffer_cost || 0)).toFixed(2);
+          if (newItem) rep_bill_items.push(rep_bill_item);
+
+        });
       }
-     return retval;
+    }
+    return retval;
 
   }
 
-  calculateGateInOutCost(items:BillingSOTItem[],rep_bill_items:report_billing_item[])
-  {
-     var retval :string ="";
+  calculateGateInOutCost(items: BillingSOTItem[], rep_bill_items: report_billing_item[]) {
+    var retval: string = "";
 
-      if(items.length>0)
-      {
-        var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-        if(itms.length>0)
-        { 
-          itms.forEach(c=>{
-             let newItem=false;
-            let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-            if(!rep_bill_item)
-            {
-              newItem=true;
-              rep_bill_item= new report_billing_item();
-              rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-            }
-            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-            rep_bill_item.gateio_est_no +=1;
-            rep_bill_item.gateio_cost = Number(Number( rep_bill_item?.gateio_cost||0)+ (c.gate_in_cost||0)+(c.gate_out_cost||0)).toFixed(2);
-            if(newItem)rep_bill_items.push(rep_bill_item);
-            
-          });
-        }
+    if (items.length > 0) {
+      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+      if (itms.length > 0) {
+        itms.forEach(c => {
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = new report_billing_item();
+            rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
+          if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
+          if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
+          if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
+          rep_bill_item.gateio_est_no += 1;
+          rep_bill_item.gateio_cost = Number(Number(rep_bill_item?.gateio_cost || 0) + (c.gate_in_cost || 0) + (c.gate_out_cost || 0)).toFixed(2);
+          if (newItem) rep_bill_items.push(rep_bill_item);
+
+        });
       }
-     return retval;
+    }
+    return retval;
 
   }
 
-  calculateLOLOCost(items:BillingSOTItem[],rep_bill_items:report_billing_item[])
-  {
-     var retval :string ="";
+  calculateLOLOCost(items: BillingSOTItem[], rep_bill_items: report_billing_item[]) {
+    var retval: string = "";
 
-      if(items.length>0)
-      {
-        var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-        if(itms.length>0)
-        { 
-          itms.forEach(c=>{
-             let newItem=false;
-            let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-            if(!rep_bill_item)
-            {
-              newItem=true;
-              rep_bill_item= new report_billing_item();
-              rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-            }
-            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-            rep_bill_item.lolo_est_no +=1;
-            rep_bill_item.lolo_cost = Number(Number( rep_bill_item?.lolo_cost||0)+ (c.lift_off?c.lift_off_cost!:0)+(c.lift_on?c.lift_on_cost!:0)).toFixed(2);
-            if(newItem)rep_bill_items.push(rep_bill_item);
-            
-          });
-        }
+    if (items.length > 0) {
+      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+      if (itms.length > 0) {
+        itms.forEach(c => {
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = new report_billing_item();
+            rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
+          if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
+          if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
+          if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
+          rep_bill_item.lolo_est_no += 1;
+          rep_bill_item.lolo_cost = Number(Number(rep_bill_item?.lolo_cost || 0) + (c.lift_off ? c.lift_off_cost! : 0) + (c.lift_on ? c.lift_on_cost! : 0)).toFixed(2);
+          if (newItem) rep_bill_items.push(rep_bill_item);
+
+        });
       }
-     return retval;
+    }
+    return retval;
 
   }
 
-  calculatePreInspectionCost(items:BillingSOTItem[],rep_bill_items:report_billing_item[])
-  {
-     var retval :string ="";
+  calculatePreInspectionCost(items: BillingSOTItem[], rep_bill_items: report_billing_item[]) {
+    var retval: string = "";
 
-      if(items.length>0)
-      {
-        var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-        if(itms.length>0)
-        { 
-          itms.forEach(c=>{
-             let newItem=false;
-            let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-            if(!rep_bill_item)
-            {
-              newItem=true;
-              rep_bill_item= new report_billing_item();
-              rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-            }
-            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
+    if (items.length > 0) {
+      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+      if (itms.length > 0) {
+        itms.forEach(c => {
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = new report_billing_item();
+            rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
+          if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
+          if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
+          if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
 
-            rep_bill_item.preins_est_no +=1;
-            rep_bill_item.preins_cost = Number(Number( rep_bill_item?.preins_cost||0)+ (c.preinspection?c.preinspection_cost!:0)).toFixed(2);
-            if(newItem)rep_bill_items.push(rep_bill_item);
-            
-          });
-        }
+          rep_bill_item.preins_est_no += 1;
+          rep_bill_item.preins_cost = Number(Number(rep_bill_item?.preins_cost || 0) + (c.preinspection ? c.preinspection_cost! : 0)).toFixed(2);
+          if (newItem) rep_bill_items.push(rep_bill_item);
+
+        });
       }
-     return retval;
+    }
+    return retval;
   }
 
-  calculateStorageCost(items:BillingSOTItem[],rep_bill_items:report_billing_item[])
-  {
-     var retval :string ="";
+  calculateStorageCost(items: BillingSOTItem[], rep_bill_items: report_billing_item[]) {
+    var retval: string = "";
 
-      if(items.length>0)
-      {
-        var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-        if(itms.length>0)
-        { 
-          itms.forEach(c=>{
-
-          
-              
-             let newItem=false;
-            let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-            if(!rep_bill_item)
-            {
-              newItem=true;
-              rep_bill_item= new report_billing_item();
-              rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-            }
-
-            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-
-            let packDepotItm :PackageDepotItem=new PackageDepotItem();
-            packDepotItm.storage_cal_cv=c.storage_cal_cv;
-
-            let daysDifference:number =Number(this.pdDS.getStorageDays(c.storing_order_tank!,packDepotItm));
+    if (items.length > 0) {
+      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+      if (itms.length > 0) {
+        itms.forEach(c => {
 
 
-             var in_gates= c.storing_order_tank?.in_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
-             var out_gates=c.storing_order_tank?.out_gate?.filter(v=>v.delete_dt===null||v.delete_dt===0);
-             rep_bill_item.days= String(daysDifference);
-             rep_bill_item.storage_est_no +=1;
-             rep_bill_item.storage_cost = Number((c.storage_cost||0)*daysDifference).toFixed(2);
-            if(in_gates?.length) 
-              {
-                rep_bill_item.in_date=Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
-                rep_bill_item.eir_no=in_gates?.[0]?.eir_no;
-              }
-            if(out_gates?.length) {
-              rep_bill_item.out_date=Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
-              rep_bill_item.eir_no=out_gates?.[0]?.eir_no;
-            }
-            if(newItem)rep_bill_items.push(rep_bill_item);
-            
-          });
-        }
+
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = new report_billing_item();
+            rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
+
+          if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
+          if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
+          if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
+
+          let packDepotItm: PackageDepotItem = new PackageDepotItem();
+          packDepotItm.storage_cal_cv = c.storage_cal_cv;
+
+          let daysDifference: number = Number(this.pdDS.getStorageDays(c.storing_order_tank!, packDepotItm));
+
+
+          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          var out_gates = c.storing_order_tank?.out_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          rep_bill_item.days = String(daysDifference);
+          rep_bill_item.storage_est_no += 1;
+          rep_bill_item.storage_cost = Number((c.storage_cost || 0) * daysDifference).toFixed(2);
+          if (in_gates?.length) {
+            rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
+          }
+          if (out_gates?.length) {
+            rep_bill_item.out_date = Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = out_gates?.[0]?.eir_no;
+          }
+          if (newItem) rep_bill_items.push(rep_bill_item);
+
+        });
       }
-     return retval;
+    }
+    return retval;
   }
 
-  calculateRepairCost(items:RepairItem[],rep_bill_items:report_billing_item[],CustomerType:number=0)
-  {
-     var retval :string ="";
+  calculateRepairCost(items: RepairItem[], rep_bill_items: report_billing_item[], CustomerType: number = 0) {
+    var retval: string = "";
 
-      if(items.length>0)
-      {
-        var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-        if(itms.length>0)
-        { 
-          itms.forEach(c=>{
-             let newItem=false;
-            let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-            if(!rep_bill_item)
-            {
-              newItem=true;
-              rep_bill_item= new report_billing_item();
-              rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-            }
-            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-            rep_bill_item.repair_est_no +=1;
-            const totalCost = this.repDS.calculateCost(c,c.repair_part!,c.labour_cost);
-            rep_bill_item.repair_cost  = Number(Number( rep_bill_item?.repair_cost||0)+(CustomerType==0?Number(totalCost.net_lessee_cost||0):Number(totalCost.net_owner_cost||0))).toFixed(2);
-            if(newItem)rep_bill_items.push(rep_bill_item);
-            
-          });
-        }
+    if (items.length > 0) {
+      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+      if (itms.length > 0) {
+        itms.forEach(c => {
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = new report_billing_item();
+            rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
+          if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
+          if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
+          if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
+          rep_bill_item.repair_est_no += 1;
+          const totalCost = this.repDS.calculateCost(c, c.repair_part!, c.labour_cost);
+          rep_bill_item.repair_cost = Number(Number(rep_bill_item?.repair_cost || 0) + (CustomerType == 0 ? Number(totalCost.net_lessee_cost || 0) : Number(totalCost.net_owner_cost || 0))).toFixed(2);
+          if (newItem) rep_bill_items.push(rep_bill_item);
+
+        });
       }
-     return retval;
+    }
+    return retval;
   }
 
 
-  calculateResidueCost(items:ResidueItem[],rep_bill_items:report_billing_item[])
-  {
-     var retval :string ="";
+  calculateResidueCost(items: ResidueItem[], rep_bill_items: report_billing_item[]) {
+    var retval: string = "";
 
-      if(items.length>0)
-      {
-        var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-        if(itms.length>0)
-        { 
-          itms.forEach(c=>{
-             let newItem=false;
-            let rep_bill_item = rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-            if(!rep_bill_item)
-            {
-              newItem=true;
-              rep_bill_item= new report_billing_item();
-              rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-            }
-            
-            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-             c.residue_part?.forEach(p=>{  
-                 if(rep_bill_item) rep_bill_item.residue_cost  = Number(Number( rep_bill_item?.residue_cost||0)+ ((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
+    if (items.length > 0) {
+      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+      if (itms.length > 0) {
+        itms.forEach(c => {
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = new report_billing_item();
+            rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
 
-             });
-             rep_bill_item.residue_est_no +=1;
-            if(newItem)rep_bill_items.push(rep_bill_item);
-            
+          if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
+          if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
+          if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
+          c.residue_part?.forEach(p => {
+            if (rep_bill_item) rep_bill_item.residue_cost = Number(Number(rep_bill_item?.residue_cost || 0) + ((p.approve_part ?? true) ? ((p.approve_cost || 0) * (p.approve_qty || 0)) : 0)).toFixed(2);
+
           });
-        }
+          rep_bill_item.residue_est_no += 1;
+          if (newItem) rep_bill_items.push(rep_bill_item);
+
+        });
       }
-     return retval;
+    }
+    return retval;
   }
 
-  calculateSteamingCost(items:SteamItem[],rep_bill_items:report_billing_item[])
-  {
-     var retval :string ="";
+  calculateSteamingCost(items: SteamItem[], rep_bill_items: report_billing_item[]) {
+    var retval: string = "";
 
-      if(items.length>0)
-      {
-         var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-        if(itms.length>0)
-        { 
-          itms.forEach(c=>{
-             let newItem=false;
-            let rep_bill_item = rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-            if(!rep_bill_item)
-            {
-              newItem=true;
-              rep_bill_item= new report_billing_item();
-              rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-            }
-            
-            if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-            if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-            if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-             c.steaming_part?.forEach(p=>{
-              if(rep_bill_item)  rep_bill_item.steam_cost  = Number(Number( rep_bill_item?.steam_cost||0)+ ((p.approve_part ?? true)?((p.approve_cost||0)*(p.approve_qty||0)):0)).toFixed(2);
+    if (items.length > 0) {
+      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+      if (itms.length > 0) {
+        itms.forEach(c => {
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = new report_billing_item();
+            rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
 
-             });
-             rep_bill_item.steam_est_no +=1;
-            if(newItem)rep_bill_items.push(rep_bill_item);
-            
+          if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
+          if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
+          if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
+          c.steaming_part?.forEach(p => {
+            if (rep_bill_item) rep_bill_item.steam_cost = Number(Number(rep_bill_item?.steam_cost || 0) + ((p.approve_part ?? true) ? ((p.approve_cost || 0) * (p.approve_qty || 0)) : 0)).toFixed(2);
+
           });
-        }
+          rep_bill_item.steam_est_no += 1;
+          if (newItem) rep_bill_items.push(rep_bill_item);
+
+        });
       }
-     return retval;
+    }
+    return retval;
   }
 
-  preventDefault(event: Event)
-  {
+  preventDefault(event: Event) {
     event.preventDefault();
   }
-   onExport(repCustomers: report_billing_customer[]) {
-      //this.preventDefault(event);
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-  
-      const dialogRef = this.dialog.open(CustomerInvoicesPdfComponent, {
-        width: '85wv',
-        height: '80vh',
-        data: {
-          billing_customers:repCustomers
-        },
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
-      });
+  onExport(repCustomers: report_billing_customer[]) {
+    //this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-  
+
+    const dialogRef = this.dialog.open(CustomerInvoicesPdfComponent, {
+      width: '85wv',
+      height: '80vh',
+      data: {
+        billing_customers: repCustomers
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    });
+  }
+
 }

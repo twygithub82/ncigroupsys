@@ -1,58 +1,50 @@
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
+import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
-import { GuidSelectionModel } from '@shared/GuidSelectionModel';
-import { SteamDS, SteamItem } from 'app/data-sources/steam';
-import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { BillingDS, BillingEstimateRequest,BillingItem,BillingInputRequest } from 'app/data-sources/billing';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import {report_status, report_status_yard} from 'app/data-sources/reports';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { GuidSelectionModel } from '@shared/GuidSelectionModel';
+import { Apollo } from 'apollo-angular';
+import { BillingDS, BillingEstimateRequest } from 'app/data-sources/billing';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { PackageLabourDS } from 'app/data-sources/package-labour';
+import { report_status, report_status_yard } from 'app/data-sources/reports';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/charts/yard-chart-pdf.component';
+import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-yard-status-report',
@@ -60,7 +52,6 @@ import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/cha
   templateUrl: './yard-status.component.html',
   styleUrl: './yard-status.component.scss',
   imports: [
-    BreadcrumbComponent,
     MatTooltipModule,
     MatButtonModule,
     MatIconModule,
@@ -72,7 +63,6 @@ import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/cha
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -103,11 +93,6 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     // 'action'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
-  breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
-  ]
-
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -137,33 +122,33 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     RO_NO: 'COMMON-FORM.RO-NO',
-    RELEASE_DATE:'COMMON-FORM.RELEASE-DATE',
-    INVOICE_DATE:'COMMON-FORM.INVOICE-DATE',
-    INVOICE_NO:'COMMON-FORM.INVOICE-NO',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
+    INVOICE_DATE: 'COMMON-FORM.INVOICE-DATE',
+    INVOICE_NO: 'COMMON-FORM.INVOICE-NO',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    INVOICE_DETAILS:'COMMON-FORM.INVOICE-DETAILS',
-    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
+    INVOICE_DETAILS: 'COMMON-FORM.INVOICE-DETAILS',
+    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
-    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE',
+    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
+    CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
-    INVOICED:'COMMON-FORM.INVOICED',
-    CONFIRM_UPDATE_INVOICE:'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
-    CONFIRM_INVALID_ESTIMATE:'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
-    COST:'COMMON-FORM.COST',
-    CONFIRM_REMOVE_ESITMATE:'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
-    DELETE:'COMMON-FORM.DELETE',
-    AV_DATE:'COMMON-FORM.AV-DATE',
-    CLEAN_DATE:'COMMON-FORM.CLEAN-DATE',
-    CAPACITY:'COMMON-FORM.CAPACITY',
-    REPAIR_COMPLETED_DATE:'COMMON-FORM.REPAIR-COMPLETED-DATE',
-    TARE_WEIGHT:'COMMON-FORM.TARE-WEIGHT',
-    CURRENT_STATUS:'COMMON-FORM.CURRENT-STATUS',
-    DATE:'COMMON-FORM.DATE',
-    INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
-    SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    DETAIL_REPORT:'COMMON-FORM.DETAIL-REPORT',
-    YARD_STATUS:'COMMON-FORM.YARD-STATUS'
+    INVOICED: 'COMMON-FORM.INVOICED',
+    CONFIRM_UPDATE_INVOICE: 'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
+    CONFIRM_INVALID_ESTIMATE: 'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
+    COST: 'COMMON-FORM.COST',
+    CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
+    DELETE: 'COMMON-FORM.DELETE',
+    AV_DATE: 'COMMON-FORM.AV-DATE',
+    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
+    CAPACITY: 'COMMON-FORM.CAPACITY',
+    REPAIR_COMPLETED_DATE: 'COMMON-FORM.REPAIR-COMPLETED-DATE',
+    TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
+    CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
+    DATE: 'COMMON-FORM.DATE',
+    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
+    DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
+    YARD_STATUS: 'COMMON-FORM.YARD-STATUS'
   }
 
   invForm?: UntypedFormGroup;
@@ -178,18 +163,18 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
-  
-  stmDS:SteamDS;
-  plDS:PackageLabourDS;
-  billDS:BillingDS;
 
-  distinctCustomerCodes:any;
-  selectedEstimateItem?:SteamItem;
-  selectedEstimateLabourCost?:number;
-  stmEstList:SteamItem[]=[];
+  stmDS: SteamDS;
+  plDS: PackageLabourDS;
+  billDS: BillingDS;
+
+  distinctCustomerCodes: any;
+  selectedEstimateItem?: SteamItem;
+  selectedEstimateLabourCost?: number;
+  stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
-  branch_companyList?:CustomerCompanyItem[];
+  branch_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
@@ -197,8 +182,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   inventoryTypeCvList: CodeValuesItem[] = [];
 
-  processType:string="STEAMING";
-  billingParty:string="CUSTOMER";
+  processType: string = "STEAMING";
+  billingParty: string = "CUSTOMER";
 
   pageIndex = 0;
   pageSize = 100;
@@ -210,9 +195,9 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   hasPreviousPage = false;
   selection = new GuidSelectionModel<SteamItem>(true, []);
   //selection = new SelectionModel<InGateCleaningItem>(true, []);
-  invoiceNoControl= new FormControl('', [Validators.required]);
-  invoiceDateControl= new FormControl('', [Validators.required]);
-  invoiceTotalCostControl= new FormControl('0.00');
+  invoiceNoControl = new FormControl('', [Validators.required]);
+  invoiceDateControl = new FormControl('', [Validators.required]);
+  invoiceTotalCostControl = new FormControl('0.00');
 
   constructor(
     public httpClient: HttpClient,
@@ -231,10 +216,10 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
-    this.stmDS= new SteamDS(this.apollo);
-    this.plDS=new PackageLabourDS(this.apollo);
-    this.billDS= new BillingDS(this.apollo);
-    this.sotDS=new StoringOrderTankDS(this.apollo);
+    this.stmDS = new SteamDS(this.apollo);
+    this.plDS = new PackageLabourDS(this.apollo);
+    this.billDS = new BillingDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -248,10 +233,10 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.loadData();
   }
 
-  initInvoiceForm(){
-    this.invForm=this.fb.group({
-      inv_no:[''],
-      inv_dt:['']
+  initInvoiceForm() {
+    this.invForm = this.fb.group({
+      inv_no: [''],
+      inv_dt: ['']
     })
   }
   initSearchForm() {
@@ -264,7 +249,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       // eir_dt_start:[''],
       // eir_dt_end:[''],
       // inv_type: ['MASTER_IN']
-      
+
     });
   }
 
@@ -274,7 +259,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList=[];
+        this.branch_companyList = [];
         this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
@@ -312,7 +297,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     //     this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
     //       this.last_cargoList = data
     //       this.updateValidators(this.lastCargoControl, this.last_cargoList);
-          
+
     //     });
     //   })
     // ).subscribe();
@@ -347,7 +332,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
   // export table data in excel file
   exportExcel() {
-   
+
   }
 
   // context menu
@@ -363,8 +348,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-  search_summary()
-  {
+  search_summary() {
     this.search(1);
   }
 
@@ -372,43 +356,42 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.search(2);
   }
 
-  search(report_type:number)
-  {
+  search(report_type: number) {
 
-    let queryType =1;
+    let queryType = 1;
     const where: any = {};
-  
-    
-    where.tank_status_cv = {neq: "RELEASED"};
+
+
+    where.tank_status_cv = { neq: "RELEASED" };
     if (this.searchForm?.get('customer_code')?.value) {
-     // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_company = { code:{eq: this.searchForm?.get('customer_code')?.value.code }};
+      // if(!where.storing_order_tank) where.storing_order_tank={};
+      where.customer_company = { code: { eq: this.searchForm?.get('customer_code')?.value.code } };
     }
 
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined , report_type);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string,report_type?:number) {
-   // this.selection.clear();
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number) {
+    // this.selection.clear();
 
-   
+
 
     // if(queryType==1)
     // {
-      this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-        .subscribe(data => {
-          this.sotList = data;
-          this.endCursor = this.stmDS.pageInfo?.endCursor;
-          this.startCursor = this.stmDS.pageInfo?.startCursor;
-          this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-          this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-          this.ProcessReportStatus(report_type!);
-          //this.checkInvoicedAndGetTotalCost();
-          //this.checkInvoiced();
-          //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
-        });
-     
+    this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.sotList = data;
+        this.endCursor = this.stmDS.pageInfo?.endCursor;
+        this.startCursor = this.stmDS.pageInfo?.startCursor;
+        this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+        this.ProcessReportStatus(report_type!);
+        //this.checkInvoicedAndGetTotalCost();
+        //this.checkInvoiced();
+        //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
+      });
+
   }
 
   onPageEvent(event: PageEvent) {
@@ -450,20 +433,18 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   displayReleaseDate(sot: StoringOrderTankItem) {
-    let retval:string="-";
-    if(sot.out_gate?.length)
-    {
-      if(sot.out_gate[0]?.out_gate_survey)
-      {
+    let retval: string = "-";
+    if (sot.out_gate?.length) {
+      if (sot.out_gate[0]?.out_gate_survey) {
         const date = new Date(sot.out_gate[0]?.out_gate_survey?.create_dt! * 1000);
 
         const day = String(date.getDate()).padStart(2, '0');
         const month = date.toLocaleString('en-US', { month: 'short' });
         const year = date.getFullYear();
-    
+
         // Replace the '/' with '-' to get the required format
-    
-    
+
+
         return `${day}/${month}/${year}`;
       }
 
@@ -484,7 +465,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   displayDate(input: number | undefined): string | undefined {
-    if(input===null) return "-";
+    if (input === null) return "-";
     return Utility.convertEpochToDateStr(input);
   }
 
@@ -536,7 +517,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   isAllSelected() {
-   // this.calculateTotalCost();
+    // this.calculateTotalCost();
     const numSelected = this.selection.selected.length;
     const numRows = this.stmEstList.length;
     return numSelected === numRows;
@@ -544,22 +525,20 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-     this.isAllSelected()
-       ? this.selection.clear()
-       : this.stmEstList.forEach((row) =>
-           this.selection.select(row)
-         );
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.stmEstList.forEach((row) =>
+        this.selection.select(row)
+      );
     this.calculateTotalCost();
   }
 
-  AllowToSave():boolean{
-    let retval:boolean=false;
-    if(this.selection.selected.length>0)
-    {
-        if(this.invoiceDateControl.valid && this.invoiceNoControl.valid)
-        {
-          return true;
-        }
+  AllowToSave(): boolean {
+    let retval: boolean = false;
+    if (this.selection.selected.length > 0) {
+      if (this.invoiceDateControl.valid && this.invoiceNoControl.valid) {
+        return true;
+      }
     }
 
     return retval;
@@ -567,211 +546,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
 
 
-     delete(event:Event){
-    
-        event.preventDefault(); // Prevents the form submission
-    
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          data: {
-            headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
-            action: 'delete',
-          },
-          direction: tempDirection
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-          if (result.action === 'confirmed') {
-            const guids=this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
-            this.RemoveEstimatesFromInvoice(event,guids!);
-          }
-        });
-      }
-      RemoveEstimatesFromInvoice(event:Event, processGuid:string[])
-      {
-        var updateBilling: any=null;
-        let billingEstimateRequests:BillingEstimateRequest[]=[];
-        processGuid.forEach(g=>{
-          var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-          billingEstReq.action="CANCEL";
-          billingEstReq.billing_party=this.billingParty;
-          billingEstReq.process_guid=g;
-          billingEstReq.process_type=this.processType;
-          billingEstimateRequests.push(billingEstReq);
-        });
-       
-        this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-          if(result.data.updateBilling)
-          {
-            this.handleSaveSuccess(result.data.updateBilling);
-            this.onCancel(event);
-          //  this.search();
-          }
-        })
-    
-      }
-    
-     handleSaveSuccess(count: any) {
-       if ((count ?? 0) > 0) {
-         let successMsg = this.langText.SAVE_SUCCESS;
-         this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-           successMsg = res;
-           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-           //this.router.navigate(['/admin/master/estimate-template']);
-   
-           // Navigate to the route and pass the JSON object
-           
-         });
-       }
-     }
- 
-
-  onCancel(event:Event){
-    event.stopPropagation();
-    this.invoiceNoControl.reset('');
-    this.invoiceDateControl.reset('');
-  }
-
-  calculateTotalCost()
-    {
-    this.invoiceTotalCostControl.setValue('0.00');
-    const totalCost = this.selection.selected.reduce((accumulator, s) => {
-      // Add buffer_cost and cleaning_cost of the current item to the accumulator
-      //var cost:number = this.selectedEstimateLabourCost||0;
-      var itm:any = s;
-      return accumulator + itm.total_cost;
-      //return accumulator+ Number(stmItm.net_cost||0);
-    }, 0); // Initialize accumulator to 0
-    this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
-  }
-   toggleRow(row:SteamItem)
-   {
-    
-     this.selection.toggle(row);
-     this.SelectFirstItem();
-     this.calculateTotalCost();
-   }
-
-   SelectFirstItem()
-   {
-    if(!this.selection.selected.length)
-    {
-      this.selectedEstimateItem=undefined;
-    }
-    else if(this.selection.selected.length===1)
-    {
-      this.selectedEstimateItem=this.selection.selected[0];
-      if(this.selectedEstimateItem?.bill_to_guid)
-      {
-      this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
-      
-      }
-    }
-   }
-   CheckBoxDisable(row:InGateCleaningItem)
-   {
-     if(this.selectedEstimateItem?.customer_company)
-     {
-     if(row.customer_company?.code!=this.selectedEstimateItem.customer_company?.code)
-     {
-      return true;
-     }
-    }
-     return false;
-   }
-
-   MasterCheckBoxDisable()
-   {
-     if(this.distinctCustomerCodes?.length)
-     {
-        return this.distinctCustomerCodes.length>1;
-     }
-
-     return false;
-   }
-
-   
-   getTotalCost(row:any)
-   {
-     
-    const customer_company_guid= row.storing_order_tank?.storing_order?.customer_company?.guid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-      if(data.length>0)
-      {
-        var cost:number =data[0].cost;
-        row.total_cost=(this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part,cost).total_mat_cost||0);
-        //this.calculateTotalCost();
-      }
-    });
-
-   }
-   
-   getCustomerLabourPackage(custGuid: string){
-
-    const customer_company_guid= custGuid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-      if(data.length>0)
-      {
-        this.selectedEstimateLabourCost =data[0].cost;
-        // this.stmEstList = this.stmEstList?.map(stm => {
-        //       var stm_part=[...stm.steaming_part!];
-        //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
-        //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
-        // });
-        this.calculateTotalCost();
-      }
-    });
-   
-  }
-
-  calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): number {
-    
-    const total = this.IsApproved(steam)?this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.stmDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
-      return total.total_mat_cost;
-
-  }
-
-  IsApproved(steam:SteamItem)
-  {
-    const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
-    return validStatus.includes(steam!.status_cv!);
-    
-  }
-
-  checkInvoicedAndGetTotalCost()
-  {
-    this.stmEstList = this.stmEstList?.map(stm => {
-              return { ...stm, invoiced: (stm.customer_billing_guid?true:false), total_cost:0 };
-        });
-    this.stmEstList?.forEach(stm => {
-         this.getTotalCost(stm);
-        });    
-  }
-
-  checkInvoiced()
-  {
-    this.stmEstList = this.stmEstList?.map(stm => {
-            
-              return { ...stm, invoiced: (stm.customer_billing_guid?true:false) };
-        });
-  }
-
-  handleDelete(event:Event, row:SteamItem)
-  {
+  delete(event: Event) {
 
     event.preventDefault(); // Prevents the form submission
 
@@ -790,25 +565,207 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        this.RmoveEstimateFromInvoice(event,row.guid!);
+        const guids = this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
+        this.RemoveEstimatesFromInvoice(event, guids!);
+      }
+    });
+  }
+  RemoveEstimatesFromInvoice(event: Event, processGuid: string[]) {
+    var updateBilling: any = null;
+    let billingEstimateRequests: BillingEstimateRequest[] = [];
+    processGuid.forEach(g => {
+      var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
+      billingEstReq.action = "CANCEL";
+      billingEstReq.billing_party = this.billingParty;
+      billingEstReq.process_guid = g;
+      billingEstReq.process_type = this.processType;
+      billingEstimateRequests.push(billingEstReq);
+    });
+
+    this.billDS._updateBilling(updateBilling, billingEstimateRequests).subscribe(result => {
+      if (result.data.updateBilling) {
+        this.handleSaveSuccess(result.data.updateBilling);
+        this.onCancel(event);
+        //  this.search();
+      }
+    })
+
+  }
+
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.langText.SAVE_SUCCESS;
+      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+        successMsg = res;
+        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        //this.router.navigate(['/admin/master/estimate-template']);
+
+        // Navigate to the route and pass the JSON object
+
+      });
+    }
+  }
+
+
+  onCancel(event: Event) {
+    event.stopPropagation();
+    this.invoiceNoControl.reset('');
+    this.invoiceDateControl.reset('');
+  }
+
+  calculateTotalCost() {
+    this.invoiceTotalCostControl.setValue('0.00');
+    const totalCost = this.selection.selected.reduce((accumulator, s) => {
+      // Add buffer_cost and cleaning_cost of the current item to the accumulator
+      //var cost:number = this.selectedEstimateLabourCost||0;
+      var itm: any = s;
+      return accumulator + itm.total_cost;
+      //return accumulator+ Number(stmItm.net_cost||0);
+    }, 0); // Initialize accumulator to 0
+    this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
+  }
+  toggleRow(row: SteamItem) {
+
+    this.selection.toggle(row);
+    this.SelectFirstItem();
+    this.calculateTotalCost();
+  }
+
+  SelectFirstItem() {
+    if (!this.selection.selected.length) {
+      this.selectedEstimateItem = undefined;
+    }
+    else if (this.selection.selected.length === 1) {
+      this.selectedEstimateItem = this.selection.selected[0];
+      if (this.selectedEstimateItem?.bill_to_guid) {
+        this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
+
+      }
+    }
+  }
+  CheckBoxDisable(row: InGateCleaningItem) {
+    if (this.selectedEstimateItem?.customer_company) {
+      if (row.customer_company?.code != this.selectedEstimateItem.customer_company?.code) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  MasterCheckBoxDisable() {
+    if (this.distinctCustomerCodes?.length) {
+      return this.distinctCustomerCodes.length > 1;
+    }
+
+    return false;
+  }
+
+
+  getTotalCost(row: any) {
+
+    const customer_company_guid = row.storing_order_tank?.storing_order?.customer_company?.guid;
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    };
+    this.plDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data.length > 0) {
+        var cost: number = data[0].cost;
+        row.total_cost = (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+        //this.calculateTotalCost();
+      }
+    });
+
+  }
+
+  getCustomerLabourPackage(custGuid: string) {
+
+    const customer_company_guid = custGuid;
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    };
+    this.plDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data.length > 0) {
+        this.selectedEstimateLabourCost = data[0].cost;
+        // this.stmEstList = this.stmEstList?.map(stm => {
+        //       var stm_part=[...stm.steaming_part!];
+        //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
+        //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
+        // });
+        this.calculateTotalCost();
+      }
+    });
+
+  }
+
+  calculateNetCostWithLabourCost(steam: SteamItem, LabourCost: number): number {
+
+    const total = this.IsApproved(steam) ? this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part, LabourCost) : this.stmDS.getTotalWithLabourCost(steam?.steaming_part, LabourCost)
+    return total.total_mat_cost;
+
+  }
+
+  IsApproved(steam: SteamItem) {
+    const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
+    return validStatus.includes(steam!.status_cv!);
+
+  }
+
+  checkInvoicedAndGetTotalCost() {
+    this.stmEstList = this.stmEstList?.map(stm => {
+      return { ...stm, invoiced: (stm.customer_billing_guid ? true : false), total_cost: 0 };
+    });
+    this.stmEstList?.forEach(stm => {
+      this.getTotalCost(stm);
+    });
+  }
+
+  checkInvoiced() {
+    this.stmEstList = this.stmEstList?.map(stm => {
+
+      return { ...stm, invoiced: (stm.customer_billing_guid ? true : false) };
+    });
+  }
+
+  handleDelete(event: Event, row: SteamItem) {
+
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        action: 'delete',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.RmoveEstimateFromInvoice(event, row.guid!);
       }
     });
   }
 
-  RmoveEstimateFromInvoice(event:Event, processGuid:string)
-  {
-    var updateBilling: any=null;
-    var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-    billingEstReq.action="CANCEL";
-    billingEstReq.billing_party=this.billingParty;
-    billingEstReq.process_guid=processGuid;
-    billingEstReq.process_type=this.processType;
-    let billingEstimateRequests:BillingEstimateRequest[]=[];
+  RmoveEstimateFromInvoice(event: Event, processGuid: string) {
+    var updateBilling: any = null;
+    var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
+    billingEstReq.action = "CANCEL";
+    billingEstReq.billing_party = this.billingParty;
+    billingEstReq.process_guid = processGuid;
+    billingEstReq.process_type = this.processType;
+    let billingEstimateRequests: BillingEstimateRequest[] = [];
     billingEstimateRequests.push(billingEstReq);
-   
-    this.billDS._updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-      if(result.data.updateBilling)
-      {
+
+    this.billDS._updateBilling(updateBilling, billingEstimateRequests).subscribe(result => {
+      if (result.data.updateBilling) {
         this.handleSaveSuccess(result.data.updateBilling);
         this.onCancel(event);
         //this.search();
@@ -816,71 +773,64 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     })
 
   }
-   
-  ProcessReportStatus(report_type:number)
-  {
-    if(this.sotList.length===0) return;
 
-    var repStatus:report_status[]=[];
-    
-    this.sotList.map(s=>{
+  ProcessReportStatus(report_type: number) {
+    if (this.sotList.length === 0) return;
 
-      if(s)
-      {
-        if(!s.in_gate?.[0]?.yard_cv)return;
-         var repCust :report_status= repStatus.find(r=>r.code===s.storing_order?.customer_company?.code)||new report_status ();
-         let newCust=false;
-         if(!repCust.code)
-         {
-           repCust.code = s.storing_order?.customer_company?.code;
-           repCust.customer = s.storing_order?.customer_company?.name;
-           repCust.yards=[];
-           newCust=true;
-         }
-         repCust.number_tank ??= 0;
-         repCust.number_tank+=1;
-         var yard : report_status_yard= repCust.yards?.find(y=>y.code===s.in_gate?.[0].yard_cv)||new report_status_yard();
-         let newYard=false;
-         if(!yard.code)
-         {
-           yard.code= s.in_gate?.[0].yard_cv;
-           yard.storing_order_tank=[];
-           newYard=true;
-         }
-         switch(s.tank_status_cv)
-         {
-            case "STEAM":
-              yard.noTank_steam!+=1;
-              break;
-            case "OFFHIRE":
-            case "REPAIR":
-              yard.noTank_repair!+=1;
-              break;
-            case "CLEANING":
-              yard.noTank_clean!+=1;
-              break;
-            case "STORAGE":
-              yard.noTank_storage!+=1;
-              break;
-            case "IN_SURVEY":
-              yard.noTank_in_survey!+=1;
-              break;
-         }
-         yard.storing_order_tank?.push(s);
-         if(newYard)repCust.yards?.push(yard);
-         if(newCust)repStatus.push(repCust);
+    var repStatus: report_status[] = [];
+
+    this.sotList.map(s => {
+
+      if (s) {
+        if (!s.in_gate?.[0]?.yard_cv) return;
+        var repCust: report_status = repStatus.find(r => r.code === s.storing_order?.customer_company?.code) || new report_status();
+        let newCust = false;
+        if (!repCust.code) {
+          repCust.code = s.storing_order?.customer_company?.code;
+          repCust.customer = s.storing_order?.customer_company?.name;
+          repCust.yards = [];
+          newCust = true;
+        }
+        repCust.number_tank ??= 0;
+        repCust.number_tank += 1;
+        var yard: report_status_yard = repCust.yards?.find(y => y.code === s.in_gate?.[0].yard_cv) || new report_status_yard();
+        let newYard = false;
+        if (!yard.code) {
+          yard.code = s.in_gate?.[0].yard_cv;
+          yard.storing_order_tank = [];
+          newYard = true;
+        }
+        switch (s.tank_status_cv) {
+          case "STEAM":
+            yard.noTank_steam! += 1;
+            break;
+          case "OFFHIRE":
+          case "REPAIR":
+            yard.noTank_repair! += 1;
+            break;
+          case "CLEANING":
+            yard.noTank_clean! += 1;
+            break;
+          case "STORAGE":
+            yard.noTank_storage! += 1;
+            break;
+          case "IN_SURVEY":
+            yard.noTank_in_survey! += 1;
+            break;
+        }
+        yard.storing_order_tank?.push(s);
+        if (newYard) repCust.yards?.push(yard);
+        if (newCust) repStatus.push(repCust);
       }
     });
 
     if (this.searchForm?.get('customer_code')?.value) {
-      repStatus= repStatus.filter(s=>s.code==this.searchForm?.get('customer_code')?.value.code);
+      repStatus = repStatus.filter(s => s.code == this.searchForm?.get('customer_code')?.value.code);
     }
-    if(report_type==1)
-    {
-    this.onExportSummary(repStatus);
+    if (report_type == 1) {
+      this.onExportSummary(repStatus);
     }
-    else
-    {
+    else {
       this.onExportDetail(repStatus);
     }
 
@@ -890,7 +840,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-  
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -913,31 +863,31 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onExportSummary(repStatus: report_status[]) {
-            //this.preventDefault(event);
-            let cut_off_dt = new Date();
-  
-          
-            let tempDirection: Direction;
-            if (localStorage.getItem('isRtl') === 'true') {
-              tempDirection = 'rtl';
-            } else {
-              tempDirection = 'ltr';
-            }
-        
-            const dialogRef = this.dialog.open(YardChartPdfComponent, {
-              width: '85vw',
-              maxHeight: '85vh',
-              data: {
-                report_summary_status: repStatus
-              },
-              // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-              direction: tempDirection
-            });
-            this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      
-            });
-          }
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
 
-  
- 
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(YardChartPdfComponent, {
+      width: '85vw',
+      maxHeight: '85vh',
+      data: {
+        report_summary_status: repStatus
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    });
+  }
+
+
+
 }
