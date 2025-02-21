@@ -2,7 +2,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
@@ -48,6 +48,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 
 @Component({
   selector: 'app-customer-new',
@@ -83,7 +84,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatCardModule,
   ]
 })
-export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
   displayedColumns = [
     'index',
     'group_name_cv',
@@ -220,16 +221,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   customerTypeControl = new UntypedFormControl();
   customerCodeControl = new UntypedFormControl();
 
-
-  // soDS: StoringOrderDS;
-  // sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
   curDS: CurrencyDS;
-  // igDS: InGateDS;
-  // trLabourDS: TariffLabourDS;
-  // estTempDS: MasterEstimateTemplateDS
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
@@ -240,6 +235,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   billingBranch?: CustomerCompanyItem[] = [];
   currencyList?: CurrencyItem[] = [];
   phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
+  countryCodes: any = [];
+
+  @ViewChild('countrySelect') countrySelect!: MatSelect;
+  
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -269,6 +268,25 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
+
+    this.countryCodes = getCountries().map(countryISO => ({
+      country: countryISO,
+      code: `+${getCountryCallingCode(countryISO)}`,
+      iso: countryISO.toLowerCase()
+    }));
+  }
+
+  ngAfterViewInit(): void {
+    // this.countrySelect.openedChange.subscribe(opened => {
+    //   if (opened) {
+    //     setTimeout(() => {
+    //       const listbox = document.querySelector('.mat-mdc-select-panel') as HTMLElement;
+    //       if (listbox) {
+    //         listbox.classList.add('wide-dropdown'); // ✅ Add a custom class to role="listbox"
+    //       }
+    //     });
+    //   }
+    // });
   }
 
   SetCostDecimal() {
@@ -304,8 +322,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       customer_name: [''],
       customer_type: [''],
       billing_branches: [''],
-      phone: ['', [Validators.required,
-      Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
+      country_code: [''],
+      phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['', [Validators.required, Validators.email]],
       web: [''],
       currency: [''],

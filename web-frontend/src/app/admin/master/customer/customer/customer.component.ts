@@ -46,7 +46,6 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
-
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -496,7 +495,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.lastSearchCriteria = where;
     this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.customer_companyList = data;
-      console.log(data)
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
       this.endCursor = this.ccDS.pageInfo?.endCursor;

@@ -834,7 +834,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       const subqueries: any[] = [];
       data.map(d => {
 
-        if (d.child_code) {
+        if (d?.child_code) {
           let q = { alias: d.child_code, codeValType: d.child_code };
           const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
           if (!hasMatch) {

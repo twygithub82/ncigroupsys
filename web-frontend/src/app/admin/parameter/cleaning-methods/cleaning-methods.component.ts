@@ -85,7 +85,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
   ];
 
-  pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-METHODS'
+  pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-PROCESS'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.CLEANING-MANAGEMENT.TEXT', route: '/admin/parameter/cleaning-methods' }
@@ -122,7 +122,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     LAST_UPDATED: 'COMMON-FORM.LAST-UPDATED',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
-    CLEANING_METHOD: 'COMMON-FORM.CLEANING-METHOD',
+    CLEANING_METHOD: 'COMMON-FORM.CLEANING-PROCESS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
   }

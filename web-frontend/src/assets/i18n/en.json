@@ -107,7 +107,7 @@
       "TEXT": "Parameter",
       "LIST": {
         "CLEANING-CATEGORY": "Category",
-        "CLEANING-METHODS": "Method"
+        "CLEANING-PROCESS": "Process"
       }
     },
     "PACKAGE": {
@@ -128,7 +128,7 @@
     "CLEANING-MANAGEMENT": {
       "TEXT": "Cleaning Management",
       "LIST": {
-        "CLEAN-METHODS": "Cleaning Method",
+        "CLEAN-PROCESS": "Cleaning Process",
         "CLEAN-CATEGORY": "Cleaning Category",
         "CLEAN-STEPS": "Cleaning Steps",
         "CLEAN-PROCEDURES": "Cleaning Procedures",
@@ -604,7 +604,7 @@
     "COST-TYPE": "Cost Type",
     "REBATE-TYPE": "Rebate Type",
     "JOB-TYPE": "Job Type",
-    "CLEANING-METHOD": "Cleaning Method",
+    "CLEANING-PROCESS": "Cleaning Process",
     "METHOD-NAME": "Method Name",
     "FILTER": "Filter",
     "ARE-YOU-SURE": "Are you sure?",
