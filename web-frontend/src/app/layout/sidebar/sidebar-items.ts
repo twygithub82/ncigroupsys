@@ -45,7 +45,7 @@ export const ROUTES: RouteInfo[] = [
   //     },
   //     {
   //       path: "admin/parameter/cleaning-methods",
-  //       title: "MENUITEMS.PARAMETER.LIST.CLEANING-METHODS",
+  //       title: "MENUITEMS.PARAMETER.LIST.CLEANING-PROCESS",
   //       iconType: "",
   //       icon: "",
   //       class: "ml-menu",
@@ -253,7 +253,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         path: "admin/parameter/cleaning-methods",
-        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-METHODS",
+        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-PROCESS",
         iconType: "",
         icon: "",
         class: "ml-menu",

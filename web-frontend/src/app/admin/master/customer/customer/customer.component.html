@@ -27,16 +27,12 @@
                     <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
                     <mat-select formControlName="customer_code" multiple>
                       <mat-option *ngFor="let cc of custCompDS.connect() | async" [value]="cc">
-
                         <ng-container *ngIf="cc !== null">
                           {{ custCompDS.displayName(cc) }}
                         </ng-container>
-
                       </mat-option>
                     </mat-select>
-
                   </mat-form-field>
-
                 </div>
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
@@ -79,32 +75,35 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.CUSTOMER_CODE
+                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">
                 <span class="mobile-label">{{this.translatedLangText.CODE }}:</span>{{row.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer_name">
-              <mat-header-cell [ngClass]="''" *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell [ngClass]="'justify-content-center'" *matHeaderCellDef
+                mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
               <mat-cell [ngClass]="''" *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="mobile">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.CONTACT_NO
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-1_5-xl'">
+              <mat-header-cell *matHeaderCellDef mat-sort-header
+                [ngClass]="'tbl-col-width-per-1_5-xl justify-content-center'">{{this.translatedLangText.CONTACT_NO}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                [ngClass]="'tbl-col-width-per-1_5-xl'">
                 <span class="mobile-label">{{this.translatedLangText.CONTACT_NO }}:</span> {{row.phone}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="email">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.EMAIL }}</mat-header-cell>
+              <mat-header-cell [ngClass]="'justify-content-center'" *matHeaderCellDef
+                mat-sort-header>{{this.translatedLangText.EMAIL }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_update_dt">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl'" *matHeaderCellDef
+              <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl justify-content-center'" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell [ngClass]="'tbl-col-width-per-2-xl'" *matCellDef="let row"
