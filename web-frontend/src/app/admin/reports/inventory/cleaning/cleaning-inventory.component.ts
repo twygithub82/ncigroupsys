@@ -405,18 +405,18 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       cond_counter++;
     }
 
-    if (this.searchForm!.get('depot_status_cv')?.value) {
-      // if(!where.storing_order_tank) where.storing_order_tank={};
-      report_type = "RELEASED";
-      var cond: any = { eq: "RELEASED" };
-      if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
-        cond = { neq: "RELEASED" };
-        report_type = "IN_YARD";
-      }
-      if (where.tank_status_cv) where.tank_status_cv = {};
-      where.tank_status_cv = cond;
-      cond_counter++;
-    }
+    // if (this.searchForm!.get('depot_status_cv')?.value) {
+    //   // if(!where.storing_order_tank) where.storing_order_tank={};
+    //   report_type = "RELEASED";
+    //   var cond: any = { eq: "RELEASED" };
+    //   if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
+    //     cond = { neq: "RELEASED" };
+    //     report_type = "IN_YARD";
+    //   }
+    //   if (where.tank_status_cv) where.tank_status_cv = {};
+    //   where.tank_status_cv = cond;
+    //   cond_counter++;
+    // }
 
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};

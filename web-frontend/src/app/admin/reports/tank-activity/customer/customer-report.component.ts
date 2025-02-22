@@ -926,7 +926,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     }
 
     const dialogRef = this.dialog.open(CustomerDetailPdfComponent, {
-      width: '90wv',
+      width: '90vw',
       height: '80vh',
       data: {
         report_customer_tank_activity: repCustomerTankActivity,

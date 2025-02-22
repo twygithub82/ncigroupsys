@@ -1,65 +1,68 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {jsPDF} from 'jspdf';
-import html2canvas from 'html2canvas';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { customerInfo } from 'environments/environment.development';
-import { Utility } from 'app/utilities/utility';
+import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
-import { OutGateItem } from 'app/data-sources/out-gate';
-import { InGateSurveyDS } from 'app/data-sources/in-gate-survey';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { PackageBufferItem } from 'app/data-sources/package-buffer';
-import { NgClass } from '@angular/common';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { Utility } from 'app/utilities/utility';
+import { customerInfo } from 'environments/environment.development';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-import { MatIconModule } from '@angular/material/icon';
-// import { saveAs } from 'file-saver';
-import { FileManagerService } from '@core/service/filemanager.service';
-import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { RepairCostTableItem, RepairDS } from 'app/data-sources/repair';
-import { RepairPartDS } from 'app/data-sources/repair-part';
-import { CustomerCompanyDS } from 'app/data-sources/customer-company';
-import { RepairPartItem } from 'app/data-sources/repair-part';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { SteamDS } from 'app/data-sources/steam';
-import { SteamPartDS } from 'app/data-sources/steam-part';
-import { report_billing_customer } from 'app/data-sources/billing';
-import { report_customer_tank_activity } from 'app/data-sources/reports';
-import { MatTooltipModule } from '@angular/material/tooltip';
-// import { fileSave } from 'browser-fs-access';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { DomSanitizer } from '@angular/platform-browser';
+import { FileManagerService } from '@core/service/filemanager.service';
+import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
+import { RepairCostTableItem } from 'app/data-sources/repair';
+import { RepairPartItem } from 'app/data-sources/repair-part';
+import { report_customer_inventory, report_status } from 'app/data-sources/reports';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
+import {
+  ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis,
+  ApexDataLabels,  ApexPlotOptions,  ApexYAxis,  ApexLegend,
+  ApexStroke,  ApexFill,  ApexTooltip,  ApexTitleSubtitle,
+  ApexGrid,  ApexMarkers,  ApexNonAxisChartSeries,  ApexResponsive,
+  NgApexchartsModule} from 'ng-apexcharts';
+ 
+export type ChartOptions = {
+  series?: ApexAxisChartSeries;
+  series2?: ApexNonAxisChartSeries;
+  chart?: ApexChart;
+  dataLabels?: ApexDataLabels;
+  plotOptions?: ApexPlotOptions;
+  yaxis?: ApexYAxis;
+  xaxis?: ApexXAxis;
+  fill?: ApexFill;
+  tooltip?: ApexTooltip;
+  stroke?: ApexStroke;
+  legend?: ApexLegend;
+  title?: ApexTitleSubtitle;
+  colors?: string[];
+  grid?: ApexGrid;
+  markers?: ApexMarkers;
+  labels: string[];
+  responsive: ApexResponsive[];
+};
+  
 
 export interface DialogData {
-  report_customer_tank_activity: report_customer_tank_activity[],
-  queryType:number,
-  type:string,
-  date:string,
-
-  // repair_guid: string;
-  // customer_company_guid: string;
-  // sotDS: StoringOrderTankDS;
-  // repairDS: RepairDS;
-  // ccDS: CustomerCompanyDS;
-  // cvDS: CodeValuesDS;
-  // existingPdf?: any;
-  // estimate_no?: string;
-  // retrieveFile: boolean;
+  report_inventory: report_customer_inventory[],
+  date:string
+ 
 }
 
 @Component({
-  selector: 'app-yard-detail-pdf',
-  templateUrl: './yard-detail-pdf.component.html',
-  styleUrls: ['./yard-detail-pdf.component.scss'],
+  selector: 'app-daily-overview-summary-pdf',
+  templateUrl: './daily-overview-summary-pdf.component.html',
+  styleUrls: ['./daily-overview-summary-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -69,11 +72,13 @@ export interface DialogData {
     MatProgressSpinnerModule,
     MatCardModule,
     MatProgressBarModule,
-    MatTooltipModule
+    NgApexchartsModule
   ],
 })
-export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
+  barChartOptions!: Partial<ChartOptions>;
+
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
     STATUS: 'COMMON-FORM.STATUS',
@@ -190,10 +195,11 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     EMAIL: 'COMMON-FORM.EMAIL',
     WEB: 'COMMON-FORM.WEB',
     IN_GATE: 'COMMON-FORM.IN-GATE',
+    OUT_GATE: 'COMMON-FORM.OUT-GATE',
     EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
-    LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE-S',
-    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE-S',
+    LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
+    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
     OPERATOR: 'COMMON-FORM.OPERATOR',
     TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
     YES: 'COMMON-FORM.YES',
@@ -216,8 +222,8 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
     IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
     OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
     DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
     REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
@@ -240,37 +246,61 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE: 'COMMON-FORM.IN-DATE',
-    OUT_DATE: 'COMMON-FORM.OUT-DATE',
-    TOTAL: 'COMMON-FORM.TOTAL',
-    DAYS: 'COMMON-FORM.DAYS',
-    GATEIO: 'COMMON-FORM.GATEIO-S',
-    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
-    DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
-    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
-    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
-    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
-    AV_DATE: 'COMMON-FORM.AV-DATE',
-    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE-S',
-    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE-S',
-    INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
-    CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
-    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S'
+    INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
+    CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
+    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
+    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
+    IN_DATE:'COMMON-FORM.IN-DATE',
+    OUT_DATE:'COMMON-FORM.OUT-DATE',
+    TOTAL:'COMMON-FORM.TOTAL',
+    DAYS:'COMMON-FORM.DAYS',
+    GATEIO:'COMMON-FORM.GATEIO',
+    INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
+    TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
+    SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
+    INVENTORY_DATE:'COMMON-FORM.INVENTORY-DATE',
+    TANK_STATUS:'COMMON-FORM.TANK-STATUS',
+    YARD_STATUS:'COMMON-FORM.YARD-STATUS',
+    TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER',
+    OVERVIEW_SUMMARY:'COMMON-FORM.OVERVIEW-SUMMARY',
+    DAILY_INVENTORY:'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY',
+    
+    
+    
+
   }
 
+ 
+  // bar chart start
+  // public barChartOptions: ChartConfiguration['options'] = {
+  //   responsive: true,
+  //   scales: {
+  //     x: {
+  //       ticks: {
+  //         color: '#9aa0ac', // Font Color
+  //       },
+  //     },
+  //     y: {
+  //       ticks: {
+  //         color: '#9aa0ac', // Font Color
+  //       },
+  //       min: 10,
+  //     },
+  //   },
+  //   plugins: {
+  //     legend: {
+  //       display: true,
+  //     },
+  //   },
+  // };
+  // public barChartType: ChartType = 'bar';
+  // public barChartPlugins = [];
+
+  // public barChartData: any ={};
   
   type?: string | null;
-  steamDS: SteamDS;
-  steamPartDS: SteamPartDS;
-  sotDS: StoringOrderTankDS;
-  ccDS: CustomerCompanyDS;
+  
   cvDS: CodeValuesDS;
   repair_guid?: string | null;
   customer_company_guid?: string | null;
@@ -288,7 +318,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
   groupNameCvList: CodeValuesItem[] = [];
   subgroupNameCvList: CodeValuesItem[] = [];
   yesnoCvList: CodeValuesItem[] = [];
-  TankStatusCvList: CodeValuesItem[] = [];
+  soTankStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   testTypeCvList: CodeValuesItem[] = [];
   testClassCvList: CodeValuesItem[] = [];
@@ -297,7 +327,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
   chunkedDamageCodeCvList: any[][] = [];
   repairCodeCvList: CodeValuesItem[] = [];
   chunkedRepairCodeCvList: any[][] = [];
-  unitTypeCvList: CodeValuesItem[] = [];
+  yardCvList: CodeValuesItem[] = [];
 
   scale = 2.5;
   imageQuality = 0.7;
@@ -311,15 +341,14 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_customer_tank_activity:report_customer_tank_activity[]=[];
+  report_inventory:report_customer_inventory[]=[];
   date:string='';
   invType:string='';
-  queryType:number=1;
 
   
 
   constructor(
-    public dialogRef: MatDialogRef<YardDetailPdfComponent>,
+    public dialogRef: MatDialogRef<DailyOverviewSummaryPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -328,31 +357,93 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer) {
     super();
+    
     this.translateLangText();
-    this.steamDS = new SteamDS(this.apollo);
-    this.steamPartDS = new SteamPartDS(this.apollo);
-    this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
-    this.report_customer_tank_activity= data.report_customer_tank_activity;
-    this.invType=data.type;
-    this.date=data.date;
-    this.queryType=data.queryType;
-
+    this.InitialDefaultData();
+    
+     this.cvDS = new CodeValuesDS(this.apollo);
+    this.report_inventory= data.report_inventory;
+    this.date = data.date;
+    
+    this.processBarCharValue(this.report_inventory);
+    this.loadData();
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-    this.getCodeValuesData();
+    
   }
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
    
+  }
+
+  public loadData() {
+    const queries = [
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'yardCv', codeValType: 'YARD' },
+      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
+      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      // { alias: 'yardCv', codeValType: 'YARD' },
+      // { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+      if(data.length)
+        {
+          this.purposeOptionCvList = data;
+          //this.processHorizontalBarValue(this.report_summary_status);
+          //this.processCustomerStatus(this.report_summary_status);
+        }
+    });
+
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      if(data.length)
+      {
+        this.yardCvList = data;
+      // this.processTankStatus(this.report_summary_status);
+      }
+      
+    });
+ 
+    
+  }
+
+  async getCodeValuesData(): Promise<void> {
+    const queries = [
+      // { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+      // { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      // { alias: 'TankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      // { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      // { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+      // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
+      // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+      // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+       { alias: 'yardCv', codeValType: 'YARD' },
+    ];
+
+    await this.cvDS.getCodeValuesByTypeAsync(queries);
+
+    // Wrap all alias connections in promises
+    const promises = [
+     
+   
+      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
+        this.purposeOptionCvList = data || [];
+        
+      }),
+
+      firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
+        this.yardCvList = data || [];
+        
+      }),
+      
+    ];
+
+    // Wait for all promises to resolve
+    await Promise.all(promises);
   }
 
   async generatePDF(): Promise<void> {
@@ -560,102 +651,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     }
   }
 
-  getRepairData(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.repair_guid!).subscribe({
-        next: (data) => resolve(data),
-        error: (err) => reject(err),
-      });
-    });
-  }
-
-  getRepairPdf(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
-        next: (data) => resolve(data),
-        error: (err) => reject(err),
-      });
-    });
-  }
-
-  async getCodeValuesData(): Promise<void> {
-    const queries = [
-      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      { alias: 'TankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
-    ];
-
-    await this.cvDS.getCodeValuesByTypeAsync(queries);
-
-    // Wrap all alias connections in promises
-    const promises = [
-      firstValueFrom(this.cvDS.connectAlias('groupNameCv')).then(async data => {
-        this.groupNameCvList = data || [];
-        const subqueries: any[] = [];
-        data.map(d => {
-          if (d.child_code) {
-            let q = { alias: d.child_code, codeValType: d.child_code };
-            const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-            if (!hasMatch) {
-              subqueries.push(q);
-            }
-          }
-        });
-
-        // Process subqueries if any
-        if (subqueries.length > 0) {
-          await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
-
-          for (const s of subqueries) {
-            const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
-            if (subData) {
-              this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
-            }
-          }
-        }
-
-      }),
-      firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
-        this.yesnoCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('TankStatusCv')).then(data => {
-        this.TankStatusCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
-        this.purposeOptionCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
-        this.testTypeCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('testClassCv')).then(data => {
-        this.testClassCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('partLocationCv')).then(data => {
-        this.partLocationCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('damageCodeCv')).then(data => {
-        this.damageCodeCvList = data || [];
-        this.chunkedDamageCodeCvList = this.chunkArray(this.damageCodeCvList, 10);
-      }),
-      firstValueFrom(this.cvDS.connectAlias('repairCodeCv')).then(data => {
-        this.repairCodeCvList = data || [];
-        this.chunkedRepairCodeCvList = this.chunkArray(this.repairCodeCvList, 10);
-      }),
-      firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
-        this.unitTypeCvList = data || [];
-      })
-    ];
-
-    // Wait for all promises to resolve
-    await Promise.all(promises);
-  }
+ 
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -677,71 +673,14 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     return -1;
   }
 
-  getLastTest(igs: any): string | undefined {
-    return this.getLastTestIGS(igs);
-  }
-
-  getLastTestIGS(igs: any): string | undefined {
-    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
-
-    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
-      const test_type = igs.last_test_cv;
-      const test_class = igs.test_class_cv;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
-    }
-    return "";
-  }
-
-  // getLastTestTI(): string | undefined {
-  //   if (!this.populateCodeValues?.testTypeCvList?.length || !this.populateCodeValues?.testClassCvList?.length || !this.tiItem) return "";
-
-  //   if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
-  //     const test_type = this.tiItem.last_test_cv;
-  //     const test_class = this.tiItem.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
-
-  getTestTypeDescription(codeVal: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-  }
-
-  getTestClassDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
-  }
-
-  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  }
-
-  getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
-  }
-
+  
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
-  displayTankPurpose(sot: any) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
-  }
-
+ 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -843,13 +782,12 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
 
 
   async exportToPDF(fileName: string = 'document.pdf') {
-    let pageWidth=297;
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
-    const pdf = new jsPDF('l', 'mm', 'a4');
+    const pdf = new jsPDF('p', 'mm', 'a4');
     const leftMargin = 10; // Left margin
     const rightMargin = 10; // Right margin
-    const contentWidth = pageWidth - leftMargin - rightMargin; // 190mm usable width
+    const contentWidth = 210 - leftMargin - rightMargin; // 190mm usable width
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 0;
@@ -874,7 +812,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
   
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
-      const titleX = (pageWidth - titleWidth) / 2; // Centering the title (210mm is page width)
+      const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
   
       const pos=15;
       pdf.text(reportTitle, titleX, pos); // Position it at the top
@@ -884,12 +822,12 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
   
       // If card height exceeds A4 page height, split across multiple pages
-      if (imgHeight > 190) { // 297mm (A4 height) - 20mm (top & bottom margins)
+      if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
         while (yPosition < canvas.height) {
           const sectionCanvas = document.createElement('canvas');
           sectionCanvas.width = canvas.width;
-          sectionCanvas.height = Math.min(800, canvas.height - yPosition); // A4 height in pixels
+          sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
   
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
@@ -899,7 +837,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
   
           // Store page position for page numbering
-          pagePositions.push({ page: pageNumber, x: 280, y: 200 });
+          pagePositions.push({ page: pageNumber, x: 200, y: 287 });
   
           yPosition += sectionCanvas.height;
           if (yPosition < canvas.height) {
@@ -914,7 +852,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
   
         // Store page position for page numbering
-        pagePositions.push({ page: pageNumber, x: 280, y: 200 });
+        pagePositions.push({ page: pageNumber, x: 200, y: 287 });
       }
       pageNumber++;
       this.generatingPdfProgress += progressValue;
@@ -942,132 +880,143 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
    }
    GetReportTitle():string
    {
-     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.DETAIL_REPORT}`
+     return `${this.translatedLangText.DAILY_INVENTORY} ${this.translatedLangText.SUMMARY_REPORT}`
    }
 
-   removeDeletedInGateAndOutGate(sot:StoringOrderTankItem)
+   processBarCharValue(repInv:report_customer_inventory[])
    {
-    sot.in_gate = sot?.in_gate?.filter(i=>i.delete_dt==null||i.delete_dt==0)||[];
-    sot.out_gate = sot?.out_gate?.filter(i=>i.delete_dt==null||i.delete_dt==0)||[];
-    sot.cleaning=sot?.cleaning?.filter(i=>i.delete_dt==null||i.delete_dt==0)||[];
-    sot.repair=sot?.repair?.filter(i=>i.delete_dt==null||i.delete_dt==0)||[];
+    if (this.barChartOptions.xaxis)   
+      {
+    // const topTenReports = repStatus
+    // .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
+    // .slice(0, 10); // Get the top 10
+
+    var categories:any =[
+    ];
+    // repInv.map(p=>
+        
+    //   categories.push(p.code)
+    // );
+    
+     var series:any=[];
+     var in_gate_tank_no:number[]=[];
+     var out_gate_tank_no:number[]=[];
+     repInv.map(c=>{
+      categories.push(c.code)
+      in_gate_tank_no.push(c.tank_no_in_gate||0);
+      out_gate_tank_no.push(c.tank_no_out_gate||0);
+     });
+     var series:any=[
+      {
+        name:this.translatedLangText.IN_GATE,
+        data:in_gate_tank_no
+      },
+      {
+        name:this.translatedLangText.OUT_GATE,
+        data:out_gate_tank_no
+      }
+     ];
+    
+        this.barChartOptions.xaxis =  {
+          type: 'category',
+          categories: categories,
+          labels: {
+            style: {
+              colors: '#9aa0ac',
+            },
+          },
+        };
+        //categories;
+
+      this.barChartOptions.yaxis= {
+        title: {
+          text: `${this.translatedLangText.NO_OF_TANKS}`,
+        },
+      }
+      this.barChartOptions.series=series;
+    }
    }
 
-   DisplayInDate(sot:StoringOrderTankItem):string
-   {
-      this.removeDeletedInGateAndOutGate(sot);
-      return Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt!)!;
-
-   }
-
-   DisplayCleanDate(sot:StoringOrderTankItem):string
-   {
-    this.removeDeletedInGateAndOutGate(sot);
-     return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt!)!;;
-   }
-
-   DisplayTakeInRef(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return sot.in_gate?.[0]?.in_gate_survey?.take_in_reference||'';
-      
-
-   }
-
-   DisplayTareWeight(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return `${sot.in_gate?.[0]?.in_gate_survey?.tare_weight||''}`;
-     
-
-   }
-
-   DisplayCapacity(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return `${sot.in_gate?.[0]?.in_gate_survey?.capacity||''}`;
-     
-
-   }
-
-   DisplayEstimateNo(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return `${sot.repair?.[0]?.estimate_no||''}`;
-
-   }
-
-   DisplayEstimateDate(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return Utility.convertEpochToDateStr(sot.repair?.[0]?.create_dt!)!;;
-   }
-  
    
-   DisplayApprovalDate(sot:StoringOrderTankItem):string
+   InitialDefaultData()
    {
-     this.removeDeletedInGateAndOutGate(sot);
-      return Utility.convertEpochToDateStr(sot.repair?.[0]?.approve_dt!)!;;
-     
-
+    this.barChartOptions = {
+      series: [
+        {
+          name: 'Net Profit',
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+        },
+        {
+          name: 'Revenue',
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+        },
+        {
+          name: 'Free Cash Flow',
+          data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+        },
+      ],
+      chart: {
+        type: 'bar',
+        height: 350,
+        foreColor: '#9aa0ac',
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '55%',
+          borderRadius: 5,
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        show: true,
+        width: 2,
+        colors: ['transparent'],
+      },
+      xaxis: {
+        categories: [
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+        ],
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      },
+      yaxis: {
+        title: {
+          text: '$ (thousands)',
+        },
+      },
+      grid: {
+        show: true,
+        borderColor: '#9aa0ac',
+        strokeDashArray: 1,
+      },
+      fill: {
+        opacity: 1,
+      },
+      tooltip: {
+        theme: 'dark',
+        marker: {
+          show: true,
+        },
+        x: {
+          show: true,
+        },
+      },
+    };
+   
    }
-
-   DisplayApprovalRef(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-      return `${sot.repair?.[0]?.job_no||''}`;
-     
-
-   }
-
-   DisplayAVDate(sot:StoringOrderTankItem):string
-   {
-
-      return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;;
-  }
-
-   DisplayLastTest(sot:StoringOrderTankItem):string 
-   {
-     var lastTest:string='';
-     this.removeDeletedInGateAndOutGate(sot);
-     if(this.queryType==1)
-     {
-      lastTest=this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv,this.testTypeCvList)||'';
-     }
-     else
-     {
-      lastTest=this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv,this.testTypeCvList)||'';
-     }
-     return lastTest;
-   }
-
-
-   DisplayPostInsp(sot:StoringOrderTankItem):string
-   {
-
-    return '';
-  }
-   DisplayReleaseDate(sot:StoringOrderTankItem):string
-   {
-    this.removeDeletedInGateAndOutGate(sot);
-    return Utility.convertEpochToDateStr(sot.out_gate?.[0]?.eir_dt!)!;
-    return '';
-  }
-   DisplayReleaseRef(sot:StoringOrderTankItem):string
-   {
-    this.removeDeletedInGateAndOutGate(sot);
-    return sot.release_job_no||'';
-  }
-   DisplayCurrentStatus(sot:StoringOrderTankItem):string
-   {
-
-    return this.cvDS.getCodeDescription(sot.tank_status_cv,this.TankStatusCvList)||'';;
-  }
-   DisplayRemarks(sot:StoringOrderTankItem):string
-   {
-
-    return sot?.remarks||'';
-  }
-  
   
 }

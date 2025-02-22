@@ -2703,6 +2703,7 @@ const GET_STORING_ORDER_TANKS_ACTIVITY = gql`
         purpose_steam
         purpose_storage
         tank_status_cv
+        release_job_no
         remarks
         guid
         tank_no
@@ -2718,6 +2719,129 @@ const GET_STORING_ORDER_TANKS_ACTIVITY = gql`
          estimate_no
          create_dt
          delete_dt
+        }
+        customer_company {
+          code
+          guid
+          name
+        }
+        storing_order {
+          so_no
+          so_notes
+          haulier
+          create_dt
+          status_cv
+          customer_company_guid
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+        }
+        release_order_sot {
+          release_order {
+            create_dt
+            ro_no
+            ro_notes
+            release_dt
+            customer_company {
+              code
+              guid
+              name
+            }
+          }
+        }
+        in_gate(where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}) {
+          delete_dt
+          eir_dt
+          eir_no
+          guid
+          remarks
+          so_tank_guid
+          yard_cv
+          in_gate_survey {
+            delete_dt
+            guid
+            inspection_dt
+            last_test_cv
+            next_test_cv
+            tare_weight
+            test_dt
+            walkway_cv
+            capacity
+            take_in_reference
+          }
+        }
+        out_gate(where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}) {
+          eir_no
+          eir_dt
+          guid
+          out_gate_survey {
+            delete_dt
+            guid
+            inspection_dt
+            last_test_cv
+            next_test_cv
+            tare_weight
+            test_dt
+            walkway_cv
+            capacity
+            take_in_reference
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+const GET_STORING_ORDER_INVENTORY = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        tank_status_cv
+        remarks
+        guid
+        tank_no
+        so_guid
+        create_dt
+        cleaning (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
+         approve_dt
+         complete_dt
+         delete_dt
+        }
+        repair (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
+         approve_dt
+         complete_dt
+         estimate_no
+         create_dt
+         delete_dt
+        }
+        booking(where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
+          book_type_cv
+          booking_dt
+          reference
         }
         customer_company {
           code
@@ -3007,6 +3131,33 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   constructor(private apollo: Apollo) {
     super();
   }
+
+  searchStoringOrderTanksInventoryReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_INVENTORY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
 
   searchStoringOrderTanksActivityReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);

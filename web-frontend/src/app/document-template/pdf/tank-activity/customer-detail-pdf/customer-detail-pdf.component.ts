@@ -513,12 +513,13 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   async exportToPDF(fileName: string = 'document.pdf') {
+    let pageWidth=297;
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
     const pdf = new jsPDF('l', 'mm', 'a4');
     const leftMargin = 10; // Left margin
     const rightMargin = 10; // Right margin
-    const contentWidth = 210 - leftMargin - rightMargin; // 190mm usable width
+    const contentWidth = pageWidth - leftMargin - rightMargin; // 190mm usable width
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 0;
@@ -543,7 +544,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
-      const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
+      const titleX = (pageWidth - titleWidth) / 2; // Centering the title (210mm is page width)
 
       const pos = 15;
       pdf.text(reportTitle, titleX, pos); // Position it at the top
@@ -553,12 +554,12 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
 
       // If card height exceeds A4 page height, split across multiple pages
-      if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
+      if (imgHeight > 190) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
         while (yPosition < canvas.height) {
           const sectionCanvas = document.createElement('canvas');
           sectionCanvas.width = canvas.width;
-          sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
+          sectionCanvas.height = Math.min(800, canvas.height - yPosition); // A4 height in pixels
 
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
@@ -568,7 +569,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
 
           // Store page position for page numbering
-          pagePositions.push({ page: pageNumber, x: 200, y: 287 });
+          pagePositions.push({ page: pageNumber, x: 280, y: 200 });
 
           yPosition += sectionCanvas.height;
           if (yPosition < canvas.height) {
@@ -583,7 +584,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
 
         // Store page position for page numbering
-        pagePositions.push({ page: pageNumber, x: 200, y: 287 });
+        pagePositions.push({ page: pageNumber, x: 280, y: 200 });
       }
       pageNumber++;
       this.generatingPdfProgress += progressValue;
