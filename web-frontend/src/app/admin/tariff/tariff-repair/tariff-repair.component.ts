@@ -88,10 +88,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    // // 'img',
     'fName',
-    'dimension',
-    'lName',
+    // 'dimension',
+    // 'lName',
     'email',
     'subgroup',
     'gender',
@@ -210,13 +209,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     CARGO_ALERT: 'COMMON-FORM.CARGO-ALERT',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
@@ -224,8 +216,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     COST: 'COMMON-FORM.COST',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
-    GROUP_NAME: "COMMON-FORM.GROUP-NAME",
-    SUB_GROUP_NAME: "COMMON-FORM.SUB-GROUP-NAME",
+    GROUP_NAME: "COMMON-FORM.GROUP",
+    SUB_GROUP_NAME: "COMMON-FORM.SUB-GROUP",
     PART_NAME: "COMMON-FORM.PART-NAME",
     MIN_COST: "COMMON-FORM.MIN-COST",
     MAX_COST: "COMMON-FORM.MAX-COST",
@@ -280,9 +272,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   initPcForm() {
     this.pcForm = this.fb.group({
-      // guid: [{value:''}],
-      // customer_code: this.customerCodeControl,
-      // cleaning_category:this.categoryControl,
       group_name_cv: [''],
       sub_group_name_cv: [''],
       len: [''],
@@ -305,25 +294,22 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   refresh() {
     this.loadData();
   }
+
   dupCall(row: TariffRepairItem) {
-    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
-    //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '700px',
+      width: '1000px',
       height: 'auto',
       data: {
         action: 'duplicate',
         langText: this.langText,
         selectedItem: row
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -331,13 +317,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         this.handleSaveSuccess(result);
         if (this.trfRepairDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-          //this.search();
-          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
         }
       }
     });
   }
-
 
   addCall() {
     // this.preventDefault(event);  // Prevents the form submission
@@ -350,14 +333,13 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '700px',
+      width: '1000px',
       height: 'auto',
       data: {
         action: 'new',
         langText: this.langText,
         selectedItem: null
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -370,18 +352,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         }
       }
     });
-  }
-
-  addNew() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-
-
   }
 
   preventDefault(event: Event) {
@@ -427,7 +397,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: '700px',
+      width: '1000px',
       data: {
         action: 'new',
         langText: this.langText,
@@ -455,21 +425,18 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '700px',
+      width: '1000px',
       data: {
         action: 'new',
         langText: this.langText,
         selectedItems: this.selection.selected
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-
         this.handleSaveSuccess(result);
         this.search();
-
       }
     });
   }
@@ -486,7 +453,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: TariffRepairItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '700px',
+      width: '1000px',
       data: {
         action: 'edit',
         langText: this.langText,

@@ -1,58 +1,42 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject, numberAttribute, OnInit,ViewChild } from '@angular/core';
-import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, Inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatInputModule } from '@angular/material/input';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TranslateModule,TranslateService } from '@ngx-translate/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Utility } from 'app/utilities/utility';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { DatePipe } from '@angular/common';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { Apollo } from 'apollo-angular';
-import { CommonModule } from '@angular/common';
-import { startWith, debounceTime, tap } from 'rxjs';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-import { TariffRepairDS,TariffRepairItem } from 'app/data-sources/tariff-repair';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatTableModule } from '@angular/material/table';
-import { MatSortModule } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { ComponentUtil } from 'app/utilities/component-util';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Apollo } from 'apollo-angular';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
+import { Utility } from 'app/utilities/utility';
+import { provideNgxMask } from 'ngx-mask';
 //import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
-import {TariffDepotItem,TariffDepotDS} from 'app/data-sources/tariff-depot';
-import { TankDS,TankItem } from 'app/data-sources/tank';
-import { elements } from 'chart.js';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { TankItem } from 'app/data-sources/tank';
+import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 
 
 export interface DialogData {
   action?: string;
-  selectedValue?:number;
-  // item: StoringOrderTankItem;
-   langText?: any;
-   selectedItem:TariffRepairItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
+  selectedValue?: number;
+  langText?: any;
+  selectedItem: TariffRepairItem;
 }
-
-interface Condition {
-  guid: { eq: string };
-  tariff_depot_guid: { eq: null };
-}
-
 
 @Component({
   selector: 'app-tariff-repair-form-dialog',
@@ -72,55 +56,49 @@ interface Condition {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
     MatTabsModule,
-    MatTabGroup,
-    MatTabHeader,
-    MatTabBody,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    
-    
+
+
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     //  'select',
-      // 'img',
-       'fName',
-       'lName',
-       'email',
-      // 'gender',
-      // 'bDate',
-      // 'mobile',
-      // 'actions',
-    ];
+    // 'img',
+    'fName',
+    'lName',
+    'email',
+    // 'gender',
+    // 'bDate',
+    // 'mobile',
+    // 'actions',
+  ];
 
   action: string;
   index?: number;
   dialogTitle?: string;
- 
-  cvDS :CodeValuesDS;
-  groupNameCvList :CodeValuesItem[] = [];
-  subGroupNameCvList :CodeValuesItem[] = [];
-  lengthTypeCvList :CodeValuesItem[] = [];
-  unitTypeCvList : CodeValuesItem[]=[];
-  
-  selectedItem? : TariffRepairItem;
 
-  tnkItems?:TankItem[];
+  cvDS: CodeValuesDS;
+  groupNameCvList: CodeValuesItem[] = [];
+  subGroupNameCvList: CodeValuesItem[] = [];
+  lengthTypeCvList: CodeValuesItem[] = [];
+  unitTypeCvList: CodeValuesItem[] = [];
 
-  trfRepairDS:TariffRepairDS;
-  subGrpNames :any[]=[];
-  
+  selectedItem?: TariffRepairItem;
+
+  tnkItems?: TankItem[];
+
+  trfRepairDS: TariffRepairDS;
+  subGrpNames: any[] = [];
+
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -130,12 +108,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
-  lengthUnitControl=new UntypedFormControl();
-  heightDiameterUnitControl=new UntypedFormControl();
+  lengthUnitControl = new UntypedFormControl();
+  heightDiameterUnitControl = new UntypedFormControl();
   widthDiameterUnitControl = new UntypedFormControl();
-  thicknessUnitControl =new UntypedFormControl();
-  
-  
+  thicknessUnitControl = new UntypedFormControl();
+
+
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -145,7 +123,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -177,7 +155,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
-    SEARCH:'COMMON-FORM.SEARCH',
+    SEARCH: 'COMMON-FORM.SEARCH',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
@@ -194,78 +172,70 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME:'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS:'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST :'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
-    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
-    PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
-    VIEW:'COMMON-FORM.VIEW',
-    DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
-    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
-    PREINSPECTION_COST:"COMMON-FORM.PREINSPECTION-COST",
-    LOLO_COST:"COMMON-FORM.LOLO-COST",
-    STORAGE_COST:"COMMON-FORM.STORAGE-COST",
-    FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
-    ASSIGNED : 'COMMON-FORM.ASSIGNED',
+    CARGO_ALERT: 'COMMON-FORM.CARGO-ALERT',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    VIEW: 'COMMON-FORM.VIEW',
+    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST: "COMMON-FORM.LOLO-COST",
+    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    ASSIGNED: 'COMMON-FORM.ASSIGNED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
-    COST : 'COMMON-FORM.COST',
-    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
-    GROUP_NAME:"COMMON-FORM.GROUP-NAME",
-    SUB_GROUP_NAME:"COMMON-FORM.SUB-GROUP-NAME",
-    PART_NAME:"COMMON-FORM.PART-NAME",
-    MIN_COST:"COMMON-FORM.MIN-COST",
-    MAX_COST:"COMMON-FORM.MAX-COST",
-    LENGTH:"COMMON-FORM.LENGTH",
-    MIN_LENGTH:"COMMON-FORM.MIN-LENGTH",
-    MAX_LENGTH:"COMMON-FORM.MAX-LENGTH",
-    MIN_LABOUR:"COMMON-FORM.MIN-LABOUR",
-    MAX_LABOUR:"COMMON-FORM.MAX-LABOUR",
-    HANDLED_ITEM:"COMMON-FORM.HANDLED-ITEM",
-    LABOUR_HOUR:"COMMON-FORM.LABOUR-HOUR",
-    MATERIAL_COST:"COMMON-FORM.MATERIAL-COST",
-    TEST_TYPE:"COMMON-FORM.TEST-TYPE",
-    DIMENSION:"COMMON-FORM.DIMENSION",
-    HEIGHT_DIAMETER:"COMMON-FORM.HEIGHT-DIAMETER",
-    WIDTH_DIAMETER:"COMMON-FORM.WIDTH-DIAMETER",
-    THICKNESS:"COMMON-FORM.THICKNESS",
-    COST_TYPE:"COMMON-FORM.COST-TYPE",
-    REBATE_TYPE:"COMMON-FORM.REBATE-TYPE",
-    JOB_TYPE:"COMMON-FORM.JOB-TYPE",
-    ALIAS_NAME:"COMMON-FORM.ALIAS-NAME"
-    
+    COST: 'COMMON-FORM.COST',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    GROUP_NAME: "COMMON-FORM.GROUP-NAME",
+    SUB_GROUP_NAME: "COMMON-FORM.SUB-GROUP-NAME",
+    PART_NAME: "COMMON-FORM.PART-NAME",
+    MIN_COST: "COMMON-FORM.MIN-COST",
+    MAX_COST: "COMMON-FORM.MAX-COST",
+    LENGTH: "COMMON-FORM.LENGTH",
+    MIN_LENGTH: "COMMON-FORM.MIN-LENGTH",
+    MAX_LENGTH: "COMMON-FORM.MAX-LENGTH",
+    MIN_LABOUR: "COMMON-FORM.MIN-LABOUR",
+    MAX_LABOUR: "COMMON-FORM.MAX-LABOUR",
+    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
+    LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
+    MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
+    TEST_TYPE: "COMMON-FORM.TEST-TYPE",
+    DIMENSION: "COMMON-FORM.DIMENSION",
+    HEIGHT_DIAMETER: "COMMON-FORM.HEIGHT-DIAMETER",
+    WIDTH_DIAMETER: "COMMON-FORM.WIDTH-DIAMETER",
+    THICKNESS: "COMMON-FORM.THICKNESS",
+    COST_TYPE: "COMMON-FORM.COST-TYPE",
+    REBATE_TYPE: "COMMON-FORM.REBATE-TYPE",
+    JOB_TYPE: "COMMON-FORM.JOB-TYPE",
+    ALIAS_NAME: "COMMON-FORM.ALIAS-NAME"
   };
   unit_type_control = new UntypedFormControl();
-  unitTypeChangedEventUnsub: boolean=false;
-  
- // selectedItem: TariffRepairItem;
+  unitTypeChangedEventUnsub: boolean = false;
+
+  // selectedItem: TariffRepairItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
-  
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -277,133 +247,121 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     // Set the defaults
     super();
     //this.selectedItem = data.selectedItem;
-   
+
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.pcForm = this.createTariffRepair();
-   
-    
-   
+
     this.action = data.action!;
     this.translateLangText();
     this.loadData()
 
-    if(data.action=="duplicate")
-    {
+    if (data.action == "duplicate") {
       this.selectedItem = data.selectedItem;
       this.pcForm.patchValue({
-        part_name:this.selectedItem.part_name,
-        alias:this.selectedItem.alias,
-        dimension:this.selectedItem.dimension,
-        height_diameter:this.selectedItem.height_diameter,
-        height_diameter_unit_cv:this.heightDiameterUnitControl,
-        width_diameter:this.selectedItem.width_diameter,
+        part_name: this.selectedItem.part_name,
+        alias: this.selectedItem.alias,
+        dimension: this.selectedItem.dimension,
+        height_diameter: this.selectedItem.height_diameter,
+        height_diameter_unit_cv: this.heightDiameterUnitControl,
+        width_diameter: this.selectedItem.width_diameter,
         width_diameter_unit_cv: this.widthDiameterUnitControl,
-        thickness:this.selectedItem.width_diameter,
-        thickness_unit_cv:this.thicknessUnitControl,
-        length:[''],
-        labour_hour:[''],
-        material_cost:[''],
+        thickness: this.selectedItem.width_diameter,
+        thickness_unit_cv: this.thicknessUnitControl,
+        length: [''],
+        labour_hour: [''],
+        material_cost: [''],
       });
     }
-   
+
   }
 
   createTariffRepair(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: null,
-      action:"new",
-      group_name_cv:this.groupNameControl,
-      sub_group_name_cv:this.subGroupNameControl,
-      alias:({value:'',disabled:true}),
-      dimension:({value:'',disabled:true}),
-      part_name:[''],
-      height_diameter:[''],
+      action: "new",
+      group_name_cv: this.groupNameControl,
+      sub_group_name_cv: this.subGroupNameControl,
+      alias: ({ value: '', disabled: true }),
+      dimension: ({ value: '', disabled: true }),
+      part_name: [''],
+      height_diameter: [''],
       height_diameter_unit_cv: this.heightDiameterUnitControl,
-      width_diameter:[''],
-      width_diameter_unit_cv : this.widthDiameterUnitControl,
-      thickness:[''],
-      thickness_unit_cv:this.thicknessUnitControl,
-      length:[''],
-      length_unit_cv:this.lengthUnitControl,
-      labour_hour:[''],
-      material_cost:[''],
+      width_diameter: [''],
+      width_diameter_unit_cv: this.widthDiameterUnitControl,
+      thickness: [''],
+      thickness_unit_cv: this.thicknessUnitControl,
+      length: [''],
+      length_unit_cv: this.lengthUnitControl,
+      labour_hour: [''],
+      material_cost: [''],
 
     });
 
 
   }
- 
+
   public loadData() {
 
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
-     // { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME1' },
+      // { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME1' },
       { alias: 'unitType', codeValType: 'UNIT_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
-      if(this.selectedItem)
-      {
-          var rec=this.selectedItem;
-          this.groupNameControl.setValue(this.GetCodeValue(rec.group_name_cv!,this.groupNameCvList));
+      if (this.selectedItem) {
+        var rec = this.selectedItem;
+        this.groupNameControl.setValue(this.GetCodeValue(rec.group_name_cv!, this.groupNameCvList));
       }
 
-    
+
     });
     this.cvDS.connectAlias('subGroupName').subscribe(data => {
       this.subGroupNameCvList = data;
     });
     this.cvDS.connectAlias('unitType').subscribe(data => {
       this.unitTypeCvList = data;
-      if(this.selectedItem)
-        { 
-          var rec=this.selectedItem;
-          //this.lengthUnitControl.setValue(this.GetCodeValue(codeValue,this.unitTypeCvList);//this.getUnitTypeCodeValue(rec.length_unit_cv!));
-          this.widthDiameterUnitControl.setValue(this.GetCodeValue(rec.width_diameter_unit_cv!,this.unitTypeCvList));
-          this.heightDiameterUnitControl.setValue(this.GetCodeValue(rec.height_diameter_unit_cv!,this.unitTypeCvList));
-          this.thicknessUnitControl.setValue(this.GetCodeValue(rec.thickness_unit_cv!,this.unitTypeCvList));
-        }
+      if (this.selectedItem) {
+        var rec = this.selectedItem;
+        //this.lengthUnitControl.setValue(this.GetCodeValue(codeValue,this.unitTypeCvList);//this.getUnitTypeCodeValue(rec.length_unit_cv!));
+        this.widthDiameterUnitControl.setValue(this.GetCodeValue(rec.width_diameter_unit_cv!, this.unitTypeCvList));
+        this.heightDiameterUnitControl.setValue(this.GetCodeValue(rec.height_diameter_unit_cv!, this.unitTypeCvList));
+        this.thicknessUnitControl.setValue(this.GetCodeValue(rec.thickness_unit_cv!, this.unitTypeCvList));
+      }
     });
- 
+
     this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
       console.log('Selected value:', value);
-      var aliasName =value.child_code;
-
-      const subqueries :any[]=  [{ alias: aliasName, codeValType: aliasName }];
+      var aliasName = value.child_code;
+      const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
       this.cvDS.getCodeValuesByType(subqueries);
       this.cvDS.connectAlias(aliasName).subscribe(data => {
         this.subGroupNameCvList = data;
-        if(this.selectedItem)
-        {
-          var rec=this.selectedItem;
-          this.subGroupNameControl.setValue(this.GetCodeValue(rec.subgroup_name_cv!,this.subGroupNameCvList));
+        if (this.selectedItem) {
+          var rec = this.selectedItem;
+          this.subGroupNameControl.setValue(this.GetCodeValue(rec.subgroup_name_cv!, this.subGroupNameCvList));
         }
       });
       // Handle value changes here
     });
 
     this.listenTheValueChangesForPartNameDiameter();
-  
+
   }
-  
-  GetButtonCaption()
-  {
-    if(this.pcForm!.value['action']== "view")
-      {
-        return this.translatedLangText.CLOSE ;      
-      }
-      else
-      {
-        return this.translatedLangText.CANCEL ;
-      }
+
+  GetButtonCaption() {
+    if (this.pcForm!.value['action'] == "view") {
+      return this.translatedLangText.CLOSE;
+    }
+    else {
+      return this.translatedLangText.CANCEL;
+    }
   }
-  GetTitle()
-  {
-   
-      return this.translatedLangText.NEW + " " + this.translatedLangText.REPAIR;      
-    
+
+  GetTitle() {
+    return this.translatedLangText.NEW + " " + this.translatedLangText.REPAIR;
   }
 
   translateLangText() {
@@ -411,130 +369,106 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       this.translatedLangText = translations;
     });
   }
-  
 
-  canEdit()
-  {
-    return this.pcForm!.value['action']=="new";
+  canEdit() {
+    return this.pcForm!.value['action'] == "new";
   }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-
       console.log('valid');
       this.dialogRef.close(count);
-      // let successMsg = this.langText.SAVE_SUCCESS;
-      // this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-      //   successMsg = res;
-      //   ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        
-      // });
     }
   }
 
-  isDimensionRequired()
-  {
+  isDimensionRequired() {
     return false;
-    // return (
-    //   this.pcForm.value['height_diameter'] !== "" ||
-    //   this.pcForm.value['width_diameter'] !== "" ||
-    //   this.pcForm.value['thickness'] !== ""
-    // );
   }
 
   save() {
-
     if (!this.pcForm?.valid) return;
-    
-    let newRepair = new TariffRepairItem();
-    newRepair.part_name=String(this.pcForm.value['part_name']);
-    newRepair.alias=String(this.pcForm.get('alias')?.value||this.pcForm.value['part_name']);
-    newRepair.dimension=String(this.pcForm.get('dimension')?.value||'');
-    newRepair.material_cost= Number(this.pcForm!.value['material_cost']);
-    newRepair.height_diameter= Number(this.pcForm.value['height_diameter']);
-    newRepair.height_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
-    newRepair.width_diameter= Number(this.pcForm.value['width_diameter']);
-    newRepair.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['width_diameter_unit_cv']));
-    newRepair.group_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['group_name_cv']));
-    newRepair.subgroup_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['sub_group_name_cv']));
-    newRepair.labour_hour= Number(this.pcForm.value['labour_hour']);
-    newRepair.length= Number(this.pcForm.value['length']);
-    newRepair.length_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['length_unit_cv']));
-    newRepair.thickness=Number(this.pcForm.value['thickness']);
-    newRepair.thickness_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['thickness_unit_cv']));
 
-    
+    let newRepair = new TariffRepairItem();
+    newRepair.part_name = String(this.pcForm.value['part_name']);
+    newRepair.alias = String(this.pcForm.get('alias')?.value || this.pcForm.value['part_name']);
+    newRepair.dimension = String(this.pcForm.get('dimension')?.value || '');
+    newRepair.material_cost = Number(this.pcForm!.value['material_cost']);
+    newRepair.height_diameter = Number(this.pcForm.value['height_diameter']);
+    newRepair.height_diameter_unit_cv = String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
+    newRepair.width_diameter = Number(this.pcForm.value['width_diameter']);
+    newRepair.width_diameter_unit_cv = String(this.RetrieveCodeValue(this.pcForm.value['width_diameter_unit_cv']));
+    newRepair.group_name_cv = String(this.RetrieveCodeValue(this.pcForm.value['group_name_cv']));
+    newRepair.subgroup_name_cv = String(this.RetrieveCodeValue(this.pcForm.value['sub_group_name_cv']));
+    newRepair.labour_hour = Number(this.pcForm.value['labour_hour']);
+    newRepair.length = Number(this.pcForm.value['length']);
+    newRepair.length_unit_cv = String(this.RetrieveCodeValue(this.pcForm.value['length_unit_cv']));
+    newRepair.thickness = Number(this.pcForm.value['thickness']);
+    newRepair.thickness_unit_cv = String(this.RetrieveCodeValue(this.pcForm.value['thickness_unit_cv']));
+
+
 
     let where: any = {};
     if (newRepair.alias) {
       where.alias = { eq: newRepair.alias };
     }
 
-    if(newRepair.length)
-    {
-      where.length={eq:newRepair.length};
-      where.length_unit_cv={eq:newRepair.length_unit_cv};
+    if (newRepair.length) {
+      where.length = { eq: newRepair.length };
+      where.length_unit_cv = { eq: newRepair.length_unit_cv };
     }
 
-    this.subs.sink= this.trfRepairDS.SearchTariffRepair(where).subscribe(data=>{
-        if(data.length==0)
-        {
-          this.trfRepairDS.addNewTariffRepair(newRepair).subscribe(result=>{
+    this.subs.sink = this.trfRepairDS.SearchTariffRepair(where).subscribe(data => {
+      if (data.length == 0) {
+        this.trfRepairDS.addNewTariffRepair(newRepair).subscribe(result => {
 
-            this.handleSaveSuccess(result?.data?.addTariffRepair);
-          });
-        }
-        else
-        {
-            this.pcForm?.get('length')?.setErrors({ existed: true });
-        }
+          this.handleSaveSuccess(result?.data?.addTariffRepair);
+        });
+      }
+      else {
+        this.pcForm?.get('length')?.setErrors({ existed: true });
+      }
 
 
     });
 
-   
 
-   
+
+
 
   }
 
-  RetrieveCodeDesc(CdValue :CodeValuesItem):String
-  {
-    let retCodeValue:String='';
+  RetrieveCodeDesc(CdValue: CodeValuesItem): String {
+    let retCodeValue: String = '';
 
-    if(CdValue)
-    {
-      retCodeValue=CdValue.description||'';
+    if (CdValue) {
+      retCodeValue = CdValue.description || '';
     }
     return retCodeValue;
 
   }
 
-  RetrieveCodeValue(CdValue :CodeValuesItem):String
-  {
-    let retCodeValue:String='';
+  RetrieveCodeValue(CdValue: CodeValuesItem): String {
+    let retCodeValue: String = '';
 
-    if(CdValue)
-    {
-      retCodeValue=CdValue.code_val||'';
+    if (CdValue) {
+      retCodeValue = CdValue.code_val || '';
     }
     return retCodeValue;
 
   }
-  
+
   displayLastUpdated(r: TariffDepotItem) {
-    var updatedt= r.update_dt;
-    if(updatedt===null)
-    {
-      updatedt= r.create_dt;
+    var updatedt = r.update_dt;
+    if (updatedt === null) {
+      updatedt = r.create_dt;
     }
     const date = new Date(updatedt! * 1000);
     const day = String(date.getDate()).padStart(2, '0');
     const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();   
+    const year = date.getFullYear();
 
-   // Replace the '/' with '-' to get the required format
- 
+    // Replace the '/' with '-' to get the required format
+
 
     return `${day}/${month}/${year}`;
 
@@ -554,66 +488,62 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
 
-  listenTheValueChangesForPartNameDiameter():void
-  {
+  listenTheValueChangesForPartNameDiameter(): void {
 
     this.pcForm.get("part_name")?.valueChanges.subscribe(
-      value=>{this.updateDimensionAndAliasName()});
-    this.pcForm.get("height_diameter")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
-    this.pcForm.get("height_diameter_unit_cv")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
-    this.pcForm.get("width_diameter")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
-    this.pcForm.get("width_diameter_unit_cv")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
-    this.pcForm.get("thickness")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
-    this.pcForm.get("thickness_unit_cv")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+      value => { this.updateDimensionAndAliasName() });
+    this.pcForm.get("height_diameter")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
+    this.pcForm.get("height_diameter_unit_cv")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
+    this.pcForm.get("width_diameter")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
+    this.pcForm.get("width_diameter_unit_cv")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
+    this.pcForm.get("thickness")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
+    this.pcForm.get("thickness_unit_cv")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
   }
 
-  updateDimensionAndAliasName():void
-  {
-    if(this.unitTypeChangedEventUnsub) return;
-    let heightDimension=`${this.pcForm?.get("height_diameter")?.value||''}`;
-    let widthDimension=`${this.pcForm?.get("width_diameter")?.value||''}`;
-    let thicknessDimension=`${this.pcForm?.get("thickness")?.value||''}`;
+  updateDimensionAndAliasName(): void {
+    if (this.unitTypeChangedEventUnsub) return;
+    let heightDimension = `${this.pcForm?.get("height_diameter")?.value || ''}`;
+    let widthDimension = `${this.pcForm?.get("width_diameter")?.value || ''}`;
+    let thicknessDimension = `${this.pcForm?.get("thickness")?.value || ''}`;
     let dimension = '';
-    if(heightDimension!="") dimension=`${heightDimension}${this.RetrieveCodeDesc(this.heightDiameterUnitControl.value)||''}`;
-    else 
-    { 
-      this.unitTypeChangedEventUnsub=true;
+    if (heightDimension != "") dimension = `${heightDimension}${this.RetrieveCodeDesc(this.heightDiameterUnitControl.value) || ''}`;
+    else {
+      this.unitTypeChangedEventUnsub = true;
       this.heightDiameterUnitControl.reset();
-      this.unitTypeChangedEventUnsub=false;
+      this.unitTypeChangedEventUnsub = false;
     }
-    
-    if(widthDimension!="") {
-      if(dimension!="") dimension+=" x ";
-      dimension +=`${widthDimension}${this.RetrieveCodeDesc(this.widthDiameterUnitControl.value)||''}`;}
-    else{ 
-      this.unitTypeChangedEventUnsub=true;
+
+    if (widthDimension != "") {
+      if (dimension != "") dimension += " x ";
+      dimension += `${widthDimension}${this.RetrieveCodeDesc(this.widthDiameterUnitControl.value) || ''}`;
+    }
+    else {
+      this.unitTypeChangedEventUnsub = true;
       this.widthDiameterUnitControl.reset();
-      this.unitTypeChangedEventUnsub=false;
+      this.unitTypeChangedEventUnsub = false;
     }
-    if(thicknessDimension!="") {
-      if(dimension!="") dimension+=" x ";
-      dimension +=`${thicknessDimension}${this.RetrieveCodeDesc(this.thicknessUnitControl.value)||''}`;
+    if (thicknessDimension != "") {
+      if (dimension != "") dimension += " x ";
+      dimension += `${thicknessDimension}${this.RetrieveCodeDesc(this.thicknessUnitControl.value) || ''}`;
     }
-    else
-    { 
-      this.unitTypeChangedEventUnsub=true;
+    else {
+      this.unitTypeChangedEventUnsub = true;
       this.thicknessUnitControl.reset();
-      this.unitTypeChangedEventUnsub=false;
+      this.unitTypeChangedEventUnsub = false;
     }
 
     let aliasName = `${this.pcForm?.get("part_name")?.value}`;
-    if(dimension!="") aliasName+=`  ${dimension}`
+    if (dimension != "") aliasName += `  ${dimension}`
     this.pcForm.patchValue({
-      alias:aliasName,
-      dimension:dimension
+      alias: aliasName,
+      dimension: dimension
     });
   }
 
-  GetCodeValue(codeValue:String, codeValueItems:CodeValuesItem[])
-  {
-   
+  GetCodeValue(codeValue: String, codeValueItems: CodeValuesItem[]) {
+
     return codeValueItems.find(item => item.code_val === codeValue);
-    
+
   }
-  
+
 }

@@ -5,9 +5,6 @@
         <h3>{{GetTitle()}}</h3>
       </div>
     </div>
-    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
-      <mat-icon>close</mat-icon>
-    </button> -->
   </div>
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
@@ -60,25 +57,29 @@
                 {{translatedLangText.PART_NAME }} {{translatedLangText.EXISTED }}
               </mat-error>
               }
-
             </mat-form-field>
           </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-            <mat-form-field class="example-full-width">
+            <!-- <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.DIMENSION}}</mat-label>
               <input matInput formControlName="dimension" type="text">
-
-            </mat-form-field>
+            </mat-form-field> -->
+            {{translatedLangText.DIMENSION}}:
+            <span class="font-bold">
+              {{this.pcForm.get('dimension')?.value}}
+            </span>
           </div>
         </div>
         <div class="row">
-
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-            <mat-form-field class="example-full-width">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+            <!-- <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.ALIAS_NAME}}</mat-label>
               <input matInput formControlName="alias" type="text">
-
-            </mat-form-field>
+            </mat-form-field> -->
+            {{translatedLangText.ALIAS_NAME}}:
+            <span class="font-bold">
+              {{this.pcForm.get('alias')?.value}}
+            </span>
           </div>
         </div>
         <div class="row">
@@ -96,7 +97,6 @@
                   {{ t.description }}
                 </mat-option>
               </mat-select>
-
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
@@ -113,13 +113,10 @@
                   {{ t.description }}
                 </mat-option>
               </mat-select>
-
             </mat-form-field>
           </div>
-
         </div>
         <div class="row">
-
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
@@ -134,7 +131,6 @@
                   {{ t.description }}
                 </mat-option>
               </mat-select>
-
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
@@ -156,10 +152,8 @@
                   {{ t.description }}
                 </mat-option>
               </mat-select>
-
             </mat-form-field>
           </div>
-
         </div>
         <div class="row">
           <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
@@ -183,7 +177,6 @@
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
-
                     <ng-container matColumnDef="fName">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.PART_NAME
                         }}</mat-header-cell>
@@ -218,7 +211,6 @@
                         <span class="mobile-label">{{translatedLangText.MATERIAL_COST }}:</span>
                         {{row.material_cost.toFixed(2)}}</mat-cell>
                     </ng-container>
-
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
                     </mat-row>

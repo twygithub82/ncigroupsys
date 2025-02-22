@@ -46,7 +46,7 @@ interface Condition {
 }
 
 @Component({
-  selector: 'app-tariff-repair-form-dialog',
+  selector: 'app-tariff-repair-edit-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],
@@ -235,7 +235,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     THICKNESS: "COMMON-FORM.THICKNESS",
     COST_TYPE: "COMMON-FORM.COST-TYPE",
     REBATE_TYPE: "COMMON-FORM.REBATE-TYPE",
-    JOB_TYPE: "COMMON-FORM.JOB-TYPE"
+    JOB_TYPE: "COMMON-FORM.JOB-TYPE",
+    ALIAS_NAME: "COMMON-FORM.ALIAS-NAME"
   };
   unit_type_control = new UntypedFormControl();
 
@@ -332,21 +333,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-
   GetButtonCaption() {
-    // if(this.pcForm!.value['action']== "view")
-    //   {
-    //     return this.translatedLangText.CLOSE ;      
-    //   }
-    //   else
-    //   {
     return this.translatedLangText.CANCEL;
-    // }
   }
+
   GetTitle() {
-
     return this.translatedLangText.EDIT + " " + this.translatedLangText.REPAIR;
-
   }
 
   translateLangText() {
@@ -356,7 +348,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
 
   public loadData() {
-
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
       //{ alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
@@ -378,8 +369,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         }
       });
       if (subqueries.length > 0) {
-
-
         this.cvDS.getCodeValuesByType(subqueries)
         subqueries.map(s => {
           this.cvDS.connectAlias(s.alias).subscribe(data => {
@@ -396,16 +385,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         var group_name_codeValue = this.getGroupNameCodeValue(rec.group_name_cv!) || new CodeValuesItem();
         this.groupNameControl.setValue(group_name_codeValue);
       }
-      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
-    // this.cvDS.connectAlias('subGroupName').subscribe(data => {
-    //   this.subGroupNameCvList = data;
-    //   if(this.selectedItems.length==1)
-    //     { 
-    //       var rec=this.selectedItems[0];
-    //       this.subGroupNameControl.setValue(this.getSubGroupNameCodeValue(rec.subgroup_name_cv!));
-    //     }
-    // });
 
     this.cvDS.connectAlias('unitType').subscribe(data => {
       this.unitTypeCvList = data;
@@ -431,9 +411,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
           var subgroupNameCodeValue = this.GetCodeValue(rec.subgroup_name_cv!, this.subGroupNameCvList);
           this.subGroupNameControl.setValue(subgroupNameCodeValue);
         }
-
       });
-      // Handle value changes here
     });
     this.listenTheValueChangesForPartNameDiameter();
   }
@@ -452,15 +430,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-
       console.log('valid');
       this.dialogRef.close(count);
-      // let successMsg = this.langText.SAVE_SUCCESS;
-      // this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-      //   successMsg = res;
-      //   ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
-      // });
     }
   }
 
@@ -477,34 +448,26 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
 
   GetCodeValue(codeValue: String, codeValueItems: CodeValuesItem[]) {
-
     return codeValueItems.find(item => item.code_val === codeValue);
-
   }
-
 
   RetrieveCodeDesc(CdValue: CodeValuesItem): String {
     let retCodeValue: String = '';
-
     if (CdValue) {
       retCodeValue = CdValue.description || '';
     }
     return retCodeValue;
-
   }
 
   RetrieveCodeValue(CdValue: CodeValuesItem): string {
     let retCodeValue: string = '';
-
     if (CdValue) {
       retCodeValue = CdValue.code_val || '';
     }
     return retCodeValue;
-
   }
 
   update() {
-
     let update = true;
     if (!this.pcForm?.valid) return;
 
@@ -536,7 +499,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
         }
         if (update) {
-
           if (this.selectedItems.length == 1) {
             var trfRepairItem = new TariffRepairItem(this.selectedItems[0]);
             trfRepairItem.part_name = this.pcForm!.value['part_name'];
@@ -559,7 +521,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
             this.trfRepairDS.updateTariffRepair(trfRepairItem).subscribe(result => {
               this.handleSaveSuccess(result?.data?.updateTariffRepair);
-
             });
           }
           else {
@@ -694,5 +655,4 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       dimension: dimension
     });
   }
-
 }
