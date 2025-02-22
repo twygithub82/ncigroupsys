@@ -73,7 +73,7 @@ export class report_inventory_yard{
   out_gate?:number=0;
   transfer_in?:number=0;
   transfer_out?:number=0;
-  
+
   constructor(item: Partial<report_inventory_yard> = {}) {
     this.code = item.code;
     if (!this.code) this.code = '';
@@ -109,3 +109,17 @@ export class report_status_yard{
 
 
 }
+
+export class report_inventory_cleaning_detail{
+  cargo?:string;
+  storing_order_tank?:StoringOrderTankItem[];
+
+  constructor(item: Partial<report_inventory_cleaning_detail> = {}) {
+    this.cargo = item.cargo;
+    this.storing_order_tank=item.storing_order_tank;
+    
+  }
+
+
+}
+

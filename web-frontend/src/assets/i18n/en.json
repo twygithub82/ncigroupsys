@@ -984,7 +984,9 @@
     "DETAIL-SUMMARY":"Detail Summary",
     "AVAILABLE-IN-YARD":"Available In Yard",
     "RELEASED-TANK":"Released Tank",
-    "CLEAN-CERT-BOOKING":"Clean Cert. Booking"
+    "CLEAN-CERT-BOOKING":"Clean Cert. Booking",
+    "CLEAN-IN":"Clean In",
+    "DURATION-DAYS":"Duration (Days)"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

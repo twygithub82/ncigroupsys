@@ -1,0 +1,62 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  <div id="pdf-form-body" class="pdf-container pdf-body">
+    @for (bCust of report_inventory_cln_dtl; track bCust) {
+    <div class="card">
+      <div class="pdf-body">
+        <table id="table_customer_info" class="table_customer_info">
+          <tr>
+            <td class="sp30">{{bCust.cargo}}</td>
+            <td class="sp30">{{translatedLangText.CLEAN_DATE}} : {{date}}</td>
+          </tr>
+        </table>
+      </div>
+      @if(bCust.storing_order_tank?.length!>0)
+      {
+      <table id="repair-part-table" class="repair-part-table">
+        <tr class="group-header">
+          <th class="th-w3">{{translatedLangText.NO}}</th>
+          <th class="th-w8">{{translatedLangText.TANK_NO}}</th>
+          <th class="th-w8">{{translatedLangText.CUSTOMER}}</th>
+          <th class="th-w10">{{translatedLangText.CLEAN_IN}}</th>
+          <th class="th-w6">{{translatedLangText.CLEAN_DATE}}</th>
+          <th class="th-w8">{{translatedLangText.DURATION_DAYS}}</th>
+          <th class="th-w6">{{translatedLangText.UN_NO}}</th>
+          <th class="th-w6">{{translatedLangText.PROCEDURE}}</th>
+        </tr>
+        @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
+        <tr class="fixed_height_40px">
+          <td>{{ index + 1 }}</td> <!-- Row number -->
+          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td><span class="overflow-text">{{ DisplayCustomerName(itm) }}</span></td>
+          <td><span class="overflow-text">{{ DisplayCleanIn(itm) }}</span></td>
+          <td>{{ DisplayCleanDate(itm) }}</td>
+          <td>{{ DipslayCleanDuration(itm) }}</td>
+          <td>{{ itm.tariff_cleaning?.un_no }}</td>
+          <td><span class="overflow-text">{{ DisplayCleanMethod(itm) }}</span></td>
+        </tr>
+        }
+      </table>
+      }
+    </div>
+    }
+  </div>
+</div>
+<div mat-dialog-actions class="m-2 align-right">
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>

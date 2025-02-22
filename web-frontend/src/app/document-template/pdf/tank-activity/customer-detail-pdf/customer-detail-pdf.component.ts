@@ -547,11 +547,11 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       const titleX = (pageWidth - titleWidth) / 2; // Centering the title (210mm is page width)
 
       const pos = 15;
-      pdf.text(reportTitle, titleX, pos); // Position it at the top
+      // pdf.text(reportTitle, titleX, pos); // Position it at the top
 
-      // Draw underline for the title
-      pdf.setLineWidth(0.5); // Set line width for underline
-      pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+      // // Draw underline for the title
+      // pdf.setLineWidth(0.5); // Set line width for underline
+      // pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
 
       // If card height exceeds A4 page height, split across multiple pages
       if (imgHeight > 190) { // 297mm (A4 height) - 20mm (top & bottom margins)
@@ -575,14 +575,21 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           if (yPosition < canvas.height) {
             pdf.addPage();
             pageNumber++;
-            pdf.text(reportTitle, titleX, 10); // Add title on new page
-            pdf.line(titleX, 12, titleX + titleWidth, 12); // Draw underline on new page
+            pdf.text(reportTitle, titleX, pos); // Add title on new page
+            pdf.setLineWidth(0.5); // Set line width for underline
+            pdf.line(titleX, pos+2, titleX + titleWidth, pos + 2); // Draw underline on new page
           }
         }
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
 
+        pdf.text(reportTitle, titleX, pos); // Position it at the top
+
+        // Draw underline for the title
+        pdf.setLineWidth(0.5); // Set line width for underline
+        pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+  
         // Store page position for page numbering
         pagePositions.push({ page: pageNumber, x: 280, y: 200 });
       }

@@ -2830,6 +2830,7 @@ const GET_STORING_ORDER_INVENTORY = gql`
          approve_dt
          complete_dt
          delete_dt
+         create_dt
         }
         repair (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
          approve_dt
@@ -2865,6 +2866,10 @@ const GET_STORING_ORDER_INVENTORY = gql`
           guid
           open_on_gate_cv
           cargo
+          un_no
+          cleaning_method{
+           name
+          }
         }
         release_order_sot {
           release_order {

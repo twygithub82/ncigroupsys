@@ -35,11 +35,12 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_customer_tank_activity } from 'app/data-sources/reports';
+import { report_inventory_cleaning_detail } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { CleaningDetailInventoryPdfComponent } from 'app/document-template/pdf/inventory/cleaning-detail-pdf/cleaning-detail-pdf.component';
 import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activity/customer-detail-pdf/customer-detail-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -154,7 +155,10 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
     CLASS_NO:'COMMON-FORM.CARGO-CLASS',
     UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    REPORT_TYPE:'COMMON-FORM.REPORT-TYPE'
+    REPORT_TYPE:'COMMON-FORM.REPORT-TYPE',
+    START:"COMMON-FORM.START",
+    END:"COMMON-FORM.END",
+    IS_REQUIRED:'COMMON-FORM.IS-REQUIRED',
   }
 
   invForm?: UntypedFormGroup;
@@ -254,7 +258,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       customer_code: this.customerCodeControl,
       last_cargo: this.lastCargoControl,
       eir_no: [''],
-      report_type: [''],
+      report_type: ['DETAIL'],
       clean_dt_start: [''],
       clean_dt_end: [''],
       tank_no: [''],
@@ -388,35 +392,14 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     var cond_counter = 0;
     var report_type: string = "ALL";
     const where: any = {};
-    this.selectedEstimateItem = undefined;
-    this.selectedEstimateLabourCost = 0;
-    this.stmEstList = [];
-    this.selection.clear();
-
-    // var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
-
-    // if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
-    // {
-    //    queryType=2;
-    // }
-
+    if(this.searchForm?.invalid)return;
+    
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       cond_counter++;
     }
 
-    // if (this.searchForm!.get('depot_status_cv')?.value) {
-    //   // if(!where.storing_order_tank) where.storing_order_tank={};
-    //   report_type = "RELEASED";
-    //   var cond: any = { eq: "RELEASED" };
-    //   if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
-    //     cond = { neq: "RELEASED" };
-    //     report_type = "IN_YARD";
-    //   }
-    //   if (where.tank_status_cv) where.tank_status_cv = {};
-    //   where.tank_status_cv = cond;
-    //   cond_counter++;
-    // }
+    
 
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
@@ -443,97 +426,58 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       cond_counter++;
     }
 
-    if (this.searchForm!.get('tare_weight')?.value) {
-
-      var cond: any = { eq: Number(this.searchForm!.value['tare_weight']) };
-      if (!where.tank_info) where.tank_info = {};
-      if (!where.tank_info.tare_weight) where.tank_info.tare_weight = {};
-      where.tank_info.tare_weight = cond;
-      cond_counter++;
-    }
-
-    if (this.searchForm!.get('capacity')?.value) {
-
-      var cond: any = { eq: Number(this.searchForm!.value['capacity']) };
-      if (!where.tank_info) where.tank_info = {};
-      if (!where.tank_info.capacity) where.tank_info.capacity = {};
-      where.tank_info.capacity = cond;
-      cond_counter++;
-    }
-
-    if (this.searchForm!.get('av_dt_start')?.value && this.searchForm!.get('av_dt_end')?.value) {
-
-      var cond: any = { complete_dt: { gte: Utility.convertDate(this.searchForm!.value['av_dt_start']), lte: Utility.convertDate(this.searchForm!.value['av_dt_end'], true) } };
-      if (!where.repair) where.repair = {};
-      where.repair = { some: cond };
-      cond_counter++;
-    }
-
-
+    
     var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
-    if (this.searchForm!.get('release_dt_start')?.value && this.searchForm!.get('release_dt_end')?.value) {
-      var cond: any = { some: { release_order: { release_dt: { gte: Utility.convertDate(this.searchForm!.value['release_dt_start']), lte: Utility.convertDate(this.searchForm!.value['release_dt_end'], true) } } } };
-      date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_end')?.value))}`;
-      if (!where.release_order_sot) where.release_order_sot = {};
-      where.release_order_sot = cond;
-      cond_counter++;
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
-
-
     if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
-      var cond: any = { some: { complete_dt: { gte: Utility.convertDate(this.searchForm!.value['clean_dt_start']), lte: Utility.convertDate(this.searchForm!.value['clean_dt_end'], true) } } };
+      var start_dt = new Date(this.searchForm!.get('clean_dt_start')?.value);
+      var end_dt = new Date(this.searchForm!.get('clean_dt_end')?.value);
+      var cond: any ={ some: {  complete_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true)  } } };
+      date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`;
       if (!where.cleaning) where.cleaning = {};
       where.cleaning = cond;
       cond_counter++;
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
-    // if (this.searchForm!.get('eir_dt')?.value) {
-    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      if (!where.in_gate) {
-        where.in_gate = {};
-        where.in_gate.some = {};
-        where.in_gate.some.and = [];
-      }
 
-      if (!where.out_gate) {
-        where.out_gate = {};
-        where.out_gate.some = {};
-        where.out_gate.some.and = [];
-      }
-
-      //var cond :any ={eir_dt:{eq: Utility.convertDate(this.searchForm!.value['eir_dt'])}};
-      var cond: any = { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'], true) } };
-
-      where.in_gate.some.and.push(cond);
-      where.out_gate.some.and.push(cond);
-      cond_counter++;
-
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
+  
 
     if (this.searchForm!.get('last_cargo')?.value) {
       where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
       cond_counter++;
     }
 
+    if (this.searchForm!.get('un_no')?.value) {
+      if(!where.tariff_cleaning) where.tariff_cleaning={};
+      where.tariff_cleaning.un_no= {contains:this.searchForm!.get('un_no')?.value};
+      //where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
+      cond_counter++;
+    }
+
+    if (this.searchForm!.get('class_no')?.value) {
+      if(!where.tariff_cleaning) where.tariff_cleaning={};
+      where.tariff_cleaning.class_cv= {contains:this.searchForm!.get('class_no')?.value};
+      //where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
+      cond_counter++;
+    }
+
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,date);
 
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string,date?:string) {
     // this.selection.clear();
-    this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksInventoryReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+        this.ProcessReportCleaningInventory(this.searchForm!.get('report_type')?.value,date!)
         // report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
         // this.ProcessReportCustomerTankActivity(report_type!);
         // this.checkInvoicedAndGetTotalCost();
@@ -657,7 +601,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
   resetForm() {
     this.searchForm?.patchValue({
       eir_no: '',
-      report_type: '',
+      report_type: 'DETAIL',
       clean_dt_start: '',
       clean_dt_end: '',
       tank_no: '',
@@ -665,8 +609,11 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       un_no: '',
     });
 
+    
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
+  
+  
     this.noCond = false;
   }
 
@@ -677,159 +624,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     return numSelected === numRows;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  // masterToggle() {
-  //    this.isAllSelected()
-  //      ? this.selection.clear()
-  //      : this.stmEstList.forEach((row) =>
-  //          this.selection.select(row)
-  //        );
-  //   this.calculateTotalCost();
-  // }
-
-  // AllowToSave():boolean{
-  //   let retval:boolean=false;
-  //   if(this.selection.selected.length>0)
-  //   {
-  //       if(this.invoiceDateControl.valid && this.invoiceNoControl.valid)
-  //       {
-  //         return true;
-  //       }
-  //   }
-
-  //   return retval;
-  // }
-
-
-  //    handleSaveSuccess(count: any) {
-  //      if ((count ?? 0) > 0) {
-  //        let successMsg = this.langText.SAVE_SUCCESS;
-  //        this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-  //          successMsg = res;
-  //          ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-  //          //this.router.navigate(['/admin/master/estimate-template']);
-
-  //          // Navigate to the route and pass the JSON object
-
-  //        });
-  //      }
-  //    }
-
-
-  // onCancel(event:Event){
-  //   event.stopPropagation();
-  //   this.invoiceNoControl.reset('');
-  //   this.invoiceDateControl.reset('');
-  // }
-
-  // calculateTotalCost()
-  //   {
-  //   this.invoiceTotalCostControl.setValue('0.00');
-  //   const totalCost = this.selection.selected.reduce((accumulator, s) => {
-  //     // Add buffer_cost and cleaning_cost of the current item to the accumulator
-  //     //var cost:number = this.selectedEstimateLabourCost||0;
-  //     var itm:any = s;
-  //     return accumulator + itm.total_cost;
-  //     //return accumulator+ Number(stmItm.net_cost||0);
-  //   }, 0); // Initialize accumulator to 0
-  //   this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
-  // }
-  //  toggleRow(row:SteamItem)
-  //  {
-
-  //    this.selection.toggle(row);
-  //    this.SelectFirstItem();
-  //    this.calculateTotalCost();
-  //  }
-
-  //  SelectFirstItem()
-  //  {
-  //   if(!this.selection.selected.length)
-  //   {
-  //     this.selectedEstimateItem=undefined;
-  //   }
-  //   else if(this.selection.selected.length===1)
-  //   {
-  //     this.selectedEstimateItem=this.selection.selected[0];
-  //     if(this.selectedEstimateItem?.bill_to_guid)
-  //     {
-  //     this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
-
-  //     }
-  //   }
-  //  }
-  //  CheckBoxDisable(row:InGateCleaningItem)
-  //  {
-  //    if(this.selectedEstimateItem?.customer_company)
-  //    {
-  //    if(row.customer_company?.code!=this.selectedEstimateItem.customer_company?.code)
-  //    {
-  //     return true;
-  //    }
-  //   }
-  //    return false;
-  //  }
-
-  //  MasterCheckBoxDisable()
-  //  {
-  //    if(this.distinctCustomerCodes?.length)
-  //    {
-  //       return this.distinctCustomerCodes.length>1;
-  //    }
-
-  //    return false;
-  //  }
-
-
-  //  getTotalCost(row:any)
-  //  {
-
-  //   const customer_company_guid= row.storing_order_tank?.storing_order?.customer_company?.guid;
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: customer_company_guid } }
-  //     ]
-  //   };
-  //   this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-  //     if(data.length>0)
-  //     {
-  //       var cost:number =data[0].cost;
-  //       row.total_cost=(this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part,cost).total_mat_cost||0);
-  //       //this.calculateTotalCost();
-  //     }
-  //   });
-
-  //  }
-
-  //  getCustomerLabourPackage(custGuid: string){
-
-  //   const customer_company_guid= custGuid;
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: customer_company_guid } }
-  //     ]
-  //   };
-  //   this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-  //     if(data.length>0)
-  //     {
-  //       this.selectedEstimateLabourCost =data[0].cost;
-  //       // this.stmEstList = this.stmEstList?.map(stm => {
-  //       //       var stm_part=[...stm.steaming_part!];
-  //       //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
-  //       //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
-  //       // });
-  //       this.calculateTotalCost();
-  //     }
-  //   });
-
-  // }
-
-  // calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): number {
-
-  //   const total = this.IsApproved(steam)?this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.stmDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
-  //     return total.total_mat_cost;
-
-  // }
+ 
 
   IsApproved(steam: SteamItem) {
     const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
@@ -837,15 +632,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
 
   }
 
-  // checkInvoicedAndGetTotalCost()
-  // {
-  //   this.stmEstList = this.stmEstList?.map(stm => {
-  //             return { ...stm, invoiced: (stm.customer_billing_guid?true:false), total_cost:0 };
-  //       });
-  //   this.stmEstList?.forEach(stm => {
-  //        this.getTotalCost(stm);
-  //       });    
-  // }
+  
 
   checkInvoiced() {
     this.stmEstList = this.stmEstList?.map(stm => {
@@ -854,28 +641,33 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
+  ProcessReportCleaningInventory(report_type:string,date:string){
+
+    if(report_type=='DETAIL')
+    {
+      this.ProcessReportCleaningInventoryDetail(date);
+    }
+  }
 
 
-  ProcessReportCustomerTankActivity(report_type: string) {
+  ProcessReportCleaningInventoryDetail(date:string) {
     if (this.sotList.length === 0) return;
 
-    var report_customer_tank_acts: report_customer_tank_activity[] = [];
+    var report_inv_cln_dtl: report_inventory_cleaning_detail[] = [];
 
     this.sotList.map(s => {
 
       if (s) {
-        var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
-        let newCust = false;
-        if (!repCust.code) {
-          repCust.code = s.storing_order?.customer_company?.code;
-          repCust.customer = s.storing_order?.customer_company?.name;
-          newCust = true;
+        var repCln: report_inventory_cleaning_detail = report_inv_cln_dtl.find(r => r.cargo === s.tariff_cleaning?.cargo) || new report_inventory_cleaning_detail();
+        let newItm = false;
+        if (!repCln.cargo) {
+          repCln.cargo = s.tariff_cleaning?.cargo;
+          newItm = true;
         }
-        repCust.number_tank ??= 0;
-        repCust.number_tank += 1;
-        if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
-        repCust.storing_order_tank?.push(s);
-        if (newCust) report_customer_tank_acts.push(repCust);
+       
+        if (!repCln.storing_order_tank) repCln.storing_order_tank = [];
+        repCln.storing_order_tank?.push(s);
+        if (newItm) report_inv_cln_dtl.push(repCln);
 
 
 
@@ -883,12 +675,12 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     });
 
 
-    this.onExportDetail(report_customer_tank_acts, report_type);
+    this.onExportDetail(report_inv_cln_dtl,date);
 
 
   }
 
-  onExportDetail(repCustomerTankActivity: report_customer_tank_activity[], report_type: string) {
+  onExportDetail(repCln: report_inventory_cleaning_detail[],date:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -900,12 +692,12 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(CustomerDetailPdfComponent, {
+    const dialogRef = this.dialog.open(CleaningDetailInventoryPdfComponent, {
       width: '90wv',
-      height: '80vh',
+      maxHeight: '80vh',
       data: {
-        report_customer_tank_activity: repCustomerTankActivity,
-        type: report_type
+        report_inventory: repCln,
+        date: date
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

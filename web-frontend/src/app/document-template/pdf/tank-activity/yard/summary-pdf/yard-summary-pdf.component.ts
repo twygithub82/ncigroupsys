@@ -862,11 +862,11 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
       const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
   
       const pos=15;
-      pdf.text(reportTitle, titleX, pos); // Position it at the top
+      // pdf.text(reportTitle, titleX, pos); // Position it at the top
   
-      // Draw underline for the title
-      pdf.setLineWidth(0.5); // Set line width for underline
-      pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
+      // // Draw underline for the title
+      // pdf.setLineWidth(0.5); // Set line width for underline
+      // pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
   
       // If card height exceeds A4 page height, split across multiple pages
       if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
@@ -891,13 +891,19 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
             pdf.addPage();
             pageNumber++;
             pdf.text(reportTitle, titleX, 10); // Add title on new page
-            pdf.line(titleX, 12, titleX + titleWidth, 12); // Draw underline on new page
+            pdf.setLineWidth(0.5); // Set line width for underline
+            pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
           }
         }
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
+        pdf.text(reportTitle, titleX, pos); // Position it at the top
   
+        // Draw underline for the title
+        pdf.setLineWidth(0.5); // Set line width for underline
+        pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
+    
         // Store page position for page numbering
         pagePositions.push({ page: pageNumber, x: 200, y: 287 });
       }
