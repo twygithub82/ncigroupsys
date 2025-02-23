@@ -311,6 +311,17 @@ export const ROUTES: RouteInfo[] = [
     badgeClass: "",
     submenu: [
       {
+        path: "admin/package/package-depot",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
         path: "admin/package/package-cleaning",
         title: "MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING",
         iconType: "",
@@ -322,8 +333,19 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },
       {
-        path: "admin/package/package-depot",
-        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
+        path: "admin/package/package-repair",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/package/package-steam",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-STEAMING",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -343,17 +365,6 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: false
-      },
-      {
-        path: "admin/package/package-repair",
-        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
       },
       {
         path: "admin/package/package-buffer",
@@ -378,17 +389,6 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: false
-      },
-      {
-        path: "admin/package/package-steam",
-        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-STEAMING",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
       },
       {
         path: "admin/package/exclusive-steam",

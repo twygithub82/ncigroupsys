@@ -1463,7 +1463,8 @@ $breakpoints: (
 }
 
 .sidebar .menu .list a span {
-  font-size: 0.9rem !important;
+  // font-size: 1rem !important;
+  margin-bottom: 5px;
 }
 
 section.content {
@@ -1484,4 +1485,8 @@ section.content {
   margin-right: calc(var(--mat-menu-item-spacing) - 5px);
   font-size: 20px;
   padding: 3px 0 3px 3px;
+}
+
+body {
+  font-family: "Calibri", "Arial", sans-serif;
 }

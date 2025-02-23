@@ -82,20 +82,16 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    // 'img',
     'fName',
     'lName',
     'email',
     'gender',
     'cost',
-    //'tariff_cleanings',
     'updateddt',
-    // 'actions',
   ];
 
   PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
   PROCEDURE_DESCRIPTION = 'COMMON-FORM.DESCRIPTION'
-  PROCEDURE_CLEAN_CATEGORY = 'COMMON-FORM.CLEAN-CATEGORY'
   PROCEDURE_CLEAN_GROUP = 'COMMON-FORM.CLEAN-GROUP'
   PROCEDURE_MIN_COST = 'COMMON-FORM.MIN-COST'
   PROCEDURE_MAX_COST = 'COMMON-FORM.MAX-COST'
@@ -226,9 +222,12 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    COST: "COMMON-FORM.COST",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    PROCEDURE_CLEAN_CATEGORY: 'COMMON-FORM.CLEAN-CATEGORY',
+    TARIFF_COST: 'COMMON-FORM.TARIFF-COST'
   }
 
   constructor(
@@ -637,13 +636,13 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   // context menu
   onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-      this.contextMenu.menuData = { item: item };
-      this.contextMenu.menu.focusFirstItem('mouse');
-      this.contextMenu.openMenu();
-    }
+    // this.contextMenuPosition.x = event.clientX + 'px';
+    // this.contextMenuPosition.y = event.clientY + 'px';
+    // if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
+    //   this.contextMenu.menuData = { item: item };
+    //   this.contextMenu.menu.focusFirstItem('mouse');
+    //   this.contextMenu.openMenu();
+    // }
   }
 
   onlyNumbersDashValidator(control: AbstractControl): { [key: string]: boolean } | null {
