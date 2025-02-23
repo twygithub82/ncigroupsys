@@ -1,4 +1,5 @@
 using IDMS.User.Authentication.API.Models.RefreshToken;
+using IDMS.User.Authentication.API.Utilities;
 using IDMS.User.Authentication.Service.Models;
 using IDMS.User.Authentication.Service.Services;
 using IDMS.UserAuthentication.DB;
@@ -28,7 +29,6 @@ builder.Services.Configure<IdentityOptions>(
 
 //Generate the link for reseting password
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(10));
-
 
 builder.Services.AddAuthentication(options => {
 
@@ -60,8 +60,8 @@ var emailConfig = builder.Configuration
 
 builder.Services.AddSingleton(emailConfig);
 builder.Services.AddSingleton<IRefreshTokenStore, RefreshTokenStore>();
-
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHostedService<KeepAliveService>();
 
 // Add services to the container.
 //builder.Services.AddCors(options =>

@@ -48,8 +48,6 @@ namespace IDMS.UserAuthentication.Controllers
             _jwtTokenService = new JwtTokenService(_configuration, _dbContext);
             _refreshTokenStore = refreshTokenStore;
 
-
-
         }
 
         
