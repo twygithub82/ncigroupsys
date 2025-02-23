@@ -1103,23 +1103,71 @@ $breakpoints: (
   }
 }
 
-.table-striped > tbody > tr:nth-of-type(odd) > * {
+.table-striped>tbody>tr:nth-of-type(odd)>* {
   color: #06005f !important;
   background-color: #2196f309 !important;
 }
 
-.table-col-1 { width: 8.33%; }  /* 1/12 */
-.table-col-2 { width: 16.67%; } /* 2/12 */
-.table-col-3 { width: 25%; }    /* 3/12 */
-.table-col-4 { width: 33.33%; } /* 4/12 */
-.table-col-5 { width: 41.67%; } /* 5/12 */
-.table-col-6 { width: 50%; }    /* 6/12 */
-.table-col-7 { width: 58.33%; } /* 7/12 */
-.table-col-8 { width: 66.67%; } /* 8/12 */
-.table-col-9 { width: 75%; }    /* 9/12 */
-.table-col-10 { width: 83.33%; }/* 10/12 */
-.table-col-11 { width: 91.67%; }/* 11/12 */
-.table-col-12 { width: 100%; }  /* 12/12 */
+.table-col-1 {
+  width: 8.33%;
+}
+
+/* 1/12 */
+.table-col-2 {
+  width: 16.67%;
+}
+
+/* 2/12 */
+.table-col-3 {
+  width: 25%;
+}
+
+/* 3/12 */
+.table-col-4 {
+  width: 33.33%;
+}
+
+/* 4/12 */
+.table-col-5 {
+  width: 41.67%;
+}
+
+/* 5/12 */
+.table-col-6 {
+  width: 50%;
+}
+
+/* 6/12 */
+.table-col-7 {
+  width: 58.33%;
+}
+
+/* 7/12 */
+.table-col-8 {
+  width: 66.67%;
+}
+
+/* 8/12 */
+.table-col-9 {
+  width: 75%;
+}
+
+/* 9/12 */
+.table-col-10 {
+  width: 83.33%;
+}
+
+/* 10/12 */
+.table-col-11 {
+  width: 91.67%;
+}
+
+/* 11/12 */
+.table-col-12 {
+  width: 100%;
+}
+
+/* 12/12 */
 
 .image-container {
   display: inline-block;
@@ -1327,127 +1375,127 @@ $breakpoints: (
 }
 
 .td-col {
-    width: 0;
+  width: 0;
 }
 
 .td-col-12 {
-    width: 100%;
+  width: 100%;
 }
 
 .td-col-11-5 {
-    width: 95.83333333%;
+  width: 95.83333333%;
 }
 
 .td-col-11 {
-    width: 91.66666667%;
+  width: 91.66666667%;
 }
 
 .td-col-10-5 {
-    width: 87.5%;
+  width: 87.5%;
 }
 
 .td-col-10 {
-    width: 83.33333333%;
+  width: 83.33333333%;
 }
 
 .td-col-9-5 {
-    width: 79.16666667%;
+  width: 79.16666667%;
 }
 
 .td-col-9 {
-    width: 75%;
+  width: 75%;
 }
 
 .td-col-8-5 {
-    width: 70.83333333%;
+  width: 70.83333333%;
 }
 
 .td-col-8 {
-    width: 66.66666667%;
+  width: 66.66666667%;
 }
 
 .td-col-7-5 {
-    width: 62.5%;
+  width: 62.5%;
 }
 
 .td-col-7 {
-    width: 58.33333333%;
+  width: 58.33333333%;
 }
 
 .td-col-6-5 {
-    width: 54.16666667%;
+  width: 54.16666667%;
 }
 
 .td-col-6 {
-    width: 50%;
+  width: 50%;
 }
 
 .td-col-5-5 {
-    width: 45.83333333%;
+  width: 45.83333333%;
 }
 
 .td-col-5 {
-    width: 41.66666667%;
+  width: 41.66666667%;
 }
 
 .td-col-4-5 {
-    width: 37.5%;
+  width: 37.5%;
 }
 
 .td-col-4 {
-    width: 33.33333333%;
+  width: 33.33333333%;
 }
 
 .td-col-3-5 {
-    width: 29.16666667%;
+  width: 29.16666667%;
 }
 
 .td-col-3 {
-    width: 25%;
+  width: 25%;
 }
 
 .td-col-2-75 {
-    width: 22.91666667%;
+  width: 22.91666667%;
 }
 
 .td-col-2-5 {
-    width: 20.83333333%;
+  width: 20.83333333%;
 }
 
 .td-col-2-25 {
-    width: 18.75%;
+  width: 18.75%;
 }
 
 .td-col-2 {
-    width: 16.66666667%;
+  width: 16.66666667%;
 }
 
 .td-col-1-75 {
-    width: 14.58333333%;
+  width: 14.58333333%;
 }
 
 .td-col-1-5 {
-    width: 12.5%;
+  width: 12.5%;
 }
 
 .td-col-1-25 {
-    width: 10.41666667%;
+  width: 10.41666667%;
 }
 
 .td-col-1 {
-    width: 8.33333333%;
+  width: 8.33333333%;
 }
 
 .td-col-0-75 {
-    width: 6.25%;
+  width: 6.25%;
 }
 
 .td-col-0-5 {
-    width: 4.16666667%;
+  width: 4.16666667%;
 }
 
 .td-col-0-25 {
-    width: 2.08333334%;
+  width: 2.08333334%;
 }
 
 .navbar-brand {
@@ -1488,5 +1536,33 @@ section.content {
 }
 
 body {
-  font-family: "Calibri", "Arial", sans-serif;
+  font-family: "Calibri", "Arial", sans-serif !important;
+}
+
+table.advance-tab-table,
+table.advance-table {
+  mat-header-cell {
+    font-weight: bold;
+    justify-content: center !important;
+  }
+
+  mat-header-cell.justify-content-start {
+    justify-content: flex-start !important;
+  }
+
+  mat-header-cell.justify-content-end {
+    justify-content: flex-end !important;
+  }
+}
+
+mat-tab-header .mat-mdc-tab-label-container .mdc-tab__text-label {
+  font-weight: bold;
+}
+
+.breadcrumb-title .page-title {
+  font-weight: bold;
+}
+
+.card .header h2 {
+  font-weight: bold;
 }

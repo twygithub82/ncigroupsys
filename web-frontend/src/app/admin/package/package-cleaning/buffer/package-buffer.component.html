@@ -130,22 +130,18 @@
                   <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
                     {{translatedLangText.CLEAR_ALL}}
                   </button>
-                  <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)" style="margin-top: 10px; margin-left:15px">
-                        <mat-icon>cached</mat-icon>
-                      </button> -->
                 </div>
               </div>
-
             </form>
           </div>
         </mat-expansion-panel>
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="packBufferItems" matSort class="mat-cell advance-table">
+          <table mat-table [dataSource]="packBufferItems" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
                 <mat-checkbox (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
                   [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
@@ -158,28 +154,32 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="profile">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'" mat-sort-header>{{this.translatedLangText.PROFILE_NAME
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+                mat-sort-header>{{this.translatedLangText.PROFILE_NAME
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
                   }}:</span>{{row.tariff_buffer.buffer_type}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'" mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+                mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'" mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+                mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="mobile">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'" mat-sort-header>{{this.translatedLangText.COST
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+                mat-sort-header>{{this.translatedLangText.COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.COST }}:</span> {{row.cost.toFixed(2)}}
@@ -191,12 +191,14 @@
                       <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.tariff_buffer.cost.toFixed(2)}}</mat-cell>
                   </ng-container> -->
             <ng-container matColumnDef="bDate">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'" mat-sort-header>{{this.translatedLangText.REMARKS }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+                mat-sort-header>{{this.translatedLangText.REMARKS }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.remarks}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="email">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'" mat-sort-header>{{this.translatedLangText.LAST_UPDATE
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+                mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>

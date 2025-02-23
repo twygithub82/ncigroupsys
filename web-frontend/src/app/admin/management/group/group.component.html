@@ -89,9 +89,7 @@
             </mat-accordion>
             <div class="body overflow-auto">
               <div class="responsive_table">
-                <table mat-table [dataSource]="customer_companyList" matSort class="mat-cell advance-table">
-            
-                  
+                <table mat-table [dataSource]="customer_companyList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
                   <ng-container matColumnDef="fName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-1'">

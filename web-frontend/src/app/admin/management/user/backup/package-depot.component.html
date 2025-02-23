@@ -121,10 +121,10 @@
             </mat-accordion> -->
             <div class="body overflow-auto">
               <div class="responsive_table">
-                <table mat-table [dataSource]="customer_companyList" matSort class="mat-cell advance-table">
+                <table mat-table [dataSource]="customer_companyList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
                   <!-- Checkbox Column -->
                   <ng-container matColumnDef="select">
-                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
                       <mat-checkbox (change)="$event ? masterToggle() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
                         [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">

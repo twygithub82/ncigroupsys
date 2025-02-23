@@ -145,7 +145,7 @@
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                     <mat-checkbox (change)="$event ? masterToggle() : null"
                       [checked]="soSelection.hasValue() && isAllSelected()"
                       [indeterminate]="soSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">

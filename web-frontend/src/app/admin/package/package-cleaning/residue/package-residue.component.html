@@ -68,10 +68,11 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="packResidueItems" matSort class="mat-cell advance-table">
+          <table mat-table [dataSource]="packResidueItems" matSort
+            class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
                 <mat-checkbox (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
                   [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
@@ -117,9 +118,13 @@
                   }}:</span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="mobile">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" mat-sort-header>{{this.translatedLangText.COST
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                mat-sort-header>{{this.translatedLangText.COST
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.COST }}:</span>
                 {{row.cost.toFixed(2)}}</mat-cell>
             </ng-container>

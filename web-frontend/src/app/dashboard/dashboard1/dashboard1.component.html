@@ -10,7 +10,7 @@
           <div class="info-box8">
             <!-- <i class="material-icons bg-black card1-icon">assessment</i> -->
             <i class="material-icons bg-purple card1-icon far fa-calendar-check"></i>
-            <h5 class="col-purple font-b-500"> Tank : Yet to Survey</h5>
+            <h5 class="col-purple font-bold"> Tank : Yet to Survey</h5>
             @if (igDS.loading$ | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
@@ -32,7 +32,7 @@
           <div class="info-box8">
             <i class="material-icons bg-orange card1-icon fas fa-stopwatch"></i>
             <!-- <i class="material-icons bg-orange card1-icon">people</i> -->
-            <h5 class="col-orange font-b-500">Tank : Waiting</h5>
+            <h5 class="col-orange font-bold">Tank : Waiting</h5>
             @if (sotDS.loading$ | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">

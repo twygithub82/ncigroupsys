@@ -136,15 +136,6 @@
                       [matTooltip]="translatedLangText.SEARCH">
                       <mat-icon>search</mat-icon>
                     </button>
-                    <!-- <button mat-mini-fab color="primary" class="ms-1" (click)="addBookingDetails($event)"
-                      [matTooltip]="translatedLangText.ADD_NEW_BOOKING" [disabled]="!sotSelection.hasValue()">
-                      <mat-icon>add</mat-icon>
-                    </button>
-                    <mat-checkbox class="card-checkbox ms-1" (change)="masterToggle()"
-                      [checked]="sotSelection.hasValue() && isAllSelected()"
-                      [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
-                      {{translatedLangText.SELECT_ALL}}
-                    </mat-checkbox> -->
                     <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
                       {{translatedLangText.CLEAR_ALL}}
                     </button>
@@ -232,7 +223,8 @@
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-auto-lg tbl-col-width-per-auto-md tbl-col-width-per-auto-sm'">
-                    <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row?.tank_status_cv)}}
+                    <span
+                      class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row?.tank_status_cv)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="accept_status">

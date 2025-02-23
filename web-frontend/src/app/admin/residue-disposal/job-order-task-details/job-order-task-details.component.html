@@ -138,35 +138,38 @@
               </div>
               }
               @if (!(joDS.loadingSubject | async)) {
-                <div class="row">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
-                    {{translatedLangText.JOB_ORDER_NO}}: <span class="font-bold">{{jobOrderItem?.job_order_no}}</span>
-                  </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
-                    {{translatedLangText.STATUS}}: <span class="font-bold">{{getJobStatusDescription(jobOrderItem?.status_cv)}}</span>
-                  </div>
+              <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                  {{translatedLangText.JOB_ORDER_NO}}: <span class="font-bold">{{jobOrderItem?.job_order_no}}</span>
                 </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                  {{translatedLangText.STATUS}}: <span
+                    class="font-bold">{{getJobStatusDescription(jobOrderItem?.status_cv)}}</span>
+                </div>
+              </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <button mat-flat-button (click)="viewTimeTableDetails($event)" [ngClass]="'m-r-10'">
                     <mat-icon>view_list</mat-icon>
                     {{translatedLangText.TIME_HISTORY}}
                   </button>
-                  <button mat-flat-button color="accent" (click)="toggleJobState($event, isStarted())" [disabled]="!canStartJob()"
+                  <button mat-flat-button color="accent" (click)="toggleJobState($event, isStarted())"
+                    [disabled]="!canStartJob()"
                     [ngClass]="{'m-r-10': true, 'bg-red': canStartJob() && isStarted(), 'bg-green': canStartJob() && !isStarted()}">
                     <mat-icon>timer</mat-icon>
                     {{ isStarted() ? translatedLangText.STOP_JOB : translatedLangText.START_JOB }}
                   </button>
-                  <button mat-flat-button color="accent" [disabled]="!canCompleteJob()" (click)="completeJob($event)" [ngClass]="'m-r-10'">
+                  <button mat-flat-button color="accent" [disabled]="!canCompleteJob()" (click)="completeJob($event)"
+                    [ngClass]="'m-r-10'">
                     <mat-icon>check_box</mat-icon>
                     {{translatedLangText.COMPLETE_JOB}}
                   </button>
                   @if (canRollbackJob()) {
-                    <button mat-flat-button color="accent" (click)="rollbackJob($event)">
-                      <mat-icon>undo</mat-icon>
-                      {{translatedLangText.ROLLBACK}}
-                    </button>
-                    }
+                  <button mat-flat-button color="accent" (click)="rollbackJob($event)">
+                    <mat-icon>undo</mat-icon>
+                    {{translatedLangText.ROLLBACK}}
+                  </button>
+                  }
                 </div>
               </div>
               }
@@ -197,8 +200,10 @@
                       class="mat-cell advance-table striped-rows hover-highlight dark-header">
                       <!-- ID Column -->
                       <ng-container matColumnDef="seq">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i = index"  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+                        <mat-cell *matCellDef="let row; let i = index"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="desc">
                         <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -213,8 +218,7 @@
                           {{translatedLangText.QUANTITY}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row" class="">
-                          <span
-                            class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
+                          <span class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="unit_price">
@@ -222,7 +226,8 @@
                           {{translatedLangText.UNIT_PRICE}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row" class="">
-                          <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}}
+                          <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{
+                          this.parse2Decimal(row.cost)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="cost">
@@ -230,7 +235,8 @@
                           {{translatedLangText.COST}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row" class="">
-                          <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity*row.cost)}}
+                          <span
+                            class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity*row.cost)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="approve_part">
@@ -242,16 +248,16 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-                        
-      
+
+
                           @if (row.approve_part === null || row.approve_part === undefined ||
                           IsApprovePart(row)){
-                          <mat-icon class="col-green font-bold" >check</mat-icon>
+                          <mat-icon class="col-green font-bold">check</mat-icon>
                           }
                           @else {
                           <mat-icon class="col-red font-bold">close</mat-icon>
                           }
-                          
+
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="team">
@@ -259,10 +265,6 @@
                           [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.TEAM}}
-                          <!-- <mat-checkbox (change)="$event ? masterToggle() : null"
-                          [checked]="repSelection.hasValue() && isAllSelected()"
-                          [indeterminate]="repSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                        </mat-checkbox> -->
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm font-bold'">
@@ -270,26 +272,8 @@
                           {{row.job_order?.team?.description || 'NA'}}
                         </mat-cell>
                       </ng-container>
-                      <!-- <ng-container matColumnDef="actions">
-                        <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row;" class="justify-content-end">
-                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                            <mat-icon>more_vert</mat-icon>
-                          </button>
-                          <mat-menu #menu="matMenu">
-                            @if (sotDS.canAddRemove(row)) {
-                            <button mat-menu-item (click)="handleDelete($event, row, row.index)">
-                              <mat-icon>delete_forever</mat-icon>
-                              <span>{{translatedLangText.DELETE}}</span>
-                            </button>
-                            }
-                          </mat-menu>
-                        </mat-cell>
-                      </ng-container> -->
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
-                      [style.cursor]="'pointer'"  
+                      <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
                         matRipple>
                       </mat-row>
                     </table>
@@ -309,13 +293,12 @@
                   </div>
                   }
                 </div>
-                
+
               </div>
               }
               <mat-divider></mat-divider>
             </div>
-        </div>
-        
+          </div>
         </div>
       </div>
       <div class="row clearfix">
@@ -324,9 +307,6 @@
             <div class="header">
               <h2>
                 {{translatedLangText.ESTIMATE_SUMMARY}}
-                <!-- - <span class="font-bold m-r-5">{{repairItem?.estimate_no}}</span>
-                <span
-                  [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span> -->
               </h2>
             </div>
             <div class="body">
@@ -351,21 +331,6 @@
                 </div>
               </div>
               <div class="row">
-                <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
-                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
-                    </div>
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
-                      {{translatedLangText.ESTIMATE_DATE}}: <span
-                        class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
-                    </div>
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
-                      {{translatedLangText.STATUS}}: <span
-                        [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
-                    </div>
-                  </div>
-                </div> -->
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row p-l-5 p-r-10">
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 m-b-0">
@@ -462,18 +427,6 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  <!-- @if (repairDS.canAssign(repairItem)) {
-                  <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)">
-                    <mat-icon>
-                      @if (!(joDS.loading$ | async)) {
-                      save
-                      } @else if ((joDS.loading$ | async)) {
-                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                      }
-                    </mat-icon>
-                    {{translatedLangText.SAVE_AND_SUBMIT}}
-                  </button>
-                  } -->
                 </div>
               </div>
             </div>

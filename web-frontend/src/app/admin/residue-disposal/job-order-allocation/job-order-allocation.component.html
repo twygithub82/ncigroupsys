@@ -3,7 +3,7 @@
     <div class="block-header">
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitleDetails" [items]="breadcrumsMiddleList"
-      [active_item]="translatedLangText.VIEW"></app-breadcrumb>
+        [active_item]="translatedLangText.VIEW"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -121,115 +121,115 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="residueEstForm!"  #formDirective="ngForm">
-    <div class="row">
-      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
-            <h2>
-              {{translatedLangText.BILLING_PROFILE}}
-            </h2>
-          </div>
-          <div class="body">
-            @if (sotDS.loading$ | async) {
-            <div class="tbl-spinner">
-              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-              </mat-progress-spinner>
+    <form class="ms-0" [formGroup]="residueEstForm!" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.BILLING_PROFILE}}
+              </h2>
             </div>
-            }
-            @if (!(sotDS.loading$ | async)) {
-            <mat-card-content>
-              <div class="row">
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
-                        <input matInput formControlName="customer_code" readonly>
-                      </mat-form-field>
-                    </div>
-                    <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+            <div class="body">
+              @if (sotDS.loading$ | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              @if (!(sotDS.loading$ | async)) {
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                    <div class="row">
+
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
+                          <input matInput formControlName="customer_code" readonly>
+                        </mat-form-field>
+                      </div>
+                      <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">{{ccDS.displayName(sotItem?.storing_order?.customer_company)}}</div>
                     </div> -->
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.DEPOT_REFERENCE}}</mat-label>
-                        <input matInput formControlName="job_no" readonly>
-                      </mat-form-field>
                     </div>
-                  </div>
-                </div>
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                  
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="row">
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
-                          <input matInput formControlName="billing_branch" readonly>
+                          <mat-label>{{translatedLangText.DEPOT_REFERENCE}}</mat-label>
+                          <input matInput formControlName="job_no" readonly>
                         </mat-form-field>
                       </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                        <input matInput formControlName="remarks" readonly>
-                      </mat-form-field>
+                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                    <div class="row">
+
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+                            <input matInput formControlName="billing_branch" readonly>
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                          <input matInput formControlName="remarks" readonly>
+                        </mat-form-field>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </mat-card-content>
-            }
+              </mat-card-content>
+              }
+            </div>
           </div>
         </div>
       </div>
-    </div>
-   
-    <div class="row clearfix">
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
-            <h2>
-              {{translatedLangText.TEAM_ALLOCATION}}
-            </h2>
-          </div>
-          <div class="body">
-            @if (residueDS.loadingSubject | async) {
-            <div class="tbl-spinner">
-              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-              </mat-progress-spinner>
+
+      <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.TEAM_ALLOCATION}}
+              </h2>
             </div>
-            }
-            @if (!(residueDS.loadingSubject | async)) {
-            <div class="row">
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
-                <mat-form-field class="example-full-width">
-                  <mat-label>{{translatedLangText.TEAM}}</mat-label>
-                  <mat-select formControlName="team_allocation">
-                    @for (team of teamList; track team) {
-                    <mat-option [value]="team">{{team.description}}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
+            <div class="body">
+              @if (residueDS.loadingSubject | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
               </div>
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0 p-t-10">
-                <button mat-flat-button color="accent" [disabled]="!isAssignEnabled()" (click)="assignTeam($event)">
-                  <mat-icon>person_add</mat-icon>
-                  {{translatedLangText.ASSIGN}}
-                </button>
+              }
+              @if (!(residueDS.loadingSubject | async)) {
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.TEAM}}</mat-label>
+                    <mat-select formControlName="team_allocation">
+                      @for (team of teamList; track team) {
+                      <mat-option [value]="team">{{team.description}}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0 p-t-10">
+                  <button mat-flat-button color="accent" [disabled]="!isAssignEnabled()" (click)="assignTeam($event)">
+                    <mat-icon>person_add</mat-icon>
+                    {{translatedLangText.ASSIGN}}
+                  </button>
+                </div>
               </div>
+              }
             </div>
-            }
           </div>
         </div>
       </div>
-    </div>
 
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -253,8 +253,10 @@
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <!-- ID Column -->
                     <ng-container matColumnDef="seq">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
-                      <mat-cell *matCellDef="let row; let i = index"  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+                      <mat-cell *matCellDef="let row; let i = index"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="desc">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -269,8 +271,7 @@
                         {{translatedLangText.QUANTITY}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
+                        <span class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="unit_price">
@@ -278,7 +279,8 @@
                         {{translatedLangText.UNIT_PRICE}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}}
+                        <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{
+                        this.parse2Decimal(row.cost)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="cost">
@@ -286,7 +288,8 @@
                         {{translatedLangText.COST}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity*row.cost)}}
+                        <span
+                          class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity*row.cost)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="approve_part">
@@ -298,16 +301,13 @@
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-                      
-    
                         @if (row.approve_part === null || row.approve_part === undefined ||
                         IsApprovePart(row)){
-                        <mat-icon class="col-green font-bold" >check</mat-icon>
+                        <mat-icon class="col-green font-bold">check</mat-icon>
                         }
                         @else {
                         <mat-icon class="col-red font-bold">close</mat-icon>
                         }
-                        
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="team">
@@ -316,9 +316,9 @@
                         mat-sort-header>
                         {{translatedLangText.TEAM}}
                         <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="repSelection.hasValue() && isAllSelected()"
-                        [indeterminate]="repSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                      </mat-checkbox>
+                          [checked]="repSelection.hasValue() && isAllSelected()"
+                          [indeterminate]="repSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                        </mat-checkbox>
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm font-bold'">
@@ -344,11 +344,8 @@
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
-                    (click)="toggleRep(row)"
-                    [ngClass]="{'bg-light-green': repSelection.isSelected(row)}"
-                    [style.cursor]="'pointer'"  
-                      matRipple>
+                    <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" (click)="toggleRep(row)"
+                      [ngClass]="{'bg-light-green': repSelection.isSelected(row)}" [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                   </table>
                 </div>
@@ -379,7 +376,7 @@
             <div class="row">
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
                 <button mat-flat-button type="button" aria-label="Back to previous page"
-                   (click)="GoBackPrevious($event)">
+                  (click)="GoBackPrevious($event)">
                   <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                 </button>
               </div>
@@ -397,46 +394,46 @@
                 </button>
                 } -->
                 @if (residueDS.canAbort(residueItem, deList)) {
-                  <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
-                    (click)="onAbort($event)">
-                    <mat-icon>
-                      @if (!(residueDS.loading$ | async)) {
-                      close
-                      } @else if ((residueDS.loading$ | async)) {
-                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                      }
-                    </mat-icon>
-                    {{translatedLangText.ABORT}}
-                  </button>
-                  }
+                <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                  (click)="onAbort($event)">
+                  <mat-icon>
+                    @if (!(residueDS.loading$ | async)) {
+                    close
+                    } @else if ((residueDS.loading$ | async)) {
+                    <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                    }
+                  </mat-icon>
+                  {{translatedLangText.ABORT}}
+                </button>
+                }
                 <!-- <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right"> -->
-                  @if(canSave())
-                  {
-                  <button mat-flat-button color="primary"  (click)="save()"
-                  >{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
-                  }
+                @if(canSave())
+                {
+                <button mat-flat-button color="primary"
+                  (click)="save()">{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
+                }
 
-                  @if(canRollBack())
-                  {
-                    <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
-                    (click)="rollbackJobs($event)">
-                    <mat-icon>
-                      @if (!(residueDS.loading$ | async)) {
-                      undo
-                      } @else if ((residueDS.loading$ | async)) {
-                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                      }
-                    </mat-icon>
-                    {{translatedLangText.ROLLBACK}}
-                  </button>
-                  }
+                @if(canRollBack())
+                {
+                <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                  (click)="rollbackJobs($event)">
+                  <mat-icon>
+                    @if (!(residueDS.loading$ | async)) {
+                    undo
+                    } @else if ((residueDS.loading$ | async)) {
+                    <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                    }
+                  </mat-icon>
+                  {{translatedLangText.ROLLBACK}}
+                </button>
+                }
                 <!-- </div> -->
               </div>
             </div>
           </div>
         </div>
       </div>
-     
+
     </form>
   </div>
 </section>

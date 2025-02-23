@@ -221,17 +221,6 @@
                 <div class="responsive_table">
                   <table mat-table [dataSource]="filterDeleted(row.residue || [])" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                    <ng-container matColumnDef="select">
-                      <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                           [ngClass]="'tbl-checkbox'">
-                        </mat-checkbox>
-                      </mat-cell>
-                    </ng-container>
                     <ng-container matColumnDef="id">
                       <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                       <mat-cell *matCellDef="let residueRow">{{residueRow.guid}}</mat-cell>
