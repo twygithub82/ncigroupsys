@@ -120,15 +120,19 @@ tr.th {
 }
 
 .frame-info-content {
+    width: 100%;
     display: flex;
-    font-size: 7px;
-    justify-content: center;
+    flex-direction: column; /* ✅ Stack items vertically */
+    font-size: 9px;
+    font-weight: bold;
+    align-items: center; /* ✅ Center everything horizontally */
 
     .frame-type-info {
-        max-width: 80%;
+        max-width: 100%;
 
         .frame-line {
             display: flex;
+            justify-content: space-between;
 
             .frame-title {
                 display: flex;
@@ -142,12 +146,12 @@ tr.th {
                 text-align: center;
 
                 .frame-rect {
-                    max-width: 144px;
+                    max-width: 175px;
                 }
 
                 .frame-square {
-                    max-width: 78px;
-                    margin: 0 20px 0 20px;
+                    max-width: 95px;
+                    margin: 0 35px 0 35px;
                 }
             }
         }
@@ -160,6 +164,7 @@ tr.th {
 }
 
 .manlid-info-content {
+    width: 100%;
     display: flex;
     align-items: flex-start;
     font-size: 0.6rem;

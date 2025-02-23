@@ -195,6 +195,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     PUBLISH_SUCCESS: 'COMMON-FORM.PUBLISH-SUCCESS',
     FOR: 'COMMON-FORM.FOR',
     DELIVERY_COURIER: 'COMMON-FORM.DELIVERY-COURIER',
+    DAMAGED: 'COMMON-FORM.DAMAGED',
   }
   @Output() publishedEir = new EventEmitter<any>();
   // @Input() type?: string | null;
