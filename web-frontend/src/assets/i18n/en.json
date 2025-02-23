@@ -987,7 +987,8 @@
     "RELEASED-TANK": "Released Tank",
     "CLEAN-CERT-BOOKING": "Clean Cert. Booking",
     "CLEAN-IN": "Clean In",
-    "DURATION-DAYS": "Duration (Days)"
+    "DURATION-DAYS": "Duration (Days)",
+    "TARIFF-COST": "Tariff Cost"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

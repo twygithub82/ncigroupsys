@@ -297,12 +297,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       material_cost: [''],
 
     });
-
-
   }
 
   public loadData() {
-
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
       // { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME1' },
@@ -315,8 +312,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         var rec = this.selectedItem;
         this.groupNameControl.setValue(this.GetCodeValue(rec.group_name_cv!, this.groupNameCvList));
       }
-
-
     });
     this.cvDS.connectAlias('subGroupName').subscribe(data => {
       this.subGroupNameCvList = data;

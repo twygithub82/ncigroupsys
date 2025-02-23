@@ -102,6 +102,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   pageTitleEdit = 'MENUITEMS.MASTER.LIST.CUSTOMER-EDIT'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/customer' },
     { text: 'MENUITEMS.MASTER.LIST.CUSTOMER', route: '/admin/master/customer' }
   ]
   translatedLangText: any = {}
@@ -238,7 +239,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   countryCodes: any = [];
 
   @ViewChild('countrySelect') countrySelect!: MatSelect;
-  
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -1080,11 +1081,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
         //this.router.navigate(['/admin/master/estimate-template']);
-
         // Navigate to the route and pass the JSON object
         this.router.navigate(['/admin/master/customer'], {
           state: this.historyState
-
         }
         );
       });

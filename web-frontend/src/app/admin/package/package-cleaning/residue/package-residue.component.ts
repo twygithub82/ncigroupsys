@@ -201,7 +201,6 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
-
     PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
     LOLO_COST: "COMMON-FORM.LOLO-COST",
     STORAGE_COST: "COMMON-FORM.STORAGE-COST",
@@ -617,13 +616,13 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   // context menu
   onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-      this.contextMenu.menuData = { item: item };
-      this.contextMenu.menu.focusFirstItem('mouse');
-      this.contextMenu.openMenu();
-    }
+    // this.contextMenuPosition.x = event.clientX + 'px';
+    // this.contextMenuPosition.y = event.clientY + 'px';
+    // if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
+    //   this.contextMenu.menuData = { item: item };
+    //   this.contextMenu.menu.focusFirstItem('mouse');
+    //   this.contextMenu.openMenu();
+    // }
   }
 
   onlyNumbersDashValidator(control: AbstractControl): { [key: string]: boolean } | null {
