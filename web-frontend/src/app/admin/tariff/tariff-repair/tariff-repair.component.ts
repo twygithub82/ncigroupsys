@@ -120,6 +120,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   groupNameCvList: CodeValuesItem[] = [];
   subGroupNameCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
+  unitTypeCvList: CodeValuesItem[] = [];
 
   lengthItems: TariffRepairLengthItem[] = [];
   dimensionItems: string[] = [];
@@ -792,12 +793,12 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
       //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
-      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' }
+      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
+      { alias: 'unitType', codeValType: 'UNIT_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
-
       const subqueries: any[] = [];
       data.map(d => {
 
@@ -829,22 +830,16 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     this.cvDS.connectAlias('handledItem').subscribe(data => {
       this.handledItemCvList = data;
     });
-
+    this.cvDS.connectAlias('unitType').subscribe(data => {
+      this.unitTypeCvList = data;
+    });
     this.search();
-    // this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
-    //   console.log('Selected value:', value);
-    //   var aliasName =value.child_code;
-
-    //   const subqueries :any[]=  [{ alias: aliasName, codeValType: aliasName }];
-    //   this.cvDS.getCodeValuesByType(subqueries);
-    //   this.cvDS.connectAlias(aliasName).subscribe(data => {
-    //     this.subGroupNameCvList = data;
-    //   });
-    //   // Handle value changes here
-    // });
-
-
   }
+
+  getUnitTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.unitTypeCvList);
+  }
+
   showNotification(
     colorName: string,
     text: string,

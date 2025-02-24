@@ -73,8 +73,6 @@
                         <input matInput formControlName="max_cost" type="number">
                       </mat-form-field>
                     </div>
-                  </div>
-                  <div class="row">
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.DIMENSION}}</mat-label>
@@ -88,7 +86,6 @@
                           }
                         </mat-select>
                       </mat-form-field>
-
                     </div>
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
@@ -103,25 +100,19 @@
                           }
                         </mat-select>
                       </mat-form-field>
-
                     </div>
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.MIN_LABOUR}}</mat-label>
                         <input matInput formControlName="min_labour" type="number">
-
                       </mat-form-field>
                     </div>
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.MAX_LABOUR }}</mat-label>
                         <input matInput formControlName="max_labour" type="number">
-
                       </mat-form-field>
                     </div>
-                  </div>
-
-                  <div class="row">
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
@@ -141,7 +132,7 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                       <button mat-mini-fab color="primary" (click)="search()">
                         <mat-icon>search</mat-icon>
                       </button>
@@ -160,7 +151,7 @@
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
                     <mat-checkbox (change)="$event ? masterToggle() : null"
                       [checked]="selection.hasValue() && isAllSelected()"
                       [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
@@ -179,7 +170,7 @@
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_75-xl'"
                     (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.PART_NAME
-                      }}:</span>{{row.alias}}</mat-cell>
+                      }}:</span>{{row.alias}} {{row.length}} {{getUnitTypeDescription(row.length_unit_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="dimension">
                   <mat-header-cell *matHeaderCellDef mat-sort-header

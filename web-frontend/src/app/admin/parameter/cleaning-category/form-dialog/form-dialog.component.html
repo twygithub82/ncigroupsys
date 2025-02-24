@@ -5,9 +5,6 @@
         <h3>{{GetTitle()}}</h3>
       </div>
     </div>
-    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
-      <mat-icon>close</mat-icon>
-    </button> -->
   </div>
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
@@ -15,103 +12,45 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
-                <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.CATEGORY_NAME | translate}}</mat-label>
-                    <input matInput formControlName="name" type="text" required>
-                    @if (pcForm.get('name')?.hasError('required')) {
-                      <mat-error>
-                        {{langText.CATEGORY_NAME | translate}} {{langText.CARGO_REQUIRED | translate}}
-                      </mat-error>
-                      }
-                      @if (pcForm.get('name')?.hasError('existed')) {
-                        <mat-error>
-                          {{langText.CATEGORY_NAME | translate}}: {{langText.EXISTED | translate}}
-                        </mat-error>
-                        }
-                  </mat-form-field>
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.CATEGORY_NAME | translate}}</mat-label>
+                <input matInput formControlName="name" type="text" required>
+                @if (pcForm.get('name')?.hasError('required')) {
+                <mat-error>
+                  {{langText.CATEGORY_NAME | translate}} {{langText.CARGO_REQUIRED | translate}}
+                </mat-error>
+                }
+                @if (pcForm.get('name')?.hasError('existed')) {
+                <mat-error>
+                  {{langText.CATEGORY_NAME | translate}}: {{langText.EXISTED | translate}}
+                </mat-error>
+                }
+              </mat-form-field>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
-                  <mat-label>{{translatedLangText.CATEGORY_DESCRIPTION | translate }}</mat-label>
-                  <input matInput formControlName="description" type="text">
-                 
-                </mat-form-field>
+                <mat-label>{{translatedLangText.CATEGORY_DESCRIPTION | translate }}</mat-label>
+                <input matInput formControlName="description" type="text">
+              </mat-form-field>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width" required>
-                  <mat-label>{{translatedLangText.CATEGORY_COST | translate}}</mat-label>
-                  <input matInput formControlName="adjusted_cost" type="number" required>
-                  @if (pcForm.get('adjusted_cost')?.hasError('required')) {
-                    <mat-error>
-                      {{langText.CATEGORY_COST | translate}} {{langText.CARGO_REQUIRED | translate}}
-                    </mat-error>
-                    }
-                </mat-form-field>
-          </div>
-          </div>
-          <!-- <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-              <mat-form-field class="example-full-width" required>
-                  <mat-label>{{translatedLangText.CATEGORY_COST | translate}}</mat-label>
-                  <input matInput formControlName="adjusted_cost" type="number" required>
-                  @if (pcForm.get('adjusted_cost')?.hasError('required')) {
-                    <mat-error>
-                      {{langText.CATEGORY_COST | translate}} {{langText.CARGO_REQUIRED | translate}}
-                    </mat-error>
-                    }
-                </mat-form-field>
-          </div>
-           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-            <mat-form-field class="example-full-width">
-                <mat-label>{{translatedLangText.REMARKS }}</mat-label>
-                <input matInput formControlName="remarks" type="text">
-               
+                <mat-label>{{translatedLangText.CATEGORY_COST | translate}}</mat-label>
+                <input matInput formControlName="adjusted_cost" type="number" required>
+                @if (pcForm.get('adjusted_cost')?.hasError('required')) {
+                <mat-error>
+                  {{langText.CATEGORY_COST | translate}} {{langText.CARGO_REQUIRED | translate}}
+                </mat-error>
+                }
               </mat-form-field>
-          </div> 
-          </div> -->
-          <!-- <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-              <div class="card">
-                <div class="materialTableHeader">
-                </div>
-                <div class="body overflow-auto">
-                  <div class="responsive_table">
-                    <table mat-table [dataSource]="selectedItem" matSort class="mat-cell advance-table">
-                      
-                      <ng-container matColumnDef="fName">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE | translate}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" >
-                          <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE | translate}}:</span>{{row.customer_company.code}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="lName">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME | translate}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" >
-                          <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME | translate}}:</span>{{row.customer_company.name}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="email">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_CATEGORY | translate}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" >
-                          <span class="mobile-label">{{translatedLangText.CARGO_CATEGORY | translate}}:</span> {{row.cleaning_category.name}}</mat-cell>
-                      </ng-container>
-                      
-                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: displayedColumns;" 
-                        [style.cursor]="'pointer'" matRipple>
-                      </mat-row>
-                    </table>
-                  </div>
-                </div>
-              </div>
             </div>
-        </div> -->
-         
-        
+          </div>
         </div>
-        
+
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-          <button mat-flat-button color="primary" (click)="save()">{{GetButtonCaption()}}</button>
+        <button mat-flat-button color="primary" (click)="save()">{{GetButtonCaption()}}</button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
       </div>

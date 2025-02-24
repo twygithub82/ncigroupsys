@@ -1,57 +1,50 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS } from 'app/data-sources/in-gate';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 
 // import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
-import { ResidueDS,ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
-import { RepairItem } from 'app/data-sources/repair';
-import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { ResidueDS, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 
 @Component({
   selector: 'app-estimate',
@@ -67,13 +60,10 @@ import { ResiduePartItem } from 'app/data-sources/residue-part';
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -168,7 +158,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     RESIDUE_JOB_NO: 'COMMON-FORM.RESIDUE-JOB-NO',
   }
 
-  
+
   availableProcessStatus: string[] = [
     'ASSIGNED',
     'PARTIAL_ASSIGNED',
@@ -187,8 +177,8 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  residueDS:ResidueDS;
- // repairEstDS: RepairDS;
+  residueDS: ResidueDS;
+  // repairEstDS: RepairDS;
 
   sotList: StoringOrderTankItem[] = [];
   reSelection = new SelectionModel<ResidueItem>(true, []);
@@ -196,7 +186,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   reStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  processStatusCvList:CodeValuesItem[]=[];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -213,8 +203,8 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  previous_endCursor:any;
-  
+  previous_endCursor: any;
+
 
   constructor(
     private router: Router,
@@ -236,7 +226,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.residueDS= new ResidueDS(this.apollo);
+    this.residueDS = new ResidueDS(this.apollo);
     //this.repairEstDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -250,21 +240,19 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.loadData();
     var state = history.state;
 
-    if(state.type=="residue-estimate")
-    {
+    if (state.type == "residue-estimate") {
       let showResult = state.pagination.showResult;
-      if(showResult)
-      {
-      this.lastSearchCriteria=state.pagination.where;
-      this.pageIndex=state.pagination.pageIndex;
-      this.pageSize= state.pagination.pageSize;
-      this.hasPreviousPage=state.pagination.hasPreviousPage;
-      this.startCursor=state.pagination.startCursor;
-      this.endCursor=state.pagination.endCursor;
-      this.previous_endCursor=state.pagination.previous_endCursor;
-      this.paginator.pageSize=this.pageSize;
-      this.paginator.pageIndex=this.pageIndex;
-      this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+      if (showResult) {
+        this.lastSearchCriteria = state.pagination.where;
+        this.pageIndex = state.pagination.pageIndex;
+        this.pageSize = state.pagination.pageSize;
+        this.hasPreviousPage = state.pagination.hasPreviousPage;
+        this.startCursor = state.pagination.startCursor;
+        this.endCursor = state.pagination.endCursor;
+        this.previous_endCursor = state.pagination.previous_endCursor;
+        this.paginator.pageSize = this.pageSize;
+        this.paginator.pageIndex = this.pageIndex;
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
 
     }
@@ -278,7 +266,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.searchForm = this.fb.group({
       tank_no: [''],
       customer_code: [''],
-      last_cargo:[''],
+      last_cargo: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
       part_name: [''],
@@ -323,7 +311,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   }
 
   cancelRow(row: ResidueItem) {
-     const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
     if (!found) {
       // this.toggleRow(row);
@@ -351,19 +339,19 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-         const reList = result.item.map((item: ResidueItem) => new ResidueItem(item));
-         console.log(reList);
+        const reList = result.item.map((item: ResidueItem) => new ResidueItem(item));
+        console.log(reList);
 
-         let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-         residueStatus.action="CANCEL";
-         residueStatus.guid = row[0]?.guid;
-         residueStatus.sot_guid= row[0]?.sot_guid;
-         residueStatus.remarks=reList[0].remarks;
-          this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
- 
-            this.handleCancelSuccess(result?.data?.UpdateResidueStatus)
-            this.performSearch(this.pageSize, 0, this.pageSize);
-          });
+        let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action = "CANCEL";
+        residueStatus.guid = row[0]?.guid;
+        residueStatus.sot_guid = row[0]?.sot_guid;
+        residueStatus.remarks = reList[0].remarks;
+        this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
+
+          this.handleCancelSuccess(result?.data?.UpdateResidueStatus)
+          this.performSearch(this.pageSize, 0, this.pageSize);
+        });
         //  this.residueDS.cancelResidue(reList).subscribe((result: { data: { cancelResidue: any; }; }) => {
         //    this.handleCancelSuccess(result?.data?.cancelResidue)
         //    this.performSearch(this.pageSize, 0, this.pageSize);
@@ -371,7 +359,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       }
     });
   }
-  
+
 
   rollbackRow(row: ResidueItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
@@ -410,7 +398,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
             guid: item.guid,
             remarks: item.remarks,
             sot_guid: item.sot_guid,
-            is_approved:item?.status_cv=="APPROVED"
+            is_approved: item?.status_cv == "APPROVED"
           }
           return ResidueEstimateRequestInput;
         });
@@ -423,7 +411,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
-  
+
   copyResidueEst(residueEst: ResidueItem) {
     this.copiedResidueEst = residueEst;
   }
@@ -505,7 +493,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['CLEANING','STORAGE'] }
+      tank_status_cv: { in: ['CLEANING', 'STORAGE'] }
     };
 
     if (this.searchForm!.value['tank_no']) {
@@ -513,63 +501,58 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     }
 
     if (this.searchForm!.value['last_cargo']) {
-      
-      if(!where.tariff_cleaning) where.tariff_cleaning={};
 
-       where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
+      if (!where.tariff_cleaning) where.tariff_cleaning = {};
+
+      where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
     }
 
 
     if (this.searchForm!.value['eir_no']) {
-      if(!where.in_gate) where.in_gate={};
-      where.in_gate = {some:{ eir_no:{contains: this.searchForm!.value['eir_no'] }}};
+      if (!where.in_gate) where.in_gate = {};
+      where.in_gate = { some: { eir_no: { contains: this.searchForm!.value['eir_no'] } } };
     }
 
     if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
-      if(!where.in_gate) where.in_gate={};
-      where.in_gate = {some:{eir_dt:{ gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) }}};
+      if (!where.in_gate) where.in_gate = {};
+      where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) } } };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
 
     if (this.searchForm!.value['customer_code']) {
-        where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
 
-    
-    if (this.searchForm!.value['part_name'] )
-      {
-        if(!where.residue) where.residue={};
-        where.residue.some = {residue_part:{some:{description:{contains:this.searchForm!.value['part_name']}} }};
-      }
-    
-    if ( this.searchForm!.value['residue_job_no'])
-      {
-        
-        if(!where.residue) where.residue={};
-        where.residue = {some:{ job_no:{contains: this.searchForm!.value['job_no'] }}};
-      }
 
-    if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end'])
-      {
-        if(!where.residue) where.residue={};
-        if(!where.residue.some) where.residue.some={};
-        where.residue.some.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
-      }
-        
-    if (this.searchForm!.value['approval_dt_start'] && this.searchForm!.value['approval_dt_end'])
-      {
-        if(!where.residue) where.residue={};
-        if(!where.residue.some) where.residue.some={};
-        where.residue.some.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
-      }
+    if (this.searchForm!.value['part_name']) {
+      if (!where.residue) where.residue = {};
+      where.residue.some = { residue_part: { some: { description: { contains: this.searchForm!.value['part_name'] } } } };
+    }
 
-      if (this.searchForm!.value['est_status_cv']!==undefined&&this.searchForm!.value['est_status_cv'].length>0 )
-      {
-        if(!where.residue) where.residue={};
-        if(!where.residue.some) where.residue.some={};
-        where.residue.some.status_cv={in:this.searchForm!.value['est_status_cv']} ;
-      }
+    if (this.searchForm!.value['residue_job_no']) {
+
+      if (!where.residue) where.residue = {};
+      where.residue = { some: { job_no: { contains: this.searchForm!.value['job_no'] } } };
+    }
+
+    if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
+      if (!where.residue) where.residue = {};
+      if (!where.residue.some) where.residue.some = {};
+      where.residue.some.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
+    }
+
+    if (this.searchForm!.value['approval_dt_start'] && this.searchForm!.value['approval_dt_end']) {
+      if (!where.residue) where.residue = {};
+      if (!where.residue.some) where.residue.some = {};
+      where.residue.some.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
+    }
+
+    if (this.searchForm!.value['est_status_cv'] !== undefined && this.searchForm!.value['est_status_cv'].length > 0) {
+      if (!where.residue) where.residue = {};
+      if (!where.residue.some) where.residue.some = {};
+      where.residue.some.status_cv = { in: this.searchForm!.value['est_status_cv'] };
+    }
     // if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
     //   let reSome: any = {};
 
@@ -591,7 +574,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     //   where.repair_est = { some: reSome };
     // }
 
-   
+
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
@@ -604,11 +587,11 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       .subscribe(data => {
         this.sotList = data.map(sot => {
           sot.residue = sot.residue?.map(res => {
-             var res_part=[...res.residue_part!];
-             res.residue_part=res_part?.filter(data => !data.delete_dt);
+            var res_part = [...res.residue_part!];
+            res.residue_part = res_part?.filter(data => !data.delete_dt);
             return { ...res, net_cost: this.calculateNetCost(res) }
           })
-          
+
           return sot;
         });
         this.endCursor = this.sotDS.pageInfo?.endCursor;
@@ -653,9 +636,9 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
-  
 
- 
+
+
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -711,11 +694,11 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   }
 
   calculateNetCost(residue: ResidueItem): any {
-    
+
 
     const total = this.residueDS.getTotal(residue?.residue_part)
-     
-     return total.total_mat_cost.toFixed(2);
+
+    return total.total_mat_cost.toFixed(2);
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
@@ -760,7 +743,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.searchForm?.patchValue({
       tank_no: '',
       customer_code: '',
-      last_cargo:'',
+      last_cargo: '',
       eir_dt_start: '',
       eir_dt_end: '',
       part_name: '',
@@ -796,78 +779,78 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     event.preventDefault(); // Prevents the form submission
   }
 
-  addResidueEstimate(event: Event, row:StoringOrderItem)
-  {
+  addResidueEstimate(event: Event, row: StoringOrderItem) {
     event.stopPropagation(); // Stop the click event from propagating
- // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
-      state: { id: '' ,
-        action:"NEW",
-        selectedResidue:undefined,
-        selectedRow:row,
-        type:'residue-estimate',
-        pagination:{
-          where :this.lastSearchCriteria,
-          pageSize:this.pageSize,
-          pageIndex:this.pageIndex,
-          hasPreviousPage:this.hasPreviousPage,
-          startCursor:this.startCursor,
-          endCursor:this.endCursor,
-          previous_endCursor:this.previous_endCursor,
-          
-          showResult: this.sotDS.totalCount>0
-          
+    // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/residue-disposal/estimate/new/', row.guid], {
+      state: {
+        id: '',
+        action: "NEW",
+        selectedResidue: undefined,
+        selectedRow: row,
+        type: 'residue-estimate',
+        pagination: {
+          where: this.lastSearchCriteria,
+          pageSize: this.pageSize,
+          pageIndex: this.pageIndex,
+          hasPreviousPage: this.hasPreviousPage,
+          startCursor: this.startCursor,
+          endCursor: this.endCursor,
+          previous_endCursor: this.previous_endCursor,
+
+          showResult: this.sotDS.totalCount > 0
+
         }
       }
     });
   }
 
-  pasteResidueEstimate(event: Event, sot:StoringOrderItem, row:ResidueItem)
-  {
+  pasteResidueEstimate(event: Event, sot: StoringOrderItem, row: ResidueItem) {
     event.stopPropagation(); // Stop the click event from propagating
- // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
-      state: { id: '' ,
-        action:"DUPLICATE",
-        selectedResidue:row,
-        selectedRow:sot,
-        type:'residue-estimate',
-        pagination:{
-          where :this.lastSearchCriteria,
-          pageSize:this.pageSize,
-          pageIndex:this.pageIndex,
-          hasPreviousPage:this.hasPreviousPage,
-          startCursor:this.startCursor,
-          endCursor:this.endCursor,
-          previous_endCursor:this.previous_endCursor,
-          
-          showResult: this.sotDS.totalCount>0
-          
+    // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/residue-disposal/estimate/new/', row.guid], {
+      state: {
+        id: '',
+        action: "DUPLICATE",
+        selectedResidue: row,
+        selectedRow: sot,
+        type: 'residue-estimate',
+        pagination: {
+          where: this.lastSearchCriteria,
+          pageSize: this.pageSize,
+          pageIndex: this.pageIndex,
+          hasPreviousPage: this.hasPreviousPage,
+          startCursor: this.startCursor,
+          endCursor: this.endCursor,
+          previous_endCursor: this.previous_endCursor,
+
+          showResult: this.sotDS.totalCount > 0
+
         }
       }
     });
   }
-  updateResidueEstimate(event: Event, sot:StoringOrderItem, row:ResidueItem)
-  {
+  updateResidueEstimate(event: Event, sot: StoringOrderItem, row: ResidueItem) {
     event.stopPropagation(); // Stop the click event from propagating
- // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
-      state: { id: '' ,
-        action:"UPDATE",
-        selectedResidue:row,
-        selectedRow:sot,
-        type:'residue-estimate',
-        pagination:{
-          where :this.lastSearchCriteria,
-          pageSize:this.pageSize,
-          pageIndex:this.pageIndex,
-          hasPreviousPage:this.hasPreviousPage,
-          startCursor:this.startCursor,
-          endCursor:this.endCursor,
-          previous_endCursor:this.previous_endCursor,
-          
-          showResult: this.sotDS.totalCount>0
-          
+    // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/residue-disposal/estimate/new/', row.guid], {
+      state: {
+        id: '',
+        action: "UPDATE",
+        selectedResidue: row,
+        selectedRow: sot,
+        type: 'residue-estimate',
+        pagination: {
+          where: this.lastSearchCriteria,
+          pageSize: this.pageSize,
+          pageIndex: this.pageIndex,
+          hasPreviousPage: this.hasPreviousPage,
+          startCursor: this.startCursor,
+          endCursor: this.endCursor,
+          previous_endCursor: this.previous_endCursor,
+
+          showResult: this.sotDS.totalCount > 0
+
         }
       }
     });

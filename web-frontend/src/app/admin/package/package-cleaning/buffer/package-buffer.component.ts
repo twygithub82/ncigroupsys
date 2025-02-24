@@ -209,6 +209,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
     CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    COST: "COMMON-FORM.COST",
     STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
     ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
     CONTACT_PERSON: "COMMON-FORM.CONTACT-PERSON",
@@ -218,7 +219,6 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
-
   }
 
   constructor(
@@ -621,13 +621,13 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   // context menu
   onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-      this.contextMenu.menuData = { item: item };
-      this.contextMenu.menu.focusFirstItem('mouse');
-      this.contextMenu.openMenu();
-    }
+    // this.contextMenuPosition.x = event.clientX + 'px';
+    // this.contextMenuPosition.y = event.clientY + 'px';
+    // if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
+    //   this.contextMenu.menuData = { item: item };
+    //   this.contextMenu.menu.focusFirstItem('mouse');
+    //   this.contextMenu.openMenu();
+    // }
   }
 
   onlyNumbersDashValidator(control: AbstractControl): { [key: string]: boolean } | null {

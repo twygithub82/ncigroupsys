@@ -108,11 +108,15 @@
       <div class="frame-info-content mt-1 mb-1">
         <div class="frame-walkway-legend">
           <img mat-card-image src="assets/images/icons/walkway.jpg"
-            class="walkway-img img-fluid m-4"><span>{{translatedLangText.WALKWAY}}</span>
+            class="walkway-img img-fluid m-3">
+            <span class="me-3">{{translatedLangText.WALKWAY}}</span>
+          <img mat-card-image src="assets/images/icons/damage-image.png"
+            class="walkway-img img-fluid m-3">
+            <span>{{translatedLangText.DAMAGED}}</span>
         </div>
         <div class="frame-type-info">
           <div class="frame-line">
-            <div class="frame-type me-1">
+            <div class="frame-type me-3">
               <div class="frame-title">
                 {{translatedLangText.LEFT_SIDE}}
               </div>
@@ -141,8 +145,8 @@
               </div>
             </div>
           </div>
-          <div class="frame-line mt-1">
-            <div class="frame-type me-1">
+          <div class="frame-line mt-3">
+            <div class="frame-type me-3">
               <div class="frame-title">
                 {{translatedLangText.REAR_SIDE}}
               </div>
@@ -171,8 +175,8 @@
               </div>
             </div>
           </div>
-          <div class="frame-line mt-1">
-            <div class="frame-type">
+          <div class="frame-line mt-3">
+            <div class="frame-type me-3">
               <div class="frame-title">
                 {{translatedLangText.TOP_SIDE}}
               </div>
@@ -248,7 +252,7 @@
         </div>
       </div>
       <div class="manlid-info-content mt-1">
-        <table class="manlid-info w-50">
+        <table class="manlid-info">
           <tbody>
             <tr class="th">
               <td class="td-col-11">
@@ -383,6 +387,7 @@
                 /
                 }
                 }
+
                 <span class="text-decoration-underline">
                   {{eirDetails?.thermometer}}
                 </span> &deg;C
@@ -528,8 +533,10 @@
                 /
                 }
                 }
+                )
+                (
                 <span class="text-decoration-underline">{{eirDetails?.airline_valve_pcs || '_'}}</span> pcs,
-                <span class="text-decoration-underline">{{eirDetails?.airline_valve_dim || '_'}}</span> inch
+                <span class="text-decoration-underline">{{eirDetails?.airline_valve_dim ?? '_'}}</span> inch
                 )
                 }
               </td>
@@ -580,8 +587,8 @@
               </td>
             </tr>
           </tbody>
-        </table>
-        <table class="manlid-info w-50">
+          <!-- </table>
+        <table class="manlid-info w-50"> -->
           <tbody>
             <tr class="th">
               <td class="td-col-11">
@@ -594,6 +601,7 @@
             <tr>
               <td>
                 {{translatedLangText.MANLID_COMP__ABB}}
+                @if (eirDetails?.manlid_comp_cv) {
                 (
                 @for (codeValue of disCompCvList; track codeValue; let index = $index) {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.manlid_comp_cv}">
@@ -604,6 +612,7 @@
                 }
                 }
                 )
+                }
               </td>
               <td>
                 @if (eirDetails?.manlid_comp_cv) {
@@ -617,6 +626,7 @@
             <tr>
               <td>
                 {{translatedLangText.MANLID_COVER}}
+                @if (eirDetails?.manlid_cover_cv) {
                 (
                 @for (codeValue of manlidCoverCvList; track codeValue; let index = $index) {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.manlid_cover_cv}">
@@ -627,10 +637,11 @@
                 }
                 }
                 )
-              </td>
-              <td>
+                (
                 <span class="text-decoration-underline">{{eirDetails?.manlid_cover_pcs}}</span> pcs /
                 <span class="text-decoration-underline">{{eirDetails?.manlid_cover_pts}}</span> pts
+                )
+                }
               </td>
               <td>
                 @if (eirDetails?.manlid_cover_cv) {
@@ -644,6 +655,7 @@
             <tr>
               <td>
                 {{translatedLangText.MANLID_SEAL}}
+                @if (eirDetails?.manlid_seal_cv) {
                 (
                 @for (codeValue of manlidSealCvList; track codeValue; let index = $index) {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.manlid_seal_cv}">
@@ -654,8 +666,7 @@
                 }
                 }
                 )
-              </td>
-              <td>
+                }
               </td>
               <td>
                 @if (eirDetails?.manlid_seal_cv) {
@@ -669,6 +680,7 @@
             <tr>
               <td>
                 {{translatedLangText.PV}}
+                @if (eirDetails?.pv_type_cv) {
                 (
                 @for (codeValue of pvTypeCvList; track codeValue; let index = $index) {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.pv_type_cv}">
@@ -679,6 +691,8 @@
                 }
                 }
                 )
+                <span class="text-decoration-underline">{{eirDetails?.pv_type_pcs}}</span> pcs
+
                 (
                 @for (codeValue of pvSpecCvList; track codeValue; let index = $index) {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.pv_spec_cv}">
@@ -689,10 +703,8 @@
                 }
                 }
                 )
-              </td>
-              <td>
-                <span class="text-decoration-underline">{{eirDetails?.pv_type_pcs}}</span> pcs /
                 <span class="text-decoration-underline">{{eirDetails?.pv_spec_pcs}}</span> pcs
+                }
               </td>
               <td>
                 @if (eirDetails?.pv_type_cv) {
@@ -705,7 +717,6 @@
             </tr>
             <tr>
               <td>{{translatedLangText.SAFETY_HANDRAIL}}</td>
-              <td></td>
               <td>
                 @if (eirDetails?.safety_handrail) {
                 <mat-icon>checked</mat-icon>
@@ -716,9 +727,13 @@
               </td>
             </tr>
             <tr>
-              <td>{{translatedLangText.BUFFER_PLATE}}</td>
               <td>
+                {{translatedLangText.BUFFER_PLATE}}
+                @if (eirDetails?.buffer_plate) {
+                (
                 <span class="text-decoration-underline">{{eirDetails?.buffer_plate}}</span> pcs
+                )
+                }
               </td>
               <td>
                 @if (eirDetails?.buffer_plate) {
@@ -730,9 +745,13 @@
               </td>
             </tr>
             <tr>
-              <td>{{translatedLangText.RESIDUE}}</td>
               <td>
+                {{translatedLangText.RESIDUE}}
+                @if (eirDetails?.residue) {
+                (
                 <span class="text-decoration-underline">{{eirDetails?.residue}}</span> KG
+                )
+                }
               </td>
               <td>
                 @if (eirDetails?.residue) {
@@ -745,7 +764,6 @@
             </tr>
             <tr>
               <td>{{translatedLangText.DIPSTICK}}</td>
-              <td></td>
               <td>
                 @if (eirDetails?.dipstick) {
                 <mat-icon>checked</mat-icon>

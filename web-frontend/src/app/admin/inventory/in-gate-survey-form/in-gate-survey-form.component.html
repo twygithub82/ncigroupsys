@@ -275,7 +275,7 @@
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
-                                <input matInput formControlName="capacity" type="number" min="0" required>
+                                <input matInput formControlName="capacity" type="number" (wheel)="preventDefault($event)" min="0" required>
                                 <h6 class="color-icon p-t-15 p-r-5" matSuffix>L</h6>
                                 @if (surveyForm?.get('tank_details.capacity')?.hasError('required')) {
                                 <mat-error>
@@ -287,7 +287,7 @@
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
-                                <input matInput formControlName="tare_weight" type="number" min="0" required>
+                                <input matInput formControlName="tare_weight" type="number" (wheel)="preventDefault($event)" min="0" required>
                                 <h6 class="color-icon p-t-15 p-r-5" matSuffix>KG</h6>
                                 @if (surveyForm?.get('tank_details.tare_weight')?.hasError('required')) {
                                 <mat-error>
@@ -1638,7 +1638,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.THERMOMETER}}</mat-label>
-                                    <input matInput formControlName="thermometer" type="number">
+                                    <input matInput formControlName="thermometer" type="number" (wheel)="preventDefault($event)">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
                                     @if (getBottomFormGroup().get('thermometer')?.hasError('required')) {
                                     <mat-error>
@@ -1771,7 +1771,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="airline_valve_pcs" type="number" min="0">
+                                    <input matInput formControlName="airline_valve_pcs" type="number" (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getTopFormGroup().get('airline_valve_pcs')?.hasError('required')) {
                                     <mat-error>
@@ -1783,7 +1783,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.DIAMITER}}</mat-label>
-                                    <input matInput formControlName="airline_valve_dim" type="number" min="0">
+                                    <input matInput formControlName="airline_valve_dim" type="number" (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>inch</h6>
                                     @if (getTopFormGroup().get('airline_valve_dim')?.hasError('required')) {
                                     <mat-error>
@@ -1878,7 +1878,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="manlid_cover_pcs" type="number" min="0">
+                                    <input matInput formControlName="manlid_cover_pcs" type="number" (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getManlidFormGroup().get('manlid_cover_pcs')?.hasError('required')) {
                                     <mat-error>
@@ -1890,7 +1890,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.VOLUME}}</mat-label>
-                                    <input matInput formControlName="manlid_cover_pts" type="number" min="0">
+                                    <input matInput formControlName="manlid_cover_pts" type="number" (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pts</h6>
                                     @if (getManlidFormGroup().get('manlid_cover_pts')?.hasError('required')) {
                                     <mat-error>
@@ -1936,7 +1936,7 @@
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="pv_type_pcs" type="number" min="0">
+                                    <input matInput formControlName="pv_type_pcs" type="number" (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getManlidFormGroup().get('pv_type_pcs')?.hasError('required')) {
                                     <mat-error>
@@ -1963,7 +1963,7 @@
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="pv_spec_pcs" type="number" min="0">
+                                    <input matInput formControlName="pv_spec_pcs" type="number" (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getManlidFormGroup().get('pv_spec_pcs')?.hasError('required')) {
                                     <mat-error>
@@ -1984,7 +1984,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.BUFFER_PLATE}}</mat-label>
-                                    <input matInput formControlName="buffer_plate" type="number" min="0">
+                                    <input matInput formControlName="buffer_plate" type="number" (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
                                     @if (getManlidFormGroup().get('buffer_plate')?.hasError('required')) {
                                     <mat-error>
@@ -1998,7 +1998,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.RESIDUE}}</mat-label>
-                                    <input matInput formControlName="residue" type="number" min="0">
+                                    <input matInput formControlName="residue" type="number"(wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>KG</h6>
                                     @if (getManlidFormGroup().get('residue')?.hasError('required')) {
                                     <mat-error>

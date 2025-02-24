@@ -41,8 +41,10 @@ $linear-colors: (
 );
 
 //Fonts Family
-$navbar-font-family: "Roboto", sans-serif;
-$sidebar-font-family: "Roboto", sans-serif;
+// $navbar-font-family: "Roboto", sans-serif;
+// $sidebar-font-family: "Roboto", sans-serif;
+$navbar-font-family: "Calibri", "Arial", sans-serif;
+$sidebar-font-family: "Calibri", "Arial", sans-serif;
 
 @function color($name) {
   @return map-get($colors, $name);

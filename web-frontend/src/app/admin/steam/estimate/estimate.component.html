@@ -128,11 +128,11 @@
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                       <mat-select multiple formControlName="est_status_cv">
                         @for (codeValue of processStatusCvList; track codeValue) {
-                          @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
-                            <mat-option [value]="codeValue.code_val">
-                              {{codeValue.description}}
-                            </mat-option>
-                            }
+                        @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
                         }
                       </mat-select>
                     </mat-form-field>
@@ -161,10 +161,12 @@
                     <strong>{{translatedLangText.ESTIMATE_NO}}</strong>: {{copiedSteamEst.estimate_no}}
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
-                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>: {{filterDeleted(copiedSteamEst.steaming_part)?.length}}
+                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>:
+                    {{filterDeleted(copiedSteamEst.steaming_part)?.length}}
                   </div>
                   <div class="col-xl col-lg col-md-12 col-sm-12 m-b-0 d-flex justify-content-end">
-                    <mat-icon (click)="clearCopiedRepairEst()" [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>
+                    <mat-icon (click)="clearCopiedRepairEst()"
+                      [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>
                   </div>
                 </div>
               </mat-card-content>
@@ -180,13 +182,15 @@
                 </mat-card-title>
                 <mat-card-actions class="pt-0 pb-0">
                   @if (copiedSteamEst) {
-                  <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK" (click)="pasteSteamEstimate($event,row,copiedSteamEst)" >
+                  <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
+                    (click)="pasteSteamEstimate($event,row,copiedSteamEst)">
                     <!-- [routerLink]="['/admin/repair/estimate/duplicate', row.guid, copiedResidueEst!.guid]"> -->
                     <mat-icon class="col-white">content_paste</mat-icon>
                   </button>
                   }
                   @else {
-                  <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW" (click)="addResidueEstimate($event,row)">
+                  <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW"
+                    (click)="addResidueEstimate($event,row)">
                     <!-- [routerLink]="['/admin/repair/estimate/new', row.guid]"> -->
                     <mat-icon class="col-white">add</mat-icon>
                   </button>
@@ -221,17 +225,6 @@
                 <div class="responsive_table">
                   <table mat-table [dataSource]="filterDeleted(row.steaming || [])" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                    <ng-container matColumnDef="select">
-                      <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                           [ngClass]="'tbl-checkbox'">
-                        </mat-checkbox>
-                      </mat-cell>
-                    </ng-container>
                     <ng-container matColumnDef="id">
                       <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                       <mat-cell *matCellDef="let steamRow">{{steamRow.guid}}</mat-cell>
@@ -241,8 +234,7 @@
                         {{translatedLangText.ESTIMATE_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let steamRow" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{steamRow.estimate_no}}
+                        <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{steamRow.estimate_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="net_cost">
@@ -259,7 +251,8 @@
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let steamRow" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(steamRow.status_cv)}}
+                        <span
+                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(steamRow.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="remarks">
@@ -310,7 +303,7 @@
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let residueRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                       matRipple (click)="updateSteamEstimate($event,row,residueRow)">
+                      matRipple (click)="updateSteamEstimate($event,row,residueRow)">
                     </mat-row>
                   </table>
                 </div>

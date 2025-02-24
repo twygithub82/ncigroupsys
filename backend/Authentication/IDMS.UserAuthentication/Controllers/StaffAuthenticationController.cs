@@ -18,6 +18,7 @@ using System;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography.Xml;
 
@@ -50,6 +51,8 @@ namespace IDMS.User.Authentication.API.Controllers
             _dbContext = context;
             _jwtTokenService = new JwtTokenService(_configuration, _dbContext);
             _refreshTokenStore= refreshTokenStore;
+
+            //InitDB();
         }
 
         [HttpGet("Hello")]
@@ -599,5 +602,6 @@ namespace IDMS.User.Authentication.API.Controllers
                 refreshToken = newRefreshToken
             });
         }
+       
     }
 }

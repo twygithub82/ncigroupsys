@@ -2,7 +2,7 @@
   <div class="modalHeader">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-         <h3>{{GetTitle()}}</h3> 
+        <h3>{{GetTitle()}}</h3>
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -14,82 +14,71 @@
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.MIN_TEMP }}</mat-label>
-                    <input matInput formControlName="min_temp" type="number" step="1" inputmode="numeric" required  >
-                  </mat-form-field> 
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-                  <mat-form-field class="example-full-width">
-                     <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
-                     <input matInput formControlName="max_temp" type="number" step="1" inputmode="numeric"  >
-                   </mat-form-field> 
-                </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.MIN_TEMP }}</mat-label>
+                <input matInput formControlName="min_temp" type="number" step="1" inputmode="numeric" required>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
+                <input matInput formControlName="max_temp" type="number" step="1" inputmode="numeric">
+              </mat-form-field>
+            </div>
           </div>
           @if (pcForm.hasError('tempRangeInvalid')) {
-            <mat-error>
-               {{translatedLangText.TEMP_RANGE_ERROR}}
-            </mat-error>
-            }
-            @if (pcForm.hasError('overlaps')) {
-              <mat-error>
-                 {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
-              </mat-error>
-              }
+          <mat-error>
+            {{translatedLangText.TEMP_RANGE_ERROR}}
+          </mat-error>
+          }
+          @if (pcForm.hasError('overlaps')) {
+          <mat-error>
+            {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
+          </mat-error>
+          }
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.COST }}</mat-label>
-                    <input matInput formControlName="cost" type="number" required >
-                    @if (pcForm.get('cost')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.COST }} {{langText.CARGO_REQUIRED | translate}}
-                      </mat-error>
-                      }
-                  </mat-form-field> 
-                </div>
-                <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                     <mat-label>{{translatedLangText.QTY }}</mat-label>
-                     <input matInput formControlName="qty" type="number" required >
-                     @if (pcForm.get('qty')?.hasError('required')) {
-                       <mat-error>
-                         {{langText.COST }} {{langText.CARGO_REQUIRED | translate}}
-                       </mat-error>
-                       }
-                   </mat-form-field> 
-                 </div> -->
-                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                     <mat-label>{{translatedLangText.LABOUR }}</mat-label>
-                     <input matInput formControlName="labour" type="number" required >
-                     @if (pcForm.get('labour')?.hasError('required')) {
-                       <mat-error>
-                         {{translatedLangText.LABOUR }} {{translatedLangText.CARGO_REQUIRED | translate}}
-                       </mat-error>
-                       }
-                   </mat-form-field> 
-                 </div>
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.COST }}</mat-label>
+                <input matInput formControlName="cost" type="number" required>
+                @if (pcForm.get('cost')?.hasError('required')) {
+                <mat-error>
+                  {{translatedLangText.COST }} {{langText.CARGO_REQUIRED | translate}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.LABOUR }}</mat-label>
+                <input matInput formControlName="labour" type="number" required>
+                @if (pcForm.get('labour')?.hasError('required')) {
+                <mat-error>
+                  {{translatedLangText.LABOUR }} {{translatedLangText.CARGO_REQUIRED | translate}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
           </div>
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                    <input matInput formControlName="remarks" type="text"  >
-                  </mat-form-field> 
-                </div>
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                <input matInput formControlName="remarks" type="text">
+              </mat-form-field>
+            </div>
           </div>
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-          <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+        <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
         }
         @else {
-          <button mat-flat-button color="primary" (click)="update()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+        <button mat-flat-button color="primary" (click)="update()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
         }
-        
+
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
       </div>
     </form>

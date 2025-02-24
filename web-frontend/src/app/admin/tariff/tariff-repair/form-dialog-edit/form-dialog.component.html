@@ -176,7 +176,8 @@
               </div>
               <div class="body overflow-auto">
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
+                  <table mat-table [dataSource]="selectedItems" matSort
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="fName">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.PART_NAME
                         }}</mat-header-cell>
@@ -221,7 +222,6 @@
           </div>
         </div>
       </div>
-
       <div class="row">
         <div mat-dialog-actions class="mb-1 align-right">
           @if (canEdit()) {

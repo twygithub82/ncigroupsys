@@ -1,34 +1,29 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose, MatDialog } from '@angular/material/dialog';
-import { Component, Inject, OnInit } from '@angular/core';
-import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, DatePipe } from '@angular/common';
+import { Component, Inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatInputModule } from '@angular/material/input';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Utility } from 'app/utilities/utility';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { DatePipe } from '@angular/common';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Apollo } from 'apollo-angular';
-import { CommonModule } from '@angular/common';
-import { startWith, debounceTime, tap } from 'rxjs';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning';
+import { TariffRepairDS } from 'app/data-sources/tariff-repair';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
-import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
-import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
-import { Direction } from '@angular/cdk/bidi';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ContactPersonItem } from 'app/data-sources/contact-person';
+import { PackageRepairDS } from 'app/data-sources/package-repair';
+import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 
 
 export interface DialogData {
@@ -58,14 +53,11 @@ export interface DialogData {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -74,10 +66,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dialogTitle: string;
   customer_company_guid: string;
 
-  contactPerson : ContactPersonItem;
+  contactPerson: ContactPersonItem;
   contactPersonForm?: UntypedFormGroup;
   repairPart: any;
-  
+
   partNameList?: string[];
   partNameFilteredList?: string[];
   dimensionList?: string[];
@@ -90,7 +82,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   trDS: TariffRepairDS;
   repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
-  phone_regex:any =/^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
+  phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   title_control = new UntypedFormControl();
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -115,34 +107,34 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.CONTACT_PERSON}`;
     }
-    this.contactPerson= data.item ? data.item : new ContactPersonItem();
-    
+    this.contactPerson = data.item ? data.item : new ContactPersonItem();
+
     this.index = data.index;
-   // this.title_control.setValue(this.contactPerson.title_cv);
-  
+    // this.title_control.setValue(this.contactPerson.title_cv);
+
     this.initializeValueChange();
-   // this.patchForm();
+    // this.patchForm();
   }
   ngOnInit() {
     // this.initializeFilterCustomerCompany();
     this.contactPersonForm = this.createForm();
-     
-   }
+
+  }
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      guid: [this.contactPerson.guid||''],
+      guid: [this.contactPerson.guid || ''],
       title_cv: [this.contactPerson.title_cv, [Validators.required]],
       customer_company: [this.contactPerson.customer_company],
-      name:  [this.contactPerson.name, [Validators.required]],
+      name: [this.contactPerson.name, [Validators.required]],
       email: [this.contactPerson.email, [Validators.required, Validators.email]],
       department: [this.contactPerson.department],
       job_title: [this.contactPerson.job_title],
       customer_guid: [this.contactPerson.customer_guid],
-      did : [ this.contactPerson.did,
-        [Validators.required] 
+      did: [this.contactPerson.did,
+      [Validators.required]
       ],
-      phone: [this.contactPerson.phone,[
+      phone: [this.contactPerson.phone, [
         Validators.required,
         Validators.pattern(this.phone_regex)] // Adjust regex for your format
       ]
@@ -161,8 +153,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       name: this.contactPerson.name,
       email: this.contactPerson.email,
       department: this.contactPerson.department,
-      did :this.contactPerson.did,
-      phone:this.contactPerson.phone,
+      did: this.contactPerson.did,
+      phone: this.contactPerson.phone,
       job_title: this.contactPerson.job_title,
       customer_guid: this.contactPerson.customer_guid
     });
@@ -170,7 +162,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   submit() {
     if (this.contactPersonForm?.valid) {
-    //  let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
+      //  let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
       // if (this.action === 'new') {
       //   if (!actions.includes('new')) {
       //     actions = [...new Set([...actions, 'new'])];
@@ -189,9 +181,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         phone: this.contactPersonForm?.get("phone")!.value,
         job_title: this.contactPersonForm?.get("job_title")!.value,
         did: this.contactPersonForm?.get("did")!.value,
-  //     actions
+        //     actions
       }
-  
+
       console.log(rep)
       const returnDialog: DialogData = {
         item: rep,
@@ -219,10 +211,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   initializeValueChange() {
-    
+
   }
 
-  
+
 
   findInvalidControls() {
     const controls = this.contactPersonForm?.controls;
@@ -250,7 +242,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   validateLength(): boolean {
-     let isValid = true;
+    let isValid = true;
     // const length = this.repairPartForm.get('length')?.value;
     // const remarks = this.repairPartForm.get('remarks')?.value;
 
@@ -260,7 +252,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     //   this.repairPartForm.get('remarks')?.setErrors({ required: true });
     // }
 
-     return isValid;
+    return isValid;
   }
 
   canEdit(): boolean {
@@ -282,13 +274,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
   }
 
-  getTitleCvObject(codeValType:string):CodeValuesItem |undefined{
-    return this.cvDS.getCodeObject(codeValType,this.data.populateData.satulationCvList);
+  getTitleCvObject(codeValType: string): CodeValuesItem | undefined {
+    return this.cvDS.getCodeObject(codeValType, this.data.populateData.satulationCvList);
   }
 
-  
+
 
   searchPart() {
-   
+
   }
 }

@@ -44,10 +44,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 @Component({
   selector: 'app-tariff-cleaning',
   standalone: true,
-   templateUrl: './tariff-cleaning.component.html',
+  templateUrl: './tariff-cleaning.component.html',
   styleUrl: './tariff-cleaning.component.scss',
   imports: [
-    BreadcrumbComponent,
     MatTooltipModule,
     MatButtonModule,
     MatIconModule,
@@ -55,12 +54,10 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
     RouterLink,
     TranslateModule,
     MatExpansionModule,
@@ -74,14 +71,11 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatAutocompleteModule,
     MatDividerModule,
   ]
- 
 })
-
-
 
 export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-   //'select',
+    //'select',
     'cargo',
     'desc',
     'class',
@@ -90,8 +84,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     'flash_point',
     'category',
     //'duplicate',
-   // 'cost',
-   // 'actions'
+    // 'cost',
+    // 'actions'
   ];
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING'
@@ -124,16 +118,16 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_NAME:'COMMON-FORM.CARGO-NAME',
-    CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
-    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST :'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
@@ -143,11 +137,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   //soDS: StoringOrderDS;
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
-  cCategoryDS:CleaningCategoryDS;
-  cMethodDS:CleaningMethodDS;
+  cCategoryDS: CleaningCategoryDS;
+  cMethodDS: CleaningMethodDS;
 
-  
-  
   previous_endCursor: string | undefined = undefined;
   soList: StoringOrderItem[] = [];
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -156,19 +148,18 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  cCategoryList : CleaningCategoryItem[]=[];
-  cMethodList : CleaningMethodItem[]=[];
-  tcList :TariffCleaningItem[]=[];
-  classNoCvList :CodeValuesItem[] = [];
-  banTypeCvList :CodeValuesItem[] = [];
-  hazardLevelCvList :CodeValuesItem[] = [];
+  cCategoryList: CleaningCategoryItem[] = [];
+  cMethodList: CleaningMethodItem[] = [];
+  tcList: TariffCleaningItem[] = [];
+  classNoCvList: CodeValuesItem[] = [];
+  banTypeCvList: CodeValuesItem[] = [];
+  hazardLevelCvList: CodeValuesItem[] = [];
 
-
-  classNoControl = new UntypedFormControl();
-  methodControl = new UntypedFormControl();
+  // classNoControl = new UntypedFormControl();
+  // methodControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
-  banTypeControl= new UntypedFormControl();
-  hazardLevelControl= new UntypedFormControl();
+  banTypeControl = new UntypedFormControl();
+  hazardLevelControl = new UntypedFormControl();
 
   pageIndex = 0;
   pageSize = 10;
@@ -188,12 +179,12 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     private apollo: Apollo,
     private translate: TranslateService,
     private searchCriteriaService: SearchCriteriaService
-    
+
   ) {
     super();
     this.translateLangText();
     this.initSearchForm();
-   // this.soDS = new StoringOrderDS(this.apollo);
+    // this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
@@ -208,25 +199,23 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-   // this.initializeFilterCustomerCompany();
+    // this.initializeFilterCustomerCompany();
     this.loadData();
-    
+
     var state = history.state;
-    if(state.type=="tariff-cleaning")
-    {
+    if (state.type == "tariff-cleaning") {
       let showResult = state.pagination.showResult;
-      if(showResult)
-      {
-      this.searchCriteriaService=state.pagination.where;
-      this.pageIndex=state.pagination.pageIndex;
-      this.pageSize= state.pagination.pageSize;
-      this.hasPreviousPage=state.pagination.hasPreviousPage;
-      this.startCursor=state.pagination.startCursor;
-      this.endCursor=state.pagination.endCursor;
-      this.previous_endCursor=state.pagination.previous_endCursor;
-      this.paginator.pageSize=this.pageSize;
-      this.paginator.pageIndex=this.pageIndex;
-      this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+      if (showResult) {
+        this.searchCriteriaService = state.pagination.where;
+        this.pageIndex = state.pagination.pageIndex;
+        this.pageSize = state.pagination.pageSize;
+        this.hasPreviousPage = state.pagination.hasPreviousPage;
+        this.startCursor = state.pagination.startCursor;
+        this.endCursor = state.pagination.endCursor;
+        this.previous_endCursor = state.pagination.previous_endCursor;
+        this.paginator.pageSize = this.pageSize;
+        this.paginator.pageIndex = this.pageIndex;
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
 
     }
@@ -236,19 +225,19 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.initSearchForm();
   }
 
- 
-  
+
+
   initSearchForm() {
     this.searchForm = this.fb.group({
       cargo_name: [''],
-      class_no: this.classNoControl,
-      method: this.methodControl,
-      category:this.categoryControl,
-      hazard_level:this.hazardLevelControl,
-      ban_type:this.banTypeControl,
-      flash_point:[''],
+      class_no: [''],
+      method: [''],
+      category: this.categoryControl,
+      hazard_level: this.hazardLevelControl,
+      ban_type: this.banTypeControl,
+      flash_point: [''],
       un_no: [''],
-      
+
     });
   }
   cancelItem(row: StoringOrderItem) {
@@ -260,10 +249,10 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-   // const numSelected = this.soSelection.selected.length;
-   // const numRows = this.soDS.totalCount;
-   // return numSelected === numRows;
-   return false;
+    // const numSelected = this.soSelection.selected.length;
+    // const numRows = this.soDS.totalCount;
+    // return numSelected === numRows;
+    return false;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
@@ -282,50 +271,45 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
-    
+
   }
   public loadData() {
-    
+
     let lastSrchCriteria = this.searchCriteriaService.getCriteria();
 
-    this.lastSearchCriteria=this.tcDS.addDeleteDtCriteria({});
-   
-     if(lastSrchCriteria.pageIndex) 
-      {
-        this.pageIndex=lastSrchCriteria.pageIndex;
-        this.endCursor=lastSrchCriteria.after;
-        this.startCursor=lastSrchCriteria.before;
-        this.hasNextPage=lastSrchCriteria.hasNextPage;
-        this.hasPreviousPage= lastSrchCriteria.hasPreviousPage;
-        //this.paginator.pageIndex= lastSrchCriteria.pageIndex;
-      }
-      else
-      {
-        lastSrchCriteria.pageIndex=0;
-        lastSrchCriteria.length=0;
-        this.endCursor=undefined;
-        this.startCursor=undefined;
-        this.hasNextPage=false;
-        this.hasPreviousPage= false;
-      }
+    this.lastSearchCriteria = this.tcDS.addDeleteDtCriteria({});
 
-      this.onPageEvent({pageIndex:lastSrchCriteria.pageIndex,pageSize:this.pageSize,length:lastSrchCriteria.length})
+    if (lastSrchCriteria.pageIndex) {
+      this.pageIndex = lastSrchCriteria.pageIndex;
+      this.endCursor = lastSrchCriteria.after;
+      this.startCursor = lastSrchCriteria.before;
+      this.hasNextPage = lastSrchCriteria.hasNextPage;
+      this.hasPreviousPage = lastSrchCriteria.hasPreviousPage;
+      //this.paginator.pageIndex= lastSrchCriteria.pageIndex;
+    }
+    else {
+      lastSrchCriteria.pageIndex = 0;
+      lastSrchCriteria.length = 0;
+      this.endCursor = undefined;
+      this.startCursor = undefined;
+      this.hasNextPage = false;
+      this.hasPreviousPage = false;
+    }
+
+    this.onPageEvent({ pageIndex: lastSrchCriteria.pageIndex, pageSize: this.pageSize, length: lastSrchCriteria.length })
 
 
-    this.cCategoryDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-      if(this.cCategoryDS.totalCount>0)
-      {
-        this.cCategoryList=data;
+    this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+      if (this.cCategoryDS.totalCount > 0) {
+        this.cCategoryList = data;
       }
 
     });
 
-    this.cMethodDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-      if(this.cMethodDS.totalCount>0)
-      {
-        this.cMethodList=data;
+    this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+      if (this.cMethodDS.totalCount > 0) {
+        this.cMethodList = data;
       }
-
     });
 
     const queries = [
@@ -336,7 +320,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('ctHazardLevelCv').subscribe(data => {
       this.hazardLevelCvList = data;
-     // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('classNoCv').subscribe(data => {
       this.classNoCvList = data;
@@ -346,7 +330,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-  
+
   showNotification(
     colorName: string,
     text: string,
@@ -363,7 +347,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   // export table data in excel file
   exportExcel() {
-   
+
   }
 
   // context menu
@@ -397,26 +381,25 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
 
-  searchTC(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
-    previousPageIndex?:number)
-  {
-    
-    this.tcDS.SearchTariffCleaning(where,order, first, after, last, before).subscribe(data => {
+  searchTC(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number) {
+
+    this.tcDS.SearchTariffCleaning(where, order, first, after, last, before).subscribe(data => {
       this.tcList = data;
-      let after=this.endCursor;
+      let after = this.endCursor;
       let before = this.startCursor;
-      this.storeSearchCriteria(where,order,first,after ,last,before,pageIndex,previousPageIndex,
-        this.tcDS.totalCount,this.hasNextPage,this.hasPreviousPage);
+      this.storeSearchCriteria(where, order, first, after, last, before, pageIndex, previousPageIndex,
+        this.tcDS.totalCount, this.hasNextPage, this.hasPreviousPage);
       this.endCursor = this.tcDS.pageInfo?.endCursor;
       this.startCursor = this.tcDS.pageInfo?.startCursor;
       this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
       this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
-      this.paginator.pageIndex=this.pageIndex;
-      
-      
+      this.paginator.pageIndex = this.pageIndex;
+
+
     });
   }
-  
+
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize, previousPageIndex } = event;
@@ -454,11 +437,10 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     //}
   }
 
- 
 
-  storeSearchCriteria(where :any, order:any, first:any, after:any, last:any,before:any, pageIndex:number,
-    previousPageIndex?:number,length?:number,hasNextPage?:boolean, hasPreviousPage?:boolean)
-  {
+
+  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
     const sCriteria: any = {};
     sCriteria.where = where;
     sCriteria.order = order;
@@ -466,12 +448,12 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     sCriteria.after = after;
     sCriteria.last = last;
     sCriteria.before = before;
-    sCriteria.pageIndex= pageIndex;
-    sCriteria.previousPageIndex=previousPageIndex;
+    sCriteria.pageIndex = pageIndex;
+    sCriteria.previousPageIndex = previousPageIndex;
     sCriteria.length = length;
-    sCriteria.hasNextPage=hasNextPage;
-    sCriteria.hasPreviousPage=hasPreviousPage;
-    
+    sCriteria.hasNextPage = hasNextPage;
+    sCriteria.hasPreviousPage = hasPreviousPage;
+
     this.searchCriteriaService.setCriteria(sCriteria);
   }
 
@@ -482,47 +464,48 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       where.cargo = { contains: this.searchForm!.value['cargo_name'] };
     }
 
+    debugger
     if (this.searchForm!.value['class_no']) {
-      const classNo:CodeValuesItem = this.searchForm!.value['class_no'];
+      const classNo: CodeValuesItem = this.searchForm!.value['class_no'];
       where.class_cv = { contains: classNo.code_val };
     }
 
     if (this.searchForm!.value['hazard_level']) {
-      const hazardLevel:CodeValuesItem = this.searchForm!.value['hazard_level'];
+      const hazardLevel: CodeValuesItem = this.searchForm!.value['hazard_level'];
       where.hazard_level = { contains: hazardLevel.code_val };
     }
 
     if (this.searchForm!.value['ban_type']) {
-      const banType:CodeValuesItem = this.searchForm!.value['ban_type'];
+      const banType: CodeValuesItem = this.searchForm!.value['ban_type'];
       where.ban_type = { contains: banType.code_val };
     }
 
     if (this.searchForm!.value['method']) {
-       const cMethod :CleaningMethodItem =this.searchForm!.value['method'];
+      const cMethod: CleaningMethodItem = this.searchForm!.value['method'];
       where.cleaning_method_guid = { contains: cMethod.guid };
     }
 
     if (this.searchForm!.value['category']) {
-      const cCat :CleaningCategoryItem =this.searchForm!.value['category'];
-     where.cleaning_category_guid = { contains: cCat.guid };
-   }
+      const cCat: CleaningCategoryItem = this.searchForm!.value['category'];
+      where.cleaning_category_guid = { contains: cCat.guid };
+    }
 
-   if (this.searchForm!.value['flash_point']) {
-    const flashPoint :number =Number(this.searchForm!.value['flash_point']);
+    if (this.searchForm!.value['flash_point']) {
+      const flashPoint: number = Number(this.searchForm!.value['flash_point']);
       where.flash_point = { eq: flashPoint };
     }
 
     if (this.searchForm!.value['un_no']) {
-        where.un_no = { contains: this.searchForm!.value['un_no'] };
+      where.un_no = { contains: this.searchForm!.value['un_no'] };
     }
-    
+
     // // TODO :: search criteria
     this.subs.sink = this.tcDS.SearchTariffCleaning(where).subscribe(data => {
       this.tcList = data;
     });
   }
 
- 
+
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
     //return this.ccDS.displayName(cc);
@@ -534,12 +517,12 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   displayMethodFn(cMethod: CleaningMethodItem): string {
-    return  cMethod && cMethod.name ? `${cMethod.name}` : '';
+    return cMethod && cMethod.name ? `${cMethod.name}` : '';
     //return this.ccDS.displayName(cc);
   }
 
   displayCodeValueFn(cValue: CodeValuesItem): string {
-    return  cValue && cValue.code_val ? `${cValue.code_val}` : '';
+    return cValue && cValue.code_val ? `${cValue.code_val}` : '';
     //return this.ccDS.displayName(cc);
   }
 
@@ -582,7 +565,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.translatedLangText = translations;
     });
   }
-  
+
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
@@ -612,67 +595,68 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   resetForm() {
     this.initSearchForm();
-    // this.searchForm?.patchValue({
-    //   class_no: [''],
-    //   method: [''],
-    //   category:[''],
-    //   hazard_level:[''],
-    //   ban_type:[''],
-    // });
-    this.classNoControl.reset();
-    this.methodControl.reset();
+    this.searchForm?.patchValue({
+      class_no: [''],
+      method: [''],
+      category:[''],
+      hazard_level:[''],
+      ban_type:[''],
+    });
+    // this.classNoControl.reset();
+    // this.methodControl.reset();
     this.categoryControl.reset();
     this.hazardLevelControl.reset();
     this.banTypeControl.reset();
-    
+
     //this.customerCodeControl.reset('');
-   
+
   }
 
   editCall(row: TariffCleaningItem) {
 
-    
+
     // Navigate to the route and pass the JSON object
-       this.router.navigate(['/admin/tariff/tariff-cleaning/edit/'+row.guid], {
-         state: { id: row.guid ,
-           type:'tariff-cleaning',
-           selectedRow:row,
-           pagination:{
-             where :this.lastSearchCriteria,
-             pageSize:this.pageSize,
-             pageIndex:this.pageIndex,
-             hasPreviousPage:this.hasPreviousPage,
-             startCursor:this.startCursor,
-             endCursor:this.endCursor,
-             previous_endCursor:this.previous_endCursor,
-             
-             showResult: this.tcDS.totalCount>0
-             
-           }
-         }
-       });
-  
-   
+    this.router.navigate(['/admin/tariff/tariff-cleaning/edit/' + row.guid], {
+      state: {
+        id: row.guid,
+        type: 'tariff-cleaning',
+        selectedRow: row,
+        pagination: {
+          where: this.lastSearchCriteria,
+          pageSize: this.pageSize,
+          pageIndex: this.pageIndex,
+          hasPreviousPage: this.hasPreviousPage,
+          startCursor: this.startCursor,
+          endCursor: this.endCursor,
+          previous_endCursor: this.previous_endCursor,
+
+          showResult: this.tcDS.totalCount > 0
+
+        }
+      }
+    });
+
+
   }
 
-  addCallSelection(event: Event)
-  {
+  addCallSelection(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
- // Navigate to the route and pass the JSON object
+    // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/tariff/tariff-cleaning/new/ '], {
-      state: { id: '' ,
-        type:'tariff-cleaning',
-        pagination:{
-          where :this.lastSearchCriteria,
-          pageSize:this.pageSize,
-          pageIndex:this.pageIndex,
-          hasPreviousPage:this.hasPreviousPage,
-          startCursor:this.startCursor,
-          endCursor:this.endCursor,
-          previous_endCursor:this.previous_endCursor,
-          
-          showResult: this.tcDS.totalCount>0
-          
+      state: {
+        id: '',
+        type: 'tariff-cleaning',
+        pagination: {
+          where: this.lastSearchCriteria,
+          pageSize: this.pageSize,
+          pageIndex: this.pageIndex,
+          hasPreviousPage: this.hasPreviousPage,
+          startCursor: this.startCursor,
+          endCursor: this.endCursor,
+          previous_endCursor: this.previous_endCursor,
+
+          showResult: this.tcDS.totalCount > 0
+
         }
       }
     });

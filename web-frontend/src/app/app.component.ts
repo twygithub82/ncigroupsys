@@ -69,11 +69,16 @@ export class AppComponent implements OnInit, OnDestroy {
         const now = Date.now();
         const timeLeft = tokenExpiration ? tokenExpiration - now : 0; // Remaining token time in ms
   
-        if (timeLeft > 300000 || this.isRefreshing) {
-          return; // Exit if more than 10 minutes remain or refresh is in progress
+        if (timeLeft > 300000) {
+          console.log('User is active - but still > 300000...');
+          return;
+        }
+        if (this.isRefreshing) {
+          console.log('User is active - but refreshing...');
+          return;
         }
   
-        console.log('User is active - refreshing token...');
+        console.log('User is active - start refresh token...');
         this.isRefreshing = true; // Set flag to avoid duplicate requests
   
         this.authService.refreshToken().subscribe({
