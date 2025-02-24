@@ -1080,6 +1080,18 @@ export const ROUTES: RouteInfo[] = [
         visible: true
       },
       {
+        path: "admin/reports/transfer",
+        title: "MENUITEMS.REPORTS.LIST.LOCATION-TRANSFER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: true
+      },
+      {
         path: "admin/steam/job-order",
         title: "MENUITEMS.STEAM.LIST.JOB-ORDER",
         iconType: "",

@@ -3,6 +3,8 @@ import { MainTankActivityComponent } from "./tank-activity/main-tank-activity.co
 import { MainStatusComponent } from "./status/main-status.component";
 import { MainInventoryComponent } from "./inventory/main-inventory.component";
 import { MainPendingComponent } from "./pending/main-pending.component";
+import {MainTransferComponent} from "./transfer/main-transfer.component";
+
 
 export const REPORTS_ROUTE: Routes = [{
     path: "tank-activity",
@@ -19,5 +21,10 @@ export const REPORTS_ROUTE: Routes = [{
   {
     path: "pending",
     component: MainPendingComponent,
+  },
+  {
+    path:"transfer",
+    component:MainTransferComponent,
   }
+ 
 ];

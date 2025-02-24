@@ -2688,7 +2688,7 @@ const GET_STORING_ORDER_TANKS_FOR_TRANSFER_DETAILS = gql`
     }
   }
 `;
-const GET_STORING_ORDER_TANKS_ACTIVITY = gql`
+const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -2806,7 +2806,7 @@ const GET_STORING_ORDER_TANKS_ACTIVITY = gql`
   }
 `;
 
-const GET_STORING_ORDER_INVENTORY = gql`
+const GET_STORING_ORDER_FOR_INVENTORY = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -2933,6 +2933,176 @@ const GET_STORING_ORDER_INVENTORY = gql`
     }
   }
 `;
+
+const GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING = gql`
+  query queryStoringOrderTank($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        guid
+        tank_no
+        so_guid
+        tank_status_cv
+        create_dt
+        create_by
+        purpose_cleaning
+        purpose_repair_cv
+        clean_status_cv
+        unit_type_guid
+        cleaning {
+          allocate_by
+          allocate_dt
+          approve_by
+          approve_dt
+          bill_to_guid
+          buffer_cost
+          cleaning_cost
+          complete_by
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+        }
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+          nature_cv
+          in_gate_alert
+        }
+        customer_company {
+          code
+          guid
+          name
+        }
+        storing_order {
+          customer_company_guid
+          delete_dt
+          guid
+          haulier
+          remarks
+          so_no
+          so_notes
+          status_cv
+          update_by
+          update_dt
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          guid
+          eir_no
+          eir_dt
+          create_dt
+          delete_dt
+          in_gate_survey {
+            tank_comp_guid
+          }
+        }
+        repair(where: { delete_dt: { eq: null }, status_cv: { nin: ["JOB_COMPLETED"] } }) {
+          allocate_by
+          allocate_dt
+          approve_by
+          approve_dt
+          aspnetusers_guid
+          bill_to_guid
+          complete_dt
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+const GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER = gql`
+  query queryStoringOrderTank($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        guid
+        tank_no
+        so_guid
+        tank_status_cv
+        create_dt
+        create_by
+        purpose_cleaning
+        purpose_repair_cv
+        clean_status_cv
+        unit_type_guid
+        transfer(where: { delete_dt: { eq: null } }) {
+          delete_dt
+          driver_name
+          guid
+          haulier
+          location_from_cv
+          location_to_cv
+          remarks
+          sot_guid
+          transfer_in_dt
+          transfer_out_dt
+          update_by
+          update_dt
+          vehicle_no
+        }
+        customer_company {
+          code
+          guid
+          name
+        }
+        storing_order {
+          customer_company_guid
+          delete_dt
+          guid
+          haulier
+          remarks
+          so_no
+          so_notes
+          status_cv
+          update_by
+          update_dt
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
+          guid
+          delete_dt
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const CANCEL_STORING_ORDER_TANK = gql`
   mutation CancelStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
     cancelStoringOrderTank(sot: $sot)
@@ -3137,12 +3307,64 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     super();
   }
 
+  searchStoringOrderTanksYardTransferReport(where: any): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  searchStoringOrderTanksRepairOutstandingReport(where: any): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
   searchStoringOrderTanksInventoryReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_INVENTORY,
+        query: GET_STORING_ORDER_FOR_INVENTORY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -3169,7 +3391,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANKS_ACTIVITY,
+        query: GET_STORING_ORDER_TANKS_FOR_ACTIVITY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

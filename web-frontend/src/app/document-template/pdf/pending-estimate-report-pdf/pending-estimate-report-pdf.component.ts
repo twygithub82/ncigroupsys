@@ -12,6 +12,7 @@ import { customerInfo } from 'environments/environment.development';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+// import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -22,47 +23,69 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_customer_inventory, report_status } from 'app/data-sources/reports';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
-import { BaseChartDirective } from 'ng2-charts';
+import { report_status } from 'app/data-sources/reports';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import {
-  ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis,
-  ApexDataLabels,  ApexPlotOptions,  ApexYAxis,  ApexLegend,
-  ApexStroke,  ApexFill,  ApexTooltip,  ApexTitleSubtitle,
-  ApexGrid,  ApexMarkers,  ApexNonAxisChartSeries,  ApexResponsive,
-  NgApexchartsModule} from 'ng-apexcharts';
- 
-export type ChartOptions = {
-  series?: ApexAxisChartSeries;
-  series2?: ApexNonAxisChartSeries;
-  chart?: ApexChart;
-  dataLabels?: ApexDataLabels;
-  plotOptions?: ApexPlotOptions;
-  yaxis?: ApexYAxis;
-  xaxis?: ApexXAxis;
-  fill?: ApexFill;
-  tooltip?: ApexTooltip;
-  stroke?: ApexStroke;
-  legend?: ApexLegend;
-  title?: ApexTitleSubtitle;
-  colors?: string[];
-  grid?: ApexGrid;
-  markers?: ApexMarkers;
-  labels: string[];
-  responsive: ApexResponsive[];
-};
-  
+  ApexAxisChartSeries, ApexChart,
+  ApexDataLabels,
+  ApexFill,
+  ApexGrid,
+  ApexLegend,
+  ApexMarkers, ApexNonAxisChartSeries,
+  ApexPlotOptions,
+  ApexResponsive,
+  ApexStroke,
+  ApexTitleSubtitle,
+  ApexTooltip,
+  ApexXAxis,
+  ApexYAxis,
+  NgApexchartsModule
+} from 'ng-apexcharts';
+
+  export type HorizontalBarOptions={
+    showXAxis?:boolean;
+    showYAxis?:boolean;
+    gradient?:boolean ;
+    showLegend?:boolean ;
+    showXAxisLabel?:boolean;
+    showYAxisLabel?:boolean ;
+    legendPosition: LegendPosition ;
+    timeline?:boolean ;
+    colorScheme?: Color;
+    showLabels?:boolean ;
+    // data goes here
+    single?:any ;
+    hbarxAxisLabel?:string;
+  };
+
+  export type ChartOptions = {
+    series?: ApexAxisChartSeries;
+    series2?: ApexNonAxisChartSeries;
+    chart?: ApexChart;
+    dataLabels?: ApexDataLabels;
+    plotOptions?: ApexPlotOptions;
+    yaxis?: ApexYAxis;
+    xaxis?: ApexXAxis;
+    fill?: ApexFill;
+    tooltip?: ApexTooltip;
+    stroke?: ApexStroke;
+    legend?: ApexLegend;
+    title?: ApexTitleSubtitle;
+    colors?: string[];
+    grid?: ApexGrid;
+    markers?: ApexMarkers;
+    labels: string[];
+    responsive: ApexResponsive[];
+  };
 
 export interface DialogData {
-  report_inventory: report_customer_inventory[],
-  date:string
- 
+  sot: StoringOrderTankItem[]
 }
 
 @Component({
-  selector: 'app-daily-overview-summary-pdf',
-  templateUrl: './daily-overview-summary-pdf.component.html',
-  styleUrls: ['./daily-overview-summary-pdf.component.scss'],
+  selector: 'app-pending-estimate-report-pdf',
+  templateUrl: './pending-estimate-report-pdf.component.html',
+  styleUrls: ['./pending-estimate-report-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -72,13 +95,12 @@ export interface DialogData {
     MatProgressSpinnerModule,
     MatCardModule,
     MatProgressBarModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    BarChartModule,
   ],
 })
-export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
-  barChartOptions!: Partial<ChartOptions>;
-
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
     STATUS: 'COMMON-FORM.STATUS',
@@ -195,7 +217,6 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     EMAIL: 'COMMON-FORM.EMAIL',
     WEB: 'COMMON-FORM.WEB',
     IN_GATE: 'COMMON-FORM.IN-GATE',
-    OUT_GATE: 'COMMON-FORM.OUT-GATE',
     EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
     LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
@@ -259,48 +280,26 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
     TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
     SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    INVENTORY_DATE:'COMMON-FORM.INVENTORY-DATE',
+    INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
     TANK_STATUS:'COMMON-FORM.TANK-STATUS',
     YARD_STATUS:'COMMON-FORM.YARD-STATUS',
     TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER',
-    OVERVIEW_SUMMARY:'COMMON-FORM.OVERVIEW-SUMMARY',
-    DAILY_INVENTORY:'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY',
-    
-    
+    CLEAN_DATE:'COMMON-FORM.CLEAN-DATE',
+    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
+    REPAIR_IN_DATE:'COMMON-FORM.REPAIR-IN-DATE',
     
 
   }
 
- 
-  // bar chart start
-  // public barChartOptions: ChartConfiguration['options'] = {
-  //   responsive: true,
-  //   scales: {
-  //     x: {
-  //       ticks: {
-  //         color: '#9aa0ac', // Font Color
-  //       },
-  //     },
-  //     y: {
-  //       ticks: {
-  //         color: '#9aa0ac', // Font Color
-  //       },
-  //       min: 10,
-  //     },
-  //   },
-  //   plugins: {
-  //     legend: {
-  //       display: true,
-  //     },
-  //   },
-  // };
-  // public barChartType: ChartType = 'bar';
-  // public barChartPlugins = [];
-
-  // public barChartData: any ={};
+  public pieChartOptions!: Partial<ChartOptions>;
+  public columnChartOptions!: Partial<ChartOptions>;
+  public horizontalBarOptions!:Partial<HorizontalBarOptions>;
   
   type?: string | null;
-  
+  // steamDS: SteamDS;
+  // steamPartDS: SteamPartDS;
+  // sotDS: StoringOrderTankDS;
+  // ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   repair_guid?: string | null;
   customer_company_guid?: string | null;
@@ -341,14 +340,12 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_inventory:report_customer_inventory[]=[];
-  date:string='';
-  invType:string='';
-
+  sotList:StoringOrderTankItem[]=[];
+  
   
 
   constructor(
-    public dialogRef: MatDialogRef<DailyOverviewSummaryPdfComponent>,
+    public dialogRef: MatDialogRef<PendingEstimateReportPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -361,12 +358,11 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     this.translateLangText();
     this.InitialDefaultData();
     
+    // this.ccDS = new CustomerCompanyDS(this.apollo);
      this.cvDS = new CodeValuesDS(this.apollo);
-    this.report_inventory= data.report_inventory;
-    this.date = data.date;
     
-    this.processBarCharValue(this.report_inventory);
-    this.loadData();
+    
+    this.loadData(data.sot);
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -379,7 +375,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
    
   }
 
-  public loadData() {
+  public loadData(sot:StoringOrderTankItem[]) {
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'yardCv', codeValType: 'YARD' },
@@ -393,8 +389,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
       if(data.length)
         {
           this.purposeOptionCvList = data;
-          //this.processHorizontalBarValue(this.report_summary_status);
-          //this.processCustomerStatus(this.report_summary_status);
+          this.sotList=sot;
         }
     });
 
@@ -880,44 +875,86 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
    }
    GetReportTitle():string
    {
-     return `${this.translatedLangText.DAILY_INVENTORY} ${this.translatedLangText.SUMMARY_REPORT}`
+     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.SUMMARY_REPORT}`
    }
 
-   processBarCharValue(repInv:report_customer_inventory[])
+   processCustomerStatus(repStatus:report_status[])
    {
-    if (this.barChartOptions.xaxis)   
+    if (this.columnChartOptions.xaxis)   
       {
-    // const topTenReports = repStatus
-    // .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
-    // .slice(0, 10); // Get the top 10
+    const topTenReports = repStatus
+    .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
+    .slice(0, 10); // Get the top 10
 
     var categories:any =[
     ];
-    // repInv.map(p=>
+    topTenReports.map(p=>
         
-    //   categories.push(p.code)
-    // );
+      categories.push(p.code)
+    );
     
      var series:any=[];
-     var in_gate_tank_no:number[]=[];
-     var out_gate_tank_no:number[]=[];
-     repInv.map(c=>{
-      categories.push(c.code)
-      in_gate_tank_no.push(c.tank_no_in_gate||0);
-      out_gate_tank_no.push(c.tank_no_out_gate||0);
+
+     this.purposeOptionCvList.map(c=>{
+
+      var values:number[]=[];
+      switch(c.code_val)
+        {
+          case "STEAM":
+               topTenReports.forEach(t=>{
+                var value:number =0;
+                 t.yards?.forEach(y=>{
+                    value+=Number(y.noTank_steam||0);
+                 });
+                 values.push(value);
+               });
+               series.push({name:c.description,data:values});
+            break;
+          case "CLEANING":
+            topTenReports.forEach(t=>{
+              var value:number =0;
+               t.yards?.forEach(y=>{
+                  value+=Number(y.noTank_clean||0);
+               });
+               values.push(value);
+             });
+             series.push({name:c.description,data:values});
+            break;
+          case "REPAIR":
+            topTenReports.forEach(t=>{
+              var value:number =0;
+               t.yards?.forEach(y=>{
+                  value+=Number(y.noTank_repair||0);
+               });
+               values.push(value);
+             });
+             series.push({name:c.description,data:values});
+            break;
+          case "STORAGE":
+            topTenReports.forEach(t=>{
+              var value:number =0;
+               t.yards?.forEach(y=>{
+                  value+=Number(y.noTank_storage||0);
+               });
+               values.push(value);
+             });
+             series.push({name:c.description,data:values});
+            break;
+          case "IN_SURVEY":
+            topTenReports.forEach(t=>{
+              var value:number =0;
+               t.yards?.forEach(y=>{
+                  value+=Number(y.noTank_in_survey||0);
+               });
+               values.push(value);
+             });
+             series.push({name:c.description,data:values});
+            break;
+        }
      });
-     var series:any=[
-      {
-        name:this.translatedLangText.IN_GATE,
-        data:in_gate_tank_no
-      },
-      {
-        name:this.translatedLangText.OUT_GATE,
-        data:out_gate_tank_no
-      }
-     ];
     
-        this.barChartOptions.xaxis =  {
+    
+        this.columnChartOptions.xaxis =  {
           type: 'category',
           categories: categories,
           labels: {
@@ -928,54 +965,201 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
         };
         //categories;
 
-      this.barChartOptions.yaxis= {
-        title: {
-          text: `${this.translatedLangText.NO_OF_TANKS}`,
-        },
-      }
-      this.barChartOptions.series=series;
+      
+      this.columnChartOptions.series=series;
     }
    }
+   processTankStatus(repStatus:report_status[])
+   {
+    var yardInfo:any =[
+    ];
+    this.yardCvList.map(p=>{
+        
+      yardInfo.push({code:p.code_val,name:p.description,value:0 });
+    });
+    repStatus.map(r=>{
+      r.yards?.map(y=>{
+        var yInfo = yardInfo.find((i:{ code: string,name:string,value:number })=>(i.code===y.code ));
+        if(yInfo)
+        {
+           yInfo.value += Number(y.noTank_repair)+Number(y.noTank_steam)+Number(y.noTank_clean)+Number(y.noTank_storage)+Number(y.noTank_in_survey);
+        }
+      });
+    });
+    var labels:any=[];
+    var series:any=[];
+    yardInfo.forEach((y:{ code: string,name:string,value:number })=>{
+      labels.push(y.name);
+      series.push(y.value);
+    });
 
-   
+     this.pieChartOptions.labels=labels;
+     this.pieChartOptions.series2=series;
+   }
+
+   processHorizontalBarValue(repStatus:report_status[])
+   {
+      var singleValues:any =[
+      ];
+      this.purposeOptionCvList.map(p=>{
+          
+          singleValues.push({name:p.description,value:0 });
+      });
+      repStatus.map(r=>{
+        r.yards?.map(y=>{
+        this.purposeOptionCvList.map(p=>{
+          var s = singleValues.find((g:{ name: string })=>(g.name===p.description ));
+          if(s)
+          {
+            switch(p.code_val)
+            {
+              case "STEAM":
+                s.value +=y.noTank_steam;
+                break;
+              case "CLEANING":
+                s.value +=y.noTank_clean;
+                break;
+              case "OFFHIRE":
+              case "REPAIR":
+                s.value +=y.noTank_repair;
+                break;
+              case "STORAGE":
+                s.value +=y.noTank_storage;
+                break;
+              case "IN_SURVEY":
+                s.value +=y.noTank_in_survey;
+                break;
+            }
+          }
+        });
+
+        });
+          //let s = singleValues.find(s=>s.name===r.)
+      });
+
+      this.horizontalBarOptions.single=singleValues.filter((s:{name:string})=>s.name!="Offhire");
+
+   }
    InitialDefaultData()
    {
-    this.barChartOptions = {
+    // pie chart
+    this.pieChartOptions = {
+      chart: {
+        width: 360,
+        type: 'pie',
+        foreColor: '#9aa0ac',
+        toolbar: {
+          show: true,
+        },
+      },
+      labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+      series2: [44, 55, 13, 43, 22],
       series: [
         {
-          name: 'Net Profit',
-          data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+          name: 'PRODUCT A',
+          data: [44, 55, 41, 67, 22, 43],
         },
         {
-          name: 'Revenue',
-          data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+          name: 'PRODUCT B',
+          data: [13, 23, 20, 8, 13, 27],
         },
         {
-          name: 'Free Cash Flow',
-          data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+          name: 'PRODUCT C',
+          data: [11, 17, 15, 15, 21, 14],
+        },
+        {
+          name: 'PRODUCT D',
+          data: [21, 7, 25, 13, 22, 8],
         },
       ],
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200,
+            },
+            legend: {
+              position: 'bottom',
+            },
+          },
+        },
+      ],
+      xaxis: {
+        type: 'category',
+        categories: [
+          '2018-09-19T00:00:00',
+          '2018-09-19T01:30:00',
+          '2018-09-19T02:30:00',
+          '2018-09-19T03:30:00',
+          '2018-09-19T04:30:00',
+        ],
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      },
+    };
+    // radar chart
+
+    this.columnChartOptions = {
       chart: {
-        type: 'bar',
         height: 350,
+        type: 'bar',
+        stacked: true,
+        toolbar: {
+          show: true,
+        },
+        zoom: {
+          enabled: true,
+        },
         foreColor: '#9aa0ac',
       },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            legend: {
+              position: 'bottom',
+              offsetX: -5,
+              offsetY: 0,
+            },
+          },
+        },
+      ],
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: '10%',
-          borderRadius: 5,
+          // endingShape: 'rounded',
+          columnWidth: '180%',
         },
       },
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
+      grid: {
         show: true,
-        width: 2,
-        colors: ['transparent'],
+        borderColor: '#9aa0ac',
+        strokeDashArray: 1,
       },
+      series: [
+        {
+          name: 'PRODUCT A',
+          data: [44, 55, 41, 67, 22, 43],
+        },
+        {
+          name: 'PRODUCT B',
+          data: [13, 23, 20, 8, 13, 27],
+        },
+        {
+          name: 'PRODUCT C',
+          data: [11, 17, 15, 15, 21, 14],
+        },
+        {
+          name: 'PRODUCT D',
+          data: [21, 7, 25, 13, 22, 8],
+        },
+      ],
       xaxis: {
+        type: 'category',
         categories: [
           'Feb',
           'Mar',
@@ -983,9 +1167,6 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
           'May',
           'Jun',
           'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
         ],
         labels: {
           style: {
@@ -994,29 +1175,206 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
         },
       },
       yaxis: {
-        title: {
-          text: '$ (thousands)',
-        },
+        // labels: {
+        //   show:false,
+        //   style: {
+        //     colors: ['#000000'],
+        //   },
+        // },
       },
-      grid: {
-        show: true,
-        borderColor: '#9aa0ac',
-        strokeDashArray: 1,
+      legend: {
+        position: 'bottom',
+        offsetY: 0,
       },
       fill: {
         opacity: 1,
       },
-      tooltip: {
-        theme: 'dark',
-        marker: {
-          show: true,
-        },
-        x: {
-          show: true,
-        },
-      },
     };
-   
+
+    this.horizontalBarOptions={
+      hbarxAxisLabel:this.translatedLangText.NO_OF_TANKS,
+      showXAxis : true,
+      showYAxis : true,
+      gradient : false,
+      showLegend : false,
+      showXAxisLabel : true,
+      showYAxisLabel : true,
+      legendPosition: LegendPosition.Right,
+      timeline : true,
+      colorScheme:  {
+        domain: ['#9370DB', '#87CEFA', '#FA8072', '#FF7F50', '#90EE90', '#9370DB'],
+        group: ScaleType.Ordinal,
+        selectable: true,
+        name: 'Customer Usage',
+      },
+      showLabels : true,
+      // data goes here
+       single : [
+        {
+          name: 'China',
+          value: 2243772,
+        },
+        {
+          name: 'USA',
+          value: 1826000,
+        },
+        {
+          name: 'India',
+          value: 1173657,
+        },
+        {
+          name: 'Japan',
+          value: 857363,
+        },
+        {
+          name: 'Germany',
+          value: 496750,
+        },
+        {
+          name: 'France',
+          value: 204617,
+        },
+      ]
+    };
+
    }
+
+   
+  removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
+    sot.in_gate = sot?.in_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+    sot.out_gate = sot?.out_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+    sot.cleaning = sot?.cleaning?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+    sot.repair = sot?.repair?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+  }
+
+     DisplayInDate(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt!)!;
+   
+     }
+   
+     DisplayCleanDate(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt!)!;
+     }
+   
+     
+   
+     DisplayRepairInDate(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return Utility.convertEpochToDateStr(sot.repair?.[0]?.allocate_dt)||'';
+   
+     }
+   
+     DisplayTareWeight(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return `${sot.in_gate?.[0]?.in_gate_survey?.tare_weight || ''}`;
+   
+   
+     }
+   
+     DisplayCapacity(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return `${sot.in_gate?.[0]?.in_gate_survey?.capacity || ''}`;
+   
+   
+     }
+   
+     DisplayEstimateNo(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return `${sot.repair?.[0]?.estimate_no || ''}`;
+   
+     }
+   
+     DisplayEstimateDate(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return Utility.convertEpochToDateStr(sot.repair?.[0]?.create_dt!)!;;
+     }
+   
+   
+     DisplayApprovalDate(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return Utility.convertEpochToDateStr(sot.repair?.[0]?.approve_dt!)!;;
+   
+   
+     }
+   
+     DisplayApprovalRef(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return `${sot.repair?.[0]?.job_no || ''}`;
+     }
+   
+     DisplayAVDate(sot: StoringOrderTankItem): string {
+   
+       return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;;
+     }
+   
+     DisplayPostInsp(sot: StoringOrderTankItem): string {
+   
+       return '';
+     }
+     DisplayReleaseDate(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return Utility.convertEpochToDateStr(sot.out_gate?.[0]?.eir_dt!)!;
+   
+     }
+     DisplayReleaseRef(sot: StoringOrderTankItem): string {
+       this.removeDeletedInGateAndOutGate(sot);
+       return sot.release_job_no || '';
+     }
+    
+     DisplayRemarks(sot: StoringOrderTankItem): string {
+   
+       return sot?.remarks || '';
+     }
+   
+     DisplayCustomerName(sot: StoringOrderTankItem) {
+       return `${sot.storing_order?.customer_company?.name})`
+     }
+   
+     DisplayEIRNo(sot:StoringOrderTankItem)
+     {
+      this.removeDeletedInGateAndOutGate(sot);
+       return `${sot.in_gate?.[0]?.eir_no}`;
+     }
+
+     DisplayEIRDate(sot:StoringOrderTankItem)
+     {
+      this.removeDeletedInGateAndOutGate(sot);
+      return Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt!)!;
+     }
+
+     DisplayRepairType(sot:StoringOrderTankItem)
+     {
+        return this.cvDS.getCodeDescription(sot.purpose_repair_cv,this.purposeOptionCvList);
+     }
+   
+     DisplayOwner(sot: StoringOrderTankItem) {
+       return `${sot.customer_company?.code}`
+     }
+
+     DisplayDays(sot:StoringOrderTankItem)
+     {
+      if(!sot.repair?.[0]?.allocate_dt) return '';
+      let today = new Date();
+      today.setHours(0, 0, 0, 0); 
+
+      // Convert allocate_dt to a Date object
+      let allocateDt = new Date(sot.repair?.[0]?.allocate_dt || 0);
+
+      // Check if allocateDt is a valid date
+      if (isNaN(allocateDt.getTime())) {
+        return '';
+      } else {
+        // Reset time for accurate day difference calculation
+        allocateDt.setHours(0, 0, 0, 0);
+
+        // Calculate the difference in days
+        let daysDifference = Math.floor((today.getTime() - allocateDt.getTime()) / (1000 * 60 * 60 * 24));
+      
+        console.log("Days difference:", daysDifference);
+        return String(daysDifference);
+      }
+     }
   
 }

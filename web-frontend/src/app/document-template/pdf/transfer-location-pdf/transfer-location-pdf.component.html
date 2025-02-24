@@ -1,0 +1,59 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  <div id="pdf-form-body" class="pdf-container pdf-body">
+    @for (bCust of report_transfer_location; track bCust) {
+    <div class="card">
+      <div class="pdf-body">
+        <table id="table_customer_info" class="table_customer_info">
+          <tr>
+            <td>{{translatedLangText.CUSTOMER}} :{{this.DisplayCustomerName(bCust)}}</td>
+            <td class="sp60">{{translatedLangText.TRANSFER_PERIOD}} : {{date}}</td>
+          </tr>
+        </table>
+      </div>
+      <table id="repair-part-table" class="repair-part-table">
+        <tr class="group-header">
+          <th class="th-w3">{{translatedLangText.NO}}</th>
+          <th class="th-w8">{{translatedLangText.TANK_NO}}</th>
+          <th class="th-w8">{{translatedLangText.EIR_NO}}</th>
+          <th class="th-w8">{{translatedLangText.FROM_YARD}}</th>
+          <th class="th-w8">{{translatedLangText.TO_YARD}}</th>
+          <th class="th-w8">{{translatedLangText.IN_DATE}}</th>
+          <th class="th-w8">{{translatedLangText.OUT_DATE}}</th>
+        </tr>
+        @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
+        <tr class="fixed_height_40px">
+          <td>{{ index + 1 }}</td> <!-- Row number -->
+          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td>{{ DisplayEIRNo(itm) }}</td>
+          <td><span class="overflow-text">{{ DisplayFromYard(itm) }}</span></td>
+          <td><span class="overflow-text">{{ DisplayToYard(itm) }}</span></td>
+          <td><span class="overflow-text">{{ DisplayDateIn(itm) }}</span></td>
+          <td><span class="overflow-text">{{ DisplayDateOut(itm) }}</span></td>
+          
+        </tr>
+        }
+      </table>
+
+    </div>
+    }
+  </div>
+</div>
+<div mat-dialog-actions class="m-2 align-right">
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>

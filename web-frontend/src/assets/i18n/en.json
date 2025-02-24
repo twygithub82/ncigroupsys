@@ -638,6 +638,7 @@
     "BILL-COMPLETED": "Bill Completed",
     "REPAIR-JOB-NO": "Repair Job No.",
     "REPAIR-TYPE": "Repair Type",
+    "REPAIR-IN-DATE": "Repair In Date",
     "ESTIMATE-DATE": "Estimate Date",
     "APPROVAL-DATE": "Approval Date",
     "ESTIMATE-STATUS": "Estimate Status",
@@ -986,7 +987,17 @@
     "RELEASED-TANK":"Released Tank",
     "CLEAN-CERT-BOOKING":"Clean Cert. Booking",
     "CLEAN-IN":"Clean In",
-    "DURATION-DAYS":"Duration (Days)"
+    "DURATION-DAYS":"Duration (Days)",
+    "MIN-DAYS":"Min. Days",
+    "MAX-DAYS":"Max. Days",
+    "OUTSTANDING-DAYS":"Outstanding Days",
+    "WARNING-OUTSTANDING-DAYS":"Max Day(s) cannot smaller than Min Day(s)",
+    "TRANSFER-DATE":"Transfer Date",
+    "TRANSFER-PERIOD":"Transfer Period",
+    "FROM_YARD":"From Yard",
+    "TO_YARD":"To Yard"
+    
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

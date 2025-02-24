@@ -60,24 +60,43 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="release_picker">
+                  <mat-date-range-input [rangePicker]="eir_picker">
                     <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
                     <input matEndDate placeholder="End date" formControlName="eir_dt_end">
                   </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="release_picker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #release_picker></mat-date-range-picker>
+                  <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
+                  <mat-date-range-picker #eir_picker></mat-date-range-picker>
                 </mat-form-field>
               </div>
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEAN_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="release_picker">
+                  <mat-date-range-input [rangePicker]="clean_picker">
                     <input matStartDate placeholder="Start date" formControlName="cln_dt_start">
                     <input matEndDate placeholder="End date" formControlName="cln_dt_end">
                   </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="release_picker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #release_picker></mat-date-range-picker>
+                  <mat-datepicker-toggle matSuffix [for]="clean_picker"></mat-datepicker-toggle>
+                  <mat-date-range-picker #clean_picker></mat-date-range-picker>
                 </mat-form-field>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <div class="number-range-container">
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{ translatedLangText.MIN_DAYS }}</mat-label>
+                    <input matInput type="number" placeholder="Min" formControlName="min_days" min="1" max="10">
+                  </mat-form-field>
+              
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{ translatedLangText.MAX_DAYS }}</mat-label>
+                    <input matInput type="number" placeholder="Max" formControlName="max_days"  min="1" max="50">
+                  </mat-form-field>
+                </div>
+                  @if (searchForm?.get('min_days')?.hasError('invalidRange') ||(searchForm?.get('max_days')?.hasError('invalidRange'))) {
+                    <mat-error>
+                      {{translatedLangText.OUTSTANDING_DAYS }} {{translatedLangText.WARNING_OUTSTANDING_DAYS}}
+                    </mat-error>
+                    }
+                
               </div>
               <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
@@ -92,9 +111,6 @@
                 </mat-form-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
-                <button mat-mini-fab color="primary" (click)="search_summary()" matTooltip={{translatedLangText.SUMMARY_REPORT}}>
-                  <mat-icon>assessment</mat-icon>
-                </button>
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()" matTooltip={{translatedLangText.DETAIL_REPORT}}>
                   <mat-icon>assignment</mat-icon>
                 </button>

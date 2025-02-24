@@ -38,11 +38,11 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { YardDetailPdfComponent } from 'app/document-template/pdf/tank-activity/yard/detail-pdf/yard-detail-pdf.component';
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import {PendingEstimateReportPdfComponent} from 'app/document-template/pdf/pending-estimate-report-pdf/pending-estimate-report-pdf.component'
 
 @Component({
   selector: 'app-estimate-pending',
@@ -147,7 +147,11 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE'
+    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
+    OUTSTANDING_DAYS:'COMMON-FORM.OUTSTANDING-DAYS',
+    MAX_DAYS:'COMMON-FORM.MAX-DAYS',
+    MIN_DAYS:'COMMON-FORM.MIN-DAYS',
+    WARNING_OUTSTANDING_DAYS:'COMMON-FORM.WARNING-OUTSTANDING-DAYS'
   }
 
   invForm?: UntypedFormGroup;
@@ -240,20 +244,41 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     })
   }
   initSearchForm() {
+    this.searchForm = this.fb.group(
+      {
+        customer_code: this.customerCodeControl,
+        eir_no: [''],
+        tank_no: [''],
+        eir_dt_start: [''],
+        eir_dt_end: [''],
+        cln_dt_start: [''],
+        cln_dt_end: [''],
+        rep_type: [''],
+        min_days: [''],
+        max_days: ['']
+      },
+      { validators: this.minMaxDaysValidator } // Apply custom validator at form level
+    );
+  }
 
-    this.searchForm = this.fb.group({
-      customer_code: this.customerCodeControl,
-      eir_no: [''],
-      tank_no: [''],
-      eir_dt_start: [''],
-      eir_dt_end: [''],
-      cln_dt_start: [''],
-      cln_dt_end: [''],
-      repair_type:[''],
-      min_days:[''],
-      max_days:['']
+   // Custom validator to check if min <= max
+   minMaxDaysValidator(form:UntypedFormGroup) {
+    
+      const minControl = form.get('min_days');
+      const maxControl = form.get('max_days');
 
-    });
+      const min = minControl?.value;
+      const max = maxControl?.value;
+
+      if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
+        minControl?.setErrors({ invalidRange: true });
+        maxControl?.setErrors({ invalidRange: true });
+        return { invalidRange: true }; // Form-level error
+      } else {
+        minControl?.setErrors(null);
+        maxControl?.setErrors(null);
+        return null; // No error
+      }
   }
 
   initializeValueChanges() {
@@ -285,23 +310,6 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       })
     ).subscribe();
 
-    // this.searchForm!.get('last_cargo')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     var searchCriteria = '';
-    //     if (typeof value === 'string') {
-    //       searchCriteria = value;
-    //     } else {
-    //       searchCriteria = value.cargo;
-    //     }
-    //     this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-    //       this.last_cargoList = data
-    //       this.updateValidators(this.lastCargoControl, this.last_cargoList);
-
-    //     });
-    //   })
-    // ).subscribe();
   }
 
   public loadData() {
@@ -377,14 +385,9 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     this.stmEstList = [];
     this.selection.clear();
 
-    var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
+    //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
 
-    where.tank_status_cv = { neq: 'RELEASED' };
-    if (this.searchForm!.get('rep_type')?.value == "MASTER_OUT") {
-      queryType = 2;
-      where.tank_status_cv = { eq: 'RELEASED' };
-    }
-
+   
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       cond_counter++;
@@ -396,59 +399,129 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       cond_counter++;
     }
 
+    
+    if( (this.searchForm!.get('min_days')?.value) && (this.searchForm!.get('max_days')?.value)) {
+      if(!where.repair)where.repair={};
+
+      const today = new Date(); // Today's date
+      const minDate = new Date(today);
+      const maxDate = new Date(today);
+
+      // Calculate min and max dates based on min_days and max_days
+      minDate.setDate(today.getDate() - this.searchForm!.get('min_days')?.value);
+      maxDate.setDate(today.getDate() - this.searchForm!.get('max_days')?.value);
+
+      // Convert dates to epoch timestamps (in seconds)
+      const maxEpoch = Math.floor(maxDate.getTime() / 1000); // Convert to seconds
+      const minEpoch = Math.floor(minDate.getTime() / 1000); // Convert to seconds
+       where.repair={some:{allocate_dt:{
+        lte: minEpoch, // Greater than or equal to minEpoch
+        gte: maxEpoch, // Less than or equal to maxEpoch
+
+       }}}
+       cond_counter++;
+    }
+    else if (this.searchForm!.get('min_days')?.value)
+    {
+      if(!where.repair)where.repair={};
+      const today = new Date(); // Today's date
+      const minDate = new Date(today);
+
+      // Calculate min and max dates based on min_days and max_days
+      minDate.setDate(today.getDate() - this.searchForm!.get('min_days')?.value);
+      const minEpoch = Math.floor(minDate.getTime() / 1000); // Convert to seconds
+      where.repair={some:{allocate_dt:{
+        gte: minEpoch, // Greater than or equal to minEpoch
+       }}}
+       cond_counter++;
+
+    }
+    else if(this.searchForm!.get('max_days')?.value)
+    {
+      if(!where.repair)where.repair={};
+      const today = new Date(); // Today's date
+      const maxDate = new Date(today);
+
+      // Calculate min and max dates based on min_days and max_days
+      maxDate.setDate(today.getDate() - this.searchForm!.get('max_days')?.value);
+      const maxEpoch = Math.floor(maxDate.getTime() / 1000); // Convert to seconds
+      where.repair={some:{allocate_dt:{
+        lte: maxEpoch, // Less than or equal to maxEpoch
+       }}}
+       cond_counter++;
+    }
 
     if (this.searchForm!.get('eir_no')?.value) {
 
       var cond: any = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
 
-      if (queryType == 1) {
+     
         where.in_gate = cond;
-      }
-      else {
-        where.out_gate = cond;
-      }
+     
       cond_counter++;
     }
 
-    var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
+    //var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
     if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      var cond: any = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'], true) } } };
-      date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
-      if (queryType == 1) {
+      var start_dt=new Date(this.searchForm!.value['eir_dt_start']);
+      var end_dt=new Date(this.searchForm!.value['eir_dt_start']);
+      var cond: any = { some: { eir_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } } };
+    //  date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
+      
         where.in_gate = {};
         where.in_gate = cond;
-      }
-      else {
-        where.out_gate = {};
-        where.out_gate = cond;
-      }
+      
       cond_counter++;
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+      
     }
 
-    if (this.searchForm!.get('last_cargo')?.value) {
-      where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
-      cond_counter++
+    if (this.searchForm!.get('cln_dt_start')?.value && this.searchForm!.get('cln_dt_end')?.value) {
+      var start_dt=new Date(this.searchForm!.value['cln_dt_start']);
+      var end_dt=new Date(this.searchForm!.value['cln_dt_end']);
+      var cond: any = { some: { complete_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } } };
+    //  date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
+      
+        where.cleaning = {};
+        where.cleaning = cond;
+      
+      cond_counter++;
+      
     }
+
+    if (this.searchForm!.get('rep_type')?.value) {
+     
+        
+        where.purpose_repair_cv ={in:this.searchForm!.get('rep_type')?.value};
+      
+      cond_counter++;
+      
+    }
+
+
+    // if (this.searchForm!.get('last_cargo')?.value) {
+    //   where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
+    //   cond_counter++
+    // }
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
 
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType);
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number, invType?: string, date?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number) {
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairOutstandingReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.ProcessReportCustomerTankActivity(invType!, date!, report_type!, queryType!);
+        this.onExportDetail(this.sotList);
+        //this.ProcessReportCustomerTankActivity(invType!, date!, report_type!, queryType!);
         //this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
@@ -593,15 +666,6 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     return numSelected === numRows;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  // masterToggle() {
-  //    this.isAllSelected()
-  //      ? this.selection.clear()
-  //      : this.stmEstList.forEach((row) =>
-  //          this.selection.select(row)
-  //        );
-  //   this.calculateTotalCost();
-  // }
 
   AllowToSave(): boolean {
     let retval: boolean = false;
@@ -616,294 +680,9 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
 
 
-  //    delete(event:Event){
+  
 
-  //       event.preventDefault(); // Prevents the form submission
-
-  //       let tempDirection: Direction;
-  //       if (localStorage.getItem('isRtl') === 'true') {
-  //         tempDirection = 'rtl';
-  //       } else {
-  //         tempDirection = 'ltr';
-  //       }
-  //       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-  //         data: {
-  //           headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
-  //           action: 'delete',
-  //         },
-  //         direction: tempDirection
-  //       });
-  //       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-  //         if (result.action === 'confirmed') {
-  //           const guids=this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
-  //           this.RemoveEstimatesFromInvoice(event,guids!);
-  //         }
-  //       });
-  //     }
-
-
-  //     RemoveEstimatesFromInvoice(event:Event, processGuid:string[])
-  //     {
-  //       var updateBilling: any=null;
-  //       let billingEstimateRequests:BillingEstimateRequest[]=[];
-  //       processGuid.forEach(g=>{
-  //         var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-  //         billingEstReq.action="CANCEL";
-  //         billingEstReq.billing_party=this.billingParty;
-  //         billingEstReq.process_guid=g;
-  //         billingEstReq.process_type=this.processType;
-  //         billingEstimateRequests.push(billingEstReq);
-  //       });
-
-  //       this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-  //         if(result.data.updateBilling)
-  //         {
-  //           this.handleSaveSuccess(result.data.updateBilling);
-  //           this.onCancel(event);
-  //         //  this.search();
-  //         }
-  //       })
-
-  //     }
-
-  //    handleSaveSuccess(count: any) {
-  //      if ((count ?? 0) > 0) {
-  //        let successMsg = this.langText.SAVE_SUCCESS;
-  //        this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-  //          successMsg = res;
-  //          ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-  //          //this.router.navigate(['/admin/master/estimate-template']);
-
-  //          // Navigate to the route and pass the JSON object
-
-  //        });
-  //      }
-  //    }
-
-
-  // onCancel(event:Event){
-  //   event.stopPropagation();
-  //   this.invoiceNoControl.reset('');
-  //   this.invoiceDateControl.reset('');
-  // }
-
-  // calculateTotalCost()
-  //   {
-  //   this.invoiceTotalCostControl.setValue('0.00');
-  //   const totalCost = this.selection.selected.reduce((accumulator, s) => {
-  //     // Add buffer_cost and cleaning_cost of the current item to the accumulator
-  //     //var cost:number = this.selectedEstimateLabourCost||0;
-  //     var itm:any = s;
-  //     return accumulator + itm.total_cost;
-  //     //return accumulator+ Number(stmItm.net_cost||0);
-  //   }, 0); // Initialize accumulator to 0
-  //   this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
-  // }
-  //  toggleRow(row:SteamItem)
-  //  {
-
-  //    this.selection.toggle(row);
-  //    this.SelectFirstItem();
-  //    this.calculateTotalCost();
-  //  }
-
-  //  SelectFirstItem()
-  //  {
-  //   if(!this.selection.selected.length)
-  //   {
-  //     this.selectedEstimateItem=undefined;
-  //   }
-  //   else if(this.selection.selected.length===1)
-  //   {
-  //     this.selectedEstimateItem=this.selection.selected[0];
-  //     if(this.selectedEstimateItem?.bill_to_guid)
-  //     {
-  //     this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
-
-  //     }
-  //   }
-  //  }
-  //  CheckBoxDisable(row:InGateCleaningItem)
-  //  {
-  //    if(this.selectedEstimateItem?.customer_company)
-  //    {
-  //    if(row.customer_company?.code!=this.selectedEstimateItem.customer_company?.code)
-  //    {
-  //     return true;
-  //    }
-  //   }
-  //    return false;
-  //  }
-
-  //  MasterCheckBoxDisable()
-  //  {
-  //    if(this.distinctCustomerCodes?.length)
-  //    {
-  //       return this.distinctCustomerCodes.length>1;
-  //    }
-
-  //    return false;
-  //  }
-
-
-  //  getTotalCost(row:any)
-  //  {
-
-  //   const customer_company_guid= row.storing_order_tank?.storing_order?.customer_company?.guid;
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: customer_company_guid } }
-  //     ]
-  //   };
-  //   this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-  //     if(data.length>0)
-  //     {
-  //       var cost:number =data[0].cost;
-  //       row.total_cost=(this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part,cost).total_mat_cost||0);
-  //       //this.calculateTotalCost();
-  //     }
-  //   });
-
-  //  }
-
-  //  getCustomerLabourPackage(custGuid: string){
-
-  //   const customer_company_guid= custGuid;
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: customer_company_guid } }
-  //     ]
-  //   };
-  //   this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-  //     if(data.length>0)
-  //     {
-  //       this.selectedEstimateLabourCost =data[0].cost;
-  //       // this.stmEstList = this.stmEstList?.map(stm => {
-  //       //       var stm_part=[...stm.steaming_part!];
-  //       //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
-  //       //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
-  //       // });
-  //       this.calculateTotalCost();
-  //     }
-  //   });
-
-  // }
-
-  // calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): number {
-
-  //   const total = this.IsApproved(steam)?this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.stmDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
-  //     return total.total_mat_cost;
-
-  // }
-
-  // IsApproved(steam:SteamItem)
-  // {
-  //   const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
-  //   return validStatus.includes(steam!.status_cv!);
-
-  // }
-
-  // checkInvoicedAndGetTotalCost()
-  // {
-  //   this.stmEstList = this.stmEstList?.map(stm => {
-  //             return { ...stm, invoiced: (stm.customer_billing_guid?true:false), total_cost:0 };
-  //       });
-  //   this.stmEstList?.forEach(stm => {
-  //        this.getTotalCost(stm);
-  //       });    
-  // }
-
-  // checkInvoiced()
-  // {
-  //   this.stmEstList = this.stmEstList?.map(stm => {
-
-  //             return { ...stm, invoiced: (stm.customer_billing_guid?true:false) };
-  //       });
-  // }
-
-  // handleDelete(event:Event, row:SteamItem)
-  // {
-
-  //   event.preventDefault(); // Prevents the form submission
-
-  //   let tempDirection: Direction;
-  //   if (localStorage.getItem('isRtl') === 'true') {
-  //     tempDirection = 'rtl';
-  //   } else {
-  //     tempDirection = 'ltr';
-  //   }
-  //   const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-  //     data: {
-  //       headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
-  //       action: 'delete',
-  //     },
-  //     direction: tempDirection
-  //   });
-  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-  //     if (result.action === 'confirmed') {
-  //       this.RmoveEstimateFromInvoice(event,row.guid!);
-  //     }
-  //   });
-  // }
-
-  // RmoveEstimateFromInvoice(event:Event, processGuid:string)
-  // {
-  //   var updateBilling: any=null;
-  //   var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
-  //   billingEstReq.action="CANCEL";
-  //   billingEstReq.billing_party=this.billingParty;
-  //   billingEstReq.process_guid=processGuid;
-  //   billingEstReq.process_type=this.processType;
-  //   let billingEstimateRequests:BillingEstimateRequest[]=[];
-  //   billingEstimateRequests.push(billingEstReq);
-
-  //   this.billDS.updateBilling(updateBilling,billingEstimateRequests).subscribe(result=>{
-  //     if(result.data.updateBilling)
-  //     {
-  //       this.handleSaveSuccess(result.data.updateBilling);
-  //       this.onCancel(event);
-  //       //this.search();
-  //     }
-  //   })
-
-  // }
-
-  ProcessReportCustomerTankActivity(invType: string, date: string, report_type: number, queryType: number) {
-    if (this.sotList.length === 0) return;
-
-    var report_customer_tank_acts: report_customer_tank_activity[] = [];
-
-    this.sotList.map(s => {
-
-      if (s) {
-        var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
-        let newCust = false;
-        if (!repCust.code) {
-          repCust.code = s.storing_order?.customer_company?.code;
-          repCust.customer = s.storing_order?.customer_company?.name;
-          newCust = true;
-        }
-        repCust.number_tank ??= 0;
-        repCust.number_tank += 1;
-        if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
-        repCust.storing_order_tank?.push(s);
-        if (newCust) report_customer_tank_acts.push(repCust);
-
-
-
-      }
-    });
-
-    if (report_type == 1) {
-      this.onExportSummary(report_customer_tank_acts, invType, date, queryType);
-    }
-    else {
-      this.onExportDetail(report_customer_tank_acts, invType, date, queryType);
-    }
-
-  }
-
-  onExportDetail(repCustomerTankActivity: report_customer_tank_activity[], invType: string, date: string, queryType: number) {
+  onExportDetail(sot: StoringOrderTankItem[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -915,14 +694,11 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(YardDetailPdfComponent, {
-      width: '85wv',
-      height: '80vh',
+    const dialogRef = this.dialog.open(PendingEstimateReportPdfComponent, {
+      width: '85vw',
+      maxHeight: '80vh',
       data: {
-        report_customer_tank_activity: repCustomerTankActivity,
-        type: invType,
-        date: date,
-        queryType: queryType
+        sot: sot
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

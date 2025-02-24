@@ -29,27 +29,28 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS, BillingEstimateRequest } from 'app/data-sources/billing';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_status, report_status_yard } from 'app/data-sources/reports';
+import { report_customer_tank_activity, report_status, report_status_yard } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { TransferLocationPdfComponent } from 'app/document-template/pdf/transfer-location-pdf/transfer-location-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-location-status-report',
+  selector: 'app-location-transfer-report',
   standalone: true,
-  templateUrl: './location-status.component.html',
-  styleUrl: './location-status.component.scss',
+  templateUrl: './location-transfer.component.html',
+  styleUrl: './location-transfer.component.scss',
   imports: [
     MatTooltipModule,
     MatButtonModule,
@@ -75,7 +76,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatSlideToggleModule
   ]
 })
-export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'tank_no',
@@ -148,6 +149,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     YARD: 'COMMON-FORM.YARD',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
+    TRANSFER_DATE:'COMMON-FORM.TRANSFER-DATE'
   }
 
   invForm?: UntypedFormGroup;
@@ -250,7 +252,10 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       eir_dt_start: [''],
       eir_dt_end: [''],
       inv_type: ['MASTER_IN'],
-      yard: ['']
+      yard: [''],
+      purpose:[''],
+      trf_dt_start:[''],
+      trf_dt_end:['']
 
     });
   }
@@ -271,41 +276,25 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if (!this.customerCodeControl.invalid) {
-            if (this.customerCodeControl.value?.guid) {
-              let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
-                this.branch_companyList = data;
-                this.updateValidators(this.branchCodeControl, this.branch_companyList);
-              });
-            }
-          }
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
         });
       })
     ).subscribe();
 
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-        }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-          this.updateValidators(this.lastCargoControl, this.last_cargoList);
-
-        });
-      })
-    ).subscribe();
+    
   }
 
   public loadData() {
     const queries = [
-      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
@@ -318,10 +307,9 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     // this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
     //   this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
     // });
-    // this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-    //   this.tankStatusCvListDisplay = data;
-    //   this.tankStatusCvList = addDefaultSelectOption(data, 'All');
-    // });
+    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+      this.purposeOptionCvList = addDefaultSelectOption(data, 'All');
+    });
     // this.cvDS.connectAlias('yardCv').subscribe(data => {
     //   this.yardCvList = addDefaultSelectOption(data, 'All');
     // });
@@ -374,14 +362,19 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     const where: any = {};
 
 
-    where.tank_status_cv = { neq: "RELEASED" };
+    // where.tank_status_cv = { neq: "RELEASED" };
+    // if (this.searchForm?.get('customer_code')?.value) {
+    //   // if(!where.storing_order_tank) where.storing_order_tank={};
+    //   where.customer_company = { code: { eq: this.searchForm?.get('customer_code')?.value.code } };
+    //   cond_counter++;
+    // }
+
     if (this.searchForm?.get('customer_code')?.value) {
       var cond: any =  { customer_company_guid:{eq:this.searchForm!.get('customer_code')?.value?.guid } };
      
       where.storing_order=cond;
       cond_counter++;
     }
-
 
     if (this.searchForm?.get('eir_no')?.value) {
       var cond: any = { eir_no: { contains: this.searchForm!.get('eir_no')?.value } };
@@ -414,113 +407,52 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       cond_counter++;
     }
 
+    var date:string=''
+    if(this.searchForm?.get('trf_dt_start')?.value && this.searchForm?.get('trf_dt_end')?.value)
+    {
+      var start_dt=new Date(this.searchForm!.value['trf_dt_start']);
+      var end_dt=new Date(this.searchForm!.value['trf_dt_end']);
+      var cond: any = { some: {or:[
+                        { transfer_in_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } },
+                        { transfer_out_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } }
+                      ]} };
+      date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('trf_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('trf_dt_end')?.value))}`;
+      
+        where.transfer = {};
+        where.transfer = cond;
+      cond_counter++;
+    }
+
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
+    this.performSearch(date);
 
 
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number) {
-    // this.selection.clear();
-
-
-
-    // if(queryType==1)
-    // {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+  performSearch(date :string) {
+    this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.ProcessReportStatus(report_type!);
-        //this.checkInvoicedAndGetTotalCost();
-        //this.checkInvoiced();
-        //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
+        this.ProcessReportTransferYard(date);
       });
 
   }
 
   onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-
-    // Check if the page size has changed
-    if (this.pageSize !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndex = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndex && this.hasNextPage) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursor;
-      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursor;
-      }
-    }
-
-    this.performSearch(pageSize, pageIndex, first, after, last, before);
+    
   }
 
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-  }
+  
 
-  displayLastCargoFn(tc: TariffCleaningItem): string {
-    return tc && tc.cargo ? `${tc.cargo}` : '';
-  }
-
-  displayReleaseDate(sot: StoringOrderTankItem) {
-    let retval: string = "-";
-    if (sot.out_gate?.length) {
-      if (sot.out_gate[0]?.out_gate_survey) {
-        const date = new Date(sot.out_gate[0]?.out_gate_survey?.create_dt! * 1000);
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = date.toLocaleString('en-US', { month: 'short' });
-        const year = date.getFullYear();
-
-        // Replace the '/' with '-' to get the required format
-
-
-        return `${day}/${month}/${year}`;
-      }
-
-    }
-    return retval;
-  }
-
-  displayYard(codeValType: CodeValuesItem | undefined): string {
-    return this.cvDS.getCodeDescription(codeValType?.code_val, this.yardCvList)!;
-  }
-  displayTankPurpose(sot: StoringOrderTankItem) {
-    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
-  }
-
-  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  }
-
-  getTankStatusDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
-  }
-
-  displayDate(input: number | undefined): string | undefined {
-    if (input === null) return "-";
-    return Utility.convertEpochToDateStr(input);
-  }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -564,7 +496,10 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       eir_dt_start: '',
       eir_dt_end: '',
       inv_type: ['MASTER_IN'],
-      yard: ''
+      yard: '',
+      purpose:'', 
+      trf_dt_start:'',
+      trf_dt_end:''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
@@ -577,51 +512,8 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     return numSelected === numRows;
   }
 
-  delete(event: Event) {
-
-    event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
-        action: 'delete',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        const guids = this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
-        this.RemoveEstimatesFromInvoice(event, guids!);
-      }
-    });
-  }
-  RemoveEstimatesFromInvoice(event: Event, processGuid: string[]) {
-    var updateBilling: any = null;
-    let billingEstimateRequests: BillingEstimateRequest[] = [];
-    processGuid.forEach(g => {
-      var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
-      billingEstReq.action = "CANCEL";
-      billingEstReq.billing_party = this.billingParty;
-      billingEstReq.process_guid = g;
-      billingEstReq.process_type = this.processType;
-      billingEstimateRequests.push(billingEstReq);
-    });
-
-    this.billDS._updateBilling(updateBilling, billingEstimateRequests).subscribe(result => {
-      if (result.data.updateBilling) {
-        this.handleSaveSuccess(result.data.updateBilling);
-        this.onCancel(event);
-        //  this.search();
-      }
-    })
-
-  }
+  
+ 
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -638,108 +530,39 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   }
 
 
-  onCancel(event: Event) {
-    event.stopPropagation();
-    this.invoiceNoControl.reset('');
-    this.invoiceDateControl.reset('');
-  }
-
-
-
-
-
-
-  getCustomerLabourPackage(custGuid: string) {
-
-    const customer_company_guid = custGuid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data => {
-      if (data.length > 0) {
-        this.selectedEstimateLabourCost = data[0].cost;
-        // this.stmEstList = this.stmEstList?.map(stm => {
-        //       var stm_part=[...stm.steaming_part!];
-        //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
-        //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
-        // });
-        //this.calculateTotalCost();
-      }
-    });
-
-  }
-
-
-
-
-
-
-
-  ProcessReportStatus(report_type: number) {
-    if (this.sotList.length === 0) return;
-
-    var repStatus: report_status[] = [];
-
-    this.sotList.map(s => {
-
-      if (s) {
-        if (!s.in_gate?.[0]?.yard_cv) return;
-        var repCust: report_status = repStatus.find(r => r.code === s.storing_order?.customer_company?.code) || new report_status();
-        let newCust = false;
-        if (!repCust.code) {
-          repCust.code = s.storing_order?.customer_company?.code;
-          repCust.customer = s.storing_order?.customer_company?.name;
-          repCust.yards = [];
-          newCust = true;
+   ProcessReportTransferYard(date: string) {
+      if (this.sotList.length === 0) return;
+  
+      var report_customer_tank_acts: report_customer_tank_activity[] = [];
+  
+      this.sotList.map(s => {
+  
+        if (s) {
+          var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
+          let newCust = false;
+          if (!repCust.code) {
+            repCust.code = s.storing_order?.customer_company?.code;
+            repCust.customer = s.storing_order?.customer_company?.name;
+            newCust = true;
+          }
+          repCust.number_tank ??= 0;
+          repCust.number_tank += 1;
+          if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
+          repCust.storing_order_tank?.push(s);
+          if (newCust) report_customer_tank_acts.push(repCust);
+  
+  
+  
         }
-        repCust.number_tank ??= 0;
-        repCust.number_tank += 1;
-        var yard: report_status_yard = repCust.yards?.find(y => y.code === s.in_gate?.[0].yard_cv) || new report_status_yard();
-        let newYard = false;
-        if (!yard.code) {
-          yard.code = s.in_gate?.[0].yard_cv;
-          yard.storing_order_tank = [];
-          newYard = true;
-        }
-        switch (s.tank_status_cv) {
-          case "STEAM":
-            yard.noTank_steam! += 1;
-            break;
-          case "OFFHIRE":
-          case "REPAIR":
-            yard.noTank_repair! += 1;
-            break;
-          case "CLEANING":
-            yard.noTank_clean! += 1;
-            break;
-          case "STORAGE":
-            yard.noTank_storage! += 1;
-            break;
-          case "IN_SURVEY":
-            yard.noTank_in_survey! += 1;
-            break;
-        }
-        yard.storing_order_tank?.push(s);
-        if (newYard) repCust.yards?.push(yard);
-        if (newCust) repStatus.push(repCust);
-      }
-    });
-
-    if (this.searchForm?.get('customer_code')?.value) {
-      repStatus = repStatus.filter(s => s.code == this.searchForm?.get('customer_code')?.value.code);
-    }
-    if (report_type == 1) {
-      this.onExportSummary(repStatus);
-    }
-    else {
-      this.onExportDetail(repStatus);
+      });
+  
+  
+      this.onExportDetail(report_customer_tank_acts,date);
+  
+  
     }
 
-  }
-
-  onExportDetail(repStatus: report_status[]) {
+  onExportDetail(repStatus: report_customer_tank_activity[],date:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -751,11 +574,12 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
+    const dialogRef = this.dialog.open(TransferLocationPdfComponent, {
       width: '85vw',
       maxHeight: '85vh',
       data: {
-        report_customer_tank_activity: repStatus,
+        report_transfer_location: repStatus,
+        date:date
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

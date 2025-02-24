@@ -7,17 +7,3 @@
     white-space: normal; /* Allows text wrapping */
     max-width: 100%; /* Adjust width as needed */
   }
-  .number-range-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .range-separator {
-    font-weight: bold;
-  }
-  
-  input[matInput] {
-    flex: 1;
-    min-width: 0;
-  }

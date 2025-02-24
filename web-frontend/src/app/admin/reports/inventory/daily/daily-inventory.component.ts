@@ -693,15 +693,22 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     });
     report_customer_tank_inventory =report_customer_tank_inventory.filter(r=>r.tank_no_total!>0);
 
-    if (report_type == 1) {
-      this.onExportChart(report_customer_tank_inventory, invType, date, queryType);
-    }
-    else if (report_type == 2) {
-      this.onExportSummary(report_customer_tank_inventory, invType, date, queryType);
-    }
-    else if (report_type ==3) {
-      this.onExportDetail(report_customer_tank_inventory, invType, date, queryType);
-    }
+    if(report_customer_tank_inventory.length>0)
+    {
+      if (report_type == 1) {
+        this.onExportChart(report_customer_tank_inventory, invType, date, queryType);
+      }
+      else if (report_type == 2) {
+        this.onExportSummary(report_customer_tank_inventory, invType, date, queryType);
+      }
+      else if (report_type ==3) {
+        this.onExportDetail(report_customer_tank_inventory, invType, date, queryType);
+      }
+   }
+   else
+   {
+    this.sotList=[];
+   }
 
 
   }
