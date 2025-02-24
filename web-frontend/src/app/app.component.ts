@@ -69,12 +69,13 @@ export class AppComponent implements OnInit, OnDestroy {
         const now = Date.now();
         const timeLeft = tokenExpiration ? tokenExpiration - now : 0; // Remaining token time in ms
   
-        if (timeLeft > 300000) {
-          console.log('User is active - but still > 300000...');
+        const timeLeftCompare = 500000;
+        if (timeLeft > timeLeftCompare) {
+          console.log(`User is active - ${timeLeft} > ${timeLeftCompare}...`);
           return;
         }
         if (this.isRefreshing) {
-          console.log('User is active - but refreshing...');
+          console.log('Token refreshing...');
           return;
         }
   

@@ -22,109 +22,27 @@
           </mat-expansion-panel-header>
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
-              <!-- <div class="row">
-                      <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-                            <mat-select [formControl]="customerCodeControl" formControlName="customer_code" multiple>
-                                <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
-                                 
-                                  <ng-container *ngIf="cc !== null">
-                                    {{ ccDS.displayName(cc) }}
-                                  </ng-container>
-                                 
-                                </mat-option>
-                              </mat-select>
-                           
-                        </mat-form-field>
-                        
-                      </div>
-                      <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
-                            <mat-select [formControl]="profileNameControl" formControlName="profile_name" multiple>
-                                <mat-option *ngFor="let cc of tariffDepotDS.connect() | async" [value]="cc">
-                                   
-                                  <ng-container *ngIf="cc !== null">
-                                    {{ cc.profile_name }}
-                                  </ng-container>
-                                    
-                                 
-                                </mat-option>
-                              </mat-select>
-                           
-                        </mat-form-field>
-                        
-                      </div> 
-                      
-                      <button mat-mini-fab color="primary" (click)="search()" style="margin-top: 10px; margin-left:15px">
-                        <mat-icon>search</mat-icon>
-                      </button>
-                    
-                    </div> -->
               <div class="row">
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
                     <mat-select formControlName="customer_code" multiple>
                       <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
-
                         <ng-container *ngIf="cc !== null">
                           {{ ccDS.displayName(cc) }}
                         </ng-container>
-
                       </mat-option>
                     </mat-select>
-
                   </mat-form-field>
-
                 </div>
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.ALIAS_NAME}}</mat-label>
-                    <input matInput formControlName="alias_name" type="text">
-                  </mat-form-field>
-
-                </div>
-
-              </div>
-              <div class="row">
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.COUNTRY}}</mat-label>
-                    <input matInput formControlName="country" type="text">
+                    <mat-label>{{translatedLangText.PROFILE_NAME }}</mat-label>
+                    <input matInput formControlName="profile_name" type="text">
                   </mat-form-field>
                 </div>
-                <!-- <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-2">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.PHONE }}</mat-label>
-                            <input matInput formControlName="phone" type="text">
-                           
-                        </mat-form-field>
-                        
-                      </div>
-                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-2">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.FAX_NO }}</mat-label>
-                            <input matInput formControlName="fax_no" type="text">
-                        </mat-form-field>
-                        
-                      </div>
-                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-2">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.EMAIL}}</mat-label>
-                            <input matInput formControlName="email" type="text">
-                        </mat-form-field>
-                      </div>  -->
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.CONTACT_PERSON }}</mat-label>
-                    <input matInput formControlName="contact_person" type="text">
-                  </mat-form-field>
-
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
-                  <button mat-mini-fab color="primary" (click)="search()" style="margin-top: 10px; margin-left:15px">
+                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                  <button mat-mini-fab color="primary" (click)="search()">
                     <mat-icon>search</mat-icon>
                   </button>
                   <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
@@ -138,7 +56,8 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="packBufferItems" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+          <table mat-table [dataSource]="packBufferItems" matSort
+            class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
@@ -153,32 +72,32 @@
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="profile">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
-                mat-sort-header>{{this.translatedLangText.PROFILE_NAME
+            <ng-container matColumnDef="buffer_type">
+              <mat-header-cell *matHeaderCellDef
+                mat-sort-header>{{this.translatedLangText.BUFFER_TYPE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
+                <span class="mobile-label">{{this.translatedLangText.BUFFER_TYPE
                   }}:</span>{{row.tariff_buffer.buffer_type}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+            <ng-container matColumnDef="customer_code">
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+            <ng-container matColumnDef="customer_name">
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="mobile">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+            <ng-container matColumnDef="cost">
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -190,14 +109,14 @@
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.tariff_buffer.cost.toFixed(2)}}</mat-cell>
                   </ng-container> -->
-            <ng-container matColumnDef="bDate">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+            <ng-container matColumnDef="remarks">
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.REMARKS }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.remarks}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="email">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+            <ng-container matColumnDef="last_update_dt">
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

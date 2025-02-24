@@ -26,7 +26,7 @@
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
               <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
+                <div class="col-xl-3 col-lg-4 col-md-12 col-col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
                     <mat-select formControlName="customer_code" multiple>
@@ -36,7 +36,7 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
+                <div class="col-xl-3 col-lg-4 col-md-12 col-col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CARGO_CATEGORY}}</mat-label>
                     <mat-select formControlName="cleaning_category" multiple>
@@ -48,21 +48,7 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PACKAGE_MIN_COST}}</mat-label>
-                    <input matInput formControlName="min_cost" type="number">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PACKAGE_MAX_COST }}</mat-label>
-                    <input matInput formControlName="max_cost" type="number">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()">
                     <mat-icon>search</mat-icon>
                   </button>
@@ -99,7 +85,7 @@
               <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -107,7 +93,7 @@
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -115,14 +101,14 @@
                   }}:</span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="email">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.PROCEDURE_CLEAN_CATEGORY}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.PROCEDURE_CLEAN_CATEGORY}}:</span>
                 {{row.cleaning_category.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="gender">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -130,7 +116,7 @@
                 {{row.adjusted_price.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'"
+              <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.TARIFF_COST}}$ :</span>

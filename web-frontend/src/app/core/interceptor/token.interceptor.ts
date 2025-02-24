@@ -31,14 +31,6 @@ export class TokenInterceptor implements HttpInterceptor {
       );
     }
 
-    // const tokenExpiration = this.authService.getTokenExpiration();
-    // const now = Date.now();
-    // const timeLeft = tokenExpiration ? tokenExpiration - now : 0;
-
-    // if (timeLeft <= 600000 && !this.isRefreshing) {
-    //   return this.refreshTokenAndRetry(request, next);
-    // }
-
     if (accessToken) {
       request = this.addToken(request, accessToken);
     }
@@ -56,16 +48,18 @@ export class TokenInterceptor implements HttpInterceptor {
   private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
-      this.refreshTokenSubject.next(null);
-
+      this.refreshTokenSubject.next(null); // Clear previous token
+  
       return this.authService.refreshToken().pipe(
         switchMap((newToken) => {
           this.isRefreshing = false;
           if (newToken) {
-            this.refreshTokenSubject.next(newToken.token);
-            request = this.addToken(request, newToken.token);
+            this.refreshTokenSubject.next(newToken.token); // Store new token
+            return next.handle(this.addToken(request, newToken.token));
+          } else {
+            this.authService.logout();
+            return throwError(() => new Error('Token refresh failed'));
           }
-          return next.handle(request);
         }),
         catchError(error => {
           this.isRefreshing = false;
@@ -74,8 +68,9 @@ export class TokenInterceptor implements HttpInterceptor {
         })
       );
     } else {
+      // ✅ Wait for the refreshed token before retrying the request
       return this.refreshTokenSubject.pipe(
-        filter(token => token !== null),
+        filter(token => token !== null), // Wait until the new token is available
         take(1),
         switchMap(token => next.handle(this.addToken(request, token!)))
       );

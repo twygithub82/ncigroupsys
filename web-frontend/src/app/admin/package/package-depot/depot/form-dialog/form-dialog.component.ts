@@ -41,8 +41,6 @@ export interface DialogData {
   // sotExistedList?: StoringOrderTankItem[]
 }
 
-
-
 @Component({
   selector: 'app-package-depot-form-dialog',
   templateUrl: './form-dialog.component.html',
@@ -77,13 +75,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     //  'select',
     // 'img',
-    'fName',
-    'lName',
-    'email',
-    'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
+    'customer_code',
+    'customer_name',
+    'profile_name',
+    // 'storage_cost',
   ];
 
   action: string;
@@ -101,7 +96,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   last_cargoList?: TariffCleaningItem[];
   startDate = new Date();
   pcForm: UntypedFormGroup;
-  storageCalControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
@@ -187,7 +181,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
   };
 
-
   selectedItems: PackageDepotItem[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
@@ -218,7 +211,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       preinspection_cost_cust: [],
       lolo_cost_cust: [],
       lolo_cost_standard: ['-'],
-      storage_cal_cv: this.storageCalControl,
+      storage_cal_cv: [''],
       storage_cost_cust: [],
       storage_cost_standard: ['-'],
       free_storage_days: [],
@@ -230,7 +223,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       gate_out_cost_standard: ['-'],
 
       profile_name: this.profileNameControl,
-
     });
   }
   profileChanged() {
@@ -247,11 +239,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         gate_in_cost: selectedProfile.gate_in_cost,
         gate_out_cost: selectedProfile.gate_out_cost,
         remarks: selectedProfile.remarks,
-        //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
+        storage_cal_cv: selectedProfile.storage_cal_cv
       });
-      this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
-
-
     }
   }
   displayName(cc?: CustomerCompanyItem): string {
@@ -268,8 +257,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const year = date.getFullYear();
 
       // Replace the '/' with '-' to get the required format
-
-
       return `${day}/${month}/${year}`;
     }
     return `-`;
@@ -309,15 +296,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           gate_in_cost_standard: pckDepotItm.tariff_depot?.gate_in_cost?.toFixed(2),
           gate_out_cost_standard: pckDepotItm.tariff_depot?.gate_out_cost?.toFixed(2),
           remarks: pckDepotItm.remarks,
-          //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
+          storage_cal_cv: pckDepotItm.storage_cal_cv
         });
-        this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
-
       }
     });
-
-
-
   }
 
   queryDepotCost() {
@@ -333,23 +315,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
     if (this.storageCalCvList.length > 0) {
       valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
-
       // If no match is found, description will be undefined, so you can handle it accordingly
-
     }
     return valCodeObject;
-
   }
-
-
-
-  // selectClassNo(value:string):void{
-  //   const returnDialog: DialogData = {
-  //     selectedValue:value
-  //   }
-  //   console.log('valid');
-  //   this.dialogRef.close(returnDialog);
-  // }
 
   canEdit() {
     return true;
@@ -361,13 +330,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
       });
     }
   }
 
   save() {
-
     if (!this.pcForm?.valid) return;
 
     let pd_guids: string[] = this.selectedItems
@@ -393,9 +360,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (this.pcForm!.value["gate_out_cost_cust"]) gate_out_cost = Number(this.pcForm!.value["gate_out_cost_cust"]);
 
     var storageCalValue: String = "";
-    if (this.storageCalControl.value) {
-      const storage_calCv: CodeValuesItem = this.storageCalControl.value;
-      storageCalValue = storage_calCv.code_val || "";
+    if (this.pcForm?.get('storage_cal_cv')?.value) {
+      const storage_calCv = this.pcForm?.get('storage_cal_cv')?.value;
+      storageCalValue = storage_calCv || "";
     }
 
     var storage_cal_cv = storageCalValue;
@@ -407,38 +374,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
     this.packageDepotDS?.updatePackageDepots(pd_guids, free_storage, lolo_cost, preinspection_cost, storage_cost, gate_in_cost, gate_out_cost, remarks, storage_cal_cv).subscribe(result => {
       if (result.data.updatePackageDepots > 0) {
-
         console.log('valid');
         this.dialogRef.close(result.data.updatePackageDepots);
-
       }
     });
-
-    // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
-    // // tc.guid='';
-    // pdItem.lolo_cost =Number(this.pcForm.value['lolo_cost_cust']);
-    // pdItem.preinspection_cost =Number( this.pcForm.value['preinspection_cost_cust']);
-    // pdItem.free_storage =Number( this.pcForm.value['free_storage_days']);
-    // pdItem.storage_cost =Number( this.pcForm.value['storage_cost_cust']);
-    // pdItem.remarks = this.pcForm.value['remarks'];
-    // var storageCalValue;
-    // if(this.storageCalControl.value)
-    // {
-    //     const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-    //     storageCalValue = storage_calCv.code_val;
-    // }
-    // pdItem.storage_cal_cv = storageCalValue;
-    // this.packageDepotDS?.updatePackageDepot(pdItem).subscribe(result=>{
-    //   if(result.data.updatePackageDepot>0)
-    //   {
-
-    //             console.log('valid');
-    //             this.dialogRef.close(result.data.updatePackageDepot);
-
-    //   }
-    // });
-
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {

@@ -85,33 +85,16 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
+    'customer_code',
+    'customer_name',
     'profile',
-    'fName',
-    'lName',
-    'mobile',
-    'gender',
-    // 'bDate',
-
-    'email',
-    // 'actions',
+    'preinspection_cost',
+    'lolo_cost',
+    'gate_surcharge_cost',
+    'storage_cost',
+    'free_days',
+    'last_update_dt',
   ];
-
-  PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
-  PROCEDURE_DESCRIPTION = 'COMMON-FORM.DESCRIPTION'
-  PROCEDURE_CLEAN_CATEGORY = 'COMMON-FORM.CLEAN-CATEGORY'
-  PROCEDURE_CLEAN_GROUP = 'COMMON-FORM.CLEAN-GROUP'
-  PROCEDURE_MIN_COST = 'COMMON-FORM.MIN-COST'
-  PROCEDURE_MAX_COST = 'COMMON-FORM.MAX-COST'
-  PROCEDURE_TOTAL_DURATION = 'COMMON-FORM.TOTAL-DURATION'
-  PROCEDURE_REQUIRED = 'COMMON-FORM.IS-REQUIRED'
-  PROCEDURE_STEPS = 'COMMON-FORM.PROCEDURE-STEPS'
-  PROCEDURE_STEP_NAME = 'COMMON-FORM.STEP-NAME'
-  PROCEDURE_STEP_DURATION = 'COMMON-FORM.STEP-DURATION'
-  PROCEDURE_STEP_DURATION_TOOLTIP = 'COMMON-FORM.STEP-DURATION-TOOLTIP'
-  CLEANING_GROUP_NAME = 'COMMON-FORM.GROUP-NAME'
-  CLEANING_BAY = 'COMMON-FORM.BAY'
-
-  CLEANING_LAST_UPDATED_DT = 'COMMON-FORM.LAST-UPDATED'
 
   customerCodeControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
@@ -232,7 +215,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     FAX_NO: "COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    FREE_DAYS: 'COMMON-FORM.FREE-DAYS',
+    GATE_SURCHARGE_COST: 'COMMON-FORM.GATE-SURCHARGE-COST'
   }
 
   constructor(
@@ -270,17 +255,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      alias_name: [''],
-      phone: [''],
-      fax_no: [''],
-      email: [''],
-      country: [''],
-      contact_person: [''],
-      mobile_no: [''],
-      //description: this.descriptionControl,
-      // handled_item_cv : this.handledItemControl,
-      //  profile_name: this.profileNameControl
-
+      profile_name: [''],
     });
   }
 
@@ -321,16 +296,12 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '700px',
-      height: '800px',
+      height: '90vh',
       data: {
         action: 'update',
         langText: this.langText,
         selectedItems: this.selection.selected
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -355,18 +326,13 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-
       width: '700px',
-      height: '800px',
+      height: '90vh',
       data: {
         action: 'update',
         langText: this.langText,
         selectedItems: rows
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -416,53 +382,20 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
-
-
         const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         var guids = customerCodes.map(cc => cc.guid);
         where.customer_company_guid = { in: guids };
       }
     }
 
-    // if (this.profileNameControl.value) {
-    //   if(this.profileNameControl.value.length>0)
-    //   {
-    //     const profileNames :TariffDepotItem[] = this.profileNameControl.value;
-    //     const guids = profileNames.map(cc=>cc.guid);
-    //     where.tariff_depot_guid = { in: guids };
-    //   }
-    // }
-    if (this.pcForm!.value["alias"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { alias: { contains: this.pcForm!.value["alias"] } };
+    if (this.pcForm!.get('profile_name')?.value) {
+      const tariffDepot: any = {}
+      tariffDepot.or = [
+        // { description: { contains: this.pcForm!.get('profile_name')?.value } },
+        { profile_name: { contains: this.pcForm!.get('profile_name')?.value } }
+      ]
+      where.tariff_depot = tariffDepot;
     }
-
-    if (this.pcForm!.value["fax_no"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { fax: { eq: this.pcForm!.value["fax_no"] } };
-    }
-
-    if (this.pcForm!.value["phone"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { phone: { eq: this.pcForm!.value["phone"] } };
-    }
-
-
-    if (this.pcForm!.value["email"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { email: { eq: this.pcForm!.value["email"] } };
-    }
-
-    if (this.pcForm!.value["country"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { country: { eq: this.pcForm!.value["country"] } };
-    }
-
-    if (this.pcForm!.value["contact_person"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { cc_contact_person: { some: { name: { eq: this.pcForm!.value["contact_person"] } } } };
-    }
-
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packDepotDS.SearchPackageDepot(where, this.lastOrderBy, this.pageSize).subscribe(data => {

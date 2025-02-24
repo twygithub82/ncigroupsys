@@ -84,15 +84,12 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    'desc',
-    'fName',
-    'lName',
-    'mobile',
-    //'gender',
-    'bDate',
-
-    'email',
-    // 'actions',
+    'cutomer_code',
+    'customer_name',
+    'residue_type',
+    'cost',
+    'remarks',
+    'last_update_dt',
   ];
 
   customerCodeControl = new UntypedFormControl();
@@ -219,7 +216,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
     FAX_NO: "COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    RESIDUE_TYPE: 'COMMON-FORM.RESIDUE-TYPE'
   }
 
   constructor(
@@ -258,15 +256,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      alias_name: [''],
-      phone: [''],
-      fax_no: [''],
-      email: [''],
-      country: [''],
-      contact_person: [''],
-      mobile_no: [''],
-      description: this.descriptionControl,
-      handled_item_cv: this.handledItemControl
+      residue_disposal: [''],
     });
   }
 
@@ -395,52 +385,22 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
     const where: any = {};
 
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
-
-
         const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         var guids = customerCodes.map(cc => cc.guid);
         where.customer_company_guid = { in: guids };
       }
     }
 
-    if (this.pcForm!.value["alias"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { alias: { contains: this.pcForm!.value["alias"] } };
+    if (this.pcForm!.get("residue_disposal")?.value) {
+      const tariffResidue: any = {}
+      tariffResidue.description = { contains: this.pcForm!.get("residue_disposal")?.value };
+      where.tariff_residue = tariffResidue;
     }
-
-    if (this.pcForm!.value["fax_no"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { fax: { eq: this.pcForm!.value["fax_no"] } };
-    }
-
-    if (this.pcForm!.value["phone"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { phone: { eq: this.pcForm!.value["phone"] } };
-    }
-
-
-    if (this.pcForm!.value["email"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { email: { eq: this.pcForm!.value["email"] } };
-    }
-
-    if (this.pcForm!.value["country"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { country: { eq: this.pcForm!.value["country"] } };
-    }
-
-    if (this.pcForm!.value["contact_person"]) {
-      where.customer_company = where.customer_company || {};
-      where.customer_company = { cc_contact_person: { some: { name: { eq: this.pcForm!.value["contact_person"] } } } };
-    }
-
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packResidueDS.SearchPackageResidue(where, this.lastOrderBy, this.pageSize).subscribe(data => {

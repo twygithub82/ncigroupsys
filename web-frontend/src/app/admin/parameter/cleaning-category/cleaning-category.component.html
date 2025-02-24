@@ -31,33 +31,31 @@
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                 <div class="row">
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{langText.CATEGORY_NAME | translate}}</mat-label>
                       <input matInput formControlName="name">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{langText.CATEGORY_DESCRIPTION | translate}}</mat-label>
                       <input matInput formControlName="description">
-
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{langText.MIN_COST | translate}}</mat-label>
                       <input matInput formControlName="min_cost" type="number">
-
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{langText.MAX_COST | translate}}</mat-label>
                       <input matInput formControlName="max_cost" type="number">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto justify-content-end">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>
