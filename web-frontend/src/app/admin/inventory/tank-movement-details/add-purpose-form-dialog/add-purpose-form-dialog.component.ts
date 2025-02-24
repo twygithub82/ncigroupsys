@@ -157,4 +157,8 @@ export class AddPurposeFormDialogComponent {
     }
     return "";
   }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
 }

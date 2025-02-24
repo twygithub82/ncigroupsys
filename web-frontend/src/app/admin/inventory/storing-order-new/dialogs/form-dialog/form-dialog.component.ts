@@ -386,4 +386,8 @@ export class FormDialogComponent {
       AutocompleteSelectionValidator(validOptions)
     ]);
   }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
 }
