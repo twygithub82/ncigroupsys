@@ -1535,15 +1535,15 @@ section.content {
   padding: 3px 0 3px 3px;
 }
 
-body {
-  font-family: "Calibri", "Arial", sans-serif !important;
-}
-
 table.advance-tab-table,
 table.advance-table {
   mat-header-cell {
     font-weight: bold;
-    justify-content: center !important;
+    font-family: "Calibri", "Arial", sans-serif;
+  }
+
+  mat-cell {
+    font-family: "Calibri", "Arial", sans-serif;
   }
 
   mat-header-cell.justify-content-start {
@@ -1557,6 +1557,7 @@ table.advance-table {
 
 mat-tab-header .mat-mdc-tab-label-container .mdc-tab__text-label {
   font-weight: bold;
+  font-family: "Calibri", "Arial", sans-serif;
 }
 
 .breadcrumb-title .page-title {
@@ -1565,4 +1566,22 @@ mat-tab-header .mat-mdc-tab-label-container .mdc-tab__text-label {
 
 .card .header h2 {
   font-weight: bold;
+}
+
+body,
+button,
+input,
+optgroup,
+select,
+textarea,
+.mdc-form-field,
+.mdc-text-field--filled .mdc-floating-label,
+.mat-mdc-option,
+.mat-step-label,
+.mat-mdc-select,
+.mat-stepper-vertical,
+.mat-stepper-horizontal,
+.mat-mdc-card-title,
+.mat-mdc-dialog-container .mdc-dialog__content {
+  font-family: "Calibri", "Arial", sans-serif !important;
 }
