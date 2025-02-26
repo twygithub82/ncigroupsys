@@ -237,6 +237,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   currencyList?: CurrencyItem[] = [];
   phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   countryCodes: any = [];
+  countryCodesFiltered: any = [];
 
   @ViewChild('countrySelect') countrySelect!: MatSelect;
 
@@ -275,6 +276,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       code: `+${getCountryCallingCode(countryISO)}`,
       iso: countryISO.toLowerCase()
     }));
+    this.countryCodesFiltered = this.countryCodes;
   }
 
   ngAfterViewInit(): void {
@@ -308,6 +310,13 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   initializeValueChange() {
+    this.ccForm?.get('country_code')?.valueChanges.subscribe(value => {
+      if (value !== null && value !== '') {
+        this.countryCodesFiltered = this.countryCodes.filter((country: any) => country.code.toLowerCase().includes(value.toLowerCase()));
+      } else {
+        this.countryCodesFiltered = this.countryCodes;
+      }
+    });
   }
 
   initCCForm() {
@@ -530,7 +539,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     return retval.sort((a, b) => (a.code_cv ?? 0) - (b.code_cv ?? 0));
   }
 
-
   populateSOT(rep: any[]) {
     if (rep?.length) {
       this.updateData(rep);
@@ -539,6 +547,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+
+  displayCountryCodeFn(cc: any): string {
+    return cc && cc.country ? `${cc.country} (${cc.code})` : '';
   }
 
   showNotification(
@@ -1213,11 +1225,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     };
     this.historyState.customerCompany = custCmp;
 
-    this.router.navigate(['/admin/master/billing-branch/new/ '], {
+    this.router.navigate(['/admin/master/customer/billing-branch/new/ '], {
       state: this.historyState
-
-    }
-    );
+    });
   }
 
   GoBackPrevious(event: Event) {

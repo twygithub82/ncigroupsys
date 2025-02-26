@@ -200,7 +200,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL: 'COMMON-FORM.EMAIL',
-    PHONE: 'COMMON-FORM.PHONE',
+    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
@@ -361,7 +361,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   addBillingBranch(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/master/billing-branch/new/ '], {
+    this.router.navigate(['/admin/master/customer/billing-branch/new/'], {
       state: {
         id: '',
         type: 'billing-branch',
@@ -373,9 +373,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
-
           showResult: this.ccDS.totalCount > 0
-
         }
       }
     });
@@ -384,7 +382,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
 
   editBillingBranch(row: CustomerCompanyItem) {
-    this.router.navigate([`/admin/master/billing-branch/new/${row.guid} `], {
+    this.router.navigate([`/admin/master/customer/billing-branch/new/${row.guid} `], {
       state: {
         id: row.guid,
         type: 'billing-branch',

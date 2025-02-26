@@ -71,14 +71,14 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE
+                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">
+                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg'">
                 <span class="mobile-label">{{this.translatedLangText.CODE }}:</span>{{row.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer_name">
-              <mat-header-cell [ngClass]="'justify-content-center'" *matHeaderCellDef
+              <mat-header-cell [ngClass]="''" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
               <mat-cell [ngClass]="''" *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -87,19 +87,19 @@
             </ng-container>
             <ng-container matColumnDef="mobile">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [ngClass]="'tbl-col-width-per-1_5-xl justify-content-center'">{{this.translatedLangText.CONTACT_NO}}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.CONTACT_NO}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-1_5-xl'">
                 <span class="mobile-label">{{this.translatedLangText.CONTACT_NO }}:</span> {{row.phone}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="email">
-              <mat-header-cell [ngClass]="'justify-content-center'" *matHeaderCellDef
+              <mat-header-cell [ngClass]="''" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.EMAIL }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_update_dt">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl justify-content-center'" *matHeaderCellDef
+              <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl'" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell [ngClass]="'tbl-col-width-per-2-xl'" *matCellDef="let row"
@@ -108,7 +108,7 @@
                 {{this.displayLastUpdated(row)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-1_5-xl justify-content-center'" *matHeaderCellDef
+              <mat-header-cell [ngClass]="'tbl-col-width-per-1_5-xl'" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.CATEGORY
                 }}</mat-header-cell>
               <mat-cell [ngClass]="'tbl-col-width-per-1_5-xl'" *matCellDef="let row"

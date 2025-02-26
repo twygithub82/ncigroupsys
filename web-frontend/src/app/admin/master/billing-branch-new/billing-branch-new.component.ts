@@ -48,6 +48,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 
 @Component({
   selector: 'app-billing-branch-new',
@@ -209,7 +210,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     COUNTRY: "COMMON-FORM.COUNTRY",
     FAX_NO: "COMMON-FORM.FAX-NO",
     EMAIL: "COMMON-FORM.EMAIL",
-    PHONE: "COMMON-FORM.PHONE",
+    CONTACT_NO: "COMMON-FORM.CONTACT-NO",
     WEB: "COMMON-FORM.WEB",
     CONVERSION_CURRENCY: "COMMON-FORM.CONVERSION-CURRENCY",
     PERSON_IN_CHARGE: "COMMON-FORM.PERSON-IN-CHARGE",
@@ -233,6 +234,9 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     BRANCH_NAME: "COMMON-FORM.BRANCH-NAME",
     BILLING_BRANCH_DETAILS: "COMMON-FORM.BILLING-BRANCH-DETAILS",
     SAME: "COMMON-FORM.SAME",
+    MIN_3_ALPHA: 'COMMON-FORM.MIN-3-ALPHA',
+    ONLY_ALPHA_NUMERIC: 'COMMON-FORM.ONLY-ALPHA-NUMERIC',
+    S_N: 'COMMON-FORM.S_N'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -267,15 +271,10 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   tankItemList?: TankItem[] = [];
   customerTypeControl = new UntypedFormControl();
 
-  // soDS: StoringOrderDS;
-  // sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
   curDS: CurrencyDS;
-  // igDS: InGateDS;
-  // trLabourDS: TariffLabourDS;
-  // estTempDS: MasterEstimateTemplateDS
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
@@ -285,8 +284,10 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   currencyList?: CurrencyItem[] = [];
   selectedBillingBranch: any;
   phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
-  constructor(
+  countryCodes: any = [];
+  countryCodesFiltered: any = [];
 
+  constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -320,7 +321,12 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
-
+    this.countryCodes = getCountries().map(countryISO => ({
+      country: countryISO,
+      code: `+${getCountryCallingCode(countryISO)}`,
+      iso: countryISO.toLowerCase()
+    }));
+    this.countryCodesFiltered = this.countryCodes;
   }
 
   SetCostDecimal() {
@@ -329,9 +335,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         // Ensure the value has two decimal places
         const formattedValue = parseFloat(value).toFixed(2);
         this.ccForm?.get('material_discount_amount')?.setValue(formattedValue, { emitEvent: false });
-        // this.ccForm.get('material_discount_amount').setValue(formattedValue, { emitEvent: false });
       }
-
     });
   }
   calculateCostSummary() {
@@ -357,6 +361,13 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initializeValueChange() {
+    this.ccForm?.get('country_code')?.valueChanges.subscribe(value => {
+      if (value !== null && value !== '') {
+        this.countryCodesFiltered = this.countryCodes.filter((country: any) => country.code.toLowerCase().includes(value.toLowerCase()));
+      } else {
+        this.countryCodesFiltered = this.countryCodes;
+      }
+    });
   }
 
   initCCForm() {
@@ -364,10 +375,15 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       guid: [''],
       // customer_company_guid: [''],
       customer_code: [''],
-      branch_code: [''],
+      branch_code: ['', [
+        Validators.required,
+        Validators.minLength(3), // Minimum 3 characters
+        Validators.maxLength(6), // Maximum 6 characters
+        Validators.pattern('^[A-Za-z0-9]+$') // Only alphabets
+      ]],
       branch_name: [''],
-      phone: ['', [Validators.required,
-      Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
+      country_code: [''],
+      phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['', [Validators.required, Validators.email]],
       web: [''],
       currency: [''],
@@ -393,7 +409,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   patchData(currentBillingBranch: CustomerCompanyItem) {
-
     if (currentBillingBranch) {
       this.ccForm?.patchValue({
         guid: currentBillingBranch.guid,
@@ -427,25 +442,18 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
     if (this.historyState.customerCompany) {
       this.isFromBranch = false;
-
     } else if (this.historyState) {
       this.selectedBillingBranch = this.historyState.selectedRow;
-
       this.patchData(this.selectedBillingBranch);
-
     }
-
 
     this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
       this.currencyList = data;
-
-
       if (this.selectedBillingBranch) {
         this.ccForm?.patchValue({
           currency: this.getCurrency(this.selectedBillingBranch?.currency?.guid!),
         })
       }
-
     });
 
     this.branch_guid = this.route.snapshot.paramMap.get('id');
@@ -456,7 +464,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 20).subscribe(data => {
       this.customer_companyList = data
       if (data.length) {
-
         if (!this.isFromBranch) // data from Customer company
         {
           let selectedCustomer = this.historyState.customerCompany.customerCompanyData;
@@ -483,9 +490,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
               customer_code: selectedCustomers[0]
             });
           }
-
         }
-
       }
     });
 
@@ -498,26 +503,17 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       }
     })
 
-
     const queries = [
-
       { alias: 'customerTypeCv', codeValType: 'CUSTOMER_TYPE' },
       { alias: 'satulationCv', codeValType: 'PERSON_TITLE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-
     this.cvDS.connectAlias('customerTypeCv').subscribe(data => {
       this.customerTypeCvList = data;
-
-
     });
-
     this.cvDS.connectAlias('satulationCv').subscribe(data => {
       this.satulationCvList = data;
-
-
     });
-
   }
 
 
@@ -550,6 +546,10 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+
+  displayCountryCodeFn(cc: any): string {
+    return cc && cc.country ? `${cc.country} (${cc.code})` : '';
   }
 
   showNotification(
@@ -1589,11 +1589,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         return tnkItm![0];
       else
         return undefined;
-
     }
     return undefined;
-
   }
-
-
 }

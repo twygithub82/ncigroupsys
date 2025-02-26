@@ -119,10 +119,10 @@
                 </ng-container>
                 <ng-container matColumnDef="mobile">
                   <mat-header-cell *matHeaderCellDef mat-sort-header
-                    [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.PHONE }}</mat-header-cell>
+                    [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.CONTACT_NO }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-2'">
-                    <span class="mobile-label">{{this.translatedLangText.PHONE }}:</span> {{row.phone}}</mat-cell>
+                    <span class="mobile-label">{{this.translatedLangText.CONTACT_NO }}:</span> {{row.phone}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="gender">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DID }}</mat-header-cell>

@@ -209,7 +209,7 @@ export class GroupNewComponent extends UnsubscribeOnDestroyAdapter implements On
     COUNTRY: "COMMON-FORM.COUNTRY",
     FAX_NO: "COMMON-FORM.FAX-NO",
     EMAIL: "COMMON-FORM.EMAIL",
-    PHONE: "COMMON-FORM.PHONE",
+    CONTACT_NO: "COMMON-FORM.CONTACT-NO",
     WEB: "COMMON-FORM.WEB",
     CONVERSION_CURRENCY: "COMMON-FORM.CONVERSION-CURRENCY",
     PERSON_IN_CHARGE: "COMMON-FORM.PERSON-IN-CHARGE",
@@ -1360,11 +1360,9 @@ export class GroupNewComponent extends UnsubscribeOnDestroyAdapter implements On
     };
     this.historyState.customerCompany = custCmp;
 
-    this.router.navigate(['/admin/master/billing-branch/new/ '], {
+    this.router.navigate(['/admin/master/customer/billing-branch/new/'], {
       state: this.historyState
-
-    }
-    );
+    });
   }
 
   GoBackPrevious(event: Event) {
