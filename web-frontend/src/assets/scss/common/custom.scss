@@ -1585,3 +1585,27 @@ textarea,
 .mat-mdc-dialog-container .mdc-dialog__content {
   font-family: "Calibri", "Arial", sans-serif !important;
 }
+
+// .mat-mdc-snack-bar-container.snackbar-success .mdc-snackbar__surface {
+//   background-color: rgba(0, 255, 0, 0.8) !important;
+//   color: #333333 !important;
+// }
+
+// .mat-mdc-snack-bar-container.snackbar-info .mdc-snackbar__surface {
+//   background-color: rgba(44, 168, 255, 0.8) !important;
+//   color: #ffffff !important;
+// }
+
+// .mat-mdc-snack-bar-container.snackbar-warning .mdc-snackbar__surface {
+//   background-color: rgba(255, 230, 0, 0.8) !important;
+//   color: #ffffff !important;
+// }
+
+// .mat-mdc-snack-bar-container.snackbar-danger .mdc-snackbar__surface {
+//   background-color: rgba(255, 0, 0, 0.8) !important;
+//   color: #ffffff !important;
+// }
+
+.mat-mdc-form-field-error {
+  color: #ff0000 !important;
+}

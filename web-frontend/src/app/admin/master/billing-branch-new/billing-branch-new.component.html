@@ -54,6 +54,14 @@
                       {{this.translatedLangText.SAME}}
                     </mat-error>
                     }
+                    @if (ccForm?.get('branch_code')?.hasError('minlength')) {
+                    <mat-error>
+                      {{this.translatedLangText.MIN_3_ALPHA}}
+                    </mat-error>
+                    }
+                    @if (ccForm?.get('branch_code')?.hasError('pattern')) {
+                    <mat-error>{{this.translatedLangText.ONLY_ALPHA_NUMERIC}}</mat-error>
+                    }
                   </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-1">

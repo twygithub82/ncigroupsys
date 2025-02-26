@@ -163,40 +163,40 @@
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
                     <mat-checkbox (change)="$event ? masterToggle() : null"
                       [checked]="selection.hasValue() && isAllSelected()"
                       [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
                     <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
                       [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="custCode">
+                <!-- <ng-container matColumnDef="custCode">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                       }}:</span>{{row.customer_company.code}}</mat-cell>
-                </ng-container>
+                </ng-container> -->
                 <ng-container matColumnDef="custCompanyName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
-                      }}:</span>{{row.customer_company.name}}</mat-cell>
+                      }}:</span>{{custCompDS.displayName(row.customer_company)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="fName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PART_NAME
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.PART_NAME
-                      }}:</span>{{row.tariff_repair.part_name}}</mat-cell>
+                      }}:</span>{{row.tariff_repair.alias}} {{row.tariff_repair.length}} {{getUnitTypeDescription(row.tariff_repair.length_unit_cv)}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="dimension">
+                <!-- <ng-container matColumnDef="dimension">
                   <mat-header-cell *matHeaderCellDef mat-sort-header
                     [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.DIMENSION
                     }}</mat-header-cell>
@@ -213,19 +213,18 @@
                     [ngClass]="'tbl-col-width-per-1'">
                     <span class="mobile-label">{{this.translatedLangText.LENGTH
                       }}:</span>{{row.tariff_repair.length}}</mat-cell>
-                </ng-container>
+                </ng-container> -->
                 <ng-container matColumnDef="email">
-                  <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.GROUP}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.GROUP}}:</span>
                     {{this.displayGroupNameCodeValue_Description(row.tariff_repair.group_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subgroup">
                   <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
+                    mat-sort-header>{{this.translatedLangText.SUB_GROUP}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.SUB_GROUP}}:</span>
                     {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair.subgroup_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="gender">
