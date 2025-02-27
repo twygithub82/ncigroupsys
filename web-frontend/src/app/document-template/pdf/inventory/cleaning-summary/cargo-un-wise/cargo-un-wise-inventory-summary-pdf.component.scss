@@ -71,6 +71,22 @@
     text-align: right;
     width: 20%; /* Removes borders from table rows and cells */
 }
+.table_customer_info td.sp50
+{
+    text-align: right;
+    width: 50%; /* Removes borders from table rows and cells */
+}
+.table_customer_info td.sp60
+{
+    text-align: right;
+    width: 60%; /* Removes borders from table rows and cells */
+}
+
+.table_customer_info td.sp40
+{
+    text-align: right;
+    width:40%; /* Removes borders from table rows and cells */
+}
 
 .table_customer_info td.sp
 {
@@ -102,7 +118,6 @@ td {
 tr.th {
     background-color: #353131;
     text-align: center;
-    
 }
 
 .dmg-repair-code-table {
@@ -147,8 +162,6 @@ tr.th {
 .repair-part-table {
     font-size: 0.65rem;
     padding: 0px 10px 0px 10px;
-    width: 100%;
-    table-layout: fixed;
 
     .sub-header-table {
         background-color: #d2d2d2;
@@ -213,7 +226,9 @@ tr.th {
 .text-right {
     text-align: right;
 }
-
+.text-bold{
+    font-weight: bold;
+}
 .text-center {
     text-align: center;
 }
@@ -222,46 +237,6 @@ tr.th {
     font-size: 0.6rem;
 
 }
-
-.detail-table.table {
-    width: 100%;
-    table-layout: fixed;
-  }
-  .detail-table.th, .detail-table.td {
-    word-wrap: break-word;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .restricted-height {
-    width:100%;
- //   height: 40px; /* Set the height for the cells */
-    overflow: hidden; /* Prevent overflow */
-    text-overflow: ellipsis; /* Add ellipsis (...) if the content overflows */
-    white-space: nowrap; /* Allow text to wrap */
-    word-wrap: break-word; /* Allow words to break and wrap to the next line */
-}
-
-.table_customer_info td.sp20
-{
-    text-align: left;
-    width: 20%; /* Removes borders from table rows and cells */
-}
-.table_customer_info td.sp60
-{
-    text-align: left;
-    width: 60%; /* Removes borders from table rows and cells */
-}
-
-.fixed_height_40px{
-overflow:hidden; 
-min-height:40px;
-max-height:40px;
-height:40px;
-padding:0;
-border:0;
-}
-
 .th-w2{width:2%}
 .th-w3{width:3%}
 .th-w5{width:5%}
@@ -271,13 +246,6 @@ border:0;
 .th-w10{width:10%}
 .th-w12{width:12%}
 .th-w15{width:15%}
-
-.overflow-text {
-display: -webkit-box;
--webkit-line-clamp: 2; /* Limits text to 2 lines */
--webkit-box-orient: vertical;
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: normal; /* Allows text wrapping */
-max-width: 100%; /* Adjust width as needed */
-}
+.th-w50{width:50%}
+.th-w60{width:60%}
+.th-w70{width:70%}

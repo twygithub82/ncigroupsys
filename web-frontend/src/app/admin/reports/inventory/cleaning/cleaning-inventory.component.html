@@ -60,7 +60,7 @@
               <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLASS_NO}}</mat-label>
-                  <mat-select formControlName="class_no">
+                  <mat-select formControlName="class_no" multiple>
                     @for (codeValue of classCvList; track codeValue) {
                     <mat-option [value]="codeValue.code_val">
                       {{codeValue.description}}
@@ -329,7 +329,7 @@
           </table>
         </div>
         <!-- No result -->
-        @if (!(sotDS.loading$ | async) && !sotList.length) {
+        @if (!(sotDS.loading$ | async) && (!sotList.length && !cleaningSumList.length)) {
         <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>

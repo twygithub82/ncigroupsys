@@ -51,7 +51,8 @@ export class Utility {
       if (date instanceof Date) {
         const jsDate = new Date(date); // Create a copy of the date
         if (!includeTime) {
-          jsDate.setUTCHours(endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0, endOfDay ? 999 : 0);
+          //jsDate.setUTCHours(endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0, endOfDay ? 999 : 0);
+          jsDate.setHours(endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0, endOfDay ? 999 : 0);
         }
         return Math.floor(jsDate.getTime() / 1000); // Return epoch time in seconds
       }

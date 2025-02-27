@@ -45,7 +45,9 @@ import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activ
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-
+import {ReportDS,cleaning_report_summary_item} from 'app/data-sources/reports';
+import {CustomerWiseInventorySummaryPdfComponent} from 'app/document-template/pdf/inventory/cleaning-summary/customer-wise/customer-wise-inventory-summary-pdf.component';
+import {CargoUNWiseInventorySummaryPdfComponent} from 'app/document-template/pdf/inventory/cleaning-summary/cargo-un-wise/cargo-un-wise-inventory-summary-pdf.component';
 @Component({
   selector: 'app-cleaning-inventory',
   standalone: true,
@@ -173,6 +175,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  repDS:ReportDS;
   //clnDS:InGateCleaningDS;
   stmDS: SteamDS;
   plDS: PackageLabourDS;
@@ -212,6 +215,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
+  cleaningSumList:cleaning_report_summary_item[]=[];
 
   constructor(
     public httpClient: HttpClient,
@@ -233,6 +237,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     this.stmDS = new SteamDS(this.apollo);
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
+    this.repDS= new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -336,10 +341,13 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('classNoCv').subscribe(data => {
-      this.classCvList = data;
+     // this.classCvList = data;
     });
     this.cvDS.connectAlias('reportTypesCv').subscribe(data => {
       this.reportTypesCvList = data;
+    });
+    this.cvDS.getAllClassNo().subscribe(data=>{
+      this.classCvList = data;
     });
     // this.search();
   }
@@ -389,11 +397,15 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
 
   search() {
 
+    
     var cond_counter = 0;
-    var report_type: string = "ALL";
+    var report_type: string =this.searchForm!.get('report_type')?.value;
     const where: any = {};
     if(this.searchForm?.invalid)return;
     
+
+    if(report_type=="DETAIL")
+    {
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       cond_counter++;
@@ -456,7 +468,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
 
     if (this.searchForm!.get('class_no')?.value) {
       if(!where.tariff_cleaning) where.tariff_cleaning={};
-      where.tariff_cleaning.class_cv= {contains:this.searchForm!.get('class_no')?.value};
+      where.tariff_cleaning.class_cv= {in:this.searchForm!.get('class_no')?.value};
       //where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
       cond_counter++;
     }
@@ -464,11 +476,113 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,date);
+    this.performSearchSOT(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,date);
+  }
+  else
+  {
+      this.lastSearchCriteria={};
+      if (this.searchForm!.get('tank_no')?.value) {
+        this.lastSearchCriteria.tank_no =  this.searchForm!.get('tank_no')?.value ;
+        cond_counter++;
+      }
+
+      
+
+      if (this.searchForm!.get('customer_code')?.value) {
+        // if(!where.storing_order_tank) where.storing_order_tank={};
+        this.lastSearchCriteria.customer_code =  this.searchForm!.get('customer_code')?.value.code ;
+        cond_counter++;
+      }
+
+      if (this.searchForm!.get('eir_no')?.value) {
+        this.lastSearchCriteria.eir_no = this.searchForm!.get('eir_no')?.value;
+        cond_counter++;
+      }
+
+      var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
+      if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
+        var start_dt = new Date(this.searchForm!.get('clean_dt_start')?.value);
+        var end_dt = new Date(this.searchForm!.get('clean_dt_end')?.value);
+        this.lastSearchCriteria.start_date= Utility.convertDate(start_dt);
+        this.lastSearchCriteria.end_date= Utility.convertDate(end_dt, true);
+        date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`;
+        cond_counter++;
+      }
+
+
+    
+
+      if (this.searchForm!.get('last_cargo')?.value) {
+        this.lastSearchCriteria.last_cargo = this.searchForm!.get('last_cargo')?.value.cargo;
+        cond_counter++;
+      }
+
+      if (this.searchForm!.get('un_no')?.value) {
+        this.lastSearchCriteria.un_no = this.searchForm!.get('un_no')?.value.cargo;
+        cond_counter++;
+      }
+
+      if (this.searchForm!.get('class_no')?.value) {
+      
+        this.lastSearchCriteria.class_no= this.searchForm!.get('class_no')?.value;
+        //where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
+        cond_counter++;
+      }
+
+      this.noCond = (cond_counter === 0);
+      this.lastSearchCriteria.report_type=this.GetReportType(report_type);
+      this.performSearchCleaningInventorySummary(report_type,date);
+  }
 
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string,date?:string) {
+  GetReportType(report_type:String):String
+  {
+    var retval:String ="customer";
+    switch(report_type)
+    {
+      case "CUSTOMER_WISE":
+         retval="customer";
+        break;
+      case "CARGO_WISE":
+        retval="cargo";
+        break;
+      case "UN_WISE":
+        retval="un";
+        break;
+    }
+
+    return retval;
+  }
+
+  performSearchCleaningInventorySummary(report_type?: string,date?:string) {
+    // this.selection.clear();
+    this.subs.sink = this.repDS.searchCleaningInventorySummaryReport(this.lastSearchCriteria)
+      .subscribe(data => {
+        this.cleaningSumList = data;
+        if(report_type=="CUSTOMER_WISE")
+        {
+        this.onExportCustomerWise(this.cleaningSumList,date!);
+        }
+        else
+        {
+          this.onExportCargoUNWise(this.cleaningSumList,date!,report_type!);
+        }
+        // this.endCursor = this.stmDS.pageInfo?.endCursor;
+        // this.startCursor = this.stmDS.pageInfo?.startCursor;
+        // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
+        // this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+        //this.ProcessReportCleaningInventory(this.searchForm!.get('report_type')?.value,date!)
+        // report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
+        // this.ProcessReportCustomerTankActivity(report_type!);
+        // this.checkInvoicedAndGetTotalCost();
+        //this.checkInvoiced();
+        //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
+      });
+
+  }
+
+  performSearchSOT(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string,date?:string) {
     // this.selection.clear();
     this.subs.sink = this.sotDS.searchStoringOrderTanksInventoryReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
@@ -707,6 +821,60 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
+  onExportCargoUNWise(repCln: cleaning_report_summary_item[],date:string,report_type:string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(CargoUNWiseInventorySummaryPdfComponent, {
+      width: '80vw',
+      maxHeight: '80vh',
+      data: {
+        report_summary_cleaning_item: repCln,
+        date: date,
+        report_type:report_type
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    });
+  }
+
+onExportCustomerWise(repCln: cleaning_report_summary_item[],date:string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(CustomerWiseInventorySummaryPdfComponent, {
+      width: '80vw',
+      maxHeight: '80vh',
+      data: {
+        report_summary_cleaning_item: repCln,
+        date: date
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    });
+  }
 
 
 }

@@ -1,3 +1,9 @@
+import { Apollo } from 'apollo-angular';
+import { BehaviorSubject, Observable, merge, of } from 'rxjs';
+import { catchError,finalize,  map } from 'rxjs/operators';
+import gql from 'graphql-tag';
+import { BaseDataSource } from './base-ds';
+import { ApolloError } from '@apollo/client/errors';
 import { StoringOrderTankItem } from "./storing-order-tank";
 
 export class report_customer_inventory{
@@ -120,6 +126,67 @@ export class report_inventory_cleaning_detail{
     
   }
 
+}
+
+
+export class cleaning_report_summary_item {
+  public code?: string;
+  public count?: number;
+  public name?: string;
+
+  constructor(item: Partial<cleaning_report_summary_item> = {}) {
+
+    this.code=item.code;
+    this.count=item.count;
+    this.name=item.name;
+  }
+}
+
+export const GET_CLEANING_INVENTORY_REPORT = gql`
+  query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!) {
+    resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest) {
+      nodes {
+        code
+        count
+        name
+      }
+    }
+  }
+`
+
+
+export class ReportDS extends BaseDataSource<any> {
+  constructor(private apollo: Apollo) {
+    super();
+  }
+
+
+ searchCleaningInventorySummaryReport(cleaningInventoryRequest:any): Observable<cleaning_report_summary_item[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_CLEANING_INVENTORY_REPORT,
+        variables: { cleaningInventoryRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
 
 }
+
 

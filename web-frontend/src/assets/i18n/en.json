@@ -982,13 +982,6 @@
     "ONLY-ALPHA-NUMERIC": "Only alpha numeric",
     "S_N": "S/N",
     "DAMAGED": "Damaged",
-    "OVERVIEW-SUMMARY": "Overview Summary",
-    "DETAIL-SUMMARY": "Detail Summary",
-    "AVAILABLE-IN-YARD": "Available In Yard",
-    "RELEASED-TANK": "Released Tank",
-    "CLEAN-CERT-BOOKING": "Clean Cert. Booking",
-    "CLEAN-IN": "Clean In",
-    "DURATION-DAYS": "Duration (Days)",
     "TARIFF-COST": "Tariff Cost",
     "OVERVIEW-SUMMARY":"Overview Summary",
     "DETAIL-SUMMARY":"Detail Summary",
@@ -1004,8 +997,12 @@
     "TRANSFER-DATE":"Transfer Date",
     "TRANSFER-PERIOD":"Transfer Period",
     "FROM_YARD":"From Yard",
-    "TO_YARD":"To Yard"
-    
+    "TO_YARD":"To Yard",
+    "CLEANING-INVENTORY":"Cleaning Inventory",
+    "CUSTOMER-WISE":"Customer wise",
+    "CARGO-WISE":"Cargo wise",
+    "UN-WISE":"UN wise",
+    "CLEANING-PERIOD": "Cleaning Period"
 
   },
   "CLEAN-PROCEDURES": {

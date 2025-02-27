@@ -5,6 +5,7 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { BaseDataSource } from './base-ds';
+import { ApolloError } from '@apollo/client/errors';
 
 export class CodeValuesItem {
   public guid?: string;
@@ -72,6 +73,27 @@ export function addDefaultSelectOption(list: CodeValuesItem[] | undefined, desc:
   return list;
 }
 
+export const GET_ALL_CLASS_NO = gql`
+ query {
+ resultList: queryCodeValues(
+    where: { code_val_type: { startsWith: "CLASS" } },
+    order: {  code_val_type: ASC,sequence: ASC },
+    first:100
+  ) {
+    totalCount
+    nodes {
+      code_val
+      code_val_type
+      description
+      guid
+      sequence
+    }
+  }
+}
+`;
+
+
+
 export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
   private itemsSubjects = new Map<string, BehaviorSubject<CodeValuesItem[]>>();
   private itemsSubject = new BehaviorSubject<CodeValuesItem[]>([]);
@@ -79,6 +101,32 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
   constructor(private apollo: Apollo) {
     super();
   }
+
+  getAllClassNo(): Observable<CodeValuesItem[]> {
+   this.loadingSubject.next(true);
+  
+      return this.apollo
+        .query<any>({
+          query: GET_ALL_CLASS_NO,
+          fetchPolicy: 'no-cache' // Ensure fresh data
+        })
+        .pipe(
+          map((result) => result.data),
+          catchError((error: ApolloError) => {
+            console.error('GraphQL Error:', error);
+            return of([] as CodeValuesItem[]); // Return an empty array on error
+          }),
+          finalize(() => this.loadingSubject.next(false)),
+          map((result) => {
+            const resultList = result.resultList || { nodes: [], totalCount: 0 };
+            this.dataSubject.next(resultList.nodes);
+            this.totalCount = resultList.totalCount;
+            this.pageInfo = resultList.pageInfo;
+            return resultList.nodes;
+          })
+        );
+    }
+  
   getCodeValuesByType(queries: { alias: string, codeValType: string }[]) {
     this.loadingSubject.next(true);
 
@@ -186,4 +234,6 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
     }
     return undefined;
   }
+
+
 }

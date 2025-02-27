@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DailyInventoryReportComponent } from './inventory-daily.component';
+import { DailyInventoryReportComponent } from './daily-inventory.component';
 
 describe('DailyInventoryReportComponent', () => {
   let component: DailyInventoryReportComponent;

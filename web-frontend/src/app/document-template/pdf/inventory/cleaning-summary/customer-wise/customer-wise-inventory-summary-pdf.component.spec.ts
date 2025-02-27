@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { LocationStatusSummaryPdfComponent } from "./location-status-summary-pdf.component"
+import { CustomerWiseInventorySummaryPdfComponent } from "./customer-wise-inventory-summary-pdf.component"
 describe("LocationStatusSummaryPdfComponent", () => {
-  let component: LocationStatusSummaryPdfComponent;
-  let fixture: ComponentFixture<LocationStatusSummaryPdfComponent>;
+  let component: CustomerWiseInventorySummaryPdfComponent;
+  let fixture: ComponentFixture<CustomerWiseInventorySummaryPdfComponent>;
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-    imports: [LocationStatusSummaryPdfComponent],
+    imports: [CustomerWiseInventorySummaryPdfComponent],
 }).compileComponents();
     })
   );
   beforeEach(() => {
-    fixture = TestBed.createComponent(LocationStatusSummaryPdfComponent);
+    fixture = TestBed.createComponent(CustomerWiseInventorySummaryPdfComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MainTankActivityComponent } from './main-tank-activity.component';
+import { MainPendingComponent } from './main-pending.component';
 
-describe('MainTankActivityComponent', () => {
-  let component: MainTankActivityComponent;
-  let fixture: ComponentFixture<MainTankActivityComponent>;
+describe('MainPendingComponent', () => {
+  let component: MainPendingComponent;
+  let fixture: ComponentFixture<MainPendingComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MainTankActivityComponent]
+      imports: [MainPendingComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(MainTankActivityComponent);
+    fixture = TestBed.createComponent(MainPendingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

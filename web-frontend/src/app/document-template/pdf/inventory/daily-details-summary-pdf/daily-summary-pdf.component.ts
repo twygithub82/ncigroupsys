@@ -35,7 +35,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { report_billing_customer } from 'app/data-sources/billing';
-import {report_status, report_status_yard} from 'app/data-sources/reports';
+import {report_customer_inventory, report_status, report_status_yard} from 'app/data-sources/reports';
 import {
   ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis,
   ApexDataLabels,  ApexPlotOptions,  ApexYAxis,  ApexLegend,
@@ -81,8 +81,8 @@ import{BarChartModule, Color, LegendPosition, ScaleType} from '@swimlane/ngx-cha
   };
 
 export interface DialogData {
-  report_summary_status: report_status[],
- 
+  report_inventory: report_customer_inventory[],
+  date:string
  
 }
 
@@ -341,7 +341,7 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_summary_status:report_status[]=[];
+  report_inventory:report_customer_inventory[]=[];
   date:string='';
   invType:string='';
 
@@ -370,7 +370,7 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
     // this.existingPdf = data.existingPdf;
-    this.report_summary_status= data.report_summary_status;
+    this.report_inventory= data.report_inventory;
     
     this.loadData();
     this.disclaimerNote = customerInfo.eirDisclaimerNote
@@ -399,8 +399,8 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
       if(data.length)
         {
           this.purposeOptionCvList = data;
-          this.processHorizontalBarValue(this.report_summary_status);
-          this.processCustomerStatus(this.report_summary_status);
+          //this.processHorizontalBarValue(this.report_summary_status);
+          //this.processCustomerStatus(this.report_summary_status);
         }
     });
 
@@ -408,7 +408,7 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
       if(data.length)
       {
         this.yardCvList = data;
-        this.processTankStatus(this.report_summary_status);
+      // this.processTankStatus(this.report_summary_status);
       }
       
     });

@@ -730,7 +730,8 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       maxHeight: '90vh',
       data: {
         report_inventory: repCustomerInv,
-        date: date
+        date: date,
+        queryType: queryType
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -787,7 +788,8 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
        maxHeight: '80vh',
        data: {
         report_inventory: repCustomerInventory,
-         date: date
+         date: date,
+         queryType: queryType
 
        },
        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
