@@ -1,14 +1,12 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { testTypeMapping } from 'environments/environment';
 import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { testTypeMapping } from 'environments/environment.development';
 import { CustomerCompanyItem } from './customer-company';
 import { TankItem } from './tank';
 import { TariffBufferItem } from './tariff-buffer';
-import { CodeValuesItem } from './code-values';
 
 export class TankInfoGO {
   public guid?: string;

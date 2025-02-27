@@ -1,36 +1,43 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateService } from '@ngx-translate/core';
-import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
-import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { Utility } from 'app/utilities/utility';
-import { customerInfo } from 'environments/environment.development';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
-import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
+import { TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_customer_inventory, report_status } from 'app/data-sources/reports';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
-import { BaseChartDirective } from 'ng2-charts';
+import { report_customer_inventory } from 'app/data-sources/reports';
+import { Utility } from 'app/utilities/utility';
+import { customerInfo } from 'environments/environment';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import {
-  ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis,
-  ApexDataLabels,  ApexPlotOptions,  ApexYAxis,  ApexLegend,
-  ApexStroke,  ApexFill,  ApexTooltip,  ApexTitleSubtitle,
-  ApexGrid,  ApexMarkers,  ApexNonAxisChartSeries,  ApexResponsive,
-  NgApexchartsModule} from 'ng-apexcharts';
+  ApexAxisChartSeries, ApexChart,
+  ApexDataLabels,
+  ApexFill,
+  ApexGrid,
+  ApexLegend,
+  ApexMarkers, ApexNonAxisChartSeries,
+  ApexPlotOptions,
+  ApexResponsive,
+  ApexStroke,
+  ApexTitleSubtitle,
+  ApexTooltip,
+  ApexXAxis,
+  ApexYAxis,
+  NgApexchartsModule
+} from 'ng-apexcharts';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
  
 export type ChartOptions = {
   series?: ApexAxisChartSeries;

@@ -7,6 +7,7 @@ import { Subscription, timer, fromEvent, merge } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs/operators';
 import { RefreshTokenDialogComponent } from '@shared/components/refresh-token-dialog/refresh-token-dialog.component';
+import { refreshTokenWithin } from 'environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -69,13 +70,13 @@ export class AppComponent implements OnInit, OnDestroy {
         const now = Date.now();
         const timeLeft = tokenExpiration ? tokenExpiration - now : 0; // Remaining token time in ms
   
-        const timeLeftCompare = 500000;
+        const timeLeftCompare = refreshTokenWithin;
         if (timeLeft > timeLeftCompare) {
           console.log(`User is active - ${timeLeft} > ${timeLeftCompare}...`);
           return;
         }
         if (this.isRefreshing) {
-          console.log('Token refreshing...');
+          console.log('Token is refreshing...');
           return;
         }
   

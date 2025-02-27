@@ -1,13 +1,10 @@
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { JwtPayload } from '@core/models/JwtPayload';
+import { api_full_endpoints, jwt_mapping } from 'app/api-endpoints';
+import { decodeToken } from 'app/utilities/jwt-util';
 import { BehaviorSubject, Observable, Subject, catchError, map, of, throwError } from 'rxjs';
 import { User, UserToken } from '../models/user';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { JwtPayload } from '@core/models/JwtPayload';
-import { environment } from 'environments/environment';
-import { api_endpoints, api_full_endpoints } from 'app/api-endpoints';
-import { decodeToken } from 'app/utilities/jwt-util';
-import { jwt_mapping } from 'app/api-endpoints';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',

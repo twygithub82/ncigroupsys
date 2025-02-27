@@ -12,3 +12,18 @@ export const testTypeMapping: any = {
   "5": "2.5",
   "2.5": "5"
 }
+
+export const customerInfo = {
+  companyName: 'DMS Global Pte. Ltd.',
+  companyAbb: 'DMS Global',
+  companyAddress: '123 Orchard Road #10-01 Singapore 238888',
+  companyPhone: '+65-6789 9333',
+  companyFax: '+65-6321 9333',
+  companyEmail: 'dms-global@dms.com',
+  companyWebsite: 'dms-global.com.sg',
+  companyUen: '2024555000U',
+  eirDisclaimerNote: 'Notwithstanding that {companyName} (UEN:{companyUen}; hereinafter known as \"{companyAbb}\") will at its best-effort basis ensure that the above tank serviced is in good condition on the service job requisite by above-named customer and accepted by {companyAbb}. {companyAbb} will not in any way, guarantee nor accept liability for damage or claim due to the condition of tank, or of any other nature whatsoever arises upon tank released. Customer is however, at all times advised to appoint a third party class surveyor to conduct a post inspection, verify and certify that the tank is in good condition prior it is released from {companyAbb}\'s Depot, at own costs and discretion.',
+  eirDisclaimerVer: 'VER-2412-210206'
+};
+
+export const refreshTokenWithin: number = 1200000;

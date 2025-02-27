@@ -8,7 +8,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
-import { customerInfo } from 'environments/environment.development';
+import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { BehaviorSubject, Observable } from 'rxjs';
