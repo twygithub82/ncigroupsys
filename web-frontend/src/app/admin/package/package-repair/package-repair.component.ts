@@ -89,11 +89,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   displayedColumns = [
     'select',
     // // 'img',
-    'custCode',
+    // 'custCode',
     'custCompanyName',
     'fName',
-    'dimension',
-    'lName',
+    // 'dimension',
+    // 'lName',
     'email',
     'subgroup',
     'gender',
@@ -117,7 +117,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   lengthControl = new UntypedFormControl();
   dimensionControl = new UntypedFormControl();
 
-
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
   handledItemControl = new UntypedFormControl();
@@ -128,10 +127,10 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   groupNameCvList: CodeValuesItem[] = [];
   subGroupNameCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
-
+  unitTypeCvList: CodeValuesItem[] = [];
 
   storageCalCvList: CodeValuesItem[] = [];
-  CodeValuesDS?: CodeValuesDS;
+  CodeValuesDS: CodeValuesDS;
   // packDepotDS : PackageDepotDS;
   trfRepairDS: TariffRepairDS;
   packRepairDS: PackageRepairDS;
@@ -228,7 +227,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL: 'COMMON-FORM.EMAIL',
-    PHONE: 'COMMON-FORM.PHONE',
+    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
@@ -243,8 +242,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
     COST: 'COMMON-FORM.COST',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
-    GROUP_NAME: "COMMON-FORM.GROUP-NAME",
-    SUB_GROUP_NAME: "COMMON-FORM.SUB-GROUP-NAME",
+    GROUP: "COMMON-FORM.GROUP",
+    SUB_GROUP: "COMMON-FORM.SUB-GROUP",
     PART_NAME: "COMMON-FORM.PART-NAME",
     MIN_COST: "COMMON-FORM.MIN-COST",
     MAX_COST: "COMMON-FORM.MAX-COST",
@@ -437,19 +436,14 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      //if (result) {
       if (result > 0) {
         this.handleSaveSuccess(result);
         //this.search();
         if (this.packRepairItems.length > 1)
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
-      //}
     });
-
   }
-
-
 
   deleteItem(row: any) {
 
@@ -477,27 +471,18 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
     const where: any = {};
-
-
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
-
-
         const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         var guids = customerCodes.map(cc => cc.guid);
         where.customer_company_guid = { in: guids };
       }
     }
 
-
     if (this.groupNameControl.value) {
       if (this.groupNameControl.value.length > 0) {
-
-
         const cdValues: CodeValuesItem[] = this.groupNameControl.value;
         var codes = cdValues.map(cc => cc);
         where.tariff_repair = where.tariff_repair || {};
@@ -507,8 +492,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.subGroupNameControl.value) {
       if (this.subGroupNameControl.value.length > 0) {
-
-
         const cdValues: CodeValuesItem[] = this.subGroupNameControl.value;
         var codes = cdValues.map(cc => cc);
         where.tariff_repair = where.tariff_repair || {};
@@ -521,7 +504,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       where.tariff_repair = where.tariff_repair || {};
       where.tariff_repair.part_name = { contains: description }
     }
-
 
     // Handling material_cost
     if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
@@ -667,7 +649,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
       });
     }
   }
@@ -779,7 +760,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
       //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
-      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' }
+      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
+      { alias: 'unitType', codeValType: 'UNIT_TYPE' }
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('groupName').subscribe(data => {
@@ -798,17 +780,13 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
         }
       });
       if (subqueries.length > 0) {
-
-
         this.CodeValuesDS?.getCodeValuesByType(subqueries)
         subqueries.map(s => {
           this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
             this.subGroupNameCvList.push(...data);
           });
         });
-
       }
-      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.CodeValuesDS?.connectAlias('subGroupName').subscribe(data => {
       this.subGroupNameCvList = data;
@@ -817,9 +795,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
       this.handledItemCvList = addDefaultSelectOption(data, 'All');
     });
-
-
+    this.CodeValuesDS.connectAlias('unitType').subscribe(data => {
+      this.unitTypeCvList = data;
+    });
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -871,6 +851,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     return null;
   }
+
   displayGroupNameCodeValue_Description(codeValue: String) {
     return this.GetCodeValue_Description(codeValue, this.groupNameCvList);
   }
@@ -879,15 +860,19 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
   }
 
+  getUnitTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.CodeValuesDS.getCodeDescription(codeVal, this.unitTypeCvList);
+  }
+
   GetCodeValue_Description(codeValue: String, codeValueItems: CodeValuesItem[]) {
     let retval: string = '';
     const foundItem = codeValueItems.find(item => item.code_val === codeValue);
     if (foundItem) {
       retval = foundItem.description || '';
     }
-
     return retval;
   }
+
   displayLastUpdated(r: PackageRepairItem) {
     var updatedt = r.update_dt;
     if (updatedt === null) {

@@ -135,7 +135,8 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto d-flex justify-content-end">
+              <div
+                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto d-flex justify-content-end">
                 <button mat-mini-fab color="primary" (click)="search()">
                   <mat-icon>search</mat-icon>
                 </button>
@@ -149,7 +150,8 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="tcList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+          <table mat-table [dataSource]="tcList" matSort
+            class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <!-- ID Column -->
             <ng-container matColumnDef="id">
               <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -162,18 +164,16 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="desc">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_DESCRIPTION |
-                translate}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef
+                mat-sort-header>{{translatedLangText.CARGO_DESCRIPTION}}</mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row">
                 <span class="mobile-label">{{translatedLangText.CARGO_DESCRIPTION}}:</span>{{row.description}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="class">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [ngClass]="'justify-content-center'">{{langText.CARGO_CLASS
-                | translate}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="''">
+                [ngClass]="''">{{translatedLangText.CARGO_CLASS}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
                 <span class="mobile-label">{{translatedLangText.NO_OF_TANKS }}:</span>
                 {{row.class_cv}}
               </mat-cell>
@@ -184,8 +184,7 @@
                 <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.un_no}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_CATEGORY |
-                translate}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_CATEGORY}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <div *ngIf="row.cleaning_category !== null && row.cleaning_category !== undefined; else elseBlock">
                   <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.cleaning_category.name}}
@@ -196,8 +195,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="method">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_METHOD |
-                translate}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_METHOD}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <div *ngIf="row.cleaning_method!== null && row.cleaning_method !== undefined; else elseBlock">
                   <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.cleaning_method.name}}
@@ -208,14 +206,13 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="flash_point">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_FLASH_POINT |
-                translate}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef
+                mat-sort-header>{{translatedLangText.CARGO_FLASH_POINT}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.flash_point}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_COST |
-                translate}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_COST}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <div *ngIf="row.cleaning_category !== null ; else elseBlock">
                   <span class="mobile-label">{{translatedLangText.STATUS}}:</span>

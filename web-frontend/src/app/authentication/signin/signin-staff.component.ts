@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Utility } from 'app/utilities/utility'
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 @Component({
@@ -53,7 +53,8 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
     private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private dialog: MatDialog
   ) {
     super();
   }
@@ -75,6 +76,7 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
       // User is logged in, navigate to the dashboard or home
       this.router.navigate(['/']);
     }
+    this.dialog.closeAll();
   }
   get f() {
     return this.authForm.controls;

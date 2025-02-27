@@ -47,7 +47,7 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { testTypeMapping } from 'environments/environment.development';
+import { testTypeMapping } from 'environments/environment';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 import { Observable, Subject, merge } from 'rxjs';

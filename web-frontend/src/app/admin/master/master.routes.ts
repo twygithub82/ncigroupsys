@@ -23,7 +23,11 @@ export const MASTER_ROUTE: Routes = [
     component: CustomerNewComponent,
   },
   {
-    path: "billing-branch/new/:id",
+    path: "customer/billing-branch/new",
+    component: BillingBranchNewComponent,
+  },
+  {
+    path: "customer/billing-branch/new/:id",
     component: BillingBranchNewComponent,
   },
 ];

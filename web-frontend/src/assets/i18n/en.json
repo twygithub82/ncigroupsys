@@ -224,7 +224,7 @@
       }
     },
     "STEAM": {
-      "TEXT": "Steam",
+      "TEXT": "Steaming",
       "LIST": {
         "STEAM-ESTIMATE-APPROVAL": "Estimate/Approval",
         "STEAM-ESTIMATE": "Steam Estimate",
@@ -554,9 +554,9 @@
     "RELEASE-ORDER-DATE": "Release Order Date",
     "DEPOT-PROFILE": "Depot Profile",
     "PROFILE-NAME": "Profile Name",
-    "PREINSPECTION-COST": "Pre-inspection Cost $",
-    "LOLO-COST": "LOLO Cost per Lift $",
-    "STORAGE-COST": "Storage Cost $",
+    "PREINSPECTION-COST": "Pre-inspection $",
+    "LOLO-COST": "LOLO (Per Lift) $",
+    "STORAGE-COST": "Storage $",
     "FREE-STORAGE": "Free Storage Days",
     "ASSIGNED": "has been assigned to others",
     "ADD-TANK": "Add Tank",
@@ -1002,8 +1002,18 @@
     "CUSTOMER-WISE":"Customer wise",
     "CARGO-WISE":"Cargo wise",
     "UN-WISE":"UN wise",
-    "CLEANING-PERIOD": "Cleaning Period"
+    "CLEANING-PERIOD": "Cleaning Period",
 
+    "GATE-SURCHARGE-COST": "Gate Surcharge",
+    "FREE-DAYS": "Free Days",
+    "MIN-DAYS": "Min. Days",
+    "MAX-DAYS": "Max. Days",
+    "OUTSTANDING-DAYS": "Outstanding Days",
+    "WARNING-OUTSTANDING-DAYS": "Max Day(s) cannot smaller than Min Day(s)",
+    "TRANSFER-DATE": "Transfer Date",
+    "TRANSFER-PERIOD": "Transfer Period",
+    "FROM_YARD": "From Yard",
+    "TO_YARD": "To Yard"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

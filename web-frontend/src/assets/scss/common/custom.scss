@@ -1535,15 +1535,15 @@ section.content {
   padding: 3px 0 3px 3px;
 }
 
-body {
-  font-family: "Calibri", "Arial", sans-serif !important;
-}
-
 table.advance-tab-table,
 table.advance-table {
   mat-header-cell {
     font-weight: bold;
-    justify-content: center !important;
+    font-family: "Calibri", "Arial", sans-serif;
+  }
+
+  mat-cell {
+    font-family: "Calibri", "Arial", sans-serif;
   }
 
   mat-header-cell.justify-content-start {
@@ -1557,6 +1557,7 @@ table.advance-table {
 
 mat-tab-header .mat-mdc-tab-label-container .mdc-tab__text-label {
   font-weight: bold;
+  font-family: "Calibri", "Arial", sans-serif;
 }
 
 .breadcrumb-title .page-title {
@@ -1565,4 +1566,46 @@ mat-tab-header .mat-mdc-tab-label-container .mdc-tab__text-label {
 
 .card .header h2 {
   font-weight: bold;
+}
+
+body,
+button,
+input,
+optgroup,
+select,
+textarea,
+.mdc-form-field,
+.mdc-text-field--filled .mdc-floating-label,
+.mat-mdc-option,
+.mat-step-label,
+.mat-mdc-select,
+.mat-stepper-vertical,
+.mat-stepper-horizontal,
+.mat-mdc-card-title,
+.mat-mdc-dialog-container .mdc-dialog__content {
+  font-family: "Calibri", "Arial", sans-serif !important;
+}
+
+// .mat-mdc-snack-bar-container.snackbar-success .mdc-snackbar__surface {
+//   background-color: rgba(0, 255, 0, 0.8) !important;
+//   color: #333333 !important;
+// }
+
+// .mat-mdc-snack-bar-container.snackbar-info .mdc-snackbar__surface {
+//   background-color: rgba(44, 168, 255, 0.8) !important;
+//   color: #ffffff !important;
+// }
+
+// .mat-mdc-snack-bar-container.snackbar-warning .mdc-snackbar__surface {
+//   background-color: rgba(255, 230, 0, 0.8) !important;
+//   color: #ffffff !important;
+// }
+
+// .mat-mdc-snack-bar-container.snackbar-danger .mdc-snackbar__surface {
+//   background-color: rgba(255, 0, 0, 0.8) !important;
+//   color: #ffffff !important;
+// }
+
+.mat-mdc-form-field-error {
+  color: #ff0000 !important;
 }

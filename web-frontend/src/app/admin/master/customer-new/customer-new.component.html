@@ -65,19 +65,27 @@
                     }
                   </mat-form-field>
                 </div>
-                <!-- <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label><mat-icon>flag</mat-icon></mat-label>
-                    <mat-select #countrySelect formControlName="country_code" class="wide-dropdown">
+                    <input matInput formControlName="country_code" [matAutocomplete]="countryCode">
+                    <mat-autocomplete #countryCode="matAutocomplete" [displayWith]="displayCountryCodeFn">
+                      @for (cc of countryCodesFiltered; track cc) {
+                      <mat-option [value]="cc">
+                        {{ cc.country }} ({{cc.code}})
+                      </mat-option>
+                      }
+                    </mat-autocomplete>
+                    <!-- <mat-select formControlName="country_code">
                       @for (cc of countryCodes; track cc) {
                       <mat-option [value]="cc">
                         {{ cc.country }} ({{cc.code}})
                       </mat-option>
                       }
-                    </mat-select>
+                    </mat-select> -->
                   </mat-form-field>
-                </div> -->
-                <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 mb-1">
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CONTACT_NO }}</mat-label>
                     <input matInput formControlName="phone" required>
@@ -238,7 +246,7 @@
                       <!-- Index Column -->
                       <ng-container matColumnDef="index">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.S_N}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; let i = index"
@@ -249,7 +257,7 @@
                       <!-- ID Column -->
                       <ng-container matColumnDef="group_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.CONTACT_PERSON}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -260,7 +268,7 @@
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.JOB_TITLE}}
                         </mat-header-cell>
@@ -272,7 +280,7 @@
                       </ng-container>
                       <ng-container matColumnDef="damage">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.DEPARTMENT}}
                         </mat-header-cell>
@@ -286,7 +294,7 @@
                       </ng-container>
                       <ng-container matColumnDef="repair">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.EMAIL}}
                         </mat-header-cell>
@@ -298,7 +306,7 @@
                       </ng-container>
                       <ng-container matColumnDef="description">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.DID}}
                         </mat-header-cell>
@@ -310,7 +318,7 @@
                       </ng-container>
                       <ng-container matColumnDef="quantity">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.CONTACT_NO}}
                         </mat-header-cell>

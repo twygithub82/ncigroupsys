@@ -11,7 +11,7 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { InGate, InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyDS, InGateSurveyGO } from 'app/data-sources/in-gate-survey';
 import { Utility } from 'app/utilities/utility';
-import { customerInfo } from 'environments/environment.development';
+import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';

@@ -26,18 +26,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
@@ -86,14 +79,12 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    'profile',
-    'fName',
-    'lName',
-    'mobile',
-    // 'gender',
-    'bDate',
-
-    'email',
+    'customer_code',
+    'customer_name',
+    'buffer_type',
+    'cost',
+    'remarks',
+    'last_update_dt',
   ];
 
   customerCodeControl = new UntypedFormControl();
@@ -197,7 +188,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL: 'COMMON-FORM.EMAIL',
-    PHONE: 'COMMON-FORM.PHONE',
+    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
@@ -218,7 +209,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     FAX_NO: "COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    BUFFER_TYPE: 'COMMON-FORM.BUFFER-TYPE'
   }
 
   constructor(
@@ -226,19 +218,15 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
-
   ) {
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.packBuffDS = new PackageBufferDS(this.apollo)
-    //this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
-    //this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -257,15 +245,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      alias_name: [''],
-      phone: [''],
-      fax_no: [''],
-      email: [''],
-      country: [''],
-      contact_person: [''],
-      mobile_no: [''],
-      profile_name: this.profileNameControl
-
+      profile_name: ['']
     });
   }
 
@@ -319,11 +299,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-        //if(result.selectedValue>0)
-        // {
         this.handleSaveSuccess(result);
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        //}
       }
     });
   }
@@ -361,17 +338,15 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       }
       //}
     });
-
   }
-
-
 
   deleteItem(row: any) {
-
   }
+
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -399,20 +374,23 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
-
-
         const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         var guids = customerCodes.map(cc => cc.guid);
         where.customer_company_guid = { in: guids };
       }
     }
 
-    if (this.profileNameControl.value) {
-      if (this.profileNameControl.value.length > 0) {
-        const profileNames: TariffDepotItem[] = this.profileNameControl.value;
-        const guids = profileNames.map(cc => cc.guid);
-        where.tariff_depot_guid = { in: guids };
-      }
+    // if (this.profileNameControl.value) {
+    //   if (this.profileNameControl.value.length > 0) {
+    //     const profileNames: TariffDepotItem[] = this.profileNameControl.value;
+    //     const guids = profileNames.map(cc => cc.guid);
+    //     where.tariff_depot_guid = { in: guids };
+    //   }
+    // }
+    if (this.pcForm?.get('profile_name')?.value) {
+      const tariffBuffer: any = {}
+      tariffBuffer.buffer_type = { contains: this.pcForm?.get('profile_name')?.value }
+      where.tariff_buffer = tariffBuffer;
     }
 
     if (this.pcForm!.value["alias"]) {
@@ -566,25 +544,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
   }
   public loadData() {
-
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-      // this.customer_companyList1 = data
     });
-
-
-    // this.subs.sink = this.packBuffDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
-
-    // const queries = [
-    //   { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-
-    // ];
-    // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-    //   this.storageCalCvList=data;
-    // });
-
-
-
   }
   showNotification(
     colorName: string,

@@ -35,9 +35,8 @@
               </mat-expansion-panel-header>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
-
                   <div class="row">
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
                         <mat-select formControlName="group_name_cv" multiple>
@@ -49,7 +48,7 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
                         <mat-select formControlName="sub_group_name_cv" multiple>
@@ -59,24 +58,21 @@
                           </mat-option>
                           }
                         </mat-select>
-
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PACKAGE_MIN_COST}}</mat-label>
                         <input matInput formControlName="min_cost" type="number">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PACKAGE_MAX_COST }}</mat-label>
                         <input matInput formControlName="max_cost" type="number">
                       </mat-form-field>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.DIMENSION}}</mat-label>
                         <mat-select formControlName="dimension" multiple>
@@ -89,9 +85,8 @@
                           }
                         </mat-select>
                       </mat-form-field>
-
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.LENGTH}}</mat-label>
                         <mat-select formControlName="len" multiple>
@@ -104,47 +99,39 @@
                           }
                         </mat-select>
                       </mat-form-field>
-
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.MIN_LABOUR}}</mat-label>
                         <input matInput formControlName="min_labour" type="number">
 
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.MAX_LABOUR }}</mat-label>
                         <input matInput formControlName="max_labour" type="number">
-
                       </mat-form-field>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
                         <mat-select formControlName="customer_code" multiple>
                           <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
-
                             <ng-container *ngIf="cc !== null">
                               {{ ccDS.displayName(cc) }}
                             </ng-container>
-
                           </mat-option>
                         </mat-select>
-
                       </mat-form-field>
-
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                         <input matInput formControlName="part_name" type="text">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
                         <mat-select formControlName="handled_item_cv">
@@ -156,7 +143,8 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
+                    <div
+                      class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1 d-flex align-items-center ms-auto justify-content-end">
                       <button mat-mini-fab color="primary" (click)="search()">
                         <mat-icon>search</mat-icon>
                       </button>
@@ -175,40 +163,40 @@
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
                     <mat-checkbox (change)="$event ? masterToggle() : null"
                       [checked]="selection.hasValue() && isAllSelected()"
                       [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
                     <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
                       [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="custCode">
+                <!-- <ng-container matColumnDef="custCode">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                       }}:</span>{{row.customer_company.code}}</mat-cell>
-                </ng-container>
+                </ng-container> -->
                 <ng-container matColumnDef="custCompanyName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
-                      }}:</span>{{row.customer_company.name}}</mat-cell>
+                      }}:</span>{{custCompDS.displayName(row.customer_company)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="fName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PART_NAME
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.PART_NAME
-                      }}:</span>{{row.tariff_repair.part_name}}</mat-cell>
+                      }}:</span>{{row.tariff_repair.alias}} {{row.tariff_repair.length}} {{getUnitTypeDescription(row.tariff_repair.length_unit_cv)}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="dimension">
+                <!-- <ng-container matColumnDef="dimension">
                   <mat-header-cell *matHeaderCellDef mat-sort-header
                     [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.DIMENSION
                     }}</mat-header-cell>
@@ -225,19 +213,18 @@
                     [ngClass]="'tbl-col-width-per-1'">
                     <span class="mobile-label">{{this.translatedLangText.LENGTH
                       }}:</span>{{row.tariff_repair.length}}</mat-cell>
-                </ng-container>
+                </ng-container> -->
                 <ng-container matColumnDef="email">
-                  <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.GROUP}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.GROUP}}:</span>
                     {{this.displayGroupNameCodeValue_Description(row.tariff_repair.group_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subgroup">
                   <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
+                    mat-sort-header>{{this.translatedLangText.SUB_GROUP}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.SUB_GROUP}}:</span>
                     {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair.subgroup_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="gender">

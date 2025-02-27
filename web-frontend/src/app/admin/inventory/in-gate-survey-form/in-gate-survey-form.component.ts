@@ -47,7 +47,7 @@ import { TankInfoDS } from 'app/data-sources/tank-info';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { testTypeMapping } from 'environments/environment.development';
+import { testTypeMapping } from 'environments/environment';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 import { Observable, Subject, merge } from 'rxjs';

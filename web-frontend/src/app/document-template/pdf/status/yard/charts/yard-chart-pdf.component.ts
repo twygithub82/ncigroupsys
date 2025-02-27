@@ -1,48 +1,45 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {jsPDF} from 'jspdf';
-import html2canvas from 'html2canvas';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { customerInfo } from 'environments/environment.development';
-import { Utility } from 'app/utilities/utility';
+import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
-import { OutGateItem } from 'app/data-sources/out-gate';
-import { InGateSurveyDS } from 'app/data-sources/in-gate-survey';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { PackageBufferItem } from 'app/data-sources/package-buffer';
-import { NgClass } from '@angular/common';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { Utility } from 'app/utilities/utility';
+import { customerInfo } from 'environments/environment';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-import { MatIconModule } from '@angular/material/icon';
 // import { saveAs } from 'file-saver';
-import { FileManagerService } from '@core/service/filemanager.service';
-import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { RepairCostTableItem, RepairDS } from 'app/data-sources/repair';
-import { RepairPartDS } from 'app/data-sources/repair-part';
-import { CustomerCompanyDS } from 'app/data-sources/customer-company';
-import { RepairPartItem } from 'app/data-sources/repair-part';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { SteamDS } from 'app/data-sources/steam';
-import { SteamPartDS } from 'app/data-sources/steam-part';
-import { report_billing_customer } from 'app/data-sources/billing';
-import {report_status, report_status_yard} from 'app/data-sources/reports';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { DomSanitizer } from '@angular/platform-browser';
+import { FileManagerService } from '@core/service/filemanager.service';
+import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
+import { RepairCostTableItem } from 'app/data-sources/repair';
+import { RepairPartItem } from 'app/data-sources/repair-part';
+import { report_status } from 'app/data-sources/reports';
 import {
-  ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis,
-  ApexDataLabels,  ApexPlotOptions,  ApexYAxis,  ApexLegend,
-  ApexStroke,  ApexFill,  ApexTooltip,  ApexTitleSubtitle,
-  ApexGrid,  ApexMarkers,  ApexNonAxisChartSeries,  ApexResponsive,
-  NgApexchartsModule} from 'ng-apexcharts';
-import{BarChartModule, Color, LegendPosition, ScaleType} from '@swimlane/ngx-charts'
+  ApexAxisChartSeries, ApexChart,
+  ApexDataLabels,
+  ApexFill,
+  ApexGrid,
+  ApexLegend,
+  ApexMarkers, ApexNonAxisChartSeries,
+  ApexPlotOptions,
+  ApexResponsive,
+  ApexStroke,
+  ApexTitleSubtitle,
+  ApexTooltip,
+  ApexXAxis,
+  ApexYAxis,
+  NgApexchartsModule
+} from 'ng-apexcharts';
 
   export type HorizontalBarOptions={
     showXAxis?:boolean;
