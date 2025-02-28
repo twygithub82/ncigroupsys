@@ -21,7 +21,6 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 
-
 export interface DialogData {
   action?: string;
   item: StoringOrderTankItem;
@@ -209,12 +208,22 @@ export class FormDialogComponent {
 
   initializeValueChange() {
     this.storingOrderTankForm?.get('purpose_steam')!.valueChanges.subscribe(value => {
+      const purposeStorage = this.storingOrderTankForm.get('purpose_storage');
       const requiredTempControl = this.storingOrderTankForm.get('required_temp');
+      const purposeCleaning = this.storingOrderTankForm.get('purpose_cleaning');
+      const purposeRepair = this.storingOrderTankForm.get('purpose_repair_cv');
       if (value) {
+        purposeStorage?.setValue(true);
+        purposeStorage?.disable();
         requiredTempControl!.enable();
+        purposeCleaning!.disable();
+        purposeRepair!.disable();
       } else {
         requiredTempControl!.disable();
         requiredTempControl!.setValue(''); // Clear the value if disabled
+        purposeStorage?.enable();
+        purposeCleaning!.enable();
+        purposeRepair!.enable();
       }
     });
 
@@ -347,9 +356,14 @@ export class FormDialogComponent {
   onPurposeChangeCheck(event: any) {
     if ((this.storingOrderTankForm.get('purpose_cleaning')?.value || this.storingOrderTankForm.get('purpose_repair_cv')?.value)) {
       this.storingOrderTankForm.get('purpose_storage')?.setValue(true);
+      
+      this.storingOrderTankForm.get('required_temp')?.setValue('');
+      this.storingOrderTankForm.get('required_temp')?.disable();
+      this.storingOrderTankForm.get('purpose_steam')?.disable();
       this.storingOrderTankForm.get('purpose_storage')?.disable();
     } else if (!this.storingOrderTankForm.get('purpose_cleaning')?.value && !this.storingOrderTankForm.get('purpose_repair_cv')?.value) {
       this.storingOrderTankForm.get('purpose_storage')?.enable();
+      this.storingOrderTankForm.get('purpose_steam')?.enable();
     }
   }
 
