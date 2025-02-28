@@ -469,8 +469,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         remarks: this.inGateForm.get('remarks')?.value,
         tank: sot,
         yard_cv: this.inGateForm.get('yard_cv')?.value,
-        preinspection_cv: this.inGateForm.get('preinspection_cv')?.value,
-        lolo_cv: this.inGateForm.get('lolo_cv')?.value,
+        preinspection_cv: 'YES',
+        lolo_cv: 'BOTH',
         haulier: this.inGateForm.get('haulier')?.value
       })
       console.log(ig);
@@ -581,7 +581,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       remarks: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.remarks,
       open_on_gate: this.storingOrderTankItem!.tariff_cleaning?.open_on_gate_cv,
       yard_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.yard_cv,
-      preinspection_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.preinspection_cv,
+      preinspection_cv: 'YES',
       lolo_cv: 'BOTH' // default BOTH
     });
 
