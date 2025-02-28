@@ -233,14 +233,12 @@
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                              <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                                  <input matInput formControlName="remarks">
+                                  <textarea matInput formControlName="remarks"></textarea>
                                 </mat-form-field>
                               </div>
-                            </div>
-                            <div class="row">
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.YARD}}</mat-label>
@@ -252,36 +250,6 @@
                                   @if (inGateForm?.get('yard_cv')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.YARD}} {{translatedLangText.SO_REQUIRED}}
-                                  </mat-error>
-                                  }
-                                </mat-form-field>
-                              </div>
-                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
-                                <mat-form-field class="example-full-width">
-                                  <mat-label>{{translatedLangText.PRE_INSPECTION}}</mat-label>
-                                  <mat-select formControlName="preinspection_cv" required>
-                                    @for (codeValue of yesnoCvList; track codeValue) {
-                                    <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                    }
-                                  </mat-select>
-                                  @if (inGateForm?.get('preinspection_cv')?.hasError('required')) {
-                                  <mat-error>
-                                    {{translatedLangText.PRE_INSPECTION}} {{translatedLangText.SO_REQUIRED}}
-                                  </mat-error>
-                                  }
-                                </mat-form-field>
-                              </div>
-                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
-                                <mat-form-field class="example-full-width">
-                                  <mat-label>{{translatedLangText.LOLO}}</mat-label>
-                                  <mat-select formControlName="lolo_cv" required>
-                                    @for (codeValue of loloCvList; track codeValue) {
-                                    <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                    }
-                                  </mat-select>
-                                  @if (inGateForm?.get('lolo_cv')?.hasError('required')) {
-                                  <mat-error>
-                                    {{translatedLangText.LOLO}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
                                   }
                                 </mat-form-field>
@@ -333,11 +301,6 @@
                             </div>
                             <div class="row">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3 p-t-10">
-                                <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
-                                  {{translatedLangText.STORAGE}}
-                                </mat-checkbox>
-                              </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <label>{{translatedLangText.OPEN_ON_GATE}}:</label>
                                 <mat-radio-group formControlName="open_on_gate">
                                   @for (codeValue of yesnoCvList; track codeValue) {
@@ -373,9 +336,9 @@
                               </mat-icon>
                               {{translatedLangText.ACCEPT}}
                             </button>
-                            <button mat-flat-button color="primary">
+                            <!-- <button mat-flat-button color="primary">
                               <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}
-                            </button>
+                            </button> -->
                           </div>
                         </div>
                       </mat-card-content>

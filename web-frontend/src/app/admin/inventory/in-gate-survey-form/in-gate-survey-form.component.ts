@@ -1732,6 +1732,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return index === 4 || index === 5 || index === 9 || index === 10;
   }
 
+  isDisabledRect(index: number): boolean {
+    return index === 20 || index === 36 || index === 172 || index === 188;
+  }
+
+  isDisabledSquare(index: number): boolean {
+    return index === 12 || index === 13 || index === 19 || index === 20 || index === 23 || index === 31 || index === 89 || index === 97 || index === 100 || index === 101 || index === 107 || index === 108;
+  }
+
   getHighlightedCoordinates(highlightedCells: boolean[]): { x: number, y: number }[] {
     const coordinates: any[] = [];
     for (let i = 0; i < highlightedCells.length; i++) {

@@ -67,13 +67,8 @@
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.RO_NOTES}}</mat-label>
-                    <input matInput formControlName="ro_notes" required>
-                    @if (roForm?.get('ro_notes')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.RO_NOTES}} {{translatedLangText.SO_REQUIRED}}
-                    </mat-error>
-                    }
+                    <mat-label>{{translatedLangText.NOTES}}</mat-label>
+                    <input matInput formControlName="ro_notes">
                   </mat-form-field>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">

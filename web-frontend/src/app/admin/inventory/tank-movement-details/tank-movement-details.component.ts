@@ -487,8 +487,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   private sotPurposeChangeSubscriptions: Subscription[] = [];
 
-  unit_typeList: TankItem[] = []
-
   dateOfInspection: Date = new Date();
   startDateTest: Date = new Date();
   maxManuDOMDt: Date = new Date();
@@ -744,9 +742,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
-    });
-    this.subs.sink = this.tDS.loadItems().subscribe(data => {
-      this.unit_typeList = data
     });
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');

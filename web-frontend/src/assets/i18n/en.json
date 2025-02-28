@@ -1004,8 +1004,7 @@
     "WARNING-OUTSTANDING-DAYS": "Max Day(s) cannot smaller than Min Day(s)",
     "TRANSFER-DATE": "Transfer Date",
     "TRANSFER-PERIOD": "Transfer Period",
-    "FROM_YARD": "From Yard",
-    "TO_YARD": "To Yard"
+    "NOTES": "Notes"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
