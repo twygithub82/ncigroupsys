@@ -7,7 +7,7 @@ import { BaseDataSource } from './base-ds';
 
 export class TankItem {
   public guid?: string;
-  public tariff_depot_guid?:string;
+  public tariff_depot_guid?: string;
   public unit_type?: string;
   public description?: string;
   public create_dt?: number;
@@ -18,7 +18,7 @@ export class TankItem {
 
   constructor(item: Partial<TankItem> = {}) {
     this.guid = item.guid;
-    this.tariff_depot_guid=item.tariff_depot_guid;
+    this.tariff_depot_guid = item.tariff_depot_guid;
     this.unit_type = item.unit_type;
     this.description = item.description || '';
     this.create_dt = item.create_dt;
@@ -84,12 +84,12 @@ export class TankDS extends BaseDataSource<TankItem> {
     // });
   }
 
-  search(where?:any,order?:any): Observable<TankItem[]> {
+  search(where?: any, order?: any): Observable<TankItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: GET_TANK_Where,
-        variables: { where, order},
+        variables: { where, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

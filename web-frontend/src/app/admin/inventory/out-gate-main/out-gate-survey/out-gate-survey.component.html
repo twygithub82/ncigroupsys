@@ -229,7 +229,7 @@
       </ng-container>
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"
-        [routerLink]="['/admin/inventory/out-gate-survey/survey-form', row.guid, row.tank?.release_order_sot?.[0]?.guid]"
+        [routerLink]="['/admin/inventory/out-gate-main/survey-form', row.guid, row.tank?.release_order_sot?.[0]?.guid]"
         [style.cursor]="'pointer'" matRipple>
       </mat-row>
     </table>
