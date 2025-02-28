@@ -93,7 +93,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.IN-GATE-DETAILS'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE', route: '/admin/inventory/in-gate' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '0' } },
+    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '0' } }
   ]
 
   translatedLangText: any = {};
@@ -183,7 +184,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   purposeOptionCvList: CodeValuesItem[] = [];
   yesnoCvList: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
-  loloCvList: CodeValuesItem[] = [];
   hazardLevelCvList: CodeValuesItem[] = [];
   banTypeCvList: CodeValuesItem[] = [];
   natureTypeCvList: CodeValuesItem[] = [];
@@ -243,8 +243,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       purpose_storage: [''],
       open_on_gate: [{ value: '', disabled: true }],
       yard_cv: [''],
-      preinspection_cv: [''],
-      lolo_cv: ['BOTH'] // default BOTH
+      preinspection_cv: ['YES'],
+      lolo_cv: ['BOTH']
     });
   }
 
@@ -288,7 +288,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'yardCv', codeValType: 'YARD' },
-      { alias: 'loloCv', codeValType: 'LOLO' },
       { alias: 'hazardLevelCv', codeValType: 'HAZARD_LEVEL' },
       { alias: 'banTypeCv', codeValType: 'BAN_TYPE' },
       { alias: 'natureTypeCv', codeValType: 'NATURE_TYPE' },
@@ -305,9 +304,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
-    });
-    this.cvDS.connectAlias('loloCv').subscribe(data => {
-      this.loloCvList = data;
     });
     this.cvDS.connectAlias('hazardLevelCv').subscribe(data => {
       this.hazardLevelCvList = data;
@@ -332,7 +328,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       remarks: this.igDS.getInGateItem(sot.in_gate)?.remarks,
       last_cargo_guid: sot.last_cargo_guid,
       last_cargo: this.lastCargoControl,
-      purpose_storage: sot.purpose_storage,
       open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
       yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv,
       preinspection_cv: this.igDS.getInGateItem(sot.in_gate)?.preinspection_cv,
@@ -460,7 +455,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.get('haulier')?.value;
       this.storingOrderTankItem!.owner_guid = this.inGateForm.get('owner_guid')?.value;
       this.storingOrderTankItem!.job_no = this.inGateForm.get('job_no')?.value;
-      this.storingOrderTankItem!.purpose_storage = this.inGateForm.get('purpose_storage')?.value;
       this.storingOrderTankItem!.last_cargo_guid = this.inGateForm.get('last_cargo_guid')?.value;
       let so = new StoringOrderGO(this.storingOrderTankItem!.storing_order);
       let sot = new StoringOrderTankGO(this.storingOrderTankItem);
@@ -475,8 +469,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         remarks: this.inGateForm.get('remarks')?.value,
         tank: sot,
         yard_cv: this.inGateForm.get('yard_cv')?.value,
-        preinspection_cv: this.inGateForm.get('preinspection_cv')?.value,
-        lolo_cv: this.inGateForm.get('lolo_cv')?.value,
+        preinspection_cv: 'YES',
+        lolo_cv: 'BOTH',
         haulier: this.inGateForm.get('haulier')?.value
       })
       console.log(ig);
@@ -531,7 +525,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/inventory/in-gate']);
+      this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: 0 } });
     }
   }
 
@@ -585,10 +579,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       eir_dt: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt ? Utility.convertDate(this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt) : new Date(),
       job_no: this.storingOrderTankItem!.job_no,
       remarks: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.remarks,
-      purpose_storage: this.storingOrderTankItem!.purpose_storage,
       open_on_gate: this.storingOrderTankItem!.tariff_cleaning?.open_on_gate_cv,
       yard_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.yard_cv,
-      preinspection_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.preinspection_cv,
+      preinspection_cv: 'YES',
       lolo_cv: 'BOTH' // default BOTH
     });
 

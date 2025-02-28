@@ -208,7 +208,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT: 'COMMON-FORM.CARGO-ALERT',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
@@ -812,8 +811,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         }
       });
       if (subqueries.length > 0) {
-
-
         this.cvDS.getCodeValuesByType(subqueries)
         subqueries.map(s => {
           this.cvDS.connectAlias(s.alias).subscribe(data => {

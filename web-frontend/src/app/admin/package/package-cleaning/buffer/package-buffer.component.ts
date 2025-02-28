@@ -370,6 +370,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
 
   search() {
+    if (!this.customerCodeControl.value?.length) return;
     const where: any = {};
 
     if (this.customerCodeControl.value) {

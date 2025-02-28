@@ -104,7 +104,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     SO_NO: 'COMMON-FORM.SO-NO',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
+    NOTES: 'COMMON-FORM.NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
     ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
     UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
@@ -263,7 +263,11 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.subs.sink = this.tDS.loadItems().subscribe(data => {
+    this.subs.sink = this.tDS.search({
+      tariff_depot_guid: {
+        neq: null
+      }
+    }).subscribe(data => {
       this.unit_typeList = data
     });
 

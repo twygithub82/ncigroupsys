@@ -42,8 +42,8 @@ namespace IDMS.Gate.GqlTypes
                     eir_no = InGate.eir_no,
                     guid = InGate.guid,
                     remarks = InGate.remarks,
-                    lolo_cv = InGate.lolo_cv,
-                    preinspection_cv = InGate.preinspection_cv,
+                    //lolo_cv = InGate.lolo_cv,
+                    //preinspection_cv = InGate.preinspection_cv,
                     so_tank_guid = InGate.so_tank_guid,
                     vehicle_no = InGate.vehicle_no,
                     yard_cv = InGate.yard_cv,
@@ -84,7 +84,7 @@ namespace IDMS.Gate.GqlTypes
                     so_tank.tank_status_cv = TankMovementStatus.INGATE_SURVEY;
                     so_tank.owner_guid = InGate.tank.owner_guid;
                     so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
-                    so_tank.purpose_storage = InGate.tank.purpose_storage;
+                    //so_tank.purpose_storage = InGate.tank.purpose_storage;
                     so_tank.update_by = uid;
                     so_tank.update_dt = currentDate;
                     so_guid = so_tank.so_guid;
@@ -173,7 +173,7 @@ namespace IDMS.Gate.GqlTypes
                         so_tank.job_no = InGate.tank.job_no;
                         so_tank.status_cv = SOTankStatus.ACCEPTED; //"ACCEPTED";
                         so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
-                        so_tank.purpose_storage = InGate.tank.purpose_storage;
+                        //so_tank.purpose_storage = InGate.tank.purpose_storage;
                         so_tank.owner_guid = InGate.tank.owner_guid;
                         so_tank.update_by = uid;
                         so_tank.update_dt = epochNow;

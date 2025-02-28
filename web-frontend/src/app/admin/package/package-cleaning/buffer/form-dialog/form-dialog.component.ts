@@ -1,43 +1,39 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject, OnInit,ViewChild } from '@angular/core';
-import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, Inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatInputModule } from '@angular/material/input';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TranslateModule,TranslateService } from '@ngx-translate/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Utility } from 'app/utilities/utility';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { DatePipe } from '@angular/common';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { Apollo } from 'apollo-angular';
-import { CommonModule } from '@angular/common';
-import { startWith, debounceTime, tap } from 'rxjs';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatTableModule } from '@angular/material/table';
-import { MatSortModule } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Apollo } from 'apollo-angular';
+import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-company-category';
+import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
+import { PackageLabourItem } from 'app/data-sources/package-labour';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { PackageLabourItem,PackageLabourDS } from 'app/data-sources/package-labour';
-import { PackageBufferItem,PackageBufferDS } from 'app/data-sources/package-buffer';
+import { Utility } from 'app/utilities/utility';
+import { provideNgxMask } from 'ngx-mask';
 
 export interface DialogData {
   action?: string;
-  selectedValue?:number;
+  selectedValue?: number;
   // item: StoringOrderTankItem;
-   langText?: any;
-   selectedItems:PackageBufferItem[];
+  langText?: any;
+  selectedItems: PackageBufferItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -63,52 +59,39 @@ export interface DialogData {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
     MatTabsModule,
-    MatTabGroup,
-    MatTabHeader,
-    MatTabBody,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    
   ],
 })
 export class FormDialogComponent {
   displayedColumns = [
-    //  'select',
-      // 'img',
-      'mobile',
-       'fName',
-       'lName',
-       'email',
-      // 'gender',
-      // 'bDate',
-      
-      // 'actions',
-    ];
+    'mobile',
+    'fName',
+    'lName',
+    'email',
+  ];
 
   action: string;
   index?: number;
   dialogTitle?: string;
 
-  
+
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
-  custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
+  custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
   //packLabourDS : PackageLabourDS;
-  packBufferDS : PackageBufferDS;
+  packBufferDS: PackageBufferDS;
 
   translatedLangText: any = {};
   langText = {
@@ -117,7 +100,7 @@ export class FormDialogComponent {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -165,48 +148,47 @@ export class FormDialogComponent {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME:'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS:'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST :'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
-    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
-    PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-     EDIT_PACKAGE_CLEANING:"MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING-EDIT",
-     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
-     PACKAGE_LABOUR:"COMMON-FORM.PACKAGE-LABOUR",
-     COST:"COMMON-FORM.COST",
-     PACKAGE_BUFFER:'MENUITEMS.PACKAGE.LIST.PACKAGE-BUFFER',
-     LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
-    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
-    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    EDIT_PACKAGE_CLEANING: "MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING-EDIT",
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    PACKAGE_LABOUR: "COMMON-FORM.PACKAGE-LABOUR",
+    COST: "COMMON-FORM.COST",
+    PACKAGE_BUFFER: 'MENUITEMS.PACKAGE.LIST.PACKAGE-BUFFER',
+    LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
   };
 
-  
-  selectedItems: PackageBufferItem[]=[];
+
+  selectedItems: PackageBufferItem[] = [];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
-  
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -216,24 +198,24 @@ export class FormDialogComponent {
     private snackBar: MatSnackBar,
   ) {
     // Set the defaults
-    
+
     this.selectedItems = data.selectedItems;
-    
+
     this.pcForm = this.createPackageLabour();
-    if(this.selectedItems.length==1)
+    if (this.selectedItems.length == 1)
       this.pcForm.patchValue({
-      
-        adjusted_cost:this.selectedItems[0].cost?.toFixed(2),
-        standard_cost:this.selectedItems[0].tariff_buffer?.cost?.toFixed(2),
-        remarks:this.selectedItems[0].remarks
-      
+
+        adjusted_cost: this.selectedItems[0].cost?.toFixed(2),
+        standard_cost: this.selectedItems[0].tariff_buffer?.cost?.toFixed(2),
+        remarks: this.selectedItems[0].remarks
+
         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
       });
-    
-         
+
+
     //this.tcDS = new TariffCleaningDS(this.apollo);
     //this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.packBufferDS = new PackageBufferDS(this.apollo);
 
     this.action = data.action!;
@@ -258,22 +240,21 @@ export class FormDialogComponent {
   createPackageLabour(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      adjusted_cost:[''],
-      standard_cost:['-'],
-      remarks:['']
+      adjusted_cost: [''],
+      standard_cost: ['-'],
+      remarks: ['']
     });
   }
- 
+
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
   }
- 
 
-  canEdit()
-  {
+
+  canEdit() {
     return true;
   }
 
@@ -283,55 +264,51 @@ export class FormDialogComponent {
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        
+
       });
     }
   }
 
   save() {
 
-   
+
 
     var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
     var remarks = this.pcForm!.value["remarks"];
 
-    if(this.selectedItems.length==1)
-    {
+    if (this.selectedItems.length == 1) {
       var packLabour = new PackageLabourItem(this.selectedItems[0]);
-      packLabour.cost= Number( this.pcForm!.value["adjusted_cost"]);
-      packLabour.remarks=this.pcForm!.value["remarks"];
-      packLabour.tariff_labour=undefined;
-      packLabour.customer_company=undefined;
-      this.packBufferDS.updatePackageBuffer(packLabour).subscribe(result=>{
+      packLabour.cost = Number(this.pcForm!.value["adjusted_cost"]);
+      packLabour.remarks = this.pcForm!.value["remarks"];
+      packLabour.tariff_labour = undefined;
+      packLabour.customer_company = undefined;
+      this.packBufferDS.updatePackageBuffer(packLabour).subscribe(result => {
 
-        if(result.data.updatePackageBuffer>0)
-          {
-           
-                    console.log('valid');
-                    this.dialogRef.close(result.data.updatePackageBuffer);
-    
-          }
+        if (result.data.updatePackageBuffer > 0) {
+
+          console.log('valid');
+          this.dialogRef.close(result.data.updatePackageBuffer);
+
+        }
       });
     }
-    else if(this.selectedItems.length>1)
-    {
-      let pc_guids:string[] = this.selectedItems
-      .map(cc => cc.guid)
-      .filter((guid): guid is string => guid !== undefined);
+    else if (this.selectedItems.length > 1) {
+      let pc_guids: string[] = this.selectedItems
+        .map(cc => cc.guid)
+        .filter((guid): guid is string => guid !== undefined);
 
-      let cost= -1;
-      if(this.pcForm!.value["adjusted_cost"]) cost = this.pcForm!.value["adjusted_cost"];
+      let cost = -1;
+      if (this.pcForm!.value["adjusted_cost"]) cost = this.pcForm!.value["adjusted_cost"];
 
-      let remarks =this.pcForm!.value["remarks"];
-      this.packBufferDS.updatePackageBuffers(pc_guids,cost,remarks).subscribe(result=>{
+      let remarks = this.pcForm!.value["remarks"];
+      this.packBufferDS.updatePackageBuffers(pc_guids, cost, remarks).subscribe(result => {
 
-        if(result.data.updatePackageBuffers>0)
-          {
-           
-                    console.log('valid');
-                    this.dialogRef.close(result.data.updatePackageBuffers);
-    
-          }
+        if (result.data.updatePackageBuffers > 0) {
+
+          console.log('valid');
+          this.dialogRef.close(result.data.updatePackageBuffers);
+
+        }
       });
 
     }
@@ -349,10 +326,10 @@ export class FormDialogComponent {
     //   }
     // });
 
-   
+
 
   }
-  
+
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
@@ -366,5 +343,5 @@ export class FormDialogComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  
+
 }

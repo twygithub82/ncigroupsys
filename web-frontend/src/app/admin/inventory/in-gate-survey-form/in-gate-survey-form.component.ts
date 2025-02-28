@@ -99,7 +99,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY-FORM'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY', route: '/admin/inventory/in-gate-survey' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '1' } },
+    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '1' } }
   ]
 
   translatedLangText: any = {};
@@ -1729,6 +1730,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   isDisabled(index: number): boolean {
     return index === 4 || index === 5 || index === 9 || index === 10;
+  }
+
+  isDisabledRect(index: number): boolean {
+    return index === 20 || index === 36 || index === 172 || index === 188;
+  }
+
+  isDisabledSquare(index: number): boolean {
+    return index === 12 || index === 13 || index === 19 || index === 20 || index === 23 || index === 31 || index === 89 || index === 97 || index === 100 || index === 101 || index === 107 || index === 108;
   }
 
   getHighlightedCoordinates(highlightedCells: boolean[]): { x: number, y: number }[] {

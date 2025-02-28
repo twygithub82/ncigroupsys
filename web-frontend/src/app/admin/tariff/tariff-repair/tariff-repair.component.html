@@ -219,7 +219,7 @@
                     (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST$}}:</span>
                     <div class="cost-label">
-                      <span></span><span>{{row.material_cost.toFixed(2)}}</span>
+                      <span></span><span>{{row.material_cost?.toFixed(2)}}</span>
                     </div>
                   </mat-cell>
                 </ng-container>

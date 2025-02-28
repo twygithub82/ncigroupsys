@@ -27,16 +27,9 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
@@ -81,28 +74,21 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    // // 'img',
     'customerCode',
     'companyName',
     'minTemp',
     'maxTemp',
     'cost',
     'labour',
-    // 'qty',
     'lastUpdate',
-    // 'mobile',
-    //  'actions',
   ];
 
   customerCodeControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
 
   ccDS: CustomerCompanyDS;
-  // clnCatDS:CleaningCategoryDS;
-  // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   packSteamDS: PackageSteamingDS;
 
-  //tariffSteamItems : TariffSteamingItem[]=[];
   customer_companyList?: CustomerCompanyItem[];
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
 
@@ -193,7 +179,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT: 'COMMON-FORM.CARGO-ALERT',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
     CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
     CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
@@ -223,7 +208,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
@@ -232,8 +216,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     super();
     this.initTcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.packSteamDS = new PackageSteamingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -433,6 +415,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
 
   search() {
+    if (!this.customerCodeControl.value?.length) return;
     const where: any = {
       and: []
     };
