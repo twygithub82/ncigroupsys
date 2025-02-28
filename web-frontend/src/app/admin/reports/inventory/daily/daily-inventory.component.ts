@@ -33,15 +33,15 @@ import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_customer_inventory, report_inventory_yard } from 'app/data-sources/reports';
+import { daily_inventory_summary, report_customer_inventory, report_inventory_yard, ReportDS } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { DailyDetailInventoryPdfComponent } from 'app/document-template/pdf/inventory/daily-detail-pdf/daily-detail-pdf.component';
 import { DailyOverviewSummaryPdfComponent } from 'app/document-template/pdf/inventory/daily-overview-summary-pdf/daily-overview-summary-pdf.component';
-import { YardDetailPdfComponent } from 'app/document-template/pdf/tank-activity/yard/detail-pdf/yard-detail-pdf.component';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+
+import { DailyDetailSummaryPdfComponent } from 'app/document-template/pdf/inventory/daily-details-summary-pdf/daily-summary-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -150,7 +150,8 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
     OVERVIEW_SUMMARY:'COMMON-FORM.OVERVIEW-SUMMARY',
-    DETAIL_SUMMARY:'COMMON-FORM.DETAIL-SUMMARY'
+    DETAIL_SUMMARY:'COMMON-FORM.DETAIL-SUMMARY',
+    LOCATION:'COMMON-FORM.LOCATION'
 
     
   }
@@ -171,12 +172,14 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   stmDS: SteamDS;
   plDS: PackageLabourDS;
   billDS: BillingDS;
+  reportDS:ReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
   selectedEstimateLabourCost?: number;
   stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
+  dailySumList: daily_inventory_summary[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -225,6 +228,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.reportDS=new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -385,14 +389,89 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       queryType=2;
     }
 
+    if ([1, 3].includes(report_type)) 
+    {
+      if (this.searchForm!.get('customer_code')?.value) {
+        // if(!where.storing_order_tank) where.storing_order_tank={};
+        where.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
+        cond_counter++;
+      }
+
+      var date: string = `${Utility.convertDateToStr(new Date())}`;
+    // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+      if (this.searchForm!.get('inv_dt')?.value) {
+        // date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt_end')?.value))}`;
+        // var start_dt:any=Utility.convertDate(this.searchForm!.value['inv_dt_start'])||Utility.convertDate(new Date());
+        // var end_dt:any=Utility.convertDate(this.searchForm!.value['inv_dt_end'], true)||Utility.convertDate(new Date(),true);
+
+        date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt')?.value))}`;
+        var startdt=new Date( this.searchForm!.value['inv_dt']);
+      var enddt=new Date( this.searchForm!.value['inv_dt']);
+        var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date());
+        var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
+        var cond: any = { some: { eir_dt: { gte:start_dt, lte: end_dt } } };
+        
+        if (queryType == 1 || queryType==3) {
+          if(!where.or)where.or=[];
+          //where.in_gate = {};
+          where.or.push({and:[{in_gate:cond},{in_gate:{any:true}}]}); //in Gate
+        }
+        
+        if(queryType==2 || queryType==3){
+          if(!where.or)where.or=[];
+          //where.in_gate = {};
+          where.or.push({and:[{out_gate:cond},{out_gate:{any:true}}]}); //out Gate
+        
+        }
+      // if(!where.or)where.or=[];
+      // where.or.push({and:[{create_dt:{lte:end_dt}},{or:[{in_gate:{some:{eir_dt:{gte:end_dt}}}},{in_gate:{any:false}}]}]}); //pending
+      //where.or.push({and:[{create_dt:{lte:end_dt}}]}); //pending and opening balance
+      //where.or.push({and:[{in_gate:{some:{eir_dt:{lte:end_dt}}}},{or:[{out_gate:{some:{eir_dt:{lte:end_dt}}}},{out_gate:{any:false}}]}]}); //In Yard
+
+
+        cond_counter++;
+        //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+      }
+
+      // if (this.searchForm!.get('last_cargo')?.value) {
+      //   where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
+      //   cond_counter++
+      // }
+      this.noCond = (cond_counter === 0);
+      if (this.noCond) return;
+
+      this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
+      this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date);
+    }
+    else
+    {
+      this.performSearchSummaryDetail(queryType,invType);
+
+    }
+  }
+
+
+  performSearchSummaryDetail(queryType?: number, invType?: string)
+  {
+
+    var cond_counter = 0;
+    var date: string = `${Utility.convertDateToStr(new Date())}`;
+    var dailyInvReq:any={};
+    dailyInvReq.inventory_type='in';
+    if(queryType==2)
+    {
+      dailyInvReq.inventory_type='out';
+    }
+    else if(queryType==3)
+    {
+      dailyInvReq.inventory_type='all';
+    }
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
+      dailyInvReq.customer_code = this.searchForm!.get('customer_code')?.value.code ;
       cond_counter++;
     }
 
-    var date: string = `${Utility.convertDateToStr(new Date())}`;
-   // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
     if (this.searchForm!.get('inv_dt')?.value) {
       // date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt_end')?.value))}`;
       // var start_dt:any=Utility.convertDate(this.searchForm!.value['inv_dt_start'])||Utility.convertDate(new Date());
@@ -401,43 +480,24 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt')?.value))}`;
       var startdt=new Date( this.searchForm!.value['inv_dt']);
     var enddt=new Date( this.searchForm!.value['inv_dt']);
-      var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date());
-      var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
-      var cond: any = { some: { eir_dt: { gte:start_dt, lte: end_dt } } };
-      
-      if (queryType == 1 || queryType==3) {
-        if(!where.or)where.or=[];
-        //where.in_gate = {};
-        where.or.push({and:[{in_gate:cond},{in_gate:{any:true}}]}); //in Gate
-      }
-      
-      if(queryType==2 || queryType==3){
-        if(!where.or)where.or=[];
-        //where.in_gate = {};
-        where.or.push({and:[{out_gate:cond},{out_gate:{any:true}}]}); //out Gate
-       
-      }
-     // if(!where.or)where.or=[];
-     // where.or.push({and:[{create_dt:{lte:end_dt}},{or:[{in_gate:{some:{eir_dt:{gte:end_dt}}}},{in_gate:{any:false}}]}]}); //pending
-     //where.or.push({and:[{create_dt:{lte:end_dt}}]}); //pending and opening balance
-     //where.or.push({and:[{in_gate:{some:{eir_dt:{lte:end_dt}}}},{or:[{out_gate:{some:{eir_dt:{lte:end_dt}}}},{out_gate:{any:false}}]}]}); //In Yard
-
-
+      dailyInvReq.start_date=Utility.convertDate(startdt)||Utility.convertDate(new Date());
+      dailyInvReq.end_date=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
       cond_counter++;
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
-    // if (this.searchForm!.get('last_cargo')?.value) {
-    //   where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
-    //   cond_counter++
-    // }
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
+    this.subs.sink = this.reportDS.searchDailyInventorySummaryReport(dailyInvReq)
+    .subscribe(data => {
+      if(data.length>0)
+      {
+        this.dailySumList = data;
+        
+        this.onExportSummary(this.dailySumList, invType!, date!, queryType!);
+      }
+   });
 
-    this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date);
   }
-
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number, invType?: string, date?: string) {
 
     // if(queryType==1)
@@ -450,13 +510,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
         this.ProcessReportCustomerInventory(invType!, date!, report_type!, queryType!);
-        //this.checkInvoicedAndGetTotalCost();
-        //this.checkInvoiced();
-        //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
-      });
-
-
-
+     });
     this.pageSize = pageSize;
     this.pageIndex = pageIndex;
   }
@@ -592,16 +646,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     return numSelected === numRows;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  // masterToggle() {
-  //    this.isAllSelected()
-  //      ? this.selection.clear()
-  //      : this.stmEstList.forEach((row) =>
-  //          this.selection.select(row)
-  //        );
-  //   this.calculateTotalCost();
-  // }
-
+ 
   AllowToSave(): boolean {
     let retval: boolean = false;
     if (this.selection.selected.length > 0) {
@@ -613,6 +658,10 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     return retval;
   }
 
+  ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number)
+  { if (this.dailySumList.length === 0) return;
+
+  }
 
   ProcessReportCustomerInventory(invType: string, date: string, report_type: number, queryType: number) {
     if (this.sotList.length === 0) return;
@@ -620,8 +669,6 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     var report_customer_tank_inventory: report_customer_inventory[] = [];
     var report_yard_inventory:report_inventory_yard[]=[];
 
-    // var start_dt:any=Utility.convertDate(this.searchForm!.value['inv_dt_start'])||Utility.convertDate(new Date());
-    // var end_dt:any=Utility.convertDate(this.searchForm!.value['inv_dt_end'], true)||Utility.convertDate(new Date(),true);
     var startdt=new Date( this.searchForm!.value['inv_dt']);
     var enddt=new Date( this.searchForm!.value['inv_dt']);
      var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date());
@@ -741,7 +788,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     });
   }
 
-  onExportSummary(repCustomerTankActivity: report_customer_inventory[], invType: string, date: string, queryType: number) {
+  onExportSummary(repDailyDetailSummary: daily_inventory_summary[], invType: string, date: string, queryType: number) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -753,11 +800,11 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
-      width: '85vw',
+    const dialogRef = this.dialog.open(DailyDetailSummaryPdfComponent, {
+      width: '70vw',
       maxHeight: '80vh',
       data: {
-        report_customer_tank_activity: repCustomerTankActivity,
+        report_daily_inventory_summary: repDailyDetailSummary,
         type: invType,
         date: date,
         queryType: queryType

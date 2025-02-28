@@ -128,7 +128,6 @@ export class report_inventory_cleaning_detail{
 
 }
 
-
 export class cleaning_report_summary_item {
   public code?: string;
   public count?: number;
@@ -139,6 +138,32 @@ export class cleaning_report_summary_item {
     this.code=item.code;
     this.count=item.count;
     this.name=item.name;
+  }
+}
+
+
+export class openingBalance{
+  count?:number;
+  yard?:String;
+  constructor(item: Partial<openingBalance> = {}) {
+    this.count = item.count;
+    this.yard=item.yard;
+  }
+}
+
+export class daily_inventory_summary{
+  code?:String;
+  in_gate_count?:number;
+  name?:String;
+  out_gate_count?:number;
+  opening_balance?:openingBalance[]=[];
+
+  constructor(item: Partial<daily_inventory_summary> = {}) {
+    this.code = item.code;
+    this.in_gate_count=item.in_gate_count;
+    this.out_gate_count=item.out_gate_count;
+    this.name=item.name;
+    this.opening_balance=item.opening_balance;
   }
 }
 
@@ -154,12 +179,52 @@ export const GET_CLEANING_INVENTORY_REPORT = gql`
   }
 `
 
+export const GET_DAILY_INVENTORY_SUMMARY = gql`
+  query queryDailyInventorySummary($dailyInventoryRequest: DailyInventoryRequestInput!) {
+    resultList: queryDailyInventorySummary(dailyInventoryRequest: $dailyInventoryRequest) {
+      code
+      name
+      out_gate_count
+      in_gate_count
+      opening_balance {
+        count
+        yard
+      }
+    }
+  }
+`
+
 
 export class ReportDS extends BaseDataSource<any> {
   constructor(private apollo: Apollo) {
     super();
   }
 
+  searchDailyInventorySummaryReport(dailyInventoryRequest:any): Observable<daily_inventory_summary[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_DAILY_INVENTORY_SUMMARY,
+        variables: { dailyInventoryRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList;
+        })
+      );
+  }
 
  searchCleaningInventorySummaryReport(cleaningInventoryRequest:any): Observable<cleaning_report_summary_item[]> {
     this.loadingSubject.next(true);

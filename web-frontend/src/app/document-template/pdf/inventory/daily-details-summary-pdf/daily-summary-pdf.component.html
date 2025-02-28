@@ -3,57 +3,75 @@
 </div>
 <div #pdfTable id="pdfTable" mat-dialog-content>
   
-  <div class="row clearfix">
-    
-    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+  <div class="clearfix">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
       <div class="card">
-        <div class="header">
-          <h2>{{this.translatedLangText.TANK_STATUS}}</h2>
-        </div>
-        <div class="card-body">
-          <div style="height: 400px">
-            <ngx-charts-bar-horizontal [scheme]="horizontalBarOptions.colorScheme!" [results]="horizontalBarOptions.single" [gradient]="horizontalBarOptions.gradient!"
-              [xAxis]="horizontalBarOptions.showXAxis" [yAxis]="horizontalBarOptions.showYAxis" [legend]="horizontalBarOptions.showLegend!" [legendPosition]="horizontalBarOptions.legendPosition!"
-              [showXAxisLabel]="horizontalBarOptions.showXAxisLabel!" [showYAxisLabel]="horizontalBarOptions.showYAxisLabel!" [xAxisLabel]="horizontalBarOptions.hbarxAxisLabel!"
-              >
-            </ngx-charts-bar-horizontal>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-      <div class="card">
+        <div class="pdf-body">
+          <table  id="table_customer_info" class="table_customer_info">
+            <tr>
+              <td class="sp60 text-right">{{translatedLangText.INVENTORY_DATE}} : {{date}}</td>
+              <td class="sp20">&nbsp;</td>
+              <td class="sp40 text-right"> {{translatedLangText.DATE}} :{{GeneratedDate()}}</td>
+              
+            </tr>
+          </table>
+        </div> 
         <table id="repair-part-table" class="repair-part-table">
           <tr class="group-header">
             <th class="th-w3">{{translatedLangText.NO}}</th>
-            <th class="th-w8">{{translatedLangText.TANK_NO}}</th>
-            <th class="th-w6">{{translatedLangText.IN_DATE}}</th>
-            <th class="th-w8">{{translatedLangText.TAKE_IN_REFERENCE}}</th>
-            <th class="th-w6">{{translatedLangText.CAPACITY}}</th>
-            <th class="th-w8">{{translatedLangText.TARE_WEIGHT}}</th>
-            <th class="th-w12">{{translatedLangText.LAST_CARGO}}</th>
-            <th class="th-w7">{{translatedLangText.CLEAN_DATE}}</th>
+            <th class="th-w15">{{translatedLangText.CUSTOMER_CODE}}</th>
+            <th class="th-w30">{{translatedLangText.CUSTOMER_NAME}}</th>
+            <th class="th-w8">{{translatedLangText.IN_GATE}}</th>
+            <th class="th-w8">{{translatedLangText.OUT_GATE}}</th>
           </tr>
           @for (itm of report_inventory; track itm;let index = $index) {
           <tr class="fixed_height_40px">
             <td>{{ index + 1 }}</td> <!-- Row number -->
             <td>{{ itm.code }}</td>
-            <td>{{itm.customer }}</td>
-            <td>{{itm.tank_no_in_gate}}</td>
-            <td>{{itm.tank_no_out_gate}}</td>
-            <td>{{itm.tank_no_in_yard}}</td>
-            <td>{{itm.tank_no_pending}}</td>
-            <td>{{itm.tank_no_ro}}</td>
+            <td>{{itm.name }}</td>
+            <td>{{displayInGate(itm)}}</td>
+            <td>{{displayOutGate(itm)}}</td>
           </tr>
           }
           <tr>
-            <td colspan="3">{{translatedLangText.TOTAL}}</td>
-            <td>sum of in-gate</td>
-            <td>sum of out-gate</td>
-            <td colspan="3">&nbsp;</td>
+            <td class="text-right text-bold" colspan="3">{{translatedLangText.TOTAL}}</td>
+            <td>{{displayTotalInGate()}}</td>
+            <td>{{displayTotalOutGate()}}</td>
           </tr>
         </table>
-  
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+        <table class="repair-part-table">
+          <tr class="group-header">
+            <th class="th-w3">{{translatedLangText.NO}}</th>
+            <th class="th-w30">{{translatedLangText.LOCATION}}</th>
+            <th class="th-w8">{{translatedLangText.OPENING_BALANCE}}</th>
+            <th class="th-w8">{{translatedLangText.IN_GATE}}</th>
+            <th class="th-w8">{{translatedLangText.OUT_GATE}}</th>
+            <th class="th-w8">{{translatedLangText.CLOSING_BALANCE}}</th>
+          </tr>
+          @if(report_inventory.length>0){
+            @if(report_inventory[0].opening_balance){
+              @for (itm of report_inventory[0].opening_balance; track itm;let index = $index) {
+                <tr class="fixed_height_40px">
+                  <td>{{ index + 1 }}</td> <!-- Row number -->
+                  <td>{{ itm.yard }}</td>
+                  <td>{{itm.count }}</td>
+                  <td>{{displayInGateForYard(itm.yard!)}}</td>
+                  <td>{{displayOutGateForYard(itm.yard!)}}</td>
+                  <td>{{displayClosingBalanceForYard(itm.yard!)}}</td>
+                </tr>
+                }
+            }
+          }
+            <tr>
+              <td class="text-right text-bold" colspan="2">{{translatedLangText.TOTAL}}</td>
+              <td>{{displayOpeningBalance()}}</td>
+              <td>{{displayTotalInGate()}}</td>
+              <td>{{displayTotalOutGate()}}</td>
+              <td>{{displayClosingBalance()}}</td>
+            </tr>
+        </table>
       </div>
     </div>
   </div>

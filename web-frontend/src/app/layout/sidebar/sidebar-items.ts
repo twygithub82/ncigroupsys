@@ -1092,8 +1092,8 @@ export const ROUTES: RouteInfo[] = [
         visible: true
       },
       {
-        path: "admin/steam/job-order",
-        title: "MENUITEMS.STEAM.LIST.JOB-ORDER",
+        path: "admin/reports/tank-survey",
+        title: "MENUITEMS.REPORTS.LIST.TANK-SURVEY",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -1101,7 +1101,19 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: false
+        visible: true
+      },
+      {
+        path: "admin/reports/periodic-test-due",
+        title: "MENUITEMS.REPORTS.LIST.PERIODIC-TEST-DUE",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: true
       }
     ].filter(item => item.visible !== false),
   },

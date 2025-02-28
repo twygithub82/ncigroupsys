@@ -1,45 +1,48 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef, Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import {jsPDF} from 'jspdf';
+import html2canvas from 'html2canvas';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
+import { customerInfo } from 'environments/environment.development';
+import { Utility } from 'app/utilities/utility';
 import { TranslateService } from '@ngx-translate/core';
+import { OutGateItem } from 'app/data-sources/out-gate';
+import { InGateSurveyDS } from 'app/data-sources/in-gate-survey';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { Utility } from 'app/utilities/utility';
-import { customerInfo } from 'environments/environment';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { PackageBufferItem } from 'app/data-sources/package-buffer';
+import { NgClass } from '@angular/common';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
 // import { saveAs } from 'file-saver';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
-import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
-import { RepairCostTableItem } from 'app/data-sources/repair';
+import { DomSanitizer } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { RepairCostTableItem, RepairDS } from 'app/data-sources/repair';
+import { RepairPartDS } from 'app/data-sources/repair-part';
+import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status } from 'app/data-sources/reports';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { SteamDS } from 'app/data-sources/steam';
+import { SteamPartDS } from 'app/data-sources/steam-part';
+import { report_billing_customer } from 'app/data-sources/billing';
+import {daily_inventory_summary, report_customer_inventory, report_status, report_status_yard} from 'app/data-sources/reports';
 import {
-  ApexAxisChartSeries, ApexChart,
-  ApexDataLabels,
-  ApexFill,
-  ApexGrid,
-  ApexLegend,
-  ApexMarkers, ApexNonAxisChartSeries,
-  ApexPlotOptions,
-  ApexResponsive,
-  ApexStroke,
-  ApexTitleSubtitle,
-  ApexTooltip,
-  ApexXAxis,
-  ApexYAxis,
-  NgApexchartsModule
-} from 'ng-apexcharts';
+  ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis,
+  ApexDataLabels,  ApexPlotOptions,  ApexYAxis,  ApexLegend,
+  ApexStroke,  ApexFill,  ApexTooltip,  ApexTitleSubtitle,
+  ApexGrid,  ApexMarkers,  ApexNonAxisChartSeries,  ApexResponsive,
+  NgApexchartsModule} from 'ng-apexcharts';
+import{BarChartModule, Color, LegendPosition, ScaleType} from '@swimlane/ngx-charts'
 
   export type HorizontalBarOptions={
     showXAxis?:boolean;
@@ -78,8 +81,12 @@ import {
   };
 
 export interface DialogData {
-  report_inventory: report_customer_inventory[],
-  date:string
+  report_daily_inventory_summary: daily_inventory_summary[],
+  type: string,
+  date:string,
+  queryType:number
+  
+  
  
 }
 
@@ -100,7 +107,7 @@ export interface DialogData {
     BarChartModule,
   ],
 })
-export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -218,6 +225,7 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
     EMAIL: 'COMMON-FORM.EMAIL',
     WEB: 'COMMON-FORM.WEB',
     IN_GATE: 'COMMON-FORM.IN-GATE',
+    OUT_GATE: 'COMMON-FORM.OUT-GATE',
     EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
     LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
@@ -284,7 +292,12 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
     INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
     TANK_STATUS:'COMMON-FORM.TANK-STATUS',
     YARD_STATUS:'COMMON-FORM.YARD-STATUS',
-    TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER'
+    TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER',
+    OPENING_BALANCE:'COMMON-FORM.OPENING-BALANCE',
+    CLOSING_BALANCE:'COMMON-FORM.CLOSING-BALANCE',
+    LOCATION:'COMMON-FORM.LOCATION',
+    INVENTORY_DATE:'COMMON-FORM.INVENTORY-DATE',
+    DAILY_INVENTORY:'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY'
     
 
   }
@@ -338,14 +351,15 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_inventory:report_customer_inventory[]=[];
+  report_inventory:daily_inventory_summary[]=[];
   date:string='';
   invType:string='';
+  queryType:number=0;
 
   
 
   constructor(
-    public dialogRef: MatDialogRef<DailySummaryPdfComponent>,
+    public dialogRef: MatDialogRef<DailyDetailSummaryPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -367,7 +381,10 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
     // this.existingPdf = data.existingPdf;
-    this.report_inventory= data.report_inventory;
+    this.report_inventory= data.report_daily_inventory_summary;
+    this.queryType=data.queryType;
+    this.invType=data.type;
+    this.date=data.date;
     
     this.loadData();
     this.disclaimerNote = customerInfo.eirDisclaimerNote
@@ -883,7 +900,7 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
    }
    GetReportTitle():string
    {
-     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.SUMMARY_REPORT}`
+     return `${this.translatedLangText.DAILY_INVENTORY} ${this.translatedLangText.SUMMARY_REPORT}`
    }
 
    processCustomerStatus(repStatus:report_status[])
@@ -1245,6 +1262,69 @@ export class DailySummaryPdfComponent extends UnsubscribeOnDestroyAdapter implem
       ]
     };
 
+   }
+
+   displayOpeningBalance()
+   {
+     var OpenBal:number=0;
+     OpenBal = this.report_inventory?.[0]?.opening_balance?.reduce((total, item) => {
+      return total + (item.count??0);
+    }, 0)||0;
+  
+     return OpenBal;
+   }
+
+   displayOutGate(dailyInv:daily_inventory_summary)
+   {
+     return dailyInv.out_gate_count||0;
+   }
+   displayInGate(dailyInv:daily_inventory_summary)
+   {
+     return dailyInv.in_gate_count||0;
+   }
+   displayTotalInGate()
+   {
+    var totalInGate:number=0;
+    totalInGate = this.report_inventory?.reduce((total, item) => {
+      return total + (item.in_gate_count??0);
+    }, 0)||0;
+  
+     return totalInGate;
+     
+   }
+
+   displayTotalOutGate()
+   {
+    var totalOutGate:number=0;
+    totalOutGate = this.report_inventory?.reduce((total, item) => {
+      return total + (item.out_gate_count??0);
+    }, 0)||0;
+  
+     return totalOutGate;
+     
+   }
+
+   displayInGateForYard(yard?:String)
+   {
+     return 0;
+   }
+
+   displayOutGateForYard(yard?:String)
+   {
+     return 0;
+   }
+
+   displayClosingBalanceForYard(yard?:String)
+   {
+    return 0;
+   }
+
+   displayClosingBalance()
+   {
+     var openBal=this.displayOpeningBalance();
+     var inGate=this.displayTotalInGate();
+     var outGate=this.displayTotalOutGate();
+     return openBal+inGate-outGate;
    }
   
 }
