@@ -99,7 +99,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY-FORM'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY', route: '/admin/inventory/in-gate-survey' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '1' } },
+    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '1' } }
   ]
 
   translatedLangText: any = {};

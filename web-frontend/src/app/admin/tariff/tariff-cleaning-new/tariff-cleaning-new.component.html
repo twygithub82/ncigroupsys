@@ -9,139 +9,138 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <form class="ms-0" [formGroup]="tcForm!" (ngSubmit)="onTCFormSubmit()" #formDirective="ngForm">
           <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 " >
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
               <div class="card">
-              <div class="header">
-                <h2>
-                  {{langText.HEADER | translate}}
-                  @if (this.tc_guid) {
-                  ({{ tcForm?.get('cargo_name')?.value}})
-                  }
-                </h2>
-              </div>
-              <div class="body">
-              <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-
-                <div class="row ">
-                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{langText.CARGO_NAME | translate}}</mat-label>
-                      <input matInput formControlName="cargo_name" required>
-                      @if (tcForm?.get('cargo_name')?.hasError('required')) {
-                      <mat-error>
-                        {{langText.CARGO_NAME | translate}} {{langText.CARGO_REQUIRED | translate}}
-                      </mat-error>
-                      }
-                    </mat-form-field>
-                  </div>
-                 
+                <div class="header">
+                  <h2>
+                    {{langText.HEADER | translate}}
+                    @if (this.tc_guid) {
+                    ({{ tcForm?.get('cargo_name')?.value}})
+                    }
+                  </h2>
                 </div>
-                <div class="row">
-                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{langText.CARGO_DESCRIPTION | translate}}</mat-label>
-                      <input matInput formControlName="cargo_description">
-                    </mat-form-field>
-                  </div>
+                <div class="body">
+                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="row ">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{langText.CARGO_NAME | translate}}</mat-label>
+                          <input matInput formControlName="cargo_name" required>
+                          @if (tcForm?.get('cargo_name')?.hasError('required')) {
+                          <mat-error>
+                            {{langText.CARGO_NAME | translate}} {{langText.CARGO_REQUIRED | translate}}
+                          </mat-error>
+                          }
+                        </mat-form-field>
+                      </div>
 
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{langText.CARGO_DESCRIPTION | translate}}</mat-label>
+                          <input matInput formControlName="cargo_description">
+                        </mat-form-field>
+                      </div>
+
+                    </div>
+                    <div class="row ">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{langText.CARGO_ALIAS | translate}}</mat-label>
+                          <input matInput formControlName="cargo_alias">
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row">
+
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{langText.OPEN_ON_GATE | translate}}</mat-label>
+                          <mat-select formControlName="open_gate" required>
+                            @for (cn of openGateCvList; track cn) {
+                            <mat-option [value]="cn.code_val">
+                              {{cn.description}}
+                            </mat-option>
+                            }
+                          </mat-select>
+
+                          @if (tcForm?.get('open_gate')?.hasError('required')) {
+                          <mat-error>
+                            {{langText.OPEN_ON_GATE | translate}} {{langText.CARGO_REQUIRED | translate}}
+                          </mat-error>
+                          }
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{langText.CARGO_METHOD | translate}}</mat-label>
+                          <mat-select formControlName="method" required>
+                            @for (cm of cMethodList; track cm) {
+                            <mat-option [value]="cm.guid">
+                              {{cm.name}}
+                            </mat-option>
+                            }
+                          </mat-select>
+                          @if (tcForm?.get('method')?.hasError('required')) {
+                          <mat-error>
+                            {{langText.CARGO_METHOD | translate}} {{langText.CARGO_REQUIRED | translate}}
+                          </mat-error>
+                          }
+
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{langText.CARGO_CATEGORY | translate}}</mat-label>
+                          <mat-select formControlName="category" required>
+                            @for (cCat of cCategoryList; track cCat) {
+                            <mat-option [value]="cCat.guid">
+                              {{cCat.name}}
+                            </mat-option>
+                            }
+                          </mat-select>
+                          @if (tcForm?.get('category')?.hasError('required')) {
+                          <mat-error>
+                            {{langText.CARGO_CATEGORY | translate}} {{langText.CARGO_REQUIRED | translate}}
+                          </mat-error>
+                          }
+                        </mat-form-field>
+
+
+                      </div>
+                    </div>
+
+                    <div class="row ">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{langText.REMARKS | translate}}</mat-label>
+                          <input matInput formControlName="remarks">
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
-                <div class="row ">
-                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{langText.CARGO_ALIAS | translate}}</mat-label>
-                      <input matInput formControlName="cargo_alias">
-                    </mat-form-field>
-                  </div>
-                </div>
-                <div class="row">
-                  
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{langText.OPEN_ON_GATE | translate}}</mat-label>
-                      <mat-select formControlName="open_gate" required>
-                        @for (cn of openGateCvList; track cn) {
-                        <mat-option [value]="cn.code_val">
-                          {{cn.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-
-                      @if (tcForm?.get('open_gate')?.hasError('required')) {
-                      <mat-error>
-                        {{langText.OPEN_ON_GATE | translate}} {{langText.CARGO_REQUIRED | translate}}
-                      </mat-error>
-                      }
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.CARGO_METHOD | translate}}</mat-label>
-                      <mat-select formControlName="method" required>
-                        @for (cm of cMethodList; track cm) {
-                        <mat-option [value]="cm.guid">
-                          {{cm.name}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                      @if (tcForm?.get('method')?.hasError('required')) {
-                      <mat-error>
-                        {{langText.CARGO_METHOD | translate}} {{langText.CARGO_REQUIRED | translate}}
-                      </mat-error>
-                      }
-                    
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{langText.CARGO_CATEGORY | translate}}</mat-label>
-                      <mat-select formControlName="category" required>
-                        @for (cCat of cCategoryList; track cCat) {
-                        <mat-option [value]="cCat.guid">
-                          {{cCat.name}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                      @if (tcForm?.get('category')?.hasError('required')) {
-                      <mat-error>
-                        {{langText.CARGO_CATEGORY | translate}} {{langText.CARGO_REQUIRED | translate}}
-                      </mat-error>
-                      }
-                    </mat-form-field>
-
-                    
-                  </div>
-                </div>
-
-                <div class="row ">
-                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{langText.REMARKS | translate}}</mat-label>
-                      <input matInput formControlName="remarks">
-                    </mat-form-field>
-                  </div>
-                </div>
-              
-              </div>
               </div>
             </div>
-            </div>
-            <div class=" col-lg-6 col-md-6 col-sm-12 col-xs-12" >
+            <div class=" col-lg-6 col-md-6 col-sm-12 col-xs-12">
               <div class="row">
                 <div class="card">
                   <div class="header">
                     <h2>
                       {{langText.CARGO_CLASS_SELECT | translate}}
-                    
+
                     </h2>
                   </div>
-                <div class="body">
+                  <div class="body">
                     <div class="row">
-    
+
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.CARGO_HAZARD_LEVEL | translate}}</mat-label>
-    
+
                           <mat-select formControlName="hazard_level" required>
                             @for (cn of hazardLevelCvList; track cn) {
                             <mat-option [value]="cn.code_val">
@@ -149,7 +148,7 @@
                             </mat-option>
                             }
                           </mat-select>
-    
+
                           @if (tcForm?.get('hazard_level')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_HAZARD_LEVEL | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -168,35 +167,36 @@
                             }
                           </mat-select>
                           @if (tcForm?.get('nature')?.hasError('required')) {
-                            <mat-error>
-                              {{langText.CARGO_NATURE | translate}} {{langText.CARGO_REQUIRED | translate}}
-                            </mat-error>
-                            }
+                          <mat-error>
+                            {{langText.CARGO_NATURE | translate}} {{langText.CARGO_REQUIRED | translate}}
+                          </mat-error>
+                          }
                         </mat-form-field>
                       </div>
-                    
+
                     </div>
                     <div class="row">
-                      
+
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
-                           <input matInput formControlName="un_no" required [maxLength]="6" (blur)="onUnNoBlur()" [ngStyle]="{ 'color': this.newUNNo ? '#FF8C00' : 'black' }" >
+                          <input matInput formControlName="un_no" required [maxLength]="6" (blur)="onUnNoBlur()"
+                            [ngStyle]="{ 'color': this.newUNNo ? '#FF8C00' : 'black' }">
                           @if (tcForm?.get('un_no')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_UN_NO | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
                           }
                           @if (tcForm?.get('un_no')?.hasError('existed')) {
-                            <mat-error>
-                              {{langText.CARGO_UN_NO | translate}}: {{langText.EXISTED | translate}}
-                            </mat-error>
-                            }
+                          <mat-error>
+                            {{langText.CARGO_UN_NO | translate}}: {{langText.EXISTED | translate}}
+                          </mat-error>
+                          }
                           @if (tcForm?.get('un_no')?.hasError('invalidCharacter')) {
-                              <mat-error>
-                                {{langText.CARGO_UN_NO | translate}}: {{langText.INVALID | translate}}
-                              </mat-error>
-                              }
+                          <mat-error>
+                            {{langText.CARGO_UN_NO | translate}}: {{langText.INVALID | translate}}
+                          </mat-error>
+                          }
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
@@ -213,10 +213,11 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CARGO_CLASS }}</mat-label>
-                          <input matInput formControlName="class_no" required (dblclick)="addClassNo($event)" [matAutocomplete]="classNo">
+                          <input matInput formControlName="class_no" required (dblclick)="addClassNo($event)"
+                            [matAutocomplete]="classNo">
                           <mat-autocomplete #classNo="matAutocomplete" [displayWith]="displayClassNoFn">
                             @for (itm of existingClassNos; track itm) {
-              
+
                             <mat-option [value]="itm.class">
                               {{itm.class}}
                             </mat-option>
@@ -233,87 +234,90 @@
                     <div class="row">
                       <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                         <mat-label>{{translatedLangText.SDS_FILE }}</mat-label>
-                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button" [disabled]="!isFileSelectable">
+                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button"
+                          [disabled]="!isFileSelectable">
                           <i class="material-icons">attach_file</i>
                         </button>
-                        <input type="file" #fileInput class="defaultd-none"  (change)="onFileSelected($event)" 
-                          style="display: none;" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
-                          
+                        <input type="file" #fileInput class="defaultd-none" (change)="onFileSelected($event)"
+                          style="display: none;"
+                          accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+
                       </div>
-                    
+
                       @if (tcForm?.get('file_size')?.hasError('required')) {
-                        <mat-error  >
-                          {{translatedLangText.SDS_FILE }}  {{translatedLangText.CARGO_REQUIRED }}
-                        </mat-error>
-                        }
+                      <mat-error>
+                        {{translatedLangText.SDS_FILE }} {{translatedLangText.CARGO_REQUIRED }}
+                      </mat-error>
+                      }
                       @if (tcForm?.get('file_size')?.hasError('error')) {
-                        <mat-error  >
-                          {{translatedLangText.ATTACHMENT_TOO_BIG }}
-                        </mat-error>
-                        }
+                      <mat-error>
+                        {{translatedLangText.ATTACHMENT_TOO_BIG }}
+                      </mat-error>
+                      }
                       <!-- Display file name and preview button -->
                       <div *ngIf="selectedFile">
                         <p>{{ tcForm!.get('cargo_name')?.value??'' }}
-                         <span *ngIf="selectedFileChanged">*</span></p>
-                        <button mat-raised-button color="primary" (click)="previewFile()"  type="button">Preview</button>
+                          <span *ngIf="selectedFileChanged">*</span>
+                        </p>
+                        <button mat-raised-button color="primary" (click)="previewFile()" type="button">Preview</button>
                       </div>
                       @if (this.selectedFileLoading | async) {
-                        <div class="tbl-spinner">
-                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                          </mat-progress-spinner>
-                        </div>
-                        }
-
-                      
-                    </div>
-                  
-              </div>
-             </div>
-            </div>
-             <div class="row">
-              <div class="card">
-                <div class="header">
-                  <h2>
-                    {{langText.HEADER_OTHER | translate}}
-                  
-                  </h2>
-                </div>
-                <div class="body">
-                <div class="row">
-                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.CARGO_ALERT }}</mat-label>
-                      <input matInput formControlName="in_gate_alert" required>
-                      @if (tcForm?.get('in_gate_alert')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.CARGO_ALERT }} {{translatedLangText.CARGO_REQUIRED }}
-                      </mat-error>
+                      <div class="tbl-spinner">
+                        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                        </mat-progress-spinner>
+                      </div>
                       }
-                    </mat-form-field>
+
+
+                    </div>
+
                   </div>
-                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.CARGO_NOTE }}</mat-label>
-                      <input matInput formControlName="depot_note">
-                    </mat-form-field>
-                  </div>
-                </div>
                 </div>
               </div>
-            </div>
-            
-            
+              <div class="row">
+                <div class="card">
+                  <div class="header">
+                    <h2>
+                      {{langText.HEADER_OTHER | translate}}
+
+                    </h2>
+                  </div>
+                  <div class="body">
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.CARGO_ALERT }}</mat-label>
+                          <input matInput formControlName="in_gate_alert" required>
+                          @if (tcForm?.get('in_gate_alert')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.CARGO_ALERT }} {{translatedLangText.CARGO_REQUIRED }}
+                          </mat-error>
+                          }
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.CARGO_NOTE }}</mat-label>
+                          <input matInput formControlName="depot_note">
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
             </div>
           </div>
-          
+
           <div class="row m-t-10">
-           
+
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
               <button mat-flat-button aria-label="Back to previous page" (click)="GoBackPrevious($event)" type="button">
-               <!-- [routerLink]="['/admin/tariff/tariff-cleaning']"  type="button"> -->
-               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK }}
-             </button> 
-           </div>
+                <!-- [routerLink]="['/admin/tariff/tariff-cleaning']"  type="button"> -->
+                <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK }}
+              </button>
+            </div>
 
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
 
@@ -326,11 +330,11 @@
                 <ng-template #loading>
                   <mat-icon class="spinner">autorenew</mat-icon>
                 </ng-template>
-               
+
               </button>
 
             </div>
-           
+
           </div>
         </form>
       </div>

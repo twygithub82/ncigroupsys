@@ -93,7 +93,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.IN-GATE-DETAILS'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE', route: '/admin/inventory/in-gate' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '0' } },
+    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '0' } }
   ]
 
   translatedLangText: any = {};
@@ -531,7 +532,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/inventory/in-gate']);
+      this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: 0 } });
     }
   }
 

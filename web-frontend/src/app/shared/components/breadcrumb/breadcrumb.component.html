@@ -18,7 +18,7 @@
         }
         @else {
         <li class="breadcrumb-item">
-          <a [routerLink]="item.route">
+          <a [routerLink]="item.route" [queryParams]="item.queryParams">
             {{item.text | translate}}
           </a>
         </li>

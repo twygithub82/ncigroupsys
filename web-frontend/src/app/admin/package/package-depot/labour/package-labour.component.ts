@@ -186,7 +186,6 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT: 'COMMON-FORM.CARGO-ALERT',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
     CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
     CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
@@ -395,9 +394,8 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
+    if (!this.customerCodeControl.value?.length) return;
     const where: any = {};
 
     if (this.customerCodeControl.value) {

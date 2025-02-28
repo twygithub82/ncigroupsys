@@ -51,6 +51,9 @@ export class AppComponent implements OnInit, OnDestroy {
       this.userActivitySubscription?.unsubscribe();
       this.router.navigate(['/authentication/signin-staff']);
     });
+    this.authService.userLoggedIn.subscribe(() => { // ✅ Resubscribe when user logs in
+      this.detectUserActivity(); 
+    });
   }
 
   ngOnDestroy() {

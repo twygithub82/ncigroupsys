@@ -19,6 +19,7 @@ export class AuthService {
   public currentUser: Observable<User>;
 
   tokenRefreshed = new Subject<void>();
+  userLoggedIn = new Subject<void>();
   userLoggedOut = new Subject<void>();
 
   constructor(private http: HttpClient) {
@@ -79,6 +80,7 @@ export class AuthService {
             localStorage.setItem(this.tokenKey, JSON.stringify(userToken));
             this.currentUserSubject.next(usr);
             this.tokenRefreshed.next();
+            this.userLoggedIn.next();
           }
           return user;
         }),

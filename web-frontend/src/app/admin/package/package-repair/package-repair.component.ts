@@ -292,7 +292,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
     this.translateLangText();
     this.search();
-
   }
 
   initPcForm() {
@@ -472,6 +471,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
+    if (!this.customerCodeControl.value?.length) return;
     const where: any = {};
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {

@@ -89,9 +89,6 @@
                 <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
                   [style.cursor]="'pointer'" matRipple>
                 </mat-row>
-                <!-- <mat-row *matRowDef="let row; columns: displayedColumns;"
-                    [routerLink]="['/admin/in-gate/details', row.guid]" [style.cursor]="'pointer'" matRipple>
-                  </mat-row> -->
               </table>
             </div>
             <!-- No result -->

@@ -354,7 +354,7 @@
                         <div class="row m-t-10">
                           <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12">
                             <button mat-flat-button aria-label="Back to previous page"
-                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/in-gate/']">
+                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/in-gate-main']" [queryParams]="{ tabIndex: 0 }">
                               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                             </button>
                           </div>
@@ -495,7 +495,7 @@
                           {{translatedLangText.IN_GATE_ALERT}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.in_gate_alert ?? "-"}}
+                          <b class="text-danger">{{cargoDetails?.in_gate_alert ?? "-"}}</b>
                         </div>
                       </div>
                       <div class="row">
