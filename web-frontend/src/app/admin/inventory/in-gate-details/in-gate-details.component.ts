@@ -243,7 +243,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       purpose_storage: [''],
       open_on_gate: [{ value: '', disabled: true }],
       yard_cv: [''],
-      preinspection_cv: ['']
+      preinspection_cv: ['YES'],
+      lolo_cv: ['BOTH']
     });
   }
 
@@ -328,7 +329,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       last_cargo_guid: sot.last_cargo_guid,
       last_cargo: this.lastCargoControl,
       open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
-      yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv
+      yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv,
+      preinspection_cv: this.igDS.getInGateItem(sot.in_gate)?.preinspection_cv,
+      lolo_cv: 'BOTH' // default BOTH
     });
 
     if (sot.tariff_cleaning) {
@@ -466,6 +469,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         remarks: this.inGateForm.get('remarks')?.value,
         tank: sot,
         yard_cv: this.inGateForm.get('yard_cv')?.value,
+        preinspection_cv: this.inGateForm.get('preinspection_cv')?.value,
+        lolo_cv: this.inGateForm.get('lolo_cv')?.value,
         haulier: this.inGateForm.get('haulier')?.value
       })
       console.log(ig);
@@ -576,6 +581,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       remarks: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.remarks,
       open_on_gate: this.storingOrderTankItem!.tariff_cleaning?.open_on_gate_cv,
       yard_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.yard_cv,
+      preinspection_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.preinspection_cv,
+      lolo_cv: 'BOTH' // default BOTH
     });
 
     if (this.storingOrderTankItem!.tariff_cleaning) {
