@@ -38,6 +38,8 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { firstValueFrom } from 'rxjs';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,
@@ -80,7 +82,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     //  'gender',
     // 'bDate',
     // 'mobile',
-    // 'actions',
+     'actions',
   ];
 
   PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
@@ -109,6 +111,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   tariffResidueDS: TariffResidueDS;
 
   tariffResidueItems: TariffResidueItem[] = [];
+  sotDS : StoringOrderTankDS;
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList1?: CustomerCompanyItem[];
@@ -212,7 +215,10 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     COST: 'COMMON-FORM.COST',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    TARIFF_RESIDUE_ASSIGNED:'COMMON-FORM.TARIFF-RESIDUE-ASSIGNED',
+    ARE_U_SURE_DELETE:'COMMON-FORM.ARE-YOU-SURE-DELETE',
+   
   }
 
   constructor(
@@ -231,6 +237,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.tariffResidueDS = new TariffResidueDS(this.apollo);
+    this.sotDS=new StoringOrderTankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -292,6 +299,11 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
+
+        if (this.tariffResidueDS.totalCount > 0) {
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        }
+
         this.handleSaveSuccess(result);
         //this.search();
         // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
@@ -709,5 +721,76 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     //this.customerCodeControl.reset('');
 
   }
+
+  async cancelItem(row: TariffResidueItem) {
+      // this.id = row.id;
+     
+       var cargoAssigned:boolean = await this.TariffResidueAssigned(row.guid!);
+       if(cargoAssigned)
+       {
+          let tempDirection: Direction;
+          if (localStorage.getItem('isRtl') === 'true') {
+            tempDirection = 'rtl';
+          } else {
+            tempDirection = 'ltr';
+          }
+          const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            width: '500px',
+            data: {
+              headerText: this.translatedLangText.WARNING,
+              messageText:[this.translatedLangText.TARIFF_RESIDUE_ASSIGNED,this.translatedLangText.ARE_U_SURE_DELETE],
+              act: "warn"
+            },
+            direction: tempDirection
+          });
+        dialogRef.afterClosed().subscribe(result=>{
+         
+          if(result.action=="confirmed")
+          {
+            this.deleteTariffAndPackageResidue(row.guid!);
+          }
+  
+        });
+       }
+       else
+       {
+          this.deleteTariffAndPackageResidue(row.guid!);
+       }
+  
+    }
+
+   deleteTariffAndPackageResidue(tariffResidueGuid:string)
+      {
+         
+         this.tariffResidueDS.deleteTariffResidue ([tariffResidueGuid]).subscribe(d=>{
+            let count =d.data.deleteTariffResidue;
+            if(count>0)
+            {
+                this.handleSaveSuccess(count);
+                if (this.tariffResidueDS.totalCount > 0) {
+                  this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+                }
+            }
+         });
+      }
+  
+    async TariffResidueAssigned(tariffResidueGuid: string): Promise<boolean> {
+          let retval: boolean = false;
+          var where: any = {};
+      
+          where = {and:[{residue:{ some: { residue_part:{some:{tariff_residue_guid:{eq:tariffResidueGuid}}} }}},
+                        {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}] };
+          
+          try {
+            // Use firstValueFrom to convert Observable to Promise
+            const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {},1));
+            retval=(result.length > 0)
+          } catch (error) {
+            console.error("Error fetching tariff residue guid:", error);
+          }
+      
+          return retval;
+        }
+    
 }
 

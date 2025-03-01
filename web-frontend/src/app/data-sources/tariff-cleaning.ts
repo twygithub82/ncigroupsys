@@ -329,6 +329,12 @@ export const UPDATE_TARIFF_CLEANING = gql`
   }
 `;
 
+export const DELETE_TARIFF_CLEANING = gql`
+  mutation deleteTariffClean($deleteTariffClean_guids: [String!]!) {
+    deleteTariffClean(deleteTariffClean_guids: $deleteTariffClean_guids)
+  }
+`;
+
 
 export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
   constructor(private apollo: Apollo) {
@@ -430,6 +436,20 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       mutation: UPDATE_TARIFF_CLEANING,
       variables: {
         tc
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  deleteTariffCleaning(deleteTariffClean_guids: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_TARIFF_CLEANING,
+      variables: {
+        deleteTariffClean_guids
       }
     }).pipe(
       catchError((error: ApolloError) => {

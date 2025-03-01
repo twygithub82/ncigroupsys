@@ -319,20 +319,31 @@
               </button>
             </div>
 
+            
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
 
-              <button mat-flat-button color="primary" type="submit">
+              @if (!(submitForSaving | async)) {
+              <button mat-flat-button color="primary" class="m-r-5" type="submit">
 
-                <ng-container *ngIf="!(submitForSaving | async); else loading">
+                <mat-icon>
+                  save
+                </mat-icon>
+                {{translatedLangText.SAVE_AND_SUBMIT}}
+
+                <!-- @if(submitForSaving)
+                {
                   <mat-icon>save</mat-icon>
-                  {{ translatedLangText.SAVE_AND_SUBMIT | translate }}
-                </ng-container>
-                <ng-template #loading>
+                  {{ translatedLangText.SAVE_AND_SUBMIT}}
+                }
+                else
+                {
                   <mat-icon class="spinner">autorenew</mat-icon>
-                </ng-template>
-
+                } -->
               </button>
-
+              } @else{
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              }
             </div>
 
           </div>

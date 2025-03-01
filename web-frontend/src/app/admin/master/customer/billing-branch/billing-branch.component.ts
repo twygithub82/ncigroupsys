@@ -437,6 +437,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
+    where.type_cv = { in: ["BRANCH"] };
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
 
@@ -598,7 +599,9 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   }
   public loadData() {
 
-    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
+    var cond:any={};
+    cond.type_cv = { in: ["BRANCH"] }
+    this.subs.sink = this.custCompDS.search(cond, { code: 'ASC' }, 100).subscribe(data => {
       this.all_customer_companyList = data
     });
 

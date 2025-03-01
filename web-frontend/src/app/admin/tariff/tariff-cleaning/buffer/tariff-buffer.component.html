@@ -107,16 +107,17 @@
             </ng-container>
             <!-- actions -->
             <ng-container matColumnDef="actions">
-              <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
-              <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="addCall()"
-                  class="tbl-action-btn">
-                  <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+              <mat-header-cell
+                [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let row; let i=index;"
+                [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+               
+                <button mat-icon-button  (click)="$event.stopPropagation()" (click)="cancelItem(row)"
+                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                  <mat-icon>delete_forever</mat-icon>
                 </button>
-                <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
-                  class="tbl-action-btn">
-                  <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
-                </button>
+                
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

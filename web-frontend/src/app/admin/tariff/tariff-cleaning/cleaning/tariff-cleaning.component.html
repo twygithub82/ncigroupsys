@@ -225,6 +225,20 @@
               <!-- <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.un_no}}</mat-cell> -->
             </ng-container>
+            <ng-container matColumnDef="actions">
+              <mat-header-cell
+                [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let row; let i=index;"
+                [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+               
+                <button mat-icon-button  (click)="$event.stopPropagation()" (click)="cancelItem(row)"
+                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                  <mat-icon>delete_forever</mat-icon>
+                </button>
+                
+              </mat-cell>
+            </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)" [style.cursor]="'pointer'"
               matRipple>

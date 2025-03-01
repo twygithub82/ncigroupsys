@@ -406,7 +406,7 @@
     "CARGO-FLASH-POINT": "Flash Point",
     "CARGO-COST": "Cost $",
     "CARGO-CATEGORY": "Category",
-    "CARGO-METHOD": "Method",
+    "CARGO-METHOD": "Process",
     "CARGO-HAZARD-LEVEL": "Hazard Level",
     "CARGO-BAN-TYPE": "Ban Type",
     "CARGO-DETAILS": "Cargo Details",
@@ -1012,7 +1012,12 @@
     "OPENING-BALANCE":"Opening Balance",
     "CLOSING-BALANCE":"Closing Balance",
     "DUE-TYPE":"Due Type",
-    "NEXT-TEST-TYPE":"Next Test Type"
+    "NEXT-TEST-TYPE":"Next Test Type",
+    "DUPLICATE-CARGO-FOUND":"The Cargo is found in the system",
+    "WARNING":"Warning",
+    "TARIFF-CARGO-ASSIGNED":"The Tariff Cargo was assigned to storing order tanks",
+    "TARIFF-RESIDUE-ASSIGNED":"The Tariff Residue was assigned to storing order tanks",
+    "TARIFF-BUFFER-ASSIGNED":"The Tariff Buffer was assigned to storing order tanks"
     
   },
   "CLEAN-PROCEDURES": {

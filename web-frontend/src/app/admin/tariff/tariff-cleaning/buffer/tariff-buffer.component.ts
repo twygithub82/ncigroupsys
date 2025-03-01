@@ -35,6 +35,8 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { firstValueFrom } from 'rxjs';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 
 @Component({
   selector: 'app-tariff-buffer',
@@ -78,7 +80,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     //  'gender',
     // 'bDate',
     // 'mobile',
-    // 'actions',
+     'actions',
   ];
 
   PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
@@ -105,6 +107,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   tariffBufferDS: TariffBufferDS;
+  sotDS:StoringOrderTankDS;
 
   tariffBufferItems: TariffBufferItem[] = [];
 
@@ -211,7 +214,11 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     BUFFER_CLEANING: 'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
     COST: 'COMMON-FORM.COST',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    TARIFF_BUFFER_ASSIGNED:'COMMON-FORM.TARIFF-BUFFER-ASSIGNED',
+    ARE_U_SURE_DELETE:'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    
+   
   }
 
   constructor(
@@ -230,6 +237,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.tariffBufferDS = new TariffBufferDS(this.apollo);
+    this.sotDS=new StoringOrderTankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -673,4 +681,78 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     this.customerCodeControl.reset('');
 
   }
+
+
+
+  async cancelItem(row: TariffBufferItem) {
+      // this.id = row.id;
+     
+       var cargoAssigned:boolean = await this.TariffBufferAssigned(row.guid!);
+       if(cargoAssigned)
+       {
+          let tempDirection: Direction;
+          if (localStorage.getItem('isRtl') === 'true') {
+            tempDirection = 'rtl';
+          } else {
+            tempDirection = 'ltr';
+          }
+          const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            width: '500px',
+            data: {
+              headerText: this.translatedLangText.WARNING,
+              messageText:[this.translatedLangText.TARIFF_BUFFER_ASSIGNED,this.translatedLangText.ARE_U_SURE_DELETE],
+              act: "warn"
+            },
+            direction: tempDirection
+          });
+        dialogRef.afterClosed().subscribe(result=>{
+         
+          if(result.action=="confirmed")
+          {
+            this.deleteTariffAndPackageBuffer(row.guid!);
+          }
+  
+        });
+       }
+       else
+       {
+          this.deleteTariffAndPackageBuffer(row.guid!);
+       }
+  
+    }
+  
+    deleteTariffAndPackageBuffer(tariffBufferGuid:string)
+    {
+       
+       this.tariffBufferDS.deleteTariffBuffer([tariffBufferGuid]).subscribe(d=>{
+          let count =d.data.deleteTariffBuffer;
+          if(count>0)
+          {
+              this.handleSaveSuccess(count);
+              if (this.tariffBufferDS.totalCount > 0) {
+                this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+              }
+          }
+       });
+    }
+
+  async TariffBufferAssigned(tariffBufferGuid: string): Promise<boolean> {
+        let retval: boolean = false;
+        var where: any = {};
+    
+        where = {and:[{in_gate:{ some: { in_gate_survey:{tank_comp_guid:{eq:tariffBufferGuid}}}}},
+                      {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}] };
+        
+        try {
+          // Use firstValueFrom to convert Observable to Promise
+          const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {},1));
+          retval=(result.length > 0)
+        } catch (error) {
+          console.error("Error fetching tariff buffer guid:", error);
+        }
+    
+        return retval;
+      }
+  
+  
 }

@@ -83,6 +83,13 @@ export const UPDATE_TARIFF_BUFFER = gql`
   }
 `;
 
+
+export const DELETE_TARIFF_BUFFER = gql`
+   mutation deleteTariffBuffer($deleteTariffBuffer_guids: [String!]!) {
+    deleteTariffBuffer(deleteTariffBuffer_guids: $deleteTariffBuffer_guids)
+  }
+`;
+
 export const ADD_TARIFF_BUFFER = gql`
   mutation addTariffBuffer($td: tariff_bufferInput!) {
     addTariffBuffer(newTariffBuffer: $td)
@@ -145,6 +152,20 @@ export class TariffBufferDS extends BaseDataSource<TariffBufferItem> {
         mutation: UPDATE_TARIFF_BUFFER,
         variables: {
           td
+        }
+      }).pipe(
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+      );
+    }
+
+    deleteTariffBuffer(deleteTariffBuffer_guids: any): Observable<any> {
+      return this.apollo.mutate({
+        mutation: DELETE_TARIFF_BUFFER,
+        variables: {
+          deleteTariffBuffer_guids
         }
       }).pipe(
         catchError((error: ApolloError) => {

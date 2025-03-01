@@ -848,20 +848,68 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
 
     var billingBranches: BillingBranchesItem[] = [];
-    if (this.ccForm?.get("billing_branches")?.value) {
-
-    }
+   
     this.ccDS.AddCustomerCompany(cust, contactPerson, billingBranches).subscribe(result => {
 
 
       var count = result.data.addCustomerCompany;
       if (count > 0) {
+
+
+        if (this.ccForm?.get("billing_branches")?.value) {
+          var b = this.ccForm?.get("billing_branches")?.value as CustomerCompanyItem;
+          this.updateCustomerBillingBranch(cust,b);
+        }
+        
         this.handleSaveSuccess(count);
+       
       }
     });
 
   }
 
+  updateCustomerBillingBranch( customer?:CustomerCompanyItem, customerBillingBranch?:CustomerCompanyItem)
+  {
+     if(customer)
+     {
+      const where :any={};
+      where.code ={eq:customer?.code};
+      this.ccDS.search(where).subscribe(c=>{
+         if(c.length>0)
+         {
+          var CusCmp = new CustomerCompanyItem(c[0]);
+            var custGuid = CusCmp.guid;
+            
+            
+            if (customerBillingBranch?.main_customer_guid !== custGuid) {
+              let billing_branch = new BillingBranchesItem();
+              billing_branch.branchCustomer = new BillingCustomerItem(customerBillingBranch);
+              billing_branch.branchCustomer.action = customerBillingBranch?.guid == "" ? "NEW" : "EDIT";
+              billing_branch.branchCustomer.main_customer_guid = custGuid;
+              var billingBranches: BillingBranchesItem[] = [];
+              delete billing_branch.branchCustomer.update_by;
+              delete billing_branch.branchCustomer.update_dt;
+              delete billing_branch.branchCustomer.create_by;
+              delete billing_branch.branchCustomer.create_dt;
+              delete billing_branch.branchCustomer.delete_dt;
+              delete billing_branch.branchCustomer.cc_contact_person;
+              delete billing_branch.branchCustomer.currency;
+              billingBranches.push(billing_branch);
+
+              
+              delete CusCmp.update_by;
+              delete CusCmp.update_dt;
+              delete CusCmp.create_by;
+              delete CusCmp.create_dt;
+              delete CusCmp.delete_dt;
+              delete CusCmp.cc_contact_person;
+              delete CusCmp.currency;
+              this.ccDS.UpdateCustomerCompany(CusCmp, undefined, billingBranches).subscribe();
+            }
+         }
+        });
+     }
+  }
   updateExistCustomer() {
 
     if (this.selectedCustomerCmp) {
@@ -945,17 +993,18 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
 
       var billingBranches: BillingBranchesItem[] = [];
+      let billing_branch = new BillingBranchesItem();
       if (this.ccForm?.get("billing_branches")?.value) {
 
 
         var b = this.ccForm?.get("billing_branches")?.value as CustomerCompanyItem;
-        let billing_branch = new BillingBranchesItem();
+       
         billing_branch.branchCustomer = new BillingCustomerItem(b);
 
         if (b.main_customer_guid !== this.selectedCustomerCmp.guid) {
           billing_branch.branchCustomer.action = b.guid == "" ? "NEW" : "EDIT";
           billing_branch.branchCustomer.main_customer_guid = this.selectedCustomerCmp?.guid;
-
+          
 
         }
         else {
@@ -971,6 +1020,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         delete billing_branch.branchCustomer.cc_contact_person;
         delete billing_branch.branchCustomer.currency;
 
+        billingBranches.push(billing_branch);
         billing_branch.branchContactPerson = [];
         b.cc_contact_person?.forEach(p => {
 
@@ -980,12 +1030,22 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         });
 
 
+      
+
+
+      }
+
+        const where :any={};
+        where.main_customer_guid={eq:selectedCusCmp?.guid};
+        this.ccDS.search(where,{},100).subscribe(b=>{
+          var branches =b;
         //check and remove the existing Billing branch if new billing branch selected.
-        var existingBillingBranchCust = this.getBillingBranches(selectedCusCmp?.guid!);
-        if (existingBillingBranchCust) {
-          if (existingBillingBranchCust?.guid !== billing_branch?.branchCustomer.guid!) {
+        
+        if (branches.length>0) {
+          branches.forEach(b=>{
+          if (b?.guid !== billing_branch?.branchCustomer?.guid!) {
             let exist_billing_branch = new BillingBranchesItem();
-            exist_billing_branch.branchCustomer = new BillingCustomerItem(existingBillingBranchCust);
+            exist_billing_branch.branchCustomer = new BillingCustomerItem(b);
             exist_billing_branch.branchCustomer.action = "EDIT";
             exist_billing_branch.branchCustomer.main_customer_guid = "";
 
@@ -999,13 +1059,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
             billingBranches.push(exist_billing_branch);
           }
-        }
-
-        billingBranches.push(billing_branch);
-
-
-
+        });
       }
+      //   billingBranches.push(billing_branch);
+      // });
 
 
       delete selectedCusCmp.update_by;
@@ -1014,6 +1071,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       delete selectedCusCmp.create_dt;
       delete selectedCusCmp.delete_dt;
       delete selectedCusCmp.cc_contact_person;
+      
 
 
       var existContactPersons = existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
@@ -1026,7 +1084,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           this.handleSaveSuccess(count);
         }
       });
-
+     });
     }
     else {
       this.insertNewCustomer();
@@ -1347,8 +1405,14 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
+        var cond:any={};
+        cond.and=[];
+        cond.and.push({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] });
+        cond.and.push({type_cv : { in: ["BRANCH"] }});
+        this.subs.sink = this.ccDS.search(cond, { code: 'ASC' }).subscribe(data => {
+          let currentCustCode =  this.ccForm!.get('customer_code')!.value;
+          this.customer_companyList = data.filter(d=>d.code!=currentCustCode);
+
         });
       })
     ).subscribe();
