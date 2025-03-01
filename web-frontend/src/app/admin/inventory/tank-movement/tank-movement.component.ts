@@ -298,7 +298,13 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
 
   search() {
     const where: any = {
-      status_cv: { in: ['WAITING', 'ACCEPTED'] }
+      status_cv: { in: ['WAITING', 'ACCEPTED'] },
+      in_gate: {
+        some: {
+          delete_dt: { eq: null },
+          eir_status_cv: { in: ["PENDING", "PUBLISHED"] }
+        }
+      }
     };
 
     if (this.searchForm!.get('tank_no')?.value) {
