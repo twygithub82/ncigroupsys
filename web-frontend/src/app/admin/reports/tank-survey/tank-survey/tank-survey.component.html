@@ -65,7 +65,7 @@
                   <mat-label>{{translatedLangText.SURVEY_TYPE}}</mat-label>
                   <mat-select   formControlName="svy_type" multiple>
                  
-                    @for (tc of yardCvList; track tc) {
+                    @for (tc of surveyTypeCvList; track tc) {
                     <mat-option [value]="tc">
                       {{tc.description}}
                     </mat-option>
@@ -79,10 +79,10 @@
                   <mat-label>{{translatedLangText.SURVEY_NAME}}</mat-label>
                   <input matInput formControlName="svy_name" 
                     [matAutocomplete]="SurveyName">
-                  <mat-autocomplete #SurveyName="matAutocomplete" >
-                    @for (cc of customer_companyList; track cc) {
+                  <mat-autocomplete #SurveyName="matAutocomplete" [displayWith]="displayCustomerCompanyFn" >
+                    @for (cc of survey_nameList; track cc) {
                     <mat-option [value]="cc">
-                      {{cc.code}}
+                      {{ccDS.displayName(cc)}}
                     </mat-option>
                     }
                   </mat-autocomplete>

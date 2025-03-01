@@ -156,7 +156,9 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     SURVEY_TYPE:'COMMON-FORM.SURVEY-TYPE',
     SURVEY_NAME:'COMMON-FORM.SURVEY-NAME',
     DUE_TYPE:'COMMON-FORM.DUE-TYPE',
-    NEXT_TEST_TYPE:'COMMON-FORM.NEXT-TEST-TYPE'
+    NEXT_TEST_DUE:'COMMON-FORM.NEXT-TEST-DUE',
+    NORMAL:'COMMON-FORM.NORMAL',
+    DUE:'COMMON-FORM.DUE'
   }
 
   invForm?: UntypedFormGroup;
@@ -190,6 +192,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   inventoryTypeCvList: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
+  testCvList:CodeValuesItem[]=[];
 
   processType: string = "STEAMING";
   billingParty: string = "CUSTOMER";
@@ -208,7 +211,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-
+  dueType:string[]=[];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -241,6 +244,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     this.initializeValueChanges();
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
+    
   }
 
   initInvoiceForm() {
@@ -262,7 +266,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       yard: [''],
       reference:[''],
       due_type:[''],
-      next_test_type:['']
+      next_test_due:['']
 
     });
   }
@@ -299,6 +303,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'testCv', codeValType: 'TEST_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -309,6 +314,9 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     // });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('testCv').subscribe(data => {
+      this.testCvList = data;
     });
     // this.cvDS.connectAlias('yardCv').subscribe(data => {
     //   this.yardCvList = addDefaultSelectOption(data, 'All');
@@ -457,6 +465,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
+      this.dueType=[this.translatedLangText.NORMAL,this.translatedLangText.DUE]
     });
   }
 
@@ -499,7 +508,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       yard: '',
       reference:'', 
       due_type:'',
-      next_test_type:''
+      next_test_due:''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
