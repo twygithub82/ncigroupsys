@@ -53,6 +53,8 @@ import { Moment } from 'moment';
 import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-out-gate-survey-form',
@@ -213,7 +215,17 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
     PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS',
-    PHOTOS: 'COMMON-FORM.PHOTOS'
+    PHOTOS: 'COMMON-FORM.PHOTOS',
+    PUBLISH: 'COMMON-FORM.PUBLISH',
+    MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
+    DOM: 'COMMON-FORM.DOM',
+    OTHERS: 'COMMON-FORM.OTHERS',
+    EMPTY_FORM: 'COMMON-FORM.EMPTY-FORM',
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    COMPARTMENT_TYPE_BTM_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-BTM-EMPTY',
+    COMPARTMENT_TYPE_TOP_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-TOP-EMPTY',
+    COMPARTMENT_TYPE_MANLID_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-MANLID-EMPTY',
+    ARE_YOU_SURE_TO_SUBMIT: 'COMMON-FORM.ARE-YOU-SURE-TO-SUBMIT',
   }
   private destroy$ = new Subject<void>();
 
@@ -417,8 +429,11 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         bottomFormGroup: this.fb.group({
           btm_dis_comp_cv: [''],
           btm_dis_valve_cv: [''],
+          btm_dis_valve_oth: [''],
           btm_dis_valve_spec_cv: [''],
+          btm_dis_valve_spec_oth: [''],
           foot_valve_cv: [''],
+          foot_valve_oth: [''],
           btm_valve_brand_cv: [''],
           thermometer: [''],
           thermometer_cv: [''],
@@ -428,17 +443,23 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         topFormGroup: this.fb.group({
           top_dis_comp_cv: [''],
           top_dis_valve_cv: [''],
+          top_dis_valve_oth: [''],
           top_dis_valve_spec_cv: [''],
+          top_dis_valve_spec_oth: [''],
           top_valve_brand_cv: [''],
           airline_valve_cv: [''],
+          airline_valve_oth: [''],
           airline_valve_pcs: [''],
           airline_valve_dim: [''],
           airline_valve_conn_cv: [''],
+          airline_valve_conn_oth: [''],
           airline_valve_conn_spec_cv: [''],
+          airline_valve_conn_spec_oth: [''],
         }),
         manlidFormGroup: this.fb.group({
           manlid_comp_cv: [''],
           manlid_cover_cv: [''],
+          manlid_cover_oth: [''],
           manlid_cover_pcs: [''],
           manlid_cover_pts: [''],
           manlid_seal_cv: [''],
@@ -558,6 +579,10 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         });
       })
     ).subscribe();
+  }
+
+  displayOthers(formControlValue: any) {
+    return BusinessLogicUtil.isOthers(formControlValue);
   }
 
   dmgImages(): UntypedFormArray {
@@ -799,6 +824,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     }
 
     this.initBtmDisValveValueChange();
+    this.initBtmFootValveValueChange();
     this.initBtmThermoValueChange();
     this.initTopDisValveValueChange();
     this.initTopAirlineValveValueChange();
@@ -811,7 +837,9 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     const bottomForm = this.getBottomFormGroup();
     const btmDisValveCvCtrl = bottomForm.get('btm_dis_valve_cv');
     const btmDisValveSpecCvCtrl = bottomForm.get('btm_dis_valve_spec_cv');
-    if (!btmDisValveCvCtrl || !btmDisValveSpecCvCtrl) return;
+    const btmDisValveOthCtrl = bottomForm.get('btm_dis_valve_oth');
+    const btmDisValveSpecOthCtrl = bottomForm.get('btm_dis_valve_spec_oth');
+    if (!btmDisValveCvCtrl || !btmDisValveSpecCvCtrl || !btmDisValveOthCtrl || !btmDisValveSpecOthCtrl) return;
 
     merge(
       this.surveyForm!.get('compartment_type.bottomFormGroup.btm_dis_valve_cv')!.valueChanges.pipe(startWith(btmDisValveCvCtrl.value)),
@@ -824,6 +852,18 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           const valveValue = btmDisValveCvCtrl.value;
           const specValue = btmDisValveSpecCvCtrl.value;
 
+          if (this.displayOthers(valveValue)) {
+            btmDisValveOthCtrl.setValidators([Validators.required]);
+          } else {
+            btmDisValveOthCtrl.clearValidators();
+          }
+
+          if (this.displayOthers(specValue)) {
+            btmDisValveSpecOthCtrl.setValidators([Validators.required]);
+          } else {
+            btmDisValveSpecOthCtrl.clearValidators();
+          }
+
           if (valveValue || specValue) {
             btmDisValveCvCtrl.setValidators([Validators.required]);
             btmDisValveSpecCvCtrl.setValidators([Validators.required]);
@@ -835,6 +875,39 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           setTimeout(() => {
             btmDisValveCvCtrl.updateValueAndValidity({ emitEvent: false });
             btmDisValveSpecCvCtrl.updateValueAndValidity({ emitEvent: false });
+            btmDisValveOthCtrl.updateValueAndValidity({ emitEvent: false });
+            btmDisValveSpecOthCtrl.updateValueAndValidity({ emitEvent: false });
+            this.detectChanges();
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  initBtmFootValveValueChange() {
+    const bottomForm = this.getBottomFormGroup();
+    const btmFootValveCvCtrl = bottomForm.get('foot_valve_cv');
+    const btmFootValveOthCtrl = bottomForm.get('foot_valve_oth');
+    if (!btmFootValveCvCtrl || !btmFootValveOthCtrl) return;
+
+    merge(
+      this.surveyForm!.get('compartment_type.bottomFormGroup.foot_valve_cv')!.valueChanges.pipe(startWith(btmFootValveCvCtrl.value))
+    )
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(300),
+        tap(() => {
+          const valveValue = btmFootValveCvCtrl.value;
+
+          if (this.displayOthers(valveValue)) {
+            btmFootValveOthCtrl?.setValidators([Validators.required]);
+          } else {
+            btmFootValveOthCtrl?.clearValidators();
+          }
+
+          setTimeout(() => {
+            btmFootValveCvCtrl.updateValueAndValidity({ emitEvent: false });
+            btmFootValveOthCtrl.updateValueAndValidity({ emitEvent: false });
             this.detectChanges();
           });
         })
@@ -849,17 +922,17 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     if (!btmThermoCtrl || !btmThermoSpecCvCtrl) return;
 
     merge(
-      this.surveyForm!.get('compartment_type.bottomFormGroup.thermometer')!.valueChanges.pipe(startWith(btmThermoCtrl.value)),
+      // this.surveyForm!.get('compartment_type.bottomFormGroup.thermometer')!.valueChanges.pipe(startWith(btmThermoCtrl.value)),
       this.surveyForm!.get('compartment_type.bottomFormGroup.thermometer_cv')!.valueChanges.pipe(startWith(btmThermoSpecCvCtrl.value))
     )
       .pipe(
         takeUntil(this.destroy$),
         debounceTime(300),
         tap(() => {
-          const valveValue = btmThermoCtrl.value;
+          // const valveValue = btmThermoCtrl.value;
           const specValue = btmThermoSpecCvCtrl.value;
 
-          if (valveValue || specValue) {
+          if (specValue) {
             btmThermoCtrl.setValidators([Validators.required]);
             btmThermoSpecCvCtrl.setValidators([Validators.required]);
           } else {
@@ -881,7 +954,9 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     const topForm = this.getTopFormGroup();
     const topDisValveCvCtrl = topForm.get('top_dis_valve_cv');
     const topDisValveSpecCvCtrl = topForm.get('top_dis_valve_spec_cv');
-    if (!topDisValveCvCtrl || !topDisValveSpecCvCtrl) return;
+    const topDisValveOthCtrl = topForm.get('top_dis_valve_oth');
+    const topDisValveSpecOthCtrl = topForm.get('top_dis_valve_spec_oth');
+    if (!topDisValveCvCtrl || !topDisValveSpecCvCtrl || !topDisValveOthCtrl || !topDisValveSpecOthCtrl) return;
 
     merge(
       this.surveyForm!.get('compartment_type.topFormGroup.top_dis_valve_cv')!.valueChanges.pipe(startWith(topDisValveCvCtrl.value)),
@@ -894,6 +969,18 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           const valveValue = topDisValveCvCtrl.value;
           const specValue = topDisValveSpecCvCtrl.value;
 
+          if (this.displayOthers(valveValue)) {
+            topDisValveOthCtrl.setValidators([Validators.required]);
+          } else {
+            topDisValveOthCtrl.clearValidators();
+          }
+
+          if (this.displayOthers(specValue)) {
+            topDisValveSpecOthCtrl.setValidators([Validators.required]);
+          } else {
+            topDisValveSpecOthCtrl.clearValidators();
+          }
+
           if (valveValue || specValue) {
             topDisValveCvCtrl.setValidators([Validators.required]);
             topDisValveSpecCvCtrl.setValidators([Validators.required]);
@@ -905,6 +992,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           setTimeout(() => {
             topDisValveCvCtrl.updateValueAndValidity({ emitEvent: false });
             topDisValveSpecCvCtrl.updateValueAndValidity({ emitEvent: false });
+            topDisValveOthCtrl.updateValueAndValidity({ emitEvent: false });
+            topDisValveSpecOthCtrl.updateValueAndValidity({ emitEvent: false });
             this.detectChanges();
           });
         })
@@ -915,9 +1004,10 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   initTopAirlineValveValueChange() {
     const topForm = this.getTopFormGroup();
     const topAirlineValveCvCtrl = topForm.get('airline_valve_cv');
+    const topAirlineValveOthCtrl = topForm.get('airline_valve_oth');
     const topAirlineValvePcsCtrl = topForm.get('airline_valve_pcs');
     const topAirlineValveDimCtrl = topForm.get('airline_valve_dim');
-    if (!topAirlineValveCvCtrl || !topAirlineValvePcsCtrl || !topAirlineValveDimCtrl) return;
+    if (!topAirlineValveCvCtrl || !topAirlineValveOthCtrl || !topAirlineValvePcsCtrl || !topAirlineValveDimCtrl) return;
 
     merge(
       this.surveyForm!.get('compartment_type.topFormGroup.airline_valve_cv')!.valueChanges.pipe(startWith(topAirlineValveCvCtrl.value)),
@@ -932,6 +1022,12 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           const pcsValue = topAirlineValvePcsCtrl.value;
           const dimValue = topAirlineValveDimCtrl.value;
 
+          if (this.displayOthers(valveValue)) {
+            topAirlineValveOthCtrl.setValidators([Validators.required]);
+          } else {
+            topAirlineValveOthCtrl.clearValidators();
+          }
+
           if (valveValue || pcsValue || dimValue) {
             topAirlineValveCvCtrl.setValidators([Validators.required]);
             topAirlineValvePcsCtrl.setValidators([Validators.required]);
@@ -944,6 +1040,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
           setTimeout(() => {
             topAirlineValveCvCtrl.updateValueAndValidity({ emitEvent: false });
+            topAirlineValveOthCtrl.updateValueAndValidity({ emitEvent: false });
             topAirlineValvePcsCtrl.updateValueAndValidity({ emitEvent: false });
             topAirlineValveDimCtrl.updateValueAndValidity({ emitEvent: false });
             this.detectChanges();
@@ -957,7 +1054,9 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     const topForm = this.getTopFormGroup();
     const topAirlineValveConnCvCtrl = topForm.get('airline_valve_conn_cv');
     const topAirlineValveConnSpecCvCtrl = topForm.get('airline_valve_conn_spec_cv');
-    if (!topAirlineValveConnCvCtrl || !topAirlineValveConnSpecCvCtrl) return;
+    const topAirlineValveConnOthCtrl = topForm.get('airline_valve_conn_oth');
+    const topAirlineValveConnSpecOthCtrl = topForm.get('airline_valve_conn_spec_oth');
+    if (!topAirlineValveConnCvCtrl || !topAirlineValveConnSpecCvCtrl || !topAirlineValveConnOthCtrl || !topAirlineValveConnSpecOthCtrl) return;
 
     merge(
       this.surveyForm!.get('compartment_type.topFormGroup.airline_valve_conn_cv')!.valueChanges.pipe(startWith(topAirlineValveConnCvCtrl.value)),
@@ -970,6 +1069,18 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           const valveValue = topAirlineValveConnCvCtrl.value;
           const specValue = topAirlineValveConnSpecCvCtrl.value;
 
+          if (this.displayOthers(valveValue)) {
+            topAirlineValveConnOthCtrl.setValidators([Validators.required]);
+          } else {
+            topAirlineValveConnOthCtrl.clearValidators();
+          }
+
+          if (this.displayOthers(specValue)) {
+            topAirlineValveConnSpecOthCtrl.setValidators([Validators.required]);
+          } else {
+            topAirlineValveConnSpecOthCtrl.clearValidators();
+          }
+
           if (valveValue || specValue) {
             topAirlineValveConnCvCtrl.setValidators([Validators.required]);
             topAirlineValveConnSpecCvCtrl.setValidators([Validators.required]);
@@ -981,6 +1092,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           setTimeout(() => {
             topAirlineValveConnCvCtrl.updateValueAndValidity({ emitEvent: false });
             topAirlineValveConnSpecCvCtrl.updateValueAndValidity({ emitEvent: false });
+            topAirlineValveConnOthCtrl.updateValueAndValidity({ emitEvent: false });
+            topAirlineValveConnSpecOthCtrl.updateValueAndValidity({ emitEvent: false });
             this.detectChanges();
           });
         })
@@ -991,9 +1104,10 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   initManlidCoverValueChange() {
     const manlidForm = this.getManlidFormGroup();
     const manlidCoverCvCtrl = manlidForm.get('manlid_cover_cv');
+    const manlidCoverOthCtrl = manlidForm.get('manlid_cover_oth');
     const manlidCoverPcsCtrl = manlidForm.get('manlid_cover_pcs');
     const manlidCoverPtsCtrl = manlidForm.get('manlid_cover_pts');
-    if (!manlidCoverCvCtrl || !manlidCoverPcsCtrl || !manlidCoverPtsCtrl) return;
+    if (!manlidCoverCvCtrl || !manlidCoverPcsCtrl || !manlidCoverPtsCtrl || !manlidCoverOthCtrl) return;
 
     merge(
       this.surveyForm!.get('compartment_type.manlidFormGroup.manlid_cover_cv')!.valueChanges.pipe(startWith(manlidCoverCvCtrl.value)),
@@ -1008,6 +1122,12 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           const pcsValue = manlidCoverPcsCtrl.value;
           const dimValue = manlidCoverPtsCtrl.value;
 
+          if (this.displayOthers(valveValue)) {
+            manlidCoverOthCtrl.setValidators([Validators.required]);
+          } else {
+            manlidCoverOthCtrl.clearValidators();
+          }
+
           if (valveValue || pcsValue || dimValue) {
             manlidCoverCvCtrl.setValidators([Validators.required]);
             manlidCoverPcsCtrl.setValidators([Validators.required]);
@@ -1020,6 +1140,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
           setTimeout(() => {
             manlidCoverCvCtrl.updateValueAndValidity({ emitEvent: false });
+            manlidCoverOthCtrl.updateValueAndValidity({ emitEvent: false });
             manlidCoverPcsCtrl.updateValueAndValidity({ emitEvent: false });
             manlidCoverPtsCtrl.updateValueAndValidity({ emitEvent: false });
             this.detectChanges();
@@ -1131,8 +1252,11 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         bottomFormGroup: {
           btm_dis_comp_cv: og.out_gate_survey?.btm_dis_comp_cv,
           btm_dis_valve_cv: og.out_gate_survey?.btm_dis_valve_cv,
+          // btm_dis_valve_oth: og.out_gate_survey?.btm_dis_valve_oth,
           btm_dis_valve_spec_cv: og.out_gate_survey?.btm_dis_valve_spec_cv,
+          // btm_dis_valve_spec_oth: og.out_gate_survey?.btm_dis_valve_spec_oth,
           foot_valve_cv: og.out_gate_survey?.foot_valve_cv,
+          // foot_valve_oth: og.out_gate_survey?.foot_valve_oth,
           btm_valve_brand_cv: og.out_gate_survey?.btm_valve_brand_cv,
           thermometer: og.out_gate_survey?.thermometer,
           thermometer_cv: og.out_gate_survey?.thermometer_cv,
@@ -1142,17 +1266,23 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         topFormGroup: {
           top_dis_comp_cv: og.out_gate_survey?.top_dis_comp_cv,
           top_dis_valve_cv: og.out_gate_survey?.top_dis_valve_cv,
+          // top_dis_valve_oth: og.out_gate_survey?.top_dis_valve_oth,
           top_dis_valve_spec_cv: og.out_gate_survey?.top_dis_valve_spec_cv,
+          // top_dis_valve_spec_oth: og.out_gate_survey?.top_dis_valve_spec_oth,
           top_valve_brand_cv: og.out_gate_survey?.top_valve_brand_cv,
           airline_valve_cv: og.out_gate_survey?.airline_valve_cv,
+          // airline_valve_oth: og.out_gate_survey?.airline_valve_oth,
           airline_valve_pcs: og.out_gate_survey?.airline_valve_pcs,
           airline_valve_dim: og.out_gate_survey?.airline_valve_dim,
           airline_valve_conn_cv: og.out_gate_survey?.airline_valve_conn_cv,
+          // airline_valve_conn_oth: og.out_gate_survey?.airline_valve_conn_oth,
           airline_valve_conn_spec_cv: og.out_gate_survey?.airline_valve_conn_spec_cv,
+          // airline_valve_conn_spec_oth: og.out_gate_survey?.airline_valve_conn_spec_oth,
         },
         manlidFormGroup: {
           manlid_comp_cv: og.out_gate_survey?.manlid_comp_cv,
           manlid_cover_cv: og.out_gate_survey?.manlid_cover_cv,
+          // manlid_cover_oth: og.out_gate_survey?.manlid_cover_oth,
           manlid_cover_pcs: og.out_gate_survey?.manlid_cover_pcs,
           manlid_cover_pts: og.out_gate_survey?.manlid_cover_pts,
           manlid_seal_cv: og.out_gate_survey?.manlid_seal_cv,
@@ -1267,6 +1397,71 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     //   }));
 
     // TableExportUtil.exportToExcel(exportData, 'excel');
+  }
+
+  compartmentTypeFormCheck(): any[] {
+    const compartmentTypeFormChecks = [];
+
+    const bottomFormGroup = this.getBottomFormGroup();
+    if (!(bottomFormGroup.get('btm_dis_comp_cv')?.value || bottomFormGroup.get('btm_dis_valve_cv')?.value
+      || bottomFormGroup.get('btm_dis_valve_spec_cv')?.value || bottomFormGroup.get('foot_valve_cv')?.value
+      || bottomFormGroup.get('btm_valve_brand_cv')?.value || bottomFormGroup.get('thermometer')?.value
+      || bottomFormGroup.get('thermometer_cv')?.value || bottomFormGroup.get('ladder')?.value
+      || bottomFormGroup.get('data_csc_transportplate')?.value)) {
+      compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_BTM_EMPTY);
+    }
+
+    const topFormGroup = this.getTopFormGroup();
+    if (!(topFormGroup.get('top_dis_comp_cv')?.value || topFormGroup.get('top_dis_valve_cv')?.value
+      || topFormGroup.get('top_dis_valve_spec_cv')?.value || topFormGroup.get('top_valve_brand_cv')?.value
+      || topFormGroup.get('airline_valve_cv')?.value || topFormGroup.get('airline_valve_pcs')?.value
+      || topFormGroup.get('airline_valve_dim')?.value || topFormGroup.get('airline_valve_conn_cv')?.value
+      || topFormGroup.get('airline_valve_conn_spec_cv')?.value)) {
+      compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_TOP_EMPTY);
+    }
+
+    const manlidFormGroup = this.getManlidFormGroup();
+    if (!(manlidFormGroup.get('manlid_comp_cv')?.value || manlidFormGroup.get('manlid_cover_cv')?.value
+      || manlidFormGroup.get('manlid_cover_pcs')?.value || manlidFormGroup.get('manlid_cover_pts')?.value
+      || manlidFormGroup.get('manlid_seal_cv')?.value || manlidFormGroup.get('pv_type_cv')?.value
+      || manlidFormGroup.get('pv_type_pcs')?.value || manlidFormGroup.get('pv_spec_cv')?.value
+      || manlidFormGroup.get('pv_spec_pcs')?.value || manlidFormGroup.get('safety_handrail')?.value
+      || manlidFormGroup.get('buffer_plate')?.value || manlidFormGroup.get('residue')?.value
+      || manlidFormGroup.get('dipstick')?.value)) {
+      compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_MANLID_EMPTY);
+    }
+
+    return compartmentTypeFormChecks;
+  }
+
+  onSubmitCheck(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
+
+    if (compartmentTypeFormChecks.length) {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
+        width: '500px',
+        data: {
+          action: 'edit',
+          translatedLangText: this.translatedLangText,
+          confirmForm: compartmentTypeFormChecks
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.confirmed) {
+          this.onFormSubmit();
+        }
+      });
+    } else {
+      this.onFormSubmit();
+    }
   }
 
   onFormSubmit() {
@@ -1851,12 +2046,12 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         },
         complete: () => {
           console.log('Upload process completed.');
-          this.router.navigate(['/admin/inventory/out-gate-survey']);
+          this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: 1 } });
         }
       });
     } else {
       this.handleSaveSuccess(1);
-      this.router.navigate(['/admin/inventory/out-gate-survey']);
+      this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: 1 } });
     }
   }
 

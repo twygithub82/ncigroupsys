@@ -1604,6 +1604,19 @@
                                     }
                                   </mat-radio-group>
                                 </div>
+                                @if (displayOthers(getBottomFormGroup().get('foot_valve_cv')?.value)) {
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.OTHERS}}</mat-label>
+                                    <input matInput formControlName="foot_valve_oth" />
+                                    @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                                }
                               </div>
                               <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
@@ -1635,9 +1648,25 @@
                                     }
                                   </mat-form-field>
                                 </div>
+                                @if (displayOthers(getBottomFormGroup().get('btm_dis_valve_cv')?.value)) {
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
+                                    <mat-label>{{translatedLangText.OTHERS}}</mat-label>
+                                    <input matInput formControlName="btm_dis_valve_oth" />
+                                    @if (getBottomFormGroup().get('btm_dis_valve_oth')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                                }
+                              </div>
+                              <div class="row">
+                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.BOTTOM_DIS_VALVE}}
+                                      {{translatedLangText.SPECIFICATION}}</mat-label>
                                     <mat-select formControlName="btm_dis_valve_spec_cv">
                                       @for (codeValue of disValveSpecCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
@@ -1645,11 +1674,25 @@
                                     </mat-select>
                                     @if (getBottomFormGroup().get('btm_dis_valve_spec_cv')?.hasError('required')) {
                                     <mat-error>
-                                      {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
+                                      {{translatedLangText.BOTTOM_DIS_VALVE}} {{translatedLangText.SPECIFICATION}}
+                                      {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
                                     }
                                   </mat-form-field>
                                 </div>
+                                @if (displayOthers(getBottomFormGroup().get('btm_dis_valve_spec_cv')?.value)) {
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.OTHERS}}</mat-label>
+                                    <input matInput formControlName="btm_dis_valve_spec_oth" />
+                                    @if (getBottomFormGroup().get('btm_dis_valve_spec_oth')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                                }
                               </div>
                               <div class="row">
                                 <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
@@ -1738,9 +1781,25 @@
                                     }
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                @if (displayOthers(getTopFormGroup().get('top_dis_valve_cv')?.value)) {
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
+                                    <mat-label>{{translatedLangText.OTHERS}}</mat-label>
+                                    <input matInput formControlName="top_dis_valve_oth" />
+                                    @if (getTopFormGroup().get('top_dis_valve_oth')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                                }
+                              </div>
+                              <div class="row">
+                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.TOP_DIS_VALVE}}
+                                      {{translatedLangText.SPECIFICATION}}</mat-label>
                                     <mat-select formControlName="top_dis_valve_spec_cv">
                                       @for (codeValue of disValveSpecCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
@@ -1753,6 +1812,19 @@
                                     }
                                   </mat-form-field>
                                 </div>
+                                @if (displayOthers(getTopFormGroup().get('top_dis_valve_spec_cv')?.value)) {
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.OTHERS}}</mat-label>
+                                    <input matInput formControlName="top_dis_valve_spec_oth" />
+                                    @if (getTopFormGroup().get('top_dis_valve_spec_oth')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                                }
                               </div>
                               <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
@@ -1769,7 +1841,7 @@
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.AIRLINE_VALVE}}</mat-label>
                                     <mat-select formControlName="airline_valve_cv">
@@ -1784,6 +1856,21 @@
                                     }
                                   </mat-form-field>
                                 </div>
+                                @if (displayOthers(getTopFormGroup().get('airline_valve_cv')?.value)) {
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.OTHERS}}</mat-label>
+                                    <input matInput formControlName="airline_valve_oth" />
+                                    @if (getTopFormGroup().get('airline_valve_oth')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                                }
+                              </div>
+                              <div class="row">
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
@@ -1828,7 +1915,22 @@
                                     }
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                @if (displayOthers(getTopFormGroup().get('airline_valve_conn_cv')?.value)) {
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.OTHERS}}</mat-label>
+                                    <input matInput formControlName="airline_valve_conn_oth" />
+                                    @if (getTopFormGroup().get('airline_valve_conn_oth')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                                }
+                              </div>
+                              <div class="row">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
                                     <mat-select formControlName="airline_valve_conn_spec_cv">
@@ -1843,6 +1945,19 @@
                                     }
                                   </mat-form-field>
                                 </div>
+                                @if (displayOthers(getTopFormGroup().get('airline_valve_conn_spec_cv')?.value)) {
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.OTHERS}}</mat-label>
+                                    <input matInput formControlName="airline_valve_conn_spec_oth" />
+                                    @if (getTopFormGroup().get('airline_valve_conn_spec_oth')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                                }
                               </div>
                               <div class="row">
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
@@ -1891,7 +2006,22 @@
                                     }
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                @if (displayOthers(getManlidFormGroup().get('manlid_cover_cv')?.value)) {
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.OTHERS}}</mat-label>
+                                    <input matInput formControlName="manlid_cover_oth" />
+                                    @if (getManlidFormGroup().get('manlid_cover_oth')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                                }
+                              </div>
+                              <div class="row">
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                     <input matInput formControlName="manlid_cover_pcs" type="number"
@@ -1904,7 +2034,7 @@
                                     }
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.VOLUME}}</mat-label>
                                     <input matInput formControlName="manlid_cover_pts" type="number"

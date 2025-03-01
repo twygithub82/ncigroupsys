@@ -1,4 +1,3 @@
-import { formatDate } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
