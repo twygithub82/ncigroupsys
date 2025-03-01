@@ -161,6 +161,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   searchForm?: UntypedFormGroup;
   customerCodeControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
+  surveyorControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
 
 
@@ -180,6 +181,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
+  survey_nameList?:CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -188,6 +190,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   inventoryTypeCvList: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
+  surveyTypeCvList: CodeValuesItem[] = [];
 
   processType: string = "STEAMING";
   billingParty: string = "CUSTOMER";
@@ -260,7 +263,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       yard: [''],
       reference:[''],
       svy_type:[''],
-      svy_name:['']
+      svy_name:this.surveyorControl
 
     });
   }
@@ -286,20 +289,24 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     ).subscribe();
 
     this.searchForm!.get('svy_name')!.valueChanges.pipe(
-      // startWith(''),
-      // debounceTime(300),
-      // tap(value => {
-      //   var searchCriteria = '';
-      //   if (typeof value === 'string') {
-      //     searchCriteria = value;
-      //   } else {
-      //     searchCriteria = value.code;
-      //   }
-      //   this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-      //     this.customer_companyList = data
-      //     this.updateValidators(this.customerCodeControl, this.customer_companyList);
-      //   });
-      // })
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+
+        var cond :any ={ and:[ {or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }]},
+                                {type_cv:{eq:'SURVEYOR'}}] };
+
+        this.subs.sink = this.ccDS.search(cond, { code: 'ASC' }).subscribe(data => {
+          this.survey_nameList = data
+          this.updateValidators(this.surveyorControl, this.survey_nameList);
+        });
+      })
     ).subscribe();
 
     
@@ -309,7 +316,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'surveyTypeCv', codeValType: 'BOOKING_TYPE' },
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
       { alias: 'yardCv', codeValType: 'YARD' },
     ];
@@ -322,6 +329,10 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     // });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = addDefaultSelectOption(data, 'All');
+    });
+
+    this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
+      this.surveyTypeCvList = data;
     });
     // this.cvDS.connectAlias('yardCv').subscribe(data => {
     //   this.yardCvList = addDefaultSelectOption(data, 'All');

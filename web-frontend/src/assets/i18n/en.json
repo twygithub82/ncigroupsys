@@ -1012,12 +1012,15 @@
     "OPENING-BALANCE":"Opening Balance",
     "CLOSING-BALANCE":"Closing Balance",
     "DUE-TYPE":"Due Type",
-    "NEXT-TEST-TYPE":"Next Test Type",
+    "NORMAL":"Normal",
+    "DUE":"Due",
+    "NEXT-TEST-DUE":"Next Test Due",
     "DUPLICATE-CARGO-FOUND":"The Cargo is found in the system",
     "WARNING":"Warning",
     "TARIFF-CARGO-ASSIGNED":"The Tariff Cargo was assigned to storing order tanks",
     "TARIFF-RESIDUE-ASSIGNED":"The Tariff Residue was assigned to storing order tanks",
-    "TARIFF-BUFFER-ASSIGNED":"The Tariff Buffer was assigned to storing order tanks"
+    "TARIFF-BUFFER-ASSIGNED":"The Tariff Buffer was assigned to storing order tanks",
+    "CUSTOMER-ASSIGNED":"The selected customer cannot be deleted because there are existing customer transactions in the system."
     
   },
   "CLEAN-PROCEDURES": {

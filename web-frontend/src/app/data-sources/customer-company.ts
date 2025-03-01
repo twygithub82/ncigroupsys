@@ -89,6 +89,12 @@ export const UPDATE_CUSTOMER_COMPANY = gql`
   }
 `
 
+export const DELETE_CUSTOMER_COMPANY = gql`
+    mutation deleteCustomerCompany($customerGuids: [String!]!) {
+    deleteCustomerCompany(customerGuids: $customerGuids)
+  }
+`
+
 export const ADD_CUSTOMER_COMPANY = gql`
     mutation addCustomerCompany($customer: CustomerRequestInput!,$contactPersons:[customer_company_contact_personInput],$billingBranches:[BillingBranchRequestInput]) {
     addCustomerCompany(customer: $customer,contactPersons:$contactPersons,billingBranches:$billingBranches)
@@ -418,6 +424,21 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
         customer,
         contactPersons,
         billingBranches
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+
+  }
+
+  DeleteCustomerCompany(customerGuids: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_CUSTOMER_COMPANY,
+      variables: {
+        customerGuids
       }
     }).pipe(
       catchError((error: ApolloError) => {

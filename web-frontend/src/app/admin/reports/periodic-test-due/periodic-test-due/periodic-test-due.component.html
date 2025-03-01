@@ -44,9 +44,9 @@
                   <mat-label>{{translatedLangText.DUE_TYPE}}</mat-label>
                   <mat-select   formControlName="due_type" multiple>
                  
-                    @for (tc of yardCvList; track tc) {
+                    @for (tc of dueType; track tc) {
                     <mat-option [value]="tc">
-                      {{tc.description}}
+                      {{tc}}
                     </mat-option>
                     }
                   
@@ -55,10 +55,10 @@
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.NEXT_TEST_TYPE}}</mat-label>
-                  <mat-select   formControlName="next_test_type" multiple>
+                  <mat-label>{{translatedLangText.NEXT_TEST_DUE}}</mat-label>
+                  <mat-select   formControlName="next_test_due" multiple>
                   
-                    @for (tc of yardCvList; track tc) {
+                    @for (tc of testCvList; track tc) {
                       <mat-option [value]="tc">
                         {{tc.description}}
                       </mat-option>

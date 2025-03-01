@@ -45,7 +45,9 @@ import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-
+import { firstValueFrom } from 'rxjs';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import {MessageDialogComponent} from 'app/shared/components/message-dialog/message-dialog.component';
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -86,6 +88,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     'email',
     'category',
     'last_update_dt',
+    'actions'
   ];
 
   customerCodeControl = new UntypedFormControl();
@@ -99,6 +102,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   ccDS: CustomerCompanyDS;
   custCompDS: CustomerCompanyDS;
+  sotDS:StoringOrderTankDS;
 
   packResidueItems: PackageResidueItem[] = [];
 
@@ -213,7 +217,9 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     CODE: 'COMMON-FORM.CODE',
-    CATEGORY: 'COMMON-FORM.CATEGORY'
+    CATEGORY: 'COMMON-FORM.CATEGORY',
+    CUSTOMER_ASSIGNED:'COMMON-FORM.CUSTOMER-ASSIGNED',
+    WARNING:'COMMON-FORM.WARNING'
   }
 
   constructor(
@@ -233,6 +239,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
+    this.sotDS=new StoringOrderTankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -468,21 +475,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       where.alias = { contains: this.pcForm!.value["alias"] };
     }
 
-    // if (this.pcForm!.value["fax_no"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
-    // }
-
-    // if (this.pcForm!.value["phone"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
-    // }
-
-
-    // if (this.pcForm!.value["email"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
-    // }
+   
 
     if (this.pcForm!.value["country"]) {
       where.country = { eq: this.pcForm!.value["country"] };
@@ -710,6 +703,71 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.customerCodeControl.reset();
   }
 
+  
+    async cancelItem(row: CustomerCompanyItem) {
+        // this.id = row.id;
+       
+         var customerAssigned:boolean = await this.CustomerAssigned(row.guid!);
+         if(customerAssigned)
+         {
+            let tempDirection: Direction;
+            if (localStorage.getItem('isRtl') === 'true') {
+              tempDirection = 'rtl';
+            } else {
+              tempDirection = 'ltr';
+            }
+            const dialogRef = this.dialog.open(MessageDialogComponent, {
+              width: '500px',
+              data: {
+                headerText: this.translatedLangText.WARNING,
+                messageText:[this.translatedLangText.CUSTOMER_ASSIGNED],
+                act: "warn"
+              },
+              direction: tempDirection
+            });
+          dialogRef.afterClosed().subscribe(result=>{
+          });
+         }
+         else
+         {
+            this.deleteCustomerAndBillingBranch(row.guid!);
+         }
+    
+      }
+    
+      deleteCustomerAndBillingBranch(customerGuid:string)
+      {
+        
+         this.ccDS.DeleteCustomerCompany([customerGuid]).subscribe(d=>{
+            let count =d.data.deleteCustomerCompany;
+            if(count>0)
+            {
+                this.handleSaveSuccess(count);
+                if (this.ccDS.totalCount > 0) {
+                  this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+                }
+            }
+         });
+      }
+  
+    async CustomerAssigned(CustomerGuid: string): Promise<boolean> {
+          let retval: boolean = false;
+          var where: any = {};
+      
+          where = {and:[ {or:[{customer_company:{ guid:{eq:CustomerGuid}}},
+                              {storing_order:{customer_company_guid:{eq:CustomerGuid}}}]},
+                        {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}] };
+          
+          try {
+            // Use firstValueFrom to convert Observable to Promise
+            const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {},1));
+            retval=(result.length > 0)
+          } catch (error) {
+            console.error("Error fetching tariff buffer guid:", error);
+          }
+      
+          return retval;
+        }
 
 }
 

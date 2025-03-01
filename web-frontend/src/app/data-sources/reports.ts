@@ -167,6 +167,36 @@ export class daily_inventory_summary{
   }
 }
 
+export class periodic_test_due_summary{
+        class_cv?:String;
+        customer_code?:String;
+        due_days?:String;
+        due_type?:String;
+        eir_dt?:Number;
+        eir_no?:String;
+        last_test_type?:String;
+        next_test_dt?:Number;
+        next_test_type?:String;
+        owner_code?:String;
+        tank_no?:String;
+        test_dt?:Number;
+
+  constructor(item: Partial<periodic_test_due_summary> = {}) {
+    this.class_cv=item.class_cv;
+    this.customer_code=item.customer_code;
+    this.due_days=item.due_days;
+    this.due_type=item.due_type;
+    this.eir_dt=item.eir_dt;
+    this.eir_no=item.eir_no;
+    this.last_test_type=item.last_test_type;
+    this.next_test_dt=item.next_test_dt;
+    this.next_test_type=item.next_test_type;
+    this.owner_code=item.owner_code;
+    this.tank_no=item.tank_no;
+    this.test_dt=item.test_dt;
+  }
+}
+
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest) {
@@ -189,6 +219,27 @@ export const GET_DAILY_INVENTORY_SUMMARY = gql`
       opening_balance {
         count
         yard
+      }
+    }
+  }
+`
+
+export const GET_PERIODIC_TEST_DUE_SUMMARY = gql`
+  query queryPeriodicTestDueSummary($periodicTestDueRequest: PeriodicTestDueRequestInput!) {
+    resultList: queryPeriodicTestDueSummary(periodicTestDueRequest: $periodicTestDueRequest) {
+       nodes {
+        class_cv
+        customer_code
+        due_days
+        due_type
+        eir_dt
+        eir_no
+        last_test_type
+        next_test_dt
+        next_test_type
+        owner_code
+        tank_no
+        test_dt
       }
     }
   }
@@ -226,7 +277,34 @@ export class ReportDS extends BaseDataSource<any> {
       );
   }
 
- searchCleaningInventorySummaryReport(cleaningInventoryRequest:any): Observable<cleaning_report_summary_item[]> {
+ searchPeriodicTestDueSummaryReport(periodicTestDueRequest:any): Observable<periodic_test_due_summary[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_PERIODIC_TEST_DUE_SUMMARY,
+        variables: { periodicTestDueRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+
+  searchCleaningInventorySummaryReport(cleaningInventoryRequest:any): Observable<cleaning_report_summary_item[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
