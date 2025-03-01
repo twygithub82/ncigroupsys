@@ -13,8 +13,6 @@
 		<PackageReference Include="HotChocolate.Types" Version="13.9.5" />
 		<PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.6" />
 		<PackageReference Include="MySqlConnector" Version="2.4.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>

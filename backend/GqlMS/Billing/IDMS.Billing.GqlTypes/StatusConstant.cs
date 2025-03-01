@@ -25,4 +25,11 @@ namespace IDMS.Billing.GqlTypes
         public const string PREINSPECTION = "PREINSPECTION";
         public const string STORAGE = "STORAGE";
     }
+
+    public class DailyInventoryReportType
+    {
+        public const string IN = "IN";
+        public const string OUT = "OUT";
+        public const string ALL = "ALL";
+    }
 }
