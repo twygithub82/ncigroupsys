@@ -5,6 +5,7 @@ using System.Text;
 using IDMS.Models.Parameter.GqlTypes;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
+using HotChocolate.Execution;
 
 var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration.GetConnectionString("default");
@@ -23,7 +24,13 @@ builder.Services.AddPooledDbContextFactory<ApplicationParameterDBContext>(o =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
     .AddAuthorization()
-    .InitializeOnStartup(keepWarm: true)
+    //.InitializeOnStartup(keepWarm: true)
+        .InitializeOnStartup(keepWarm: true,
+        warmup: async (executor, cancellationToken) => 
+        {
+            //await executor.ExecuteAsync("{ __typename }");
+            await executor.ExecuteAsync("queryCleaningCategory {\r\ntotalCount\r\n }");
+        })
     .RegisterDbContext<ApplicationParameterDBContext>(DbContextKind.Pooled)
      //.RegisterDbContextFactory<ApplicationParameterDBContext>()
     .AddQueryType<CleaningMethodQuery>()
@@ -32,10 +39,9 @@ builder.Services.AddGraphQLServer()
     .AddProjections()
     .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
     {
-        MaxPageSize = 100
+        MaxPageSize = 100   
     })
     .AddSorting();
-
 
 
 builder.Services.AddAuthentication(options =>
