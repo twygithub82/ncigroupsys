@@ -5,7 +5,7 @@
       <ul class="nav navbar-nav flex-row">
         <li class="nav-item logo">
           <a class="navbar-brand" routerLink="/" [matTooltip]="envTest">
-            @if (menuIcon === 'radio_button_checked' || isHovered) {
+            @if (menuIcon === 'chevron_left' || isHovered) {
             <img src="assets/images/logo.png" alt="translatedLangText.SOFTWARE_NAME" />
             }
             @else {
@@ -15,9 +15,12 @@
           </a>
         </li>
         <li class="nav-item nav-toggle">
-          <button mat-icon-button (click)="callSidemenuCollapse()" class="sidemenu-collapse">
+          <!-- <button mat-icon-button (click)="callSidemenuCollapse()" class="sidemenu-collapse">
             <mat-icon [ngStyle]="{'color':'#8F8C91'}" class="menuIcon">{{menuIcon}}</mat-icon>
-          </button>
+          </button> -->
+          <a (click)="callSidemenuCollapse()" class="sidemenu-collapse d-flex align-items-center cursor-pointer">
+            <mat-icon [ngStyle]="{'color':'#8F8C91'}" class="menuIcon">{{menuIcon}}</mat-icon>
+          </a>
         </li>
       </ul>
     </div>

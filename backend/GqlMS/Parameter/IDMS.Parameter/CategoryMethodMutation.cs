@@ -125,6 +125,7 @@ namespace IDMS.Models.Parameter.GqlTypes
                 newCleanCategory.create_by = uid;
                 newCleanCategory.create_dt = GqlUtils.GetNowEpochInSec();
 
+                await context.cleaning_category.AddAsync(newCleanCategory);
                 retval = await context.SaveChangesAsync();
 
                 //Change below code to use trigger

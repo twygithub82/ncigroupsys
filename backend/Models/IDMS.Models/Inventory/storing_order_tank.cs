@@ -69,6 +69,9 @@ namespace IDMS.Models.Inventory
         public tank? tank { get; set; }
 
         [UseFiltering]
+        public billing_sot? billing_sot { get; set; }
+
+        [UseFiltering]
         public IEnumerable<in_gate>? in_gate { get; set; }
         [UseFiltering]
         public IEnumerable<out_gate>? out_gate { get; set; }
@@ -91,7 +94,6 @@ namespace IDMS.Models.Inventory
         [UseFiltering]
         [UseSorting]
         public IEnumerable<transfer?>? transfer { get; set; }
-        [UseFiltering]
-        public IEnumerable<billing_sot?>? billing_sot { get; set; } 
+
     }
 }
