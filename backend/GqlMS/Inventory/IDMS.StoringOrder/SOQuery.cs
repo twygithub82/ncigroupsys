@@ -52,7 +52,7 @@ namespace IDMS.StoringOrder.GqlTypes
             }
         }
 
-        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10, MaxPageSize = int.MaxValue - 1)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
