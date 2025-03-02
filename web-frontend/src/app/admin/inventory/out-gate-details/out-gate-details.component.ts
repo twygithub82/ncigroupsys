@@ -300,6 +300,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
       eir_dt: this.ogDS.getOutGateItem(sot?.out_gate)?.eir_dt ? Utility.convertDate(this.ogDS.getOutGateItem(sot?.out_gate)?.eir_dt) : new Date(),
       release_job_no: sot?.release_job_no,
       remarks: this.ogDS.getOutGateItem(sot?.out_gate)?.remarks,
+      yard_cv: this.ogDS.getOutGateItem(sot?.out_gate)?.yard_cv || sot?.tank_info?.yard_cv,
       // last_cargo_guid: sot.last_cargo_guid,
       // last_cargo: this.lastCargoControl,
     });
@@ -409,6 +410,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
         remarks: this.outGateForm.get('remarks')?.value,
         so_tank_guid: sot.guid,
         haulier: this.outGateForm.get('haulier')?.value,
+        yard_cv: this.outGateForm.get('yard_cv')?.value,
         tank: sot
       })
       console.log(og);

@@ -398,22 +398,19 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
           previous_endCursor: this.previous_endCursor,
 
           showResult: this.ccDS.totalCount > 0
-
         }
       }
     });
-
   }
-
-
 
   deleteItem(row: any) {
 
   }
+
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
-  /** Whether the number of selected elements matches the total number of rows. */
+  
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.packResidueItems.length;
@@ -433,18 +430,16 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
     const where: any = {};
 
-    where.and = [ {main_customer_guid:{neq:null}},
-                  {main_customer_guid:{neq:""}},
-                  {type_cv : { in: ["BRANCH"] }}];
+    where.and = [
+      { main_customer_guid: { neq: null } },
+      { main_customer_guid: { neq: "" } },
+      { type_cv: { in: ["BRANCH"] } }
+    ];
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
-
-
         const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         var guids = customerCodes.map(cc => cc.guid);
         where.guid = { in: guids };
@@ -558,12 +553,10 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    if(this.lastSearchCriteria)
-    {
+    if (this.lastSearchCriteria) {
       this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
     }
-    else
-    {
+    else {
       this.search();
     }
     //}
@@ -605,14 +598,14 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   }
 
   removeSelectedRows() {
-
   }
-  public loadData() {
 
-    var cond:any={};
+  public loadData() {
+    var cond: any = {};
+    cond.main_customer_guid = { neq: null };
     cond.type_cv = { neq: "SURVEYOR" }
     this.subs.sink = this.custCompDS.search(cond, { code: 'ASC' }, 100).subscribe(data => {
-      this.all_branch_List = data.filter(d=>d.type_cv=="BRANCH");
+      this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
       this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
     });
 
@@ -725,12 +718,11 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getMainCustomerCode(row: CustomerCompanyItem): String | undefined {
-
     const mainCustItem = this.getCustomerCompanyItem(row.main_customer_guid!);
     if (mainCustItem) return mainCustItem.code;
-
     return "-";
   }
+
   getCustomerCompanyItem(guid: string): CustomerCompanyItem | undefined {
     if (this.customer_companyList?.length) {
       const custCmp = this.all_customer_companyList?.filter((x: any) => x.guid === guid).map(item => {
@@ -743,7 +735,5 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     }
     return undefined;
   }
-
-
 }
 
