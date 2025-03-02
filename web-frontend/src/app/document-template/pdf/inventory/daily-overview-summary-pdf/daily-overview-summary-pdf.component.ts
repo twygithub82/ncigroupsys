@@ -1056,7 +1056,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
    {
      var OpenBal:number=0;
      OpenBal = this.report_inventory?.[0]?.opening_balance?.reduce((total, item) => {
-      return total + (item.count??0);
+      return total + (item.open_balance??0);
     }, 0)||0;
   
      return OpenBal;

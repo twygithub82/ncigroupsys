@@ -287,7 +287,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   }
   loadItems(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
-    where.type_cv = { in: ["BRANCH", "OWNER"] }
+    where = { type_cv:{in: ["BRANCH", "OWNER"] }}
     where = this.addDeleteDtCriteria(where)
     return this.apollo
       .query<any>({

@@ -56,10 +56,10 @@
                 <tr class="fixed_height_40px">
                   <td>{{ index + 1 }}</td> <!-- Row number -->
                   <td>{{ itm.yard }}</td>
-                  <td>{{itm.count }}</td>
-                  <td>{{displayInGateForYard(itm.yard!)}}</td>
-                  <td>{{displayOutGateForYard(itm.yard!)}}</td>
-                  <td>{{displayClosingBalanceForYard(itm.yard!)}}</td>
+                  <td>{{itm.open_balance }}</td>
+                  <td>{{itm.in_count}}</td>
+                  <td>{{itm.out_count}}</td>
+                  <td>{{displayClosingBalanceForYard(itm)}}</td>
                 </tr>
                 }
             }

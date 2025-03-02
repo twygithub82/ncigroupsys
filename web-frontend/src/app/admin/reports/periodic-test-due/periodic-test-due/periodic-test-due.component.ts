@@ -36,7 +36,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
-import { TransferLocationPdfComponent } from 'app/document-template/pdf/transfer-location-pdf/transfer-location-pdf.component';
+import { PeriodicTestDuePdfComponent } from 'app/document-template/pdf/periodic-test-pdf/periodic-test-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -278,7 +278,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
         });
@@ -373,7 +373,12 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
     if (this.searchForm?.get('customer_code')?.value) {
      
-      periodicTestDueReq.storing_order=this.searchForm!.get('customer_code')?.value?.code;
+      periodicTestDueReq.customer_code=this.searchForm!.get('customer_code')?.value?.code;
+      cond_counter++;
+    }
+
+    if (this.searchForm?.get('tank_no')?.value) {
+      periodicTestDueReq.tank_no=this.searchForm!.get('tank_no')?.value;
       cond_counter++;
     }
 
@@ -419,6 +424,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     this.subs.sink = this.repDS.searchPeriodicTestDueSummaryReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.periodicTestRes = data;
+        this.ProcessPeriodicTestDueReport();
         // this.endCursor = this.stmDS.pageInfo?.endCursor;
         // this.startCursor = this.stmDS.pageInfo?.startCursor;
         // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -546,11 +552,12 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(TransferLocationPdfComponent, {
+    const dialogRef = this.dialog.open(PeriodicTestDuePdfComponent, {
       width: '85vw',
+      maxWidth:'1200px',
       maxHeight: '85vh',
       data: {
-        report_transfer_location: repStatus,
+        report_inventory: repStatus,
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

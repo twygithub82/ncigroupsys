@@ -35,7 +35,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { report_billing_customer } from 'app/data-sources/billing';
-import {daily_inventory_summary, report_customer_inventory, report_status, report_status_yard} from 'app/data-sources/reports';
+import {daily_inventory_summary, report_customer_inventory, report_status, openingBalance} from 'app/data-sources/reports';
 import {
   ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis,
   ApexDataLabels,  ApexPlotOptions,  ApexYAxis,  ApexLegend,
@@ -1268,7 +1268,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
    {
      var OpenBal:number=0;
      OpenBal = this.report_inventory?.[0]?.opening_balance?.reduce((total, item) => {
-      return total + (item.count??0);
+      return total + (item.open_balance??0);
     }, 0)||0;
   
      return OpenBal;
@@ -1304,19 +1304,10 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
      
    }
 
-   displayInGateForYard(yard?:String)
-   {
-     return 0;
-   }
 
-   displayOutGateForYard(yard?:String)
+   displayClosingBalanceForYard(openBal?:openingBalance)
    {
-     return 0;
-   }
-
-   displayClosingBalanceForYard(yard?:String)
-   {
-    return 0;
+    return (openBal?.open_balance||0)+(openBal?.in_count||0)-(openBal?.out_count||0);
    }
 
    displayClosingBalance()

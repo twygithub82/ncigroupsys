@@ -143,10 +143,14 @@ export class cleaning_report_summary_item {
 
 
 export class openingBalance{
-  count?:number;
+  in_count?:number;
+  out_count?:number;
+  open_balance?:number;
   yard?:String;
   constructor(item: Partial<openingBalance> = {}) {
-    this.count = item.count;
+    this.in_count = item.in_count;
+    this.out_count = item.out_count;
+    this.open_balance = item.open_balance;
     this.yard=item.yard;
   }
 }
@@ -177,18 +181,18 @@ export class report_periodic_test_due_group_customer{
   }
 }
 export class periodic_test_due_item{
-        class_cv?:String;
-        customer_code?:String;
-        due_days?:String;
-        due_type?:String;
-        eir_dt?:Number;
-        eir_no?:String;
-        last_test_type?:String;
-        next_test_dt?:Number;
-        next_test_type?:String;
-        owner_code?:String;
-        tank_no?:String;
-        test_dt?:Number;
+        class_cv?:string;
+        customer_code?:string;
+        due_days?:string;
+        due_type?:string;
+        eir_dt?:number;
+        eir_no?:string;
+        last_test_type?:string;
+        next_test_dt?:number;
+        next_test_type?:string;
+        owner_code?:string;
+        tank_no?:string;
+        test_dt?:number;
 
   constructor(item: Partial<periodic_test_due_item> = {}) {
     this.class_cv=item.class_cv;
@@ -226,7 +230,9 @@ export const GET_DAILY_INVENTORY_SUMMARY = gql`
       out_gate_count
       in_gate_count
       opening_balance {
-        count
+        open_balance
+        in_count
+        out_count
         yard
       }
     }

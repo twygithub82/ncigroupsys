@@ -1,0 +1,86 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  <div id="pdf-form-body" class="pdf-container pdf-body">
+    @for (bCust of report_customer_inventory; track bCust) {
+      <div class="card">
+        <div class="pdf-body">
+          <table id="table_customer_info" class="table_customer_info">
+            <tr>
+              <td>{{translatedLangText.CUSTOMER}} : {{this.DisplayCustomerName(bCust)}}</td>
+            </tr>
+          </table>
+        </div>
+        @if (bCust.periodic_test_due?.length! > 0) {
+          <table id="repair-part-table" class="repair-part-table">
+            
+              <tr class="group-header">
+                <th class="th-w2" rowspan="2">{{translatedLangText.NO}}</th>
+                <th class="th-w3" rowspan="2">{{translatedLangText.TANK_NO}}</th>
+                <th class="th-w3" rowspan="2">{{translatedLangText.EIR_NO}}</th>
+                <th class="th-w3" rowspan="2">{{translatedLangText.EIR_DATE}}</th>
+                <th class="th-w3" rowspan="2">{{translatedLangText.OWNER}}</th>
+                
+                <!-- Grouped header for LAST_PERIODIC_TEST -->
+                <th class="th-w12" colspan="3">{{translatedLangText.LAST_PERIODIC_TEST}}</th>
+                
+                <!-- Grouped header for NEXT_PERIODIC_TEST -->
+                <th class="th-w8" colspan="2">{{translatedLangText.NEXT_PERIODIC_TEST}}</th>
+                
+                <th class="th-w3" rowspan="2">{{translatedLangText.DUE_DAYS}}</th>
+                <th class="th-w3" rowspan="2">{{translatedLangText.DUE_TYPE}}</th>
+              </tr>
+              
+              <tr class="group-header">
+                <!-- Subheaders for LAST_PERIODIC_TEST -->
+                <th class="th-w4">{{translatedLangText.TYPE}}</th>
+                <th class="th-w4">{{translatedLangText.DATE}}</th>
+                <th class="th-w4">{{translatedLangText.CLASS}}</th>
+                
+                <!-- Subheaders for NEXT_PERIODIC_TEST -->
+                <th class="th-w4">{{translatedLangText.TYPE}}</th>
+                <th class="th-w4">{{translatedLangText.DATE}}</th>
+                
+              </tr>
+            
+         
+            @for (itm of bCust.periodic_test_due; track itm; let index = $index) {
+              <tr>
+                <td>{{ index + 1 }}</td>
+                <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
+                <td><span class="overflow-text">{{ DisplayEIRNo(itm) }}</span></td>
+                <td><span class="overflow-text">{{ DisplayEIRDate(itm) }}</span></td>
+                <td><span class="overflow-text">{{ DisplayOwner(itm) }}</span></td>
+                <td><span class="overflow-text">{{ DisplayLastTest(itm) }}</span></td>
+                <td><span class="overflow-text">{{ DisplayLastTestDate(itm)}}</span></td>
+                <td><span class="overflow-text">{{ DisplayClass(itm)}}</span></td>
+                <td><span class="overflow-text">{{ DisplayNextTest(itm)  }}</span></td>
+                <td><span class="overflow-text">{{ DisplayNextTestDate(itm)}}</span></td>
+                <td><span class="overflow-text">{{ DisplayDueDays(itm) }}</span></td>
+                <td><span class="overflow-text">{{ DisplayDueType(itm) }}</span></td>
+             
+              </tr>
+            }
+          </table>
+        }
+      </div>
+    }
+  </div>
+</div>
+<div mat-dialog-actions class="m-2 align-right">
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$ | async) || (isFileActionLoading$ | async) || (generatingPdfLoading$ | async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$ | async) && !(generatingPdfLoading$ | async)) {
+        file_download
+      } @else {
+        <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if (generatingPdfLoading$ | async) {
+    <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>
