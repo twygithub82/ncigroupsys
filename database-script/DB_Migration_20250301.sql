@@ -8,3 +8,6 @@ ADD COLUMN `airline_valve_oth` VARCHAR(50) NULL DEFAULT NULL AFTER `top_dis_valv
 ADD COLUMN `airline_valve_conn_oth` VARCHAR(50) NULL DEFAULT NULL AFTER `airline_valve_oth`,
 ADD COLUMN `airline_valve_conn_spec_oth` VARCHAR(50) NULL DEFAULT NULL AFTER `airline_valve_conn_oth`,
 ADD COLUMN `manlid_cover_oth` VARCHAR(50) NULL DEFAULT NULL AFTER `airline_valve_conn_spec_oth`;
+
+ALTER TABLE `idms`.`out_gate` 
+ADD COLUMN `yard_cv` VARCHAR(20) NULL AFTER `running_number`;
