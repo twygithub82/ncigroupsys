@@ -58,7 +58,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   headerHeight = 60;
   currentRoute?: string;
   routerObj;
-  menuIcon = 'radio_button_checked';
+  menuIcon = 'chevron_left';
   isHovered = false;
 
   envTest = environment.title;
@@ -173,11 +173,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     if (hasClass) {
       this.renderer.removeClass(this.document.body, 'side-closed');
       this.renderer.removeClass(this.document.body, 'submenu-closed');
-      this.menuIcon = 'radio_button_checked';
+      this.menuIcon = 'chevron_left';
     } else {
       this.renderer.addClass(this.document.body, 'side-closed');
       this.renderer.addClass(this.document.body, 'submenu-closed');
-      this.menuIcon = 'radio_button_unchecked';
+      this.menuIcon = 'chevron_right';
     }
 
     const sideClosedExists = this.document.body.classList.contains('side-closed');
