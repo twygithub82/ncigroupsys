@@ -16,6 +16,7 @@ namespace IDMS.Models.DB
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+    
 
             //modelBuilder.Entity<billing>()
             //   .HasMany(b => b.cleaning)
@@ -60,7 +61,8 @@ namespace IDMS.Models.DB
         public DbSet<in_gate> in_gate { get; set; }
         public DbSet<out_gate> out_gate { get; set; }
         public DbSet<tank_info> tank_info { get; set; }
-
+        public DbSet<survey_detail> survey_detail { get; set; }
+        public DbSet<code_values> code_values { get; set; }
 
     }
 }
