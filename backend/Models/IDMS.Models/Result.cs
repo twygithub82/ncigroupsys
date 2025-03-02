@@ -72,6 +72,29 @@ namespace IDMS.Models
         public string? due_days { get; set; }
     }
 
+    public class DailyTankSurveySummary
+    {
+        [NotMapped]
+        public string? customer_code { get; set; }
+        [NotMapped]
+        public string? tank_no { get; set; }
+        [NotMapped]
+        public string? eir_no { get; set; }
+        [NotMapped]
+        public string? surveryor { get; set; }
+        [NotMapped]
+        public string? status { get; set; }
+        [NotMapped]
+        public string? survey_type { get; set; }
+        [NotMapped]
+        public string? visit { get; set; }
+        [NotMapped]
+        public long? clean_dt { get; set; }
+        //[NotMapped]
+        //public string? reference { get; set; }
+    }
+
+
     public class OpeningBalance
     {
         [NotMapped]
