@@ -338,7 +338,7 @@ namespace IDMS.Billing.GqlTypes
                     query = query.Where(tf => dailyTankSurveyRequest.survey_type.Contains(tf.survey_type));
                 }
 
-                if(!string.IsNullOrEmpty(dailyTankSurveyRequest.surveyor_name))
+                if (!string.IsNullOrEmpty(dailyTankSurveyRequest.surveyor_name))
                 {
                     query = query.Where(tf => tf.surveryor.Contains(dailyTankSurveyRequest.surveyor_name));
                 }
@@ -361,8 +361,11 @@ namespace IDMS.Billing.GqlTypes
                 long sDate = dailyInventoryRequest.start_date; //StartDateExtract(dailyInventoryRequest.start_date);
                 long eDate = dailyInventoryRequest.end_date; //EndDateExtract(dailyInventoryRequest.end_date);
 
+
+
                 List<OpeningBalance?> openingBalances = new List<OpeningBalance?>();
-                openingBalances = await QueryOpeningBalance(context, sDate);
+                var OB = await QueryOpeningBalance(context, sDate);
+                openingBalances = await QueryYardCount(context, dailyInventoryRequest.inventory_type, sDate, eDate, OB);
 
                 List<DailyInventorySummary> inList = new List<DailyInventorySummary>();
                 List<DailyInventorySummary> outList = new List<DailyInventorySummary>();
@@ -518,7 +521,7 @@ namespace IDMS.Billing.GqlTypes
                 return await res.Select(x => new OpeningBalance
                 {
                     yard = x.Yard,
-                    count = x.OpeningBalance
+                    open_balance = x.OpeningBalance
                 }).ToListAsync();
             }
             catch (Exception ex)
@@ -527,172 +530,75 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        private async Task<List<OpeningBalance>> QueryYardCount(ApplicationBillingDBContext context, string type, long sDate, long eDate)
+        private async Task<List<OpeningBalance>> QueryYardCount(ApplicationBillingDBContext context, string type, long sDate, long eDate, List<OpeningBalance> openingBalances)
         {
             try
             {
-                if (type.EqualsIgnore(ReportType.IN))
+                List<OpeningBalance> inList = new List<OpeningBalance>();
+                List<OpeningBalance> outList = new List<OpeningBalance>();
+
+                if (type.EqualsIgnore(ReportType.IN) || type.EqualsIgnore(ReportType.ALL))
                 {
-
+                    var result = await (from sot in context.storing_order_tank
+                                        join i in context.in_gate
+                                        on sot.guid equals i.so_tank_guid into leftJoin
+                                        from i in leftJoin.DefaultIfEmpty()
+                                        where context.in_gate
+                                               .Where(ig => ig.delete_dt == null
+                                                            && ig.eir_dt >= sDate
+                                                            && ig.eir_dt <= eDate)
+                                               .Select(ig => ig.so_tank_guid)
+                                               .Distinct()
+                                               .Contains(sot.guid)
+                                        group sot by i.yard_cv into grouped
+                                        select new OpeningBalance
+                                        {
+                                            in_count = grouped.Count(),
+                                            yard = grouped.Key
+                                        }).ToListAsync();
+                    inList = result;
                 }
-                else
+
+                if (type.EqualsIgnore(ReportType.OUT) || type.EqualsIgnore(ReportType.ALL))
                 {
+                    var result = await (from sot in context.storing_order_tank
+                                        join i in context.out_gate
+                                        on sot.guid equals i.so_tank_guid into leftJoin
+                                        from i in leftJoin.DefaultIfEmpty()
+                                        where context.out_gate
+                                               .Where(ig => ig.delete_dt == null
+                                                            && ig.eir_dt >= sDate
+                                                            && ig.eir_dt <= eDate)
+                                               .Select(ig => ig.so_tank_guid)
+                                               .Distinct()
+                                               .Contains(sot.guid)
+                                        group sot by i.yard_cv into grouped     
+                                        select new OpeningBalance
+                                        {
+                                            out_count = grouped.Count(),
+                                            yard = grouped.Key
+                                        }).ToListAsync();
 
+                    outList = result;
                 }
-                var result = await (from sot in context.storing_order_tank
-                              join i in context.in_gate
-                              on sot.guid equals i.so_tank_guid into leftJoin
-                              from i in leftJoin.DefaultIfEmpty()
-                              where context.in_gate
-                                     .Where(ig => ig.delete_dt == null
-                                                  && ig.eir_dt >= sDate
-                                                  && ig.eir_dt <= eDate)
-                                     .Select(ig => ig.so_tank_guid)
-                                     .Distinct()
-                                     .Contains(sot.guid)
-                              group sot by i.yard_cv into grouped
-                              select new OpeningBalance
-                              {
-                                  count = grouped.Count(),
-                                  yard = grouped.Key
-                              }).ToListAsync();
 
-                return result;
+                foreach (var item in openingBalances)
+                {
+                    if (inList.Count() != 0)
+                        item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
+
+                    if(outList.Count != 0)
+                        item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
+                }
+
+                return openingBalances.OrderBy(i => i.yard).ToList();
+
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-
-
-        //public async Task<List<OpeningBalance>> QueryOpeningBalance(ApplicationBillingDBContext context, [Service] IConfiguration config,
-        //       [Service] IHttpContextAccessor httpContextAccessor, long inventoryDate)
-        //{
-        //    try
-        //    {
-        //        GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long sDate = StartDateExtract(inventoryDate);
-
-        //        var res = (from ig in context.in_gate
-        //                   join og in context.out_gate
-        //                       on ig.so_tank_guid equals og.so_tank_guid into ogGroup
-        //                   from og in ogGroup.DefaultIfEmpty()
-        //                   where (ig.delete_dt == null || ig.delete_dt == 0) && ig.eir_dt < sDate
-        //                         && (og.delete_dt == null || og.delete_dt == 0) && (og.eir_dt == null || og.eir_dt > sDate)
-        //                   group ig by ig.yard_cv into grouped
-        //                   select new
-        //                   {
-        //                       OpeningBalance = grouped.Count(ig => ig.so_tank_guid != null),
-        //                       Yard = grouped.Key
-        //                   }).AsQueryable();
-
-        //        return res.Select(x => new OpeningBalance
-        //        {
-        //            yard = x.Yard,
-        //            count = x.OpeningBalance
-        //        }).ToList();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-        //    }
-        //}
-
-        //[UseFiltering]
-        //public IQueryable<CleaningReportCustomer> QuerySummaryReport1(ApplicationBillingDBContext context, [Service] IConfiguration config,
-        //    [Service] IHttpContextAccessor httpContextAccessor, InventoryReportRequest inventoryReportRequest)
-        //{
-        //    try
-        //    {
-        //        GqlUtils.IsAuthorize(config, httpContextAccessor);
-
-        //        DateTime sDate = ExtractDateFromEpoch(inventoryReportRequest.start_date);
-        //        DateTime eDate = ExtractDateFromEpoch(inventoryReportRequest.end_date);
-
-
-        //        var query = context.storing_order_tank
-        //                        .Where(sot => context.cleaning
-        //                        .Where(c => c.complete_dt >= inventoryReportRequest.start_date && c.complete_dt <= inventoryReportRequest.end_date)
-        //                        .Select(c => c.sot_guid)
-        //                        .Contains(sot.guid)).AsQueryable();
-
-
-        //        //if (!string.IsNullOrEmpty(inventoryReportRequest.customer_code))
-        //        //{
-        //        //    query = query.Where(sot => sot.storing_order.customer_company.code == inventoryReportRequest.customer_code);
-        //        //}
-
-        //        //if (!string.IsNullOrEmpty(inventoryReportRequest.last_cargo))
-        //        //{
-        //        //    query = query.Where(sot => sot.tariff_cleaning.cargo == inventoryReportRequest.last_cargo);
-        //        //}
-
-        //        // Apply filters conditionally
-        //        if (inventoryReportRequest.report_type == "customer")
-        //        {
-        //            query = (IQueryable<storing_order_tank>)query.GroupBy(sot => new { sot.storing_order.customer_company.code, sot.storing_order.customer_company.name })
-        //                              .Select(g => new
-        //                              {
-        //                                  NoOfTanks = g.Select(s => s.guid).Distinct().Count(), // Count distinct `guid`
-        //                                  Code = g.Key.code,
-        //                                  Name = g.Key.name
-        //                              }).ToList().AsQueryable();
-
-
-        //            //return res.Select(x => new CleaningReportCustomer
-        //            //{
-        //            //    code = x.Code,
-        //            //    name = x.Name,
-        //            //    count = x.NoOfTanks
-        //            //}).ToList();
-        //        }
-        //        else if (inventoryReportRequest.report_type == "cargo")
-        //        {
-        //            var res = query.GroupBy(sot => new { sot.tariff_cleaning.cargo });
-        //                              //.Select(g => new
-        //                              //{
-        //                              //    NoOfTanks = g.Select(s => s.guid).Distinct().Count(), // Count distinct `guid`
-        //                              //    Cargo = g.Key.cargo
-        //                              //}).ToList();
-
-
-        //            //return res.Select(x => new CleaningReportCustomer
-        //            //{
-        //            //    code = x.Cargo,
-        //            //    count = x.NoOfTanks
-        //            //}).ToList();
-        //        }
-
-        //        return null;
-
-        //        //// Apply filters conditionally
-        //        //if (!string.IsNullOrEmpty(partName))
-        //        //{
-        //        //    query = query.Where(tr => tr.dimension == dimension);
-        //        //}
-
-        //        //// Select distinct part names
-        //        //var distinctLength = await query
-        //        //    .Select(tr => new { tr.length, tr.length_unit_cv })
-        //        //    .Distinct()
-        //        //    .ToListAsync();
-
-        //        //return distinctLength;
-
-        //        //return distinctLength
-        //        //   .Select(x => new LengthWithUnit
-        //        //   {
-        //        //       length = x.length,
-        //        //       length_unit_cv = x.length_unit_cv
-        //        //   })
-        //        //   .ToList();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-        //    }
-        //}
 
         private long StartDateExtract(long dateTimeEpoch)
         {
