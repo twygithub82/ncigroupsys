@@ -23,7 +23,11 @@ namespace IDMS.Billing.Applicaton
 
             builder.Services.AddPooledDbContextFactory<ApplicationBillingDBContext>(o =>
             {
-                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options =>
+                {
+                    options.EnableStringComparisonTranslations();
+                })
+                .LogTo(Console.WriteLine);
                 o.EnableSensitiveDataLogging(false);
             });
 
@@ -38,7 +42,7 @@ namespace IDMS.Billing.Applicaton
                             .AddProjections()
                             .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
                             {
-                                MaxPageSize = 100
+                                MaxPageSize = 50000
                             })
                             .AddQueryType<BillingQuery>()
                             .AddMutationType<BillingMutation>();

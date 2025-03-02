@@ -73,7 +73,8 @@ namespace IDMS.Billing.GqlTypes
 
                 if (!string.IsNullOrEmpty(cleaningInventoryRequest.customer_code))
                 {
-                    query = query.Where(sot => sot.storing_order.customer_company.code == cleaningInventoryRequest.customer_code);
+                    //query = query.Where(sot => sot.storing_order.customer_company.code == cleaningInventoryRequest.customer_code);
+                    query = query.Where(sot => String.Equals(sot.storing_order.customer_company.code, cleaningInventoryRequest.customer_code, StringComparison.OrdinalIgnoreCase));
                 }
 
                 if (!string.IsNullOrEmpty(cleaningInventoryRequest.last_cargo))
@@ -103,7 +104,7 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 // Apply filters conditionally
-                if (cleaningInventoryRequest.report_type == "customer")
+                if (cleaningInventoryRequest.report_type.EqualsIgnore(ReportType.CUSTOMER_WISE))
                 {
                     var res = query.GroupBy(sot => new { sot.storing_order.customer_company.code, sot.storing_order.customer_company.name })
                                       .Select(g => new
@@ -121,7 +122,7 @@ namespace IDMS.Billing.GqlTypes
                         count = x.NoOfTanks
                     }).ToList();
                 }
-                else if (cleaningInventoryRequest.report_type == "cargo")
+                else if (cleaningInventoryRequest.report_type.EqualsIgnore(ReportType.CARGO_WISE))
                 {
                     var res = query.GroupBy(sot => new { sot.tariff_cleaning.cargo })
                                       .Select(g => new
@@ -137,7 +138,7 @@ namespace IDMS.Billing.GqlTypes
                         count = x.NoOfTanks
                     }).ToList();
                 }
-                else if (cleaningInventoryRequest.report_type == "un")
+                else if (cleaningInventoryRequest.report_type.EqualsIgnore(ReportType.UN_WISE))
                 {
                     var res = query.GroupBy(sot => new { sot.tariff_cleaning.un_no })
                                     .Select(g => new
@@ -174,14 +175,12 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 List<PeriodicTestDueSummary> result = new List<PeriodicTestDueSummary>();
-                var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
 
+                var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
                 long currentDateTime = DateTime.Now.ToEpochTime();
                 long nextTestThreshold = (long)(Math.Floor(2.5 * 365.25 * 86400));
                 long secInDay = 86400;
 
-                //long sDate = periodicTestDueRequest.start_date; //StartDateExtract(cleaningInventoryRequest.start_date);
-                //long eDate = periodicTestDueRequest.end_date;
 
                 IQueryable<PeriodicTestDueSummary> query = from tf in context.tank_info
                                                            join sot in context.storing_order_tank on tf.tank_no equals sot.tank_no into sotGroup
@@ -195,7 +194,7 @@ namespace IDMS.Billing.GqlTypes
                                                            join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
                                                            from i in iGroup.DefaultIfEmpty()
                                                            where tf.yard_cv != null
-                                                                 && !new[] { "SO_GENERATED", "IN_GATE", "IN_SURVEY" }.Contains(sot.tank_status_cv) && i.delete_dt == null
+                                                                 && !excludeStatus.Contains(sot.tank_status_cv) && i.delete_dt == null
                                                            select (new PeriodicTestDueSummary
                                                            {
                                                                tank_no = tf.tank_no,
@@ -218,7 +217,7 @@ namespace IDMS.Billing.GqlTypes
 
                 if (!string.IsNullOrEmpty(periodicTestDueRequest.customer_code))
                 {
-                    query = query.Where(tf => tf.customer_code == periodicTestDueRequest.customer_code);
+                    query = query.Where(tf => String.Equals(tf.customer_code, periodicTestDueRequest.customer_code, StringComparison.OrdinalIgnoreCase));
                 }
 
                 if (!string.IsNullOrEmpty(periodicTestDueRequest.tank_no))
@@ -228,7 +227,7 @@ namespace IDMS.Billing.GqlTypes
 
                 if (!string.IsNullOrEmpty(periodicTestDueRequest.eir_no))
                 {
-                    query = query.Where(tf => tf.eir_no.EqualsIgnore(periodicTestDueRequest.eir_no));
+                    query = query.Where(tf => tf.eir_no.Contains(periodicTestDueRequest.eir_no));
                 }
 
                 if (!string.IsNullOrEmpty(periodicTestDueRequest.next_test_due))
@@ -247,6 +246,10 @@ namespace IDMS.Billing.GqlTypes
                     result = result.Where(i => i.due_type.EqualsIgnore(periodicTestDueRequest.due_type)).ToList();
                 }
 
+                var groupedByCustomerCode = result
+                    .GroupBy(test => test.customer_code)
+                    .ToList();
+
                 return result;
             }
             catch (Exception ex)
@@ -255,6 +258,98 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<DailyTankSurveySummary>> QueryDailyTankSurveySummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, DailyTankSurveyRequest dailyTankSurveyRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                List<DailyTankSurveySummary> result = new List<DailyTankSurveySummary>();
+
+                var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+                string surveryorCodeValType = "TEST_CLASS";
+                string tankStatusCV = "ACCEPTED";
+
+                long sDate = dailyTankSurveyRequest.start_date;
+                long eDate = dailyTankSurveyRequest.end_date;
+
+                IQueryable<DailyTankSurveySummary> query = from sot in context.storing_order_tank
+                                                           join so in context.storing_order on sot.so_guid equals so.guid
+                                                           join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                                                           join sd in context.survey_detail on sot.guid equals sd.sot_guid
+                                                           join cv in context.code_values on sd.test_class_cv equals cv.code_val
+                                                           join cl in context.cleaning on sot.guid equals cl.sot_guid into clGroup
+                                                           from cl in clGroup.DefaultIfEmpty()
+                                                           join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
+                                                           from i in iGroup.DefaultIfEmpty()
+                                                           where sot.status_cv == tankStatusCV
+                                                               && !excludeStatus.Contains(sot.tank_status_cv)
+                                                               && sd.survey_dt >= sDate
+                                                               && sd.survey_dt <= eDate
+                                                               && (i.delete_dt == null)
+                                                               && cv.code_val_type == surveryorCodeValType
+
+                                                           group new { sot, cc, sd, cl, i, cv } by new
+                                                           {
+                                                               cc.code,
+                                                               sot.tank_no,
+                                                               sot.status_cv,
+                                                               i.eir_no,
+                                                               sd.survey_type_cv,
+                                                               cv.description,
+                                                               clean_dt = sot.purpose_cleaning == true && cl.complete_dt.HasValue ? cl.complete_dt : null
+                                                           } into g
+
+                                                           select new DailyTankSurveySummary
+                                                           {
+                                                               customer_code = g.Key.code,
+                                                               tank_no = g.Key.tank_no,
+                                                               status = g.Key.status_cv,
+                                                               eir_no = g.Key.eir_no,
+                                                               survey_type = g.Key.survey_type_cv,
+                                                               surveryor = g.Key.description,
+                                                               clean_dt = g.Key.clean_dt,
+                                                               visit = g.Count().ToString()
+                                                           };
+
+                if (!string.IsNullOrEmpty(dailyTankSurveyRequest.customer_code))
+                {
+                    query = query.Where(tf => String.Equals(tf.customer_code, dailyTankSurveyRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTankSurveyRequest.tank_no))
+                {
+                    query = query.Where(tf => tf.tank_no.Contains(dailyTankSurveyRequest.tank_no));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTankSurveyRequest.eir_no))
+                {
+                    query = query.Where(tf => tf.eir_no.Contains(dailyTankSurveyRequest.eir_no));
+                }
+
+                if (dailyTankSurveyRequest.survey_type != null && dailyTankSurveyRequest.survey_type.Any())
+                {
+                    query = query.Where(tf => dailyTankSurveyRequest.survey_type.Contains(tf.survey_type));
+                }
+
+                if(!string.IsNullOrEmpty(dailyTankSurveyRequest.surveyor_name))
+                {
+                    query = query.Where(tf => tf.surveryor.Contains(dailyTankSurveyRequest.surveyor_name));
+                }
+
+                return await query.OrderBy(i => i.customer_code).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
 
         public async Task<List<DailyInventorySummary>> QueryDailyInventorySummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, DailyInventoryRequest dailyInventoryRequest)
@@ -283,7 +378,7 @@ namespace IDMS.Billing.GqlTypes
 
                 var query1 = query;
 
-                if (dailyInventoryRequest.inventory_type.EqualsIgnore(DailyInventoryReportType.IN) || dailyInventoryRequest.inventory_type.EqualsIgnore(DailyInventoryReportType.ALL))
+                if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.IN) || dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.ALL))
                 {
                     query = query.Where(sot => context.in_gate
                                     .Where(i => (i.delete_dt == null || i.delete_dt == 0) && i.eir_dt >= sDate && i.eir_dt <= eDate)
@@ -298,7 +393,7 @@ namespace IDMS.Billing.GqlTypes
                                           Name = g.Key.name
                                       }).ToListAsync();
 
-                    if (dailyInventoryRequest.inventory_type.EqualsIgnore(DailyInventoryReportType.IN))
+                    if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.IN))
                     {
                         return res.Select(x => new DailyInventorySummary
                         {
@@ -320,7 +415,7 @@ namespace IDMS.Billing.GqlTypes
                     }
                 }
 
-                if (dailyInventoryRequest.inventory_type.EqualsIgnore(DailyInventoryReportType.OUT) || dailyInventoryRequest.inventory_type.EqualsIgnore(DailyInventoryReportType.ALL))
+                if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.OUT) || dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.ALL))
                 {
                     query1 = query1.Where(sot => context.out_gate
                                     .Where(i => (i.delete_dt == null || i.delete_dt == 0) && i.eir_dt >= sDate && i.eir_dt <= eDate)
@@ -335,7 +430,7 @@ namespace IDMS.Billing.GqlTypes
                                           Name = g.Key.name
                                       }).ToListAsync();
 
-                    if (dailyInventoryRequest.inventory_type.EqualsIgnore(DailyInventoryReportType.OUT))
+                    if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.OUT))
                     {
                         return res.Select(x => new DailyInventorySummary
                         {
@@ -363,7 +458,6 @@ namespace IDMS.Billing.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
 
         private List<DailyInventorySummary> MergeList(List<DailyInventorySummary> list1, List<DailyInventorySummary> list2, List<OpeningBalance?> openingBalances)
         {
@@ -432,6 +526,45 @@ namespace IDMS.Billing.GqlTypes
                 throw ex;
             }
         }
+
+        private async Task<List<OpeningBalance>> QueryYardCount(ApplicationBillingDBContext context, string type, long sDate, long eDate)
+        {
+            try
+            {
+                if (type.EqualsIgnore(ReportType.IN))
+                {
+
+                }
+                else
+                {
+
+                }
+                var result = await (from sot in context.storing_order_tank
+                              join i in context.in_gate
+                              on sot.guid equals i.so_tank_guid into leftJoin
+                              from i in leftJoin.DefaultIfEmpty()
+                              where context.in_gate
+                                     .Where(ig => ig.delete_dt == null
+                                                  && ig.eir_dt >= sDate
+                                                  && ig.eir_dt <= eDate)
+                                     .Select(ig => ig.so_tank_guid)
+                                     .Distinct()
+                                     .Contains(sot.guid)
+                              group sot by i.yard_cv into grouped
+                              select new OpeningBalance
+                              {
+                                  count = grouped.Count(),
+                                  yard = grouped.Key
+                              }).ToListAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
 
         //public async Task<List<OpeningBalance>> QueryOpeningBalance(ApplicationBillingDBContext context, [Service] IConfiguration config,
         //       [Service] IHttpContextAccessor httpContextAccessor, long inventoryDate)

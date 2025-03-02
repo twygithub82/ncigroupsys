@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace IDMS.Billing.GqlTypes.LocalModel
 {
-    public class PeriodicTestDueRequest
+    public class DailyTankSurveyRequest
     {
         [NotMapped]
-        public string? due_type { get; set; }
+        public List<string>? survey_type { get; set; }
+        [NotMapped]
+        public string? surveyor_name { get; set; }
         [NotMapped]
         public string? customer_code { get; set; }
         [NotMapped]
@@ -20,5 +22,11 @@ namespace IDMS.Billing.GqlTypes.LocalModel
         public string? tank_no { get; set; }
         [NotMapped]
         public string? eir_no { get; set; }
+        //[NotMapped]
+        //public string? reference { get; set; }
+        [NotMapped]
+        public long start_date { get; set; }
+        [NotMapped]
+        public long end_date { get; set; }
     }
 }

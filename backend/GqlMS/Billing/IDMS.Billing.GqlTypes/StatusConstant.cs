@@ -26,10 +26,13 @@ namespace IDMS.Billing.GqlTypes
         public const string STORAGE = "STORAGE";
     }
 
-    public class DailyInventoryReportType
+    public class ReportType
     {
         public const string IN = "IN";
         public const string OUT = "OUT";
         public const string ALL = "ALL";
+        public const string CUSTOMER_WISE = "CUSTOMER";
+        public const string CARGO_WISE = "CARGO";
+        public const string UN_WISE = "UN";
     }
 }
