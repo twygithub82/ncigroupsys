@@ -21,6 +21,7 @@ namespace IDMS.Models.Inventory
         public long? eir_dt { get; set; }
         public string? eir_status_cv { get; set; } = "";
         public string? vehicle_no { get; set; } = "";
+        public string? yard_cv { get; set; } = "";
         public string? driver_name { get; set; } = "";
         public string? remarks { get; set; }
         public string? publish_by { get; set; }

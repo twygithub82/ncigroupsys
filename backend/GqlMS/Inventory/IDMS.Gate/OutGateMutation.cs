@@ -39,7 +39,7 @@ namespace IDMS.Gate.GqlTypes
                     guid = newGuid,
                     create_by = user,
                     create_dt = currentDate,
-
+                    yard_cv = OutGate.yard_cv,  
                     eir_dt = currentDate,
                     driver_name = OutGate.driver_name,
                     //Trigger auto generated
@@ -126,6 +126,7 @@ namespace IDMS.Gate.GqlTypes
                     updatedOutgate.update_dt = currentDate;
                     updatedOutgate.vehicle_no = OutGate.vehicle_no;
                     updatedOutgate.driver_name = OutGate.driver_name;
+                    updatedOutgate.yard_cv = OutGate.yard_cv;   
                     updatedOutgate.remarks = OutGate.remarks;
                     if (!string.IsNullOrEmpty(OutGate.haulier))
                         updatedOutgate.haulier = OutGate.haulier;
