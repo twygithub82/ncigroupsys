@@ -116,6 +116,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   all_customer_companyList: CustomerCompanyItem[] = [];
+  all_branch_List: CustomerCompanyItem[] = [];
   cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
@@ -437,7 +438,9 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
-    where.type_cv = { in: ["BRANCH"] };
+    where.and = [ {main_customer_guid:{neq:null}},
+                  {main_customer_guid:{neq:""}},
+                  {type_cv : { in: ["BRANCH"] }}];
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
 
@@ -555,7 +558,14 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
+    if(this.lastSearchCriteria)
+    {
+      this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
+    }
+    else
+    {
+      this.search();
+    }
     //}
   }
 
@@ -600,9 +610,10 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   public loadData() {
 
     var cond:any={};
-    cond.type_cv = { in: ["BRANCH"] }
+    cond.type_cv = { neq: "SURVEYOR" }
     this.subs.sink = this.custCompDS.search(cond, { code: 'ASC' }, 100).subscribe(data => {
-      this.all_customer_companyList = data
+      this.all_branch_List = data.filter(d=>d.type_cv=="BRANCH");
+      this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
     });
 
     // this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});

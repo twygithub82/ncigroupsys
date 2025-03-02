@@ -3,14 +3,10 @@
 </div>
 <div #pdfTable id="pdfTable" mat-dialog-content>
   
-  <div class="clearfix">
+  <div class="row clearfix">
     
-    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12">
       <div class="card">
-        <!-- <div class="header">
-          <h2>Bar chart</h2>
-
-        </div> -->
         <div class="body">
           <div >
             <apx-chart [series]="barChartOptions.series!" [chart]="barChartOptions.chart!"
@@ -23,40 +19,36 @@
         </div>
       </div>
     </div>
-    <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3">
       <div class="card">
         <table id="repair-part-table" class="repair-part-table">
           <tr class="group-header">
-            <th class="th-w3">{{translatedLangText.NO}}</th>
-            <th class="th-w8">{{translatedLangText.TANK_NO}}</th>
-            <th class="th-w6">{{translatedLangText.IN_DATE}}</th>
-            <th class="th-w8">{{translatedLangText.TAKE_IN_REFERENCE}}</th>
-            <th class="th-w6">{{translatedLangText.CAPACITY}}</th>
-            <th class="th-w8">{{translatedLangText.TARE_WEIGHT}}</th>
-            <th class="th-w12">{{translatedLangText.LAST_CARGO}}</th>
-            <th class="th-w7">{{translatedLangText.CLEAN_DATE}}</th>
+            <th class="th-w3">{{translatedLangText.OPENING_BALANCE}}</th>
           </tr>
-          @for (itm of report_inventory; track itm;let index = $index) {
-          <tr class="fixed_height_40px">
-            <td>{{ index + 1 }}</td> 
-            <td>{{ itm.code }}</td>
-            <td>{{itm.customer }}</td>
-            <td>{{itm.tank_no_in_gate}}</td>
-            <td>{{itm.tank_no_out_gate}}</td>
-            <td>{{itm.tank_no_in_yard}}</td>
-            <td>{{itm.tank_no_pending}}</td>
-            <td>{{itm.tank_no_ro}}</td>
+          <tr >
+            <td>{{displayOpeningBalance()}}</td> 
           </tr>
-          }
-          <tr>
-            <td colspan="3">{{translatedLangText.TOTAL}}</td>
-            <td>sum of in-gate</td>
-            <td>sum of out-gate</td>
-            <td colspan="3">&nbsp;</td>
+          <tr class="group-header">
+            <th class="th-w3">{{translatedLangText.IN_GATE}}</th>
+          </tr>
+          <tr >
+            <td>{{displayTotalInGate()}}</td> 
+          </tr>
+          <tr class="group-header">
+            <th class="th-w3">{{translatedLangText.OUT_GATE}}</th>
+          </tr>
+          <tr >
+            <td>{{displayTotalOutGate()}}</td> 
+          </tr>
+          <tr class="group-header">
+            <th class="th-w3">{{translatedLangText.CLOSING_BALANCE}}</th>
+          </tr>
+          <tr >
+            <td>{{displayClosingBalance()}}</td> 
           </tr>
         </table>
   
       </div>
-    </div> -->
+    </div>
   </div>
 </div>

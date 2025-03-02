@@ -2806,6 +2806,147 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANKS_FOR_STATUS_DETAIL = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        certificate_cv
+        clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        eta_dt
+        etr_dt
+        guid
+        job_no
+        owner_guid
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        last_cargo_guid
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        remarks
+        required_temp
+        so_guid
+        status_cv
+        tank_no
+        tank_status_cv
+        unit_type_guid
+        update_by
+        update_dt
+          cleaning (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
+         approve_dt
+         complete_dt
+         delete_dt
+         create_dt
+        }
+        repair (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
+         approve_dt
+         complete_dt
+         estimate_no
+         create_dt
+         delete_dt
+        }
+        booking(where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
+          book_type_cv
+          booking_dt
+          reference
+        }
+        customer_company {
+          code
+          guid
+          name
+        }
+        tariff_cleaning {
+          alias
+          ban_type_cv
+          cargo
+          class_cv
+          cleaning_category_guid
+          cleaning_method_guid
+          create_by
+          create_dt
+          delete_dt
+          depot_note
+          description
+          flash_point
+          guid
+          hazard_level_cv
+          in_gate_alert
+          nature_cv
+          open_on_gate_cv
+          remarks
+          un_no
+          update_by
+          update_dt
+          cleaning_category {
+            name
+            description
+          }
+        }
+        storing_order {
+          so_no
+          so_notes
+          haulier
+          create_dt
+          status_cv
+          customer_company_guid
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          eir_dt
+          eir_no
+          eir_status_cv
+          guid
+          haulier
+          lolo_cv
+          preinspection_cv
+          publish_by
+          publish_dt
+          remarks
+          so_tank_guid
+          update_by
+          update_dt
+          vehicle_no
+          yard_cv
+          in_gate_survey {
+            delete_dt
+            guid
+            inspection_dt
+            last_test_cv
+            next_test_cv
+            tare_weight
+            test_dt
+            walkway_cv
+            capacity
+            take_in_reference
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
 const GET_STORING_ORDER_FOR_INVENTORY = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -3365,6 +3506,32 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_FOR_INVENTORY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  searchStoringOrderTanksStatusReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_STATUS_DETAIL,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

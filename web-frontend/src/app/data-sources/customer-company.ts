@@ -8,6 +8,8 @@ import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
 import { CurrencyItem } from './currency';
 import { ContactPersonItem } from './contact-person';
+import { StoringOrderTankItem } from './storing-order-tank';
+import { StoringOrderItem } from './storing-order';
 
 export class CustomerCompanyGO {
   public guid?: string;
@@ -70,11 +72,14 @@ export class CustomerCompanyGO {
 export class CustomerCompanyItem extends CustomerCompanyGO {
   public currency?: CurrencyItem;
   public cc_contact_person?: ContactPersonItem[] = [];
-
+  public storing_order_tank?:StoringOrderTankItem[]=[];
+  public storing_orders?:StoringOrderItem[]=[];
   constructor(item: Partial<CustomerCompanyItem> = {}) {
     super(item);
     this.currency = item.currency;
     this.cc_contact_person = item.cc_contact_person;
+    this.storing_order_tank=item.storing_order_tank;
+    this.storing_orders=item.storing_orders;
   }
 }
 
@@ -174,6 +179,7 @@ export const SEARCH_COMPANY_QUERY = gql`
           guid
           unit_type
         }
+       
       }
       pageInfo {
         endCursor
@@ -185,7 +191,83 @@ export const SEARCH_COMPANY_QUERY = gql`
     }
   }
 `;
-
+export const SEARCH_COMPANY_QUERY_WITH_SO_SOT = gql`
+  query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
+    companyList: queryCustomerCompany(where: $where, order: $order,first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        address_line1
+        address_line2
+        agreement_due_dt
+        city
+        code
+        country
+        create_by
+        create_dt
+        delete_dt
+        effective_dt
+        def_tank_guid
+        email
+        guid
+        name
+        phone
+        postal
+        type_cv
+        update_by
+        update_dt
+        website
+        main_customer_guid
+        remarks
+        cc_contact_person {
+          create_by
+          create_dt
+          customer_guid
+          delete_dt
+          department
+          did
+          email
+          email_alert
+          guid
+          job_title
+          name
+          phone
+          title_cv
+          update_by
+          update_dt
+        }
+        currency_guid
+        currency {
+          create_by
+          create_dt
+          currency_code
+          currency_name
+          delete_dt
+          guid
+          is_active
+          rate
+          sequence
+          update_by
+          update_dt
+        }
+        storing_orders{
+          guid
+          so_no
+        }
+        storing_order_tank{
+          guid
+          tank_no
+        }
+       
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
 export const GET_COMPANY_AND_BRANCH = gql`
   query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!]) {
     resultList: queryCustomerCompany(where: $where, order: $order) {
@@ -274,6 +356,36 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     return this.apollo
       .query<any>({
         query: SEARCH_COMPANY_QUERY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CustomerCompanyItem[]); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          const list = result.companyList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(list.nodes);
+          this.pageInfo = list.pageInfo;
+          this.totalCount = list.totalCount;
+          return list.nodes;
+        })
+      );
+  }
+
+  searchWithSOT(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
+    this.loadingSubject.next(true);
+    if (!last)
+      if (!first)
+        first = 10;
+    return this.apollo
+      .query<any>({
+        query: SEARCH_COMPANY_QUERY_WITH_SO_SOT,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -434,6 +546,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
 
   }
 
+ 
   DeleteCustomerCompany(customerGuids: any): Observable<any> {
     return this.apollo.mutate({
       mutation: DELETE_CUSTOMER_COMPANY,

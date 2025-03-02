@@ -18,32 +18,20 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
-import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_customer_tank_activity } from 'app/data-sources/reports';
+import { report_status, report_customer_tank_activity } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  report_customer_tank_activity: report_customer_tank_activity[],
-  queryType:number,
-  type:string,
-  date:string,
-
-  // repair_guid: string;
-  // customer_company_guid: string;
-  // sotDS: StoringOrderTankDS;
-  // repairDS: RepairDS;
-  // ccDS: CustomerCompanyDS;
-  // cvDS: CodeValuesDS;
-  // existingPdf?: any;
-  // estimate_no?: string;
-  // retrieveFile: boolean;
+  report_yard_detail: report_status[],
+   
 }
 
 @Component({
@@ -58,10 +46,11 @@ export interface DialogData {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatTooltipModule
   ],
 })
-export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -181,8 +170,8 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     IN_GATE: 'COMMON-FORM.IN-GATE',
     EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
-    LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
-    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
+    LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE-S',
+    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE-S',
     OPERATOR: 'COMMON-FORM.OPERATOR',
     TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
     YES: 'COMMON-FORM.YES',
@@ -205,8 +194,8 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
     IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
     OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
     MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
     DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
     REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
@@ -229,29 +218,38 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE:'COMMON-FORM.IN-DATE',
-    OUT_DATE:'COMMON-FORM.OUT-DATE',
-    TOTAL:'COMMON-FORM.TOTAL',
-    DAYS:'COMMON-FORM.DAYS',
-    GATEIO:'COMMON-FORM.GATEIO',
-    INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
-    DETAIL_REPORT:'COMMON-FORM.DETAIL-REPORT',
-    CLEAN_DATE:'COMMON-FORM.CLEAN-DATE',
-    APPROVAL_DATE:'COMMON-FORM.APPROVAL-DATE',
-    APPROVAL_REFERENCE:'COMMON-FORM.APPROVAL-REFERENCE',
-    AV_DATE:'COMMON-FORM.AV-DATE',
-    RELEASE_DATE:'COMMON-FORM.RELEASE-DATE',
-    RELEASE_REFERENCE:'COMMON-FORM.RELEASE-REFERENCE',
-    INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD'
+    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
+    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
+    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
+    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
+    IN_DATE: 'COMMON-FORM.IN-DATE',
+    OUT_DATE: 'COMMON-FORM.OUT-DATE',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    DAYS: 'COMMON-FORM.DAYS',
+    GATEIO: 'COMMON-FORM.GATEIO-S',
+    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
+    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
+    DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
+    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
+    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
+    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
+    AV_DATE: 'COMMON-FORM.AV-DATE',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE-S',
+    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE-S',
+    INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
+    CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
+    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S',
+    AVAILABLE_IN_YARD:'COMMON-FORM.AVAILABLE-IN-YARD',
+    RELEASED_TANK:'COMMON-FORM.RELEASED-TANK',
+    DAILY_INVENTORY:'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY',
+    CLEAN_CERT_BOOKING:'COMMON-FORM.CLEAN-CERT-BOOKING',
+    INVENTORY_DATE:'COMMON-FORM.INVENTORY-DATE',
+    LOCATION:'COMMON-FORM.LOCATION'
   }
 
-  
+
   type?: string | null;
   steamDS: SteamDS;
   steamPartDS: SteamPartDS;
@@ -284,6 +282,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
   repairCodeCvList: CodeValuesItem[] = [];
   chunkedRepairCodeCvList: any[][] = [];
   unitTypeCvList: CodeValuesItem[] = [];
+  yardCvList: CodeValuesItem[] = [];
 
   scale = 2.5;
   imageQuality = 0.7;
@@ -297,15 +296,16 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_customer_tank_activity:report_customer_tank_activity[]=[];
-  date:string='';
-  invType:string='';
-  queryType:number=1;
+  report_yard_detail: report_status[] = [];
+  date: string = '';
+  invType: string = '';
+  queryType: number = 1;
+  indexCounter:number=0;
 
-  
+
 
   constructor(
-    public dialogRef: MatDialogRef<YardDetailPdfComponent>,
+    public dialogRef: MatDialogRef<YardDetailInventoryPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -320,212 +320,22 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
-    this.report_customer_tank_activity= data.report_customer_tank_activity;
-    this.invType=data.type;
-    this.date=data.date;
-    this.queryType=data.queryType;
+    this.initialize(data);
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-    this.getCodeValuesData();
-  }
+    
 
-  async ngOnInit() {
-    this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
    
   }
 
-  async generatePDF(): Promise<void> {
-    const repTableElement = document.getElementById('steam-heating-log-table');
-    const summaryElement = document.getElementById('summary-content');
-
-    if (!repTableElement || !summaryElement) {
-      console.error('Template element not found');
-      return;
-    }
-
-    try {
-      console.log('Start generate', new Date());
-      this.generatingPdfLoadingSubject.next(true);
-      this.generatingPdfProgress = 0;
-
-      const rows = Array.from(repTableElement.querySelectorAll('tr'));
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = pdf.internal.pageSize.width; // A4 page width
-      const pageHeight = pdf.internal.pageSize.height; // A4 page height
-      const leftRightMargin = 5; // Fixed left and right margins
-      const leftRightMarginBody = 7.5; // Fixed left and right margins for body
-      const topMargin = 5; // Top margin
-      const bottomMargin = 5; // Bottom margin
-
-      // Add Header for the first page
-      const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-      const footerHeight = await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, 1, 1); // Placeholder footer height calculation
-      const usableHeight = pageHeight - topMargin - bottomMargin - footerHeight;
-
-      console.log('Header Height:', headerHeight);
-      console.log('Footer Height:', footerHeight);
-      console.log('Usable Height:', usableHeight);
-
-      let yOffset = topMargin + headerHeight; // Tracks vertical position on the page
-      let currentPage = 1; // Current page number
-
-      const summaryCanvas = await html2canvas(summaryElement, { scale: this.scale });
-      const summaryHeight = (summaryCanvas.height * (pageWidth - leftRightMarginBody * 2)) / summaryCanvas.width;
-      this.generatingPdfProgress += 20;
-
-      // Calculate total height of rows
-      const totalRowHeight = rows.reduce((total, row) => {
-        const rowCanvas = document.createElement('canvas');
-        rowCanvas.width = row.offsetWidth;
-        rowCanvas.height = row.offsetHeight;
-        const rowHeight = (row.offsetHeight * (pageWidth - leftRightMarginBody * 2)) / row.offsetWidth;
-        return total + rowHeight;
-      }, 0);
-
-      // Calculate the total required height
-      const totalContentHeight = totalRowHeight + summaryHeight;
-
-      // Calculate total pages
-      const totalPages = Math.ceil(totalContentHeight / (usableHeight));
-      console.log('Total Pages:', totalPages);
-
-      let rowsCount = rows.length;
-      let currentRowCount = 0;
-      const rowProgressWeight = 0.7;
-      for (const row of rows) {
-        // Render each row to canvas
-        const rowCanvas = await html2canvas(row as HTMLElement, { scale: this.scale });
-        const rowImg = rowCanvas.toDataURL('image/jpeg', this.imageQuality);
-        const rowHeight = (rowCanvas.height * (pageWidth - leftRightMarginBody * 2)) / rowCanvas.width;
-        currentRowCount++;
-
-        // Check if row fits on the current page
-        if (yOffset + rowHeight > usableHeight) {
-          console.log('Starting new page...');
-          // Add Footer to the current page
-          await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-
-          // Start a new page
-          pdf.addPage();
-          currentPage++;
-          yOffset = topMargin;
-
-          // Add Header to the new page
-          const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-          yOffset += newHeaderHeight;
-        }
-
-        // Add row to the current page
-        pdf.addImage(rowImg, 'PNG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, rowHeight);
-        yOffset += rowHeight;
-        const rowProgress = (rowProgressWeight / rowsCount) * 100;
-        this.generatingPdfProgress += rowProgress;
-        console.log('generatingPdfProgress', this.generatingPdfProgress);
-      }
-
-      // Add summary content
-      const summaryImg = summaryCanvas.toDataURL('image/jpeg', this.imageQuality);
-
-      // Calculate remaining space for summary content
-      const remainingSpace = pageHeight - yOffset - footerHeight - bottomMargin;
-
-      if (summaryHeight > remainingSpace) {
-        console.log('Adding new page for summary...');
-        // Add Footer to the current page
-        await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-
-        // Start a new page
-        pdf.addPage();
-        currentPage++;
-        yOffset = topMargin;
-
-        // Add Header to the new page
-        const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-        yOffset += newHeaderHeight;
-
-        // Align summary content to the bottom of the page
-        const newRemainingSpace = pageHeight - footerHeight - bottomMargin;
-        yOffset = newRemainingSpace - summaryHeight;
-      } else {
-        // Align summary content to the bottom of the current page
-        yOffset = pageHeight - footerHeight - bottomMargin - summaryHeight;
-      }
-
-      pdf.addImage(summaryImg, 'PNG', leftRightMargin, yOffset, pageWidth - leftRightMargin * 2, summaryHeight);
-
-      // Update yOffset after adding summary
-      yOffset += summaryHeight;
-
-      // Add Footer to the last page
-      await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-      this.generatingPdfProgress = 100;
-
-      // Save PDF
-      // pdf.save(`ESTIMATE-${this.estimate_no}.pdf`);
-      this.generatedPDF = pdf.output('blob');
-      this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
-      this.generatingPdfLoadingSubject.next(false);
-      console.log('End generate', new Date());
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      this.generatingPdfLoadingSubject.next(false);
-    }
-  }
-
-  async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
-    const headerElement = document.getElementById('pdf-form-header');
-    if (headerElement) {
-      const canvas = await html2canvas(headerElement, {
-        scale: this.scale,
-      });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-
-      const availableWidth = pageWidth - leftRightMargin * 2; // Width available between margins
-      const imgWidth = availableWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      pdf.addImage(imgData, 'PNG', leftRightMargin, topMargin, imgWidth, imgHeight);
-      return imgHeight; // Return header height
-    }
-    return 0;
-  }
-
-  async addFooter(pdf: jsPDF, pageWidth: number, pageHeight: number, leftRightMargin: number, bottomMargin: number, currentPage: number, totalPages: number): Promise<number> {
-    const footerElement = document.getElementById('pdf-form-footer');
-    if (footerElement) {
-      // Update dynamic content in the footer
-      const currentPageSpan = footerElement.querySelector('#current-page');
-      const totalPagesSpan = footerElement.querySelector('#total-pages');
-      if (currentPageSpan) currentPageSpan.textContent = currentPage.toString();
-      if (totalPagesSpan) totalPagesSpan.textContent = totalPages.toString();
-
-      // Render the footer to a canvas
-      const canvas = await html2canvas(footerElement, {
-        scale: this.scale, // Set scale to match PDF resolution
-      });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-
-      // Calculate dimensions for the footer image
-      const availableWidth = pageWidth - leftRightMargin * 2;
-      const imgWidth = availableWidth; // Width matches the available page width
-      const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
-
-      // Add the footer to the PDF
-      pdf.addImage(imgData, 'PNG', leftRightMargin, pageHeight - imgHeight - bottomMargin, imgWidth, imgHeight);
-
-      // Return the calculated footer height
-      return imgHeight;
-    }
-
-    // If no footer element is found, return 0 as the height
-    return 0;
+  async ngOnInit() {
+   // this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+   await this.getCodeValuesData();
+   this.indexCounter=0;
+   this.report_yard_detail = this.data.report_yard_detail;
   }
 
   async getImageBase64(url: string): Promise<string> {
@@ -540,121 +350,112 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
-  cleanupTemplate(template: HTMLElement) {
-    if (template && template.parentNode) {
-      template.parentNode.removeChild(template);
-    }
+  initialize(data:DialogData) {
+    //this.loadData(data)
+   
   }
 
-  getRepairData(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.repair_guid!).subscribe({
-        next: (data) => resolve(data),
-        error: (err) => reject(err),
-      });
+  public loadData(dataDlg:DialogData) {
+    const queries = [
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'yardCv', codeValType: 'YARD' },
+      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
+       //{ alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      // { alias: 'yardCv', codeValType: 'YARD' },
+      // { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      if(data.length)
+        {
+          this.purposeOptionCvList = data;
+          this.indexCounter=0;
+          this.report_yard_detail = dataDlg.report_yard_detail;
+          //this.processHorizontalBarValue(this.report_summary_status);
+          //this.processCustomerStatus(this.report_summary_status);
+        }
     });
   }
-
-  getRepairPdf(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
-        next: (data) => resolve(data),
-        error: (err) => reject(err),
-      });
-    });
-  }
-
   async getCodeValuesData(): Promise<void> {
     const queries = [
-      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      { alias: 'TankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+     // { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+    //  { alias: 'yesnoCv', codeValType: 'YES_NO' },
+    { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+    { alias: 'yardCv', codeValType: 'YARD' },
+    { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+       { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      // { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+      // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
+      // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+      // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      // { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
 
     await this.cvDS.getCodeValuesByTypeAsync(queries);
 
     // Wrap all alias connections in promises
     const promises = [
-      firstValueFrom(this.cvDS.connectAlias('groupNameCv')).then(async data => {
-        this.groupNameCvList = data || [];
-        const subqueries: any[] = [];
-        data.map(d => {
-          if (d.child_code) {
-            let q = { alias: d.child_code, codeValType: d.child_code };
-            const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-            if (!hasMatch) {
-              subqueries.push(q);
-            }
-          }
-        });
+      // firstValueFrom(this.cvDS.connectAlias('groupNameCv')).then(async data => {
+      //   this.groupNameCvList = data || [];
+      //   const subqueries: any[] = [];
+      //   data.map(d => {
+      //     if (d.child_code) {
+      //       let q = { alias: d.child_code, codeValType: d.child_code };
+      //       const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+      //       if (!hasMatch) {
+      //         subqueries.push(q);
+      //       }
+      //     }
+      //   });
 
-        // Process subqueries if any
-        if (subqueries.length > 0) {
-          await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
+      //   // Process subqueries if any
+      //   if (subqueries.length > 0) {
+      //     await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
 
-          for (const s of subqueries) {
-            const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
-            if (subData) {
-              this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
-            }
-          }
-        }
+      //     for (const s of subqueries) {
+      //       const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
+      //       if (subData) {
+      //         this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
+      //       }
+      //     }
+      //   }
 
-      }),
-      firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
-        this.yesnoCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('TankStatusCv')).then(data => {
-        this.TankStatusCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
+      // }),
+      // firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
+      //   this.yesnoCvList = data || [];
+      // }),
+      // firstValueFrom(this.cvDS.connectAlias('TankStatusCv')).then(data => {
+      //   this.TankStatusCvList = data || [];
+      // }),
+      firstValueFrom(this.cvDS.connectAlias('purposeOptionCv')).then(data => {
         this.purposeOptionCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
+        this.yardCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('tankStatusCv')).then(data => {
+        this.TankStatusCvList = data || [];
       }),
       firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
         this.testTypeCvList = data || [];
       }),
-      firstValueFrom(this.cvDS.connectAlias('testClassCv')).then(data => {
-        this.testClassCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('partLocationCv')).then(data => {
-        this.partLocationCvList = data || [];
-      }),
-      firstValueFrom(this.cvDS.connectAlias('damageCodeCv')).then(data => {
-        this.damageCodeCvList = data || [];
-        this.chunkedDamageCodeCvList = this.chunkArray(this.damageCodeCvList, 10);
-      }),
-      firstValueFrom(this.cvDS.connectAlias('repairCodeCv')).then(data => {
-        this.repairCodeCvList = data || [];
-        this.chunkedRepairCodeCvList = this.chunkArray(this.repairCodeCvList, 10);
-      }),
-      firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
-        this.unitTypeCvList = data || [];
-      })
+      // firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
+      //   this.unitTypeCvList = data || [];
+      // })
     ];
 
     // Wait for all promises to resolve
     await Promise.all(promises);
   }
 
-  chunkArray(array: any[], chunkSize: number): any[][] {
-    const chunks: any[][] = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize));
-    }
-    return chunks;
+  refreshCounter()
+  {
+    this.indexCounter=0;
   }
-
-  updateData(newData: RepairPartItem[] | undefined): void {
-  
+  getCounter(){
+    this.indexCounter+=1;
+    return this.indexCounter;
   }
-
   getGroupSeq(codeVal: string | undefined): number | undefined {
     const gncv = this.groupNameCvList?.filter(x => x.code_val === codeVal);
     if (gncv.length) {
@@ -662,32 +463,6 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     return -1;
   }
-
-  getLastTest(igs: any): string | undefined {
-    return this.getLastTestIGS(igs);
-  }
-
-  getLastTestIGS(igs: any): string | undefined {
-    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
-
-    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
-      const test_type = igs.last_test_cv;
-      const test_class = igs.test_class_cv;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
-    }
-    return "";
-  }
-
-  // getLastTestTI(): string | undefined {
-  //   if (!this.populateCodeValues?.testTypeCvList?.length || !this.populateCodeValues?.testClassCvList?.length || !this.tiItem) return "";
-
-  //   if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
-  //     const test_type = this.tiItem.last_test_cv;
-  //     const test_class = this.tiItem.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
 
   getTestTypeDescription(codeVal: string): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
@@ -705,13 +480,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
   }
 
-  displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
-      return item.code_cv;
-    }).join('/');
-  }
-
-  displayTankPurpose(sot: any) {
+  DisplayTankPurpose(sot: any) {
     let purposes: any[] = [];
     if (sot?.purpose_storage) {
       purposes.push(this.getPurposeOptionDescription('STORAGE'));
@@ -751,14 +520,8 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     return "";
   }
 
-  calculateCost() {
-    // this.repairCost = this.steamDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
-    // console.log(this.repairCost)
-  }
-
   async onDownloadClick() {
     this.exportToPDF();
-   
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -773,119 +536,67 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     URL.revokeObjectURL(url);
   }
 
-  
-
-  async uploadPdf(group_guid: string, pdfBlob: Blob) {
-    const pdfDescription = 'REPAIR_ESTIMATE';
-    const uploadRequest: any = {
-      file: pdfBlob,
-      metadata: {
-        TableName: 'repair',
-        FileType: 'pdf',
-        GroupGuid: group_guid,
-        Description: pdfDescription
-      }
-    }
-
-    this.fileManagerService.uploadFiles([uploadRequest]).subscribe({
-      next: (response) => {
-        console.log('Files uploaded successfully:', response);
-        if (response?.affected) {
-          this.existingPdf = [
-            {
-              description: pdfDescription,
-              url: response?.url?.[0]
-            }
-          ];
-        }
-      },
-      error: (error) => {
-        console.error('Error uploading files:', error);
-      },
-      complete: () => {
-        console.log('Upload process completed.');
-      }
-    });
-  }
-
-  deleteFile() {
-    if (this.existingPdf?.[0]?.url) {
-      this.fileManagerService.deleteFile([this.existingPdf?.[0]?.url]).subscribe({
-        next: (response) => {
-          console.log('Files delete successfully:', response);
-          this.generatePDF();
-        },
-        error: (error) => {
-          console.error('Error delete files:', error);
-        },
-        complete: () => {
-          console.log('Delete process completed.');
-        }
-      });
-    }
-  }
-
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-
   async exportToPDF(fileName: string = 'document.pdf') {
+    let pagewidth =297;
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdf = new jsPDF('l', 'mm', 'a4');
     const leftMargin = 10; // Left margin
     const rightMargin = 10; // Right margin
-    const contentWidth = 210 - leftMargin - rightMargin; // 190mm usable width
+    const contentWidth = pagewidth - leftMargin - rightMargin; // 190mm usable width
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 0;
-  
+    
     // Store page positions for later text update
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
-  
+
     const reportTitle = this.GetReportTitle();  // Set your report title here
-  
+
     // Set font for the title
     pdf.setFontSize(14); // Title font size
-  
+
     for (let i = 0; i < cardElements.length; i++) {
       const card = cardElements[i];
-  
+
       // Convert card to image (JPEG format)
       const canvas = await html2canvas(card, { scale: this.scale });
       const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
-  
+
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-  
+
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
-      const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
-  
-      const pos=15;
+      const titleX = (pagewidth - titleWidth) / 2; // Centering the title (210mm is page width)
+
+      const pos = 15;
       pdf.text(reportTitle, titleX, pos); // Position it at the top
-  
+
       // Draw underline for the title
       pdf.setLineWidth(0.5); // Set line width for underline
-      pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
-  
+      pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+
       // If card height exceeds A4 page height, split across multiple pages
-      if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
+      if (imgHeight > 190) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
         while (yPosition < canvas.height) {
           const sectionCanvas = document.createElement('canvas');
           sectionCanvas.width = canvas.width;
-          sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
-  
+          sectionCanvas.height = Math.min(800, canvas.height - yPosition); // A4 height in pixels
+
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
-  
+
           const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
-  
+
           pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
-  
+
           // Store page position for page numbering
-          pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-  
+          pagePositions.push({ page: pageNumber, x: 280, y: 200 });
+
           yPosition += sectionCanvas.height;
           if (yPosition < canvas.height) {
             pdf.addPage();
@@ -897,162 +608,182 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
-  
+
         // Store page position for page numbering
-        pagePositions.push({ page: pageNumber, x: 200, y: 287 });
+        pagePositions.push({ page: pageNumber, x: 280, y: 200 });
       }
       pageNumber++;
       this.generatingPdfProgress += progressValue;
     }
-  
+
     totalPages = pageNumber - 1;
-  
+
     // Add page numbers in a second pass
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setPage(page);
       pdf.setFontSize(10);
       pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
-  
+
     this.generatingPdfProgress = 100;
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
   }
 
- 
-   GeneratedDate():string
-   {
-     return  Utility.convertDateToStr(new Date());
-   }
-   GetReportTitle():string
-   {
-     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.DETAIL_REPORT}`
-   }
 
-   removeDeletedInGateAndOutGate(sot:StoringOrderTankItem)
-   {
-    sot.in_gate = sot?.in_gate?.filter(i=>i.delete_dt==null||i.delete_dt==0)||[];
-    sot.out_gate = sot?.out_gate?.filter(i=>i.delete_dt==null||i.delete_dt==0)||[];
-    sot.cleaning=sot?.cleaning?.filter(i=>i.delete_dt==null||i.delete_dt==0)||[];
-    sot.repair=sot?.repair?.filter(i=>i.delete_dt==null||i.delete_dt==0)||[];
-   }
-
-   DisplayInDate(sot:StoringOrderTankItem):string
-   {
-      this.removeDeletedInGateAndOutGate(sot);
-      return Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt!)!;
-
-   }
-
-   DisplayCleanDate(sot:StoringOrderTankItem):string
-   {
-    this.removeDeletedInGateAndOutGate(sot);
-     return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt!)!;;
-   }
-
-   DisplayTakeInRef(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return sot.in_gate?.[0]?.in_gate_survey?.take_in_reference||'';
-      
-
-   }
-
-   DisplayTareWeight(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return `${sot.in_gate?.[0]?.in_gate_survey?.tare_weight||''}`;
-     
-
-   }
-
-   DisplayCapacity(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return `${sot.in_gate?.[0]?.in_gate_survey?.capacity||''}`;
-     
-
-   }
-
-   DisplayEstimateNo(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return `${sot.repair?.[0]?.estimate_no||''}`;
-
-   }
-
-   DisplayEstimateDate(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-     return Utility.convertEpochToDateStr(sot.repair?.[0]?.create_dt!)!;;
-   }
-  
-   
-   DisplayApprovalDate(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-      return Utility.convertEpochToDateStr(sot.repair?.[0]?.approve_dt!)!;;
-     
-
-   }
-
-   DisplayApprovalRef(sot:StoringOrderTankItem):string
-   {
-     this.removeDeletedInGateAndOutGate(sot);
-      return `${sot.repair?.[0]?.job_no||''}`;
-     
-
-   }
-
-   DisplayAVDate(sot:StoringOrderTankItem):string
-   {
-
-      return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;;
+  GeneratedDate(): string {
+    return Utility.convertDateToStr(new Date());
+  }
+  GetReportTitle(): string {
+    return `${this.translatedLangText.DAILY_INVENTORY} ${this.translatedLangText.DETAIL_REPORT}`
   }
 
-   DisplayLastTest(sot:StoringOrderTankItem):string 
-   {
-     var lastTest:string='';
-     this.removeDeletedInGateAndOutGate(sot);
-     if(this.queryType==1)
-     {
-      lastTest=this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv,this.testTypeCvList)||'';
-     }
-     else
-     {
-      lastTest=this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv,this.testTypeCvList)||'';
-     }
-     return lastTest;
-   }
+  removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
+    sot.in_gate = sot?.in_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+    sot.out_gate = sot?.out_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+    sot.cleaning = sot?.cleaning?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+    sot.repair = sot?.repair?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+  }
+
+  DisplayInDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt!)!;
+
+  }
+
+  DisplayCleanDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt!)!;;
+  }
+
+  DisplayCleanCertBooking(sot: StoringOrderTankItem): string {
+    var b = sot.booking?.find(b=>b.book_type_cv=='CLEAN_CERT');
+    if(b)
+    {
+      return `${Utility.convertEpochToDateStr(b?.booking_dt)}`
+    }
+    return '';
+    
+  }
+
+  DisplayTakeInRef(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return sot.in_gate?.[0]?.in_gate_survey?.take_in_reference || '';
 
 
-   DisplayPostInsp(sot:StoringOrderTankItem):string
-   {
+  }
+
+  DisplayTareWeight(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return `${sot.in_gate?.[0]?.in_gate_survey?.tare_weight || ''}`;
+
+
+  }
+
+  DisplayCapacity(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return `${sot.in_gate?.[0]?.in_gate_survey?.capacity || ''}`;
+
+
+  }
+
+  DisplayEstimateNo(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return `${sot.repair?.[0]?.estimate_no || ''}`;
+
+  }
+
+  DisplayEstimateDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.create_dt!)!;;
+  }
+
+
+  DisplayApprovalDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.approve_dt!)!;;
+
+
+  }
+
+  DisplayApprovalRef(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return `${sot.repair?.[0]?.job_no || ''}`;
+  }
+
+  DisplayAVDate(sot: StoringOrderTankItem): string {
+
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;;
+  }
+
+  
+  DisplayLastTest(sot: StoringOrderTankItem): string {
+    var lastTest: string = '';
+    this.removeDeletedInGateAndOutGate(sot);
+   // if (this.queryType == 1) {
+      lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+    // }
+    // else {
+    //   lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+    // }
+    return lastTest;
+  }
+
+
+  DisplayPostInsp(sot: StoringOrderTankItem): string {
 
     return '';
   }
-   DisplayReleaseDate(sot:StoringOrderTankItem):string
-   {
+  DisplayReleaseDate(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
     return Utility.convertEpochToDateStr(sot.out_gate?.[0]?.eir_dt!)!;
-    return '';
+
   }
-   DisplayReleaseRef(sot:StoringOrderTankItem):string
-   {
+  DisplayReleaseRef(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
-    return sot.release_job_no||'';
+    return sot.release_job_no || '';
   }
-   DisplayCurrentStatus(sot:StoringOrderTankItem):string
-   {
+  DisplayCurrentStatus(sot: StoringOrderTankItem): string {
 
-    return this.cvDS.getCodeDescription(sot.tank_status_cv,this.TankStatusCvList)||'';;
+    return this.cvDS.getCodeDescription(sot.tank_status_cv, this.TankStatusCvList) || '';;
   }
-   DisplayRemarks(sot:StoringOrderTankItem):string
-   {
+  DisplayRemarks(sot: StoringOrderTankItem): string {
 
-    return sot?.remarks||'';
+    return sot?.remarks || '';
   }
-  
-  
+
+  DisplayCustomerName(repCustomer: report_customer_tank_activity) {
+    return `${repCustomer.code}(${repCustomer.customer})`
+  }
+
+  DisplayEIRNo(sot:StoringOrderTankItem)
+  {
+    return `${sot.in_gate?.[0]?.eir_no}`;
+  }
+
+  DisplayOwner(sot: StoringOrderTankItem) {
+    return `${sot.customer_company?.code}`
+  }
+
+  DisplayNextTest(sot: StoringOrderTankItem): string {
+    var nextTest: string = '';
+    this.removeDeletedInGateAndOutGate(sot);
+    if (sot.in_gate?.length) {
+      nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+    }
+
+    if (sot.out_gate?.length) {
+      nextTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+    }
+    return nextTest;
+  }
+
+  DisplayReleaseBooking(sot: StoringOrderTankItem): string {
+    return Utility.convertEpochToDateStr(sot.release_order_sot?.[0]?.release_order?.release_dt!)!;
+  }
+  DisplayLocation(yardCv:string)
+  {
+     return this.cvDS.getCodeDescription(yardCv, this.yardCvList);
+  }
 }

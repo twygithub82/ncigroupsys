@@ -462,6 +462,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   search() {
     const where: any = {
       type_cv: { neq: "SURVEYOR" }
+     
     };
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
@@ -486,7 +487,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    this.subs.sink = this.ccDS.searchWithSOT(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.customer_companyList = data;
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
@@ -563,7 +564,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     }
     where.type_cv = { neq: "SURVEYOR" };
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.ccDS.search(this.ccDS.addDeleteDtCriteria(where), order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.ccDS.searchWithSOT(this.ccDS.addDeleteDtCriteria(where), order, first, after, last, before).subscribe(data => {
       this.customer_companyList = data;
       this.endCursor = this.ccDS.pageInfo?.endCursor;
       this.startCursor = this.ccDS.pageInfo?.startCursor;
@@ -707,31 +708,31 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     async cancelItem(row: CustomerCompanyItem) {
         // this.id = row.id;
        
-         var customerAssigned:boolean = await this.CustomerAssigned(row.guid!);
-         if(customerAssigned)
-         {
-            let tempDirection: Direction;
-            if (localStorage.getItem('isRtl') === 'true') {
-              tempDirection = 'rtl';
-            } else {
-              tempDirection = 'ltr';
-            }
-            const dialogRef = this.dialog.open(MessageDialogComponent, {
-              width: '500px',
-              data: {
-                headerText: this.translatedLangText.WARNING,
-                messageText:[this.translatedLangText.CUSTOMER_ASSIGNED],
-                act: "warn"
-              },
-              direction: tempDirection
-            });
-          dialogRef.afterClosed().subscribe(result=>{
-          });
-         }
-         else
-         {
+        //  var customerAssigned:boolean = await this.CustomerAssigned(row.guid!);
+        //  if(customerAssigned)
+        //  {
+        //     let tempDirection: Direction;
+        //     if (localStorage.getItem('isRtl') === 'true') {
+        //       tempDirection = 'rtl';
+        //     } else {
+        //       tempDirection = 'ltr';
+        //     }
+        //     const dialogRef = this.dialog.open(MessageDialogComponent, {
+        //       width: '500px',
+        //       data: {
+        //         headerText: this.translatedLangText.WARNING,
+        //         messageText:[this.translatedLangText.CUSTOMER_ASSIGNED],
+        //         act: "warn"
+        //       },
+        //       direction: tempDirection
+        //     });
+        //   dialogRef.afterClosed().subscribe(result=>{
+        //   });
+        //  }
+        //  else
+        //  {
             this.deleteCustomerAndBillingBranch(row.guid!);
-         }
+        //  }
     
       }
     
@@ -750,18 +751,33 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
          });
       }
   
-    async CustomerAssigned(CustomerGuid: string): Promise<boolean> {
+      async CustomerAssigned(CustomerGuid: string): Promise<boolean> {
+        let retval: boolean = false;
+        var where: any = {};
+    
+        where = {and:[ {or:[{customer_company:{ guid:{eq:CustomerGuid}}},
+                            {storing_order:{customer_company_guid:{eq:CustomerGuid}}}]},
+                      {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}] };
+        
+        try {
+          // Use firstValueFrom to convert Observable to Promise
+          const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {},1));
+          retval=(result.length > 0)
+        } catch (error) {
+          console.error("Error fetching tariff buffer guid:", error);
+        }
+    
+        return retval;
+      }
+
+
+    CanDelete(row: CustomerCompanyItem): boolean {
           let retval: boolean = false;
           var where: any = {};
-      
-          where = {and:[ {or:[{customer_company:{ guid:{eq:CustomerGuid}}},
-                              {storing_order:{customer_company_guid:{eq:CustomerGuid}}}]},
-                        {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}] };
-          
           try {
             // Use firstValueFrom to convert Observable to Promise
-            const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {},1));
-            retval=(result.length > 0)
+           retval = row.storing_order_tank?.length==0 && row.storing_orders?.length==0;
+            
           } catch (error) {
             console.error("Error fetching tariff buffer guid:", error);
           }

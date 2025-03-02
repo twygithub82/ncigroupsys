@@ -2,102 +2,78 @@
   <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
 </div>
 <div #pdfTable id="pdfTable" mat-dialog-content>
-  
-
   <div id="pdf-form-body" class="pdf-container pdf-body">
-
-     @for (bCust of report_customer_tank_activity; track bCust) {
-  <div class="card">
-
-    <div class="row pdf-body">
-      <table  id="table_customer_info" class="table_customer_info">
-        <tr>
-          <td>{{translatedLangText.INVENTORY_PERIOD}} :</td>
-          <td> {{this.date}}</td>
-          <td class="sp20">({{this.invType}})</td>
-          <td class="sp"> {{translatedLangText.DATE}} :</td>
-          <td>{{GeneratedDate()}}</td>
-        </tr>
-      </table>
-    </div> 
-     
-      <div class="row pdf-body">
-        <table  id="table_customer_info" class="table_customer_info">
+    @for (bCust of report_yard_detail; track bCust) {
+    <div class="card">
+      <div class="pdf-body">
+        <table id="table_customer_info" class="table_customer_info">
           <tr>
-            <td>[{{bCust.code}}]</td>
+            <td>{{translatedLangText.CUSTOMER}} : {{this.DisplayCustomerName(bCust)}}</td>
+            <!-- <td class="sp60">{{translatedLangText.INVENTORY_DATE}} : {{date}}</td> -->
           </tr>
         </table>
-      </div> 
+      </div>
+     
+      <!-- <div>{{translatedLangText.RELEASED_TANK}}</div> -->
       <table id="repair-part-table" class="repair-part-table">
         <tr class="group-header">
-          <th class="th-w5">#</th>
-          <th class="th-w10">{{translatedLangText.TANK_NO}}</th>
-          <th class="th-w12">{{translatedLangText.IN_DATE}}</th>
-          <th class="th-w12">{{translatedLangText.TAKE_IN_REFERENCE}}</th>
-          <th class="th-w8">{{translatedLangText.CAPACITY}}</th>
-          <th class="th-w8">{{translatedLangText.TARE_WEIGHT}}</th>
-          <th class="th-w15">{{translatedLangText.LAST_CARGO}}</th>
-          <th class="th-w12">{{translatedLangText.CLEAN_DATE}}</th>
-          <th class="th-w8">{{translatedLangText.ESTIMATE_NO}}</th>
-          <th class="th-w12">{{translatedLangText.ESTIMATE_DATE}}</th>
-          <th class="th-w12">{{translatedLangText.APPROVAL_DATE}}</th>
-          <th class="th-w12">{{translatedLangText.APPROVAL_REFERENCE}}</th>
-          <th class="th-w12">{{translatedLangText.AV_DATE}}</th>
-          <th class="th-w12">{{translatedLangText.LAST_TEST}}</th>
-          <th class="th-w12">{{translatedLangText.RELEASE_DATE}}</th>
-          <th class="th-w8">{{translatedLangText.RELEASE_REFERENCE}}</th>
-          <th class="th-w8">{{translatedLangText.CURRENT_STATUS}}</th>
-          <th class="th-w12">{{translatedLangText.REMARKS}}</th>
+          <th class="th-w3">{{translatedLangText.NO}}</th>
+          <th class="th-w6">{{translatedLangText.TANK_NO}}</th>
+          <th class="th-w5">{{translatedLangText.LOCATION}}</th>
+          <th class="th-w6">{{translatedLangText.EIR_NO}}</th>
+          <th class="th-w5">{{translatedLangText.OWNER}}</th>
+          <th class="th-w5">{{translatedLangText.IN_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.TAKE_IN_REFERENCE}}</th>
+          <th class="th-w10">{{translatedLangText.LAST_CARGO}}</th>
+          <th class="th-w6">{{translatedLangText.CLEAN_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.ESTIMATE_NO}}</th>
+          <th class="th-w6">{{translatedLangText.ESTIMATE_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.APPROVAL_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.AV_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.LAST_TEST}}</th>
+          <th class="th-w6">{{translatedLangText.NEXT_TEST}}</th>
+          <th class="th-w6">{{translatedLangText.CURRENT_STATUS}}</th>
+          <th class="th-w6">{{translatedLangText.REMARKS}}</th>
+          <th class="th-w6">{{translatedLangText.PURPOSE}}</th>
         </tr>
-        @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
-          <tr>
-            <td>{{ index + 1 }}</td> <!-- Row number -->
-            <td>{{ itm.tank_no }}</td> 
-            <td>{{ DisplayInDate(itm) }}</td> 
-            <td>{{ DisplayTakeInRef(itm) }}</td> 
-            <td>{{ DisplayCapacity(itm) }}</td> 
-            <td>{{ DisplayTareWeight(itm) }}</td> 
-            <td>{{ itm.tariff_cleaning?.cargo }}</td> 
+        {{refreshCounter()}}
+        @for(y of bCust.yards; track y)
+        {
+        @for (itm of y.storing_order_tank; track itm) {
+          <tr class="fixed_height_40px">
+            <td>{{ getCounter() }}</td> <!-- Row number -->
+            <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
+            <td>{{ DisplayLocation(y.code!) }}</td>
+            <td>{{ DisplayEIRNo(itm) }}</td>
+            <td><span class="overflow-text">{{ DisplayOwner(itm) }}</span></td>
+            <td>{{DisplayInDate(itm)}}</td>
+            <td><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
+            <td><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td>
             <td>{{ DisplayCleanDate(itm) }}</td>
-            <td>{{ DisplayEstimateNo(itm) }}</td>
+            <td><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
             <td>{{ DisplayEstimateDate(itm) }}</td>
             <td>{{ DisplayApprovalDate(itm) }}</td>
-            <td>{{ DisplayApprovalRef(itm) }}</td>
             <td>{{ DisplayAVDate(itm) }}</td>
-            <td>{{ DisplayLastTest(itm) }}</td>
-            <td>{{ DisplayReleaseDate(itm) }}</td>
-            <td>{{ DisplayReleaseRef(itm) }}</td>
+            <td><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
+            <td><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
             <td>{{ DisplayCurrentStatus(itm) }}</td>
-            <td>{{ DisplayRemarks(itm) }}</td>
-            <!-- <td>{{ itm.last_cargo }}</td> 
-            <td>{{ itm.in_date }}</td> 
-            <td>{{ itm.out_date }}</td> 
-            <td>{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
-            <td>{{ (itm.repair_cost==="0.00"?'':itm.repair_cost) }}</td> 
-            <td>{{ (itm.preins_cost==="0.00"?'':itm.preins_cost) }}</td> 
-            <td>{{ (itm.lolo_cost==="0.00"?'':itm.lolo_cost) }}</td> 
-            <td>{{ itm.days }}</td> 
-            <td>{{ (itm.storage_cost==="0.00"?'':itm.storage_cost)}}</td> 
-            <td>{{ (itm.steam_cost==="0.00"?'':itm.steam_cost)}}</td> 
-            <td>{{ (itm.residue_cost==="0.00"?'':itm.residue_cost)}}</td> 
-            <td>{{ (itm.gateio_cost==="0.00"?'':itm.gateio_cost)}}</td> 
-            <td>{{ (itm.total==="0.00"?'':itm.total) }}</td>  -->
+            <td><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
+            <td><span class="overflow-text">{{ DisplayTankPurpose(itm) }}</span></td>
           </tr>
+          
         }
+      }
       </table>
-    
+    </div>
+    }
   </div>
-  }
-  </div>
-
- 
 </div>
 <div mat-dialog-actions class="m-2 align-right">
   <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
     [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
       @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
-        file_download
+      file_download
       } @else {
       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
       }

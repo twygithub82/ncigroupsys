@@ -40,7 +40,8 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/charts/yard-chart-pdf.component';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { YardDetailInventoryPdfComponent } from 'app/document-template/pdf/status/yard/details/yard-detail-pdf.component';
+import { YardSummaryPdfComponent } from 'app/document-template/pdf/status/yard/summary-pdf/yard-summary-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -147,6 +148,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     DATE: 'COMMON-FORM.DATE',
     INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
+    DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS'
   }
@@ -352,8 +354,12 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.search(1);
   }
 
-  search_detail() {
+  search_summary_detail()
+  {
     this.search(2);
+  }
+  search_detail() {
+    this.search(3);
   }
 
   search(report_type: number) {
@@ -379,7 +385,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksStatusReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
@@ -830,7 +836,11 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     if (report_type == 1) {
       this.onExportSummary(repStatus);
     }
-    else {
+    else if(report_type==2) {
+      this.onExportSummaryDetail(repStatus);
+    }
+    else
+    {
       this.onExportDetail(repStatus);
     }
 
@@ -848,8 +858,36 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
 
+    const dialogRef = this.dialog.open(YardDetailInventoryPdfComponent, {
+      width: '85vw',
+      maxHeight: '85vh',
+      data: {
+        report_yard_detail: repStatus,
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    });
+  }
+
+ 
+  onExportSummaryDetail(repStatus: report_status[]) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
     const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
       width: '85vw',
+      maxWidth:'600px',
       maxHeight: '85vh',
       data: {
         report_customer_tank_activity: repStatus,

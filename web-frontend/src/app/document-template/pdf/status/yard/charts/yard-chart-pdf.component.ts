@@ -284,7 +284,8 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
     TANK_STATUS:'COMMON-FORM.TANK-STATUS',
     YARD_STATUS:'COMMON-FORM.YARD-STATUS',
-    TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER'
+    TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER',
+    
     
 
   }
@@ -883,7 +884,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
    }
    GetReportTitle():string
    {
-     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.SUMMARY_REPORT}`
+     return `${this.translatedLangText.YARD_STATUS} ${this.translatedLangText.SUMMARY_REPORT}`
    }
 
    processCustomerStatus(repStatus:report_status[])

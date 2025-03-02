@@ -38,50 +38,12 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
-              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                  <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
-                    formControlName="last_cargo">
-                  <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
-                    @for (tc of last_cargoList; track tc) {
-                    <mat-option [value]="tc">
-                      {{tc.cargo}}
-                    </mat-option>
-                    }
-                  </mat-autocomplete>
-                  @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
-                  <mat-error>
-                    {{translatedLangText.INVALID_SELECTION}}
-                  </mat-error>
-                  }
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="release_picker">
-                    <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
-                    <input matEndDate placeholder="End date" formControlName="eir_dt_end">
-                  </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="release_picker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #release_picker></mat-date-range-picker>
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.INVENTORY_TYPE}}</mat-label>
-                  <mat-select formControlName="inv_type">
-                    @for (codeValue of inventoryTypeCvList; track codeValue) {
-                    <mat-option [value]="codeValue.code_val">
-                      {{codeValue.description}}
-                    </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div> -->
+            
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
                 <button mat-mini-fab color="primary" (click)="search_summary()" matTooltip={{translatedLangText.SUMMARY_REPORT}}>
+                  <mat-icon>show_chart</mat-icon>
+                </button>
+                <button class="m-l-10" mat-mini-fab color="primary" (click)="search_summary_detail()" matTooltip={{translatedLangText.DETAIL_SUMMARY}}>
                   <mat-icon>assessment</mat-icon>
                 </button>
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()" matTooltip={{translatedLangText.DETAIL_REPORT}}>

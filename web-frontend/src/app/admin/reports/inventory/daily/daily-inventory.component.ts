@@ -389,7 +389,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       queryType=2;
     }
 
-    if ([1, 3].includes(report_type)) 
+    if ([3].includes(report_type)) 
     {
       if (this.searchForm!.get('customer_code')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
@@ -445,13 +445,13 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     }
     else
     {
-      this.performSearchSummaryDetail(queryType,invType);
+      this.performSearchSummaryDetail(queryType,invType,report_type);
 
     }
   }
 
 
-  performSearchSummaryDetail(queryType?: number, invType?: string)
+  performSearchSummaryDetail(queryType?: number, invType?: string,report_type?:number)
   {
 
     var cond_counter = 0;
@@ -492,8 +492,14 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       if(data.length>0)
       {
         this.dailySumList = data;
-        
-        this.onExportSummary(this.dailySumList, invType!, date!, queryType!);
+        if(report_type==1)
+        {
+        this.onExportChart_r1(this.dailySumList, invType!, date!, queryType!);
+        }
+        else
+        {
+           this.onExportSummary(this.dailySumList, invType!, date!, queryType!);
+        }
       }
    });
 
@@ -815,6 +821,36 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
 
     });
+  }
+
+  onExportChart_r1(repDailInventory: daily_inventory_summary[], invType: string, date: string, queryType: number)
+  {
+     //this.preventDefault(event);
+     let cut_off_dt = new Date();
+
+
+     let tempDirection: Direction;
+     if (localStorage.getItem('isRtl') === 'true') {
+       tempDirection = 'rtl';
+     } else {
+       tempDirection = 'ltr';
+     }
+ 
+     const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
+       width: '85vw',
+       maxHeight: '80vh',
+       data: {
+        report_inventory: repDailInventory,
+         date: date,
+         queryType: queryType
+
+       },
+       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+       direction: tempDirection
+     });
+     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+ 
+     });
   }
 
   onExportChart(repCustomerInventory: report_customer_inventory[], invType: string, date: string, queryType: number)

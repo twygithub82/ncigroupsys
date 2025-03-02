@@ -28,19 +28,14 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
-import { SURVEY_ROUTE } from 'app/admin/survey/survey.routes';
-import { BillingDS, BillingEstimateRequest } from 'app/data-sources/billing';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { InGateDS } from 'app/data-sources/in-gate';
-import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_customer_tank_activity, report_status, report_status_yard } from 'app/data-sources/reports';
-import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { periodic_test_due_item, report_periodic_test_due_group_customer, report_status, ReportDS } from 'app/data-sources/reports';
+import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
 import { TransferLocationPdfComponent } from 'app/document-template/pdf/transfer-location-pdf/transfer-location-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -170,13 +165,14 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
-  igDS: InGateDS;
+  //igDS: InGateDS;
   cvDS: CodeValuesDS;
-  tcDS: TariffCleaningDS;
+  //tcDS: TariffCleaningDS;
+  repDS:ReportDS;
 
-  stmDS: SteamDS;
-  plDS: PackageLabourDS;
-  billDS: BillingDS;
+  // stmDS: SteamDS;
+  // plDS: PackageLabourDS;
+  // billDS: BillingDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -190,8 +186,8 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
-  inventoryTypeCvList: CodeValuesItem[] = [];
-  yardCvList: CodeValuesItem[] = [];
+  //inventoryTypeCvList: CodeValuesItem[] = [];
+  //yardCvList: CodeValuesItem[] = [];
   testCvList:CodeValuesItem[]=[];
 
   processType: string = "STEAMING";
@@ -212,6 +208,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
   dueType:string[]=[];
+  periodicTestRes:periodic_test_due_item[]=[];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -224,15 +221,16 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     this.translateLangText();
     this.initSearchForm();
     this.initInvoiceForm();
-    this.sotDS = new StoringOrderTankDS(this.apollo);
+    //this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.igDS = new InGateDS(this.apollo);
+    //this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.tcDS = new TariffCleaningDS(this.apollo);
-    this.stmDS = new SteamDS(this.apollo);
-    this.plDS = new PackageLabourDS(this.apollo);
-    this.billDS = new BillingDS(this.apollo);
+    //this.tcDS = new TariffCleaningDS(this.apollo);
+    //this.stmDS = new SteamDS(this.apollo);
+    //this.plDS = new PackageLabourDS(this.apollo);
+    //this.billDS = new BillingDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.repDS= new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -260,10 +258,6 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       last_cargo: this.lastCargoControl,
       eir_no: [''],
       tank_no: [''],
-      svy_dt_start: [''],
-      svy_dt_end: [''],
-      inv_type: ['MASTER_IN'],
-      yard: [''],
       reference:[''],
       due_type:[''],
       next_test_due:['']
@@ -306,15 +300,15 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       { alias: 'testCv', codeValType: 'TEST_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('yardCv').subscribe(data => {
-      this.yardCvList = data || [];
-    });
+    // this.cvDS.connectAlias('yardCv').subscribe(data => {
+    //   this.yardCvList = data || [];
+    // });
     // this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
     //   this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
     // });
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = addDefaultSelectOption(data, 'All');
-    });
+    // this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+    //   this.purposeOptionCvList = addDefaultSelectOption(data, 'All');
+    // });
     this.cvDS.connectAlias('testCv').subscribe(data => {
       this.testCvList = data;
     });
@@ -367,7 +361,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
     var cond_counter = 0;
     let queryType = 1;
-    const where: any = {};
+    const periodicTestDueReq: any = {};
 
 
     // where.tank_status_cv = { neq: "RELEASED" };
@@ -378,63 +372,42 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     // }
 
     if (this.searchForm?.get('customer_code')?.value) {
-      var cond: any =  { customer_company_guid:{eq:this.searchForm!.get('customer_code')?.value?.guid } };
      
-      where.storing_order=cond;
+      periodicTestDueReq.storing_order=this.searchForm!.get('customer_code')?.value?.code;
       cond_counter++;
     }
 
     if (this.searchForm?.get('eir_no')?.value) {
-      var cond: any = { eir_no: { contains: this.searchForm!.get('eir_no')?.value } };
-      if (!where.in_gate) {
-        where.in_gate = {};
-        where.in_gate.some = {};
-        where.in_gate.some.and = [];
-      }
-      where.in_gate.some.and.push(cond);
+      periodicTestDueReq.eir_no=this.searchForm!.get('eir_no')?.value;
       cond_counter++;
     }
 
-    if (this.searchForm?.get('yard')?.value) {
-      var yards: string[] = this.searchForm!.get('yard')?.value?.map((y: any) => y.code_val) || [];
-
-      var cond: any = { yard_cv: { in: yards } };
-      if (!where.in_gate) {
-        where.in_gate = {};
-        where.in_gate.some = {};
-        where.in_gate.some.and = [];
-      }
-      where.in_gate.some.and.push(cond);
+    if (this.searchForm?.get('due_type')?.value) {
+      var result = this.searchForm!.get('due_type')?.value.join('|');
+      if(this.dueType.length==this.searchForm!.get('due_type')?.value.length)
+        result="";
+      periodicTestDueReq.due_type=result;
       cond_counter++;
     }
 
 
-    if (this.searchForm?.get('tank_no')?.value) {
-      // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.tank_no = { eq: this.searchForm?.get('tank_no')?.value.code };
+    if (this.searchForm?.get('next_test_due')?.value) {
+      var result = this.searchForm!.get('next_test_due')?.value
+      ?.map((item: { code_val: string }) => item.code_val) // Extract 'code' values
+      .join('|');
+      if(this.testCvList.length==this.searchForm!.get('next_test_due')?.value.length)
+        result="";
+      periodicTestDueReq.next_test_due = result;
       cond_counter++;
     }
 
     var date:string=''
-    if(this.searchForm?.get('trf_dt_start')?.value && this.searchForm?.get('trf_dt_end')?.value)
-    {
-      var start_dt=new Date(this.searchForm!.value['trf_dt_start']);
-      var end_dt=new Date(this.searchForm!.value['trf_dt_end']);
-      var cond: any = { some: {or:[
-                        { transfer_in_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } },
-                        { transfer_out_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } }
-                      ]} };
-      date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('trf_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('trf_dt_end')?.value))}`;
-      
-        where.transfer = {};
-        where.transfer = cond;
-      cond_counter++;
-    }
+   
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
-    this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(date);
+    this.lastSearchCriteria = periodicTestDueReq;
+    this.performSearch(periodicTestDueReq);
 
 
   }
@@ -443,14 +416,14 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
   performSearch(date :string) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport(this.lastSearchCriteria)
+    this.subs.sink = this.repDS.searchPeriodicTestDueSummaryReport(this.lastSearchCriteria)
       .subscribe(data => {
-        this.sotList = data;
-        this.endCursor = this.stmDS.pageInfo?.endCursor;
-        this.startCursor = this.stmDS.pageInfo?.startCursor;
-        this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.ProcessReportTransferYard(date);
+        this.periodicTestRes = data;
+        // this.endCursor = this.stmDS.pageInfo?.endCursor;
+        // this.startCursor = this.stmDS.pageInfo?.startCursor;
+        // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
+        // this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+       // this.ProcessReportTransferYard(date);
       });
 
   }
@@ -502,10 +475,6 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     this.searchForm?.patchValue({
       eir_no: '',
       tank_no: '',
-      SVGUnitTypes_dt_start: '',
-      svy_dt_end: '',
-      inv_type: ['MASTER_IN'],
-      yard: '',
       reference:'', 
       due_type:'',
       next_test_due:''
@@ -520,9 +489,6 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     const numRows = this.stmEstList.length;
     return numSelected === numRows;
   }
-
-  
- 
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -539,26 +505,23 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
-   ProcessReportTransferYard(date: string) {
-      if (this.sotList.length === 0) return;
+   ProcessPeriodicTestDueReport() {
+      if (this.periodicTestRes.length === 0) return;
   
-      var report_customer_tank_acts: report_customer_tank_activity[] = [];
+      var report_records: report_periodic_test_due_group_customer[] = [];
   
-      this.sotList.map(s => {
+      this.periodicTestRes.map(s => {
   
         if (s) {
-          var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
-          let newCust = false;
-          if (!repCust.code) {
-            repCust.code = s.storing_order?.customer_company?.code;
-            repCust.customer = s.storing_order?.customer_company?.name;
-            newCust = true;
+          var repTransaction: report_periodic_test_due_group_customer = report_records.find(r => r.customer_code === s.customer_code) || new report_periodic_test_due_group_customer();
+          let newTnx = false;
+          if (!repTransaction.customer_code) {
+            repTransaction.customer_code = s.customer_code;
+            newTnx = true;
           }
-          repCust.number_tank ??= 0;
-          repCust.number_tank += 1;
-          if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
-          repCust.storing_order_tank?.push(s);
-          if (newCust) report_customer_tank_acts.push(repCust);
+          if (!repTransaction.periodic_test_due) repTransaction.periodic_test_due = [];
+          repTransaction.periodic_test_due?.push(s);
+          if (newTnx) report_records.push(repTransaction);
   
   
   
@@ -566,12 +529,12 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       });
   
   
-      this.onExportDetail(report_customer_tank_acts,date);
+      this.onExportDetail(report_records);
   
   
     }
 
-  onExportDetail(repStatus: report_customer_tank_activity[],date:string) {
+  onExportDetail(repStatus: report_periodic_test_due_group_customer[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -588,7 +551,6 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       maxHeight: '85vh',
       data: {
         report_transfer_location: repStatus,
-        date:date
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -602,7 +564,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    var yardsCv: CodeValuesItem[] = (this.searchForm?.get('yard')?.value || this.yardCvList);
+    // var yardsCv: CodeValuesItem[] = (this.searchForm?.get('yard')?.value || this.yardCvList);
 
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -616,7 +578,6 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       maxHeight: '85vh',
       data: {
         report_summary_status: repStatus,
-        yards: yardsCv
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

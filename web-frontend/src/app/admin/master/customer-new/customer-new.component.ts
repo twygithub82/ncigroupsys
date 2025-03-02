@@ -1046,7 +1046,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           if (b?.guid !== billing_branch?.branchCustomer?.guid!) {
             let exist_billing_branch = new BillingBranchesItem();
             exist_billing_branch.branchCustomer = new BillingCustomerItem(b);
-            exist_billing_branch.branchCustomer.action = "EDIT";
+            exist_billing_branch.branchCustomer.action = "CANCEL";
             exist_billing_branch.branchCustomer.main_customer_guid = "";
 
             delete exist_billing_branch.branchCustomer.update_by;
@@ -1071,6 +1071,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       delete selectedCusCmp.create_dt;
       delete selectedCusCmp.delete_dt;
       delete selectedCusCmp.cc_contact_person;
+      delete selectedCusCmp.storing_order_tank;
+      delete selectedCusCmp.storing_orders;
       
 
 

@@ -780,6 +780,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
     const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
       width: '85vw',
+      maxWidth:'600px',
       maxHeight: '85vh',
       data: {
         report_summary_status: repStatus,

@@ -167,7 +167,16 @@ export class daily_inventory_summary{
   }
 }
 
-export class periodic_test_due_summary{
+export class report_periodic_test_due_group_customer{
+  customer_code?:String;
+  periodic_test_due?:periodic_test_due_item[];
+
+  constructor(item: Partial<report_periodic_test_due_group_customer> = {}) {
+    this.customer_code=item.customer_code;
+    this.periodic_test_due=item.periodic_test_due;
+  }
+}
+export class periodic_test_due_item{
         class_cv?:String;
         customer_code?:String;
         due_days?:String;
@@ -181,7 +190,7 @@ export class periodic_test_due_summary{
         tank_no?:String;
         test_dt?:Number;
 
-  constructor(item: Partial<periodic_test_due_summary> = {}) {
+  constructor(item: Partial<periodic_test_due_item> = {}) {
     this.class_cv=item.class_cv;
     this.customer_code=item.customer_code;
     this.due_days=item.due_days;
@@ -277,7 +286,7 @@ export class ReportDS extends BaseDataSource<any> {
       );
   }
 
- searchPeriodicTestDueSummaryReport(periodicTestDueRequest:any): Observable<periodic_test_due_summary[]> {
+ searchPeriodicTestDueSummaryReport(periodicTestDueRequest:any): Observable<periodic_test_due_item[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
