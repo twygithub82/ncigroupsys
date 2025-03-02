@@ -311,8 +311,14 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   initializeValueChange() {
     this.ccForm?.get('country_code')?.valueChanges.subscribe(value => {
-      if (value !== null && value !== '') {
-        this.countryCodesFiltered = this.countryCodes.filter((country: any) => country.code.toLowerCase().includes(value.toLowerCase()));
+      if (typeof value === 'string') {
+        this.countryCodesFiltered = this.countryCodes.filter((country: any) =>
+          country.code.toLowerCase().includes(value.toLowerCase()) || country.country.toLowerCase().includes(value.toLowerCase())
+        );
+      } else if (typeof value === 'object') {
+        this.countryCodesFiltered = this.countryCodes.filter((country: any) =>
+          country.code.toLowerCase().includes(value.code.toLowerCase())
+        );
       } else {
         this.countryCodesFiltered = this.countryCodes;
       }
@@ -550,7 +556,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   displayCountryCodeFn(cc: any): string {
-    return cc && cc.country ? `${cc.country} (${cc.code})` : '';
+    return cc && cc.country ? `${cc.country} ${cc.code}` : '';
   }
 
   showNotification(
@@ -811,7 +817,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   insertNewCustomer() {
-
     var cust: CustomerCompanyItem = new CustomerCompanyItem();
     cust.address_line1 = this.ccForm?.get("address1")?.value;
     cust.address_line2 = this.ccForm?.get("address2")?.value;
@@ -823,7 +828,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     cust.email = this.ccForm?.get("email")?.value;
     cust.remarks = this.ccForm?.get("remarks")?.value;
     cust.website = this.ccForm?.get("web")?.value;
-
+    // cust.country_code = this.ccForm?.get("country_code")?.value;
     cust.phone = this.ccForm?.get("phone")?.value;
     cust.postal = this.ccForm?.get("postal_code")?.value;
     if (this.ccForm?.get("default_profile")?.value) {
@@ -835,7 +840,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
     else {
       cust.currency_guid = "-";
-
     }
     delete cust.currency;
     cust.type_cv = (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
@@ -846,72 +850,58 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       action: 'NEW'
     }));
 
-
     var billingBranches: BillingBranchesItem[] = [];
-   
     this.ccDS.AddCustomerCompany(cust, contactPerson, billingBranches).subscribe(result => {
-
-
       var count = result.data.addCustomerCompany;
       if (count > 0) {
-
-
         if (this.ccForm?.get("billing_branches")?.value) {
           var b = this.ccForm?.get("billing_branches")?.value as CustomerCompanyItem;
-          this.updateCustomerBillingBranch(cust,b);
+          this.updateCustomerBillingBranch(cust, b);
         }
-        
         this.handleSaveSuccess(count);
-       
       }
     });
-
   }
 
-  updateCustomerBillingBranch( customer?:CustomerCompanyItem, customerBillingBranch?:CustomerCompanyItem)
-  {
-     if(customer)
-     {
-      const where :any={};
-      where.code ={eq:customer?.code};
-      this.ccDS.search(where).subscribe(c=>{
-         if(c.length>0)
-         {
+  updateCustomerBillingBranch(customer?: CustomerCompanyItem, customerBillingBranch?: CustomerCompanyItem) {
+    if (customer) {
+      const where: any = {};
+      where.code = { eq: customer?.code };
+      this.ccDS.search(where).subscribe(c => {
+        if (c.length > 0) {
           var CusCmp = new CustomerCompanyItem(c[0]);
-            var custGuid = CusCmp.guid;
-            
-            
-            if (customerBillingBranch?.main_customer_guid !== custGuid) {
-              let billing_branch = new BillingBranchesItem();
-              billing_branch.branchCustomer = new BillingCustomerItem(customerBillingBranch);
-              billing_branch.branchCustomer.action = customerBillingBranch?.guid == "" ? "NEW" : "EDIT";
-              billing_branch.branchCustomer.main_customer_guid = custGuid;
-              var billingBranches: BillingBranchesItem[] = [];
-              delete billing_branch.branchCustomer.update_by;
-              delete billing_branch.branchCustomer.update_dt;
-              delete billing_branch.branchCustomer.create_by;
-              delete billing_branch.branchCustomer.create_dt;
-              delete billing_branch.branchCustomer.delete_dt;
-              delete billing_branch.branchCustomer.cc_contact_person;
-              delete billing_branch.branchCustomer.currency;
-              billingBranches.push(billing_branch);
+          var custGuid = CusCmp.guid;
 
-              
-              delete CusCmp.update_by;
-              delete CusCmp.update_dt;
-              delete CusCmp.create_by;
-              delete CusCmp.create_dt;
-              delete CusCmp.delete_dt;
-              delete CusCmp.cc_contact_person;
-              delete CusCmp.currency;
-              this.ccDS.UpdateCustomerCompany(CusCmp, undefined, billingBranches).subscribe();
-            }
-         }
-        });
-     }
+          if (customerBillingBranch?.main_customer_guid !== custGuid) {
+            let billing_branch = new BillingBranchesItem();
+            billing_branch.branchCustomer = new BillingCustomerItem(customerBillingBranch);
+            billing_branch.branchCustomer.action = customerBillingBranch?.guid == "" ? "NEW" : "EDIT";
+            billing_branch.branchCustomer.main_customer_guid = custGuid;
+            var billingBranches: BillingBranchesItem[] = [];
+            delete billing_branch.branchCustomer.update_by;
+            delete billing_branch.branchCustomer.update_dt;
+            delete billing_branch.branchCustomer.create_by;
+            delete billing_branch.branchCustomer.create_dt;
+            delete billing_branch.branchCustomer.delete_dt;
+            delete billing_branch.branchCustomer.cc_contact_person;
+            delete billing_branch.branchCustomer.currency;
+            billingBranches.push(billing_branch);
+
+            delete CusCmp.update_by;
+            delete CusCmp.update_dt;
+            delete CusCmp.create_by;
+            delete CusCmp.create_dt;
+            delete CusCmp.delete_dt;
+            delete CusCmp.cc_contact_person;
+            delete CusCmp.currency;
+            this.ccDS.UpdateCustomerCompany(CusCmp, undefined, billingBranches).subscribe();
+          }
+        }
+      });
+    }
   }
-  updateExistCustomer() {
 
+  updateExistCustomer() {
     if (this.selectedCustomerCmp) {
       var selectedCusCmp = new CustomerCompanyItem(this.selectedCustomerCmp);
 
@@ -925,11 +915,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       selectedCusCmp.email = this.ccForm?.get("email")?.value;
       selectedCusCmp.remarks = this.ccForm?.get("remarks")?.value;
       selectedCusCmp.website = this.ccForm?.get("web")?.value;
-
-
+      // selectedCusCmp.country_code = this.ccForm?.get("country_code")?.value;
       selectedCusCmp.phone = this.ccForm?.get("phone")?.value;
       selectedCusCmp.postal = this.ccForm?.get("postal_code")?.value;
-
 
       if (this.ccForm?.get("default_profile")?.value) {
         let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
@@ -942,8 +930,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       }
       else {
         selectedCusCmp.currency_guid = "-";
-
       }
+
       delete selectedCusCmp.currency;
       selectedCusCmp.type_cv = (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
 
@@ -956,23 +944,18 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       var updContactPerson = this.repList.data.map((row) => ({
         ...row,
         title_cv: row.title_cv
-
       }));
 
       updContactPerson.forEach(data => {
-
         var matchContact = existContactPerson?.filter(d => d.guid === data.guid);
         let Cnt: any = new ContactPersonItem();
 
         if (matchContact?.length! > 0) {
           Cnt = matchContact![0];
           Cnt.action = data.action;
-
         }
         else {
-
           Cnt.action = "NEW";
-
         }
         Cnt.did = data.did;
         Cnt.email = data.email;
@@ -985,12 +968,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         if (Cnt.action === "NEW") {
           existContactPerson?.push(Cnt);
         }
-
-
       });
-
-
-
 
       var billingBranches: BillingBranchesItem[] = [];
       let billing_branch = new BillingBranchesItem();
@@ -998,19 +976,16 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
 
         var b = this.ccForm?.get("billing_branches")?.value as CustomerCompanyItem;
-       
+
         billing_branch.branchCustomer = new BillingCustomerItem(b);
 
         if (b.main_customer_guid !== this.selectedCustomerCmp.guid) {
           billing_branch.branchCustomer.action = b.guid == "" ? "NEW" : "EDIT";
           billing_branch.branchCustomer.main_customer_guid = this.selectedCustomerCmp?.guid;
-          
-
         }
         else {
           billing_branch.branchCustomer.action = "";
         }
-
 
         delete billing_branch.branchCustomer.update_by;
         delete billing_branch.branchCustomer.update_dt;
@@ -1028,68 +1003,56 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           person.action = p.guid == "" ? "NEW" : "";
           billing_branch.branchContactPerson?.push(person);
         });
-
-
-      
-
-
       }
 
-        const where :any={};
-        where.main_customer_guid={eq:selectedCusCmp?.guid};
-        this.ccDS.search(where,{},100).subscribe(b=>{
-          var branches =b;
+      const where: any = {};
+      where.main_customer_guid = { eq: selectedCusCmp?.guid };
+      this.ccDS.search(where, {}, 100).subscribe(b => {
+        var branches = b;
         //check and remove the existing Billing branch if new billing branch selected.
-        
-        if (branches.length>0) {
-          branches.forEach(b=>{
-          if (b?.guid !== billing_branch?.branchCustomer?.guid!) {
-            let exist_billing_branch = new BillingBranchesItem();
-            exist_billing_branch.branchCustomer = new BillingCustomerItem(b);
-            exist_billing_branch.branchCustomer.action = "EDIT";
-            exist_billing_branch.branchCustomer.main_customer_guid = "";
 
-            delete exist_billing_branch.branchCustomer.update_by;
-            delete exist_billing_branch.branchCustomer.update_dt;
-            delete exist_billing_branch.branchCustomer.create_by;
-            delete exist_billing_branch.branchCustomer.create_dt;
-            delete exist_billing_branch.branchCustomer.delete_dt;
-            delete exist_billing_branch.branchCustomer.cc_contact_person;
-            delete exist_billing_branch.branchCustomer.currency;
+        if (branches.length > 0) {
+          branches.forEach(b => {
+            if (b?.guid !== billing_branch?.branchCustomer?.guid!) {
+              let exist_billing_branch = new BillingBranchesItem();
+              exist_billing_branch.branchCustomer = new BillingCustomerItem(b);
+              exist_billing_branch.branchCustomer.action = "EDIT";
+              exist_billing_branch.branchCustomer.main_customer_guid = "";
 
-            billingBranches.push(exist_billing_branch);
+              delete exist_billing_branch.branchCustomer.update_by;
+              delete exist_billing_branch.branchCustomer.update_dt;
+              delete exist_billing_branch.branchCustomer.create_by;
+              delete exist_billing_branch.branchCustomer.create_dt;
+              delete exist_billing_branch.branchCustomer.delete_dt;
+              delete exist_billing_branch.branchCustomer.cc_contact_person;
+              delete exist_billing_branch.branchCustomer.currency;
+
+              billingBranches.push(exist_billing_branch);
+            }
+          });
+        }
+        //   billingBranches.push(billing_branch);
+        // });
+        delete selectedCusCmp.update_by;
+        delete selectedCusCmp.update_dt;
+        delete selectedCusCmp.create_by;
+        delete selectedCusCmp.create_dt;
+        delete selectedCusCmp.delete_dt;
+        delete selectedCusCmp.cc_contact_person;
+
+        var existContactPersons = existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
+
+        this.ccDS.UpdateCustomerCompany(selectedCusCmp, existContactPersons, billingBranches).subscribe(result => {
+          var count = result.data.updateCustomerCompany;
+          if (count > 0) {
+            this.handleSaveSuccess(count);
           }
         });
-      }
-      //   billingBranches.push(billing_branch);
-      // });
-
-
-      delete selectedCusCmp.update_by;
-      delete selectedCusCmp.update_dt;
-      delete selectedCusCmp.create_by;
-      delete selectedCusCmp.create_dt;
-      delete selectedCusCmp.delete_dt;
-      delete selectedCusCmp.cc_contact_person;
-      
-
-
-      var existContactPersons = existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
-
-      this.ccDS.UpdateCustomerCompany(selectedCusCmp, existContactPersons, billingBranches).subscribe(result => {
-
-
-        var count = result.data.updateCustomerCompany;
-        if (count > 0) {
-          this.handleSaveSuccess(count);
-        }
       });
-     });
     }
     else {
       this.insertNewCustomer();
     }
-
   }
 
   updateData(newData: any[]): void {
@@ -1183,26 +1146,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 
-
   getLastAction(actions: string[]): string {
     return actions[actions.length - 1];
-  }
-
-  getBadgeClass(action: string): string {
-    switch (action) {
-      case 'new':
-        return 'badge-solid-green';
-      case 'edit':
-        return 'badge-solid-cyan';
-      case 'rollback':
-        return 'badge-solid-blue';
-      case 'cancel':
-        return 'badge-solid-orange';
-      case 'preorder':
-        return 'badge-solid-pink';
-      default:
-        return '';
-    }
   }
 
   getGroupNameDescription(code_val: string): string | undefined {
@@ -1271,9 +1216,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       cust.currency_guid = cust.currency?.guid;
     }
 
-
     cust.type_cv = (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
-
 
     let custCmp: any = {
       customerCompanyData: cust,
@@ -1293,9 +1236,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/master/customer'], {
       state: this.historyState
-
-    }
-    );
+    });
   }
 
   GetEstimationPrice(row: any): string {
@@ -1304,7 +1245,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     retval = Number(Number(row.tariff_repair.material_cost || 0) * Number(row.quantity || 0)).toFixed(2);
     return retval;
   }
-
 
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
@@ -1329,11 +1269,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-
   resetForm() {
     this.initCCForm();
-
-
   }
 
   getCurrency(guid: string): CurrencyItem | undefined {
@@ -1345,10 +1282,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         return curItm![0];
       else
         return undefined;
-
     }
     return undefined;
-
   }
 
   getDefaultTank(guid: string): TankItem | undefined {
@@ -1360,10 +1295,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         return tnkItm![0];
       else
         return undefined;
-
     }
     return undefined;
-
   }
 
   getBillingBranches(guid: string): CustomerCompanyItem | undefined {
@@ -1392,7 +1325,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     return undefined;
   }
 
-
   initializeFilterCustomerCompany() {
     this.ccForm!.get('billing_branches')!.valueChanges.pipe(
       startWith(''),
@@ -1405,43 +1337,34 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         } else {
           searchCriteria = value.code;
         }
-        var cond:any={};
-        cond.and=[];
+        var cond: any = {};
+        cond.and = [];
         cond.and.push({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] });
-        cond.and.push({type_cv : { in: ["BRANCH"] }});
+        cond.and.push({ type_cv: { in: ["BRANCH"] } });
         this.subs.sink = this.ccDS.search(cond, { code: 'ASC' }).subscribe(data => {
-          let currentCustCode =  this.ccForm!.get('customer_code')!.value;
-          this.customer_companyList = data.filter(d=>d.code!=currentCustCode);
-
+          let currentCustCode = this.ccForm!.get('customer_code')!.value;
+          this.customer_companyList = data.filter(d => d.code != currentCustCode);
         });
       })
     ).subscribe();
   }
 
   refreshBillingBranches() {
-
     let selGuid: string | undefined = undefined;
     let selBillingCode: string | undefined = undefined;
     if (this.historyState.customerCompany) {
       selGuid = this.historyState.customerCompany.customerCompanyData.guid;
       selBillingCode = this.historyState.customerCompany.newBillingBranchCode;
-
     }
     else if (this.selectedCustomerCmp) {
       selGuid = this.selectedCustomerCmp.guid!;
     }
 
-
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
-
       if (data.length) {
         if (this.selectedCustomerCmp) {
           data = data.filter(item => item.guid !== this.selectedCustomerCmp?.guid);
-
-
         }
-
-
         this.customer_companyList = data
 
         if (selBillingCode) {
@@ -1454,8 +1377,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
             billing_branches: this.getBillingBranches(selGuid),
           })
         }
-
-
       }
     });
   }

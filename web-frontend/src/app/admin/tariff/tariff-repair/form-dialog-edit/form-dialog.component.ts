@@ -189,13 +189,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
@@ -241,8 +234,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
   unitTypeChangedEventUnsub: boolean = false;
   selectedItems: TariffRepairItem[];
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit>,
@@ -283,14 +274,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         labour_hour: rec.labour_hour,
         material_cost: rec.material_cost?.toFixed(2),
       });
-
-
     }
     else if (this.selectedItems.length > 1) {
       this.assignEditableForUI();
-
     }
-
   }
 
   assignEditableForUI() {
@@ -307,7 +294,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     this.pcForm.get('width_diameter')?.disable();
     this.pcForm.get('thickness')?.disable();
     this.pcForm.get('length')?.disable();
-
   }
 
   createTarifRepair(): UntypedFormGroup {
@@ -357,13 +343,11 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       this.groupNameCvList = data;
       const subqueries: any[] = [];
       data.map(d => {
-
         if (d?.child_code) {
           let q = { alias: d.child_code, codeValType: d.child_code };
           const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
           if (!hasMatch) {
             subqueries.push(q);
-
           }
         }
       });
@@ -373,11 +357,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
           this.cvDS.connectAlias(s.alias).subscribe(data => {
             if (data.length > 0)
               this.allSubGroupNameCvList.push(...data);
-
           });
-
         });
-
       }
       if (this.selectedItems.length == 1) {
         var rec = this.selectedItems[0];
@@ -495,7 +476,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
             update = false;
             this.pcForm?.get('part_name')?.setErrors({ existed: true });
           }
-
         }
         if (update) {
           if (this.selectedItems.length == 1) {
@@ -525,11 +505,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
           else {
 
           }
-
         }
-
       });
-
     }
     else if (this.selectedItems.length > 1) {
       let pd_guids: string[] = this.selectedItems
@@ -566,7 +543,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         trfRepairItem.remarks
       ).subscribe(result => {
         this.handleSaveSuccess(result?.data?.updateTariffRepairs);
-
       });
     }
   }
@@ -581,7 +557,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     const month = date.toLocaleString('en-US', { month: 'short' });
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
