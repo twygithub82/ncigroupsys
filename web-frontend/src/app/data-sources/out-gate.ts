@@ -18,6 +18,7 @@ export class OutGate {
   public eir_status_cv?: string;
   public so_tank_guid?: string;
   public vehicle_no?: string;
+  public yard_cv?: string;
   public remarks?: string;
   public haulier?: string;
   public create_dt?: number;
@@ -34,6 +35,7 @@ export class OutGate {
     this.eir_status_cv = item?.eir_status_cv;
     this.so_tank_guid = item?.so_tank_guid;
     this.vehicle_no = item?.vehicle_no;
+    this.yard_cv = item?.yard_cv;
     this.remarks = item?.remarks;
     this.haulier = item?.haulier;
     this.create_dt = item?.create_dt;
@@ -93,6 +95,7 @@ export const SEARCH_OUT_GATE_FOR_SURVEY_QUERY = gql`
         so_tank_guid
         update_by
         update_dt
+        yard_cv
         vehicle_no
         out_gate_survey {
           guid
@@ -165,6 +168,7 @@ export const GET_OUT_GATE_BY_ID = gql`
         so_tank_guid
         update_by
         update_dt
+        yard_cv
         vehicle_no
         tank {
           certificate_cv
@@ -415,6 +419,7 @@ export const GET_OUT_GATE_BY_ID_FOR_MOVEMENT = gql`
         so_tank_guid
         update_by
         update_dt
+        yard_cv
         vehicle_no
       }
     }

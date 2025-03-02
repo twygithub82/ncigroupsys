@@ -193,7 +193,11 @@ export const GET_RELEASE_ORDER_SOT_FOR_OUT_GATE = gql`
             so_tank_guid
             update_by
             update_dt
+            yard_cv
             vehicle_no
+          }
+          tank_info {
+            yard_cv
           }
         }
       }
@@ -211,7 +215,8 @@ export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem>
     this.loadingSubject.next(true);
     let where: any = {
       and: [
-        { sot_guid: { in: sot_guid } }
+        { sot_guid: { in: sot_guid } },
+        // { status_cv: { in: ["WAITING"] } },
       ]
     }
     return this.apollo

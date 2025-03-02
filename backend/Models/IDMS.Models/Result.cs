@@ -98,7 +98,11 @@ namespace IDMS.Models
     public class OpeningBalance
     {
         [NotMapped]
-        public int count { get; set; }
+        public int open_balance { get; set; } //for opening_balance
+        [NotMapped]
+        public int in_count { get; set; }
+        [NotMapped]
+        public int out_count { get; set; }
         [NotMapped]
         public string yard { get; set; }
     }
