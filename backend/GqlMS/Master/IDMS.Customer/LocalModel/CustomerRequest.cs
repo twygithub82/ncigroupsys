@@ -19,6 +19,7 @@ namespace IDMS.Customer.GqlTypes.LocalModel
         public string? address_line2 { get; set; }
         public string? city { get; set; }
         public string? country { get; set; }
+        public string? country_code { get; set; }
         public string? postal { get; set; }
         public string? phone { get; set; }
         public string? email { get; set; }

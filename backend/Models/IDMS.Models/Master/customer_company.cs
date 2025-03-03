@@ -29,7 +29,7 @@ namespace IDMS.Models.Master
         public string? country { get; set; }
         public string? postal { get; set; }
         public string? phone { get; set; }
-        //public string? fax { get; set; }
+        public string? country_code { get; set; }
         public string? email { get; set; }
         public string? website { get; set; }
         public long? effective_dt { get; set; }
