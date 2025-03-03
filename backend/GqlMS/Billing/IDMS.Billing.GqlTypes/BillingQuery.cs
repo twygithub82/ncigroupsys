@@ -302,6 +302,7 @@ namespace IDMS.Billing.GqlTypes
                                                                sot.status_cv,
                                                                i.eir_no,
                                                                sd.survey_type_cv,
+                                                               sd.survey_dt,
                                                                cv.description,
                                                                clean_dt = sot.purpose_cleaning == true && cl.complete_dt.HasValue ? cl.complete_dt : null
                                                            } into g
@@ -313,6 +314,7 @@ namespace IDMS.Billing.GqlTypes
                                                                status = g.Key.status_cv,
                                                                eir_no = g.Key.eir_no,
                                                                survey_type = g.Key.survey_type_cv,
+                                                               survey_dt = g.Key.survey_dt, 
                                                                surveryor = g.Key.description,
                                                                clean_dt = g.Key.clean_dt,
                                                                visit = g.Count().ToString()
