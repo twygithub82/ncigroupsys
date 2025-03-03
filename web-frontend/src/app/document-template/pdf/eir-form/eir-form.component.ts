@@ -267,8 +267,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   tankSideCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
 
-  scale = 1.1;
-  imageQuality = 0.85;
+  scale = 1.2;
+  imageQuality = 1;
 
   generatedPDF: any;
   eirPdf?: any;

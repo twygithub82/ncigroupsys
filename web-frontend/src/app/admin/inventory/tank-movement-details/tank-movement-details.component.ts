@@ -939,7 +939,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return Utility.convertEpochToDateTimeStr(input);
   }
 
-  displayDate(input: number | undefined): string | undefined {
+  displayDate(input: any): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
 
@@ -1051,6 +1051,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   updatePurposeDialog(event: Event, type: string, action: string) {
     this.preventDefault(event);
+    // TODO :: Add purpose logic
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';

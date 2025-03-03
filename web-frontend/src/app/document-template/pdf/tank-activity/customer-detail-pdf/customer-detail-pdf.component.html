@@ -44,21 +44,22 @@
         </tr>
         @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
         <tr class="fixed_height_40px">
-          <td>{{ index + 1 }}</td> <!-- Row number -->
+          <td>{{ index + 1 }}</td>
           <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
           <td>{{ DisplayInDate(itm) }}</td>
           <td><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
           <td><span class="overflow-text">{{ DisplayCapacity(itm) }}</span></td>
           <td><span class="overflow-text">{{ DisplayTareWeight(itm) }}</span></td>
-          <td><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td>
+          <td><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo
+              }}</span></td>
           <td>{{ DisplayCleanDate(itm) }}</td>
           <td><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
           <td>{{ DisplayEstimateDate(itm) }}</td>
           <td>{{ DisplayApprovalDate(itm) }}</td>
           <td><span class="overflow-text">{{ DisplayApprovalRef(itm) }}</span></td>
           <td>{{ DisplayAVDate(itm) }}</td>
-          <td><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
-          <td><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
+          <td><span class="overflow-text" matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
+          <td><span class="overflow-text" matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
           <!-- <td>{{ DisplayCleanCertDate(itm) }}</td> -->
           <td><span class="overflow-text">{{ DisplayReleaseBooking(itm) }}</span></td>
           <td>{{ DisplayReleaseDate(itm) }}</td>
