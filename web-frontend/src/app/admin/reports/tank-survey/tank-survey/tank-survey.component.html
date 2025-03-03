@@ -108,26 +108,26 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <!-- No result -->
-        @if (!(sotDS.loading$ | async) && !sotList.length) {
+        @if (!(repDS.loading$ | async) && !surveyList.length) {
         <mat-divider></mat-divider>
-        <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
+        <div class="no-results m-l-20 pt-3" [style.display]="surveyList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
-        @if (!(sotDS.loading$ | async) && this.noCond) {
+        @if (!(repDS.loading$ | async) && this.noCond) {
           <mat-divider></mat-divider>
-          <div class="no-results m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
+          <div class="no-results m-l-20 pt-3" color="warm" [style.display]="surveyList.length === 0 ? '' : 'none'">
             <h5 class="m-b-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
           </div>
           }
         <!-- Loading spinner -->
-        @if (sotDS.loading$ | async) {
+        @if (repDS.loading$ | async) {
         <div class="tbl-spinner">
           <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
           </mat-progress-spinner>
         </div>
         }
-        <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
+        <mat-paginator #paginator [length]="repDS.totalCount" [pageIndex]="0" [pageSize]="10"
           [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)" hidden>
         </mat-paginator>
       </div>

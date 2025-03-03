@@ -1029,7 +1029,10 @@
     "LAST-PERIODIC-TEST":"Last Periodic Test",
     "NEXT-PERIODIC-TEST":"Next Periodic Test",
     "DUE-DAYS":"Due Days",
-    "TYPE":"Type"
+    "TYPE":"Type",
+    "DAILY-TANK-SURVEY":"Daily Tank Survey",
+    "SURVEY-PERIOD":"Survey Period",
+    "VISIT":"Visit"
     
   },
   "CLEAN-PROCEDURES": {

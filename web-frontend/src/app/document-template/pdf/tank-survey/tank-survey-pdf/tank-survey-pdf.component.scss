@@ -71,9 +71,22 @@
     text-align: left;
     width: 20%; /* Removes borders from table rows and cells */
 }
-.table_customer_info td.sp60
+.table_customer_info td.sp30
 {
     text-align: left;
+    width: 30%; /* Removes borders from table rows and cells */
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflow content */
+    text-overflow: ellipsis; /* Add ellipsis (...) for overflow text */
+}
+.table_customer_info td.sp40
+{
+    text-align: left;
+    width: 40%; /* Removes borders from table rows and cells */
+}
+.table_customer_info td.sp60
+{
+    text-align: right;
     width: 60%; /* Removes borders from table rows and cells */
 }
 
@@ -160,10 +173,6 @@ tr.th {
     }
 
     .group-header {
-        background-color: transparent;
-    }
-
-    thead {
         background-color: #dedede;
     }
 }
@@ -260,28 +269,15 @@ padding:0;
 border:0;
 }
 
-.th-w2{width:2%;
-    text-align:center}
-.th-w3{width:3%;
-    text-align:center}
-.th-w4{width:4%;
-    text-align:center}
-.th-w5{width:5%;
-    text-align:center}
-.th-w6{width:6%;
-    text-align:center}
-.th-w7{width:7%;
-    text-align:center}
-.th-w8{width:8%;
-    text-align:center}
-    .th-w9{width:9%;
-        text-align:center}
-.th-w10{width:10%;
-    text-align:center}
-.th-w12{width:12%;
-    text-align:center}
-.th-w15{width:15%;
-    text-align:center}
+.th-w2{width:2%}
+.th-w3{width:3%}
+.th-w5{width:5%}
+.th-w6{width:6%}
+.th-w7{width:7%}
+.th-w8{width:8%}
+.th-w10{width:10%}
+.th-w12{width:12%}
+.th-w15{width:15%}
 
 .overflow-text {
 display: -webkit-box;
@@ -291,5 +287,4 @@ overflow: hidden;
 text-overflow: ellipsis;
 white-space: normal; /* Allows text wrapping */
 max-width: 100%; /* Adjust width as needed */
-height:40px;
 }

@@ -1,0 +1,69 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  <div id="pdf-form-body" class="pdf-container pdf-body">
+    @for (bCust of report_tank_summaries; track bCust) {
+    <div class="card">
+      <div class="pdf-body">
+        <table id="table_customer_info" class="table_customer_info">
+          <tr>
+            <td class="sp60">{{translatedLangText.SURVEY_PERIOD}} : {{date}}</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="sp20">{{translatedLangText.SURVEY_DATE}} : {{bCust.survey_dt}}</td>
+          </tr>
+        </table>
+      </div>
+      @if(bCust.tank_survey_summaries?.length!>0)
+      {
+      <table id="repair-part-table" class="repair-part-table">
+        <tr class="group-header">
+          <th class="th-w2">{{translatedLangText.NO}}</th>
+          <th class="th-w2">{{translatedLangText.CODE}}</th>
+          <th class="th-w6">{{translatedLangText.TANK_NO}}</th>
+          <th class="th-w6">{{translatedLangText.EIR_NO}}</th>
+          <th class="th-w6">{{translatedLangText.SURVEY_TYPE}}</th>
+          <th class="th-w2">{{translatedLangText.VISIT}}</th>
+          <th class="th-w6">{{translatedLangText.STATUS}}</th>
+          <th class="th-w6">{{translatedLangText.SURVEYOR}}</th>
+          <!-- <th class="th-w6">{{translatedLangText.REFERENCE}}</th> -->
+          <th class="th-w6">{{translatedLangText.CLEAN_DATE}}</th>
+        </tr>
+        @for (itm of bCust.tank_survey_summaries; track itm;let index = $index) {
+        <tr class="fixed_height_40px">
+          <td>{{ index + 1 }}</td> <!-- Row number -->
+          <td><span class="overflow-text">{{ itm.customer_code }}</span></td>
+          <td><span class="overflow-text">{{itm.tank_no }}</span></td>
+          <td><span class="overflow-text">{{ itm.eir_no }}</span></td>
+          <td><span class="overflow-text">{{ itm.survey_type }}</span></td>
+          <td><span class="overflow-text">{{ itm.visit }}</span></td>
+          <td><span class="overflow-text">{{ itm.status }}</span></td>
+          <td><span class="overflow-text">{{ itm.surveryor }}</span></td>
+          <!-- <td><span class="overflow-text">{{ itm.reference }}</span></td> -->
+          <td><span class="overflow-text">{{ DisplayCleanDate(itm) }}</span></td>
+        </tr>
+        }
+      </table>
+      }
+    </div>
+    }
+  </div>
+</div>
+<div mat-dialog-actions class="m-2 align-right">
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>

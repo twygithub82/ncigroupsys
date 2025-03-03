@@ -28,24 +28,24 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
-import { SURVEY_ROUTE } from 'app/admin/survey/survey.routes';
-import { BillingDS, BillingEstimateRequest } from 'app/data-sources/billing';
+import { BillingDS } from 'app/data-sources/billing';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_customer_tank_activity, report_status, report_status_yard } from 'app/data-sources/reports';
+import { report_customer_tank_activity, report_status } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
 import { TransferLocationPdfComponent } from 'app/document-template/pdf/transfer-location-pdf/transfer-location-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import {ReportDS,tank_survey_summary,tank_survey_summary_group_by_survey_dt} from 'app/data-sources/reports'
+import { TankSurveyPdfComponent } from 'app/document-template/pdf/tank-survey/tank-survey-pdf/tank-survey-pdf.component';
 
 @Component({
   selector: 'app-tank-survey-report',
@@ -170,6 +170,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  repDS:ReportDS;
 
   stmDS: SteamDS;
   plDS: PackageLabourDS;
@@ -209,6 +210,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
+  surveyList:tank_survey_summary[]=[];
 
   constructor(
     public httpClient: HttpClient,
@@ -231,6 +233,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.repDS= new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -383,7 +386,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     var cond_counter = 0;
     let queryType = 1;
-    const where: any = {};
+    var dailytankSurveyReq: any = {};
 
 
     // where.tank_status_cv = { neq: "RELEASED" };
@@ -394,63 +397,66 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     // }
 
     if (this.searchForm?.get('customer_code')?.value) {
-      var cond: any =  { customer_company_guid:{eq:this.searchForm!.get('customer_code')?.value?.guid } };
-     
-      where.storing_order=cond;
+      dailytankSurveyReq.customer_code=this.searchForm!.get('customer_code')?.value.code;
       cond_counter++;
     }
 
     if (this.searchForm?.get('eir_no')?.value) {
-      var cond: any = { eir_no: { contains: this.searchForm!.get('eir_no')?.value } };
-      if (!where.in_gate) {
-        where.in_gate = {};
-        where.in_gate.some = {};
-        where.in_gate.some.and = [];
-      }
-      where.in_gate.some.and.push(cond);
+      dailytankSurveyReq.eir_no=this.searchForm!.get('eir_no')?.value 
       cond_counter++;
     }
 
-    if (this.searchForm?.get('yard')?.value) {
-      var yards: string[] = this.searchForm!.get('yard')?.value?.map((y: any) => y.code_val) || [];
-
-      var cond: any = { yard_cv: { in: yards } };
-      if (!where.in_gate) {
-        where.in_gate = {};
-        where.in_gate.some = {};
-        where.in_gate.some.and = [];
-      }
-      where.in_gate.some.and.push(cond);
-      cond_counter++;
-    }
-
-
+    
     if (this.searchForm?.get('tank_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.tank_no = { eq: this.searchForm?.get('tank_no')?.value.code };
+      dailytankSurveyReq.tank_no =  this.searchForm?.get('tank_no')?.value;
       cond_counter++;
     }
 
+    if (this.searchForm?.get('svy_name')?.value) {
+      // if(!where.storing_order_tank) where.storing_order_tank={};
+      dailytankSurveyReq.surveyor_name =  this.searchForm?.get('svy_name')?.value;
+      cond_counter++;
+    }
+
+
+    if (this.searchForm?.get('svy_type')?.value) {
+      // if(!where.storing_order_tank) where.storing_order_tank={};
+      dailytankSurveyReq.survey_type = this.searchForm?.get('svy_type')?.value;
+      cond_counter++;
+    }
+
+
+    // if (this.searchForm?.get('yard')?.value) {
+    //   var yards: string[] = this.searchForm!.get('yard')?.value?.map((y: any) => y.code_val) || [];
+
+    //   var cond: any = { yard_cv: { in: yards } };
+    //   if (!where.in_gate) {
+    //     where.in_gate = {};
+    //     where.in_gate.some = {};
+    //     where.in_gate.some.and = [];
+    //   }
+    //   where.in_gate.some.and.push(cond);
+    //   cond_counter++;
+    // }
+
+
+
     var date:string=''
-    if(this.searchForm?.get('trf_dt_start')?.value && this.searchForm?.get('trf_dt_end')?.value)
+    if(this.searchForm?.get('svy_dt_start')?.value && this.searchForm?.get('svy_dt_end')?.value)
     {
-      var start_dt=new Date(this.searchForm!.value['trf_dt_start']);
-      var end_dt=new Date(this.searchForm!.value['trf_dt_end']);
-      var cond: any = { some: {or:[
-                        { transfer_in_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } },
-                        { transfer_out_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } }
-                      ]} };
-      date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('trf_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('trf_dt_end')?.value))}`;
-      
-        where.transfer = {};
-        where.transfer = cond;
+      var start_dt=Utility.convertDate(new Date(this.searchForm!.value['svy_dt_start']));
+      var end_dt=Utility.convertDate(new Date(this.searchForm!.value['svy_dt_end']),true);
+      date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('svy_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('svy_dt_end')?.value))}`;
+      dailytankSurveyReq.end_date=end_dt;
+      dailytankSurveyReq.start_date=start_dt;
       cond_counter++;
     }
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
-    this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(date);
+   // this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
+    this.performSearch(dailytankSurveyReq,date);
 
 
   }
@@ -458,15 +464,16 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
-  performSearch(date :string) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport(this.lastSearchCriteria)
+  performSearch(dailytankSurveyReq:any,date :string) {
+    this.subs.sink = this.repDS.searchTankSurveySummaryReport(dailytankSurveyReq)
       .subscribe(data => {
-        this.sotList = data;
-        this.endCursor = this.stmDS.pageInfo?.endCursor;
-        this.startCursor = this.stmDS.pageInfo?.startCursor;
-        this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.ProcessReportTransferYard(date);
+        this.surveyList = data;
+        this.ProcessReportTankSurvey(date);
+        // this.endCursor = this.stmDS.pageInfo?.endCursor;
+        // this.startCursor = this.stmDS.pageInfo?.startCursor;
+        // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
+        // this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+        // this.ProcessReportTransferYard(date);
       });
 
   }
@@ -554,66 +561,35 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-   ProcessReportTransferYard(date: string) {
-      if (this.sotList.length === 0) return;
+   ProcessReportTankSurvey(date: string) {
+      if (this.surveyList.length === 0) return;
   
-      var report_customer_tank_acts: report_customer_tank_activity[] = [];
+      var report_summary: tank_survey_summary_group_by_survey_dt[] = [];
   
-      this.sotList.map(s => {
+      this.surveyList.map(s => {
   
         if (s) {
-          var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
-          let newCust = false;
-          if (!repCust.code) {
-            repCust.code = s.storing_order?.customer_company?.code;
-            repCust.customer = s.storing_order?.customer_company?.name;
-            newCust = true;
+          var survey_dt = Utility.convertEpochToDateStr(s.survey_dt);
+          var repSvy: tank_survey_summary_group_by_survey_dt = report_summary.find(r => r.survey_dt === survey_dt) || new tank_survey_summary_group_by_survey_dt();
+          let newSvy = false;
+          if (!repSvy.survey_dt) {
+            repSvy.survey_dt = survey_dt;
+            newSvy = true;
           }
-          repCust.number_tank ??= 0;
-          repCust.number_tank += 1;
-          if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
-          repCust.storing_order_tank?.push(s);
-          if (newCust) report_customer_tank_acts.push(repCust);
-  
-  
-  
+         
+          if (!repSvy.tank_survey_summaries)repSvy.tank_survey_summaries = [];
+          repSvy.tank_survey_summaries?.push(s);
+          if (newSvy) report_summary.push(repSvy);
         }
       });
   
   
-      this.onExportDetail(report_customer_tank_acts,date);
+      this.onExportSummary(report_summary,date);
   
   
     }
 
-  onExportDetail(repStatus: report_customer_tank_activity[],date:string) {
-    //this.preventDefault(event);
-    let cut_off_dt = new Date();
-
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(TransferLocationPdfComponent, {
-      width: '85vw',
-      maxHeight: '85vh',
-      data: {
-        report_transfer_location: repStatus,
-        date:date
-      },
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
-    });
-  }
-
-  onExportSummary(repStatus: report_status[]) {
+  onExportSummary(repStatus: tank_survey_summary_group_by_survey_dt[],date:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -626,12 +602,13 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
+    const dialogRef = this.dialog.open(TankSurveyPdfComponent, {
       width: '85vw',
+      maxWidth:'1000px',
       maxHeight: '85vh',
       data: {
-        report_summary_status: repStatus,
-        yards: yardsCv
+        report_tank_survey: repStatus,
+        date: date
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

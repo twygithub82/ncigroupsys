@@ -66,16 +66,23 @@
     border: 1px; /* Removes borders from table rows and cells */
 }
 
-.table_customer_info td.sp20
+
+.table_customer_info td.sp40l
 {
-    text-align: right;
+    text-align: left;
+    width: 40%; /* Removes borders from table rows and cells */
+}
+
+.table_customer_info td.sp20l
+{
+    text-align: left;
     width: 20%; /* Removes borders from table rows and cells */
 }
 
 .table_customer_info td.sp
 {
     text-align: right;
-    width:40%; /* Removes borders from table rows and cells */
+    width:20%; /* Removes borders from table rows and cells */
 }
 
 table {

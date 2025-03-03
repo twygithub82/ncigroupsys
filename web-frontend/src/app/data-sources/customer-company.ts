@@ -281,6 +281,12 @@ export const GET_COMPANY_AND_BRANCH = gql`
   }
 `
 
+export const CAN_DELETE_COMPANY = gql`
+  query queryCanDeleteCustomer($guid: String!) {
+    value: queryCanDeleteCustomer(guid: $guid) 
+  }
+`
+
 export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -549,7 +555,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
  
   DeleteCustomerCompany(customerGuids: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: DELETE_CUSTOMER_COMPANY,
+      mutation: CAN_DELETE_COMPANY,
       variables: {
         customerGuids
       }
@@ -560,5 +566,27 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
       }),
     );
 
+  }
+
+  CanDeleteCustomerCompany(guid: any): Observable<any> {
+    return this.apollo
+    .query<any>({
+      query: CAN_DELETE_COMPANY,
+      variables: { guid },
+      fetchPolicy: 'no-cache' // Ensure fresh data
+    })
+    .pipe(
+      map((result) => result.data),
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(false); // Return an empty array on error
+      }),
+      finalize(() =>
+        this.loadingSubject.next(false)
+      ),
+      map((result) => {
+        return result;
+      })
+    );
   }
 }

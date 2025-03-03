@@ -23,32 +23,21 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
-import { report_customer_tank_activity } from 'app/data-sources/reports';
+import { tank_survey_summary, tank_survey_summary_group_by_survey_dt, report_inventory_cleaning_detail } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  report_customer_tank_activity: report_customer_tank_activity[],
-  type: string,
-
-
-  // repair_guid: string;
-  // customer_company_guid: string;
-  // sotDS: StoringOrderTankDS;
-  // repairDS: RepairDS;
-  // ccDS: CustomerCompanyDS;
-  // cvDS: CodeValuesDS;
-  // existingPdf?: any;
-  // estimate_no?: string;
-  // retrieveFile: boolean;
+ report_tank_survey: tank_survey_summary_group_by_survey_dt[],
+   date:string
 }
 
 @Component({
-  selector: 'app-customer-detail-pdf',
-  templateUrl: './customer-detail-pdf.component.html',
-  styleUrls: ['./customer-detail-pdf.component.scss'],
+  selector: 'app-tank-survey-pdf',
+  templateUrl: './tank-survey-pdf.component.html',
+  styleUrls: ['./tank-survey-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -61,7 +50,7 @@ export interface DialogData {
     MatTooltipModule
   ],
 })
-export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -251,7 +240,25 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S'
+    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S',
+    AVAILABLE_IN_YARD:'COMMON-FORM.AVAILABLE-IN-YARD',
+    RELEASED_TANK:'COMMON-FORM.RELEASED-TANK',
+    DAILY_INVENTORY:'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY',
+    CLEAN_CERT_BOOKING:'COMMON-FORM.CLEAN-CERT-BOOKING',
+    INVENTORY_DATE:'COMMON-FORM.INVENTORY-DATE',
+    UN_NO:'COMMON-FORM.CARGO-UN-NO',
+    DURATION_DAYS:'COMMON-FORM.DURATION-DAYS',
+    PROCEDURE:'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-PROCESS',
+    CLEAN_IN:'COMMON-FORM.CLEAN-IN',
+    CLEANING_INVENTORY:'MENUITEMS.REPORTS.LIST.CLEANING-INVENTORY',
+    SURVEY_DATE:'COMMON-FORM.SURVEY-DATE',
+    SURVEY_PERIOD:'COMMON-FORM.SURVEY-PERIOD',
+    DAILY_TANK_SURVEY:'COMMON-FORM.DAILY-TANK-SURVEY',
+    SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
+    CODE:'COMMON-FORM.CODE',
+    SURVEY_TYPE:'COMMON-FORM.SURVEY-TYPE',
+    VISIT:'COMMON-FORM.VISIT',
+    SURVEYOR:'COMMON-FORM.SURVEYOR' 
   }
 
 
@@ -300,7 +307,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_customer_tank_activity: report_customer_tank_activity[] = [];
+  report_tank_summaries: tank_survey_summary_group_by_survey_dt[] = [];
   date: string = '';
   invType: string = '';
   queryType: number = 1;
@@ -308,7 +315,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
 
   constructor(
-    public dialogRef: MatDialogRef<CustomerDetailPdfComponent>,
+    public dialogRef: MatDialogRef<TankSurveyPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -323,14 +330,17 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.report_customer_tank_activity = data.report_customer_tank_activity;
-    this.invType = data.type;
+    this.initialize(data);
+    this.report_tank_summaries=data.report_tank_survey;
+    this.date=data.date;
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-    this.getCodeValuesData();
+    
+
+   
   }
 
   async ngOnInit() {
@@ -349,18 +359,43 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
+  initialize(data:DialogData) {
+    this.loadData(data)
+   
+  }
+
+  public loadData(dataDlg:DialogData) {
+    const queries = [
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'yardCv', codeValType: 'YARD' },
+      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
+      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      // { alias: 'yardCv', codeValType: 'YARD' },
+      // { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+      if(data.length)
+        {
+          this.purposeOptionCvList = data;
+        
+          //this.processHorizontalBarValue(this.report_summary_status);
+          //this.processCustomerStatus(this.report_summary_status);
+        }
+    });
+  }
   async getCodeValuesData(): Promise<void> {
     const queries = [
-      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' },
+     // { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+    //  { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'TankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      // { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      // { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+      // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
+      // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+      // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      // { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
 
     await this.cvDS.getCodeValuesByTypeAsync(queries);
@@ -444,7 +479,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
   }
 
-  displayTankPurpose(sot: any) {
+  DisplayTankPurpose(sot: any) {
     let purposes: any[] = [];
     if (sot?.purpose_storage) {
       purposes.push(this.getPurposeOptionDescription('STORAGE'));
@@ -485,7 +520,6 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   async onDownloadClick() {
-    //this.exportToPDF();
     this.exportToPDF_r1();
   }
 
@@ -502,10 +536,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-
   async exportToPDF_r1(fileName: string = 'document.pdf') {
-    const pageWidth = 297; // A4 width in mm (landscape)
-    const pageHeight = 210; // A4 height in mm (landscape)
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10; // Left margin
     const rightMargin = 10; // Right margin
     const topMargin = 20; // Top margin for header
@@ -516,7 +549,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
 
-    const pdf = new jsPDF('l', 'mm', 'a4');
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Change orientation to portrait ('p')
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 1;
@@ -528,7 +561,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     const reportTitle = this.GetReportTitle(); // Set your report title here
 
     // Add header to the first page
-    this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+    this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
 
     let currentY = topMargin; // Start Y position after the header
 
@@ -555,7 +588,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             currentY = topMargin;
 
             // Add the report title and underline to the new page
-            this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+            this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
         }
 
         // Add the card image to the PDF
@@ -584,7 +617,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 }
 
 // Helper function to add the header (title and underline) to a page
-addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
+addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
@@ -595,20 +628,18 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
     pdf.setLineWidth(0.5); // Set line width for underline
     pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
 }
-
-
   async exportToPDF(fileName: string = 'document.pdf') {
-    let pageWidth=297;
+    let pagewidth =210;
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
-    const pdf = new jsPDF('l', 'mm', 'a4');
+    const pdf = new jsPDF('p', 'mm', 'a4');
     const leftMargin = 10; // Left margin
     const rightMargin = 10; // Right margin
-    const contentWidth = pageWidth - leftMargin - rightMargin; // 190mm usable width
+    const contentWidth = pagewidth - leftMargin - rightMargin; // 190mm usable width
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 0;
-
+    
     // Store page positions for later text update
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
@@ -629,7 +660,7 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
 
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
-      const titleX = (pageWidth - titleWidth) / 2; // Centering the title (210mm is page width)
+      const titleX = (pagewidth - titleWidth) / 2; // Centering the title (210mm is page width)
 
       const pos = 15;
       // pdf.text(reportTitle, titleX, pos); // Position it at the top
@@ -639,12 +670,12 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
       // pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
 
       // If card height exceeds A4 page height, split across multiple pages
-      if (imgHeight > 190) { // 297mm (A4 height) - 20mm (top & bottom margins)
+      if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
         while (yPosition < canvas.height) {
           const sectionCanvas = document.createElement('canvas');
           sectionCanvas.width = canvas.width;
-          sectionCanvas.height = Math.min(800, canvas.height - yPosition); // A4 height in pixels
+          sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
 
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
@@ -654,15 +685,15 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
           pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
 
           // Store page position for page numbering
-          pagePositions.push({ page: pageNumber, x: 280, y: 200 });
+          pagePositions.push({ page: pageNumber,x: 200, y: 287 });
 
           yPosition += sectionCanvas.height;
           if (yPosition < canvas.height) {
             pdf.addPage();
             pageNumber++;
-            pdf.text(reportTitle, titleX, pos); // Add title on new page
+            pdf.text(reportTitle, titleX, 10); // Add title on new page
             pdf.setLineWidth(0.5); // Set line width for underline
-            pdf.line(titleX, pos+2, titleX + titleWidth, pos + 2); // Draw underline on new page
+            pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
           }
         }
       } else {
@@ -674,9 +705,8 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
         // Draw underline for the title
         pdf.setLineWidth(0.5); // Set line width for underline
         pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
-  
         // Store page position for page numbering
-        pagePositions.push({ page: pageNumber, x: 280, y: 200 });
+        pagePositions.push({ page: pageNumber, x: 200, y: 287 });
       }
       pageNumber++;
       this.generatingPdfProgress += progressValue;
@@ -702,7 +732,7 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.CUSTOMER_REPORT}`
+    return `${this.translatedLangText.DAILY_TANK_SURVEY} ${this.translatedLangText.SUMMARY_REPORT}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
@@ -718,9 +748,19 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
 
   }
 
-  DisplayCleanDate(sot: StoringOrderTankItem): string {
-    this.removeDeletedInGateAndOutGate(sot);
-    return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt!)!;;
+  DisplayCleanDate(itm: tank_survey_summary): string {
+    //this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(itm.clean_dt!)!;;
+  }
+
+  DisplayCleanCertBooking(sot: StoringOrderTankItem): string {
+    var b = sot.booking?.find(b=>b.book_type_cv=='CLEAN_CERT');
+    if(b)
+    {
+      return `${Utility.convertEpochToDateStr(b?.booking_dt)}`
+    }
+    return '';
+    
   }
 
   DisplayTakeInRef(sot: StoringOrderTankItem): string {
@@ -773,6 +813,7 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
     return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;;
   }
 
+  
   DisplayLastTest(sot: StoringOrderTankItem): string {
     var lastTest: string = '';
     this.removeDeletedInGateAndOutGate(sot);
@@ -808,8 +849,53 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
     return sot?.remarks || '';
   }
 
-  DisplayCustomerName(repCustomer: report_customer_tank_activity) {
-    return `${repCustomer.code}(${repCustomer.customer})`
+  
+  DisplayCleanMethod(sot:StoringOrderTankItem)
+  {
+    return sot.tariff_cleaning?.cleaning_method?.name;
+  }
+
+  DipslayCleanDuration(sot:StoringOrderTankItem)
+  {
+    var start_dt =sot.cleaning?.[0]?.create_dt;
+    var end_dt =sot.cleaning?.[0]?.complete_dt;
+    if (start_dt === undefined || end_dt === undefined) {
+      console.log("Start or end timestamp is missing.");
+      return;
+     }
+
+      // Convert epoch timestamps to Date objects
+      const startDate = new Date(start_dt * 1000); // Convert seconds to milliseconds
+      const endDate = new Date(end_dt * 1000); // Convert seconds to milliseconds
+
+      // Calculate the duration in milliseconds
+      const durationMs = endDate.getTime() - startDate.getTime();
+
+      // Convert the duration to days
+      const durationDays = durationMs / (1000 * 60 * 60 * 24);
+      const roundedDuration = Math.ceil(durationDays);
+      return roundedDuration;
+
+  }
+
+  DisplayCleanIn(sot:StoringOrderTankItem)
+  {
+    return  Utility.convertEpochToDateStr(sot.cleaning?.[0]?.create_dt);
+  }
+
+  DisplayCustomerName(sot:StoringOrderTankItem)
+  {
+    return  this.ccDS.displayName(sot.storing_order?.customer_company);
+  }
+ 
+
+  DisplayEIRNo(sot:StoringOrderTankItem)
+  {
+    return `${sot.in_gate?.[0]?.eir_no}`;
+  }
+
+  DisplayOwner(sot: StoringOrderTankItem) {
+    return `${sot.customer_company?.code}`
   }
 
   DisplayNextTest(sot: StoringOrderTankItem): string {
@@ -825,9 +911,6 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
     return nextTest;
   }
 
-  DisplayCleanCertDate(sot: StoringOrderTankItem): string {
-    return '';
-  }
   DisplayReleaseBooking(sot: StoringOrderTankItem): string {
     return Utility.convertEpochToDateStr(sot.release_order_sot?.[0]?.release_order?.release_dt!)!;
   }
