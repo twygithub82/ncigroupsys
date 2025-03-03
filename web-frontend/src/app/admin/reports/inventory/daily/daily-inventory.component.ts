@@ -378,15 +378,17 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     this.selection.clear();
 
     var invType: string = this.inventoryTypeCvList.find(i => i.code_val == (this.searchForm!.get('inv_type')?.value))?.description || '';
-
+    var tnxType:string="Master In";
     
     if(this.searchForm!.get('inv_type')?.value=='')
     {
       queryType=3;
+      tnxType="All";
     }
     else if (this.searchForm!.get('inv_type')?.value=='MASTER_OUT')
     {
       queryType=2;
+      tnxType="Master Out";
     }
 
     if ([3].includes(report_type)) 
@@ -441,7 +443,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       if (this.noCond) return;
 
       this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-      this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date);
+      this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date,tnxType);
     }
     else
     {
@@ -451,7 +453,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   }
 
 
-  performSearchSummaryDetail(queryType?: number, invType?: string,report_type?:number)
+  performSearchSummaryDetail(queryType?: number, invType?: string,report_type?:number,tnxType?:string)
   {
 
     var cond_counter = 0;
@@ -498,13 +500,13 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
         }
         else
         {
-           this.onExportSummary(this.dailySumList, invType!, date!, queryType!);
+           this.onExportSummary(this.dailySumList, invType!, date!, queryType!,tnxType!);
         }
       }
    });
 
   }
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number, invType?: string, date?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number, invType?: string, date?: string,tnxType?:string) {
 
     // if(queryType==1)
     // {
@@ -515,7 +517,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.ProcessReportCustomerInventory(invType!, date!, report_type!, queryType!);
+        this.ProcessReportCustomerInventory(invType!, date!, report_type!, queryType!,tnxType!);
      });
     this.pageSize = pageSize;
     this.pageIndex = pageIndex;
@@ -669,7 +671,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
 
   }
 
-  ProcessReportCustomerInventory(invType: string, date: string, report_type: number, queryType: number) {
+  ProcessReportCustomerInventory(invType: string, date: string, report_type: number, queryType: number,tnxType:string) {
     if (this.sotList.length === 0) return;
 
     var report_customer_tank_inventory: report_customer_inventory[] = [];
@@ -752,10 +754,10 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
         this.onExportChart(report_customer_tank_inventory, invType, date, queryType);
       }
       else if (report_type == 2) {
-        this.onExportSummary(report_customer_tank_inventory, invType, date, queryType);
+        this.onExportSummary(report_customer_tank_inventory, invType, date, queryType,tnxType);
       }
       else if (report_type ==3) {
-        this.onExportDetail(report_customer_tank_inventory, invType, date, queryType);
+        this.onExportDetail(report_customer_tank_inventory, invType, date, queryType,tnxType);
       }
    }
    else
@@ -766,7 +768,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
 
   }
 
-  onExportDetail(repCustomerInv: report_customer_inventory[], invType: string, date: string, queryType: number) {
+  onExportDetail(repCustomerInv: report_customer_inventory[], invType: string, date: string, queryType: number,tnxType:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -784,7 +786,8 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       data: {
         report_inventory: repCustomerInv,
         date: date,
-        queryType: queryType
+        queryType: queryType,
+        tnxType:tnxType
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -794,7 +797,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     });
   }
 
-  onExportSummary(repDailyDetailSummary: daily_inventory_summary[], invType: string, date: string, queryType: number) {
+  onExportSummary(repDailyDetailSummary: daily_inventory_summary[], invType: string, date: string, queryType: number,tnxType:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -813,7 +816,8 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
         report_daily_inventory_summary: repDailyDetailSummary,
         type: invType,
         date: date,
-        queryType: queryType
+        queryType: queryType,
+        tnxType:tnxType
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

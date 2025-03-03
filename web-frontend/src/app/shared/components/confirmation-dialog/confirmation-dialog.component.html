@@ -15,8 +15,8 @@
         </ul>
         }
     </div>
-    <div mat-dialog-actions class="mb-1">
-        <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirm()">
+    <div mat-dialog-actions class="mb-1 d-flex justify-content-end">
+        <button mat-flat-button color="primary"  [mat-dialog-close]="1" (click)="confirm()">
             {{langText.CONFIRM | translate}}
         </button>
         <button mat-flat-button (click)="onNoClick()" tabindex="-1" [hidden]="hideCancel()">

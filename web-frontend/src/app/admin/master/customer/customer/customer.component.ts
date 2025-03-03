@@ -708,31 +708,31 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     async cancelItem(row: CustomerCompanyItem) {
         // this.id = row.id;
        
-        //  var customerAssigned:boolean = await this.CustomerAssigned(row.guid!);
-        //  if(customerAssigned)
-        //  {
-        //     let tempDirection: Direction;
-        //     if (localStorage.getItem('isRtl') === 'true') {
-        //       tempDirection = 'rtl';
-        //     } else {
-        //       tempDirection = 'ltr';
-        //     }
-        //     const dialogRef = this.dialog.open(MessageDialogComponent, {
-        //       width: '500px',
-        //       data: {
-        //         headerText: this.translatedLangText.WARNING,
-        //         messageText:[this.translatedLangText.CUSTOMER_ASSIGNED],
-        //         act: "warn"
-        //       },
-        //       direction: tempDirection
-        //     });
-        //   dialogRef.afterClosed().subscribe(result=>{
-        //   });
-        //  }
-        //  else
-        //  {
-            this.deleteCustomerAndBillingBranch(row.guid!);
-        //  }
+         var CanDeleteCustomer:boolean = await this.CanDeleteCustomer(row.guid!);
+         if(!CanDeleteCustomer)
+         {
+            let tempDirection: Direction;
+            if (localStorage.getItem('isRtl') === 'true') {
+              tempDirection = 'rtl';
+            } else {
+              tempDirection = 'ltr';
+            }
+            const dialogRef = this.dialog.open(MessageDialogComponent, {
+              width: '500px',
+              data: {
+                headerText: this.translatedLangText.WARNING,
+                messageText:[this.translatedLangText.CUSTOMER_ASSIGNED],
+                act: "warn"
+              },
+              direction: tempDirection
+            });
+          dialogRef.afterClosed().subscribe(result=>{
+          });
+         }
+         else
+         {
+           this.deleteCustomerAndBillingBranch(row.guid!);
+         }
     
       }
     
@@ -751,39 +751,34 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
          });
       }
   
-      async CustomerAssigned(CustomerGuid: string): Promise<boolean> {
+      async CanDeleteCustomer(guid: string): Promise<boolean> {
         let retval: boolean = false;
-        var where: any = {};
-    
-        where = {and:[ {or:[{customer_company:{ guid:{eq:CustomerGuid}}},
-                            {storing_order:{customer_company_guid:{eq:CustomerGuid}}}]},
-                      {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}] };
         
         try {
           // Use firstValueFrom to convert Observable to Promise
-          const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {},1));
-          retval=(result.length > 0)
+          const result = await firstValueFrom(this.ccDS.CanDeleteCustomerCompany(guid));
+          retval=(result.data.value);
         } catch (error) {
-          console.error("Error fetching tariff buffer guid:", error);
+          console.error("Error fetching Customer guid:", error);
         }
     
         return retval;
       }
 
 
-    CanDelete(row: CustomerCompanyItem): boolean {
-          let retval: boolean = false;
-          var where: any = {};
-          try {
-            // Use firstValueFrom to convert Observable to Promise
-           retval = row.storing_order_tank?.length==0 && row.storing_orders?.length==0;
+    // CanDeleteCustomer(row: CustomerCompanyItem): boolean {
+    //       let retval: boolean = false;
+    //       var where: any = {};
+    //       try {
+    //         // Use firstValueFrom to convert Observable to Promise
+    //        retval = row.storing_order_tank?.length==0 && row.storing_orders?.length==0;
             
-          } catch (error) {
-            console.error("Error fetching tariff buffer guid:", error);
-          }
+    //       } catch (error) {
+    //         console.error("Error fetching tariff buffer guid:", error);
+    //       }
       
-          return retval;
-        }
+    //       return retval;
+    //     }
 
 }
 

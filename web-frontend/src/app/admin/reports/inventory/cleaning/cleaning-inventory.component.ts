@@ -808,6 +808,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
 
     const dialogRef = this.dialog.open(CleaningDetailInventoryPdfComponent, {
       width: '90wv',
+      maxWidth:'1000px',
       maxHeight: '80vh',
       data: {
         report_inventory: repCln,

@@ -180,6 +180,7 @@ export class report_periodic_test_due_group_customer{
     this.periodic_test_due=item.periodic_test_due;
   }
 }
+
 export class periodic_test_due_item{
         class_cv?:string;
         customer_code?:string;
@@ -208,6 +209,44 @@ export class periodic_test_due_item{
     this.tank_no=item.tank_no;
     this.test_dt=item.test_dt;
   }
+}
+
+
+export class tank_survey_summary_group_by_survey_dt{
+  survey_dt?:string;
+  tank_survey_summaries?:tank_survey_summary[];
+
+  constructor(item: Partial<tank_survey_summary_group_by_survey_dt> = {}) {
+    this.survey_dt=item.survey_dt
+    this.tank_survey_summaries=item.tank_survey_summaries
+  }
+
+}
+
+export class tank_survey_summary{
+  clean_dt?:number;
+  customer_code?:string;
+  eir_no?:string;
+  status?:string;
+  surveyor?:string;
+  survey_type?:string;
+  survey_dt?:number;
+  tank_no?:string;
+ // reference?:string;
+  visit?:string;
+
+constructor(item: Partial<tank_survey_summary> = {}) {
+  this.clean_dt=item.clean_dt
+  this.customer_code=item.customer_code
+  this.eir_no=item.eir_no
+  this.status=item.status
+  this.surveyor=item.surveyor
+ // this.reference=item.reference
+  this.survey_type=item.survey_type
+  this.tank_no=item.tank_no
+  this.visit=item.visit
+  this.survey_dt=item.survey_dt
+  } 
 }
 
 export const GET_CLEANING_INVENTORY_REPORT = gql`
@@ -255,6 +294,24 @@ export const GET_PERIODIC_TEST_DUE_SUMMARY = gql`
         owner_code
         tank_no
         test_dt
+      }
+    }
+  }
+`
+
+export const GET_TANK_SURVEY_SUMMARY = gql`
+  query queryDailyTankSurveySummary($dailyTankSurveyRequest: DailyTankSurveyRequestInput!) {
+    resultList: queryDailyTankSurveySummary(dailyTankSurveyRequest: $dailyTankSurveyRequest) {
+      nodes {
+        clean_dt
+        customer_code
+        eir_no
+        status
+        surveryor
+        survey_dt
+        survey_type
+        tank_no
+        visit
       }
     }
   }
@@ -344,6 +401,33 @@ export class ReportDS extends BaseDataSource<any> {
         })
       );
   }
+
+  searchTankSurveySummaryReport(dailyTankSurveyRequest:any): Observable<tank_survey_summary[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_TANK_SURVEY_SUMMARY,
+        variables: { dailyTankSurveyRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
 
 }
 
