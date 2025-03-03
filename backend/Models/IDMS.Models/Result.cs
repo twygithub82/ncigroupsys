@@ -90,8 +90,8 @@ namespace IDMS.Models
         public string? visit { get; set; }
         [NotMapped]
         public long? clean_dt { get; set; }
-        //[NotMapped]
-        //public string? reference { get; set; }
+        [NotMapped]
+        public long? survey_dt { get; set; }
     }
 
 
