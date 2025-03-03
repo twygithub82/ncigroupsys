@@ -114,8 +114,8 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
     EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    RO_NO: 'COMMON-FORM.RO-NO',
-    YARD: 'COMMON-FORM.YARD'
+    YARD: 'COMMON-FORM.YARD',
+    CURRENT_LOCATION: 'COMMON-FORM.CURRENT-LOCATION'
   }
 
   searchForm?: UntypedFormGroup;
@@ -187,7 +187,6 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
       customer_code: this.customerCodeControl,
       last_cargo: this.lastCargoControl,
       eir_no: [''],
-      ro_no: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
       tank_no: [''],
@@ -353,6 +352,15 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
       }
       const finalIgSearch = this.igDS.addDeleteDtCriteria(igSearch);
       where.in_gate = { some: finalIgSearch }
+    }
+
+    // tank_info
+    if (this.searchForm!.get('yard_cv')?.value) {
+      const tiSearch: any = {};
+      if (this.searchForm!.get('yard_cv')?.value) {
+        tiSearch.yard_cv = { eq: this.searchForm!.get('yard_cv')?.value };
+      }
+      where.tank_info = tiSearch;
     }
 
     // storing_order
