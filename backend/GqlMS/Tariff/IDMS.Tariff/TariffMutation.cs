@@ -149,33 +149,51 @@ namespace IDMS.Models.Tariff.GqlTypes
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffDepot_guids)
         {
             int retval = 0;
-            try
+            var currentDateTime = GqlUtils.GetNowEpochInSec();
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delTariffCleans = context.tariff_depot.Where(s => DeleteTariffDepot_guids.Contains(s.guid) && s.delete_dt == null).Include(t => t.tanks).ToList();
-
-
-                foreach (var delTariffClean in delTariffCleans)
+                try
                 {
-                    delTariffClean.delete_dt = GqlUtils.GetNowEpochInSec();
-                    delTariffClean.update_by = uid;
-                    delTariffClean.update_dt = GqlUtils.GetNowEpochInSec();
-                    foreach (var t in delTariffClean.tanks)
-                    {
-                        t.tariff_depot_guid = null;
-                        t.update_dt = GqlUtils.GetNowEpochInSec();
-                        t.update_by = uid;
-                    }
-                }
-                retval = await context.SaveChangesAsync();
+                    List<string?> deletedTariffGuid = new List<string?>();
+                    var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    var delTariffCleans = await context.tariff_depot.Where(s => DeleteTariffDepot_guids.Contains(s.guid) && s.delete_dt == null).Include(t => t.tanks).ToListAsync();
 
+                    foreach (var delTariffClean in delTariffCleans)
+                    {
+                        delTariffClean.delete_dt = currentDateTime;
+                        delTariffClean.update_by = uid;
+                        delTariffClean.update_dt = currentDateTime;
+                        foreach (var t in delTariffClean.tanks)
+                        {
+                            t.tariff_depot_guid = null;
+                            t.update_dt = currentDateTime;
+                            t.update_by = uid;
+                        }
+
+                        //Add the deleted guid into list
+                        deletedTariffGuid.Add(delTariffClean.guid);
+                    }
+                    retval = await context.SaveChangesAsync();
+
+                    foreach (var guid in deletedTariffGuid)
+                    {
+                        var count = await context.package_depot.Where(b => b.tariff_depot_guid == guid)
+                                        .ExecuteUpdateAsync(setters => setters.SetProperty(b => b.delete_dt, currentDateTime)
+                                                                  .SetProperty(b => b.update_dt, currentDateTime)
+                                                                  .SetProperty(b => b.update_by, uid));
+                        retval = retval + count;
+                    }
+                    await transaction.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
-            }
+
             return retval;
         }
         #endregion Tariff Depot methods
@@ -280,26 +298,25 @@ namespace IDMS.Models.Tariff.GqlTypes
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffClean_guids)
         {
             int retval = 0;
+            var currentDateTime = GqlUtils.GetNowEpochInSec();
             try
             {
-
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delTariffCleans = context.tariff_cleaning.Where(s => DeleteTariffClean_guids.Contains(s.guid) && s.delete_dt == null);
+                var delTariffCleans = await context.tariff_cleaning.Where(s => DeleteTariffClean_guids.Contains(s.guid) && s.delete_dt == null).ToListAsync();
 
 
                 foreach (var delTariffClean in delTariffCleans)
                 {
-                    delTariffClean.delete_dt = GqlUtils.GetNowEpochInSec();
+                    delTariffClean.delete_dt = currentDateTime;
                     delTariffClean.update_by = uid;
-                    delTariffClean.update_dt = GqlUtils.GetNowEpochInSec();
+                    delTariffClean.update_dt = currentDateTime;
                 }
                 retval = context.SaveChanges();
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -353,22 +370,6 @@ namespace IDMS.Models.Tariff.GqlTypes
                 context.tariff_buffer.Add(newTariffBuffer);
 
                 //change this to use trigger, instead of using code to perform the insert
-                //var customerCompaniesGuid = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null)
-                //                                                .Select(c => c.guid).ToArray();
-                //foreach (var guid in customerCompaniesGuid)
-                //{
-                //    var pack_buffer = new package_buffer();
-                //    pack_buffer.guid = Util.GenerateGUID();
-                //    pack_buffer.tariff_buffer_guid = NewTariffBuffer.guid;
-                //    pack_buffer.customer_company_guid = guid;
-                //    pack_buffer.remarks = NewTariffBuffer.remarks;
-                //    pack_buffer.cost = NewTariffBuffer.cost;
-
-                //    pack_buffer.create_by = uid;
-                //    pack_buffer.create_dt = GqlUtils.GetNowEpochInSec();
-                //    context.package_buffer.Add(pack_buffer);
-                //}
-
                 retval = await context.SaveChangesAsync();
             }
             catch { throw; }
@@ -376,7 +377,6 @@ namespace IDMS.Models.Tariff.GqlTypes
 
             return retval;
         }
-
 
         public async Task<int> UpdateTariffBuffer(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, tariff_buffer UpdateTariffBuffer)
@@ -415,26 +415,41 @@ namespace IDMS.Models.Tariff.GqlTypes
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffBuffer_guids)
         {
             int retval = 0;
-            try
+            var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+            var currentDateTime = GqlUtils.GetNowEpochInSec();
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delTariffBuffers = context.tariff_buffer.Where(s => DeleteTariffBuffer_guids.Contains(s.guid) && s.delete_dt == null).ToList();
-
-
-                foreach (var delTariffBuffer in delTariffBuffers)
+                try
                 {
-                    delTariffBuffer.delete_dt = GqlUtils.GetNowEpochInSec();
-                    delTariffBuffer.update_by = uid;
-                    delTariffBuffer.update_dt = GqlUtils.GetNowEpochInSec();
-                }
-                retval = await context.SaveChangesAsync();
+                    List<string?> deletedTariffGuid = new List<string?>();
+                    var delTariffBuffers = await context.tariff_buffer.Where(s => DeleteTariffBuffer_guids.Contains(s.guid) && s.delete_dt == null).ToListAsync();
+                    foreach (var delTariffBuffer in delTariffBuffers)
+                    {
+                        delTariffBuffer.delete_dt = currentDateTime;
+                        delTariffBuffer.update_by = uid;
+                        delTariffBuffer.update_dt = currentDateTime;
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
+                        //Add the deleted guid into list
+                        deletedTariffGuid.Add(delTariffBuffer.guid);
+                    }
+                    retval = await context.SaveChangesAsync();
+
+                    foreach (var guid in deletedTariffGuid)
+                    {
+                        var count = await context.package_buffer.Where(b => b.tariff_buffer_guid == guid)
+                                        .ExecuteUpdateAsync(setters => setters.SetProperty(b =>b.delete_dt, currentDateTime)
+                                                                  .SetProperty(b=> b.update_dt, currentDateTime)
+                                                                  .SetProperty(b=>b.update_by, uid));
+                        retval = retval + count;
+                    }
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {  // Rollback the transaction if any errors occur
+                    await transaction.RollbackAsync();
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                }
             }
             return retval;
         }
@@ -607,24 +622,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 context.tariff_residue.Add(newTariffResidue);
 
                 //change this to use trigger, instead of using code to perform the insert
-                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
-                //foreach (var customerCompany in customerCompanies)
-                //{
-                //    var pack_residue = new package_residue();
-                //    pack_residue.guid = Util.GenerateGUID();
-                //    pack_residue.remarks = newTariffResidue.remarks;
-                //    pack_residue.customer_company_guid = customerCompany.guid;
-                //    pack_residue.cost = newTariffResidue.cost;
-                //    pack_residue.tariff_residue_guid =newTariffResidue.guid;
-
-                //    pack_residue.create_by = uid;
-                //    pack_residue.create_dt = GqlUtils.GetNowEpochInSec();
-                //    context.package_residue.Add(pack_residue);
-                //}
                 retval = await context.SaveChangesAsync();
-
-                //Change this to use trigger, instead of store_procedure
-                //Task.Run(() => AddPackageResidueTask(context, uid, NewTariffResidue.guid, NewTariffResidue.remarks, NewTariffResidue.cost, curDate));
             }
             catch { throw; }
             return retval;
@@ -668,26 +666,43 @@ namespace IDMS.Models.Tariff.GqlTypes
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffResidue_guids)
         {
             int retval = 0;
-            try
+            var currentDateTime = GqlUtils.GetNowEpochInSec();
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delTariffResidues = context.tariff_residue.Where(s => DeleteTariffResidue_guids.Contains(s.guid) && s.delete_dt == null).ToList();
-
-
-                foreach (var delTariffResidue in delTariffResidues)
+                try
                 {
-                    delTariffResidue.delete_dt = GqlUtils.GetNowEpochInSec();
-                    delTariffResidue.update_by = uid;
-                    delTariffResidue.update_dt = GqlUtils.GetNowEpochInSec();
-                }
-                retval = context.SaveChanges();
+                    List<string?> deletedTariffGuid = new List<string?>();
+                    var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    var delTariffResidues = await context.tariff_residue.Where(s => DeleteTariffResidue_guids.Contains(s.guid) && s.delete_dt == null).ToListAsync();
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
+                    foreach (var delTariffResidue in delTariffResidues)
+                    {
+                        delTariffResidue.delete_dt = currentDateTime;
+                        delTariffResidue.update_by = uid;
+                        delTariffResidue.update_dt = currentDateTime;
+
+                        //Add the deleted guid into list
+                        deletedTariffGuid.Add(delTariffResidue.guid);
+                    }
+                    retval = context.SaveChanges();
+
+                    foreach (var guid in deletedTariffGuid)
+                    {
+                        var count = await context.package_residue.Where(b => b.tariff_residue_guid == guid)
+                                        .ExecuteUpdateAsync(setters => setters.SetProperty(b => b.delete_dt, currentDateTime)
+                                                                            .SetProperty(b => b.update_dt, currentDateTime)
+                                                                            .SetProperty(b => b.update_by, uid));
+                        retval = retval + count;
+                    }
+                    await transaction.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                }
             }
             return retval;
         }
@@ -984,27 +999,45 @@ namespace IDMS.Models.Tariff.GqlTypes
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffRepair_guids)
         {
             int retval = 0;
-            try
+            var currentDateTime = GqlUtils.GetNowEpochInSec();
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delTariffRepairs = context.tariff_repair.Where(s => DeleteTariffRepair_guids.Contains(s.guid) && s.delete_dt == null).ToList();
-
-
-                foreach (var delTariffRepair in delTariffRepairs)
+                try
                 {
-                    delTariffRepair.delete_dt = GqlUtils.GetNowEpochInSec();
-                    delTariffRepair.update_by = uid;
-                    delTariffRepair.update_dt = GqlUtils.GetNowEpochInSec();
-                }
-                retval = await context.SaveChangesAsync();
+                    var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    List<string?> deletedTariffGuid = new List<string?>();
+                    var delTariffRepairs = await context.tariff_repair.Where(s => DeleteTariffRepair_guids.Contains(s.guid) && s.delete_dt == null).ToListAsync();
 
+                    foreach (var delTariffRepair in delTariffRepairs)
+                    {
+                        delTariffRepair.delete_dt = currentDateTime;
+                        delTariffRepair.update_by = uid;
+                        delTariffRepair.update_dt = currentDateTime;
+
+                        //Add the deleted guid into list
+                        deletedTariffGuid.Add(delTariffRepair.guid);
+                    }
+                    retval = await context.SaveChangesAsync();
+
+                    foreach (var guid in deletedTariffGuid)
+                    {
+                        var count = await context.package_repair.Where(b => b.tariff_repair_guid == guid)
+                                        .ExecuteUpdateAsync(setters => setters.SetProperty(b => b.delete_dt, currentDateTime)
+                                                                              .SetProperty(b => b.update_dt, currentDateTime)
+                                                                              .SetProperty(b => b.update_by, uid));
+                        retval = retval + count;
+                    }
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
-            }
+
+        
             return retval;
         }
         #endregion Tariff Repair methods
@@ -1078,27 +1111,44 @@ namespace IDMS.Models.Tariff.GqlTypes
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffSteam_guids)
         {
             int retval = 0;
-            try
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delTariffSteaming = context.tariff_steaming.Where(s => DeleteTariffSteam_guids.Contains(s.guid) && s.delete_dt == null).ToList();
-                var currentDateTime = GqlUtils.GetNowEpochInSec();
-
-                foreach (var delTariffClean in delTariffSteaming)
+                try
                 {
-                    delTariffClean.delete_dt = currentDateTime;
-                    delTariffClean.update_by = uid;
-                    delTariffClean.update_dt = currentDateTime;
-                }
-                retval = await context.SaveChangesAsync();
+                    var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    List<string?> deletedTariffGuid = new List<string?>();
+                    var delTariffSteaming = await context.tariff_steaming.Where(s => DeleteTariffSteam_guids.Contains(s.guid) && s.delete_dt == null).ToListAsync();
+                    var currentDateTime = GqlUtils.GetNowEpochInSec();
 
+                    foreach (var delTariffSteam in delTariffSteaming)
+                    {
+                        delTariffSteam.delete_dt = currentDateTime;
+                        delTariffSteam.update_by = uid;
+                        delTariffSteam.update_dt = currentDateTime;
+
+                        //Add the deleted guid into list
+                        deletedTariffGuid.Add(delTariffSteam.guid);
+                    }
+                    retval = await context.SaveChangesAsync();
+
+                    foreach (var guid in deletedTariffGuid)
+                    {
+                        var count = await context.package_steaming.Where(b => b.tariff_steaming_guid == guid)
+                                        .ExecuteUpdateAsync(setters => setters.SetProperty(b => b.delete_dt, currentDateTime)
+                                                                              .SetProperty(b => b.update_dt, currentDateTime)
+                                                                              .SetProperty(b => b.update_by, uid));
+                        retval = retval + count;
+                    }
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
-            }
+
+  
             return retval;
         }
         #endregion Tariff Steaming methods

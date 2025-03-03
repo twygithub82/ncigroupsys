@@ -6,8 +6,7 @@ using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics.Eventing.Reader;
+
 
 namespace IDMS.Models.Tariff.GqlTypes
 {
