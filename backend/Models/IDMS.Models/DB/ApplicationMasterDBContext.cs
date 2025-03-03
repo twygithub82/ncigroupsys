@@ -68,6 +68,7 @@ namespace IDMS.Models.Master.GqlTypes.DB
         public DbSet<template_est_customer> template_est_customer { get; set; }
         public DbSet<template_est_part> template_est_part { get; set; }
         public DbSet<tep_damage_repair> tep_damage_repair { get; set; }
+        public DbSet<storing_order> storing_order { get; set; }
 
     }
 }
