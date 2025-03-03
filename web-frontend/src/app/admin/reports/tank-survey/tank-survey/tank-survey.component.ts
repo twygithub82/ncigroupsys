@@ -604,7 +604,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     const dialogRef = this.dialog.open(TankSurveyPdfComponent, {
       width: '85vw',
-      maxWidth:'1200px',
+      maxWidth:'1000px',
       maxHeight: '85vh',
       data: {
         report_tank_survey: repStatus,

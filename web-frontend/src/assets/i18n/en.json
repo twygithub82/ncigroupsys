@@ -1031,7 +1031,8 @@
     "DUE-DAYS":"Due Days",
     "TYPE":"Type",
     "DAILY-TANK-SURVEY":"Daily Tank Survey",
-    "SURVEY-PERIOD":"Survey Period"
+    "SURVEY-PERIOD":"Survey Period",
+    "VISIT":"Visit"
     
   },
   "CLEAN-PROCEDURES": {

@@ -228,7 +228,7 @@ export class tank_survey_summary{
   customer_code?:string;
   eir_no?:string;
   status?:string;
-  surveyor?:string;
+  surveryor?:string;
   survey_type?:string;
   survey_dt?:number;
   tank_no?:string;
@@ -240,7 +240,7 @@ constructor(item: Partial<tank_survey_summary> = {}) {
   this.customer_code=item.customer_code
   this.eir_no=item.eir_no
   this.status=item.status
-  this.surveyor=item.surveyor
+  this.surveryor=item.surveryor
  // this.reference=item.reference
   this.survey_type=item.survey_type
   this.tank_no=item.tank_no
