@@ -353,6 +353,15 @@ export const GET_IN_GATE_BY_ID = gql`
           rear_remarks
           left_remarks
           right_remarks
+          airline_valve_conn_oth
+          airline_valve_conn_spec_oth
+          airline_valve_oth
+          btm_dis_valve_oth
+          btm_dis_valve_spec_oth
+          foot_valve_oth
+          manlid_cover_oth
+          top_dis_valve_oth
+          top_dis_valve_spec_oth
         }
       }
     }
