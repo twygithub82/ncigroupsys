@@ -1,6 +1,0 @@
-"guid";"customer_company_guid";"so_notes";"so_no";"haulier";"remarks";"status_cv";"delete_dt";"create_dt";"create_by";"update_dt";"update_by"
-"14d366b72e5611ef91a300ff079339a5";"2a0fb8df25aa11efac2d74782781fe3e";"note1 test";"SO001";"Haulier1 test";"Urgent service required";"";0;1718813272;"admin";1719665049;"admin"
-"14d36c992e5611ef91a300ff079339a5";"5d8fa01e2e5011ef91a300ff079339a5";"GlobalTrade SO";"SO002";"XYZ Transport";"Standard service";"PROCESSING";0;1718813272;"admin";1718813272;"admin"
-"14d36d752e5611ef91a300ff079339a5";"5d8fa4f02e5011ef91a300ff079339a5";"EcoSolutions SO";"SO003";"Global Shipping";"Special tank";"COMPLETE";0;1718813272;"admin";1718813272;"admin"
-"14d36dda2e5611ef91a300ff079339a5";"5d8fa7822e5011ef91a300ff079339a5";"MediCare SO";"SO004";"Swift Haulage";"Requested to cancel";"CANCELED";0;1718813272;"admin";1718813272;"admin"
-"14d36e3a2e5611ef91a300ff079339a5";"5d8faa9d2e5011ef91a300ff079339a5";"NextGenAuto SO";"SO005";"Fast Freight";"Awaiting confirmation";"PENDING";0;1718813272;"admin";1718813272;"admin"
