@@ -2,7 +2,6 @@
 using IDMS.Models.Package;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace IDMS.Models.Parameter.GqlTypes
@@ -265,9 +264,181 @@ namespace IDMS.Models.Parameter.GqlTypes
             return retval;
 
         }
-    
+
 
         #endregion Cleaning Category
+
+        #region cleaning_formula
+
+        public async Task<int> AddCleaningFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
+             [Service] IHttpContextAccessor httpContextAccessor, cleaning_formula NewCleanFormula)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                NewCleanFormula.guid = (string.IsNullOrEmpty(NewCleanFormula.guid) ? Util.GenerateGUID() : NewCleanFormula.guid);
+
+                var newCleanFormula = new cleaning_formula();
+                newCleanFormula.guid = NewCleanFormula.guid;
+                newCleanFormula.description = NewCleanFormula.description;
+                newCleanFormula.duration = NewCleanFormula.duration;
+                newCleanFormula.create_by = uid;
+                newCleanFormula.create_dt = GqlUtils.GetNowEpochInSec();
+
+                await context.cleaning_formula.AddAsync(newCleanFormula);
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public async Task<int> UpdateCleaningFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, cleaning_formula UpdateCleanFormula)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdateCleanFormula.guid;
+                var dbCleanFormula = context.cleaning_formula.Find(guid);
+                if (dbCleanFormula == null)
+                {
+                    throw new GraphQLException(new Error("The Cleaning Formula not found", "NOT FOUND"));
+                }
+                dbCleanFormula.description = UpdateCleanFormula.description;
+                dbCleanFormula.duration = UpdateCleanFormula.duration;
+                dbCleanFormula.update_by = uid;
+                dbCleanFormula.update_dt = GqlUtils.GetNowEpochInSec();
+
+                retval = await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public async Task<int> DeleteCleaningFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteCleanFormula_guids)
+        {
+            int retval = 0;
+            var currentDateTime = GqlUtils.GetNowEpochInSec();
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var delCleanFormulas = context.cleaning_formula.Where(s => DeleteCleanFormula_guids.Contains(s.guid) && s.delete_dt == null);
+
+                foreach (var delCleanMethod in delCleanFormulas)
+                {
+                    delCleanMethod.delete_dt = currentDateTime;
+                    delCleanMethod.update_by = uid;
+                    delCleanMethod.update_dt = currentDateTime;
+                }
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        #endregion
+
+        #region cleaning_method_formula
+        public async Task<int> AddCleaningMethodFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, cleaning_method_formula NewCleanMethodFormula)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                NewCleanMethodFormula.guid = (string.IsNullOrEmpty(NewCleanMethodFormula.guid) ? Util.GenerateGUID() : NewCleanMethodFormula.guid);
+
+                var newCleanMethodFormula = new cleaning_method_formula();
+                newCleanMethodFormula.guid = NewCleanMethodFormula.guid;
+                newCleanMethodFormula.method_guid = NewCleanMethodFormula.method_guid;
+                newCleanMethodFormula.formula_guid = NewCleanMethodFormula.formula_guid;
+                newCleanMethodFormula.sequence = NewCleanMethodFormula.sequence;
+                newCleanMethodFormula.create_by = uid;
+                newCleanMethodFormula.create_dt = GqlUtils.GetNowEpochInSec();
+
+                await context.cleaning_method_formula.AddAsync(newCleanMethodFormula);
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public async Task<int> UpdateCleaningMethodFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, cleaning_method_formula UpdateCleanMethodFormula)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdateCleanMethodFormula.guid;
+
+                var dbCleanMethodFormula = context.cleaning_method_formula.Find(guid);
+                if (dbCleanMethodFormula == null)
+                {
+                    throw new GraphQLException(new Error("The Cleaning Method Formula not found", "NOT FOUND"));
+                }
+                dbCleanMethodFormula.method_guid = UpdateCleanMethodFormula.method_guid;
+                dbCleanMethodFormula.formula_guid = UpdateCleanMethodFormula.formula_guid;
+                dbCleanMethodFormula.sequence = UpdateCleanMethodFormula.sequence;
+                dbCleanMethodFormula.update_by = uid;
+                dbCleanMethodFormula.update_dt = GqlUtils.GetNowEpochInSec();
+
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public async Task<int> DeleteCleaningMethodFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteCleanMethodFormula_guids)
+        {
+            int retval = 0;
+            var currentDateTime = GqlUtils.GetNowEpochInSec();
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var delCleanMethodFormulas = context.cleaning_method_formula.Where(s => DeleteCleanMethodFormula_guids.Contains(s.guid) && s.delete_dt == null);
+
+                foreach (var delCleanMethodForm in delCleanMethodFormulas)
+                {
+                    delCleanMethodForm.delete_dt = currentDateTime;
+                    delCleanMethodForm.update_by = uid;
+                    delCleanMethodForm.update_dt = currentDateTime;
+                }
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+        #endregion
     }
 
 }
