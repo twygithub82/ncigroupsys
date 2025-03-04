@@ -162,7 +162,7 @@ namespace IDMS.Survey.GqlTypes
                     ingate.driver_name = inGateRequest.driver_name;
                     ingate.haulier = inGateRequest.haulier;
                     //yet to survey --> pending
-                    ingate.eir_status_cv = EirStatus.PENDING;
+                    ingate.eir_status_cv = string.IsNullOrEmpty(inGateRequest.eir_status_cv) ? EirStatus.PENDING : inGateRequest.eir_status_cv; //EirStatus.PENDING;
                     ingate.update_by = user;
                     ingate.update_dt = currentDateTime;
                 }
