@@ -161,16 +161,8 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
   initSearchForm() {
     this.searchForm = this.fb.group({
-      so_no: [''],
       customer_code: this.customerCodeControl,
-      eir_no: [''],
-      eir_dt_start: [''],
-      eir_dt_end: [''],
       tank_no: [''],
-      job_no: [''],
-      purpose: [''],
-      tank_status_cv: [''],
-      eir_status_cv: ['']
     });
   }
 
