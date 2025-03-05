@@ -963,21 +963,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getBackgroundColorFromNature() {
-    var color = 'orange';
-    let natureCv = this.sot?.tariff_cleaning?.nature_cv?.toUpperCase();
-    switch (natureCv) {
-      case "HAZARDOUS":
-        color = 'purple';
-        break;
-      case "TOXIC":
-        color = 'green';
-        break;
-      case "GASES":
-        color = 'cyan';
-        break;
-    }
-
-    return color;
+    return Utility.getBackgroundColorFromNature(this.sot?.tariff_cleaning?.nature_cv?.toUpperCase());
   }
 
   getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {

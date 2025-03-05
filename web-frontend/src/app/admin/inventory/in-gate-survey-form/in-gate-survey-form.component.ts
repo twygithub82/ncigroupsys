@@ -2265,6 +2265,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return this.cvDS.getCodeDescription(codeValType, this.tankSideCvList);
   }
 
+  getNatureInGateAlert() {
+    return `${this.in_gate?.tank?.tariff_cleaning?.nature_cv} - ${this.in_gate?.tank?.tariff_cleaning?.in_gate_alert}`;
+  }
+
+  getBackgroundColorFromNature() {
+    return Utility.getBackgroundColorFromNature(this.in_gate?.tank?.tariff_cleaning?.nature_cv?.toUpperCase());
+  }
+
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }

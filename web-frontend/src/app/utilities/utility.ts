@@ -30,14 +30,14 @@ export class Utility {
       if (!date) {
         return undefined; // Handle null or undefined input
       }
-  
+
       // ✅ If input is a number (epoch time), return a correct Date object
       if (typeof date === 'number' && !isNaN(date)) {
         const isSeconds = date < 10000000000; // Check if input is in seconds
         const epochMs = isSeconds ? date * 1000 : date; // Convert SECONDS to MILLISECONDS
         return new Date(epochMs); // Force UTC interpretation
       }
-  
+
       // ✅ Handle Moment.js Objects (Return Epoch Time in Seconds)
       if (moment.isMoment(date)) {
         const momentDate = endOfDay
@@ -45,7 +45,7 @@ export class Utility {
           : date.utc().startOf('day'); // Set to start of day in UTC
         return Math.floor(momentDate.valueOf() / 1000); // Return epoch time in seconds
       }
-  
+
       // ✅ Handle JavaScript Date objects (Return Epoch Time in Seconds)
       if (date instanceof Date) {
         const jsDate = new Date(date); // Create a copy of the date
@@ -55,7 +55,7 @@ export class Utility {
         }
         return Math.floor(jsDate.getTime() / 1000); // Return epoch time in seconds
       }
-  
+
       // ✅ Handle Strings (Parse into Epoch Seconds)
       if (typeof date === 'string' && !isNaN(Date.parse(date))) {
         const parsedDate = new Date(date); // Parse the string into a Date object
@@ -66,7 +66,7 @@ export class Utility {
         }
         return Math.floor(parsedDate.getTime() / 1000); // Return epoch time in seconds
       }
-  
+
       // ❌ If the input format is unrecognized, log an error
       console.error('Unrecognized date format:', date);
       return undefined;
@@ -177,7 +177,7 @@ export class Utility {
     const formattedMinutes = String(minutes).padStart(2, '0');
 
     return `${day}/${month}/${year} ${formattedHours}:${formattedMinutes}`;
-}
+  }
 
   static getEarlierDate(date1: Date, date2: Date): Date {
     return date1 < date2 ? date1 : date2;
@@ -435,6 +435,37 @@ export class Utility {
       throw new Error('Failed to fetch PDF content');
     }
     return await response.blob();
+  }
+
+  static getBackgroundColorFromNature(natureCv: string | undefined) {
+    var color = 'orange';
+    switch (natureCv) {
+      case "HAZARDOUS":
+        color = 'green';
+        break;
+      case "FLAMMABLE":
+        color = 'orange';
+        break;
+      case "EXPLOSIVES":
+        color = 'red';
+        break;
+      case "GASES":
+        color = 'cyan';
+        break;
+      case "TOXIC":
+        color = 'purple';
+        break;
+      case "RADIOACTIVE":
+        color = 'purple-dark';
+        break;
+      case "CORROSIVE":
+        color = 'black';
+        break;
+      case "OXIDIZING":
+        color = 'yellow';
+        break;
+    }
+    return color;
   }
 }
 
