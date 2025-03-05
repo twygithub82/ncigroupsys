@@ -22,11 +22,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
-import { RepairCostTableItem } from 'app/data-sources/repair';
+import { RepairCostTableItem,RepairItem } from 'app/data-sources/repair';
 import { report_customer_tank_activity } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -251,7 +252,12 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S'
+    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S',
+    CLEAN_CERT_DATE:'COMMON-FORM.CLEAN-CERT-DATE',
+    YARD:'COMMON-FORM.YARD',
+    IN_YARD:'COMMON-FORM.IN-YARD',
+    RELEASED:'COMMON-FORM.RELEASED'
+
   }
 
 
@@ -287,6 +293,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   repairCodeCvList: CodeValuesItem[] = [];
   chunkedRepairCodeCvList: any[][] = [];
   unitTypeCvList: CodeValuesItem[] = [];
+  yardCvList: CodeValuesItem[] = [];
 
   scale = 2.5;
   imageQuality = 0.7;
@@ -323,18 +330,20 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.report_customer_tank_activity = data.report_customer_tank_activity;
-    this.invType = data.type;
+  
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-    this.getCodeValuesData();
+    
   }
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+    await this.getCodeValuesData();
+    this.report_customer_tank_activity = this.data.report_customer_tank_activity;
+    this.invType = this.data.type;
   }
 
   async getImageBase64(url: string): Promise<string> {
@@ -351,7 +360,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   async getCodeValuesData(): Promise<void> {
     const queries = [
-      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+      { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'TankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -393,13 +402,16 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         }
 
       }),
+      firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
+        this.yardCvList = data || [];
+      }),
       firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
         this.yesnoCvList = data || [];
       }),
       firstValueFrom(this.cvDS.connectAlias('TankStatusCv')).then(data => {
         this.TankStatusCvList = data || [];
       }),
-      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
+      firstValueFrom(this.cvDS.connectAlias('purposeOptionCv')).then(data => {
         this.purposeOptionCvList = data || [];
       }),
       firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
@@ -543,26 +555,66 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
         // Check if the card fits on the current page
         if (currentY + imgHeight > maxContentHeight) {
-            // Add page number to the current page before creating a new one
-            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
+            // Calculate remaining space on the current page
+            const remainingHeight = maxContentHeight - currentY;
 
-            // Add a new page
-            pdf.addPage();
-            pageNumber++;
-            totalPages++;
+            if (remainingHeight > 0) {
+                // Split the card into two parts
+                const splitRatio = remainingHeight / imgHeight;
+                const splitCanvas = await this.splitCanvas(canvas, splitRatio);
 
-            // Reset Y position for the new page
-            currentY = topMargin;
+                // Add the first part to the current page
+                const splitImgData = splitCanvas.toDataURL('image/jpeg', this.imageQuality);
+                pdf.addImage(splitImgData, 'JPEG', leftMargin, currentY, contentWidth, remainingHeight);
 
-            // Add the report title and underline to the new page
-            this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                // Add page number to the current page before creating a new one
+                pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
+
+                // Add a new page
+                pdf.addPage();
+                pageNumber++;
+                totalPages++;
+
+                // Reset Y position for the new page
+                currentY = topMargin;
+
+                // Add the report title and underline to the new page
+                this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+
+                // Add the remaining part of the card to the new page
+                const remainingImgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+                const remainingImgHeight = imgHeight - remainingHeight;
+                pdf.addImage(remainingImgData, 'JPEG', leftMargin, currentY, contentWidth, remainingImgHeight);
+
+                // Update the Y position for the next card
+                currentY += remainingImgHeight + 10; // Add a small gap between cards
+            } else {
+                // If no space is left, just add a new page
+                pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
+
+                pdf.addPage();
+                pageNumber++;
+                totalPages++;
+
+                // Reset Y position for the new page
+                currentY = topMargin;
+
+                // Add the report title and underline to the new page
+                this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+
+                // Add the full card to the new page
+                pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+
+                // Update the Y position for the next card
+                currentY += imgHeight + 10; // Add a small gap between cards
+            }
+        } else {
+            // Add the card image to the PDF
+            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+
+            // Update the Y position for the next card
+            currentY += imgHeight + 10; // Add a small gap between cards
         }
-
-        // Add the card image to the PDF
-        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-
-        // Update the Y position for the next card
-        currentY += imgHeight + 10; // Add a small gap between cards
 
         // Update progress
         this.generatingPdfProgress += progressValue;
@@ -581,6 +633,22 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
+}
+
+// Helper function to split a canvas into two parts
+async splitCanvas(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTMLCanvasElement> {
+    const splitHeight = canvas.height * splitRatio;
+
+    const splitCanvas = document.createElement('canvas');
+    splitCanvas.width = canvas.width;
+    splitCanvas.height = splitHeight;
+
+    const ctx = splitCanvas.getContext('2d');
+    if (ctx) {
+        ctx.drawImage(canvas, 0, 0, canvas.width, splitHeight, 0, 0, canvas.width, splitHeight);
+    }
+
+    return splitCanvas;
 }
 
 // Helper function to add the header (title and underline) to a page
@@ -725,7 +793,8 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
 
   DisplayTakeInRef(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
-    return sot.in_gate?.[0]?.in_gate_survey?.take_in_reference || '';
+    //return sot.in_gate?.[0]?.in_gate_survey?.take_in_reference || '';
+    return sot.job_no||'';
 
 
   }
@@ -752,13 +821,13 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
 
   DisplayEstimateDate(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
-    return Utility.convertEpochToDateStr(sot.repair?.[0]?.create_dt!)!;;
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.create_dt!)!;
   }
 
 
   DisplayApprovalDate(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
-    return Utility.convertEpochToDateStr(sot.repair?.[0]?.approve_dt!)!;;
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.approve_dt!)!;
 
 
   }
@@ -770,21 +839,101 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
 
   DisplayAVDate(sot: StoringOrderTankItem): string {
 
-    return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;;
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;
+  }
+
+  DisplayYard(sot: StoringOrderTankItem): string {
+     var yard='';
+     this.removeDeletedInGateAndOutGate(sot);
+     yard = sot.in_gate?.[0]?.yard_cv||'';
+     if(sot.transfer?.length!>0)
+     {
+      yard = sot.transfer?.[0]?.location_to_cv||'';
+     }
+     yard = this.cvDS.getCodeDescription(yard, this.yardCvList) || '';
+    return yard;
   }
 
   DisplayLastTest(sot: StoringOrderTankItem): string {
     var lastTest: string = '';
     this.removeDeletedInGateAndOutGate(sot);
-    if (this.queryType == 1) {
-      lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+
+    if (sot.in_gate?.length) {
+      var last_test_dt :Date = new Date();
+      if(sot.in_gate?.[0]?.in_gate_survey?.test_dt)
+      {
+        last_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date||new Date();
+      }
+      
+      lastTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+      lastTest += ` ${Utility.convertDateToStr(last_test_dt)}`;
+      if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
+      {
+        lastTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
+      }
+    //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+  }
+
+  if (sot.out_gate?.length) {
+    var last_test_dt :Date = new Date();
+    if(sot.out_gate?.[0]?.out_gate_survey?.test_dt)
+    {
+      last_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date||new Date();
     }
-    else {
-      lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
-    }
+    
+    lastTest = sot.out_gate?.[0]?.out_gate_survey?.test_class_cv||"";
+    lastTest += ` ${Utility.convertDateToStr(last_test_dt)}`;
+    if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
+      {
+         lastTest +=` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
+      }
+  }
+    // if (this.queryType == 1) {
+    //   //lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+    // }
+    // else {
+    //   lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+    // }
     return lastTest;
   }
 
+  DisplayNextTest(sot: StoringOrderTankItem): string {
+    var nextTest: string = '';
+    var yearsToAdd=2.5;
+    var next_test_dt :Date = new Date();
+    this.removeDeletedInGateAndOutGate(sot);
+    if (sot.in_gate?.length) {
+        
+        if(sot.in_gate?.[0]?.in_gate_survey?.test_dt)
+        {
+          next_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date||new Date();
+        }
+        
+        next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
+        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+        nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
+        if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
+          {
+        nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;
+          }
+      //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+    }
+
+    if (sot.out_gate?.length) {
+        if(sot.out_gate?.[0]?.out_gate_survey?.test_dt)
+        {
+          next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date||new Date();
+        }
+        next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
+        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+        nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
+        if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
+          {
+        nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;
+          }
+    }
+    return nextTest;
+  }
 
   DisplayPostInsp(sot: StoringOrderTankItem): string {
 
@@ -812,23 +961,26 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
     return `${repCustomer.code}(${repCustomer.customer})`
   }
 
-  DisplayNextTest(sot: StoringOrderTankItem): string {
-    var nextTest: string = '';
-    this.removeDeletedInGateAndOutGate(sot);
-    if (sot.in_gate?.length) {
-      nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    }
-
-    if (sot.out_gate?.length) {
-      nextTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    }
-    return nextTest;
-  }
-
+ 
   DisplayCleanCertDate(sot: StoringOrderTankItem): string {
-    return '';
+    var cleanCertDT='';
+    if(sot.survey_detail?.length!>0)
+    {
+      cleanCertDT=Utility.convertEpochToDateStr(sot.survey_detail?.[0]?.survey_dt!)!
+    }
+    return cleanCertDT;
   }
   DisplayReleaseBooking(sot: StoringOrderTankItem): string {
     return Utility.convertEpochToDateStr(sot.release_order_sot?.[0]?.release_order?.release_dt!)!;
+  }
+
+  DisplayRepairEstimateNo(rp:RepairItem)
+  {
+      return rp.estimate_no||'';
+  }
+
+  DisplayRepairEstimateDate(rp:RepairItem)
+  {
+    return Utility.convertEpochToDateStr(rp?.create_dt!)||'';
   }
 }

@@ -41,7 +41,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/charts/yard-chart-pdf.component';
 import { YardDetailInventoryPdfComponent } from 'app/document-template/pdf/status/yard/details/yard-detail-pdf.component';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/status/yard/summary-pdf/yard-summary-pdf.component';
+import { YardStatusDetailSummaryPdfComponent } from 'app/document-template/pdf/status/yard/summary-pdf/yard-summary-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -188,7 +188,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   billingParty: string = "CUSTOMER";
 
   pageIndex = 0;
-  pageSize = 100;
+  pageSize = 5000;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
@@ -268,7 +268,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
           // if(!this.customerCodeControl.invalid)
@@ -823,6 +823,15 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
           case "IN_SURVEY":
             yard.noTank_in_survey! += 1;
             break;
+          case "RO_GENERATED":
+              yard.noTank_withRO! += 1;
+              break;
+          default:
+            if(s.status_cv=="WAITING")
+            {
+              yard.noTank_pending! += 1;
+            }
+            break;
         }
         yard.storing_order_tank?.push(s);
         if (newYard) repCust.yards?.push(yard);
@@ -885,12 +894,12 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
+    const dialogRef = this.dialog.open(YardStatusDetailSummaryPdfComponent, {
       width: '85vw',
-      maxWidth:'600px',
+      maxWidth:'1200px',
       maxHeight: '85vh',
       data: {
-        report_customer_tank_activity: repStatus,
+        report_summary_detail: repStatus,
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

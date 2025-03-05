@@ -85,15 +85,15 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    'customer_code',
-    'customer_name',
-    'profile',
-    'preinspection_cost',
-    'lolo_cost',
-    'gate_surcharge_cost',
-    'storage_cost',
-    'free_days',
-    'last_update_dt',
+    //'customer_code',
+    'fName',
+    'lName',
+    'mobile',
+    'gender',
+    'email',
+    'actions',
+    // 'free_days',
+    // 'last_update_dt',
   ];
 
   customerCodeControl = new UntypedFormControl();

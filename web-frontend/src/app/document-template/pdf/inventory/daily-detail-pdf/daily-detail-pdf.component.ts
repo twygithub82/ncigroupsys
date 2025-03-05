@@ -799,17 +799,85 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
     return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;;
   }
 
-  
   DisplayLastTest(sot: StoringOrderTankItem): string {
     var lastTest: string = '';
     this.removeDeletedInGateAndOutGate(sot);
-    if (this.queryType == 1) {
-      lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+
+    if (sot.in_gate?.length) {
+      var last_test_dt :Date = new Date();
+      if(sot.in_gate?.[0]?.in_gate_survey?.test_dt)
+      {
+        last_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date||new Date();
+      }
+      
+      lastTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+      lastTest += ` ${Utility.convertDateToStr(last_test_dt)}`;
+      if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
+      {
+        lastTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
+      }
+    //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+  }
+
+  if (sot.out_gate?.length) {
+    var last_test_dt :Date = new Date();
+    if(sot.out_gate?.[0]?.out_gate_survey?.test_dt)
+    {
+      last_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date||new Date();
     }
-    else {
-      lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
-    }
+    
+    lastTest = sot.out_gate?.[0]?.out_gate_survey?.test_class_cv||"";
+    lastTest += ` ${Utility.convertDateToStr(last_test_dt)}`;
+    if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
+      {
+         lastTest +=` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
+      }
+  }
+    // if (this.queryType == 1) {
+    //   //lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+    // }
+    // else {
+    //   lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+    // }
     return lastTest;
+  }
+
+  DisplayNextTest(sot: StoringOrderTankItem): string {
+    var nextTest: string = '';
+    var yearsToAdd=2.5;
+    var next_test_dt :Date = new Date();
+    this.removeDeletedInGateAndOutGate(sot);
+    if (sot.in_gate?.length) {
+        
+        if(sot.in_gate?.[0]?.in_gate_survey?.test_dt)
+        {
+          next_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date||new Date();
+        }
+        
+        next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
+        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+        nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
+        if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
+          {
+        nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;
+          }
+      //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+    }
+
+    if (sot.out_gate?.length) {
+        if(sot.out_gate?.[0]?.out_gate_survey?.test_dt)
+        {
+          next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date||new Date();
+        }
+        next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
+        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+        nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
+        if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
+          {
+        nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;
+          }
+    }
+    return nextTest;
   }
 
 
@@ -848,18 +916,7 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
     return `${sot.customer_company?.code}`
   }
 
-  DisplayNextTest(sot: StoringOrderTankItem): string {
-    var nextTest: string = '';
-    this.removeDeletedInGateAndOutGate(sot);
-    if (sot.in_gate?.length) {
-      nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    }
-
-    if (sot.out_gate?.length) {
-      nextTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    }
-    return nextTest;
-  }
+  
 
   DisplayReleaseBooking(sot: StoringOrderTankItem): string {
     return Utility.convertEpochToDateStr(sot.release_order_sot?.[0]?.release_order?.release_dt!)!;

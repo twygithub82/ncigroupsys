@@ -294,7 +294,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
           // if (!this.customerCodeControl.invalid) {

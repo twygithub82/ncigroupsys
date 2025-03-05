@@ -268,13 +268,13 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
           if (!this.customerCodeControl.invalid) {
             if (this.customerCodeControl.value?.guid) {
               let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+              this.ccDS.search({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
                 this.branch_companyList = data;
                 this.updateValidators(this.branchCodeControl, this.branch_companyList);
               });
@@ -375,6 +375,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
 
     where.tank_status_cv = { neq: "RELEASED" };
+    
     if (this.searchForm?.get('customer_code')?.value) {
       var cond: any =  { customer_company_guid:{eq:this.searchForm!.get('customer_code')?.value?.guid } };
      
@@ -410,7 +411,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
     if (this.searchForm?.get('tank_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.tank_no = { eq: this.searchForm?.get('tank_no')?.value.code };
+      where.tank_no = { eq: this.searchForm?.get('tank_no')?.value };
       cond_counter++;
     }
 

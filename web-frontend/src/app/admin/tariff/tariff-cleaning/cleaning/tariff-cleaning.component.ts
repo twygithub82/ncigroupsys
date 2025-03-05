@@ -250,54 +250,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     });
   }
-  async cancelItem(row: TariffCleaningItem) {
-    // this.id = row.id;
-   
-     var cargoAssigned:boolean = await this.TariffCleaningAssigned(row.guid!);
-     if(cargoAssigned)
-     {
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          width: '500px',
-          data: {
-            headerText: this.translatedLangText.WARNING,
-            messageText:[this.translatedLangText.TARIFF_CARGO_ASSIGNED,this.translatedLangText.ARE_U_SURE_DELETE],
-            act: "warn"
-          },
-          direction: tempDirection
-        });
-      dialogRef.afterClosed().subscribe(result=>{
-       
-        if(result.action=="confirmed")
-        {
-          this.deleteTariffCleaningAndPackageCleaning(row.guid!);
-        }
-
-      });
-     }
-     else
-     {
-        this.deleteTariffCleaningAndPackageCleaning(row.guid!);
-     }
-
-  }
-
-  deleteTariffCleaningAndPackageCleaning(tariffCleaningGuid:string)
-  {
-     
-     this.tcDS.deleteTariffCleaning([tariffCleaningGuid]).subscribe(d=>{
-        let count =d.data.deleteTariffClean;
-        if(count>0)
-        {
-            this.handleSaveSuccess(count);
-        }
-     });
-  }
+  
 
 
 
@@ -717,6 +670,56 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
+
+  async cancelItem(row: TariffCleaningItem) {
+    // this.id = row.id;
+   
+     var cargoAssigned:boolean = await this.TariffCleaningAssigned(row.guid!);
+     if(cargoAssigned)
+     {
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          width: '500px',
+          data: {
+            headerText: this.translatedLangText.WARNING,
+            messageText:[this.translatedLangText.TARIFF_CARGO_ASSIGNED,this.translatedLangText.ARE_U_SURE_DELETE],
+            act: "warn"
+          },
+          direction: tempDirection
+        });
+      dialogRef.afterClosed().subscribe(result=>{
+       
+        if(result.action=="confirmed")
+        {
+          this.deleteTariffCleaningAndPackageCleaning(row.guid!);
+        }
+
+      });
+     }
+     else
+     {
+        this.deleteTariffCleaningAndPackageCleaning(row.guid!);
+     }
+
+  }
+
+  deleteTariffCleaningAndPackageCleaning(tariffCleaningGuid:string)
+  {
+     
+     this.tcDS.deleteTariffCleaning([tariffCleaningGuid]).subscribe(d=>{
+        let count =d.data.deleteTariffClean;
+        if(count>0)
+        {
+            this.handleSaveSuccess(count);
+        }
+     });
+  }
+  
   async TariffCleaningAssigned(tariffCleaningGuid: string): Promise<boolean> {
       let retval: boolean = false;
       var where: any = {};

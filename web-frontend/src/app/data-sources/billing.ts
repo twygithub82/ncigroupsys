@@ -312,14 +312,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                   eir_status_cv
                   guid
                 }
-                out_gate(where: { delete_dt: { eq: null } }) {
-                  delete_dt
-                  driver_name
-                  eir_dt
-                  eir_no
-                  eir_status_cv
-                  guid
-                }
+              
               }
           }
          gateio_billing_sot {
@@ -339,6 +332,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 job_no
                 tank_no
                 tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
               }
           }
           lolo_billing_sot {
@@ -359,6 +360,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 job_no
                 tank_no
                 tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
               }
           }
         preinsp_billing_sot {
@@ -370,7 +379,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
           preinspection_cost
           sot_guid
           tariff_depot_guid
-          storing_order_tank {
+           storing_order_tank {
                 estimate_cv
                 eta_dt
                 etr_dt
@@ -378,6 +387,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 job_no
                 tank_no
                 tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
               }
         }
          cleaning {
@@ -395,6 +412,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 job_no
                 tank_no
                 tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
               }
           }
           repair_customer {
@@ -413,6 +438,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 job_no
                 tank_no
                 tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
               }
               repair_part {
                 approve_cost
@@ -464,6 +497,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 job_no
                 tank_no
                 tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
               }
          residue_part {
             approve_part
@@ -485,7 +526,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
             delete_dt
             guid
             owner_billing_guid
-            storing_order_tank {
+             storing_order_tank {
                 estimate_cv
                 eta_dt
                 etr_dt
@@ -493,6 +534,14 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 job_no
                 tank_no
                 tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
               }
             steaming_part {
               approve_cost

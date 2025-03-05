@@ -2772,6 +2772,7 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
             next_test_cv
             tare_weight
             test_dt
+            test_class_cv
             walkway_cv
             capacity
             take_in_reference
@@ -2787,12 +2788,45 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
             inspection_dt
             last_test_cv
             next_test_cv
+            test_class_cv
             tare_weight
             test_dt
             walkway_cv
             capacity
             take_in_reference
           }
+        }
+        survey_detail(where: { survey_type_cv: { eq: "CLEAN_CERT" } }) {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          remarks
+          sot_guid
+          status_cv
+          survey_dt
+          survey_type_cv
+          test_class_cv
+          test_type_cv
+          update_by
+          update_dt
+        }
+        transfer(where: { delete_dt: { eq: null } }, order: { transfer_out_dt: DESC }) {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          guid
+          haulier
+          location_from_cv
+          location_to_cv
+          remarks
+          sot_guid
+          transfer_in_dt
+          transfer_out_dt
+          update_by
+          update_dt
+          vehicle_no
         }
       }
       pageInfo {
@@ -2977,6 +3011,7 @@ const GET_STORING_ORDER_FOR_INVENTORY = gql`
          approve_dt
          complete_dt
          estimate_no
+         status_cv
          create_dt
          delete_dt
         }
@@ -3039,6 +3074,7 @@ const GET_STORING_ORDER_FOR_INVENTORY = gql`
             inspection_dt
             last_test_cv
             next_test_cv
+            test_class_cv
             tare_weight
             test_dt
             walkway_cv
@@ -3056,6 +3092,7 @@ const GET_STORING_ORDER_FOR_INVENTORY = gql`
             inspection_dt
             last_test_cv
             next_test_cv
+            test_class_cv
             tare_weight
             test_dt
             walkway_cv

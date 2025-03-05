@@ -3,7 +3,7 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <mat-accordion>
-            <mat-expansion-panel>
+            <mat-expansion-panel expanded="true">
                <mat-expansion-panel-header>
                 <mat-panel-title>
                 </mat-panel-title>
@@ -20,7 +20,7 @@
                     </button>
                   </div>
                   <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                    <button mat-mini-fab color="primary"   class="m-l-5" (click)="export_report()" [disabled]="(billDS.actionLoading$| async)">
+                    <button mat-mini-fab color="primary"   class="m-l-5" (click)="export_report()" (click)="$event.stopPropagation()" [disabled]="(billDS.actionLoading$| async)">
                       <mat-icon>insert_drive_file</mat-icon>
                     </button>
                   </div>
@@ -32,13 +32,13 @@
               </mat-expansion-panel-header> 
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                 <div class="row">
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                       <input matInput formControlName="tank_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                       <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -52,7 +52,7 @@
                       </mat-autocomplete>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
                       <input matInput formControlName="branch_code" [formControl]="branchCodeControl"
@@ -66,13 +66,13 @@
                       </mat-autocomplete>
                     </mat-form-field>
                   </div>
-                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                       <input matInput formControlName="eir_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt">
@@ -80,7 +80,7 @@
                       <mat-datepicker #eir_picker></mat-datepicker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
                       <input matInput [matDatepicker]="release_picker" placeholder="Select date" formControlName="release_dt">
@@ -88,18 +88,23 @@
                       <mat-datepicker #release_picker></mat-datepicker>
                     </mat-form-field>
                   </div>
-                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="inv_picker">
-                        <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
-                        <input matEndDate placeholder="End date" formControlName="inv_dt_end">
+                      <mat-date-range-input [rangePicker]="inv_picker" required>
+                        <input matStartDate placeholder="Start date" formControlName="inv_dt_start" required>
+                        <input matEndDate placeholder="End date" formControlName="inv_dt_end" required>
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="inv_picker"></mat-datepicker-toggle>
                       <mat-date-range-picker #inv_picker></mat-date-range-picker>
+                      @if (searchForm?.get('inv_dt_start')?.hasError('required') ||searchForm?.get('inv_dt_end')?.hasError('required')) {
+                        <mat-error>
+                          {{translatedLangText.INVOICE_DATE }} {{translatedLangText.IS_REQUIRED}}
+                        </mat-error>
+                        }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
                       <input matInput formControlName="invoice_no">
@@ -124,7 +129,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
                       <mat-select formControlName="depot_status_cv">
@@ -136,7 +141,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-0">
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.BILLING_CURRENCY }}</mat-label>
                        <mat-select  formControlName="currency" >
@@ -149,8 +154,8 @@
                     </mat-form-field>
                   </div>
                  
-                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
-                    <button mat-mini-fab color="primary"  (click)="search()">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                    <button mat-mini-fab color="primary"  (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
                     <!-- <button mat-mini-fab color="primary"   class="m-l-5" (click)="search(2)" [disabled]="(billDS.actionLoading$| async)">

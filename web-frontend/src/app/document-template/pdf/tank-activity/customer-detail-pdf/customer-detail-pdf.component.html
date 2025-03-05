@@ -4,18 +4,21 @@
 <div #pdfTable id="pdfTable" mat-dialog-content>
   <div id="pdf-form-body" class="pdf-container pdf-body">
     @for (bCust of report_customer_tank_activity; track bCust) {
+    
+    @if(bCust.in_yard_storing_order_tank?.length!>0)
+    {
     <div class="card">
       <div class="pdf-body">
         <table id="table_customer_info" class="table_customer_info">
           <tr>
-            <td>{{translatedLangText.CUSTOMER}} :</td>
-            <td>{{this.DisplayCustomerName(bCust)}}</td>
+            <td>{{translatedLangText.CUSTOMER}} : {{this.DisplayCustomerName(bCust)}}</td>
+            <!-- <td>{{this.DisplayCustomerName(bCust)}}</td> -->
           </tr>
           <tr>
-            <td>{{translatedLangText.TANK_STATUS}} :</td>
-            <td>{{this.invType}}</td>
-            <td class="sp"> {{translatedLangText.DATE}} :</td>
-            <td>{{GeneratedDate()}}</td>
+            <td>{{translatedLangText.TANK_STATUS}} : {{translatedLangText.IN_YARD}}</td>
+            <!-- <td>{{translatedLangText.IN_YARD}}</td> -->
+            <!-- <td class="sp"> {{translatedLangText.DATE}} :</td>
+            <td>{{GeneratedDate()}}</td> -->
           </tr>
         </table>
       </div>
@@ -36,13 +39,16 @@
           <th class="th-w6">{{translatedLangText.AV_DATE}}</th>
           <th class="th-w8">{{translatedLangText.LAST_TEST}}</th>
           <th class="th-w8">{{translatedLangText.NEXT_TEST}}</th>
+          <th class="th-w8">{{translatedLangText.CLEAN_CERT_DATE}}</th>
           <th class="th-w8">{{translatedLangText.RELEASE_BOOKING}}</th>
           <th class="th-w6">{{translatedLangText.RELEASE_DATE}}</th>
           <th class="th-w7">{{translatedLangText.RELEASE_REFERENCE}}</th>
           <th class="th-w8">{{translatedLangText.CURRENT_STATUS}}</th>
           <th class="th-w8">{{translatedLangText.REMARKS}}</th>
+          <th class="th-w8">{{translatedLangText.PURPOSE}}</th>
+          <th class="th-w8">{{translatedLangText.YARD}}</th>
         </tr>
-        @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
+        @for (itm of bCust.in_yard_storing_order_tank; track itm;let index = $index) {
         <tr class="fixed_height_40px">
           <td>{{ index + 1 }}</td> <!-- Row number -->
           <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
@@ -59,31 +65,155 @@
           <td>{{ DisplayAVDate(itm) }}</td>
           <td><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
           <td><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
-          <!-- <td>{{ DisplayCleanCertDate(itm) }}</td> -->
+          <td>{{ DisplayCleanCertDate(itm) }}</td>
           <td><span class="overflow-text">{{ DisplayReleaseBooking(itm) }}</span></td>
           <td>{{ DisplayReleaseDate(itm) }}</td>
           <td>{{ DisplayReleaseRef(itm) }}</td>
           <td>{{ DisplayCurrentStatus(itm) }}</td>
           <td><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
-          <!-- <td>{{ itm.last_cargo }}</td> 
-            <td>{{ itm.in_date }}</td> 
-            <td>{{ itm.out_date }}</td> 
-            <td>{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
-            <td>{{ (itm.repair_cost==="0.00"?'':itm.repair_cost) }}</td> 
-            <td>{{ (itm.preins_cost==="0.00"?'':itm.preins_cost) }}</td> 
-            <td>{{ (itm.lolo_cost==="0.00"?'':itm.lolo_cost) }}</td> 
-            <td>{{ itm.days }}</td> 
-            <td>{{ (itm.storage_cost==="0.00"?'':itm.storage_cost)}}</td> 
-            <td>{{ (itm.steam_cost==="0.00"?'':itm.steam_cost)}}</td> 
-            <td>{{ (itm.residue_cost==="0.00"?'':itm.residue_cost)}}</td> 
-            <td>{{ (itm.gateio_cost==="0.00"?'':itm.gateio_cost)}}</td> 
-            <td>{{ (itm.total==="0.00"?'':itm.total) }}</td>  -->
+          <td><span class="overflow-text">{{ displayTankPurpose(itm) }}</span></td>
+          <td><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
         </tr>
+            @for(rp of itm.repair; track rp;let idx = $index)
+            {
+               @if(idx>0)
+               {
+                <tr class="fixed_height_40px">
+                  <td>&nbsp;</td> <!-- Row number -->
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td><span class="overflow-text">{{ DisplayRepairEstimateNo(rp) }}</span></td>
+                  <td>{{ DisplayRepairEstimateDate(rp)}}</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>{{ DisplayCurrentStatus(itm) }}</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
+                </tr>
+                }
+              }
         }
       </table>
-
     </div>
     }
+    @if(bCust.released_storing_order_tank?.length!>0)
+    {
+    <div class="card">
+      <div class="pdf-body">
+        <table id="table_customer_info" class="table_customer_info">
+          <tr>
+            <td>{{translatedLangText.CUSTOMER}} : {{this.DisplayCustomerName(bCust)}}</td>
+            <!-- <td>{{this.DisplayCustomerName(bCust)}}</td> -->
+          </tr>
+          <tr>
+            <td>{{translatedLangText.TANK_STATUS}} : {{translatedLangText.RELEASED}}</td>
+            <!-- <td>{{translatedLangText.RELEASED}}</td> -->
+            <!-- <td class="sp"> {{translatedLangText.DATE}} :</td>
+            <td>{{GeneratedDate()}}</td> -->
+          </tr>
+        </table>
+      </div>
+      <table id="repair-part-table" class="repair-part-table">
+        <tr class="group-header">
+          <th class="th-w3">{{translatedLangText.NO}}</th>
+          <th class="th-w8">{{translatedLangText.TANK_NO}}</th>
+          <th class="th-w6">{{translatedLangText.IN_DATE}}</th>
+          <th class="th-w8">{{translatedLangText.TAKE_IN_REFERENCE}}</th>
+          <th class="th-w6">{{translatedLangText.CAPACITY}}</th>
+          <th class="th-w8">{{translatedLangText.TARE_WEIGHT}}</th>
+          <th class="th-w12">{{translatedLangText.LAST_CARGO}}</th>
+          <th class="th-w7">{{translatedLangText.CLEAN_DATE}}</th>
+          <th class="th-w7">{{translatedLangText.ESTIMATE_NO}}</th>
+          <th class="th-w6">{{translatedLangText.ESTIMATE_DATE}}</th>
+          <th class="th-w7">{{translatedLangText.APPROVAL_DATE}}</th>
+          <th class="th-w7">{{translatedLangText.APPROVAL_REFERENCE}}</th>
+          <th class="th-w6">{{translatedLangText.AV_DATE}}</th>
+          <th class="th-w8">{{translatedLangText.LAST_TEST}}</th>
+          <th class="th-w8">{{translatedLangText.NEXT_TEST}}</th>
+          <th class="th-w8">{{translatedLangText.CLEAN_CERT_DATE}}</th>
+          <th class="th-w8">{{translatedLangText.RELEASE_BOOKING}}</th>
+          <th class="th-w6">{{translatedLangText.RELEASE_DATE}}</th>
+          <th class="th-w7">{{translatedLangText.RELEASE_REFERENCE}}</th>
+          <th class="th-w8">{{translatedLangText.CURRENT_STATUS}}</th>
+          <th class="th-w8">{{translatedLangText.REMARKS}}</th>
+          <th class="th-w8">{{translatedLangText.PURPOSE}}</th>
+          <th class="th-w8">{{translatedLangText.YARD}}</th>
+        </tr>
+        @for (itm of bCust.released_storing_order_tank; track itm;let index = $index) {
+        <tr class="fixed_height_40px">
+          <td>{{ index + 1 }}</td> <!-- Row number -->
+          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td>{{ DisplayInDate(itm) }}</td>
+          <td><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
+          <td><span class="overflow-text">{{ DisplayCapacity(itm) }}</span></td>
+          <td><span class="overflow-text">{{ DisplayTareWeight(itm) }}</span></td>
+          <td><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td>
+          <td>{{ DisplayCleanDate(itm) }}</td>
+          <td><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
+          <td>{{ DisplayEstimateDate(itm) }}</td>
+          <td>{{ DisplayApprovalDate(itm) }}</td>
+          <td><span class="overflow-text">{{ DisplayApprovalRef(itm) }}</span></td>
+          <td>{{ DisplayAVDate(itm) }}</td>
+          <td><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
+          <td><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
+          <td>{{ DisplayCleanCertDate(itm) }}</td>
+          <td><span class="overflow-text">{{ DisplayReleaseBooking(itm) }}</span></td>
+          <td>{{ DisplayReleaseDate(itm) }}</td>
+          <td>{{ DisplayReleaseRef(itm) }}</td>
+          <td>{{ DisplayCurrentStatus(itm) }}</td>
+          <td><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
+          <td><span class="overflow-text">{{ displayTankPurpose(itm) }}</span></td>
+          <td><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
+        </tr>
+        @for(rp of itm.repair; track rp;let idx = $index)
+            {
+               @if(idx>0)
+               {
+                <tr class="fixed_height_40px">
+                  <td>&nbsp;</td> <!-- Row number -->
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td><span class="overflow-text">{{ DisplayRepairEstimateNo(rp) }}</span></td>
+                  <td>{{ DisplayRepairEstimateDate(rp) }}</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
+                </tr>
+                }
+              }
+        }
+      </table>
+    </div>
+    }
+  }
   </div>
 </div>
 <div mat-dialog-actions class="m-2 align-right">

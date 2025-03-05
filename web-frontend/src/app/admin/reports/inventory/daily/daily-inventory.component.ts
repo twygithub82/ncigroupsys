@@ -276,13 +276,13 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
           if (!this.customerCodeControl.invalid) {
             if (this.customerCodeControl.value?.guid) {
               let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+              this.ccDS.search({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
                 this.branch_companyList = data;
                 this.updateValidators(this.branchCodeControl, this.branch_companyList);
               });
@@ -685,6 +685,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     this.sotList.map(s => {
 
       if (s) {
+        s.repair=s.repair?.filter(r=>!["NO_ACTION","CANCEL"].includes(r.status_cv!));
         var repCust: report_customer_inventory = report_customer_tank_inventory.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_inventory();
        
         //var repYard: report_inventory_yard= report_yard_inventory.find(y=>y.code===s.storing_order?.)

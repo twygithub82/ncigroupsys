@@ -41,6 +41,8 @@ export class report_customer_tank_activity{
   code?:string;
   customer?:string;
   number_tank?:number=0;
+  in_yard_storing_order_tank?:StoringOrderTankItem[];
+  released_storing_order_tank?:StoringOrderTankItem[];
   storing_order_tank?:StoringOrderTankItem[];
 
   constructor(item: Partial<report_customer_tank_activity> = {}) {
@@ -50,9 +52,12 @@ export class report_customer_tank_activity{
     this.customer=item.customer;
     this.code=item.code;
     this.number_tank=item.number_tank;
+    this.in_yard_storing_order_tank=item.in_yard_storing_order_tank;
+    this.released_storing_order_tank=item.released_storing_order_tank;
     this.storing_order_tank=item.storing_order_tank;
   }
 }
+
 
 export class report_status{
   guid?:string;
@@ -99,6 +104,8 @@ export class report_status_yard{
     noTank_storage?:number=0;
     noTank_steam?:number=0;
     noTank_in_survey?:number=0;
+    noTank_pending?:number=0;
+    noTank_withRO?:number=0;
     storing_order_tank?:StoringOrderTankItem[];
 
     constructor(item: Partial<report_status_yard> = {}) {
@@ -111,6 +118,8 @@ export class report_status_yard{
       this.noTank_steam=Number(item.noTank_steam||0);
       this.storing_order_tank=item.storing_order_tank;
       this.noTank_in_survey=Number(item.noTank_in_survey||0);
+      this.noTank_pending=Number(item.noTank_pending||0);
+      this.noTank_withRO=Number(item.noTank_withRO||0);
     }
 
 

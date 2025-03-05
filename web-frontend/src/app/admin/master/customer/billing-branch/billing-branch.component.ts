@@ -45,6 +45,7 @@ import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 @Component({
@@ -76,6 +77,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatProgressBarModule
   ]
 
 })

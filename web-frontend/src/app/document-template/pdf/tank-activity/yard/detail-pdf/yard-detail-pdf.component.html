@@ -48,6 +48,7 @@
           <th class="th-w7">{{translatedLangText.RELEASE_REFERENCE}}</th>
           <th class="th-w8">{{translatedLangText.CURRENT_STATUS}}</th>
           <th class="th-w8">{{translatedLangText.REMARKS}}</th>
+          <th class="th-w8">{{translatedLangText.PURPOSE}}</th>
         </tr>
         @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
           <tr class="fixed_height_40px">
@@ -69,7 +70,7 @@
             <td>{{ DisplayReleaseRef(itm) }}</td>
             <td>{{ DisplayCurrentStatus(itm) }}</td>
             <td><span class="overflow-text" matTooltip={{DisplayRemarks(itm)}}>{{ DisplayRemarks(itm) }}</span></td>
-           
+            <td>{{ displayTankPurpose(itm) }}</td>
           </tr>
         }
       </table>

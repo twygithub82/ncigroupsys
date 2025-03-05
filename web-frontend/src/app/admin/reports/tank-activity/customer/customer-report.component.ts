@@ -143,7 +143,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-
+    
   }
 
   invForm?: UntypedFormGroup;
@@ -183,7 +183,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   billingParty: string = "CUSTOMER";
 
   pageIndex = 0;
-  pageSize = 100;
+  pageSize = 1000;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
@@ -282,13 +282,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
           if (!this.customerCodeControl.invalid) {
             if (this.customerCodeControl.value?.guid) {
               let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+              this.ccDS.search({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
                 this.branch_companyList = data;
                 this.updateValidators(this.branchCodeControl, this.branch_companyList);
               });
@@ -405,6 +405,11 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     //    queryType=2;
     // }
 
+    if (this.searchForm!.get('tank_status_cv')?.value) {
+      where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
+      cond_counter++;
+    }
+
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       cond_counter++;
@@ -423,6 +428,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       cond_counter++;
     }
 
+
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
       where.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
@@ -438,13 +444,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         where.in_gate.some.and = [];
       }
 
-      if (!where.out_gate) {
-        where.out_gate = {};
-        where.out_gate.some = {};
-        where.out_gate.some.and = [];
-      }
+      // if (!where.out_gate) {
+      //   where.out_gate = {};
+      //   where.out_gate.some = {};
+      //   //where.out_gate.some.or = [];
+      // }
       where.in_gate.some.and.push(cond);
-      where.out_gate.some.and.push(cond);
+      //where.out_gate.some=cond;
       cond_counter++;
     }
 
@@ -468,7 +474,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
     if (this.searchForm!.get('av_dt_start')?.value && this.searchForm!.get('av_dt_end')?.value) {
 
-      var cond: any = { complete_dt: { gte: Utility.convertDate(this.searchForm!.value['av_dt_start']), lte: Utility.convertDate(this.searchForm!.value['av_dt_end'], true) } };
+      var startdt=new Date( this.searchForm!.value['av_dt_start']);
+      var enddt=new Date( this.searchForm!.value['av_dt_end']);
+        var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date());
+        var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
+        //var cond: any = { eir_dt:  { gte:start_dt, lte: end_dt } } ;
+       // var cond: any = { some: { complete_dt: { gte: start_dt, lte: end_dt } } };  
+      var cond: any = { complete_dt: { gte: start_dt, lte: end_dt } };
       if (!where.repair) where.repair = {};
       where.repair = { some: cond };
       cond_counter++;
@@ -477,7 +489,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
     var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
     if (this.searchForm!.get('release_dt_start')?.value && this.searchForm!.get('release_dt_end')?.value) {
-      var cond: any = { some: { release_order: { release_dt: { gte: Utility.convertDate(this.searchForm!.value['release_dt_start']), lte: Utility.convertDate(this.searchForm!.value['release_dt_end'], true) } } } };
+
+      var startdt=new Date( this.searchForm!.value['release_dt_start']);
+      var enddt=new Date( this.searchForm!.value['release_dt_end']);
+        var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date());
+        var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
+        var cond: any = { some: { release_order: { gte:start_dt, lte: end_dt } } };
+      // var cond: any = { some: { release_order: { release_dt: { gte: Utility.convertDate(this.searchForm!.value['release_dt_start']), lte: Utility.convertDate(this.searchForm!.value['release_dt_end'], true) } } } };
       date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('release_dt_end')?.value))}`;
       if (!where.release_order_sot) where.release_order_sot = {};
       where.release_order_sot = cond;
@@ -487,7 +505,14 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
 
     if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
-      var cond: any = { some: { complete_dt: { gte: Utility.convertDate(this.searchForm!.value['clean_dt_start']), lte: Utility.convertDate(this.searchForm!.value['clean_dt_end'], true) } } };
+
+      var startdt=new Date( this.searchForm!.value['clean_dt_start']);
+      var enddt=new Date( this.searchForm!.value['clean_dt_end']);
+        var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date());
+        var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
+        //var cond: any = { eir_dt:  { gte:start_dt, lte: end_dt } } ;
+        var cond: any = { some: { complete_dt: { gte: start_dt, lte: end_dt } } };  
+      //var cond: any = { some: { complete_dt: { gte: Utility.convertDate(this.searchForm!.value['clean_dt_start']), lte: Utility.convertDate(this.searchForm!.value['clean_dt_end'], true) } } };
       if (!where.cleaning) where.cleaning = {};
       where.cleaning = cond;
       cond_counter++;
@@ -502,17 +527,21 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         where.in_gate.some.and = [];
       }
 
-      if (!where.out_gate) {
-        where.out_gate = {};
-        where.out_gate.some = {};
-        where.out_gate.some.and = [];
-      }
-
+      // if (!where.out_gate) {
+      //   where.out_gate = {};
+      //   where.out_gate.some = {};
+      //   where.out_gate.some.and = [];
+      // }
+      var startdt=new Date( this.searchForm!.value['eir_dt_start']);
+      var enddt=new Date( this.searchForm!.value['eir_dt_end']);
+        var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date());
+        var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
+        var cond: any = { eir_dt:  { gte:start_dt, lte: end_dt } } ;
       //var cond :any ={eir_dt:{eq: Utility.convertDate(this.searchForm!.value['eir_dt'])}};
-      var cond: any = { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'], true) } };
+     // var cond: any = { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'], true) } };
 
       where.in_gate.some.and.push(cond);
-      where.out_gate.some.and.push(cond);
+      // where.out_gate.some.and.push(cond);
       cond_counter++;
 
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
@@ -700,159 +729,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     return numSelected === numRows;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  // masterToggle() {
-  //    this.isAllSelected()
-  //      ? this.selection.clear()
-  //      : this.stmEstList.forEach((row) =>
-  //          this.selection.select(row)
-  //        );
-  //   this.calculateTotalCost();
-  // }
-
-  // AllowToSave():boolean{
-  //   let retval:boolean=false;
-  //   if(this.selection.selected.length>0)
-  //   {
-  //       if(this.invoiceDateControl.valid && this.invoiceNoControl.valid)
-  //       {
-  //         return true;
-  //       }
-  //   }
-
-  //   return retval;
-  // }
-
-
-  //    handleSaveSuccess(count: any) {
-  //      if ((count ?? 0) > 0) {
-  //        let successMsg = this.langText.SAVE_SUCCESS;
-  //        this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-  //          successMsg = res;
-  //          ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-  //          //this.router.navigate(['/admin/master/estimate-template']);
-
-  //          // Navigate to the route and pass the JSON object
-
-  //        });
-  //      }
-  //    }
-
-
-  // onCancel(event:Event){
-  //   event.stopPropagation();
-  //   this.invoiceNoControl.reset('');
-  //   this.invoiceDateControl.reset('');
-  // }
-
-  // calculateTotalCost()
-  //   {
-  //   this.invoiceTotalCostControl.setValue('0.00');
-  //   const totalCost = this.selection.selected.reduce((accumulator, s) => {
-  //     // Add buffer_cost and cleaning_cost of the current item to the accumulator
-  //     //var cost:number = this.selectedEstimateLabourCost||0;
-  //     var itm:any = s;
-  //     return accumulator + itm.total_cost;
-  //     //return accumulator+ Number(stmItm.net_cost||0);
-  //   }, 0); // Initialize accumulator to 0
-  //   this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
-  // }
-  //  toggleRow(row:SteamItem)
-  //  {
-
-  //    this.selection.toggle(row);
-  //    this.SelectFirstItem();
-  //    this.calculateTotalCost();
-  //  }
-
-  //  SelectFirstItem()
-  //  {
-  //   if(!this.selection.selected.length)
-  //   {
-  //     this.selectedEstimateItem=undefined;
-  //   }
-  //   else if(this.selection.selected.length===1)
-  //   {
-  //     this.selectedEstimateItem=this.selection.selected[0];
-  //     if(this.selectedEstimateItem?.bill_to_guid)
-  //     {
-  //     this.getCustomerLabourPackage(this.selectedEstimateItem?.bill_to_guid!);
-
-  //     }
-  //   }
-  //  }
-  //  CheckBoxDisable(row:InGateCleaningItem)
-  //  {
-  //    if(this.selectedEstimateItem?.customer_company)
-  //    {
-  //    if(row.customer_company?.code!=this.selectedEstimateItem.customer_company?.code)
-  //    {
-  //     return true;
-  //    }
-  //   }
-  //    return false;
-  //  }
-
-  //  MasterCheckBoxDisable()
-  //  {
-  //    if(this.distinctCustomerCodes?.length)
-  //    {
-  //       return this.distinctCustomerCodes.length>1;
-  //    }
-
-  //    return false;
-  //  }
-
-
-  //  getTotalCost(row:any)
-  //  {
-
-  //   const customer_company_guid= row.storing_order_tank?.storing_order?.customer_company?.guid;
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: customer_company_guid } }
-  //     ]
-  //   };
-  //   this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-  //     if(data.length>0)
-  //     {
-  //       var cost:number =data[0].cost;
-  //       row.total_cost=(this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part,cost).total_mat_cost||0);
-  //       //this.calculateTotalCost();
-  //     }
-  //   });
-
-  //  }
-
-  //  getCustomerLabourPackage(custGuid: string){
-
-  //   const customer_company_guid= custGuid;
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: customer_company_guid } }
-  //     ]
-  //   };
-  //   this.plDS.getCustomerPackageCost(where).subscribe(data=>{
-  //     if(data.length>0)
-  //     {
-  //       this.selectedEstimateLabourCost =data[0].cost;
-  //       // this.stmEstList = this.stmEstList?.map(stm => {
-  //       //       var stm_part=[...stm.steaming_part!];
-  //       //       stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
-  //       //       return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
-  //       // });
-  //       this.calculateTotalCost();
-  //     }
-  //   });
-
-  // }
-
-  // calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): number {
-
-  //   const total = this.IsApproved(steam)?this.stmDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.stmDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
-  //     return total.total_mat_cost;
-
-  // }
+  
 
   IsApproved(steam: SteamItem) {
     const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
@@ -860,15 +737,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
   }
 
-  // checkInvoicedAndGetTotalCost()
-  // {
-  //   this.stmEstList = this.stmEstList?.map(stm => {
-  //             return { ...stm, invoiced: (stm.customer_billing_guid?true:false), total_cost:0 };
-  //       });
-  //   this.stmEstList?.forEach(stm => {
-  //        this.getTotalCost(stm);
-  //       });    
-  // }
+ 
 
   checkInvoiced() {
     this.stmEstList = this.stmEstList?.map(stm => {
@@ -887,6 +756,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.sotList.map(s => {
 
       if (s) {
+        s.repair=s.repair?.filter(r=>!["NO_ACTION","CANCEL"].includes(r.status_cv!));
         var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
         let newCust = false;
         if (!repCust.code) {
@@ -896,7 +766,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         }
         repCust.number_tank ??= 0;
         repCust.number_tank += 1;
+        if (!repCust.in_yard_storing_order_tank) repCust.in_yard_storing_order_tank = [];
+        if (!repCust.released_storing_order_tank) repCust.released_storing_order_tank = [];
         if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
+        if(s.tank_status_cv=="RELEASED")
+        {repCust.released_storing_order_tank?.push(s);}
+        else
+        {repCust.in_yard_storing_order_tank?.push(s);}
         repCust.storing_order_tank?.push(s);
         if (newCust) report_customer_tank_acts.push(repCust);
 

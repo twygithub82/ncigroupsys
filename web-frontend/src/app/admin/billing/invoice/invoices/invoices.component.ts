@@ -128,6 +128,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CONFIRM_REMOVE_INVOICES: 'COMMON-FORM.CONFIRM-REMOVE-INVOICES',
     BILLING_CURRENCY: 'COMMON-FORM.BILLING-CURRENCY',
+    IS_REQUIRED:'COMMON-FORM.IS-REQUIRED'
   }
 
   distinctCustomerCodes: any;
@@ -305,7 +306,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
       this.currencyList = data;
     });
-    this.search();
+   // this.search();
   }
   showNotification(
     colorName: string,
@@ -355,6 +356,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     const where: any = {};
     this.selectedEstimateItem = undefined;
 
+    if(this.searchForm?.invalid) return;
     // this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};
@@ -910,6 +912,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       eir_no: '',
       eir_dt_start: '',
       eir_dt_end: '',
+      inv_dt_start: '',
+      inv_dt_end: '',
       tank_no: '',
       job_no: '',
       purpose: '',
@@ -1146,6 +1150,9 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
 
   export_report() {
+
+   // if (!this.billList.length) this.search();
+
     if (!this.billList.length) return;
 
     var repCustomers: report_billing_customer[] = []
@@ -1236,6 +1243,11 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
             rep_bill_item = new report_billing_item();
             rep_bill_item.sot_guid = c.storing_order_tank?.guid;
           }
+          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          if (in_gates?.length) {
+            rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
+          }
           if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
@@ -1263,6 +1275,11 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
             newItem = true;
             rep_bill_item = new report_billing_item();
             rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
+          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          if (in_gates?.length) {
+            rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
           }
           if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
@@ -1292,6 +1309,12 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
             rep_bill_item = new report_billing_item();
             rep_bill_item.sot_guid = c.storing_order_tank?.guid;
           }
+          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          if (in_gates?.length) {
+            rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
+          }
+          
           if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
@@ -1324,6 +1347,11 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
 
+          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          if (in_gates?.length) {
+            rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
+          }
           rep_bill_item.preins_est_no += 1;
           rep_bill_item.preins_cost = Number(Number(rep_bill_item?.preins_cost || 0) + (c.preinspection ? c.preinspection_cost! : 0)).toFixed(2);
           if (newItem) rep_bill_items.push(rep_bill_item);
@@ -1362,19 +1390,21 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
           let daysDifference: number = Number(this.pdDS.getStorageDays(c.storing_order_tank!, packDepotItm));
 
 
-          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
-          var out_gates = c.storing_order_tank?.out_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          
+         // var out_gates = c.storing_order_tank?.out_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
           rep_bill_item.days = String(daysDifference);
           rep_bill_item.storage_est_no += 1;
           rep_bill_item.storage_cost = Number((c.storage_cost || 0) * daysDifference).toFixed(2);
+
+          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
           if (in_gates?.length) {
             rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
             rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
           }
-          if (out_gates?.length) {
-            rep_bill_item.out_date = Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
-            rep_bill_item.eir_no = out_gates?.[0]?.eir_no;
-          }
+          // if (out_gates?.length) {
+          //   rep_bill_item.out_date = Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
+          //   rep_bill_item.eir_no = out_gates?.[0]?.eir_no;
+          // }
           if (newItem) rep_bill_items.push(rep_bill_item);
 
         });
@@ -1396,6 +1426,11 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
             newItem = true;
             rep_bill_item = new report_billing_item();
             rep_bill_item.sot_guid = c.storing_order_tank?.guid;
+          }
+          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          if (in_gates?.length) {
+            rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
           }
           if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
@@ -1427,6 +1462,11 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
             rep_bill_item.sot_guid = c.storing_order_tank?.guid;
           }
 
+          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          if (in_gates?.length) {
+            rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
+          }
           if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
@@ -1458,6 +1498,11 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
             rep_bill_item.sot_guid = c.storing_order_tank?.guid;
           }
 
+          var in_gates = c.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          if (in_gates?.length) {
+            rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
+          }
           if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;

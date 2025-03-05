@@ -1211,7 +1211,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       legendPosition: LegendPosition.Right,
       timeline : true,
       colorScheme:  {
-        domain: ['#9370DB', '#87CEFA', '#FA8072', '#FF7F50', '#90EE90', '#9370DB'],
+        domain: ['#008ffb', '#00e396', '#feb019', '#ff4560'],
         group: ScaleType.Ordinal,
         selectable: true,
         name: 'Customer Usage',

@@ -829,7 +829,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
 
-    const reportTitle = this.translatedLangText.REPORT_TITLE; // Set your report title here
+    const reportTitle = this.GetReportTitle(); // Set your report title here
 
     // Add header to the first page
     this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);

@@ -1032,7 +1032,12 @@
     "TYPE":"Type",
     "DAILY-TANK-SURVEY":"Daily Tank Survey",
     "SURVEY-PERIOD":"Survey Period",
-    "VISIT":"Visit"
+    "VISIT":"Visit",
+    "CLEAN-CERT-DATE":"Clean Cert Date",
+    "IN-YARD":"In Yard",
+    "RELEASED":"Released",
+    "PENDING":"Pending",
+    "WITH-RO":"With RO"
     
   },
   "CLEAN-PROCEDURES": {

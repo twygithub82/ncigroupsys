@@ -265,13 +265,13 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
           if (!this.customerCodeControl.invalid) {
             if (this.customerCodeControl.value?.guid) {
               let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+              this.ccDS.search({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
                 this.branch_companyList = data;
                 this.updateValidators(this.branchCodeControl, this.branch_companyList);
               });
@@ -375,7 +375,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
     var invType: string = this.inventoryTypeCvList.find(i => i.code_val == (this.searchForm!.get('inv_type')?.value))?.description || '';
 
-    where.tank_status_cv = { neq: 'RELEASED' };
+    where.tank_status_cv = { nin: ['RELEASED','SO_GENERATED'] };
     if (this.searchForm!.get('inv_type')?.value == "MASTER_OUT") {
       queryType = 2;
       where.tank_status_cv = { eq: 'RELEASED' };

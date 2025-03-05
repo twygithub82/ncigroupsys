@@ -14,8 +14,8 @@
             <td>  &nbsp; </td>
             <td> &nbsp;</td>
             <td class="sp20">&nbsp;</td>
-            <td class="sp"> {{translatedLangText.DATE}} :</td>
-            <td>{{GeneratedDate()}}</td>
+            <td class="sp">&nbsp;</td>
+            <td class="sp20">{{translatedLangText.DATE}} :{{GeneratedDate()}}</td>
           </tr>
         </table>
       </div> 
@@ -24,29 +24,44 @@
           <th>{{translatedLangText.NO}}</th>
           <th>{{translatedLangText.CUSTOMER_CODE}}</th>
           <th>{{translatedLangText.CUSTOMER}}</th>
-          <th>{{translatedLangText.NO_OF_TANKS}}</th>
+          <th>{{translatedLangText.LOCATION}}</th>
+          <th>{{translatedLangText.STEAM}}</th>
+          <th>{{translatedLangText.CLEANING}}</th>
+          <th>{{translatedLangText.REPAIR}}</th>
+          <th>{{translatedLangText.STORAGE}}</th>
+          <th>{{translatedLangText.TOTAL}}</th>
+          <th>{{translatedLangText.PENDING}}</th>
+          <th>{{translatedLangText.WITH_RO}}</th>
         </tr>
-        @for (itm of report_customer_tank_activity; track itm;let index = $index) {
+        {{ResetIndex()}}
+        @for (itm of reportStatus; track itm;let index = $index) {
+          @for(yard of itm.yards; track yard)
+          {
           <tr>
-            <td>{{ index + 1 }}</td> <!-- Row number -->
+            <td>{{ GetIndex() }}</td> <!-- Row number -->
             <td>{{ itm.code }}</td> 
             <td>{{ itm.customer }}</td> 
-            <td>{{ itm.number_tank }}</td> 
-            <!-- <td>{{ itm.last_cargo }}</td> 
-            <td>{{ itm.in_date }}</td> 
-            <td>{{ itm.out_date }}</td> 
-            <td>{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
-            <td>{{ (itm.repair_cost==="0.00"?'':itm.repair_cost) }}</td> 
-            <td>{{ (itm.preins_cost==="0.00"?'':itm.preins_cost) }}</td> 
-            <td>{{ (itm.lolo_cost==="0.00"?'':itm.lolo_cost) }}</td> 
-            <td>{{ itm.days }}</td> 
-            <td>{{ (itm.storage_cost==="0.00"?'':itm.storage_cost)}}</td> 
-            <td>{{ (itm.steam_cost==="0.00"?'':itm.steam_cost)}}</td> 
-            <td>{{ (itm.residue_cost==="0.00"?'':itm.residue_cost)}}</td> 
-            <td>{{ (itm.gateio_cost==="0.00"?'':itm.gateio_cost)}}</td> 
-            <td>{{ (itm.total==="0.00"?'':itm.total) }}</td>  -->
+            <td>{{ displayLocation(yard) }}</td> 
+            <td>{{ yard.noTank_steam }}</td> 
+            <td>{{ yard.noTank_clean }}</td> 
+            <td>{{ yard.noTank_repair }}</td> 
+            <td>{{ yard.noTank_storage }}</td> 
+            <td>{{ displayInYardTotal(yard) }}</td> 
+            <td>{{ yard.noTank_pending }}</td> 
+            <td>{{ yard.noTank_withRO }}</td> 
           </tr>
+          }
         }
+        <tr class="group-header">
+          <td colspan ="4" class="text-right">{{ translatedLangText.TOTAL }}</td> 
+          <td>{{displayTotalSteam()}}</td>
+          <td>{{displayTotalClean()}}</td>
+          <td>{{displayTotalRepair()}}</td>
+          <td>{{displayTotalStorage()}}</td>
+          <td>{{displayTotal()}}</td>
+          <td>{{displayTotalPending()}}</td>
+          <td>{{displayTotalWithRO()}}</td>
+        </tr>
       </table>
     
   </div>

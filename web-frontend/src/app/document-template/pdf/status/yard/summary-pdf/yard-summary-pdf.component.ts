@@ -23,16 +23,15 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_customer_tank_activity } from 'app/data-sources/reports';
+import { report_status_yard,report_status } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  report_customer_tank_activity: report_customer_tank_activity[],
-  type:string,
-  date:string,
+   report_summary_detail: report_status[],
+
 
   // repair_guid: string;
   // customer_company_guid: string;
@@ -60,7 +59,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -244,7 +243,13 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
     YARD_STATUS:'COMMON-FORM.YARD-STATUS',
     DETAIL_SUMMARY:'COMMON-FORM.DETAIL-SUMMARY',
-    
+    STEAM:'COMMON-FORM.STEAM',
+    REPAIR:'COMMON-FORM.REPAIR',
+    CLEANING:'COMMON-FORM.CLEANING',
+    STORAGE:'COMMON-FORM.STORAGE',
+    PENDING:'COMMON-FORM.PENDING',
+    WITH_RO:'COMMON-FORM.WITH-RO',
+    LOCATION:'COMMON-FORM.LOCATION'
 
   }
 
@@ -267,7 +272,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
 
   repairCost?: RepairCostTableItem;
   repList?: any[] = [];
-  groupNameCvList: CodeValuesItem[] = [];
+  yardCvList: CodeValuesItem[] = [];
   subgroupNameCvList: CodeValuesItem[] = [];
   yesnoCvList: CodeValuesItem[] = [];
   soTankStatusCvList: CodeValuesItem[] = [];
@@ -293,14 +298,15 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_customer_tank_activity:report_customer_tank_activity[]=[];
-  date:string='';
-  invType:string='';
+  reportStatus:report_status[]=[];
+  index:number=0;
+  // date:string='';
+  // invType:string='';
 
   
 
   constructor(
-    public dialogRef: MatDialogRef<YardSummaryPdfComponent>,
+    public dialogRef: MatDialogRef<YardStatusDetailSummaryPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -319,9 +325,8 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
     // this.existingPdf = data.existingPdf;
-    this.report_customer_tank_activity= data.report_customer_tank_activity;
-    this.invType=data.type;
-    this.date=data.date;
+    
+   
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -330,7 +335,9 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   async ngOnInit() {
+    await this.getCodeValuesData();
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+    this.reportStatus= this.data.report_summary_detail;
    
   }
 
@@ -559,7 +566,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
 
   async getCodeValuesData(): Promise<void> {
     const queries = [
-      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+      { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -575,30 +582,30 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
 
     // Wrap all alias connections in promises
     const promises = [
-      firstValueFrom(this.cvDS.connectAlias('groupNameCv')).then(async data => {
-        this.groupNameCvList = data || [];
-        const subqueries: any[] = [];
-        data.map(d => {
-          if (d.child_code) {
-            let q = { alias: d.child_code, codeValType: d.child_code };
-            const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-            if (!hasMatch) {
-              subqueries.push(q);
-            }
-          }
-        });
+      firstValueFrom(this.cvDS.connectAlias('yardCv')).then(async data => {
+        this.yardCvList = data || [];
+        // const subqueries: any[] = [];
+        // data.map(d => {
+        //   if (d.child_code) {
+        //     let q = { alias: d.child_code, codeValType: d.child_code };
+        //     const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+        //     if (!hasMatch) {
+        //       subqueries.push(q);
+        //     }
+        //   }
+        // });
 
-        // Process subqueries if any
-        if (subqueries.length > 0) {
-          await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
+        // // Process subqueries if any
+        // if (subqueries.length > 0) {
+        //   await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
 
-          for (const s of subqueries) {
-            const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
-            if (subData) {
-              this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
-            }
-          }
-        }
+        //   for (const s of subqueries) {
+        //     const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
+        //     if (subData) {
+        //       this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
+        //     }
+        //   }
+        // }
 
       }),
       firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
@@ -648,13 +655,13 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
   
   }
 
-  getGroupSeq(codeVal: string | undefined): number | undefined {
-    const gncv = this.groupNameCvList?.filter(x => x.code_val === codeVal);
-    if (gncv.length) {
-      return gncv[0].sequence;
-    }
-    return -1;
-  }
+  // getGroupSeq(codeVal: string | undefined): number | undefined {
+  //   const gncv = this.groupNameCvList?.filter(x => x.code_val === codeVal);
+  //   if (gncv.length) {
+  //     return gncv[0].sequence;
+  //   }
+  //   return -1;
+  // }
 
   getLastTest(igs: any): string | undefined {
     return this.getLastTestIGS(igs);
@@ -1019,5 +1026,118 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
    {
      return `${this.translatedLangText.YARD_STATUS} ${this.translatedLangText.DETAIL_SUMMARY}`
    }
-  
+   
+   displayLocation(yard:report_status_yard):string
+   {
+    return this.cvDS.getCodeDescription(yard.code, this.yardCvList) || '';;
+   }
+   displayInYardTotal(yard:report_status_yard):number
+   {
+      var total =0;
+
+      total = (yard.noTank_storage||0)+(yard.noTank_clean||0)+(yard.noTank_steam||0)+(yard.noTank_repair||0);
+      return total;
+
+   }
+
+   ResetIndex()
+   {
+     this.index=0;
+   }
+
+   GetIndex()
+   {
+     this.index+=1;
+     return this.index;
+   }
+
+   displayTotalSteam()
+   {
+     var retval=0;
+     this.reportStatus.forEach(r=>{
+
+         r.yards?.forEach(y=>{
+            retval +=y.noTank_steam||0;
+         })
+
+     });
+
+     return retval;
+
+   }
+          displayTotalClean()
+          {
+            var retval=0;
+            this.reportStatus.forEach(r=>{
+       
+                r.yards?.forEach(y=>{
+                   retval +=y.noTank_clean||0;
+                })
+       
+            });
+       
+            return retval;
+          }
+          displayTotalRepair()
+          {
+            var retval=0;
+            this.reportStatus.forEach(r=>{
+       
+                r.yards?.forEach(y=>{
+                   retval +=y.noTank_repair||0;
+                })
+       
+            });
+       
+            return retval;
+          }
+          displayTotalStorage()
+          {
+            var retval=0;
+            this.reportStatus.forEach(r=>{
+       
+                r.yards?.forEach(y=>{
+                   retval +=y.noTank_storage||0;
+                })
+       
+            });
+       
+            return retval;
+          }
+          displayTotal(){
+            var retval=0;
+            this.reportStatus.forEach(r=>{
+       
+                r.yards?.forEach(y=>{
+                   retval +=(y.noTank_repair||0)+(y.noTank_storage||0)+(y.noTank_clean||0)+(y.noTank_steam||0);
+                })
+       
+            });
+       
+            return retval;
+          }
+          displayTotalPending(){
+            var retval=0;
+            this.reportStatus.forEach(r=>{
+       
+                r.yards?.forEach(y=>{
+                   retval +=y.noTank_pending||0;
+                })
+       
+            });
+       
+            return retval;
+          }
+          displayTotalWithRO(){
+            var retval=0;
+            this.reportStatus.forEach(r=>{
+       
+                r.yards?.forEach(y=>{
+                   retval +=y.noTank_withRO||0;
+                })
+       
+            });
+       
+            return retval;
+          }
 }
