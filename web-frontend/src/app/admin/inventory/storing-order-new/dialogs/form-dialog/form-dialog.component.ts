@@ -19,7 +19,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { debounceTime, startWith, tap } from 'rxjs';
+import { debounceTime, merge, startWith, tap } from 'rxjs';
 
 export interface DialogData {
   action?: string;
@@ -111,10 +111,11 @@ export class FormDialogComponent {
     }
     this.startDateETA = Utility.getEarlierDate((Utility.convertDate(this.storingOrderTank.eta_dt) as Date), this.startDateETA);
     this.startDateETR = Utility.getEarlierDate((Utility.convertDate(this.storingOrderTank.etr_dt) as Date), this.startDateETR);
+    const foundUnitType = this.data.populateData.unit_typeList.filter((item: { guid: string | undefined; }) => item.guid === this.storingOrderTank.unit_type_guid);
     return this.fb.group({
       guid: [this.storingOrderTank.guid],
       so_guid: [this.storingOrderTank.so_guid],
-      unit_type_guid: [{ value: this.storingOrderTank.unit_type_guid, disabled: !this.canEdit() }, [Validators.required]],
+      unit_type_guid: [{ value: foundUnitType?.[0], disabled: !this.canEdit() }, [Validators.required]],
       tank_no: [{ value: this.storingOrderTank.tank_no, disabled: !this.canEdit() }, [Validators.required]],
       last_cargo: this.lastCargoControl,
       last_cargo_guid: [{ value: this.storingOrderTank.last_cargo_guid, disabled: !this.canEdit() }, [Validators.required]],
@@ -163,7 +164,7 @@ export class FormDialogComponent {
         }
         var sot: StoringOrderTankItem = {
           ...this.storingOrderTank,
-          unit_type_guid: this.storingOrderTankForm.get('unit_type_guid')?.value,
+          unit_type_guid: this.storingOrderTankForm.get('unit_type_guid')?.value?.guid,
           tank_no: Utility.formatContainerNumber(this.storingOrderTankForm.get('tank_no')?.value),
           last_cargo_guid: this.storingOrderTankForm.get('last_cargo_guid')?.value,
           tariff_cleaning: this.lastCargoControl.value,
@@ -227,14 +228,25 @@ export class FormDialogComponent {
       }
     });
 
-    this.storingOrderTankForm?.get('tank_no')?.valueChanges.subscribe(value => {
+    merge(
+      this.storingOrderTankForm?.get('unit_type_guid')!.valueChanges,
+      this.storingOrderTankForm?.get('tank_no')!.valueChanges
+    ).subscribe(() => {
+      const value = this.storingOrderTankForm?.get('tank_no')!.value
       this.isPreOrder = false; // Reset PREORDER flag
       if (value) {
         const uppercaseValue = value.toUpperCase();
         this.storingOrderTankForm.get('tank_no')?.setValue(uppercaseValue, { emitEvent: false });
+        const isoFormatCheck = this.storingOrderTankForm?.get('unit_type_guid')?.value?.iso_format;
 
         const isValid = Utility.verifyIsoContainerCheckDigit(uppercaseValue);
-        if (!isValid) {
+        const result = isoFormatCheck === undefined
+          ? isValid
+          : isoFormatCheck
+            ? isValid
+            : true;
+
+        if (!result) {
           this.storingOrderTankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
         } else {
           const formattedTankNo = Utility.formatContainerNumber(uppercaseValue);
@@ -356,7 +368,7 @@ export class FormDialogComponent {
   onPurposeChangeCheck(event: any) {
     if ((this.storingOrderTankForm.get('purpose_cleaning')?.value || this.storingOrderTankForm.get('purpose_repair_cv')?.value)) {
       this.storingOrderTankForm.get('purpose_storage')?.setValue(true);
-      
+
       this.storingOrderTankForm.get('required_temp')?.setValue('');
       this.storingOrderTankForm.get('required_temp')?.disable();
       this.storingOrderTankForm.get('purpose_steam')?.disable();

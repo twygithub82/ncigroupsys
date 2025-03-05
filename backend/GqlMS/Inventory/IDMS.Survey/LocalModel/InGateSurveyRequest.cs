@@ -67,5 +67,14 @@ namespace IDMS.Survey.GqlTypes.LocalModel
         public string? rear_remarks { get; set; }
         public string? left_remarks { get; set; }
         public string? right_remarks { get; set; }
+        public string? btm_dis_valve_oth { get; set; }
+        public string? btm_dis_valve_spec_oth { get; set; }
+        public string? foot_valve_oth { get; set; }
+        public string? top_dis_valve_oth { get; set; }
+        public string? top_dis_valve_spec_oth { get; set; }
+        public string? airline_valve_oth { get; set; }
+        public string? airline_valve_conn_oth { get; set; }
+        public string? airline_valve_conn_spec_oth { get; set; }
+        public string? manlid_cover_oth { get; set; }
     }
 }

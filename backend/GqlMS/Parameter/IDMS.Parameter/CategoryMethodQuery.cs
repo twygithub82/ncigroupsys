@@ -62,5 +62,53 @@ namespace IDMS.Models.Parameter.GqlTypes
 
         }
 
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<cleaning_formula?> QueryCleaningFormula(ApplicationParameterDBContext context,
+          [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<cleaning_formula> query = null;
+            try
+            {
+                // var context = _contextFactory.CreateDbContext();
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.cleaning_formula.Where(i => i.delete_dt == null);
+            }
+            catch(Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+
+            return query;
+        }
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<cleaning_method_formula?> QueryCleaningMethodFormula(ApplicationParameterDBContext context,
+          [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<cleaning_method_formula> query = null;
+            try
+            {
+                // var context = _contextFactory.CreateDbContext();
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.cleaning_method_formula.Where(i => i.delete_dt == null);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+
+            return query;
+        }
+
     }
 }

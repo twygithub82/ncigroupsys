@@ -660,22 +660,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getBackgroundColorFromNature() {
-    var color = 'orange';
-    let natureCv = this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv;
-    switch (natureCv?.toUpperCase()) {
-
-      case "HAZARDOUS":
-        color = 'purple';
-        break;
-      case "TOXIC":
-        color = 'green';
-        break;
-      case "GASES":
-        color = 'cyan';
-        break;
-    }
-
-    return color;
+    return Utility.getBackgroundColorFromNature(this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv);
   }
 
   getTariffCleaningRemarks() {

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Inventory
 {
-    public class in_gate_survey: Dates
+    public class in_gate_survey : Dates
     {
         [Key]
         [IsProjected(true)]
@@ -29,7 +29,6 @@ namespace IDMS.Models.Inventory
         public string? test_class_cv { get; set; }
         public long? dom_dt { get; set; }
         public long? inspection_dt { get; set; }
-        //public long? last_release_dt { get; set; }
         public string? manufacturer_cv { get; set; }
         public string? cladding_cv { get; set; }
         public string? max_weight_cv { get; set; }
@@ -82,7 +81,17 @@ namespace IDMS.Models.Inventory
         public string? rear_remarks { get; set; }
         public string? left_remarks { get; set; }
         public string? right_remarks { get; set; }
+        public string? btm_dis_valve_oth { get; set; }
+        public string? btm_dis_valve_spec_oth { get; set; }
+        public string? foot_valve_oth { get; set; }
+        public string? top_dis_valve_oth { get; set; }
+        public string? top_dis_valve_spec_oth { get; set; }
+        public string? airline_valve_oth { get; set; }
+        public string? airline_valve_conn_oth { get; set; }
+        public string? airline_valve_conn_spec_oth { get; set; }
+        public string? manlid_cover_oth { get; set; }
+
         public in_gate? in_gate { get; set; }
-        public tariff_buffer? tariff_buffer {  get; set; } 
+        public tariff_buffer? tariff_buffer { get; set; }
     }
 }

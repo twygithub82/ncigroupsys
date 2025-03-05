@@ -19,7 +19,12 @@ namespace IDMS.Models.Shared
 
         [Column("description")]
         public string? description { get; set; }
-
+        public bool? preinspect { get; set; }
+        public bool? lift_on { get; set; }
+        public bool? lift_off { get; set; }
+        public bool? gate_in { get; set; }
+        public bool? gate_out { get; set; }
+        public bool? iso_format { get; set; }
         public tariff_depot? tariff_depot { get; set; }
 
     }

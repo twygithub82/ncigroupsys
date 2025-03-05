@@ -1252,11 +1252,11 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         bottomFormGroup: {
           btm_dis_comp_cv: og.out_gate_survey?.btm_dis_comp_cv,
           btm_dis_valve_cv: og.out_gate_survey?.btm_dis_valve_cv,
-          // btm_dis_valve_oth: og.out_gate_survey?.btm_dis_valve_oth,
+          btm_dis_valve_oth: og.out_gate_survey?.btm_dis_valve_oth,
           btm_dis_valve_spec_cv: og.out_gate_survey?.btm_dis_valve_spec_cv,
-          // btm_dis_valve_spec_oth: og.out_gate_survey?.btm_dis_valve_spec_oth,
+          btm_dis_valve_spec_oth: og.out_gate_survey?.btm_dis_valve_spec_oth,
           foot_valve_cv: og.out_gate_survey?.foot_valve_cv,
-          // foot_valve_oth: og.out_gate_survey?.foot_valve_oth,
+          foot_valve_oth: og.out_gate_survey?.foot_valve_oth,
           btm_valve_brand_cv: og.out_gate_survey?.btm_valve_brand_cv,
           thermometer: og.out_gate_survey?.thermometer,
           thermometer_cv: og.out_gate_survey?.thermometer_cv,
@@ -1266,23 +1266,23 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         topFormGroup: {
           top_dis_comp_cv: og.out_gate_survey?.top_dis_comp_cv,
           top_dis_valve_cv: og.out_gate_survey?.top_dis_valve_cv,
-          // top_dis_valve_oth: og.out_gate_survey?.top_dis_valve_oth,
+          top_dis_valve_oth: og.out_gate_survey?.top_dis_valve_oth,
           top_dis_valve_spec_cv: og.out_gate_survey?.top_dis_valve_spec_cv,
-          // top_dis_valve_spec_oth: og.out_gate_survey?.top_dis_valve_spec_oth,
+          top_dis_valve_spec_oth: og.out_gate_survey?.top_dis_valve_spec_oth,
           top_valve_brand_cv: og.out_gate_survey?.top_valve_brand_cv,
           airline_valve_cv: og.out_gate_survey?.airline_valve_cv,
-          // airline_valve_oth: og.out_gate_survey?.airline_valve_oth,
+          airline_valve_oth: og.out_gate_survey?.airline_valve_oth,
           airline_valve_pcs: og.out_gate_survey?.airline_valve_pcs,
           airline_valve_dim: og.out_gate_survey?.airline_valve_dim,
           airline_valve_conn_cv: og.out_gate_survey?.airline_valve_conn_cv,
-          // airline_valve_conn_oth: og.out_gate_survey?.airline_valve_conn_oth,
+          airline_valve_conn_oth: og.out_gate_survey?.airline_valve_conn_oth,
           airline_valve_conn_spec_cv: og.out_gate_survey?.airline_valve_conn_spec_cv,
-          // airline_valve_conn_spec_oth: og.out_gate_survey?.airline_valve_conn_spec_oth,
+          airline_valve_conn_spec_oth: og.out_gate_survey?.airline_valve_conn_spec_oth,
         },
         manlidFormGroup: {
           manlid_comp_cv: og.out_gate_survey?.manlid_comp_cv,
           manlid_cover_cv: og.out_gate_survey?.manlid_cover_cv,
-          // manlid_cover_oth: og.out_gate_survey?.manlid_cover_oth,
+          manlid_cover_oth: og.out_gate_survey?.manlid_cover_oth,
           manlid_cover_pcs: og.out_gate_survey?.manlid_cover_pcs,
           manlid_cover_pts: og.out_gate_survey?.manlid_cover_pts,
           manlid_seal_cv: og.out_gate_survey?.manlid_seal_cv,
@@ -1503,8 +1503,11 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       const bottomFormGroup = this.getBottomFormGroup();
       ogs.btm_dis_comp_cv = bottomFormGroup.get('btm_dis_comp_cv')?.value;
       ogs.btm_dis_valve_cv = bottomFormGroup.get('btm_dis_valve_cv')?.value;
+      ogs.btm_dis_valve_oth = bottomFormGroup.get('btm_dis_valve_oth')?.value;
       ogs.btm_dis_valve_spec_cv = bottomFormGroup.get('btm_dis_valve_spec_cv')?.value;
+      ogs.btm_dis_valve_spec_oth = bottomFormGroup.get('btm_dis_valve_spec_oth')?.value;
       ogs.foot_valve_cv = bottomFormGroup.get('foot_valve_cv')?.value;
+      ogs.foot_valve_oth = bottomFormGroup.get('foot_valve_oth')?.value;
       ogs.btm_valve_brand_cv = bottomFormGroup.get('btm_valve_brand_cv')?.value;
       ogs.thermometer = bottomFormGroup.get('thermometer')?.value;
       ogs.thermometer_cv = bottomFormGroup.get('thermometer_cv')?.value;
@@ -1514,17 +1517,23 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       const topFormGroup = this.getTopFormGroup();
       ogs.top_dis_comp_cv = topFormGroup.get('top_dis_comp_cv')?.value;
       ogs.top_dis_valve_cv = topFormGroup.get('top_dis_valve_cv')?.value;
+      ogs.top_dis_valve_oth = topFormGroup.get('top_dis_valve_oth')?.value;
       ogs.top_dis_valve_spec_cv = topFormGroup.get('top_dis_valve_spec_cv')?.value;
+      ogs.top_dis_valve_spec_oth = topFormGroup.get('top_dis_valve_spec_oth')?.value;
       ogs.top_valve_brand_cv = topFormGroup.get('top_valve_brand_cv')?.value;
       ogs.airline_valve_cv = topFormGroup.get('airline_valve_cv')?.value;
+      ogs.airline_valve_oth = topFormGroup.get('airline_valve_oth')?.value;
       ogs.airline_valve_pcs = topFormGroup.get('airline_valve_pcs')?.value;
       ogs.airline_valve_dim = topFormGroup.get('airline_valve_dim')?.value;
       ogs.airline_valve_conn_cv = topFormGroup.get('airline_valve_conn_cv')?.value;
+      ogs.airline_valve_conn_oth = topFormGroup.get('airline_valve_conn_oth')?.value;
       ogs.airline_valve_conn_spec_cv = topFormGroup.get('airline_valve_conn_spec_cv')?.value;
+      ogs.airline_valve_conn_spec_oth = topFormGroup.get('airline_valve_conn_spec_oth')?.value;
 
       const manlidFormGroup = this.getManlidFormGroup();
       ogs.manlid_comp_cv = manlidFormGroup.get('manlid_comp_cv')?.value;
       ogs.manlid_cover_cv = manlidFormGroup.get('manlid_cover_cv')?.value;
+      ogs.manlid_cover_oth = manlidFormGroup.get('manlid_cover_oth')?.value;
       ogs.manlid_cover_pcs = manlidFormGroup.get('manlid_cover_pcs')?.value;
       ogs.manlid_cover_pts = manlidFormGroup.get('manlid_cover_pts')?.value;
       ogs.manlid_seal_cv = manlidFormGroup.get('manlid_seal_cv')?.value;

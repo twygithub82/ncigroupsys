@@ -23,33 +23,10 @@ namespace IDMS.Models.Parameter
 
         public int? sequence { get; set; }
 
-        // public int? duration { get; set; }
-
-        // public string? cleaning_group_cv { get; set; }
-
         public double? cost { get; set; }
         public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
 
     }
-
-    ////[Table("cleaning_category")]
-    //public class CleaningCategoryWithTariff: Dates 
-    //{
-    //    [Key]
-    //    public string? guid { get; set; }
-
-    //    public string? name { get; set; }
-
-    //    public string? description { get; set; }
-
-    //    // public int? duration { get; set; }
-
-    //    // public string? cleaning_group_cv { get; set; }
-    //    public int? sequence { get; set; }
-    //    public double? cost { get; set; }
-
-    //    public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
-    //}
 
     public class EntityClass_CleaningCategoryWithCustomerCompanyAndCleaningCategory: cleaning_category
     {

@@ -21,6 +21,7 @@ export class CustomerCompanyGO {
   public city?: string;
   public country?: string;
   public postal?: string;
+  public country_code?: string;
   public phone?: string;
   public email?: string;
   public website?: string;
@@ -49,6 +50,7 @@ export class CustomerCompanyGO {
     this.city = item.city;
     this.country = item.country;
     this.postal = item.postal;
+    this.country_code = item.country_code;
     this.phone = item.phone;
     this.email = item.email;
     this.website = item.website;
@@ -72,14 +74,14 @@ export class CustomerCompanyGO {
 export class CustomerCompanyItem extends CustomerCompanyGO {
   public currency?: CurrencyItem;
   public cc_contact_person?: ContactPersonItem[] = [];
-  public storing_order_tank?:StoringOrderTankItem[]=[];
-  public storing_orders?:StoringOrderItem[]=[];
+  public storing_order_tank?: StoringOrderTankItem[] = [];
+  public storing_orders?: StoringOrderItem[] = [];
   constructor(item: Partial<CustomerCompanyItem> = {}) {
     super(item);
     this.currency = item.currency;
     this.cc_contact_person = item.cc_contact_person;
-    this.storing_order_tank=item.storing_order_tank;
-    this.storing_orders=item.storing_orders;
+    this.storing_order_tank = item.storing_order_tank;
+    this.storing_orders = item.storing_orders;
   }
 }
 
@@ -136,6 +138,7 @@ export const SEARCH_COMPANY_QUERY = gql`
         email
         guid
         name
+        country_code
         phone
         postal
         type_cv
@@ -209,6 +212,7 @@ export const SEARCH_COMPANY_QUERY_WITH_SO_SOT = gql`
         email
         guid
         name
+        country_code
         phone
         postal
         type_cv
@@ -293,7 +297,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   }
   loadItems(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
-    where = { type_cv:{in: ["BRANCH", "OWNER"] }}
+    where = { type_cv: { in: ["BRANCH", "OWNER"] } }
     where = this.addDeleteDtCriteria(where)
     return this.apollo
       .query<any>({
@@ -552,7 +556,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
 
   }
 
- 
+
   DeleteCustomerCompany(customerGuids: any): Observable<any> {
     return this.apollo.mutate({
       mutation: CAN_DELETE_COMPANY,
@@ -570,23 +574,23 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
 
   CanDeleteCustomerCompany(guid: any): Observable<any> {
     return this.apollo
-    .query<any>({
-      query: CAN_DELETE_COMPANY,
-      variables: { guid },
-      fetchPolicy: 'no-cache' // Ensure fresh data
-    })
-    .pipe(
-      map((result) => result.data),
-      catchError((error: ApolloError) => {
-        console.error('GraphQL Error:', error);
-        return of(false); // Return an empty array on error
-      }),
-      finalize(() =>
-        this.loadingSubject.next(false)
-      ),
-      map((result) => {
-        return result;
+      .query<any>({
+        query: CAN_DELETE_COMPANY,
+        variables: { guid },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
-    );
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(false); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          return result;
+        })
+      );
   }
 }

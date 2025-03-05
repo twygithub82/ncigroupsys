@@ -41,46 +41,46 @@ import {
   NgApexchartsModule
 } from 'ng-apexcharts';
 
-  export type HorizontalBarOptions={
-    showXAxis?:boolean;
-    showYAxis?:boolean;
-    gradient?:boolean ;
-    showLegend?:boolean ;
-    showXAxisLabel?:boolean;
-    showYAxisLabel?:boolean ;
-    legendPosition: LegendPosition ;
-    timeline?:boolean ;
-    colorScheme?: Color;
-    showLabels?:boolean ;
-    // data goes here
-    single?:any ;
-    hbarxAxisLabel?:string;
-  };
+export type HorizontalBarOptions = {
+  showXAxis?: boolean;
+  showYAxis?: boolean;
+  gradient?: boolean;
+  showLegend?: boolean;
+  showXAxisLabel?: boolean;
+  showYAxisLabel?: boolean;
+  legendPosition: LegendPosition;
+  timeline?: boolean;
+  colorScheme?: Color;
+  showLabels?: boolean;
+  // data goes here
+  single?: any;
+  hbarxAxisLabel?: string;
+};
 
-  export type ChartOptions = {
-    series?: ApexAxisChartSeries;
-    series2?: ApexNonAxisChartSeries;
-    chart?: ApexChart;
-    dataLabels?: ApexDataLabels;
-    plotOptions?: ApexPlotOptions;
-    yaxis?: ApexYAxis;
-    xaxis?: ApexXAxis;
-    fill?: ApexFill;
-    tooltip?: ApexTooltip;
-    stroke?: ApexStroke;
-    legend?: ApexLegend;
-    title?: ApexTitleSubtitle;
-    colors?: string[];
-    grid?: ApexGrid;
-    markers?: ApexMarkers;
-    labels: string[];
-    responsive: ApexResponsive[];
-  };
+export type ChartOptions = {
+  series?: ApexAxisChartSeries;
+  series2?: ApexNonAxisChartSeries;
+  chart?: ApexChart;
+  dataLabels?: ApexDataLabels;
+  plotOptions?: ApexPlotOptions;
+  yaxis?: ApexYAxis;
+  xaxis?: ApexXAxis;
+  fill?: ApexFill;
+  tooltip?: ApexTooltip;
+  stroke?: ApexStroke;
+  legend?: ApexLegend;
+  title?: ApexTitleSubtitle;
+  colors?: string[];
+  grid?: ApexGrid;
+  markers?: ApexMarkers;
+  labels: string[];
+  responsive: ApexResponsive[];
+};
 
 export interface DialogData {
   report_summary_status: report_status[],
- 
- 
+
+
 }
 
 @Component({
@@ -268,32 +268,32 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE:'COMMON-FORM.IN-DATE',
-    OUT_DATE:'COMMON-FORM.OUT-DATE',
-    TOTAL:'COMMON-FORM.TOTAL',
-    DAYS:'COMMON-FORM.DAYS',
-    GATEIO:'COMMON-FORM.GATEIO',
-    INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
-    SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
-    TANK_STATUS:'COMMON-FORM.TANK-STATUS',
-    YARD_STATUS:'COMMON-FORM.YARD-STATUS',
-    TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER',
-    
-    
+    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
+    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
+    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
+    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
+    IN_DATE: 'COMMON-FORM.IN-DATE',
+    OUT_DATE: 'COMMON-FORM.OUT-DATE',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    DAYS: 'COMMON-FORM.DAYS',
+    GATEIO: 'COMMON-FORM.GATEIO',
+    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
+    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
+    INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
+    YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
+    TOP_TEN_CUSTOMER: 'COMMON-FORM.TOP-TEN-CUSTOMER',
+
+
 
   }
 
   public pieChartOptions!: Partial<ChartOptions>;
   public columnChartOptions!: Partial<ChartOptions>;
-  public horizontalBarOptions!:Partial<HorizontalBarOptions>;
-  
+  public horizontalBarOptions!: Partial<HorizontalBarOptions>;
+
   type?: string | null;
   // steamDS: SteamDS;
   // steamPartDS: SteamPartDS;
@@ -339,11 +339,11 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_summary_status:report_status[]=[];
-  date:string='';
-  invType:string='';
+  report_summary_status: report_status[] = [];
+  date: string = '';
+  invType: string = '';
 
-  
+
 
   constructor(
     public dialogRef: MatDialogRef<YardChartPdfComponent>,
@@ -355,32 +355,32 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer) {
     super();
-    
+
     this.translateLangText();
     this.InitialDefaultData();
-    
+
     // this.steamDS = new SteamDS(this.apollo);
     // this.steamPartDS = new SteamPartDS(this.apollo);
     // this.sotDS = new StoringOrderTankDS(this.apollo);
     // this.ccDS = new CustomerCompanyDS(this.apollo);
-     this.cvDS = new CodeValuesDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
     // this.repair_guid = data.repair_guid;
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
     // this.existingPdf = data.existingPdf;
-    this.report_summary_status= data.report_summary_status;
-    
+    this.report_summary_status = data.report_summary_status;
+
     this.loadData();
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-    
+
   }
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-   
+
   }
 
   public loadData() {
@@ -394,24 +394,22 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      if(data.length)
-        {
-          this.purposeOptionCvList = data;
-          this.processHorizontalBarValue(this.report_summary_status);
-          this.processCustomerStatus(this.report_summary_status);
-        }
+      if (data.length) {
+        this.purposeOptionCvList = data;
+        this.processHorizontalBarValue(this.report_summary_status);
+        this.processCustomerStatus(this.report_summary_status);
+      }
     });
 
     this.cvDS.connectAlias('yardCv').subscribe(data => {
-      if(data.length)
-      {
+      if (data.length) {
         this.yardCvList = data;
         this.processTankStatus(this.report_summary_status);
       }
-      
+
     });
- 
-    
+
+
   }
 
   async getCodeValuesData(): Promise<void> {
@@ -425,25 +423,25 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
       // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'yardCv', codeValType: 'YARD' },
     ];
 
     await this.cvDS.getCodeValuesByTypeAsync(queries);
 
     // Wrap all alias connections in promises
     const promises = [
-     
-   
+
+
       firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
         this.purposeOptionCvList = data || [];
-        
+
       }),
 
       firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
         this.yardCvList = data || [];
-        
+
       }),
-      
+
     ];
 
     // Wait for all promises to resolve
@@ -655,7 +653,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
- 
+
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -666,7 +664,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-  
+
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {
@@ -677,14 +675,14 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     return -1;
   }
 
-  
+
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
- 
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -715,7 +713,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
   async onDownloadClick() {
     this.exportToPDF();
-   
+
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -730,7 +728,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     URL.revokeObjectURL(url);
   }
 
-  
+
 
   async uploadPdf(group_guid: string, pdfBlob: Blob) {
     const pdfDescription = 'REPAIR_ESTIMATE';
@@ -795,36 +793,36 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 0;
-  
+
     // Store page positions for later text update
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
-  
+
     const reportTitle = this.GetReportTitle();  // Set your report title here
-  
+
     // Set font for the title
     pdf.setFontSize(14); // Title font size
-  
+
     for (let i = 0; i < cardElements.length; i++) {
       const card = cardElements[i];
-  
+
       // Convert card to image (JPEG format)
       const canvas = await html2canvas(card, { scale: this.scale });
       const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
-  
+
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-  
+
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
       const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
-  
-      const pos=15;
+
+      const pos = 15;
       pdf.text(reportTitle, titleX, pos); // Position it at the top
-  
+
       // Draw underline for the title
       pdf.setLineWidth(0.5); // Set line width for underline
-      pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
-  
+      pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+
       // If card height exceeds A4 page height, split across multiple pages
       if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
@@ -832,17 +830,17 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
           const sectionCanvas = document.createElement('canvas');
           sectionCanvas.width = canvas.width;
           sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
-  
+
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
-  
+
           const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
-  
+
           pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
-  
+
           // Store page position for page numbering
           pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-  
+
           yPosition += sectionCanvas.height;
           if (yPosition < canvas.height) {
             pdf.addPage();
@@ -854,203 +852,191 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
-  
+
         // Store page position for page numbering
         pagePositions.push({ page: pageNumber, x: 200, y: 287 });
       }
       pageNumber++;
       this.generatingPdfProgress += progressValue;
     }
-  
+
     totalPages = pageNumber - 1;
-  
+
     // Add page numbers in a second pass
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setPage(page);
       pdf.setFontSize(10);
       pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
-  
+
     this.generatingPdfProgress = 100;
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
   }
 
- 
-   GeneratedDate():string
-   {
-     return  Utility.convertDateToStr(new Date());
-   }
-   GetReportTitle():string
-   {
-     return `${this.translatedLangText.YARD_STATUS} ${this.translatedLangText.SUMMARY_REPORT}`
-   }
 
-   processCustomerStatus(repStatus:report_status[])
-   {
-    if (this.columnChartOptions.xaxis)   
-      {
-    const topTenReports = repStatus
-    .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
-    .slice(0, 10); // Get the top 10
+  GeneratedDate(): string {
+    return Utility.convertDateToStr(new Date());
+  }
+  GetReportTitle(): string {
+    return `${this.translatedLangText.YARD_STATUS} ${this.translatedLangText.SUMMARY_REPORT}`
+  }
 
-    var categories:any =[
-    ];
-    topTenReports.map(p=>
-        
-      categories.push(p.code)
-    );
-    
-     var series:any=[];
+  processCustomerStatus(repStatus: report_status[]) {
+    if (this.columnChartOptions.xaxis) {
+      const topTenReports = repStatus
+        .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
+        .slice(0, 10); // Get the top 10
 
-     this.purposeOptionCvList.map(c=>{
+      var categories: any = [
+      ];
+      topTenReports.map(p =>
+        categories.push(p.code)
+      );
 
-      var values:number[]=[];
-      switch(c.code_val)
-        {
+      var series: any = [];
+
+      this.purposeOptionCvList.map(c => {
+
+        var values: number[] = [];
+        switch (c.code_val) {
           case "STEAM":
-               topTenReports.forEach(t=>{
-                var value:number =0;
-                 t.yards?.forEach(y=>{
-                    value+=Number(y.noTank_steam||0);
-                 });
-                 values.push(value);
-               });
-               series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_steam || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
           case "CLEANING":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_clean||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_clean || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
           case "REPAIR":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_repair||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_repair || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
           case "STORAGE":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_storage||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_storage || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
           case "IN_SURVEY":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_in_survey||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_in_survey || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
         }
-     });
-    
-    
-        this.columnChartOptions.xaxis =  {
-          type: 'category',
-          categories: categories,
-          labels: {
-            style: {
-              colors: '#9aa0ac',
-            },
-          },
-        };
-        //categories;
+      });
 
-      
-      this.columnChartOptions.series=series;
+
+      this.columnChartOptions.xaxis = {
+        type: 'category',
+        categories: categories,
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      };
+      //categories;
+
+
+      this.columnChartOptions.series = series;
     }
-   }
-   processTankStatus(repStatus:report_status[])
-   {
-    var yardInfo:any =[
+  }
+  processTankStatus(repStatus: report_status[]) {
+    var yardInfo: any = [
     ];
-    this.yardCvList.map(p=>{
-        
-      yardInfo.push({code:p.code_val,name:p.description,value:0 });
+    this.yardCvList.map(p => {
+
+      yardInfo.push({ code: p.code_val, name: p.description, value: 0 });
     });
-    repStatus.map(r=>{
-      r.yards?.map(y=>{
-        var yInfo = yardInfo.find((i:{ code: string,name:string,value:number })=>(i.code===y.code ));
-        if(yInfo)
-        {
-           yInfo.value += Number(y.noTank_repair)+Number(y.noTank_steam)+Number(y.noTank_clean)+Number(y.noTank_storage)+Number(y.noTank_in_survey);
+    repStatus.map(r => {
+      r.yards?.map(y => {
+        var yInfo = yardInfo.find((i: { code: string, name: string, value: number }) => (i.code === y.code));
+        if (yInfo) {
+          yInfo.value += Number(y.noTank_repair) + Number(y.noTank_steam) + Number(y.noTank_clean) + Number(y.noTank_storage) + Number(y.noTank_in_survey);
         }
       });
     });
-    var labels:any=[];
-    var series:any=[];
-    yardInfo.forEach((y:{ code: string,name:string,value:number })=>{
+    var labels: any = [];
+    var series: any = [];
+    yardInfo.forEach((y: { code: string, name: string, value: number }) => {
       labels.push(y.name);
       series.push(y.value);
     });
 
-     this.pieChartOptions.labels=labels;
-     this.pieChartOptions.series2=series;
-   }
+    this.pieChartOptions.labels = labels;
+    this.pieChartOptions.series2 = series;
+  }
 
-   processHorizontalBarValue(repStatus:report_status[])
-   {
-      var singleValues:any =[
-      ];
-      this.purposeOptionCvList.map(p=>{
-          
-          singleValues.push({name:p.description,value:0 });
-      });
-      repStatus.map(r=>{
-        r.yards?.map(y=>{
-        this.purposeOptionCvList.map(p=>{
-          var s = singleValues.find((g:{ name: string })=>(g.name===p.description ));
-          if(s)
-          {
-            switch(p.code_val)
-            {
+  processHorizontalBarValue(repStatus: report_status[]) {
+    var singleValues: any = [
+    ];
+    this.purposeOptionCvList.map(p => {
+
+      singleValues.push({ name: p.description, value: 0 });
+    });
+    repStatus.map(r => {
+      r.yards?.map(y => {
+        this.purposeOptionCvList.map(p => {
+          var s = singleValues.find((g: { name: string }) => (g.name === p.description));
+          if (s) {
+            switch (p.code_val) {
               case "STEAM":
-                s.value +=y.noTank_steam;
+                s.value += y.noTank_steam;
                 break;
               case "CLEANING":
-                s.value +=y.noTank_clean;
+                s.value += y.noTank_clean;
                 break;
               case "OFFHIRE":
               case "REPAIR":
-                s.value +=y.noTank_repair;
+                s.value += y.noTank_repair;
                 break;
               case "STORAGE":
-                s.value +=y.noTank_storage;
+                s.value += y.noTank_storage;
                 break;
               case "IN_SURVEY":
-                s.value +=y.noTank_in_survey;
+                s.value += y.noTank_in_survey;
                 break;
             }
           }
         });
 
-        });
-          //let s = singleValues.find(s=>s.name===r.)
       });
+      //let s = singleValues.find(s=>s.name===r.)
+    });
 
-      this.horizontalBarOptions.single=singleValues.filter((s:{name:string})=>s.name!="Offhire");
+    this.horizontalBarOptions.single = singleValues.filter((s: { name: string }) => s.name != "Offhire");
 
-   }
-   InitialDefaultData()
-   {
+  }
+  InitialDefaultData() {
     // pie chart
     this.pieChartOptions = {
       chart: {
@@ -1200,14 +1186,14 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       },
     };
 
-    this.horizontalBarOptions={
-      hbarxAxisLabel:this.translatedLangText.NO_OF_TANKS,
-      showXAxis : true,
-      showYAxis : true,
-      gradient : false,
-      showLegend : false,
-      showXAxisLabel : true,
-      showYAxisLabel : true,
+    this.horizontalBarOptions = {
+      hbarxAxisLabel: this.translatedLangText.NO_OF_TANKS,
+      showXAxis: true,
+      showYAxis: true,
+      gradient: false,
+      showLegend: false,
+      showXAxisLabel: true,
+      showYAxisLabel: true,
       legendPosition: LegendPosition.Right,
       timeline : true,
       colorScheme:  {
@@ -1216,9 +1202,9 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
         selectable: true,
         name: 'Customer Usage',
       },
-      showLabels : true,
+      showLabels: true,
       // data goes here
-       single : [
+      single: [
         {
           name: 'China',
           value: 2243772,
@@ -1246,6 +1232,6 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       ]
     };
 
-   }
-  
+  }
+
 }

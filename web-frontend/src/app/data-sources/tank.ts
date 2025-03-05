@@ -10,6 +10,12 @@ export class TankItem {
   public tariff_depot_guid?: string;
   public unit_type?: string;
   public description?: string;
+  public preinspect?: boolean;
+  public lift_on?: boolean;
+  public lift_off?: boolean;
+  public gate_in?: boolean;
+  public gate_out?: boolean;
+  public iso_format?: boolean;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -21,6 +27,12 @@ export class TankItem {
     this.tariff_depot_guid = item.tariff_depot_guid;
     this.unit_type = item.unit_type;
     this.description = item.description || '';
+    this.preinspect = item.preinspect;
+    this.lift_on = item.lift_on;
+    this.lift_off = item.lift_off;
+    this.gate_in = item.gate_in;
+    this.gate_out = item.gate_out;
+    this.iso_format = item.iso_format;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -41,6 +53,12 @@ export const GET_TANK_Where = gql`
       unit_type
       tariff_depot_guid
       description
+      preinspect
+      lift_on
+      lift_off
+      gate_in
+      gate_out
+      iso_format
     }
   }
 `;
@@ -51,6 +69,12 @@ export const GET_TANK = gql`
       guid
       unit_type
       description
+      preinspect
+      lift_on
+      lift_off
+      gate_in
+      gate_out
+      iso_format
     }
   }
 `;
@@ -78,10 +102,6 @@ export class TankDS extends BaseDataSource<TankItem> {
           return tankList;
         })
       );
-    // .subscribe((result) => {
-    //   this.itemsSubject.next(result.queryTank);
-    //   this.totalCount = result.totalCount;
-    // });
   }
 
   search(where?: any, order?: any): Observable<TankItem[]> {
@@ -103,12 +123,5 @@ export class TankDS extends BaseDataSource<TankItem> {
           return tankList;
         })
       );
-    // .subscribe((result) => {
-    //   this.itemsSubject.next(result.queryTank);
-    //   this.totalCount = result.totalCount;
-    // });
   }
-
-
-
 }

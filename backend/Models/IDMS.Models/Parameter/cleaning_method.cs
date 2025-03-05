@@ -14,11 +14,12 @@ namespace IDMS.Models.Parameter
         [Key]
         [IsProjected(true)]
         public string? guid { get; set; }
-
         public string? name { get; set; }
-
         public int? sequence { get; set; }
         public string? description { get; set; }
+        [UseFiltering]
         public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
+        [UseFiltering]
+        public IEnumerable<cleaning_method_formula?>? cleaning_method_formula { get; set; }
     }
 }

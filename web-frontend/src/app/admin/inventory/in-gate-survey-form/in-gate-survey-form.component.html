@@ -5,6 +5,20 @@
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList"
         [active_item]="langText.SURVEY_FORM"></app-breadcrumb>
     </div>
+    @if (this.getBackgroundColorFromNature()) {
+    <div class="row">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card l-bg-{{this.getBackgroundColorFromNature()}} pt-1 pb-1">
+          <div class="body">
+            <mat-card-content class="d-flex align-items-center text-white">
+              <mat-icon>error</mat-icon>
+              <mat-label class="m-l-10">{{this.getNatureInGateAlert()}}</mat-label>
+            </mat-card-content>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
@@ -1936,7 +1950,8 @@
                               <div class="row">
                                 <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
+                                    <mat-label>{{translatedLangText.AIRLINE_VALVE_CONNECTIONS}}
+                                      {{translatedLangText.SPECIFICATION}}</mat-label>
                                     <mat-select formControlName="airline_valve_conn_spec_cv">
                                       @for (codeValue of manlidCoverCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>

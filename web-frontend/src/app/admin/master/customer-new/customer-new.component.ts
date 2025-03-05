@@ -393,24 +393,19 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.updateData(existContact!);
       this.refreshBillingBranches();
     }
-
   }
+
   PatchSelectedRowValue() {
     this.historyState = history.state;
-
     if (this.historyState.selectedRow != null) {
-
       this.selectedCustomerCmp = this.historyState.selectedRow;
-
-      // if(this.customer_companyList)
-      //   {
-      //     this.customer_companyList = this.customer_companyList.filter(data=>data.guid!==this.selectedCustomerCmp?.guid);
-      //   }
-
       if (this.historyState.customerCompany) {
         this.PatchCustomerCompanyData();
       }
       else {
+        this.countryCodesFiltered = this.countryCodes.filter((country: any) =>
+          country.code.toLowerCase().includes(this.selectedCustomerCmp?.country_code?.toLowerCase()) || country.country.toLowerCase().includes(this.selectedCustomerCmp?.country_code?.toLowerCase())
+        );
         const contactPerson = this.selectedCustomerCmp?.cc_contact_person?.filter(value => value.delete_dt == null);
         this.selectedCustomerCmp!.cc_contact_person = contactPerson;
         this.ccForm?.patchValue({
@@ -418,6 +413,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           customer_code: this.selectedCustomerCmp?.code,
           customer_name: this.selectedCustomerCmp?.name,
           customer_type: this.getCustomerTypeCvObject(this.selectedCustomerCmp?.type_cv!),
+          country_code: this.countryCodesFiltered[0],
           phone: this.selectedCustomerCmp?.phone,
           email: this.selectedCustomerCmp?.email,
           web: this.selectedCustomerCmp?.website,
@@ -462,27 +458,21 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
     this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
       this.currencyList = data;
-
-
       if (this.historyState.customerCompany) {
         var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
         this.ccForm?.patchValue({
           currency: this.getCurrency(cust.currency_guid!),
         })
-      }
-      else if (this.selectedCustomerCmp) {
+      } else if (this.selectedCustomerCmp) {
         this.ccForm?.patchValue({
           currency: this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
         })
       }
-
     });
 
 
     this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
       this.tankItemList = data;
-
-
       if (this.historyState.customerCompany) {
         var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
         this.ccForm?.patchValue({
@@ -496,9 +486,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       }
     })
 
-
     const queries = [
-
       { alias: 'customerTypeCv', codeValType: 'CUSTOMER_TYPE' },
       { alias: 'satulationCv', codeValType: 'PERSON_TITLE' },
     ];
@@ -518,12 +506,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
     this.cvDS.connectAlias('satulationCv').subscribe(data => {
       this.satulationCvList = data;
-
-
     });
-
   }
-
 
   GetRepairOrDamage(repairDamageList: TepDamageRepairItem[], codeType: Number): any[] {
     var retval: any[] = [];
@@ -828,7 +812,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     cust.email = this.ccForm?.get("email")?.value;
     cust.remarks = this.ccForm?.get("remarks")?.value;
     cust.website = this.ccForm?.get("web")?.value;
-    // cust.country_code = this.ccForm?.get("country_code")?.value;
+    cust.country_code = this.ccForm?.get("country_code")?.value?.code;
     cust.phone = this.ccForm?.get("phone")?.value;
     cust.postal = this.ccForm?.get("postal_code")?.value;
     if (this.ccForm?.get("default_profile")?.value) {
@@ -915,7 +899,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       selectedCusCmp.email = this.ccForm?.get("email")?.value;
       selectedCusCmp.remarks = this.ccForm?.get("remarks")?.value;
       selectedCusCmp.website = this.ccForm?.get("web")?.value;
-      // selectedCusCmp.country_code = this.ccForm?.get("country_code")?.value;
+      selectedCusCmp.country_code = this.ccForm?.get("country_code")?.value?.code;
       selectedCusCmp.phone = this.ccForm?.get("phone")?.value;
       selectedCusCmp.postal = this.ccForm?.get("postal_code")?.value;
 
@@ -1010,14 +994,14 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.ccDS.search(where, {}, 100).subscribe(b => {
         var branches = b;
         //check and remove the existing Billing branch if new billing branch selected.
-        
-        if (branches.length>0) {
-          branches.forEach(b=>{
-          if (b?.guid !== billing_branch?.branchCustomer?.guid!) {
-            let exist_billing_branch = new BillingBranchesItem();
-            exist_billing_branch.branchCustomer = new BillingCustomerItem(b);
-            exist_billing_branch.branchCustomer.action = "CANCEL";
-            exist_billing_branch.branchCustomer.main_customer_guid = "";
+
+        if (branches.length > 0) {
+          branches.forEach(b => {
+            if (b?.guid !== billing_branch?.branchCustomer?.guid!) {
+              let exist_billing_branch = new BillingBranchesItem();
+              exist_billing_branch.branchCustomer = new BillingCustomerItem(b);
+              exist_billing_branch.branchCustomer.action = "CANCEL";
+              exist_billing_branch.branchCustomer.main_customer_guid = "";
 
               delete exist_billing_branch.branchCustomer.update_by;
               delete exist_billing_branch.branchCustomer.update_dt;
@@ -1027,26 +1011,26 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
               delete exist_billing_branch.branchCustomer.cc_contact_person;
               delete exist_billing_branch.branchCustomer.currency;
 
-            billingBranches.push(exist_billing_branch);
-          }
-        });
-      }
-      //   billingBranches.push(billing_branch);
-      // });
+              billingBranches.push(exist_billing_branch);
+            }
+          });
+        }
+        //   billingBranches.push(billing_branch);
+        // });
 
 
-      delete selectedCusCmp.update_by;
-      delete selectedCusCmp.update_dt;
-      delete selectedCusCmp.create_by;
-      delete selectedCusCmp.create_dt;
-      delete selectedCusCmp.delete_dt;
-      delete selectedCusCmp.cc_contact_person;
-      delete selectedCusCmp.storing_order_tank;
-      delete selectedCusCmp.storing_orders;
-      
+        delete selectedCusCmp.update_by;
+        delete selectedCusCmp.update_dt;
+        delete selectedCusCmp.create_by;
+        delete selectedCusCmp.create_dt;
+        delete selectedCusCmp.delete_dt;
+        delete selectedCusCmp.cc_contact_person;
+        delete selectedCusCmp.storing_order_tank;
+        delete selectedCusCmp.storing_orders;
 
 
-      var existContactPersons = existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
+
+        var existContactPersons = existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
 
         this.ccDS.UpdateCustomerCompany(selectedCusCmp, existContactPersons, billingBranches).subscribe(result => {
           var count = result.data.updateCustomerCompany;

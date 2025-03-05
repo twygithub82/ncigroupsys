@@ -45,20 +45,11 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB
 
         }
 
-        //public DbSet<IDMS.Models.Parameter.EntityClass_CleaningGroupWithCleanProcedure> cleaning_group { get; set; }
-        //public DbSet<IDMS.Models.Parameter.EntityClass_CleaningProcedureWithSteps> cleaning_procedure { get; set; }
-
-        //public DbSet<IDMS.Models.Parameter.EntityClass_CleaningStep> cleaning_steps { get; set; }
-
-        //public DbSet<IDMS.Models.Parameter.EntityClass_CleaningProcedureSteps> cleaning_procedure_steps { get; set; }
-
-        public DbSet<IDMS.Models.Parameter.cleaning_method> cleaning_method { get; set; }
-
-        public DbSet<IDMS.Models.Parameter.cleaning_category> cleaning_category { get; set; }
-
-        public DbSet<IDMS.Models.Master.customer_company> customer_company { get; set; }
-
-        
-        public DbSet<IDMS.Models.Package.customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
+        public DbSet<cleaning_method> cleaning_method { get; set; }
+        public DbSet<cleaning_category> cleaning_category { get; set; }
+        public DbSet<cleaning_formula> cleaning_formula { get; set; }
+        public DbSet<cleaning_method_formula> cleaning_method_formula { get; set; }
+        public DbSet<customer_company> customer_company { get; set; }
+        public DbSet<customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
     }
 }

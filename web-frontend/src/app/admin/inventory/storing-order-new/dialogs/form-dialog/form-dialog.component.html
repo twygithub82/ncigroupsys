@@ -19,7 +19,7 @@
                 <mat-label>{{data.translatedLangText.UNIT_TYPE}}</mat-label>
                 <mat-select formControlName="unit_type_guid" required>
                   @for (option of data.populateData.unit_typeList; track option) {
-                  <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
+                  <mat-option [value]="option">{{option.unit_type}}</mat-option>
                   }
                 </mat-select>
                 @if (storingOrderTankForm.get('unit_type_guid')?.hasError('required')) {

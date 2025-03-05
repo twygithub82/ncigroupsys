@@ -417,7 +417,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'STORAGE',
     'RO_GENERATED'
   ];
-  allowRemovePurposeStatuses: string[] = ['PENDING', 'CANCELED', 'APPROVED'];
+  allowRemovePurposeStatuses: string[] = ['PENDING', 'CANCELED', 'APPROVED', 'NO_ACTION'];
 
   surveyForm?: UntypedFormGroup;
 
@@ -751,6 +751,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           console.log(`sot: `, data)
           this.sot = data[0];
+          
+
           this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
           this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
             console.log(`packageDepot: `, data)
@@ -939,7 +941,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return Utility.convertEpochToDateTimeStr(input);
   }
 
-  displayDate(input: number | undefined): string | undefined {
+  displayDate(input: any): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
 
@@ -961,21 +963,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getBackgroundColorFromNature() {
-    var color = 'orange';
-    let natureCv = this.sot?.tariff_cleaning?.nature_cv?.toUpperCase();
-    switch (natureCv) {
-      case "HAZARDOUS":
-        color = 'purple';
-        break;
-      case "TOXIC":
-        color = 'green';
-        break;
-      case "GASES":
-        color = 'cyan';
-        break;
-    }
-
-    return color;
+    return Utility.getBackgroundColorFromNature(this.sot?.tariff_cleaning?.nature_cv?.toUpperCase());
   }
 
   getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
@@ -1051,6 +1039,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   updatePurposeDialog(event: Event, type: string, action: string) {
     this.preventDefault(event);
+    // TODO :: Add purpose logic
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1634,16 +1623,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const purposes = {
       storage: sot.purpose_storage,
       cleaning: sot.purpose_cleaning,
-      steam: sot.purpose_steam,
+      steaming: sot.purpose_steam,
       repair: sot.purpose_repair_cv
     };
 
     // Filter out the selected purpose and check the others
     for (const [key, value] of Object.entries(purposes)) {
-      if (key !== selectedPurpose) {
-        if ((key === 'repair' && value !== '') || (key !== 'repair' && value)) {
-          // At least one other purpose exists
-          return false;
+      if (key === selectedPurpose) {
+        if (selectedPurpose !== 'repair') {
+          return !value;
+        } else {
+          return value === '';
         }
       }
     }
@@ -1655,11 +1645,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   canRemovePurpose(purpose: string) {
     if (this.sot) {
       if (purpose === 'steaming') {
-        return this.steamItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return !this.steamItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       } else if (purpose === 'cleaning') {
-        return this.cleaningItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && this.residueItem?.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return !this.cleaningItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && !this.residueItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       } else if (purpose === 'repair') {
-        return !this.repairItem.length || this.repairItem.some(item => this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        return !this.repairItem.length || !this.repairItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
       }
     }
     return true;
@@ -1667,8 +1657,19 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canAddPurpose(purpose: string) {
     if (this.sot) {
-      return this.allowAddPurposeTankStatuses.includes(this.sot.tank_status_cv || '');
+      if (this.allowAddPurposeTankStatuses.includes(this.sot.tank_status_cv || '')) {
+        if (purpose === 'steaming') {
+          return this.isNoPurpose(this.sot, 'steaming') && this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'repair');
+        } else if (purpose === 'cleaning') {
+          return this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'steaming');
+        } else if (purpose === 'repair') {
+          return this.isNoPurpose(this.sot, 'repair') && this.isNoPurpose(this.sot, 'steaming');
+        } else if (purpose === 'storage') {
+          return this.isNoPurpose(this.sot, 'storage');
+        }
+      }
+      return false;
     }
-    return true;
+    return false;
   }
 }
