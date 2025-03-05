@@ -1445,10 +1445,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return output;
   }
 
-  getCheckDigit(tank_no: string): boolean {
-    return Utility.verifyFormattedIsoContainerCheckDigit(tank_no);
-  }
-
   getTestTypeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
   }

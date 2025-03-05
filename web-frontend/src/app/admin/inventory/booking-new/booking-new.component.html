@@ -98,12 +98,6 @@
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                      <input matInput formControlName="job_no">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="eir_picker">
                         <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
@@ -111,17 +105,6 @@
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                       <mat-date-range-picker #eir_picker></mat-date-range-picker>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.REPAIR_COMPLETION_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="repair_dt_picker">
-                        <input matStartDate placeholder="Start date" formControlName="repair_dt_start">
-                        <input matEndDate placeholder="End date" formControlName="repair_dt_end">
-                      </mat-date-range-input>
-                      <mat-datepicker-toggle matSuffix [for]="repair_dt_picker"></mat-datepicker-toggle>
-                      <mat-date-range-picker #repair_dt_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">

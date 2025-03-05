@@ -2553,6 +2553,9 @@ const GET_STORING_ORDER_TANKS_FOR_TRANSFER = gql`
           guid
           delete_dt
         }
+        tank_info {
+          yard_cv
+        }
       }
       pageInfo {
         endCursor

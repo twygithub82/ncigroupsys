@@ -114,7 +114,6 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    RO_NO: 'COMMON-FORM.RO-NO',
     YARD: 'COMMON-FORM.YARD'
   }
 
@@ -181,7 +180,6 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       customer_code: this.customerCodeControl,
       last_cargo: this.lastCargoControl,
       eir_no: [''],
-      ro_no: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
       tank_no: [''],
@@ -302,7 +300,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       in_gate: {
         some: {
           delete_dt: { eq: null },
-          eir_status_cv: { in: ["PENDING", "PUBLISHED"] }
+          eir_status_cv: { in: ["PUBLISHED"] }
         }
       }
     };

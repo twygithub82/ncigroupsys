@@ -171,10 +171,10 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="tank_status_cv">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <span
                       class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.tank_status_cv)}}
                   </mat-cell>
@@ -193,6 +193,14 @@
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <span class="mobile-label">{{translatedLangText.PURPOSE}}:</span>{{displayTankPurpose(row)}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="yard_cv">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    {{translatedLangText.LOCATION}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    <span class="mobile-label">{{translatedLangText.LOCATION}}:</span>{{getYardDescription(row?.tank_info?.yard_cv)}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

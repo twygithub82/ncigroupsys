@@ -1,7 +1,7 @@
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -44,6 +44,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-booking-new',
@@ -190,7 +191,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private http: HttpClient
   ) {
     super();
     this.translateLangText();
@@ -212,7 +214,40 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.initSearchForm();
     this.initializeValueChanges();
     this.loadData();
+    // this.generatePdf(this.apiUrl).subscribe({
+    //   next: (response) => {
+    //     const blob = new Blob([response], { type: 'application/pdf' });
+    //     const url = window.URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = 'wikipedia.pdf';
+    //     document.body.appendChild(a);
+    //     a.click();
+    //     document.body.removeChild(a);
+    //     window.URL.revokeObjectURL(url);
+    //   },
+    //   error: (error) => {
+    //     console.error('PDF generation failed', error);
+    //   }
+    // });
   }
+  // private apiUrl = 'https://api.pdfshift.io/v3/convert/pdf';
+  // private apiKey = 'sk_29cb1891b48874ee0e4225d7058b93297af8f6da';
+
+  // generatePdf(url: string): Observable<Blob> {
+  //   const headers = new HttpHeaders({
+  //     Authorization: 'Basic ' + btoa(`api:${this.apiKey}`),
+  //     'Content-Type': 'application/json',
+  //   });
+
+  //   const body = {
+  //     source: url,
+  //     landscape: false,
+  //     use_print: false
+  //   };
+
+  //   return this.http.post(this.apiUrl, body, { headers, responseType: 'blob' });
+  // }
 
   initSearchForm() {
     this.searchForm = this.fb.group({
@@ -224,11 +259,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       capacity: [''],
       book_type_cv: [''],
       eir_no: [''],
-      job_no: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
-      repair_dt_start: [''],
-      repair_dt_end: [''],
       tare_weight: [''],
       tank_status_cv: [''],
       yard_cv: ['']
@@ -446,7 +478,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       if (this.searchForm!.get('yard_cv')?.value) {
         igSearch.yard_cv = { contains: this.searchForm!.get('yard_cv')?.value }
       }
-      
+
       if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
         const eirDtStart = this.searchForm?.get('eir_dt_start')?.value;
         const eirDtEnd = this.searchForm?.get('eir_dt_end')?.value;
