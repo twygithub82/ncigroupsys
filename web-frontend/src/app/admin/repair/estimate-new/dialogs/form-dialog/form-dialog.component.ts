@@ -177,6 +177,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       repair: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)),
       material_cost: this.repairPart.material_cost
     });
+    this.onRepairSelectionChange({ value: this.repairPartForm.get('repair')?.value || [] });
   }
 
   resetForm() {
