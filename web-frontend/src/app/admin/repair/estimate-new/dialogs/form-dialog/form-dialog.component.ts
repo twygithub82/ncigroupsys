@@ -89,6 +89,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   valueChangesDisabled: boolean = false;
   subgroupNameCvList?: CodeValuesItem[];
   existedPart?: RepairPartItem[];
+  selected4XRepair = "";
 
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
@@ -406,6 +407,37 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       quantity?.enable();
       hour?.enable();
     }
+  }
+
+  onRepairSelectionChange(event: any) {
+    if (event.value.includes('4X')) {
+      this.selected4XRepair = "4X";
+    } else {
+      if (event.value.length) {
+        this.selected4XRepair = "oth";
+      } else {
+        this.selected4XRepair = "";
+      }
+    }
+  }
+
+  isDisabledOption(compareValue?: string) {
+    if (!this.selected4XRepair) return false;
+
+    if (this.selected4XRepair === "oth") {
+      if (compareValue !== "4X") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (this.selected4XRepair === "4X") {
+      if (compareValue !== "4X") {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 
   REPDamage(damages: string[]): RPDamageRepairItem[] {
