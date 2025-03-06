@@ -29,6 +29,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 
 export interface DialogData {
@@ -65,8 +66,7 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-
-
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {

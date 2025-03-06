@@ -35,6 +35,7 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ConfirmDialogComponent } from './confirm/confirm.component';
 
 export interface DialogData {
@@ -80,6 +81,7 @@ interface Condition {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {

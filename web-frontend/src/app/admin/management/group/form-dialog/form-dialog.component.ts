@@ -26,18 +26,15 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageResidueItem[];
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 
@@ -69,7 +66,7 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {

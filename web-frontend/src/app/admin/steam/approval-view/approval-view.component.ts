@@ -45,6 +45,7 @@ import { SteamDS, SteamItem, SteamPartRequest, SteamStatusRequest } from 'app/da
 import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { UserItem } from 'app/data-sources/user';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -82,7 +83,8 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    TlxFormFieldComponent
+    TlxFormFieldComponent,
+    PreventNonNumericDirective
   ]
 })
 export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

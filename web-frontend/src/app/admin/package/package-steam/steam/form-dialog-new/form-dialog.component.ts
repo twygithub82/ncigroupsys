@@ -28,6 +28,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { PackageSteamingDS, PackageSteamingItem } from 'app/data-sources/package-steam';
 import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { tempRangeValidator } from '../validators/temp-range.validator';
 
 export interface DialogData {
@@ -74,8 +75,7 @@ interface Condition {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-
-
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {

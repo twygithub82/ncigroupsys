@@ -1,45 +1,41 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject, OnInit,ViewChild } from '@angular/core';
-import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, Inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatInputModule } from '@angular/material/input';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TranslateModule,TranslateService } from '@ngx-translate/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Utility } from 'app/utilities/utility';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { DatePipe } from '@angular/common';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { Apollo } from 'apollo-angular';
-import { CommonModule } from '@angular/common';
-import { startWith, debounceTime, tap } from 'rxjs';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatTableModule } from '@angular/material/table';
-import { MatSortModule } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
-import { PackageResidueDS,PackageResidueItem } from 'app/data-sources/package-residue';
+import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-company-category';
+import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
-  selectedValue?:number;
+  selectedValue?: number;
   // item: StoringOrderTankItem;
-   langText?: any;
-   selectedItems:PackageResidueItem[];
+  langText?: any;
+  selectedItems: PackageResidueItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -65,46 +61,40 @@ export interface DialogData {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
     MatTabsModule,
-    MatTabGroup,
-    MatTabHeader,
-    MatTabBody,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     //  'select',
-      // 'img',
-       'fName',
-       'lName',
-       'email',
-       'gender',
-      // 'bDate',
-      // 'mobile',
-      // 'actions',
-    ];
+    // 'img',
+    'fName',
+    'lName',
+    'email',
+    'gender',
+    // 'bDate',
+    // 'mobile',
+    // 'actions',
+  ];
 
   action: string;
   index?: number;
   dialogTitle?: string;
 
-  packageResidueItems?: PackageResidueItem[]=[];
-  packageResidueDS?:PackageResidueDS;
-  CodeValuesDS?:CodeValuesDS;
+  packageResidueItems?: PackageResidueItem[] = [];
+  packageResidueDS?: PackageResidueDS;
+  CodeValuesDS?: CodeValuesDS;
 
-  storageCalCvList:CodeValuesItem[]=[];
+  storageCalCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -113,8 +103,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   pcForm: UntypedFormGroup;
   storageCalControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-  profileNameControl= new UntypedFormControl();
-  custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
+  profileNameControl = new UntypedFormControl();
+  custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
 
   translatedLangText: any = {};
   langText = {
@@ -123,7 +113,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -171,39 +161,39 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    CUSTOMER_COMPANY:"COMMON-FORM.CUSTOMER-COMPANY",
-    ALIAS_NAME:"COMMON-FORM.ALIAS-NAME",
-    AGREEMENT_DUE_DATE:"COMMON-FORM.AGREEMENT-DUE-DATE",
-    BILLING_PROFILE:"COMMON-FORM.BILLING-PROFILE",
-    PACKAGE_DEPOT:"MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
-    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
-    VIEW:'COMMON-FORM.VIEW',
-    DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
-    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
-    PREINSPECTION_COST:"COMMON-FORM.PREINSPECTION-COST",
-    LOLO_COST:"COMMON-FORM.LOLO-COST",
-    STORAGE_COST:"COMMON-FORM.STORAGE-COST",
-    FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
-    STANDARD_COST:"COMMON-FORM.STANDARD-COST",
-    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
-    STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    CUSTOMER_COMPANY: "COMMON-FORM.CUSTOMER-COMPANY",
+    ALIAS_NAME: "COMMON-FORM.ALIAS-NAME",
+    AGREEMENT_DUE_DATE: "COMMON-FORM.AGREEMENT-DUE-DATE",
+    BILLING_PROFILE: "COMMON-FORM.BILLING-PROFILE",
+    PACKAGE_DEPOT: "MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    VIEW: 'COMMON-FORM.VIEW',
+    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST: "COMMON-FORM.LOLO-COST",
+    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
-    COST:"COMMON-FORM.COST",
-    
+    COST: "COMMON-FORM.COST",
+
   };
 
-  
+
   selectedItems: PackageResidueItem[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
-  
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -218,7 +208,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.pcForm = this.createPackageResidue();
     this.packageResidueDS = new PackageResidueDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
-    this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
@@ -227,9 +217,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   createPackageResidue(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      cost_cust:[''],
-      cost_standard:['-'],
-      remarks:[''],
+      cost_cust: [''],
+      cost_standard: ['-'],
+      remarks: [''],
 
     });
   }
@@ -252,28 +242,27 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   //       //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
   //     });
   //     this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
-    
+
 
   //   }
   // }
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
-}
+  }
 
   displayDateFromEpoch(epoch: any) {
-    if(epoch)
-    {
-    var updatedt= Number(epoch);
-    
-    const date = new Date(updatedt! * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();   
+    if (epoch) {
+      var updatedt = Number(epoch);
 
-   // Replace the '/' with '-' to get the required format
- 
+      const date = new Date(updatedt! * 1000);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = date.toLocaleString('en-US', { month: 'short' });
+      const year = date.getFullYear();
 
-    return `${day}/${month}/${year}`;
+      // Replace the '/' with '-' to get the required format
+
+
+      return `${day}/${month}/${year}`;
     }
     return `-`;
 
@@ -284,62 +273,57 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-  loadData()
-  {
+  loadData() {
     this.queryDepotCost();
 
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-     
+
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-      this.storageCalCvList=data;
-   
+      this.storageCalCvList = data;
 
-    if(this.selectedItems.length==1)
-    {
-      var pckResidueItm = this.selectedItems[0];
 
-      this.pcForm.patchValue({
-        cost_cust: pckResidueItm.cost?.toFixed(2),
-        cost_standard:pckResidueItm.tariff_residue?.cost?.toFixed(2),
-        remarks:pckResidueItm.remarks,
-      });
+      if (this.selectedItems.length == 1) {
+        var pckResidueItm = this.selectedItems[0];
 
-    }
-  });
+        this.pcForm.patchValue({
+          cost_cust: pckResidueItm.cost?.toFixed(2),
+          cost_standard: pckResidueItm.tariff_residue?.cost?.toFixed(2),
+          remarks: pckResidueItm.remarks,
+        });
 
-    
-    
+      }
+    });
+
+
+
   }
 
-  queryDepotCost()
-  {
+  queryDepotCost() {
     // const where:any={ customer_company: { guid: { eq: this.selectedItem.guid } } };
-    
+
     // this.packageDepotDS?.SearchPackageDepot(where,{},50).subscribe((data:PackageDepotItem[])=>{
     //   this.packageDepotItems=data;
 
     // });
   }
-  
-  selectStorageCalculateCV_Description(valCode?:string):CodeValuesItem
-  {
+
+  selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
-    if(this.storageCalCvList.length>0)
-    {
-      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode)|| new CodeValuesItem();
-      
+    if (this.storageCalCvList.length > 0) {
+      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
+
       // If no match is found, description will be undefined, so you can handle it accordingly
-      
+
     }
     return valCodeObject;
-    
-  }
-  
 
-  
+  }
+
+
+
   // selectClassNo(value:string):void{
   //   const returnDialog: DialogData = {
   //     selectedValue:value
@@ -348,8 +332,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   //   this.dialogRef.close(returnDialog);
   // }
 
-  canEdit()
-  {
+  canEdit() {
     return true;
   }
 
@@ -359,7 +342,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        
+
       });
     }
   }
@@ -368,50 +351,44 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
 
-    if(this.selectedItems.length==1)
-    {
-       var pckResidueItem = new PackageResidueItem(this.selectedItems[0]);
-       pckResidueItem.remarks =this.pcForm!.value["remarks"]||"";
-       pckResidueItem.cost =Number(this.pcForm!.value["cost_cust"]);
-       pckResidueItem.tariff_residue=undefined;
-       pckResidueItem.customer_company=undefined;
-       this.packageResidueDS?.updatePackageResidue(pckResidueItem).subscribe(result=>{
-        if(result.data.updatePackageResidue>0)
-        {
-         
-                  console.log('valid');
-                  this.dialogRef.close(result.data.updatePackageResidue);
-  
+    if (this.selectedItems.length == 1) {
+      var pckResidueItem = new PackageResidueItem(this.selectedItems[0]);
+      pckResidueItem.remarks = this.pcForm!.value["remarks"] || "";
+      pckResidueItem.cost = Number(this.pcForm!.value["cost_cust"]);
+      pckResidueItem.tariff_residue = undefined;
+      pckResidueItem.customer_company = undefined;
+      this.packageResidueDS?.updatePackageResidue(pckResidueItem).subscribe(result => {
+        if (result.data.updatePackageResidue > 0) {
+
+          console.log('valid');
+          this.dialogRef.close(result.data.updatePackageResidue);
+
         }
       });
     }
-    else
-    {
-    let pd_guids:string[] = this.selectedItems
-    .map(cc => cc.guid)
-    .filter((guid): guid is string => guid !== undefined);
+    else {
+      let pd_guids: string[] = this.selectedItems
+        .map(cc => cc.guid)
+        .filter((guid): guid is string => guid !== undefined);
 
-    var cost = -1;
-    if (this.pcForm!.value["cost_cust"]) cost=Number(this.pcForm!.value["cost_cust"]);
+      var cost = -1;
+      if (this.pcForm!.value["cost_cust"]) cost = Number(this.pcForm!.value["cost_cust"]);
 
-    var remarks = this.pcForm!.value["remarks"]||"";
-     if(pd_guids.length==1)
-     {
-       if(!remarks)
-       {
-          remarks="--";
-       }
-     }
-      this.packageResidueDS?.updatePackageResidues(pd_guids,cost,remarks).subscribe(result=>{
-      if(result.data.updatePackageResidues>0)
-      {
-       
-                console.log('valid');
-                this.dialogRef.close(result.data.updatePackageResidues);
-
+      var remarks = this.pcForm!.value["remarks"] || "";
+      if (pd_guids.length == 1) {
+        if (!remarks) {
+          remarks = "--";
+        }
       }
-    });
-  }
+      this.packageResidueDS?.updatePackageResidues(pd_guids, cost, remarks).subscribe(result => {
+        if (result.data.updatePackageResidues > 0) {
+
+          console.log('valid');
+          this.dialogRef.close(result.data.updatePackageResidues);
+
+        }
+      });
+    }
 
     // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
     // // tc.guid='';
@@ -430,16 +407,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     // this.packageDepotDS?.updatePackageDepot(pdItem).subscribe(result=>{
     //   if(result.data.updatePackageDepot>0)
     //   {
-       
+
     //             console.log('valid');
     //             this.dialogRef.close(result.data.updatePackageDepot);
 
     //   }
     // });
-    
+
 
   }
-  
+
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
@@ -453,5 +430,5 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  
+
 }

@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,14 +25,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { Utility } from 'app/utilities/utility';
-import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 
 @Component({
@@ -61,6 +62,7 @@ import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.compone
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    PreventNonNumericDirective
   ]
 })
 export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter

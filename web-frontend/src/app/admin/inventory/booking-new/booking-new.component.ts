@@ -45,6 +45,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { Observable } from 'rxjs';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 @Component({
   selector: 'app-booking-new',
@@ -76,6 +77,7 @@ import { Observable } from 'rxjs';
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+    PreventNonNumericDirective
   ]
 })
 export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

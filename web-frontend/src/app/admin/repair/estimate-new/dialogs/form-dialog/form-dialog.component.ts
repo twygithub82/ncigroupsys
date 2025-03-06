@@ -30,6 +30,7 @@ import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, Subject, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 
 export interface DialogData {
@@ -67,6 +68,7 @@ export interface DialogData {
     MatAutocompleteModule,
     CommonModule,
     MatProgressSpinnerModule,
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -87,6 +89,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   valueChangesDisabled: boolean = false;
   subgroupNameCvList?: CodeValuesItem[];
   existedPart?: RepairPartItem[];
+  selected4XRepair = "";
 
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
@@ -174,6 +177,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       repair: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)),
       material_cost: this.repairPart.material_cost
     });
+    this.onRepairSelectionChange({ value: this.repairPartForm.get('repair')?.value || [] });
   }
 
   resetForm() {
@@ -404,6 +408,37 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       quantity?.enable();
       hour?.enable();
     }
+  }
+
+  onRepairSelectionChange(event: any) {
+    if (event.value.includes('4X')) {
+      this.selected4XRepair = "4X";
+    } else {
+      if (event.value.length) {
+        this.selected4XRepair = "oth";
+      } else {
+        this.selected4XRepair = "";
+      }
+    }
+  }
+
+  isDisabledOption(compareValue?: string) {
+    if (!this.selected4XRepair) return false;
+
+    if (this.selected4XRepair === "oth") {
+      if (compareValue !== "4X") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (this.selected4XRepair === "4X") {
+      if (compareValue !== "4X") {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 
   REPDamage(damages: string[]): RPDamageRepairItem[] {

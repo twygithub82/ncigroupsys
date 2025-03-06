@@ -56,6 +56,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 //import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
 
 //import { NgxMatMomentModule } from '@angular-material-components/moment-adapter';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
 @Component({
   selector: 'job-order-task-monitor',
@@ -73,7 +74,6 @@ import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
     MatCheckboxModule,
     MatSelectModule,
     MatOptionModule,
-    //MatDatepickerModule,
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
@@ -90,15 +90,10 @@ import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
     MatMenuModule,
     MatCardModule,
     MatSlideToggleModule,
-    //  NgxMatDatetimePickerModule,
-    // MatDatepickerModule,
     MatNativeDateModule,
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
-    // NgxMatNativeDateModule,
-    // NgxMatTimepickerModule,
-    // NgxMatMomentModule
-
+    PreventNonNumericDirective
   ]
 })
 export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

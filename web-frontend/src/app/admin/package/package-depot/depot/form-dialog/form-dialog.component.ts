@@ -26,6 +26,7 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
@@ -68,7 +69,7 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {

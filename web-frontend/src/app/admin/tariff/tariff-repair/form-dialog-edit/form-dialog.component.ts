@@ -29,6 +29,7 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 export interface DialogData {
   action?: string;
@@ -72,6 +73,7 @@ interface Condition {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {

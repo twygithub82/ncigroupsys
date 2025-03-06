@@ -42,15 +42,13 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TankDS } from 'app/data-sources/tank';
 import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffRepairItem } from 'app/data-sources/tariff-repair';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { DisplayPartGroupSection } from 'app/shared/DisplayGroupSection';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-
-
-
 
 @Component({
   selector: 'app-estimate-new',
@@ -85,8 +83,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-
-
+    PreventNonNumericDirective
   ]
 })
 export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

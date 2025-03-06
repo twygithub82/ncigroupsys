@@ -51,6 +51,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 @Component({
   selector: 'app-estimate-new',
@@ -85,7 +86,8 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    TlxFormFieldComponent
+    TlxFormFieldComponent,
+    PreventNonNumericDirective
   ]
 })
 export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
