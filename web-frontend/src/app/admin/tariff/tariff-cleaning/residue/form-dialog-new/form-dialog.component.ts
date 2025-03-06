@@ -1,40 +1,34 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject, OnInit,ViewChild } from '@angular/core';
-import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, Inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatInputModule } from '@angular/material/input';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TranslateModule,TranslateService } from '@ngx-translate/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Utility } from 'app/utilities/utility';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { DatePipe } from '@angular/common';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { Apollo } from 'apollo-angular';
-import { CommonModule } from '@angular/common';
-import { startWith, debounceTime, tap } from 'rxjs';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatTableModule } from '@angular/material/table';
-import { MatSortModule } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { ComponentUtil } from 'app/utilities/component-util';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Apollo } from 'apollo-angular';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { Utility } from 'app/utilities/utility';
+import { provideNgxMask } from 'ngx-mask';
 //import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
-import {TariffDepotItem,TariffDepotDS} from 'app/data-sources/tariff-depot';
-import { TankDS,TankItem } from 'app/data-sources/tank';
-import { elements } from 'chart.js';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { TankItem } from 'app/data-sources/tank';
+import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 
 export interface DialogData {
@@ -72,23 +66,16 @@ interface Condition {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
     MatTabsModule,
-    MatTabGroup,
-    MatTabHeader,
-    MatTabBody,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    
-    
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {

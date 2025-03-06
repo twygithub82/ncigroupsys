@@ -22,6 +22,7 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning';
 import { TariffRepairDS } from 'app/data-sources/tariff-repair';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
@@ -59,6 +60,7 @@ export interface DialogData {
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -185,9 +187,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         remarks: this.repairPartForm.get('remarks')?.value,
         create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
       }
-      const concludeLength = rep.tariff_repair?.length 
-                              ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} ` 
-                              : '';
+      const concludeLength = rep.tariff_repair?.length
+        ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
+        : '';
       rep.description = `${this.getLocationDescription(rep.location_cv)} (${rep.comment}) - ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       const returnDialog: DialogData = {

@@ -22,6 +22,7 @@ import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffRepairDS } from 'app/data-sources/tariff-repair';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -58,6 +59,7 @@ export interface DialogData {
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -106,9 +108,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      approve_qty: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}],
-      approve_hour: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}],
-      approve_cost: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}]
+      approve_qty: [{ value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair) }],
+      approve_hour: [{ value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair) }],
+      approve_cost: [{ value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair) }]
     });
   }
 

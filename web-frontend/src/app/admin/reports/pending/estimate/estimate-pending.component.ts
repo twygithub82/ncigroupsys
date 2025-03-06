@@ -43,6 +43,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import {PendingEstimateReportPdfComponent} from 'app/document-template/pdf/pending-estimate-report-pdf/pending-estimate-report-pdf.component'
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 @Component({
   selector: 'app-estimate-pending',
@@ -72,7 +73,8 @@ import {PendingEstimateReportPdfComponent} from 'app/document-template/pdf/pendi
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    PreventNonNumericDirective
   ]
 })
 export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

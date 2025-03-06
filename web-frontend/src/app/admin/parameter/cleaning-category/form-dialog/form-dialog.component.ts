@@ -22,6 +22,7 @@ import { Apollo } from 'apollo-angular';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
@@ -34,8 +35,6 @@ export interface DialogData {
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
 }
-
-
 
 @Component({
   selector: 'app-cleaning-category-form-dialog',
@@ -64,7 +63,7 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent {

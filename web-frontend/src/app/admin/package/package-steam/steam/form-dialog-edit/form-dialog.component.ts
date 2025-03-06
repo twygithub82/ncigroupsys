@@ -25,6 +25,7 @@ import { provideNgxMask } from 'ngx-mask';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
@@ -69,8 +70,7 @@ interface Condition {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-
-
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {

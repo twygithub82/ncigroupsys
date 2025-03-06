@@ -24,6 +24,7 @@ import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buf
 import { PackageLabourItem } from 'app/data-sources/package-labour';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
@@ -38,8 +39,6 @@ export interface DialogData {
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
 }
-
-
 
 @Component({
   selector: 'app-package-buffer-form-dialog',
@@ -68,6 +67,7 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent {

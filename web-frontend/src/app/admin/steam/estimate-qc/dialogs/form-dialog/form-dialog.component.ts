@@ -1,33 +1,30 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose, MatDialog } from '@angular/material/dialog';
-import { Component, Inject, OnInit } from '@angular/core';
-import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, Inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatInputModule } from '@angular/material/input';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Utility } from 'app/utilities/utility';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { DatePipe } from '@angular/common';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { Apollo } from 'apollo-angular';
-import { CommonModule } from '@angular/common';
-import { startWith, debounceTime, tap } from 'rxjs';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
-import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
-import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
-import { Direction } from '@angular/cdk/bidi';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
+import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { TariffRepairDS } from 'app/data-sources/tariff-repair';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { Utility } from 'app/utilities/utility';
+import { provideNgxMask } from 'ngx-mask';
 
 
 export interface DialogData {
@@ -62,6 +59,7 @@ export interface DialogData {
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -110,9 +108,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      approve_qty: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}],
-      approve_hour: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}],
-      approve_cost: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}]
+      approve_qty: [{ value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair) }],
+      approve_hour: [{ value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair) }],
+      approve_cost: [{ value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair) }]
     });
   }
 

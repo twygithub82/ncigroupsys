@@ -16,6 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
@@ -54,6 +55,7 @@ export interface DialogData {
     MatAutocompleteModule,
     CommonModule,
     NgxMaskDirective,
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent {
