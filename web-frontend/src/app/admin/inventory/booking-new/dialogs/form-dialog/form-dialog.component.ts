@@ -231,6 +231,10 @@ export class FormDialogComponent {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
+  displayDate(input: number | null | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input as number);
+  }
+
   canEdit(): boolean {
     return true;
   }
