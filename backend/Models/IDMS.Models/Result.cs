@@ -1,7 +1,9 @@
-﻿using System;
+﻿using HotChocolate;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -105,5 +107,67 @@ namespace IDMS.Models
         public int out_count { get; set; }
         [NotMapped]
         public string yard { get; set; }
+    }
+
+    public class MonthlyReport
+    {
+        [NotMapped]
+        public List<CountPerDay> count_per_day { get; set; }
+        [NotMapped]
+        public int total {  get; set; }
+        public int average { get; set; }
+    }
+
+    public class TempMonthlyReport
+    {
+        [NotMapped]
+        public string sot_guid { get; set; } //for opening_balance
+        [NotMapped]
+        public string code { get; set; }
+        [NotMapped]
+        public long date { get; set; }
+
+    }
+    public class CountPerDay
+    {
+        [NotMapped]
+        public int count { get; set; } //for opening_balance
+        [NotMapped]
+        public string day { get; set; }
+        [NotMapped]
+        public string date { get; set; }
+    }
+
+
+    public class DailyTeamRevenue
+    {
+        [NotMapped]
+        public string? estimate_no { get; set; }
+        [NotMapped]
+        public string? tank_no { get; set; }
+        [NotMapped]
+        public string? eir_no { get; set; }
+        [NotMapped]
+        public string? code { get; set; }
+        [NotMapped]
+        public long? estimate_date { get; set; }
+        [NotMapped]
+        [GraphQLIgnore]
+        public long? approved_date { get; set; }
+        [NotMapped]
+        [GraphQLIgnore]
+        public long? allocation_date { get; set; }
+        [NotMapped]
+        [GraphQLIgnore]
+        public long? qc_date { get; set; }
+        [NotMapped]
+        public string? qc_by { get; set; }
+        [NotMapped]
+        public string? repair_type { get; set; }
+        [NotMapped]
+        public double? repair_cost { get; set; }
+        [NotMapped]
+        public string? team { get; set; }
+
     }
 }

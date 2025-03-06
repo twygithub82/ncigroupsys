@@ -58,11 +58,17 @@ namespace IDMS.Models.DB
         public DbSet<storing_order> storing_order { get; set; }
         public DbSet<customer_company> customer_company { get; set; }
         public DbSet<cleaning> cleaning { get; set; }
+        public DbSet<repair> repair { get; set; }
+        public DbSet<repair_part> repair_part { get; set; }
+        public DbSet<job_order> job_order { get; set; }
+        public DbSet<team> team { get; set; }
         public DbSet<in_gate> in_gate { get; set; }
         public DbSet<out_gate> out_gate { get; set; }
         public DbSet<tank_info> tank_info { get; set; }
         public DbSet<survey_detail> survey_detail { get; set; }
         public DbSet<code_values> code_values { get; set; }
+        public DbSet<steaming> steaming {  get; set; }
+        //public DbSet<steaming> steaming { get; set; }
 
     }
 }
