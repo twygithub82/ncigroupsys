@@ -274,7 +274,7 @@
         "TANK-SURVEY": "Tank Survey",
         "PERIODIC-TEST-DUE": "Periodic Test Due",
         "PENDING-ESTIMATE": "Estimate Pending",
-        "PENDING": "Pending"
+        "PENDING": "Pending Estimate"
       }
     },
     "ADMIN-REPORTS": {
@@ -1035,7 +1035,9 @@
     "IN-YARD":"In Yard",
     "RELEASED":"Released",
     "PENDING":"Pending",
-    "WITH-RO":"With RO"
+    "WITH-RO":"With RO",
+    "YARD-DETAIL-REPORT":"Yard Detail Report",
+    "LOCATION_TRANSFER":"Location Transfer"
     
   },
   "CLEAN-PROCEDURES": {
