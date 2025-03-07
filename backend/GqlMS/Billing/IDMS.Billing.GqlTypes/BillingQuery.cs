@@ -569,7 +569,7 @@ namespace IDMS.Billing.GqlTypes
         //[UseProjection]
         //[UseFiltering]
         //[UseSorting]
-        public async Task<MonthlyReport> QueryMonthReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        public async Task<MonthlyReport> QueryMonthlyReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
            [Service] IHttpContextAccessor httpContextAccessor, MontlyReportRequest monthlyReportRequest)
         {
             try
