@@ -51,7 +51,7 @@
               </mat-header-cell>
               <mat-cell *matCellDef="let row">
                 <span
-                  class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_dt}}
+                  class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="capacity">

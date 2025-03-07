@@ -46,6 +46,7 @@ import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { UserDS, UserItem } from 'app/data-sources/user';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ResidueDisposalPdfComponent } from 'app/document-template/pdf/residue-disposal-pdf/residue-disposal-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -86,7 +87,8 @@ import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    TlxFormFieldComponent
+    TlxFormFieldComponent,
+    PreventNonNumericDirective
   ]
 })
 export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

@@ -781,7 +781,7 @@
     "TRANSACTION-DATE": "Transaction Date",
     "UPDATE-STATUS": "Update Status",
     "TEMP-RANGE-ERROR": "Maximum temperature must be greater than minimum temperature.",
-    "TEMP-RANGE-OVERLAPS-ERROR": "New steam temperature must not be overlaps the existing steam temperature.",
+    "TEMP-RANGE-OVERLAPS-ERROR": "The new steam temperature must not exceed or match the existing one.",
     "STORAGE-BEGIN-DATE": "Storage Begin Date",
     "STORAGE-DAYS": "Storage Days",
     "AV-DATE": "AV Date",

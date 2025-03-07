@@ -43,6 +43,7 @@ import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-c
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-steam';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
@@ -77,6 +78,7 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    PreventNonNumericDirective
   ]
 })
 export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter

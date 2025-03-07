@@ -41,6 +41,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { MessageDialogComponent } from '@shared/components/message-dialog/message-dialog.component';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 
 @Component({
@@ -74,17 +75,12 @@ import { MessageDialogComponent } from '@shared/components/message-dialog/messag
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
-    HttpClientModule
-
+    HttpClientModule,
+    PreventNonNumericDirective
   ]
 })
 
-
-
 export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-
-
-
   displayedColumns = [
     'select',
     // 'tank_no',
@@ -190,8 +186,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     ATTACHMENT_TOO_BIG: "COMMON-FORM.ATTACHMENT-TOO-BIG",
     SDS_FILE: "COMMON-FORM.SDS-FILE",
-    DUPLICATE_CARGO_FOUND:'COMMON-FORM.DUPLICATE-CARGO-FOUND',
-    WARNING:'COMMON-FORM.WARNING',
+    DUPLICATE_CARGO_FOUND: 'COMMON-FORM.DUPLICATE-CARGO-FOUND',
+    WARNING: 'COMMON-FORM.WARNING',
   }
 
   historyState: any = {};
@@ -467,7 +463,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
- async onTCFormSubmit() {
+  async onTCFormSubmit() {
     var fileSize = Number(this.tcForm!.get("file_size")?.value);
     if (fileSize == 0) {
       this.tcForm!.get("file_size")?.setErrors({ required: true });
@@ -506,9 +502,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       tc.cleaning_category = undefined;
       tc.cleaning_method = undefined;
       if (tc.guid) {
-        var cargo_guid=await this.getTariffCleaningGuid(tc.cargo!);
-        if(cargo_guid==tc.guid)
-        {
+        var cargo_guid = await this.getTariffCleaningGuid(tc.cargo!);
+        if (cargo_guid == tc.guid) {
           this.tcDS.updateTariffCleaning(tc).subscribe(async result => {
             console.log(result)
             var guid = tc.guid;
@@ -517,16 +512,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
             this.submitForSaving.next(this.trfCleaningSubmitting);
 
           });
-        } 
-        else
-        {
-           this.ShowDuplicateCargoMessage();
+        }
+        else {
+          this.ShowDuplicateCargoMessage();
         }
       }
       else {
-        var cargo_guid=await this.getTariffCleaningGuid(tc.cargo!);
-        if(cargo_guid=="")
-        {
+        var cargo_guid = await this.getTariffCleaningGuid(tc.cargo!);
+        if (cargo_guid == "") {
           this.tcDS.addNewTariffCleaning(tc).subscribe(async result => {
             console.log(result);
             var cargo_name = tc.cargo;
@@ -537,9 +530,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
           });
         }
-        else
-        {
-           this.ShowDuplicateCargoMessage();
+        else {
+          this.ShowDuplicateCargoMessage();
         }
       }
 
@@ -929,14 +921,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       width: '400px',
       data: {
         headerText: this.translatedLangText.WARNING,
-        messageText:[this.translatedLangText.DUPLICATE_CARGO_FOUND],
+        messageText: [this.translatedLangText.DUPLICATE_CARGO_FOUND],
         act: "warn"
       },
       direction: tempDirection
     });
-   dialogRef.afterClosed().subscribe(result=>{
-    this.trfCleaningSubmitting=false;
-    this.submitForSaving.next(this.trfCleaningSubmitting);
-   });
+    dialogRef.afterClosed().subscribe(result => {
+      this.trfCleaningSubmitting = false;
+      this.submitForSaving.next(this.trfCleaningSubmitting);
+    });
   }
 }

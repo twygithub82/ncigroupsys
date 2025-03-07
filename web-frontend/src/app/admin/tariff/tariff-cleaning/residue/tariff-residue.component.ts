@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,22 +25,21 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Utility } from 'app/utilities/utility';
-import { MatDividerModule } from '@angular/material/divider';
-import { Apollo } from 'apollo-angular';
-import { CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { firstValueFrom } from 'rxjs';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
-import { firstValueFrom } from 'rxjs';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,
@@ -53,7 +53,6 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
@@ -69,6 +68,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    PreventNonNumericDirective
   ]
 })
 export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
@@ -82,7 +82,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     //  'gender',
     // 'bDate',
     // 'mobile',
-     'actions',
+    'actions',
   ];
 
   PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
@@ -111,7 +111,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   tariffResidueDS: TariffResidueDS;
 
   tariffResidueItems: TariffResidueItem[] = [];
-  sotDS : StoringOrderTankDS;
+  sotDS: StoringOrderTankDS;
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList1?: CustomerCompanyItem[];
@@ -216,9 +216,9 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     COST: 'COMMON-FORM.COST',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    TARIFF_RESIDUE_ASSIGNED:'COMMON-FORM.TARIFF-RESIDUE-ASSIGNED',
-    ARE_U_SURE_DELETE:'COMMON-FORM.ARE-YOU-SURE-DELETE',
-   
+    TARIFF_RESIDUE_ASSIGNED: 'COMMON-FORM.TARIFF-RESIDUE-ASSIGNED',
+    ARE_U_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+
   }
 
   constructor(
@@ -237,7 +237,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.tariffResidueDS = new TariffResidueDS(this.apollo);
-    this.sotDS=new StoringOrderTankDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -723,74 +723,71 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   }
 
   async cancelItem(row: TariffResidueItem) {
-      // this.id = row.id;
-     
-       var cargoAssigned:boolean = await this.TariffResidueAssigned(row.guid!);
-       if(cargoAssigned)
-       {
-          let tempDirection: Direction;
-          if (localStorage.getItem('isRtl') === 'true') {
-            tempDirection = 'rtl';
-          } else {
-            tempDirection = 'ltr';
-          }
-          const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-            width: '500px',
-            data: {
-              headerText: this.translatedLangText.WARNING,
-              messageText:[this.translatedLangText.TARIFF_RESIDUE_ASSIGNED,this.translatedLangText.ARE_U_SURE_DELETE],
-              act: "warn"
-            },
-            direction: tempDirection
-          });
-        dialogRef.afterClosed().subscribe(result=>{
-         
-          if(result.action=="confirmed")
-          {
-            this.deleteTariffAndPackageResidue(row.guid!);
-          }
-  
-        });
-       }
-       else
-       {
+    // this.id = row.id;
+
+    var cargoAssigned: boolean = await this.TariffResidueAssigned(row.guid!);
+    if (cargoAssigned) {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        width: '500px',
+        data: {
+          headerText: this.translatedLangText.WARNING,
+          messageText: [this.translatedLangText.TARIFF_RESIDUE_ASSIGNED, this.translatedLangText.ARE_U_SURE_DELETE],
+          act: "warn"
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed().subscribe(result => {
+
+        if (result.action == "confirmed") {
           this.deleteTariffAndPackageResidue(row.guid!);
-       }
-  
+        }
+
+      });
+    }
+    else {
+      this.deleteTariffAndPackageResidue(row.guid!);
     }
 
-   deleteTariffAndPackageResidue(tariffResidueGuid:string)
-      {
-         
-         this.tariffResidueDS.deleteTariffResidue ([tariffResidueGuid]).subscribe(d=>{
-            let count =d.data.deleteTariffResidue;
-            if(count>0)
-            {
-                this.handleSaveSuccess(count);
-                if (this.tariffResidueDS.totalCount > 0) {
-                  this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-                }
-            }
-         });
-      }
-  
-    async TariffResidueAssigned(tariffResidueGuid: string): Promise<boolean> {
-          let retval: boolean = false;
-          var where: any = {};
-      
-          where = {and:[{residue:{ some: { residue_part:{some:{tariff_residue_guid:{eq:tariffResidueGuid}}} }}},
-                        {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}] };
-          
-          try {
-            // Use firstValueFrom to convert Observable to Promise
-            const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {},1));
-            retval=(result.length > 0)
-          } catch (error) {
-            console.error("Error fetching tariff residue guid:", error);
-          }
-      
-          return retval;
+  }
+
+  deleteTariffAndPackageResidue(tariffResidueGuid: string) {
+
+    this.tariffResidueDS.deleteTariffResidue([tariffResidueGuid]).subscribe(d => {
+      let count = d.data.deleteTariffResidue;
+      if (count > 0) {
+        this.handleSaveSuccess(count);
+        if (this.tariffResidueDS.totalCount > 0) {
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
-    
+      }
+    });
+  }
+
+  async TariffResidueAssigned(tariffResidueGuid: string): Promise<boolean> {
+    let retval: boolean = false;
+    var where: any = {};
+
+    where = {
+      and: [{ residue: { some: { residue_part: { some: { tariff_residue_guid: { eq: tariffResidueGuid } } } } } },
+      { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+    };
+
+    try {
+      // Use firstValueFrom to convert Observable to Promise
+      const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {}, 1));
+      retval = (result.length > 0)
+    } catch (error) {
+      console.error("Error fetching tariff residue guid:", error);
+    }
+
+    return retval;
+  }
+
 }
 

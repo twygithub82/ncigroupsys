@@ -46,6 +46,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 @Component({
   selector: 'app-approval-view',
@@ -80,7 +81,8 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    TlxFormFieldComponent
+    TlxFormFieldComponent,
+    PreventNonNumericDirective
   ]
 })
 export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

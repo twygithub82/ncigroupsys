@@ -36,6 +36,7 @@ import { Utility } from 'app/utilities/utility';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 //import {messageReceived}  from '../../../data-sources/message-received';
@@ -69,6 +70,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    PreventNonNumericDirective
   ]
 })
 export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

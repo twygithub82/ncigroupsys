@@ -217,21 +217,6 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                              <span>{{translatedLangText.CHECK_DIGIT}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">
-                                @if (getCheckDigit(sot?.tank_no!)) {
-                                <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                }
-                                @else {
-                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                }
-                              </div>
-                            </div>
-                          </div>
-                          <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5 align-right">
                               <span>{{translatedLangText.SPECIAL_NOTES}}:</span>
                             </div>
@@ -343,9 +328,9 @@
                           <table class="table table-striped table-hover m-b-0">
                             <thead>
                               <tr>
-                                <th class="d-none d-md-table-cell">{{translatedLangText.DESCRIPTION}}</th>
-                                <th>{{translatedLangText.IN_GATE}}</th>
-                                <th>{{translatedLangText.OUT_GATE}}</th>
+                                <th class="d-none d-md-table-cell font-bold">{{translatedLangText.DESCRIPTION}}</th>
+                                <th class="font-bold">{{translatedLangText.IN_GATE}}</th>
+                                <th class="font-bold">{{translatedLangText.OUT_GATE}}</th>
                               </tr>
                             </thead>
                             <tbody>

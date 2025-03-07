@@ -9,6 +9,7 @@ using IDMS.Models;
 using IDMS.Billing.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
 using CommonUtil.Core.Service;
+using System.Security.Cryptography;
 
 namespace IDMS.Billing.GqlTypes
 {
@@ -314,7 +315,7 @@ namespace IDMS.Billing.GqlTypes
                                                                status = g.Key.status_cv,
                                                                eir_no = g.Key.eir_no,
                                                                survey_type = g.Key.survey_type_cv,
-                                                               survey_dt = g.Key.survey_dt, 
+                                                               survey_dt = g.Key.survey_dt,
                                                                surveryor = g.Key.description,
                                                                clean_dt = g.Key.clean_dt,
                                                                visit = g.Count().ToString()
@@ -464,6 +465,258 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<DailyTeamRevenue>> QueryDailyTeamRevenue(ApplicationBillingDBContext context, [Service] IConfiguration config,
+              [Service] IHttpContextAccessor httpContextAccessor, DailyTeamRevenuRequest dailyTeamRevenueRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                List<DailyTeamRevenue> result = new List<DailyTeamRevenue>();
+
+                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+                //string surveryorCodeValType = "TEST_CLASS";
+                string repairStatus = "QC_COMPLETED";
+
+                //long sDate = dailyTeamRevenueRequest.start_date;
+                //long eDate = dailyTeamRevenueRequest.end_date;
+
+                var query = (from r in context.repair
+                             join rp in context.repair_part on r.guid equals rp.repair_guid
+                             join jo in context.job_order on rp.job_order_guid equals jo.guid
+                             join t in context.team on jo.team_guid equals t.guid
+                             join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
+                             join so in context.storing_order on sot.so_guid equals so.guid into soGroup
+                             from so in soGroup.DefaultIfEmpty()
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
+                             from cc in ccGroup.DefaultIfEmpty()
+                             where r.status_cv == repairStatus && !string.IsNullOrEmpty(sot.purpose_repair_cv)
+                             select new DailyTeamRevenue
+                             {
+                                 estimate_no = r.estimate_no,
+                                 tank_no = sot.tank_no,
+                                 code = cc.code,
+                                 estimate_date = r.create_dt,  // Assuming `CreateDt` is part of `Repair`
+                                 qc_by = jo.qc_by,
+                                 repair_cost = r.total_cost,  // Assuming `TotalCost` is part of `StoringOrderTank`
+                                 team = t.description,
+                                 repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+
+                             }).AsQueryable();
+
+
+                if (!string.IsNullOrEmpty(dailyTeamRevenueRequest.customer_code))
+                {
+                    query = query.Where(tr => String.Equals(tr.code, dailyTeamRevenueRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTeamRevenueRequest.tank_no))
+                {
+                    query = query.Where(tr => tr.tank_no.Contains(dailyTeamRevenueRequest.tank_no));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTeamRevenueRequest.eir_no))
+                {
+                    query = query.Where(tr => tr.eir_no.Contains(dailyTeamRevenueRequest.eir_no));
+                }
+
+                if (dailyTeamRevenueRequest.repair_type != null && dailyTeamRevenueRequest.repair_type.Any())
+                {
+                    query = query.Where(tr => dailyTeamRevenueRequest.repair_type.Contains(tr.repair_type));
+                }
+
+                if (dailyTeamRevenueRequest.estimate_start_date != null && dailyTeamRevenueRequest.estimate_end_date != null)
+                {
+                    query = query.Where(tr => tr.estimate_date >= dailyTeamRevenueRequest.estimate_start_date && tr.estimate_date <= dailyTeamRevenueRequest.estimate_end_date);
+                }
+
+                if (dailyTeamRevenueRequest.approved_start_date != null && dailyTeamRevenueRequest.approved_end_date != null)
+                {
+                    query = query.Where(tr => tr.approved_date >= dailyTeamRevenueRequest.approved_start_date && tr.approved_date <= dailyTeamRevenueRequest.approved_end_date);
+                }
+
+                if (dailyTeamRevenueRequest.allocation_start_date != null && dailyTeamRevenueRequest.allocation_end_date != null)
+                {
+                    query = query.Where(tr => tr.allocation_date >= dailyTeamRevenueRequest.allocation_start_date && tr.allocation_date <= dailyTeamRevenueRequest.allocation_end_date);
+                }
+
+                if (dailyTeamRevenueRequest.qc_start_date != null && dailyTeamRevenueRequest.qc_end_date != null)
+                {
+                    query = query.Where(tr => tr.qc_date >= dailyTeamRevenueRequest.qc_start_date && tr.qc_date <= dailyTeamRevenueRequest.qc_end_date);
+                }
+
+                if (dailyTeamRevenueRequest.team != null && dailyTeamRevenueRequest.team.Any())
+                {
+                    query = query.Where(tr => dailyTeamRevenueRequest.team.Contains(tr.team));
+                }
+
+                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.estimate_date).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+
+        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        //[UseProjection]
+        //[UseFiltering]
+        //[UseSorting]
+        public async Task<MonthlyReport> QueryMonthReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
+           [Service] IHttpContextAccessor httpContextAccessor, MontlyReportRequest monthlyReportRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+
+                if (!monthlyReportRequest.report_type.ContainsIgnore($"{ProcessType.CLEANING},{ProcessType.STEAMING},{ProcessType.REPAIR}"))
+                    throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
+
+                int year = monthlyReportRequest.year;
+                int month = monthlyReportRequest.month;
+                string completedStatus = "COMPLETED";
+                string qcCompletedStatus = "QC_COMPLETED";
+
+
+                // Get the start date of the month (1st of the month)
+                DateTime startOfMonth = new DateTime(year, month, 1);
+                // Get the end date of the month (last day of the month)
+                DateTime endOfMonth = startOfMonth.AddMonths(1).AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
+                // Convert the start and end dates to Unix Epoch (seconds since 1970-01-01)
+                long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
+                long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
+
+
+                var query = (from sot in context.storing_order_tank
+                             join so in context.storing_order on sot.so_guid equals so.guid into soJoin
+                             from so in soJoin.DefaultIfEmpty()
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccJoin
+                             from cc in ccJoin.DefaultIfEmpty()
+                             select new TempMonthlyReport
+                             {
+                                 sot_guid = sot.guid,
+                                 code = cc.code,
+                                 //date = (long)s.complete_dt
+                             }).AsQueryable();
+
+
+                if (monthlyReportRequest.report_type.EqualsIgnore("cleaning"))
+                {
+                    query = (from result in query
+                             join s in context.cleaning on result.sot_guid equals s.sot_guid
+                             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                                 && s.delete_dt == null
+                             select new TempMonthlyReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 code = result.code,
+                                 date = (long)s.complete_dt
+                             }).AsQueryable();
+
+                }
+                else if (monthlyReportRequest.report_type.EqualsIgnore("steaming"))
+                {
+                    query = (from result in query
+                             join s in context.steaming on result.sot_guid equals s.sot_guid
+                             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                                 && s.delete_dt == null
+                             select new TempMonthlyReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 code = result.code,
+                                 date = (long)s.complete_dt
+                             }).AsQueryable();
+                }
+                else if (monthlyReportRequest.report_type.EqualsIgnore("repair"))
+                {
+                    query = (from result in query
+                             join s in context.repair on result.sot_guid equals s.sot_guid
+                             where s.status_cv == qcCompletedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                                 && s.delete_dt == null
+                             select new TempMonthlyReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 code = result.code,
+                                 date = (long)s.complete_dt
+                             }).AsQueryable();
+                }
+
+                if (!string.IsNullOrEmpty(monthlyReportRequest.customer_code))
+                {
+                    query = query.Where(tr => String.Equals(tr.code, monthlyReportRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
+
+                var resultList = await query.ToListAsync();
+                // Convert epoch timestamp to local date (yyyy-MM-dd)
+                //foreach (var item in resList.Select(r=> new { sot_guid = r.sot_guid, date = r.date, FormattedDate = "" }))
+                foreach (var item in resultList)
+                {
+                    // Convert epoch timestamp to DateTimeOffset (local time zone)
+                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date);
+                    // Format the date as yyyy-MM-dd and replace the code with date
+                    item.code = dateTimeOffset.ToString("dd/MM/yyyy");
+                }
+                // Group nodes by FormattedDate and count the number of SotGuids for each group
+                var groupedNodes = resultList
+                    .GroupBy(n => n.code)  // Group by formatted date
+                    .Select(g => new
+                    {
+                        FormattedDate = g.Key,
+                        Count = g.Count(),
+                        //SotGuids = g.Select(n => n.sot_guid).Distinct().ToList() // Get distinct SotGuids
+                    })
+                    .OrderBy(g => g.FormattedDate) // Sort by date
+                    .ToList();
+
+                List<string> allDatesInMonth = new List<string>();
+                for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddDays(1))
+                {
+                    allDatesInMonth.Add(date.ToString("dd/MM/yyyy"));
+                }
+
+                // Fill missing dates with count = 0 if not present
+                var completeGroupedNodes = allDatesInMonth
+                    .Select(date => new CountPerDay
+                    {
+                        date = date,
+                        day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
+                        count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0
+                    })
+                    .OrderBy(g => g.date) // Sort by date
+                    .ToList();
+
+                // Calculate the total count of SotGuids for the month
+                int totalForMonth = completeGroupedNodes.Sum(g => g.count);
+                // Calculate the number of days with SotGuids greater than 0
+                int daysWithCount = completeGroupedNodes.Count(g => g.count > 0);
+
+                // Calculate the average
+                int averageSotGuidsPerDay = daysWithCount > 0 ? totalForMonth / daysWithCount : 0;
+
+                MonthlyReport monthlyReport = new MonthlyReport()
+                {
+                    count_per_day = completeGroupedNodes,
+                    total = totalForMonth,
+                    average = averageSotGuidsPerDay
+                };
+
+                return monthlyReport;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+
         private List<DailyInventorySummary> MergeList(List<DailyInventorySummary> list1, List<DailyInventorySummary> list2, List<OpeningBalance?> openingBalances)
         {
             List<DailyInventorySummary> mergedList = new List<DailyInventorySummary>();
@@ -574,7 +827,7 @@ namespace IDMS.Billing.GqlTypes
                                                .Select(ig => ig.so_tank_guid)
                                                .Distinct()
                                                .Contains(sot.guid)
-                                        group sot by i.yard_cv into grouped     
+                                        group sot by i.yard_cv into grouped
                                         select new OpeningBalance
                                         {
                                             out_count = grouped.Count(),
@@ -589,7 +842,7 @@ namespace IDMS.Billing.GqlTypes
                     if (inList.Count() != 0)
                         item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
 
-                    if(outList.Count != 0)
+                    if (outList.Count != 0)
                         item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
                 }
 

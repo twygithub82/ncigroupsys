@@ -74,6 +74,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
   displayedColumns = [
     'tank_no',
     'customer',
+    'yard_cv',
     'eir_no',
     'eir_dt',
     'last_cargo',
@@ -115,7 +116,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     YARD: 'COMMON-FORM.YARD',
-    CURRENT_LOCATION: 'COMMON-FORM.CURRENT-LOCATION'
+    LOCATION: 'COMMON-FORM.LOCATION'
   }
 
   searchForm?: UntypedFormGroup;
@@ -463,6 +464,10 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
+  }
+
+  getYardDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.yardCvList) || '-';
   }
 
   displayDate(input: number | undefined): string | undefined {

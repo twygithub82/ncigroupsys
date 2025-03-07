@@ -23,6 +23,7 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
@@ -33,12 +34,7 @@ export interface DialogData {
   // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageLabourItem[];
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
-
-
 
 @Component({
   selector: 'app-package-labour-form-dialog',
@@ -67,7 +63,7 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent {

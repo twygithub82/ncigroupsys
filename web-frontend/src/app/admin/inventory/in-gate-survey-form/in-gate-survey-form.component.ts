@@ -55,6 +55,7 @@ import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 @Component({
   selector: 'app-in-gate',
@@ -89,6 +90,7 @@ import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/conf
     MatCardModule,
     MatStepperModule,
     MatRadioModule,
+    PreventNonNumericDirective
   ],
   providers: [
     {
