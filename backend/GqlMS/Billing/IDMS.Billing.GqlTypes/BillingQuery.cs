@@ -10,6 +10,7 @@ using IDMS.Billing.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
 using CommonUtil.Core.Service;
 using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace IDMS.Billing.GqlTypes
 {
@@ -575,8 +576,8 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-
-                if (!monthlyReportRequest.report_type.ContainsIgnore($"{ProcessType.CLEANING},{ProcessType.STEAMING},{ProcessType.REPAIR}"))
+                List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}" };
+                if (!process.ContainsIgnore(monthlyReportRequest.report_type))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
                 int year = monthlyReportRequest.year;
@@ -594,68 +595,70 @@ namespace IDMS.Billing.GqlTypes
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
 
-                var query = (from sot in context.storing_order_tank
-                             join so in context.storing_order on sot.so_guid equals so.guid into soJoin
-                             from so in soJoin.DefaultIfEmpty()
-                             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccJoin
-                             from cc in ccJoin.DefaultIfEmpty()
-                             select new TempMonthlyReport
-                             {
-                                 sot_guid = sot.guid,
-                                 code = cc.code,
-                                 //date = (long)s.complete_dt
-                             }).AsQueryable();
+                //var query = (from sot in context.storing_order_tank
+                //             join so in context.storing_order on sot.so_guid equals so.guid into soJoin
+                //             from so in soJoin.DefaultIfEmpty()
+                //             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccJoin
+                //             from cc in ccJoin.DefaultIfEmpty()
+                //             select new TempReport
+                //             {
+                //                 sot_guid = sot.guid,
+                //                 code = cc.code,
+                //                 //date = (long)s.complete_dt
+                //             }).AsQueryable();
 
 
-                if (monthlyReportRequest.report_type.EqualsIgnore("cleaning"))
-                {
-                    query = (from result in query
-                             join s in context.cleaning on result.sot_guid equals s.sot_guid
-                             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
-                                 && s.delete_dt == null
-                             select new TempMonthlyReport
-                             {
-                                 sot_guid = result.sot_guid,
-                                 code = result.code,
-                                 date = (long)s.complete_dt
-                             }).AsQueryable();
+                //if (monthlyReportRequest.report_type.EqualsIgnore("cleaning"))
+                //{
+                //    query = (from result in query
+                //             join s in context.cleaning on result.sot_guid equals s.sot_guid
+                //             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                //                 && s.delete_dt == null
+                //             select new TempReport
+                //             {
+                //                 sot_guid = result.sot_guid,
+                //                 code = result.code,
+                //                 date = (long)s.complete_dt
+                //             }).AsQueryable();
 
-                }
-                else if (monthlyReportRequest.report_type.EqualsIgnore("steaming"))
-                {
-                    query = (from result in query
-                             join s in context.steaming on result.sot_guid equals s.sot_guid
-                             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
-                                 && s.delete_dt == null
-                             select new TempMonthlyReport
-                             {
-                                 sot_guid = result.sot_guid,
-                                 code = result.code,
-                                 date = (long)s.complete_dt
-                             }).AsQueryable();
-                }
-                else if (monthlyReportRequest.report_type.EqualsIgnore("repair"))
-                {
-                    query = (from result in query
-                             join s in context.repair on result.sot_guid equals s.sot_guid
-                             where s.status_cv == qcCompletedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
-                                 && s.delete_dt == null
-                             select new TempMonthlyReport
-                             {
-                                 sot_guid = result.sot_guid,
-                                 code = result.code,
-                                 date = (long)s.complete_dt
-                             }).AsQueryable();
-                }
+                //}
+                //else if (monthlyReportRequest.report_type.EqualsIgnore("steaming"))
+                //{
+                //    query = (from result in query
+                //             join s in context.steaming on result.sot_guid equals s.sot_guid
+                //             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                //                 && s.delete_dt == null
+                //             select new TempReport
+                //             {
+                //                 sot_guid = result.sot_guid,
+                //                 code = result.code,
+                //                 date = (long)s.complete_dt
+                //             }).AsQueryable();
+                //}
+                //else if (monthlyReportRequest.report_type.EqualsIgnore("repair"))
+                //{
+                //    query = (from result in query
+                //             join s in context.repair on result.sot_guid equals s.sot_guid
+                //             where s.status_cv == qcCompletedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                //                 && s.delete_dt == null
+                //             select new TempReport
+                //             {
+                //                 sot_guid = result.sot_guid,
+                //                 code = result.code,
+                //                 date = (long)s.complete_dt
+                //             }).AsQueryable();
+                //}
 
-                if (!string.IsNullOrEmpty(monthlyReportRequest.customer_code))
-                {
-                    query = query.Where(tr => String.Equals(tr.code, monthlyReportRequest.customer_code, StringComparison.OrdinalIgnoreCase));
-                }
+                //if (!string.IsNullOrEmpty(monthlyReportRequest.customer_code))
+                //{
+                //    query = query.Where(tr => String.Equals(tr.code, monthlyReportRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                //}
 
-                var resultList = await query.ToListAsync();
+                //var resultList = await query.ToListAsync();
+
+                var resultList = await RetriveReportResult(context, monthlyReportRequest.report_type, startEpoch, endEpoch, monthlyReportRequest.customer_code);
+
                 // Convert epoch timestamp to local date (yyyy-MM-dd)
-                //foreach (var item in resList.Select(r=> new { sot_guid = r.sot_guid, date = r.date, FormattedDate = "" }))
                 foreach (var item in resultList)
                 {
                     // Convert epoch timestamp to DateTimeOffset (local time zone)
@@ -715,6 +718,252 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
+
+        public async Task<YearlyReport> QueryYearlyReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        [Service] IHttpContextAccessor httpContextAccessor, YearlyReportRequest yearlyReportRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}" };
+                if (!process.ContainsIgnore(yearlyReportRequest.report_type))
+                    throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
+
+                int year = yearlyReportRequest.year;
+                int start_month = yearlyReportRequest.start_month;
+                int end_month = yearlyReportRequest.end_month;
+                string completedStatus = "COMPLETED";
+                string qcCompletedStatus = "QC_COMPLETED";
+
+
+                // Get the start date of the month (1st of the month)
+                DateTime startOfMonth = new DateTime(year, start_month, 1);
+                int daysInMonth = DateTime.DaysInMonth(year, end_month);
+                DateTime endOfMonth = new DateTime(year, end_month, daysInMonth).AddHours(23).AddMinutes(59).AddSeconds(59);
+                // Get the end date of the month (last day of the month)
+                //DateTime endOfMonth = startOfMonth.AddMonths(1).AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
+                // Convert the start and end dates to Unix Epoch (seconds since 1970-01-01)
+                long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
+                long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
+
+
+                //var query = (from sot in context.storing_order_tank
+                //             join so in context.storing_order on sot.so_guid equals so.guid into soJoin
+                //             from so in soJoin.DefaultIfEmpty()
+                //             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccJoin
+                //             from cc in ccJoin.DefaultIfEmpty()
+                //             select new TempReport
+                //             {
+                //                 sot_guid = sot.guid,
+                //                 code = cc.code,
+                //                 //date = (long)s.complete_dt
+                //             }).AsQueryable();
+
+
+                //if (yearlyReportRequest.report_type.EqualsIgnore("cleaning"))
+                //{
+                //    query = (from result in query
+                //             join s in context.cleaning on result.sot_guid equals s.sot_guid
+                //             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                //                 && s.delete_dt == null
+                //             select new TempReport
+                //             {
+                //                 sot_guid = result.sot_guid,
+                //                 code = result.code,
+                //                 date = (long)s.complete_dt
+                //             }).AsQueryable();
+
+                //}
+                //else if (yearlyReportRequest.report_type.EqualsIgnore("steaming"))
+                //{
+                //    query = (from result in query
+                //             join s in context.steaming on result.sot_guid equals s.sot_guid
+                //             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                //                 && s.delete_dt == null
+                //             select new TempReport
+                //             {
+                //                 sot_guid = result.sot_guid,
+                //                 code = result.code,
+                //                 date = (long)s.complete_dt
+                //             }).AsQueryable();
+                //}
+                //else if (yearlyReportRequest.report_type.EqualsIgnore("repair"))
+                //{
+                //    query = (from result in query
+                //             join s in context.repair on result.sot_guid equals s.sot_guid
+                //             where s.status_cv == qcCompletedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                //                 && s.delete_dt == null
+                //             select new TempReport
+                //             {
+                //                 sot_guid = result.sot_guid,
+                //                 code = result.code,
+                //                 date = (long)s.complete_dt
+                //             }).AsQueryable();
+                //}
+
+                //if (!string.IsNullOrEmpty(yearlyReportRequest.customer_code))
+                //{
+                //    query = query.Where(tr => String.Equals(tr.code, yearlyReportRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                //}
+
+                //var resultList = await query.OrderBy(tr => tr.date).ToListAsync();
+
+                var resultList = await RetriveReportResult(context, yearlyReportRequest.report_type, startEpoch, endEpoch, yearlyReportRequest.customer_code);
+
+                // Convert epoch timestamp to local date (yyyy-MM-dd)
+                foreach (var item in resultList)
+                {
+                    // Convert epoch timestamp to DateTimeOffset (local time zone)
+                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date);
+                    // Format the date as yyyy-MM-dd and replace the code with date
+                    item.code = dateTimeOffset.ToString("MMMM");
+                }
+                // Group nodes by FormattedDate and count the number of SotGuids for each group
+                var groupedNodes = resultList
+                    .GroupBy(n => n.code)  // Group by formatted date
+                    .Select(g => new
+                    {
+                        FormattedDate = g.Key,
+                        Count = g.Count(),
+                    })
+                    //.OrderBy(g => g.FormattedDate) // Sort by date
+                    .ToList();
+
+                List<string> allMonthInYear = new List<string>();
+                for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddMonths(1))
+                {
+                    allMonthInYear.Add(date.ToString("MMMM"));
+                }
+
+                // Fill missing dates with count = 0 if not present
+                var completeGroupedNodes = allMonthInYear
+                    .Select(date => new CountPerMonth
+                    {
+                        //date = date,
+                        //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
+                        month = date,
+                        count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0
+                    })
+                    //.OrderBy(g => g.date) // Sort by date
+                    .ToList();
+
+                // Calculate the total count of SotGuids for the month
+                int total = completeGroupedNodes.Sum(g => g.count);
+                // Calculate the number of days with SotGuids greater than 0
+                int monthsWithCount = completeGroupedNodes.Count(g => g.count > 0);
+
+                // Calculate the average
+                int average = monthsWithCount > 0 ? total / monthsWithCount : 0;
+
+                YearlyReport yearlyReport = new YearlyReport()
+                {
+                    count_per_month = completeGroupedNodes,
+                    total = total,
+                    average = average
+                };
+
+                return yearlyReport;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        private async Task<List<TempReport>?> RetriveReportResult(ApplicationBillingDBContext context, string reportType, long startEpoch, long endEpoch, string customerCode)
+        {
+
+            try
+            {
+                string completedStatus = "COMPLETED";
+                string qcCompletedStatus = "QC_COMPLETED";
+
+                var query = (from sot in context.storing_order_tank
+                             join so in context.storing_order on sot.so_guid equals so.guid into soJoin
+                             from so in soJoin.DefaultIfEmpty()
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccJoin
+                             from cc in ccJoin.DefaultIfEmpty()
+                             select new TempReport
+                             {
+                                 sot_guid = sot.guid,
+                                 code = cc.code,
+                                 //date = (long)s.complete_dt
+                             }).AsQueryable();
+
+
+                if (reportType.EqualsIgnore("cleaning"))
+                {
+                    query = (from result in query
+                             join s in context.cleaning on result.sot_guid equals s.sot_guid
+                             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                                 && s.delete_dt == null
+                             select new TempReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 code = result.code,
+                                 date = (long)s.complete_dt
+                             }).AsQueryable();
+
+                }
+                else if (reportType.EqualsIgnore("steaming"))
+                {
+                    query = (from result in query
+                             join s in context.steaming on result.sot_guid equals s.sot_guid
+                             where s.status_cv == completedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                                 && s.delete_dt == null
+                             select new TempReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 code = result.code,
+                                 date = (long)s.complete_dt
+                             }).AsQueryable();
+                }
+                else if (reportType.EqualsIgnore("repair"))
+                {
+                    //query = (from result in query
+                    //         join s in context.repair on result.sot_guid equals s.sot_guid
+                    //         where s.status_cv == qcCompletedStatus && s.complete_dt != null && s.complete_dt != 0 && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
+                    //             && s.delete_dt == null
+                    //         select new TempReport
+                    //         {
+                    //             sot_guid = result.sot_guid,
+                    //             code = result.code,
+                    //             date = (long)s.complete_dt
+                    //         }).AsQueryable();
+
+
+                    query = (from result in query
+                             join s in context.repair on result.sot_guid equals s.sot_guid
+                             join rp in context.repair_part on s.guid equals rp.repair_guid
+                             join jo in context.job_order on rp.job_order_guid equals jo.guid into joJoin
+                             from jo in joJoin.DefaultIfEmpty()  // Left Join
+                             where s.status_cv == qcCompletedStatus && s.delete_dt == null && jo.qc_dt >= startEpoch && jo.qc_dt <= endEpoch &&
+                                   rp.guid == (from rp2 in context.repair_part
+                                               where rp2.repair_guid == s.guid && rp2.approve_part == true && rp2.delete_dt == null
+                                               orderby rp2.guid  // Ensuring we take the first match
+                                               select rp2.guid).FirstOrDefault()
+                             select new TempReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 code = result.code,
+                                 date = (long)jo.qc_dt
+                             }).AsQueryable();
+                }
+
+                if (!string.IsNullOrEmpty(customerCode))
+                {
+                    query = query.Where(tr => String.Equals(tr.code, customerCode, StringComparison.OrdinalIgnoreCase));
+                }
+
+                var resultList = await query.OrderBy(tr => tr.date).ToListAsync();
+                return resultList;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
 
 
         private List<DailyInventorySummary> MergeList(List<DailyInventorySummary> list1, List<DailyInventorySummary> list2, List<OpeningBalance?> openingBalances)
