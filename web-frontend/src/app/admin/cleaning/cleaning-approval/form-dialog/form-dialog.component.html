@@ -3,284 +3,286 @@
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h3>{{this.translatedLangText.CLEANING_APPROVAL}} - {{this.getAction()}} </h3>
-      </div>  
+      </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
       <mat-icon>close</mat-icon>
     </button> -->
   </div>
-  
-  <div mat-dialog-content >
+
+  <div mat-dialog-content>
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row justify-content-center">
         <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
-        
+
           <div class="row">
 
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowJobNo()">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                        <input matInput formControlName="job_no_input" >
-                        @if (pcForm.get('job_no_input')?.hasError('required')) {
-                          <mat-error>
-                            {{translatedLangText.JOB_NO }} {{translatedLangText.CARGO_REQUIRED }}
-                          </mat-error>
-                          }
-                      </mat-form-field>
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
+                    <input matInput formControlName="job_no_input">
+                    @if (pcForm.get('job_no_input')?.hasError('required')) {
+                    <mat-error>
+                      {{translatedLangText.JOB_NO }} {{translatedLangText.CARGO_REQUIRED }}
+                    </mat-error>
+                    }
+                  </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApprovedDate()">
                   <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
-                      <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date" formControlName="approved_dt" [required]="this.ShowApprovedDate()">
-                      <mat-datepicker-toggle matSuffix [for]="clean_dt_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #clean_dt_picker></mat-datepicker>
-                      @if (pcForm.get('approved_dt')?.hasError('required')) {
-                        <mat-error>
-                          {{translatedLangText.APPROVED_DATE }} {{translatedLangText.CARGO_REQUIRED }}
-                        </mat-error>
-                        }
-                    </mat-form-field>
+                    <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
+                    <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date"
+                      formControlName="approved_dt" [required]="this.ShowApprovedDate()">
+                    <mat-datepicker-toggle matSuffix [for]="clean_dt_picker"></mat-datepicker-toggle>
+                    <mat-datepicker #clean_dt_picker></mat-datepicker>
+                    @if (pcForm.get('approved_dt')?.hasError('required')) {
+                    <mat-error>
+                      {{translatedLangText.APPROVED_DATE }} {{translatedLangText.CARGO_REQUIRED }}
+                    </mat-error>
+                    }
+                  </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDate()">
                   <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.NO_ACTION}} {{translatedLangText.DATE}}</mat-label>
-                      <input matInput [matDatepicker]="noaction_dt_picker" placeholder="Select date" formControlName="no_action_dt" [required]="this.ShowNoActionDate()">
-                      <mat-datepicker-toggle matSuffix [for]="noaction_dt_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #noaction_dt_picker></mat-datepicker>
-                      @if (pcForm.get('approved_dt')?.hasError('required')) {
-                        <mat-error>
-                          {{translatedLangText.NO_ACTION }} {{translatedLangText.CARGO_REQUIRED }}
-                        </mat-error>
-                        }
-                    </mat-form-field>
+                    <mat-label>{{translatedLangText.NO_ACTION}} {{translatedLangText.DATE}}</mat-label>
+                    <input matInput [matDatepicker]="noaction_dt_picker" placeholder="Select date"
+                      formControlName="no_action_dt" [required]="this.ShowNoActionDate()">
+                    <mat-datepicker-toggle matSuffix [for]="noaction_dt_picker"></mat-datepicker-toggle>
+                    <mat-datepicker #noaction_dt_picker></mat-datepicker>
+                    @if (pcForm.get('approved_dt')?.hasError('required')) {
+                    <mat-error>
+                      {{translatedLangText.NO_ACTION }} {{translatedLangText.CARGO_REQUIRED }}
+                    </mat-error>
+                    }
+                  </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowRemarks()">
                   <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                      <input matInput formControlName="remarks" >
-                  
-                    </mat-form-field>
-                </div>
-              </div>
-          </div>
-          </div>
-        <div class="card l-bg-{{this.getBackgroundColorFromNature()}}">
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0  d-flex align-items-center">
-              <mat-icon style="margin-right: 10px;">error</mat-icon>
-              <mat-label style="display: flex; justify-content: left;">{{this.getNatureInGateAlert()}}</mat-label>
-            </div>
-          </div>
-        </div>
-        <div class="card" [hidden]="!this.AllowChangingCost()">
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
-                    <input matInput formControlName="bill_to" [formControl]="customerCodeControl"
-                      [matAutocomplete]="customerCode" >
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                      @for (cc of customer_companyList; track cc) {
-                      <mat-option [value]="cc">
-                        {{ccDS.displayName(cc)}}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
-                    <input matInput formControlName="bill_branch" [formControl]="branchCodeControl"
-                      [matAutocomplete]="branchCode">
-                    <mat-autocomplete #branchCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                      @for (cc of branch_companyList; track cc) {
-                      <mat-option [value]="cc">
-                        {{ccDS.displayName(cc)}}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                      <mat-form-field class="example-full-width">
-                          <mat-label>{{translatedLangText.CLEANING_COST}}</mat-label>
-                          <input matInput formControlName="cleaning_cost"  >
-                        </mat-form-field>
-                  </div>
-                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                      <mat-form-field class="example-full-width">
-                          <mat-label>{{translatedLangText.BUFFER_COST}}</mat-label>
-                          <input matInput formControlName="buffer_cost"  >
-                        </mat-form-field>
-                  </div>
-              </div>
-              <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                    <input matInput formControlName="remarks" >
-                
+                    <input matInput formControlName="remarks">
+
                   </mat-form-field>
                 </div>
-            </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="card">
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-                        <input matInput formControlName="tank_no"  readonly="true">
-                      </mat-form-field>
-                </div>
+          <div class="card l-bg-{{this.getBackgroundColorFromNature()}}">
+            <div class="row">
+              <div
+                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                <mat-icon style="margin-right: 10px;">error</mat-icon>
+                <mat-label style="display: flex; justify-content: left;">{{this.getNatureInGateAlert()}}</mat-label>
+              </div>
+            </div>
+          </div>
+          <div class="card" [hidden]="!this.AllowChangingCost()">
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                        <input matInput formControlName="customer"  readonly="true">
-                      </mat-form-field>
-                </div>
-               
-              </div>
-           </div>
-          </div>
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
-                        <input matInput formControlName="eir_no"  readonly="true">
-                      </mat-form-field>
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                      
-                      <input matInput formControlName="eir_dt" readonly="true" >
-                      
+                      <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
+                      <input matInput formControlName="bill_to" [formControl]="customerCodeControl"
+                        [matAutocomplete]="customerCode">
+                      <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                        @for (cc of customer_companyList; track cc) {
+                        <mat-option [value]="cc">
+                          {{ccDS.displayName(cc)}}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
                     </mat-form-field>
+                  </div>
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+                      <input matInput formControlName="bill_branch" [formControl]="branchCodeControl"
+                        [matAutocomplete]="branchCode">
+                      <mat-autocomplete #branchCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                        @for (cc of branch_companyList; track cc) {
+                        <mat-option [value]="cc">
+                          {{ccDS.displayName(cc)}}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CLEANING_COST}}</mat-label>
+                      <input matInput formControlName="cleaning_cost">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.BUFFER_COST}}</mat-label>
+                      <input matInput formControlName="buffer_cost">
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                      <input matInput formControlName="remarks">
+
+                    </mat-form-field>
+                  </div>
+                </div>
               </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
+            </div>
+          </div>
+          <div class="card">
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+                      <input matInput formControlName="tank_no" readonly="true">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
+                      <input matInput formControlName="customer" readonly="true">
+                    </mat-form-field>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
+                      <input matInput formControlName="eir_no" readonly="true">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
+
+                      <input matInput formControlName="eir_dt" readonly="true">
+
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.QUOTATION_DATE }}</mat-label>
                       <input matInput formControlName="quotation_dt" type="text" readonly="true">
-                    
+
                     </mat-form-field>
+                  </div>
                 </div>
               </div>
-          </div>
-          
-          
-          </div>
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.CARGO_NAME}}</mat-label>
-                        <input matInput formControlName="cargo"  readonly="true" >
-                      </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                    <input matInput formControlName="job_no"  readonly="true" >
-                  
-                  </mat-form-field>
-                </div>
-              </div>
-          </div>
-          
-          
-          </div>
-          <div class="row">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+
+
+            </div>
             <div class="row">
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowStatusView()">
-                  <mat-form-field class="example-full-width">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CARGO_NAME}}</mat-label>
+                      <input matInput formControlName="cargo" readonly="true">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
+                      <input matInput formControlName="job_no" readonly="true">
+
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowStatusView()">
+                    <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.STATUS}}</mat-label>
                       <input matInput formControlName="status_cv" readonly>
                     </mat-form-field>
-              </div>
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApproveDtView()">
-                <mat-form-field class="example-full-width">
-                  <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
-                  <input matInput formControlName="approve_dt" readonly>
-                </mat-form-field>
-              </div>
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDtView()">
-                <mat-form-field class="example-full-width">
-                  <mat-label>{{translatedLangText.NO_ACTION}}</mat-label>
-                  <input matInput formControlName="na_dt" readonly >
-                </mat-form-field>
-              </div>
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowRemarksView()">
-                <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                    <input matInput formControlName="remarks" readonly >
-                
-                  </mat-form-field>
-              </div>
-            </div>
-          
-          </div>
-          </div>
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
-              <mat-label style="display: flex; justify-content: left;">* {{translatedLangText.REMARKS}} : {{this.getTariffCleaningRemarks()}} </mat-label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
-              <mat-label style="display: flex; justify-content: left;">&nbsp;</mat-label>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-              <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
-                    </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                               {{translatedLangText.APPROVAL}}
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApproveDtView()">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
+                      <input matInput formControlName="approve_dt" readonly>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDtView()">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.NO_ACTION}}</mat-label>
+                      <input matInput formControlName="na_dt" readonly>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowRemarksView()">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                      <input matInput formControlName="remarks" readonly>
+
+                    </mat-form-field>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
+                <mat-label style="display: flex; justify-content: left;">* {{translatedLangText.REMARKS}} :
+                  {{this.getTariffCleaningRemarks()}} </mat-label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
+                <mat-label style="display: flex; justify-content: left;">&nbsp;</mat-label>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                        <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  {{translatedLangText.APPROVAL}}
+                                </div>
                               </div>
-                            </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                {{translatedLangText.JOB_ALLOCATION}}
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  {{translatedLangText.JOB_ALLOCATION}}
+                                </div>
                               </div>
-                            </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                {{translatedLangText.JOB_COMPLETION}}
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  {{translatedLangText.JOB_COMPLETION}}
+                                </div>
                               </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                              <div class="table-label cost-label">
-                                {{translatedLangText.BILLING_DETAILS}}
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                                <div class="table-label cost-label">
+                                  {{translatedLangText.BILLING_DETAILS}}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -288,33 +290,29 @@
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{translatedLangText.UPDATED_BY}}</span>
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                        <span class="font-bold">{{translatedLangText.UPDATED_BY}}</span>
+                      </div>
                     </div>
-                  </div>
                     <div class="row">
                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                 <div class="table-label cost-label">
                                   <span></span><span>{{this.pcForm.get('update_by')?.value?this.pcForm.get('update_by')?.value:'-'}}</span>
                                   <!-- <span></span><span>+</span> -->
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                 <div class="table-label cost-label">
                                   <span></span><span>{{this.selectedItem?.job_order?.create_by?this.selectedItem?.job_order?.create_by:"-"}}</span>
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                 <div class="table-label cost-label">
                                   <span></span><span>{{this.selectedItem?.job_order?.complete_dt?this.selectedItem?.job_order?.update_by:"-"}}</span>
                                 </div>
@@ -329,41 +327,39 @@
                         </div>
                       </div>
                     </div>
-                   
-                  
-                </div>
-                <div class="col-xl col-lg col-md col-sm m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{translatedLangText.UPDATED_ON}}</span>
-                    </div>
+
+
                   </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span></span><span>{{this.pcForm.get('update_on')?.value!=='-'?this.displayDateFromEpoch(this.pcForm.get('update_on')?.value):'-'}}</span>
+                  <div class="col-xl col-lg col-md col-sm m-b-0">
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                        <span class="font-bold">{{translatedLangText.UPDATED_ON}}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>{{this.pcForm.get('update_on')?.value!=='-'?this.displayDateFromEpoch(this.pcForm.get('update_on')?.value):'-'}}</span>
+                                </div>
                               </div>
-                            </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span></span><span>{{this.selectedItem?.job_order?.create_dt?this.displayDateFromEpoch(this.selectedItem?.job_order?.create_dt):"-"}}</span>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>{{this.selectedItem?.job_order?.create_dt?this.displayDateFromEpoch(this.selectedItem?.job_order?.create_dt):"-"}}</span>
+                                </div>
                               </div>
-                            </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span></span><span>{{this.selectedItem?.job_order?.complete_dt?this.displayDateFromEpoch(this.selectedItem?.job_order?.complete_dt):"-"}}</span>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>{{this.selectedItem?.job_order?.complete_dt?this.displayDateFromEpoch(this.selectedItem?.job_order?.complete_dt):"-"}}</span>
+                                </div>
                               </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span></span><span>-</span>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>-</span>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -376,26 +372,25 @@
             </div>
           </div>
         </div>
-        </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-          <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.UPDATE}}</button>
+        <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.UPDATE}}</button>
         }
         @if(canRollBack())
         {
-          
-          <button mat-flat-button color="accent"   (click)="onRollback($event)" class="m-r-5">  
-            <mat-icon>undo</mat-icon>
-            <span>{{translatedLangText.ROLLBACK}}</span>
-          </button>
+
+        <button mat-flat-button color="accent" (click)="onRollback($event)" class="m-r-5">
+          <mat-icon>undo</mat-icon>
+          <span>{{translatedLangText.ROLLBACK}}</span>
+        </button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">
           @if(canEdit()){
           {{translatedLangText.CANCEL}}
           }
           @if(!canEdit()){
-            {{translatedLangText.CLOSE}}
+          {{translatedLangText.CLOSE}}
           }
         </button>
       </div>
