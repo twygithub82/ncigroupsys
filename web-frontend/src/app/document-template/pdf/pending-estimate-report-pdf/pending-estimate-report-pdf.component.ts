@@ -165,15 +165,6 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     DATA_SCS_TRANSPORT_PLATE: 'COMMON-FORM.DATA-SCS-TRANSPORT-PLATE',
     TOP_DIS_COMP: 'COMMON-FORM.TOP-DIS-COMP',
     TOP_DIS_VALVE: 'COMMON-FORM.TOP-DIS-VALVE',
-    AIRLINE_VALVE: 'COMMON-FORM.AIRLINE-VALVE',
-    AIRLINE_VALVE_CONNECTIONS: 'COMMON-FORM.AIRLINE-VALVE-CONNECTIONS',
-    MANLID_COMPARTMENT: 'COMMON-FORM.MANLID-COMPARTMENT',
-    MANLID_COVER: 'COMMON-FORM.MANLID-COVER',
-    MANLID_SEAL: 'COMMON-FORM.MANLID-SEAL',
-    PV: 'COMMON-FORM.PV',
-    SAFETY_HANDRAIL: 'COMMON-FORM.SAFETY-HANDRAIL',
-    BUFFER_PLATE: 'COMMON-FORM.BUFFER-PLATE',
-    RESIDUE: 'COMMON-FORM.RESIDUE',
     DIPSTICK: 'COMMON-FORM.DIPSTICK',
     SPECIFICATION: 'COMMON-FORM.SPECIFICATION',
     DIAMITER: 'COMMON-FORM.DIAMITER',
@@ -287,6 +278,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     CLEAN_DATE:'COMMON-FORM.CLEAN-DATE',
     REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
     REPAIR_IN_DATE:'COMMON-FORM.REPAIR-IN-DATE',
+    REPAIR_ESTIMATE_OUTSTANDING_TANK_LIST:'COMMON-FORM.REPAIR-ESTIMATE-OUTSTANDING-TANK-LIST'
     
 
   }
@@ -778,6 +770,148 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10; 
+    const rightMargin = 10;
+    const topMargin = 20;
+    const bottomMargin = 20;
+    const contentWidth = pageWidth - leftMargin - rightMargin; 
+    const maxContentHeight = pageHeight - topMargin - bottomMargin; 
+  
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+  
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+  
+    let tableHeaderHeight = 7.6153;
+    let tableRowHeight = 5.8974;
+  
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    const progressValue = 100 / cardElements.length;
+  
+    const reportTitle = this.GetReportTitle();
+  
+    this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+    let currentY = topMargin; 
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+    for (let i = 0; i < cardElements.length; i++) {
+        const card = cardElements[i];
+
+        const canvas = await html2canvas(card, { scale: scale });
+        let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+        const imgHeight = (canvas.height * contentWidth) / canvas.width;
+
+        if (currentY + imgHeight > maxContentHeight) {
+            let currentY_canvas = 0;
+            let nextPage = false;
+            const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
+            let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
+
+            const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
+            const pageTHeaderHeight = tableHeaderHeight;
+
+            do {
+                nextPage = false;
+
+                if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
+                    imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
+                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
+                    currentY += pageTHeaderHeight;
+                    currentY_canvas += tableHeaderHeight_canvas;
+
+                    const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
+                    const remainingTableHeight_canvas = canvas.height - currentY_canvas;
+                    const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
+                    let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
+                    let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
+
+                    const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
+                    imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
+                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
+
+                    currentY_canvas += cpImgHeight_canvas;
+                    currentY += cpImgHeight;
+
+                    nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
+                } else {
+                    if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
+                        pdf.addPage();
+                        pageNumber++;
+                        this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+                        currentY = topMargin;
+                    }
+
+                    nextPage = (currentY + imgHeight > maxContentHeight);
+                    if (!nextPage) {
+                        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+                        currentY += imgHeight + 5;
+                    }
+                }
+
+                if (nextPage) {
+                    pdf.addPage();
+                    currentY = topMargin;
+                    pageNumber++;
+                    this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                    currentY_canvas -= tableHeaderHeight_canvas;
+                    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+                } else {
+                    currentY += 5;
+                }
+
+            } while (nextPage);
+
+        } else {
+            if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
+                pdf.addPage();
+                pageNumber++;
+                this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+                currentY = topMargin;
+            }
+
+            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+            currentY += imgHeight + 5;
+        }
+
+        this.generatingPdfProgress += progressValue;
+    }
+
+    const totalPages = pdf.getNumberOfPages();
+
+    pagePositions.forEach(({ page, x, y }) => {
+        pdf.setPage(page);
+        pdf.setFontSize(10);
+        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+    });
+
+    this.generatingPdfProgress = 100;
+    pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+}
+
+async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:number): Promise<HTMLCanvasElement> {
+    
+  
+  const splitCanvas = document.createElement('canvas');
+  splitCanvas.width = sw;
+  splitCanvas.height = sh;
+
+  const ctx = splitCanvas.getContext('2d');
+  if (ctx) {
+      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
+  }
+
+  return splitCanvas;
+}
+  async exportToPDF_r2(fileName: string = 'document.pdf') {
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10; // Left margin
     const rightMargin = 10; // Right margin
     const topMargin = 20; // Top margin for header
@@ -966,7 +1100,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
    }
    GetReportTitle():string
    {
-     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.SUMMARY_REPORT}`
+     return `${this.translatedLangText.REPAIR_ESTIMATE_OUTSTANDING_TANK_LIST}`
    }
 
    processCustomerStatus(repStatus:report_status[])

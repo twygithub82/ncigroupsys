@@ -816,7 +816,167 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
+  GetReportTitle(): string {
+    return `${this.translatedLangText.REPORT_TITLE} `
+  }
+
   async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 297; // A4 width in mm (landscape)
+    const pageHeight = 220; // A4 height in mm (landscape)
+    const leftMargin = 10; 
+    const rightMargin = 10;
+    const topMargin = 20;
+    const bottomMargin = 20;
+    const contentWidth = pageWidth - leftMargin - rightMargin; 
+    const maxContentHeight = pageHeight - topMargin - bottomMargin; 
+  
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+  
+    const pdf = new jsPDF('l', 'mm', 'a4');
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+  
+    let tableHeaderHeight = 10.6153;
+    let tableRowHeight = 5.8974;
+  
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    const progressValue = 100 / cardElements.length;
+  
+    const reportTitle = this.GetReportTitle();
+  
+    this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+    let currentY = topMargin; 
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+    for (let i = 0; i < cardElements.length; i++) {
+        const card = cardElements[i];
+        console.log("card : " + i);
+  
+        const canvas = await html2canvas(card, { scale: scale });
+        let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+        const imgHeight = (canvas.height * contentWidth) / canvas.width;
+  
+        if (currentY + imgHeight > maxContentHeight) {
+            let currentY_canvas = 0;
+            let nextPage = false;
+            const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
+            let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
+  
+            const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
+            const pageTHeaderHeight = tableHeaderHeight;
+  
+            do {
+                nextPage = false;
+  
+                if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
+                    imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
+                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
+                    currentY += pageTHeaderHeight;
+                    currentY_canvas += tableHeaderHeight_canvas;
+  
+                    const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
+                    const remainingTableHeight_canvas = canvas.height - currentY_canvas;
+                    const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
+                    let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
+                    let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
+  
+                    const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
+                    imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
+                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
+  
+                    currentY_canvas += cpImgHeight_canvas;
+                    currentY += cpImgHeight;
+  
+                    nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
+                } else {
+                  if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
+                    pdf.addPage();
+                    pageNumber++;
+                    this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+                    currentY=topMargin;
+                  }
+                  
+                  nextPage = (currentY + imgHeight > maxContentHeight);
+                  if(!nextPage)
+                  {
+                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+                    currentY += imgHeight + 5;
+                  }
+                }
+  
+                if (nextPage) {
+                    pdf.addPage();
+                    currentY = topMargin;
+                    pageNumber++;
+                    this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                    currentY_canvas -= tableHeaderHeight_canvas;
+                    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+                } else {
+                    currentY += 5;
+                }
+  
+            } while (nextPage);
+  
+        } else {
+            if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
+                pdf.addPage();
+                pageNumber++;
+                this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+                currentY=topMargin;
+            }
+  
+            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+            currentY += imgHeight + 5;
+        }
+  
+        this.generatingPdfProgress += progressValue;
+    }
+  
+    const totalPages = pdf.getNumberOfPages();
+  
+    pagePositions.forEach(({ page, x, y }) => {
+        pdf.setPage(page);
+        pdf.setFontSize(10);
+        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+    });
+  
+    this.generatingPdfProgress = 100;
+    pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+  }
+  
+  async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:number): Promise<HTMLCanvasElement> {
+    
+  
+    const splitCanvas = document.createElement('canvas');
+    splitCanvas.width = sw;
+    splitCanvas.height = sh;
+  
+    const ctx = splitCanvas.getContext('2d');
+    if (ctx) {
+        ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
+    }
+  
+    return splitCanvas;
+  }
+  
+  addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
+    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+  
+    pdf.setFontSize(14); // Title font size
+    pdf.text(title, titleX, 15); // Position it at the top
+  
+    // Draw underline for the title
+    pdf.setLineWidth(0.5); // Set line width for underline
+    pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
+  }
+
+  async exportToPDF_r3(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 210; // A4 height in mm (landscape)
     const leftMargin = 10; // Left margin
@@ -896,18 +1056,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     this.generatingPdfLoadingSubject.next(false);
 }
 
-// Helper function to add the header (title and underline) to a page
-addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
-    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
-    pdf.setFontSize(14); // Title font size
-    pdf.text(title, titleX, 15); // Position it at the top
-
-    // Draw underline for the title
-    pdf.setLineWidth(0.5); // Set line width for underline
-    pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
-}
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);

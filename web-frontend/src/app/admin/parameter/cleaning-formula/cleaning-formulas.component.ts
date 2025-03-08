@@ -43,10 +43,10 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 
 @Component({
-  selector: 'app-cleaning-methods',
+  selector: 'app-cleaning-formulas',
   standalone: true,
-  templateUrl: './cleaning-methods.component.html',
-  styleUrl: './cleaning-methods.component.scss',
+  templateUrl: './cleaning-formulas.component.html',
+  styleUrl: './cleaning-formulas.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -73,7 +73,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     MatDividerModule,
   ]
 })
-export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'category_name',
     'category_description',
@@ -85,10 +85,10 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
   ];
 
-  pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-PROCESS'
+  pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.CLEANING-MANAGEMENT.TEXT', route: '/admin/parameter/cleaning-methods' }
+    { text: 'MENUITEMS.CLEANING-MANAGEMENT.TEXT', route: '/admin/parameter/cleaning-formulas' }
   ]
 
   translatedLangText: any = {};
@@ -125,8 +125,10 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     CLEANING_METHOD: 'COMMON-FORM.CLEANING-PROCESS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
-    PROCESS_NAME:"COMMON-FORM.PROCESS-NAME",
-    PROCESS_DESCRIPTION:"COMMON-FORM.PROCESS-DESCRIPTION"
+    FORMALA_NAME:"COMMON-FORM.FORMULA-NAME",
+    FORMALA_DESCRIPTION:"COMMON-FORM.FORMULA-DESCRIPTION",
+    MIN_DURATION:"COMMON-FORM.MIN-DURATION",
+    MAX_DURATION:"COMMON-FORM.MAX-DURATION",
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -204,6 +206,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     this.searchForm = this.fb.group({
       name: [''],
       description: [''],
+      duration_min:[''],
+      duration_max:[''],
 
     });
   }

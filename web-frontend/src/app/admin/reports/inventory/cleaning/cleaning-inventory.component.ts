@@ -772,10 +772,10 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     this.sotList.map(s => {
 
       if (s) {
-        var repCln: report_inventory_cleaning_detail = report_inv_cln_dtl.find(r => r.cargo === s.tariff_cleaning?.cargo) || new report_inventory_cleaning_detail();
+        var repCln: report_inventory_cleaning_detail = report_inv_cln_dtl.find(r => r.cargo === (s.tariff_cleaning?.cargo||'-')) || new report_inventory_cleaning_detail();
         let newItm = false;
         if (!repCln.cargo) {
-          repCln.cargo = s.tariff_cleaning?.cargo;
+          repCln.cargo = (s.tariff_cleaning?.cargo||'-');
           newItm = true;
         }
        
