@@ -130,6 +130,11 @@
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.REMARKS}}</mat-label>
                       <input matInput formControlName="remarks" required>
+                      @if (pcForm.get('remarks')?.hasError('required')) {
+                      <mat-error>
+                        {{translatedLangText.REMARKS}} {{translatedLangText.CARGO_REQUIRED}}
+                      </mat-error>
+                      }
                     </mat-form-field>
                   </div>
                 </div>
