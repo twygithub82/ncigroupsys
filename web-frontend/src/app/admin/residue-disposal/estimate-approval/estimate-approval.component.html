@@ -116,34 +116,33 @@
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                       <mat-select multiple formControlName="est_status_cv">
                         @for (codeValue of processStatusCvList; track codeValue) {
-                          @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
-                            <mat-option [value]="codeValue.code_val">
-                              {{codeValue.description}}
-                            </mat-option>
-                            }
+                        @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
                         }
                       </mat-select>
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.TANK_STATUS }}</mat-label>
-                        <mat-select formControlName="tank_status" multiple>
+                      <mat-label>{{translatedLangText.TANK_STATUS }}</mat-label>
+                      <mat-select formControlName="tank_status" multiple>
 
-                          @for (ts of tankStatusCvList; track ts) {
-                            @if (availableTankStatus.includes(ts.code_val ?? '')) {
-                              <mat-option [value]="ts.code_val">
-                                {{ts.description}}
-                              </mat-option>
-                              }
-                          }
-                           
-                          </mat-select>
-                       
+                        @for (ts of tankStatusCvList; track ts) {
+                        @if (availableTankStatus.includes(ts.code_val ?? '')) {
+                        <mat-option [value]="ts.code_val">
+                          {{ts.description}}
+                        </mat-option>
+                        }
+                        }
+
+                      </mat-select>
                     </mat-form-field>
-                    
                   </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
+                  <div
+                    class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>
@@ -167,10 +166,12 @@
                     <strong>{{translatedLangText.ESTIMATE_NO}}</strong>: {{copiedResidueEst.estimate_no}}
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
-                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>: {{filterDeleted(copiedResidueEst.residue_part)?.length}}
+                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>:
+                    {{filterDeleted(copiedResidueEst.residue_part)?.length}}
                   </div>
                   <div class="col-xl col-lg col-md-12 col-sm-12 m-b-0 d-flex justify-content-end">
-                    <mat-icon (click)="clearCopiedRepairEst()" [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>
+                    <mat-icon (click)="clearCopiedRepairEst()"
+                      [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>
                   </div>
                 </div>
               </mat-card-content>
@@ -186,13 +187,15 @@
                 </mat-card-title>
                 <mat-card-actions class="pt-0 pb-0">
                   @if (copiedResidueEst) {
-                  <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK" (click)="pasteResidueEstimate($event,row,copiedResidueEst)" >
+                  <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
+                    (click)="pasteResidueEstimate($event,row,copiedResidueEst)">
                     <!-- [routerLink]="['/admin/repair/estimate/duplicate', row.guid, copiedResidueEst!.guid]"> -->
                     <mat-icon class="col-white">content_paste</mat-icon>
                   </button>
                   }
                   @else {
-                  <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW" (click)="addResidueEstimate($event,row)">
+                  <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW"
+                    (click)="addResidueEstimate($event,row)">
                     <!-- [routerLink]="['/admin/repair/estimate/new', row.guid]"> -->
                     <mat-icon class="col-white">add</mat-icon>
                   </button>
@@ -234,7 +237,7 @@
                       <mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                           [ngClass]="'tbl-checkbox'">
+                          [ngClass]="'tbl-checkbox'">
                         </mat-checkbox>
                       </mat-cell>
                     </ng-container>
@@ -247,8 +250,7 @@
                         {{translatedLangText.ESTIMATE_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let residueRow" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{residueRow.estimate_no}}
+                        <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{residueRow.estimate_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="net_cost">
@@ -265,7 +267,8 @@
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let residueRow" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(residueRow.status_cv)}}
+                        <span
+                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(residueRow.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="remarks">
@@ -276,7 +279,7 @@
                         <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{residueRow.remarks}}
                       </mat-cell>
                     </ng-container>
-                 
+
                     <ng-container matColumnDef="actions">
                       <mat-header-cell
                         [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
@@ -288,11 +291,11 @@
                         </button>
                         <mat-menu #menu="matMenu">
                           @if (residueDS.canApprove(residueRow)) {
-                            <button mat-menu-item (click)="approveRow($event,residueRow)" >
-                              <mat-icon>check</mat-icon>
-                              <span>{{translatedLangText.APPROVE}}</span>
-                            </button>
-                            }
+                          <button mat-menu-item (click)="approveRow($event,residueRow)">
+                            <mat-icon>check</mat-icon>
+                            <span>{{translatedLangText.APPROVE}}</span>
+                          </button>
+                          }
                           @if (residueDS.canCopy(residueRow)) {
                           <button mat-menu-item (click)="copyResidueEst(residueRow)">
                             <mat-icon>content_copy</mat-icon>
@@ -312,17 +315,17 @@
                           </button>
                           }
                           @if (residueDS.canNoAction(residueRow)) {
-                            <button mat-menu-item (click)="onNoAction($event,residueRow)">
-                              <mat-icon>close</mat-icon>
-                              <span>{{translatedLangText.NO_ACTION}}</span>
-                            </button>
-                            }
+                          <button mat-menu-item (click)="onNoAction($event,residueRow)">
+                            <mat-icon>close</mat-icon>
+                            <span>{{translatedLangText.NO_ACTION}}</span>
+                          </button>
+                          }
                         </mat-menu>
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let residueRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                       matRipple (click)="updateResidueEstimate($event,row,residueRow)">
+                      matRipple (click)="updateResidueEstimate($event,row,residueRow)">
                     </mat-row>
                   </table>
                 </div>

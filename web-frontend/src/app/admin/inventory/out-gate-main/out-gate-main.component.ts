@@ -108,7 +108,6 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       const tabIndex = params['tabIndex'];
-      console.log('Tab:', tabIndex);
       if (tabIndex) {
         this.selectedTabIndex = tabIndex
       }

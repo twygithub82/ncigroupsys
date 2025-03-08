@@ -10,36 +10,21 @@
           <div class="body overflow-auto">
             <mat-tab-group dynamicHeight (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
-                <form class="ms-0" [formGroup]="filterCleanForm!" (ngSubmit)="onFilterCleaning()" #formDirective="ngForm">
+                <form class="ms-0" [formGroup]="filterCleanForm!" (ngSubmit)="onFilterCleaning()"
+                  #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
                         <mat-label>
                           {{translatedLangText.TANK_NO}}
                         </mat-label>
                         <input matInput formControlName="filterClean">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 pt-3">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.METHOD}}</mat-label>
-                        <input matInput formControlName="cleanMethod" 
-                          [matAutocomplete]="cleanMethod">
-                        <mat-autocomplete #cleanMethod="matAutocomplete" [displayWith]="displayCleanMethodFn">
-                          @for (cm of cleanMethodList; track cm) {
-                          <mat-option [value]="cm">
-                            {{cm.description}}
-                          </mat-option>
-                          }
-                        </mat-autocomplete>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                        <input matInput formControlName="customer" 
-                          [matAutocomplete]="customerCode">
+                        <input matInput formControlName="customer" [matAutocomplete]="customerCode">
                         <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                           @for (cc of customer_companyList; track cc) {
                           <mat-option [value]="cc">
@@ -49,7 +34,20 @@
                         </mat-autocomplete>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.PROCESS}}</mat-label>
+                        <input matInput formControlName="cleanMethod" [matAutocomplete]="cleanMethod">
+                        <mat-autocomplete #cleanMethod="matAutocomplete" [displayWith]="displayCleanMethodFn">
+                          @for (cm of cleanMethodList; track cm) {
+                          <mat-option [value]="cm">
+                            {{cm.description}}
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.STATUS}}</mat-label>
                         <mat-select multiple formControlName="status_cv">
@@ -63,8 +61,8 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
-                      <button mat-mini-fab color="primary" >
+                    <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-12 pt-3 d-flex align-items-center ms-auto justify-content-end">
+                      <button mat-mini-fab color="primary">
                         <mat-icon>search</mat-icon>
                       </button>
                     </div>
@@ -82,7 +80,9 @@
                         {{translatedLangText.TANK_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no ? row.storing_order_tank.tank_no : '-'}}
+                        <span
+                          class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no ?
+                        row.storing_order_tank.tank_no : '-'}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="customer">
@@ -99,7 +99,8 @@
                         {{translatedLangText.EIR_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.storing_order_tank?.in_gate[0].eir_no?row.storing_order_tank?.in_gate[0].eir_no:'-'}}
+                        <span
+                          class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.storing_order_tank?.in_gate[0].eir_no?row.storing_order_tank?.in_gate[0].eir_no:'-'}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="eir_dt">
@@ -107,10 +108,11 @@
                         {{translatedLangText.EIR_DATE}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.storing_order_tank?.in_gate[0].eir_dt)}}
+                        <span
+                          class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.storing_order_tank?.in_gate[0].eir_dt)}}
                       </mat-cell>
                     </ng-container>
-                   
+
                     <ng-container matColumnDef="last_cargo">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>
                         {{translatedLangText.LAST_CARGO}}
@@ -122,23 +124,24 @@
                     </ng-container>
                     <ng-container matColumnDef="method">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.METHOD}}
+                        {{translatedLangText.PROCESS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span
-                          class="mobile-label">{{translatedLangText.METHOD}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description:'-'}}
+                          class="mobile-label">{{translatedLangText.PROCESS}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description:'-'}}
                       </mat-cell>
                     </ng-container>
-                    
+
                     <ng-container matColumnDef="status_cv">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{displayTankStatus(row.status_cv)}}
+                        <span
+                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{displayTankStatus(row.status_cv)}}
                       </mat-cell>
                     </ng-container>
-                    
+
                     <ng-container matColumnDef="actions">
                       <mat-header-cell mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -157,13 +160,12 @@
                           <mat-icon>check_box</mat-icon>
                         </button>
                         } -->
-                      }
+                        }
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumnsRepair"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumnsRepair;"
-                     (click)="this.popupDialogForm(row,'allocation')"
-                      [style.cursor]="'pointer'" matRipple>
+                      (click)="this.popupDialogForm(row,'allocation')" [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                   </table>
                 </div>
@@ -189,7 +191,7 @@
                 <app-job-order-task></app-job-order-task>
               </mat-tab> -->
               <mat-tab [label]="translatedLangText.BAY_OVERVIEW">
-                <app-bay-overview ></app-bay-overview>
+                <app-bay-overview></app-bay-overview>
               </mat-tab>
               <!-- <mat-tab>
                 <ng-template mat-tab-label>

@@ -59,12 +59,6 @@
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                      <input matInput formControlName="job_no">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
                         formControlName="last_cargo">
@@ -84,28 +78,6 @@
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.QUOTATION_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="quotation_picker">
-                        <input matStartDate placeholder="Start date" formControlName="start_quotation_date">
-                        <input matEndDate placeholder="End date" formControlName="end_quotation_date">
-                      </mat-date-range-input>
-                      <mat-datepicker-toggle matSuffix [for]="quotation_picker"></mat-datepicker-toggle>
-                      <mat-date-range-picker #quotation_picker></mat-date-range-picker>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="approved_picker">
-                        <input matStartDate placeholder="Start date" formControlName="start_approved_date">
-                        <input matEndDate placeholder="End date" formControlName="end_approved_date">
-                      </mat-date-range-input>
-                      <mat-datepicker-toggle matSuffix [for]="approved_picker"></mat-datepicker-toggle>
-                      <mat-date-range-picker #approved_picker></mat-date-range-picker>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.APPROVAL_STATUS}}</mat-label>
                       <mat-select multiple formControlName="approval_status">
                         @for (codeValue of processStatusCvList; track codeValue) {
@@ -118,7 +90,8 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
+                  <div
+                    class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>

@@ -131,7 +131,8 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
+                  <div
+                    class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                     <button mat-mini-fab class="" color="primary" (click)="search()"
                       [matTooltip]="translatedLangText.SEARCH">
                       <mat-icon>search</mat-icon>
@@ -223,7 +224,8 @@
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-auto-lg tbl-col-width-per-auto-md tbl-col-width-per-auto-sm'">
-                    <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row?.tank_status_cv)}}
+                    <span
+                      class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row?.tank_status_cv)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="accept_status">
