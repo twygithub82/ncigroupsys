@@ -37,7 +37,7 @@ import { PreviewImageDialogComponent } from '@shared/components/preview-image-di
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { InGateDS, InGateGO, InGateItem } from 'app/data-sources/in-gate';
+import { InGate, InGateDS, InGateGO, InGateItem } from 'app/data-sources/in-gate';
 import { InGateSurveyDS, InGateSurveyGO } from 'app/data-sources/in-gate-survey';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
@@ -229,7 +229,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     COMPARTMENT_TYPE_TOP_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-TOP-EMPTY',
     COMPARTMENT_TYPE_MANLID_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-MANLID-EMPTY',
     ARE_YOU_SURE_TO_SUBMIT: 'COMMON-FORM.ARE-YOU-SURE-TO-SUBMIT',
-    SAVE: 'COMMON-FORM.SAVE'
+    SAVE: 'COMMON-FORM.SAVE',
+    DOWNLOAD: 'COMMON-FORM.DOWNLOAD'
   }
   private destroy$ = new Subject<void>();
 
@@ -1442,6 +1443,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onPublish() {
+    if (this.in_gate) {
+      const inGateSurveyItem = new InGateSurveyGO({ tank_comp_guid: this.in_gate?.in_gate_survey?.tank_comp_guid });
+      const inGateItem: any = new InGate(this.in_gate);
+      inGateItem.in_gate_survey = inGateSurveyItem
+      console.log('publishInGateSurvey: ', inGateItem)
+      this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result.data?.publishIngateSurvey)
+        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      });
+    }
+  }
+
+  onDownload() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1732,19 +1747,19 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      const successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
     }
   }
 
   handleSaveError() {
-    let successMsg = this.translatedLangText.SAVE_ERROR;
+    const successMsg = this.translatedLangText.SAVE_ERROR;
     ComponentUtil.showNotification('snackbar-error', successMsg, 'top', 'center', this.snackBar);
   }
 
   handleDeleteSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.DELETE_SUCCESS;
+      const successMsg = this.translatedLangText.DELETE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
     }
   }
@@ -2204,6 +2219,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   canPublish() {
+    return this.in_gate?.in_gate_survey?.guid;
+  }
+
+  canDownload() {
     return this.in_gate?.in_gate_survey?.guid;
   }
 
