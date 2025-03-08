@@ -13,18 +13,18 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-delete',
-    templateUrl: './delete.component.html',
-    styleUrls: ['./delete.component.scss'],
-    standalone: true,
-    imports: [
-        MatDialogTitle,
-        MatDialogContent,
-        MatDialogActions,
-        MatButtonModule,
-        MatDialogClose,
-        TranslateModule,
-    ],
+  selector: 'app-delete',
+  templateUrl: './delete.component.html',
+  styleUrls: ['./delete.component.scss'],
+  standalone: true,
+  imports: [
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatButtonModule,
+    MatDialogClose,
+    TranslateModule,
+  ],
 })
 export class DeleteDialogComponent {
   rep: any;
@@ -49,15 +49,14 @@ export class DeleteDialogComponent {
     this.dialogRef.close(returnDialog);
   }
 
-  
-  getDescription(row:TemplateEstPartItem):String{
-    var retval:String="";
 
-    if(row?.tariff_repair)
-    {
+  getDescription(row: TemplateEstPartItem): String {
+    var retval: String = "";
+
+    if (row?.tariff_repair) {
       const partName = row?.tariff_repair?.part_name!;
-      let dimension =row?.tariff_repair.alias?.replace(partName,'')!;
-      if(dimension) dimension =` - ${dimension} `;
+      let dimension = row?.tariff_repair.alias?.replace(partName, '')!;
+      if (dimension) dimension = ` - ${dimension} `;
       retval = `${row.description} ${dimension}`;
     }
 

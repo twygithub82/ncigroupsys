@@ -229,6 +229,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     COMPARTMENT_TYPE_TOP_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-TOP-EMPTY',
     COMPARTMENT_TYPE_MANLID_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-MANLID-EMPTY',
     ARE_YOU_SURE_TO_SUBMIT: 'COMMON-FORM.ARE-YOU-SURE-TO-SUBMIT',
+    SAVE: 'COMMON-FORM.SAVE'
   }
   private destroy$ = new Subject<void>();
 

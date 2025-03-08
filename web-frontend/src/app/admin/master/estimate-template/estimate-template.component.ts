@@ -1,6 +1,6 @@
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,25 +27,16 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { MatDividerModule } from '@angular/material/divider';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstPartItem } from 'app/data-sources/master-template';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
 
 @Component({
   selector: 'app-package-repair',
@@ -58,9 +50,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
     MatIconModule,
     MatTableModule,
     MatSortModule,
-    NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
@@ -82,18 +72,9 @@ import { ComponentUtil } from 'app/utilities/component-util';
 export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    // 'select',
-    // // 'img',
-    'fName',
-    'dimension',
-    'lName',
-    // 'custCode',
-    // 'custCompanyName',
-    'email',
-    // 'subgroup',
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
+    'template',
+    'type',
+    'last_update_dt',
   ];
 
   pageTitle = 'MENUITEMS.MASTER.LIST.ESTIMATE-TEMPLATE'
@@ -104,28 +85,11 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
   customerCodeControl = new UntypedFormControl();
   templateNameControl = new UntypedFormControl();
-
-
-  // groupNameControl = new UntypedFormControl();
-  // subGroupNameControl = new UntypedFormControl();
-  // handledItemControl = new UntypedFormControl();
-
-
-  // groupNameCvList: CodeValuesItem[] = [];
-  // subGroupNameCvList: CodeValuesItem[] = [];
-  // handledItemCvList: CodeValuesItem[] = [];
-
-
-  // storageCalCvList : CodeValuesItem[]=[];
   CodeValuesDS?: CodeValuesDS;
-  // packDepotDS : PackageDepotDS;
   masterEstTempDS: MasterEstimateTemplateDS;
   ccDS: CustomerCompanyDS;
-  //tariffDepotDS:TariffDepotDS;
-  // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
 
-  //packDepotItems:PackageDepotItem[]=[];
   masterTemplateItem: MasterTemplateItem[] = [];
   masterTempItemOnly: MasterTemplateItem[] = [];
 
@@ -152,38 +116,14 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
-    HEADER: 'COMMON-FORM.CARGO-DETAILS',
-    HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
-    SO_NO: 'COMMON-FORM.SO-NO',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
-    HAULIER: 'COMMON-FORM.HAULIER',
-    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
     REPAIR: 'COMMON-FORM.REPAIR',
-    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
-    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
-    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
-    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
-    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
@@ -203,16 +143,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL: 'COMMON-FORM.EMAIL',
     CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
@@ -235,21 +166,16 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     MIN_COST: "COMMON-FORM.MIN-COST",
     MAX_COST: "COMMON-FORM.MAX-COST",
     LENGTH: "COMMON-FORM.LENGTH",
-    MIN_LENGTH: "COMMON-FORM.MIN-LENGTH",
-    MAX_LENGTH: "COMMON-FORM.MAX-LENGTH",
-    MIN_LABOUR: "COMMON-FORM.MIN-LABOUR",
-    MAX_LABOUR: "COMMON-FORM.MAX-LABOUR",
     HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
     LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     DIMENSION: "COMMON-FORM.DIMENSION",
-    TEMPLATE_NAME: "COMMON-FORM.TEMPLATE-NAME",
-    TEMPLATE_TYPE: "COMMON-FORM.TEMPLATE-TYPE",
+    TEMPLATE: "COMMON-FORM.TEMPLATE",
+    TYPE: "COMMON-FORM.TYPE",
     TEMPLATE_TYPE_GENERAL: "COMMON-FORM.TEMPLATE-TYPE-GENERAL",
     TEMPLATE_TYPE_EXCLUSIVE: "COMMON-FORM.TEMPLATE-TYPE-EXCLUSIVE",
     TOTAL_MATERIAL_COST: "COMMON-FORM.TOTAL-MATERIAL-COST",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
-
   }
 
   constructor(
