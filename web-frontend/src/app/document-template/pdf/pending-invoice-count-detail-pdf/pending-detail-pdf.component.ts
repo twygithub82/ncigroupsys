@@ -240,7 +240,8 @@ export class PendingDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     PREINSP_COST:'COMMON-FORM.PREINSP-COST-REPORT',
     STORAGE_COST:'COMMON-FORM.STORAGE-COST-REPORT',
     REPORT_TITLE:'COMMON-FORM.PENDING-INVOICE-DETAIL',
-    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE'
+    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE',
+    
 
   }
 
@@ -860,6 +861,12 @@ export class PendingDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
+
+  GetReportTitle(): string {
+    return `${this.translatedLangText.REPORT_TITLE} `
+  }
+
+
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -1002,6 +1009,7 @@ async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:
 
   return splitCanvas;
 }
+
   async exportToPDF_r2(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)

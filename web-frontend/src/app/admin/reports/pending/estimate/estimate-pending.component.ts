@@ -688,7 +688,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-
+    if(sot?.length<=0) return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -698,6 +698,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
     const dialogRef = this.dialog.open(PendingEstimateReportPdfComponent, {
       width: '85vw',
+      maxWidth:'1000px',
       maxHeight: '80vh',
       data: {
         sot: sot

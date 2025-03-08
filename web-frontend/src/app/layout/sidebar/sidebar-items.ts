@@ -263,8 +263,8 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },
       {
-        path: "admin/cleaning-steps",
-        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-STEPS",
+        path: "admin/parameter/cleaning-formulas",
+        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -272,7 +272,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: false
+        visible: true
       },
       {
         path: "admin/cleaning-procedures",

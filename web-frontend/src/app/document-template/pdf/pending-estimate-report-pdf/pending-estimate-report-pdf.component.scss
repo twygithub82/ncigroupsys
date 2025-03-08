@@ -237,6 +237,12 @@ padding:0;
 border:0;
 }
 
+.table_customer_info td.sp100
+{
+    text-align: right;
+    width: 100%; /* Removes borders from table rows and cells */
+}
+
 .th-w2{width:2%}
 .th-w3{width:3%}
 .th-w5{width:5%}
