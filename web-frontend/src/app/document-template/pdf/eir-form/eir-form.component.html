@@ -874,7 +874,7 @@
     {{translatedLangText.DOWNLOAD}}
   </button>
   }
-  <button mat-flat-button color="accent" (click)="onRepublishClick()" tabindex="-1"
+  <!-- <button mat-flat-button color="accent" (click)="onRepublishClick()" tabindex="-1"
     [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
       @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
@@ -884,7 +884,7 @@
       }
     </mat-icon>
     {{translatedLangText.REPUBLISH}}
-  </button>
+  </button> -->
   @if ((generatingPdfLoading$| async)) {
   <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
   }
