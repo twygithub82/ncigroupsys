@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -17,19 +17,17 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Apollo } from 'apollo-angular';
 import { Utility } from 'app/utilities/utility';
-import { InGateComponent } from './in-gate/in-gate.component';
-import { ActivatedRoute, Router } from '@angular/router';
 import { InGateSurveyComponent } from './in-gate-survey/in-gate-survey.component';
+import { InGateComponent } from './in-gate/in-gate.component';
 
 @Component({
   selector: 'app-in-gate-main',
@@ -110,7 +108,6 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       const tabIndex = params['tabIndex'];
-      console.log('Tab:', tabIndex);
       if (tabIndex) {
         this.selectedTabIndex = tabIndex
       }

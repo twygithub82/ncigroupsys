@@ -210,14 +210,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       tank_no: [''],
       customer_code: this.customerCodeControl,
       eir_no: [''],
-      job_no: [''],
-      start_approved_date: [''],
-      end_approved_date: [''],
       last_cargo: this.lastCargoControl,
-      start_quotation_date: [''],
-      end_quotation_date: [''],
       approval_status: [['APPROVED']],
-
     });
   }
 
@@ -477,11 +471,6 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     this.searchForm?.patchValue({
       tank_no: '',
       eir_no: '',
-      job_no: '',
-      start_approved_date: '',
-      end_approved_date: '',
-      start_quotation_date: '',
-      end_quotation_date: '',
       approval_status: 'APPROVED',
 
     });

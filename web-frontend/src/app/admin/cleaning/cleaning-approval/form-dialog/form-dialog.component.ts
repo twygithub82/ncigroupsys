@@ -391,23 +391,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   loadData() {
-    //this.queryDepotCost();
-
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
       this.storageCalCvList = data;
-
-
       if (this.selectedItems.length == 1) {
         this.selectedItem = this.selectedItems[0];
         var inGateClnItem = this.selectedItem;
         this.pcForm.patchValue({
-
-
           tank_no: inGateClnItem.storing_order_tank?.tank_no,
           customer: this.displayCustomerName(inGateClnItem.storing_order_tank?.storing_order?.customer_company),
           eir_no: inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
@@ -478,9 +471,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-
   save() {
-
     if (!this.pcForm?.valid) return;
 
     var selItem = this.selectedItems[0];
@@ -569,6 +560,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
@@ -589,7 +581,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         retval = this.translatedLangText.VIEW;
         break;
     }
-
     return retval;
   }
 
@@ -599,9 +590,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       var validActions: string[] = ["no_action"];
       return validActions.includes(status_cv.toLocaleLowerCase());
     }
-
     return false;
-
   }
 
   ShowApproveDtView() {
@@ -610,9 +599,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       var validActions: string[] = ["approve"];
       return validActions.includes(status_cv.toLocaleLowerCase());
     }
-
     return false;
-
   }
 
   ShowRemarksView() {
@@ -621,9 +608,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       var validActions: string[] = ["kiv", "no_action"];
       return validActions.includes(status_cv.toLocaleLowerCase());
     }
-
     return false;
-
   }
 
   ShowStatusView() {
@@ -680,8 +665,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     else {
       return false;
     }
-
-
   }
 
   onRollback(event: Event) {
@@ -701,7 +684,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         langText: this.translatedLangText,
         confirmStatement: this.translatedLangText.ARE_SURE_ROLLBACK,
         index: -1
-
       },
       direction: tempDirection
     });
@@ -732,19 +714,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             this.handleSaveSuccess(result?.data?.rollbackJobInProgressCleaning);
           });
         }
-
       }
     });
   }
 
   PatchBillingParty(clnItem: InGateCleaningItem) {
-
     if (clnItem.bill_to_guid === clnItem.storing_order_tank?.storing_order?.customer_company?.guid) {
       this.customerCodeControl.setValue(clnItem.storing_order_tank?.storing_order?.customer_company);
     }
     else {
       this.ccDS.loadItems({ guid: { eq: clnItem.bill_to_guid } }, { code: 'ASC' }).subscribe(data => {
-
         if (data.length) {
           if (!data[0].main_customer_guid) {
             this.customerCodeControl.setValue(data[0]);
@@ -758,11 +737,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
               }
               this.branchCodeControl.setValue(branchCompany);
             });
-
           }
         }
-
-
       })
     }
   }
