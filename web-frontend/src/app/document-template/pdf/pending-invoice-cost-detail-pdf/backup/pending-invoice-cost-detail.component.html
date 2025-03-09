@@ -1,0 +1,91 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{translatedLangText.REPORT_TITLE}}</h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  
+
+  <div id="pdf-form-body" class="pdf-container pdf-body">
+    @for (bCust of repBillingCustomers; track bCust) {
+  <div class="card">
+    
+      <div class="pdf-body">
+        <table  id="table_customer_info" class="table_customer_info">
+          <tr>
+            <td class="text_right"> {{translatedLangText.CUSTOMER}} :</td>
+            <td class="text_left_width_wider"> {{bCust.customer}}</td>
+            <td class="text_right"> {{translatedLangText.CUTOFF_DATE}} :</td>
+            <td class="text_left"> {{cut_off_dt}}</td>
+            <td class="text_right"> {{translatedLangText.DATE}} :</td>
+            <td class="text_left">{{GeneratedDate()}}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- <div class="row">&nbsp;</div> -->
+      <!-- <div class="row pdf-body">
+        {{translatedLangText.INVOICE_PERIOD}} : {{bCust.invoice_period}}
+      </div> -->
+      <table id="repair-part-table" class="repair-part-table">
+        <tr class="group-header">
+          <th class="th-w2">{{translatedLangText.NO}}</th>
+          <th class="th-w5">{{translatedLangText.JOB_NO}}</th>
+          <th class="th-w8">{{translatedLangText.TANK_NO}}</th>
+          <th class="th-w8">{{translatedLangText.EIR_NO}}</th>
+          <th class="th-w12">{{translatedLangText.LAST_CARGO}}</th>
+          <th class="th-w6">{{translatedLangText.IN_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.OUT_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.CLEAN_COST}}</th>
+          <th class="th-w6">{{translatedLangText.REPAIR_COST}}</th>
+          <th class="th-w7">{{translatedLangText.PREINSP_COST}}</th>
+          <th class="th-w6">{{translatedLangText.LOLO_COST}}</th>
+          <th class="th-w3">{{translatedLangText.DAYS}}</th>
+          <th class="th-w6">{{translatedLangText.STORAGE_COST}}</th>
+          <th class="th-w6">{{translatedLangText.STEAM_COST}}</th>
+          <th class="th-w7">{{translatedLangText.RESIDUE_COST}}</th>
+          <th class="th-w6">{{translatedLangText.GATEIO_S}}</th>
+          <th class="th-w8">{{translatedLangText.TOTAL}}</th>
+        </tr>
+        @for (itm of bCust.items; track itm;let index = $index) {
+          <tr class="fixed_height_40px">
+            <td ><span class="overflow-text">{{ index + 1 }}</span></td> <!-- Row number -->
+            <td ><span class="overflow-text">{{ itm.job_no }}</span></td> 
+            <td ><span class="overflow-text">{{ itm.tank_no }}</span></td> 
+            <td ><span class="overflow-text">{{ itm.eir_no }}</span></td> 
+            <td  ><span class="overflow-text" matTooltip={{itm.last_cargo}} >{{ itm.last_cargo }}</span></td> 
+            <td >{{ itm.in_date }}</td> 
+            <td >{{ itm.out_date }}</td> 
+            <td >{{ displayCleanCost(itm) }}</td> 
+            <td >{{ displayRepairCost(itm) }}</td> 
+            <td >{{ displayPreinsCost(itm) }}</td> 
+            <td >{{ displayLOLOCost(itm) }}</td> 
+            <td >{{ itm.days }}</td> 
+            <td >{{ displayStorageCost(itm)}}</td> 
+            <td >{{displaySteamCost(itm)}}</td> 
+            <td >{{ displayResidueCost(itm)}}</td> 
+            <td >{{ displayGateIOCost(itm)}}</td> 
+            <td >{{ (itm.total==="0.00"?'':itm.total) }}</td> 
+          </tr>
+        }
+      </table>
+    
+  </div>
+  }
+  </div>
+
+ 
+</div>
+<div mat-dialog-actions class="m-2 align-right">
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+        file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>

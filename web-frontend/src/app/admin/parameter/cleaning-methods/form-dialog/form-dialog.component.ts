@@ -1,4 +1,5 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -6,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -16,16 +17,19 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
+import { CleaningMethodDS,CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { CleaningStepItem } from 'app/data-sources/cleaning-steps';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Utility } from 'app/utilities/utility';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { provideNgxMask } from 'ngx-mask';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 export interface DialogData {
   action?: string;
@@ -65,20 +69,23 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    MatTooltipModule,
+    CdkDrag,
+    //CdkDropListGroup,
+    CdkDropList,
+    CdkDragPlaceholder,
+   // CdkDragHandle,
 
   ],
 })
 export class FormDialogComponent {
   displayedColumns = [
-    //  'select',
+   //  'select',
     // 'img',
-    'fName',
-    'lName',
-    // 'email',
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
+    'customer_code',
+     'actions',
+    // 'profile_name',
+    // 'storage_cost',
   ];
 
   action: string;
@@ -92,9 +99,14 @@ export class FormDialogComponent {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
+  cleanFormulaControl=new UntypedFormControl();
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //  catDS :CleaningCategoryDS;
   mthDS: CleaningMethodDS;
+  fmlDS:CleaningFormulaDS;
+  cleanFormulaList:CleaningFormulaItem[]=[];
+  updatedMethodFormulaLinkList:CleaningStepItem[]=[];
+  existingMethodFormulaLinkList:CleaningStepItem[]=[];
 
   translatedLangText: any = {};
   langText = {
@@ -185,10 +197,14 @@ export class FormDialogComponent {
     CLEANING_METHOD: 'COMMON-FORM.CLEANING-PROCESS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
+    CLEANING_FORMULA:"MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
+    CLEANING_STEPS:"COMMON-FORM.CLEANING-STEPS",
+    NO_CLEANING_STEPS:"COMMON-FORM.NO-CLEANING-STEPS",
+    
   };
 
 
-  selectedItem: CleaningCategoryItem;
+  selectedItem: CleaningMethodItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -203,38 +219,48 @@ export class FormDialogComponent {
     // Set the defaults
 
     this.selectedItem = data.selectedItem;
-
+    this.updatedMethodFormulaLinkList = JSON.parse(JSON.stringify(this.selectedItem.cleaning_method_formula || []));
     this.pcForm = this.createCleaningCategory();
-    //this.tcDS = new TariffCleaningDS(this.apollo);
-    //this.sotDS = new StoringOrderTankDS(this.apollo);
-    //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    //this.catDS= new CleaningCategoryDS(this.apollo);
     this.mthDS = new CleaningMethodDS(this.apollo);
+    this.fmlDS= new CleaningFormulaDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
-    // this.sotExistedList = data.sotExistedList;
-    // if (this.action === 'edit') {
-    //   this.dialogTitle = 'Edit ' + data.item.tank_no;
-    //   this.storingOrderTank = data.item;
-    // } else {
-    //   this.dialogTitle = 'New Record';
-    //   this.storingOrderTank = new StoringOrderTankItem();
-    // }
-    // this.index = data.index;
-    // this.storingOrderTankForm = this.createStorigOrderTankForm();
-    // this.initializeValueChange();
-
-    // if (this.storingOrderTank?.tariff_cleaning) {
-    //   this.lastCargoControl.setValue(this.storingOrderTank?.tariff_cleaning);
-    // }
+    this.initializeValueChanges();
+   
   }
 
+  initializeValueChanges() {
+      this.pcForm!.get('formula')!.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        tap(value => {
+          var searchCriteria = '';
+          if (typeof value === 'string') {
+            searchCriteria = value;
+          } else {
+            searchCriteria = value.description;
+          }
+           this.fmlDS.search({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
+            this.cleanFormulaList = data
+            this.updateValidators(this.cleanFormulaControl, this.cleanFormulaList);
+          });
+        })
+      ).subscribe();
+     
+    }
+
+     updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
+        untypedFormControl.setValidators([
+          AutocompleteSelectionValidator(validOptions)
+        ]);
+      }
   createCleaningCategory(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: this.selectedItem,
-      adjusted_cost: this.selectedItem.cost,
       name: this.selectedItem.name,
       description: this.selectedItem.description,
+      selected_formulas:this.selectedItem,
+      formula:this.cleanFormulaControl,
       remarks: ['']
     });
   }
@@ -261,32 +287,7 @@ export class FormDialogComponent {
       this.translatedLangText = translations;
     });
   }
-  // tabs = Array.from(Array(20).keys());
 
-  // @ViewChild('tabGroup')
-  // tabGroup;
-
-  // scrollTabs(event: Event) {
-  //   const children = this.tabGroup._tabHeader._elementRef.nativeElement.children;
-  //   const back = children[0];
-  //   const forward = children[2];
-  //   if (event.deltaY > 0) {
-  //     forward.click();
-  //   } else {
-  //     back.click();
-  //   }
-  // }
-
-
-
-
-  // selectClassNo(value:string):void{
-  //   const returnDialog: DialogData = {
-  //     selectedValue:value
-  //   }
-  //   console.log('valid');
-  //   this.dialogRef.close(returnDialog);
-  // }
 
   canEdit() {
     return true;
@@ -297,12 +298,6 @@ export class FormDialogComponent {
 
       console.log('valid');
       this.dialogRef.close(count);
-      // let successMsg = this.langText.SAVE_SUCCESS;
-      // this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-      //   successMsg = res;
-      //   ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
-      // });
     }
   }
 
@@ -326,7 +321,7 @@ export class FormDialogComponent {
     this.mthDS.search(where).subscribe(p => {
       if (p.length == 0) {
         if (this.selectedItem.guid) {
-
+          cc.cleaning_method_formula=this.processCleaningStepListForUpdating();
           this.mthDS.updateCleaningMethod(cc).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.updateCleaningMethod);
@@ -334,6 +329,8 @@ export class FormDialogComponent {
 
         }
         else {
+        
+          cc.cleaning_method_formula=this.removeCleaningFormulaFromUpdatedMethodFormulaLinkList();
           this.mthDS.addCleaningMethod(cc).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.addCleaningMethod);
@@ -352,10 +349,11 @@ export class FormDialogComponent {
         if (allowUpdate) {
 
           if (this.selectedItem.guid) {
-
+            cc.cleaning_method_formula=this.processCleaningStepListForUpdating();
             this.mthDS.updateCleaningMethod(cc).subscribe(result => {
               console.log(result)
               this.handleSaveSuccess(result?.data?.updateCleaningMethod);
+
             });
 
           }
@@ -365,28 +363,6 @@ export class FormDialogComponent {
         }
       }
     });
-    // let pc_guids:string[] = this.selectedItems
-    // .map(cc => cc.guid)
-    // .filter((guid): guid is string => guid !== undefined);
-
-    // var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
-    // var remarks = this.pcForm!.value["remarks"];
-
-    // this.custCompClnCatDS.updatePackageCleanings(pc_guids,remarks,adjusted_price).subscribe(result => {
-    //   console.log(result)
-    //   if(result.data.updatePackageCleans>0)
-    //   {
-    //       //this.handleSaveSuccess(result?.data?.updateTariffClean);
-    //       const returnDialog: DialogData = {
-    //         selectedValue:result.data.updatePackageCleans,
-    //         selectedItems:[]
-    //       }
-    //       console.log('valid');
-    //       this.dialogRef.close(returnDialog);
-    //   }
-    // });
-
-
 
   }
 
@@ -404,4 +380,97 @@ export class FormDialogComponent {
     this.dialogRef.close();
   }
 
+  displayCleaningFormulaFn(item:CleaningFormulaItem):string
+  {
+    return item?.description||'';
+  }
+  canAddFormula():boolean
+  {
+     var canAddfml:boolean=false;
+   // var cleanFormula:CleaningFormulaItem=this.pcForm!.get('formula')!.value;
+     if(this.pcForm!.get('formula')!.value?.description)
+        canAddfml=true;
+
+     return (canAddfml);
+  }
+
+  AddCleaningStep()
+  {
+     var item : CleaningFormulaItem = this.pcForm!.get('formula')!.value;
+     var cleanMthFml:any = new CleaningStepItem();
+     if(this.selectedItem)
+     {
+       cleanMthFml.method_guid=this.selectedItem.guid;
+     }
+     cleanMthFml.sequence= this.updatedMethodFormulaLinkList.length||0;
+     cleanMthFml.formula_guid=item.guid;
+     cleanMthFml.cleaning_formula=new CleaningFormulaItem(item);
+      this.updatedMethodFormulaLinkList = [...this.updatedMethodFormulaLinkList, cleanMthFml];
+     this.cleanFormulaControl.reset('');
+  }
+
+  cancelItem(row:CleaningStepItem)
+  {
+
+    // Example: Removing an item
+      this.updatedMethodFormulaLinkList = this.updatedMethodFormulaLinkList.filter(item => item.cleaning_formula?.description !== row.cleaning_formula?.description);
+
+  }
+ 
+
+  drop2(event: CdkDragDrop<CleaningStepItem[]>) {
+    moveItemInArray(this.updatedMethodFormulaLinkList, event.previousIndex, event.currentIndex);
+    this.updatedMethodFormulaLinkList.forEach((item, index) => {
+      item.sequence = index + 1; // Assign sequence starting from 1
+    });
+  }
+ 
+  removeCleaningFormulaFromUpdatedMethodFormulaLinkList():CleaningStepItem[]
+  { 
+    var clonedList : any[] =JSON.parse(JSON.stringify(this.updatedMethodFormulaLinkList || []));
+    clonedList= clonedList.map(item=>{
+      delete item.cleaning_formula;
+      return new CleaningStepItem(item);
+    });
+    // this.updatedMethodFormulaLinkList.forEach(i=>{
+    //   delete i.cleaning_formula;
+    // });
+    return clonedList;
+  }
+
+  processCleaningStepListForUpdating():any
+  {
+     //var retval:any;
+    // var clonedExistingStep = JSON.parse(JSON.stringify(this.selectedItem.cleaning_method_formula || []));
+     var clonedUpdRemovedFormula= this.removeCleaningFormulaFromUpdatedMethodFormulaLinkList();
+     var clonedUpdatedStep = clonedUpdRemovedFormula.map(item => {
+      var itm: any = { ...item, action: 'NEW' }; // Create a new object with the `action` property
+      return itm;
+    });
+
+    clonedUpdatedStep.forEach(i=>{
+      var step=this.selectedItem.cleaning_method_formula?.find(e=>e.guid==i.guid);
+
+      if(step)
+      {
+        var itm :any = i;
+        itm.action="EDIT";
+      }
+    });
+    
+    this.selectedItem.cleaning_method_formula?.forEach(i=>{
+      var step=clonedUpdatedStep.find(e=>e.guid==i.guid);
+
+      if(!step)
+      {
+        var delStep : any = new CleaningStepItem(i);
+        delStep.action="CANCEL";
+        delete delStep.cleaning_formula;
+        clonedUpdatedStep.push(delStep)
+      }
+
+    });
+
+    return clonedUpdatedStep;
+  }
 }

@@ -189,7 +189,10 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     // );
   }
   refresh() {
-    this.loadData();
+    this.onPageEvent({
+      pageIndex: this.pageIndex, pageSize: this.pageSize,
+      length: 0
+    });
   }
 
   initSearchForm() {

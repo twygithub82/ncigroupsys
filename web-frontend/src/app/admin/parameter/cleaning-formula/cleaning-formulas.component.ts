@@ -39,6 +39,7 @@ import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { CleaningFormulaDS,CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
 //import {messageReceived}  from '../../../data-sources/message-received';
 
 
@@ -75,9 +76,9 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 })
 export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'category_name',
+   // 'category_name',
     'category_description',
-    //'category_cost',
+    'category_duration',
     'update_date'
     //'last_cargo',
     // 'so_no',
@@ -125,10 +126,12 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     CLEANING_METHOD: 'COMMON-FORM.CLEANING-PROCESS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
-    FORMALA_NAME:"COMMON-FORM.FORMULA-NAME",
-    FORMALA_DESCRIPTION:"COMMON-FORM.FORMULA-DESCRIPTION",
+    FORMULA_NAME:"COMMON-FORM.FORMULA-NAME",
+    FORMULA_DESCRIPTION:"COMMON-FORM.FORMULA-DESCRIPTION",
     MIN_DURATION:"COMMON-FORM.MIN-DURATION",
     MAX_DURATION:"COMMON-FORM.MAX-DURATION",
+    CLEANING_FORMULA:"MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
+    DURATION:"COMMON-FORM.DURATION"
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -143,17 +146,19 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
 
   clnMethodItem: CleaningMethodItem[] = [];
   catList: CleaningCategoryItem[] = [];
+  clnFormulaList:CleaningFormulaItem[]=[];
   soList: StoringOrderItem[] = [];
   // sotDS: StoringOrderTankDS;
   // ccDS: CustomerCompanyDS;
   // soDS: StoringOrderDS;
-  catDS: CleaningCategoryDS;
+ // catDS: CleaningCategoryDS;
   mthDS: CleaningMethodDS;
+  fmlDS:CleaningFormulaDS;
 
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { sequence: "ASC" };
+  lastOrderBy: any = { description: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -175,8 +180,9 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     // this.soDS = new StoringOrderDS(this.apollo);
     // this.sotDS = new StoringOrderTankDS(this.apollo);
     // this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.catDS = new CleaningCategoryDS(this.apollo);
+    //this.catDS = new CleaningCategoryDS(this.apollo);
     this.mthDS = new CleaningMethodDS(this.apollo);
+    this.fmlDS=new CleaningFormulaDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -189,6 +195,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
 
   ngOnInit() {
     this.initializeFilterCustomerCompany();
+    this.translateLangText();
     this.loadData();
     // this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
     //   (message) => {
@@ -199,7 +206,14 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     // );
   }
   refresh() {
-    this.loadData();
+    this.onPageEvent({
+      pageIndex: this.pageIndex, pageSize: this.pageSize,
+      length: 0
+    });
+    //onPageEvent({this.pageIndex,this.pageSize}});
+    // this.pageIndex=0;
+    // this.paginator.pageIndex=0;
+    // this.loadData();
   }
 
   initSearchForm() {
@@ -234,45 +248,15 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     // });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     item: [...row],
-    //     langText: this.langText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     // const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-    //     // this.soDS.cancelStoringOrder(so).subscribe(result => {
-    //     //   if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-    //     //     let successMsg = this.langText.CANCELED_SUCCESS;
-    //     //     this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-    //     //       successMsg = res;
-    //     //       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-    //     //       this.loadData();
-    //     //     });
-    //     //   }
-    //     // });
-    //   }
-    // });
+    
   }
 
   public loadData() {
-    this.translateLangText();
+   
     this.search();
-    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-    //   if (this.soDS.totalCount > 0) {
-    //     this.soList = data;
-    //   }
-    // });
+  
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -334,38 +318,27 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       where.description = { contains: this.searchForm!.value['description'] };
     }
 
-    // if(this.searchForm!.value['min_cost']){
-    //   where.cost ={gte: Number(this.searchForm!.value['min_cost'])}
-    // }
+    if(this.searchForm!.value['min_duration']){
+      where.duration ={gte: Number(this.searchForm!.value['min_duration'])}
+    }
 
-    // if(this.searchForm!.value['max_cost']){
-    //   where.cost ={ngt: Number(this.searchForm!.value['max_cost'])}
-    // }
+    if(this.searchForm!.value['max_duration']){
+      where.duration ={ngt: Number(this.searchForm!.value['max_duration'])}
+    }
 
-    // TODO :: search criteria
-    this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.mthDS.loadItems(where, order).subscribe(data => {
-      this.clnMethodItem = data;
-      this.endCursor = this.mthDS.pageInfo?.endCursor;
-      this.startCursor = this.mthDS.pageInfo?.startCursor;
-      this.hasNextPage = this.mthDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.mthDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = this.pageIndex;
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
+    this.lastSearchCriteria = where;
+    this.performSearch( this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
-  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number) {
+  //searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,  previousPageIndex?: number) {
+    performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number){
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.mthDS.search(where, order, first, after, last, before).subscribe(data => {
-      this.clnMethodItem = data;
-      this.endCursor = this.mthDS.pageInfo?.endCursor;
-      this.startCursor = this.mthDS.pageInfo?.startCursor;
-      this.hasNextPage = this.mthDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.mthDS.pageInfo?.hasPreviousPage ?? false;
+    this.subs.sink = this.fmlDS.search(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
+      this.clnFormulaList = data;
+      this.endCursor = this.fmlDS.pageInfo?.endCursor;
+      this.startCursor = this.fmlDS.pageInfo?.startCursor;
+      this.hasNextPage = this.fmlDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.fmlDS.pageInfo?.hasPreviousPage ?? false;
       this.pageIndex = pageIndex;
       this.paginator.pageIndex = this.pageIndex;
       if (!this.hasPreviousPage)
@@ -374,45 +347,41 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize, previousPageIndex } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-    let order: any | undefined = this.lastOrderBy;
-    // Check if the page size has changed
-    if (this.pageSize !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndex = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndex && this.hasNextPage) {
-        // Navigate forward
+  
+    onPageEvent(event: PageEvent) {
+      const { pageIndex, pageSize } = event;
+      let first: number | undefined = undefined;
+      let after: string | undefined = undefined;
+      let last: number | undefined = undefined;
+      let before: string | undefined = undefined;
+  
+      // Check if the page size has changed
+      if (this.pageSize !== pageSize) {
+        // Reset pagination if page size has changed
+        this.pageIndex = 0;
         first = pageSize;
-        after = this.endCursor;
-      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursor;
+        after = undefined;
+        last = undefined;
+        before = undefined;
       }
-      else if (pageIndex == this.pageIndex) {
-
-        first = pageSize;
-        after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
+       else {
+        if (pageIndex > this.pageIndex && this.hasNextPage) {
+          // Navigate forward
+          first = pageSize;
+          after = this.endCursor;
+        } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+          // Navigate backward
+          last = pageSize;
+          before = this.startCursor;
+        }else if (pageIndex === this.pageIndex) {
+          // Refresh the current page
+          first = pageSize;
+          after = this.previous_endCursor; // or undefined, depending on your API
+         }
       }
+  
+      this.performSearch(pageSize, pageIndex, first, after, last, before);
     }
-
-    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
-  }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -432,7 +401,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     var row = new CleaningMethodItem();
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width:'50wv',
+      maxWidth: '600px',
       data: {
         action: 'new',
         langText: this.langText,
@@ -444,8 +414,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        this.refresh();
+       // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
 
       }
     });
@@ -462,7 +432,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '450px',
+      width:'50wv',
+      maxWidth: '600px',
       data: {
         action: 'new',
         langText: this.langText,
@@ -477,8 +448,9 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       if (result > 0) {
 
         this.handleSaveSuccess(result);
+        this.refresh();
         //this.search();
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+       // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
 
       }
     });

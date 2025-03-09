@@ -20,6 +20,7 @@ import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/m
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
@@ -32,7 +33,7 @@ export interface DialogData {
   selectedValue?: number;
   // item: StoringOrderTankItem;
   langText?: any;
-  selectedItem: CleaningMethodItem;
+  selectedItem: CleaningFormulaItem;
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -94,7 +95,8 @@ export class FormDialogComponent {
   lastCargoControl = new UntypedFormControl();
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //  catDS :CleaningCategoryDS;
-  mthDS: CleaningMethodDS;
+ // mthDS: CleaningMethodDS;
+  fmlDS: CleaningFormulaDS;
 
   translatedLangText: any = {};
   langText = {
@@ -185,10 +187,14 @@ export class FormDialogComponent {
     CLEANING_METHOD: 'COMMON-FORM.CLEANING-PROCESS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
+    MIN_DURATION:"COMMON-FORM.MIN-DURATION",
+    MAX_DURATION:"COMMON-FORM.MAX-DURATION",
+    CLEANING_FORMULA:"MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
+    DURATION:"COMMON-FORM.DURATION-MIN"
   };
 
 
-  selectedItem: CleaningCategoryItem;
+  selectedItem: CleaningFormulaItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -204,43 +210,27 @@ export class FormDialogComponent {
 
     this.selectedItem = data.selectedItem;
 
-    this.pcForm = this.createCleaningCategory();
-    //this.tcDS = new TariffCleaningDS(this.apollo);
-    //this.sotDS = new StoringOrderTankDS(this.apollo);
-    //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    //this.catDS= new CleaningCategoryDS(this.apollo);
-    this.mthDS = new CleaningMethodDS(this.apollo);
+    this.pcForm = this.createCleaningFormula();
+  
+   // this.mthDS = new CleaningMethodDS(this.apollo);
+    this.fmlDS= new CleaningFormulaDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
-    // this.sotExistedList = data.sotExistedList;
-    // if (this.action === 'edit') {
-    //   this.dialogTitle = 'Edit ' + data.item.tank_no;
-    //   this.storingOrderTank = data.item;
-    // } else {
-    //   this.dialogTitle = 'New Record';
-    //   this.storingOrderTank = new StoringOrderTankItem();
-    // }
-    // this.index = data.index;
-    // this.storingOrderTankForm = this.createStorigOrderTankForm();
-    // this.initializeValueChange();
-
-    // if (this.storingOrderTank?.tariff_cleaning) {
-    //   this.lastCargoControl.setValue(this.storingOrderTank?.tariff_cleaning);
-    // }
+    
   }
 
-  createCleaningCategory(): UntypedFormGroup {
+  createCleaningFormula(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: this.selectedItem,
-      adjusted_cost: this.selectedItem.cost,
-      name: this.selectedItem.name,
-      description: this.selectedItem.description,
-      remarks: ['']
+      duration: this.selectedItem?.duration||[''],
+      description: this.selectedItem?.description||[''],
+      
     });
   }
 
+
   GetButtonCaption() {
-    if (this.selectedItem.name !== undefined) {
+    if (this.selectedItem.description !== undefined) {
       return this.translatedLangText.UPDATE;
     }
     else {
@@ -248,11 +238,11 @@ export class FormDialogComponent {
     }
   }
   GetTitle() {
-    if (this.selectedItem.name !== undefined) {
-      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_METHOD;
+    if (this.selectedItem.description !== undefined) {
+      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_FORMULA;
     }
     else {
-      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_METHOD;
+      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_FORMULA;
     }
   }
 
@@ -261,32 +251,6 @@ export class FormDialogComponent {
       this.translatedLangText = translations;
     });
   }
-  // tabs = Array.from(Array(20).keys());
-
-  // @ViewChild('tabGroup')
-  // tabGroup;
-
-  // scrollTabs(event: Event) {
-  //   const children = this.tabGroup._tabHeader._elementRef.nativeElement.children;
-  //   const back = children[0];
-  //   const forward = children[2];
-  //   if (event.deltaY > 0) {
-  //     forward.click();
-  //   } else {
-  //     back.click();
-  //   }
-  // }
-
-
-
-
-  // selectClassNo(value:string):void{
-  //   const returnDialog: DialogData = {
-  //     selectedValue:value
-  //   }
-  //   console.log('valid');
-  //   this.dialogRef.close(returnDialog);
-  // }
 
   canEdit() {
     return true;
@@ -297,12 +261,7 @@ export class FormDialogComponent {
 
       console.log('valid');
       this.dialogRef.close(count);
-      // let successMsg = this.langText.SAVE_SUCCESS;
-      // this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-      //   successMsg = res;
-      //   ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
-      // });
+     
     }
   }
 
@@ -312,31 +271,31 @@ export class FormDialogComponent {
 
     if (!this.pcForm?.valid) return;
 
-    let cc: CleaningMethodItem = new CleaningMethodItem(this.selectedItem);
+    let cf: CleaningFormulaItem = new CleaningFormulaItem(this.selectedItem);
     // tc.guid='';
-    cc.name = this.pcForm.value['name'];
-    cc.description = this.pcForm.value['description'];
+    cf.duration = this.pcForm.value['duration'];
+    cf.description = this.pcForm.value['description'];
 
 
     const where: any = {};
-    if (this.pcForm!.value['name']) {
-      where.name = { eq: this.pcForm!.value['name'] };
+    if (this.pcForm!.value['description']) {
+      where.description = { eq: this.pcForm!.value['description'] };
     }
 
-    this.mthDS.search(where).subscribe(p => {
+    this.fmlDS.search(where).subscribe(p => {
       if (p.length == 0) {
         if (this.selectedItem.guid) {
 
-          this.mthDS.updateCleaningMethod(cc).subscribe(result => {
+          this.fmlDS.updateCleaningFormula(cf).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result?.data?.updateCleaningMethod);
+            this.handleSaveSuccess(result?.data?.updateCleaningFormula);
           });
 
         }
         else {
-          this.mthDS.addCleaningMethod(cc).subscribe(result => {
+          this.fmlDS.addCleaningFormula(cf).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result?.data?.addCleaningMethod);
+            this.handleSaveSuccess(result?.data?.addCleaningFormula);
           });
         }
 
@@ -353,38 +312,18 @@ export class FormDialogComponent {
 
           if (this.selectedItem.guid) {
 
-            this.mthDS.updateCleaningMethod(cc).subscribe(result => {
+            this.fmlDS.updateCleaningFormula(cf).subscribe(result => {
               console.log(result)
-              this.handleSaveSuccess(result?.data?.updateCleaningMethod);
+              this.handleSaveSuccess(result?.data?.updateCleaningFormula);
             });
-
           }
         }
         else {
-          this.pcForm?.get('name')?.setErrors({ existed: true });
+          this.pcForm?.get('description')?.setErrors({ existed: true });
         }
       }
     });
-    // let pc_guids:string[] = this.selectedItems
-    // .map(cc => cc.guid)
-    // .filter((guid): guid is string => guid !== undefined);
-
-    // var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
-    // var remarks = this.pcForm!.value["remarks"];
-
-    // this.custCompClnCatDS.updatePackageCleanings(pc_guids,remarks,adjusted_price).subscribe(result => {
-    //   console.log(result)
-    //   if(result.data.updatePackageCleans>0)
-    //   {
-    //       //this.handleSaveSuccess(result?.data?.updateTariffClean);
-    //       const returnDialog: DialogData = {
-    //         selectedValue:result.data.updatePackageCleans,
-    //         selectedItems:[]
-    //       }
-    //       console.log('valid');
-    //       this.dialogRef.close(returnDialog);
-    //   }
-    // });
+  
 
 
 

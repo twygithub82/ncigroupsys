@@ -33,17 +33,29 @@
                 <div class="row">
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.PROCESS_NAME }}</mat-label>
+                      <mat-label>{{translatedLangText.FORMULA_NAME }}</mat-label>
                       <input matInput formControlName="name">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.PROCESS_DESCRIPTION }}</mat-label>
+                      <mat-label>{{translatedLangText.FORMULA_DESCRIPTION }}</mat-label>
                       <input matInput formControlName="description">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto align-items-center justify-content-end">
+                  <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.MIN_DURATION}}</mat-label>
+                      <input matInput formControlName="duration_min" type="number">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.MAX_DURATION}}</mat-label>
+                      <input matInput formControlName="duration_max" type="number">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto align-items-center justify-content-end">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>
@@ -54,7 +66,7 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="clnMethodItem" matSort
+              <table mat-table [dataSource]="clnFormulaList" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
@@ -63,10 +75,10 @@
                 </ng-container>
                 <ng-container matColumnDef="category_name">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{translatedLangText.CLEANING_METHOD}}
+                    {{translatedLangText.CLEANING_FORMULA}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.CLEANING_METHOD }}:</span>{{row.name}}
+                    <span class="mobile-label">{{translatedLangText.CLEANING_FORMULA }}:</span>{{row.name}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_description">
@@ -75,6 +87,14 @@
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="category_duration">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{translatedLangText.DURATION }}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                    <span class="mobile-label">{{translatedLangText.DURATION}}:</span>{{row.duration}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="update_date">
@@ -92,20 +112,20 @@
               </table>
             </div>
             <!-- No result -->
-            @if (!(mthDS.loading$ | async) && !clnMethodItem.length) {
+            @if (!(fmlDS.loading$ | async) && !clnFormulaList.length) {
             <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="clnMethodItem.length === 0 ? '' : 'none'">
+            <div class="no-results m-l-20 pt-3" [style.display]="clnFormulaList.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if (mthDS.loading$ | async) {
+            @if (fmlDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            <mat-paginator #paginator [length]="mthDS.totalCount" [pageIndex]="0" [pageSize]="10"
+            <mat-paginator #paginator [length]="fmlDS.totalCount" [pageIndex]="0" [pageSize]="10"
               [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
             </mat-paginator>
           </div>

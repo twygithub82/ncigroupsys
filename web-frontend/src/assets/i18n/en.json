@@ -1046,7 +1046,10 @@
     "FORMULA-DESCRIPTION":"Formula Description",
     "MIN-DURATION":"Min. Duration (mins)",
     "MAX-DURATION":"Max. Duration (mins)",
-    "REPAIR-ESTIMATE-OUTSTANDING-TANK-LIST":"Repair Estimate Outstanding Tank List"
+    "DURATION-MIN":"Duration (mins)",
+    "REPAIR-ESTIMATE-OUTSTANDING-TANK-LIST":"Repair Estimate Outstanding Tank List",
+    "CLEANING-STEPS":"Cleaning Steps",
+    "NO-CLEANING-STEPS":"No Cleaning Steps"
     
   },
   "CLEAN-PROCEDURES": {

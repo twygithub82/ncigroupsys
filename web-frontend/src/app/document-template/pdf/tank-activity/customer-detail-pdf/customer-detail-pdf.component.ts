@@ -712,6 +712,33 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
   this.generatingPdfLoadingSubject.next(false);
 }
 
+async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:number): Promise<HTMLCanvasElement> {
+  
+
+  const splitCanvas = document.createElement('canvas');
+  splitCanvas.width = sw;
+  splitCanvas.height = sh;
+
+  const ctx = splitCanvas.getContext('2d');
+  if (ctx) {
+      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
+  }
+
+  return splitCanvas;
+}
+
+addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
+  const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
+  const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+
+  pdf.setFontSize(14); // Title font size
+  pdf.text(title, titleX, 15); // Position it at the top
+
+  // Draw underline for the title
+  pdf.setLineWidth(0.5); // Set line width for underline
+  pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
+}
+
   async exportToPDF_r3(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
@@ -865,20 +892,6 @@ async splitCanvas_r(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTML
   return splitCanvas;
 }
 
-async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:number): Promise<HTMLCanvasElement> {
-  
-
-  const splitCanvas = document.createElement('canvas');
-  splitCanvas.width = sw;
-  splitCanvas.height = sh;
-
-  const ctx = splitCanvas.getContext('2d');
-  if (ctx) {
-      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
-  }
-
-  return splitCanvas;
-}
 
 // Helper function to split a canvas into two parts
 async splitCanvas(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTMLCanvasElement> {
@@ -897,17 +910,7 @@ async splitCanvas(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTMLCa
 }
 
 // Helper function to add the header (title and underline) to a page
-addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
-    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
-    pdf.setFontSize(14); // Title font size
-    pdf.text(title, titleX, 15); // Position it at the top
-
-    // Draw underline for the title
-    pdf.setLineWidth(0.5); // Set line width for underline
-    pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
-}
 
 
   async exportToPDF(fileName: string = 'document.pdf') {

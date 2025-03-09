@@ -197,7 +197,10 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     // );
   }
   refresh() {
-    this.loadData();
+    this.onPageEvent({
+      pageIndex: this.pageIndex, pageSize: this.pageSize,
+      length: 0
+    });
   }
 
   initSearchForm() {
@@ -230,34 +233,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     // });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     item: [...row],
-    //     langText: this.langText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     // const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-    //     // this.soDS.cancelStoringOrder(so).subscribe(result => {
-    //     //   if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-    //     //     let successMsg = this.langText.CANCELED_SUCCESS;
-    //     //     this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-    //     //       successMsg = res;
-    //     //       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-    //     //       this.loadData();
-    //     //     });
-    //     //   }
-    //     // });
-    //   }
-    // });
+    
   }
 
   public loadData() {
@@ -329,6 +305,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     if (this.searchForm!.value['description']) {
       where.description = { contains: this.searchForm!.value['description'] };
     }
+    this.searchData(where,order,undefined,undefined,undefined,undefined,this.pageIndex,undefined);
 
     // if(this.searchForm!.value['min_cost']){
     //   where.cost ={gte: Number(this.searchForm!.value['min_cost'])}
@@ -339,25 +316,29 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     // }
 
     // TODO :: search criteria
-    this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.mthDS.loadItems(where, order).subscribe(data => {
-      this.clnMethodItem = data;
-      this.endCursor = this.mthDS.pageInfo?.endCursor;
-      this.startCursor = this.mthDS.pageInfo?.startCursor;
-      this.hasNextPage = this.mthDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.mthDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = this.pageIndex;
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
+    // this.previous_endCursor = this.endCursor;
+    // this.subs.sink = this.mthDS.search(where, order).subscribe(data => {
+    //   this.clnMethodItem = data;
+    //   this.endCursor = this.mthDS.pageInfo?.endCursor;
+    //   this.startCursor = this.mthDS.pageInfo?.startCursor;
+    //   this.hasNextPage = this.mthDS.pageInfo?.hasNextPage ?? false;
+    //   this.hasPreviousPage = this.mthDS.pageInfo?.hasPreviousPage ?? false;
+    //   this.pageIndex = 0;
+    //   this.paginator.pageIndex = this.pageIndex;
+    //   if (!this.hasPreviousPage)
+    //     this.previous_endCursor = undefined;
+    // });
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
     this.subs.sink = this.mthDS.search(where, order, first, after, last, before).subscribe(data => {
-      this.clnMethodItem = data;
+      
+      this.clnMethodItem =data.map(i=>{
+        i.cleaning_method_formula?.sort((a,b)=> a.sequence! - b.sequence!);
+        return i;
+      });
       this.endCursor = this.mthDS.pageInfo?.endCursor;
       this.startCursor = this.mthDS.pageInfo?.startCursor;
       this.hasNextPage = this.mthDS.pageInfo?.hasNextPage ?? false;
@@ -399,10 +380,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
+     
       }
     }
 

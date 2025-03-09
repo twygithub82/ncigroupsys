@@ -91,7 +91,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     'mobile',
     'gender',
     'email',
-    'actions',
+    //'actions',
     // 'free_days',
     // 'last_update_dt',
   ];
@@ -295,8 +295,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '700px',
-      height: '90vh',
+      width:'80wv',
+      maxWidth: '700px',
+      //height: '90vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -326,8 +327,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '700px',
-      height: '90vh',
+      width:'80wv',
+      maxWidth: '700px',
+      //height: '90vh',
       data: {
         action: 'update',
         langText: this.langText,
