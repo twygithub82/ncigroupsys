@@ -330,9 +330,10 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
       this.cdr.detectChanges();
 
-      if (!this.eirPdf?.length) {
-        this.generatePDF();
-      }
+      await this.generatePDF();
+      // if (!this.eirPdf?.length) {
+      //   await this.generatePDF();
+      // }
       //  else {
       //   const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
       //   const pdfUrl = URL.createObjectURL(eirBlob);
@@ -473,7 +474,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         this.generatingPdfProgress = 100;
         // pdf.save(`EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`);
         this.generatedPDF = pdf.output('blob');
-        this.uploadEir(this.eirDetails?.guid, this.generatedPDF);
+        // this.uploadEir(this.eirDetails?.guid, this.generatedPDF);
+        this.onDownloadClick();
         this.generatingPdfLoadingSubject.next(false);
       } catch (error) {
         console.error('Error generating PDF:', error);
@@ -1538,10 +1540,15 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   async onDownloadClick() {
     const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
     if (this.generatedPDF) {
+      console.log(`Download from generatedPDF`)
       this.downloadFile(this.generatedPDF, fileName);
     } else if (this.eirPdf?.[0]?.url) {
+      console.log(`Download from existing`)
       const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
       this.downloadFile(eirBlob, fileName);
+    } else {
+      console.log(`Generate new PDF`)
+      await this.generatePDF();
     }
   }
 
@@ -1557,9 +1564,9 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     URL.revokeObjectURL(url);
   }
 
-  onRepublishClick() {
-    this.deleteFile();
-  }
+  // onRepublishClick() {
+  //   this.deleteFile();
+  // }
 
   async uploadEir(group_guid: string, pdfBlob: Blob) {
     const eirPdfUploadRequest: any = {
@@ -1584,23 +1591,23 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
           ];
           this.publishedEir.emit({ type: 'uploaded', eirPdf: this.eirPdf });
 
-          if (this.eirDetails?.in_gate?.eir_status_cv === 'PENDING') {
-            // const sotItem = new StoringOrderTankGO(this.eirDetails?.in_gate?.tank);
-            const inGateSurveyItem = new InGateSurveyGO({ tank_comp_guid: this.eirDetails?.tank_comp_guid });
-            const inGateItem: any = new InGate(this.eirDetails?.in_gate);
-            // inGateItem.tank = sotItem
-            inGateItem.in_gate_survey = inGateSurveyItem
-            console.log('publishInGateSurvey: ', inGateItem)
-            this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
-              console.log(result)
-              if (result.data?.publishIngateSurvey) {
-                this.eirDetails.in_gate.eir_status_cv = 'PUBLISHED'; // to avoid republish with PENDING status (first time publish then click republish)
-                this.publishedEir.emit({ type: 'published' });
-                let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
-                ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-              }
-            });
-          }
+          // if (this.eirDetails?.in_gate?.eir_status_cv === 'PENDING') {
+          //   // const sotItem = new StoringOrderTankGO(this.eirDetails?.in_gate?.tank);
+          //   const inGateSurveyItem = new InGateSurveyGO({ tank_comp_guid: this.eirDetails?.tank_comp_guid });
+          //   const inGateItem: any = new InGate(this.eirDetails?.in_gate);
+          //   // inGateItem.tank = sotItem
+          //   inGateItem.in_gate_survey = inGateSurveyItem
+          //   console.log('publishInGateSurvey: ', inGateItem)
+          //   this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
+          //     console.log(result)
+          //     if (result.data?.publishIngateSurvey) {
+          //       this.eirDetails.in_gate.eir_status_cv = 'PUBLISHED'; // to avoid republish with PENDING status (first time publish then click republish)
+          //       this.publishedEir.emit({ type: 'published' });
+          //       let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
+          //       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+          //     }
+          //   });
+          // }
         }
       },
       error: (error) => {

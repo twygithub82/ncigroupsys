@@ -140,7 +140,8 @@
                       <mat-date-range-picker #booking_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
+                  <div
+                    class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>
@@ -157,7 +158,8 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="roList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+              <table mat-table [dataSource]="roList" matSort
+                class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef
@@ -194,7 +196,8 @@
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
+                    <span
+                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="ro_dt">
@@ -208,7 +211,8 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="no_of_tanks">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.NO_OF_TANKS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
@@ -222,7 +226,8 @@
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{getSchedulingStatusDescription(row.status_cv)}}</mat-cell>
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                    {{getSchedulingStatusDescription(row.status_cv)}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="accept_status">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>

@@ -2210,6 +2210,21 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
                           <!-- <ng-container #dynamicContainer></ng-container> -->
+                          @if (canDownload()) {
+                          <button mat-raised-button matStepperNext class="msr-2"
+                            [disabled]="(igsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"
+                            (click)="onDownload()">
+                            <mat-icon>
+                              @if (!(igsDS.actionLoading$ | async) && !(isImageLoading$| async) &&
+                              !(isFileActionLoading$| async)) {
+                              download
+                              } @else {
+                              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                              }
+                            </mat-icon>
+                            {{translatedLangText.DOWNLOAD}}
+                          </button>
+                          }
                           @if (canPublish()) {
                           <button mat-raised-button matStepperNext color="accent" class="msr-2"
                             [disabled]="(igsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"
@@ -2235,7 +2250,7 @@
                               <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                               }
                             </mat-icon>
-                            {{translatedLangText.SAVE_AND_SUBMIT}}
+                            {{translatedLangText.SAVE}}
                           </button>
                         </div>
                       </div>

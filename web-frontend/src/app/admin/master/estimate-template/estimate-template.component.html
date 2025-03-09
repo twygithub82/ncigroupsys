@@ -13,9 +13,7 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-
                   <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                    <!-- <button mat-mini-fab color="primary" (click)="editCallSelection()"  (click)="$event.stopPropagation()" [routerLink]="['/admin/master/estimate-template/new/ ']"> -->
                     <button mat-mini-fab color="primary" (click)="addCallSelection($event)"
                       (click)="$event.stopPropagation()">
                       <mat-icon class="col-white">add</mat-icon>
@@ -42,15 +40,9 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                        <input matInput formControlName="part_name" type="text">
-                      </mat-form-field>
-                    </div>
                     <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.TEMPLATE_NAME}}</mat-label>
+                        <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
                         <mat-select formControlName="template_name" multiple>
                           @for (cn of masterTempItemOnly; track cn) {
                           <mat-option [value]="cn.template_name">
@@ -60,9 +52,9 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
-                      <button mat-mini-fab color="primary" (click)="search()"
-                        style="margin-top: 10px; margin-left:15px">
+                    <div
+                      class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                      <button mat-mini-fab color="primary" (click)="search()">
                         <mat-icon>search</mat-icon>
                       </button>
                       <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
@@ -78,88 +70,26 @@
             <div class="responsive_table">
               <table mat-table [dataSource]="masterTemplateItem" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                <!-- Checkbox Column -->
-                <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
-                    <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="fName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.TEMPLATE_NAME
+                <ng-container matColumnDef="template">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.TEMPLATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.TEMPLATE_NAME
+                    <span class="mobile-label">{{this.translatedLangText.TEMPLATE
                       }}:</span>{{row.template_name}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="dimension">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.TOTAL_MATERIAL_COST
+                <ng-container matColumnDef="type">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.TYPE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.TOTAL_MATERIAL_COST
-                      }}:</span>{{row.totalMaterialCost.toFixed(2)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="lName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.TEMPLATE_TYPE
-                    }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.TEMPLATE_TYPE
+                    <span class="mobile-label">{{this.translatedLangText.TEMPLATETYPE
                       }}:</span>{{this.displayTemplateType(row)}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="email">
+                <ng-container matColumnDef="last_update_dt">
                   <mat-header-cell *matHeaderCellDef
                     mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="subgroup">
-                  <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
-                    {{row.template_name}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="gender">
-                  <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span>
-                    {{row.labour_hour}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="bDate">
-                  <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.MATERIAL_COST}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST}}:</span>
-                    {{row.material_cost.toFixed(2)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="mobile">
-                  <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
-                    {{this.displayLastUpdated(row)}}</mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="actions">
-                  <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" class="tbl-action-btn">
-                      <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
-                    </button>
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
-                      class="tbl-action-btn">
-                      <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
-                    </button>
-                  </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"

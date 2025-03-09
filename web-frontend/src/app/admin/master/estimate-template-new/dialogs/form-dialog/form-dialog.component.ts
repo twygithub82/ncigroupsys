@@ -39,7 +39,6 @@ export interface DialogData {
   populateData?: any;
   index: number;
   customer_company_guid?: string;
-
 }
 
 @Component({

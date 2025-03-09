@@ -118,7 +118,16 @@ namespace IDMS.Models
         public int average { get; set; }
     }
 
-    public class TempMonthlyReport
+    public class YearlyReport
+    {
+        [NotMapped]
+        public List<CountPerMonth> count_per_month { get; set; }
+        [NotMapped]
+        public int total { get; set; }
+        public int average { get; set; }
+    }
+
+    public class TempReport
     {
         [NotMapped]
         public string sot_guid { get; set; } //for opening_balance
@@ -136,6 +145,16 @@ namespace IDMS.Models
         public string day { get; set; }
         [NotMapped]
         public string date { get; set; }
+    }
+
+    public class CountPerMonth
+    {
+        [NotMapped]
+        public int count { get; set; } //for opening_balance
+        [NotMapped]
+        public string month { get; set; }
+        //[NotMapped]
+        //public string date { get; set; }
     }
 
 

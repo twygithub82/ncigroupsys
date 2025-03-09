@@ -1174,7 +1174,7 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   }
 
   canRollbackJobWithCompleted(jobOrderItem: JobOrderItem | undefined) {
-    return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS'||jobOrderItem?.status_cv === 'COMPLETED';
+    return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'COMPLETED';
   }
 
 
@@ -1206,15 +1206,31 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
 
   getJobOrderDuration(jo: JobOrderItem | undefined): string | undefined {
     if (jo?.start_dt && jo?.complete_dt) {
-      const timeTakenMs = jo?.complete_dt - jo?.start_dt;
+      const timeTakenSec = jo.complete_dt - jo.start_dt;
 
-      if (timeTakenMs === undefined || timeTakenMs < 0) {
+      if (timeTakenSec === undefined || timeTakenSec < 0) {
         return "Invalid time data";
       }
 
-      const days = Math.floor(timeTakenMs / (3600 * 24));
-      const hours = Math.floor((timeTakenMs % (3600 * 24)) / 3600);
-      const minutes = Math.floor((timeTakenMs % 3600) / 60);
+      let days = Math.floor(timeTakenSec / (3600 * 24));
+      let remainingSecs = timeTakenSec % (3600 * 24);
+
+      let hours = Math.floor(remainingSecs / 3600);
+      remainingSecs %= 3600;
+
+      let minutes = Math.ceil(remainingSecs / 60); // Always round up minutes
+
+      // Ensure that if minutes are rounded up to 60, we increase hours
+      if (minutes === 60) {
+        minutes = 0;
+        hours += 1;
+      }
+
+      // Ensure that if hours are rounded up to 24, we increase days
+      if (hours === 24) {
+        hours = 0;
+        days += 1;
+      }
 
       return `${days} day${days !== 1 ? 's' : ''} ${hours} hr${hours !== 1 ? 's' : ''} ${minutes} min${minutes !== 1 ? 's' : ''}`;
     } else {

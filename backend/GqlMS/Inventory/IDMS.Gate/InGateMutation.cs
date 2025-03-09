@@ -294,11 +294,8 @@ namespace IDMS.Gate.GqlTypes
         {
             try
             {
-                var newBS = new billing_sot();
-                newBS.guid = Util.GenerateGUID();
-                newBS.create_by = user;
-                newBS.create_dt = currentDateTime;
-                newBS.sot_guid = inGate?.so_tank_guid;
+                string? sotGuid = inGate?.so_tank_guid;
+                var existingBS = await context.billing_sot.Where(b=>b.sot_guid == sotGuid).FirstOrDefaultAsync();
 
                 var customerGuid = inGate?.tank?.storing_order?.customer_company_guid;
                 var tariffDepotGuid = await context.tank.Where(t => t.guid == inGate.tank.unit_type_guid)
@@ -311,34 +308,77 @@ namespace IDMS.Gate.GqlTypes
                 if (packageDepot == null)
                     throw new GraphQLException(new Error($"Package depot object not found", "ERROR"));
 
-                newBS.tariff_depot_guid = tariffDepotGuid;
-                newBS.lift_on_cost = packageDepot.lolo_cost;
-                newBS.lift_off_cost = packageDepot.lolo_cost;
-                newBS.storage_cost = packageDepot.storage_cost;
-                newBS.gate_in_cost = packageDepot.gate_in_cost;
-                newBS.gate_out_cost = packageDepot.gate_out_cost;
-                newBS.free_storage = packageDepot.free_storage;
-                newBS.preinspection_cost = packageDepot.preinspection_cost;
-                newBS.storage_cal_cv = packageDepot.storage_cal_cv;
+                if(existingBS != null)
+                {
+                    existingBS.update_by = user;
+                    existingBS.update_dt = currentDateTime;
 
-                newBS.preinspection = inGate.preinspection_cv.EqualsIgnore("Y") ? true : false;
-                if (inGate.lolo_cv.EqualsIgnore("BOTH"))
-                {
-                    newBS.lift_on = true;
-                    newBS.lift_off = true;
+                    existingBS.tariff_depot_guid = tariffDepotGuid;
+                    existingBS.lift_on_cost = packageDepot.lolo_cost;
+                    existingBS.lift_off_cost = packageDepot.lolo_cost;
+                    existingBS.storage_cost = packageDepot.storage_cost;
+                    existingBS.gate_in_cost = packageDepot.gate_in_cost;
+                    existingBS.gate_out_cost = packageDepot.gate_out_cost;
+                    existingBS.free_storage = packageDepot.free_storage;
+                    existingBS.preinspection_cost = packageDepot.preinspection_cost;
+                    existingBS.storage_cal_cv = packageDepot.storage_cal_cv;
+
+                    existingBS.preinspection = inGate.preinspection_cv.EqualsIgnore("Y") ? true : false;
+                    if (inGate.lolo_cv.EqualsIgnore("BOTH"))
+                    {
+                        existingBS.lift_on = true;
+                        existingBS.lift_off = true;
+                    }
+                    else if (inGate.lolo_cv.EqualsIgnore("LIFT_ON"))
+                    {
+                        existingBS.lift_on = true;
+                        existingBS.lift_off = false;
+                    }
+                    else if (inGate.lolo_cv.EqualsIgnore("LIFT_OFF"))
+                    {
+                        existingBS.lift_on = false;
+                        existingBS.lift_off = true;
+                    }
                 }
-                else if (inGate.lolo_cv.EqualsIgnore("LIFT_ON"))
+                else
                 {
-                    newBS.lift_on = true;
-                    newBS.lift_off = false;
-                }
-                else if (inGate.lolo_cv.EqualsIgnore("LIFT_OFF"))
-                {
-                    newBS.lift_on = false;
-                    newBS.lift_off = true;
+                    var newBS = new billing_sot();
+                    newBS.guid = Util.GenerateGUID();
+                    newBS.create_by = user;
+                    newBS.create_dt = currentDateTime;
+                    newBS.sot_guid = inGate?.so_tank_guid;
+
+                    newBS.tariff_depot_guid = tariffDepotGuid;
+                    newBS.lift_on_cost = packageDepot.lolo_cost;
+                    newBS.lift_off_cost = packageDepot.lolo_cost;
+                    newBS.storage_cost = packageDepot.storage_cost;
+                    newBS.gate_in_cost = packageDepot.gate_in_cost;
+                    newBS.gate_out_cost = packageDepot.gate_out_cost;
+                    newBS.free_storage = packageDepot.free_storage;
+                    newBS.preinspection_cost = packageDepot.preinspection_cost;
+                    newBS.storage_cal_cv = packageDepot.storage_cal_cv;
+
+                    newBS.preinspection = inGate.preinspection_cv.EqualsIgnore("Y") ? true : false;
+                    if (inGate.lolo_cv.EqualsIgnore("BOTH"))
+                    {
+                        newBS.lift_on = true;
+                        newBS.lift_off = true;
+                    }
+                    else if (inGate.lolo_cv.EqualsIgnore("LIFT_ON"))
+                    {
+                        newBS.lift_on = true;
+                        newBS.lift_off = false;
+                    }
+                    else if (inGate.lolo_cv.EqualsIgnore("LIFT_OFF"))
+                    {
+                        newBS.lift_on = false;
+                        newBS.lift_off = true;
+                    }
+
+                    await context.billing_sot.AddAsync(newBS);
                 }
 
-                await context.billing_sot.AddAsync(newBS);
+
                 var res = await context.SaveChangesAsync();
                 return res;
 
@@ -348,5 +388,64 @@ namespace IDMS.Gate.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
+
+        //private async Task<int> AddBillingSOT(ApplicationInventoryDBContext context, string user, long currentDateTime, in_gate inGate)
+        //{
+        //    try
+        //    {
+        //        var newBS = new billing_sot();
+        //        newBS.guid = Util.GenerateGUID();
+        //        newBS.create_by = user;
+        //        newBS.create_dt = currentDateTime;
+        //        newBS.sot_guid = inGate?.so_tank_guid;
+
+        //        var customerGuid = inGate?.tank?.storing_order?.customer_company_guid;
+        //        var tariffDepotGuid = await context.tank.Where(t => t.guid == inGate.tank.unit_type_guid)
+        //                                    .Select(t => t.tariff_depot.guid).FirstOrDefaultAsync();
+
+        //        if (string.IsNullOrEmpty(tariffDepotGuid))
+        //            throw new GraphQLException(new Error($"Tariff depot guid not found", "ERROR"));
+
+        //        var packageDepot = await context.Set<package_depot>().Where(b => b.customer_company_guid == customerGuid && b.tariff_depot_guid == tariffDepotGuid).FirstOrDefaultAsync();
+        //        if (packageDepot == null)
+        //            throw new GraphQLException(new Error($"Package depot object not found", "ERROR"));
+
+        //        newBS.tariff_depot_guid = tariffDepotGuid;
+        //        newBS.lift_on_cost = packageDepot.lolo_cost;
+        //        newBS.lift_off_cost = packageDepot.lolo_cost;
+        //        newBS.storage_cost = packageDepot.storage_cost;
+        //        newBS.gate_in_cost = packageDepot.gate_in_cost;
+        //        newBS.gate_out_cost = packageDepot.gate_out_cost;
+        //        newBS.free_storage = packageDepot.free_storage;
+        //        newBS.preinspection_cost = packageDepot.preinspection_cost;
+        //        newBS.storage_cal_cv = packageDepot.storage_cal_cv;
+
+        //        newBS.preinspection = inGate.preinspection_cv.EqualsIgnore("Y") ? true : false;
+        //        if (inGate.lolo_cv.EqualsIgnore("BOTH"))
+        //        {
+        //            newBS.lift_on = true;
+        //            newBS.lift_off = true;
+        //        }
+        //        else if (inGate.lolo_cv.EqualsIgnore("LIFT_ON"))
+        //        {
+        //            newBS.lift_on = true;
+        //            newBS.lift_off = false;
+        //        }
+        //        else if (inGate.lolo_cv.EqualsIgnore("LIFT_OFF"))
+        //        {
+        //            newBS.lift_on = false;
+        //            newBS.lift_off = true;
+        //        }
+
+        //        await context.billing_sot.AddAsync(newBS);
+        //        var res = await context.SaveChangesAsync();
+        //        return res;
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+        //    }
+        //}
     }
 }
