@@ -219,6 +219,13 @@ tr.th {
 .text-right {
     text-align: right;
 }
+.text-right-border {
+    -webkit-text-stroke: 1px black;
+    padding: 5px;
+    text-align: right;
+    border-bottom: 0px;
+    border-left: 0px;
+}
 
 .text-center {
     text-align: center;

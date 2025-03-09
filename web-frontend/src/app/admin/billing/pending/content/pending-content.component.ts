@@ -1056,6 +1056,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const dialogRef = this.dialog.open(PendingInvoiceCostDetailPdfComponent, {
       width: '85vw',
+      maxWidth:'800px',
       maxHeight: '85vh',
       data: {
         billing_customers: repCustomers,

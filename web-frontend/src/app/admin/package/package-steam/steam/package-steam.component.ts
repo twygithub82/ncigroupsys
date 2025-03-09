@@ -415,7 +415,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
 
   search() {
-    if (!this.customerCodeControl.value?.length) return;
+    if (!this.pcForm!.get('customer_code')?.value) return;
     const where: any = {
       and: []
     };

@@ -1,6 +1,7 @@
 import { TranslateService } from "@ngx-translate/core";
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
+import { jsPDF } from 'jspdf';
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -467,6 +468,8 @@ export class Utility {
     }
     return color;
   }
+
+  
 }
 
 export const TANK_STATUS_IN_YARD = [

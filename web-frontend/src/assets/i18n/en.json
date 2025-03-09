@@ -1050,7 +1050,8 @@
     "REPAIR-ESTIMATE-OUTSTANDING-TANK-LIST": "Repair Estimate Outstanding Tank List",
     "CLEANING-STEPS": "Cleaning Steps",
     "NO-CLEANING-STEPS": "No Cleaning Steps",
-    "PROCESS": "Process"
+    "PROCESS": "Process",
+    "GATE-SURCHAGRGE-PENDING-REPORT":"Gate Surcharge Invice Pending Report"
 
   },
   "CLEAN-PROCEDURES": {
