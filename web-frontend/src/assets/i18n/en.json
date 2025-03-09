@@ -251,7 +251,7 @@
         "INVOICES": "Invoices",
         "PENDING-SUMMARY": "Pending Summary",
         "PENDING-DETAIL": "Pending Detail",
-        "PENDING": "Pending",
+        "PENDING": "Pending Estimate",
         "CUSTOMER-INVOICE": "Customer Invoice"
       }
     },
