@@ -237,6 +237,9 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     this.initializeValueChanges();
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
+
+    var autoSearch:boolean=true;
+    if(autoSearch) this.search_detail();
   }
 
   initInvoiceForm() {
@@ -379,7 +382,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
   search(report_type: number) {
 
-    var cond_counter = 0;
+    var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
     this.selectedEstimateItem = undefined;

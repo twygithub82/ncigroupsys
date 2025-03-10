@@ -160,14 +160,13 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
 
 
   availableProcessStatus: string[] = [
-    'ASSIGNED',
-    'PARTIAL_ASSIGNED',
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED',
     'PENDING',
-    'NO_ACTION'
-
+    'COMPLETED',
+    'NO_ACTION',
+    'ASSIGNED',
+    'PARTIAL_ASSIGNED',
   ]
   searchForm?: UntypedFormGroup;
 

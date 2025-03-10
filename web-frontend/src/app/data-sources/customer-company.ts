@@ -182,7 +182,6 @@ export const SEARCH_COMPANY_QUERY = gql`
           guid
           unit_type
         }
-       
       }
       pageInfo {
         endCursor
@@ -260,7 +259,10 @@ export const SEARCH_COMPANY_QUERY_WITH_SO_SOT = gql`
           guid
           tank_no
         }
-       
+        tank {
+          guid
+          unit_type
+        }
       }
       pageInfo {
         endCursor

@@ -319,6 +319,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         this.countryCodesFiltered = this.countryCodes.filter((country: any) =>
           country.code.toLowerCase().includes(value.code.toLowerCase())
         );
+        console.log(value)
+        // this.ccForm?.get('country')?.setValue(value?.country);
       } else {
         this.countryCodesFiltered = this.countryCodes;
       }
@@ -338,7 +340,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       customer_name: [''],
       customer_type: [''],
       billing_branches: [''],
-      country_code: [''],
+      country_code: [{ country: 'SG', code: '+65', iso: 'sg' }],
       phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['', [Validators.required, Validators.email]],
       web: [''],
@@ -348,7 +350,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       address2: [''],
       postal_code: [''],
       city_name: [''],
-      country: ['Singapore'],
+      country: ['SG'],
       remarks: [''],
       repList: []
     });
