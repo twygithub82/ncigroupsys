@@ -588,6 +588,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         const partNameControl = this.pcForm.get("part_name");
         partNameControl?.setErrors(null);
       }
+
+      let len = `${this.pcForm?.get("length")?.value || ''}`;
+      if(len=='')
+      {
+        this.lengthUnitControl.reset();
+      }
     });
   }
 
@@ -630,5 +636,15 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       alias: aliasName,
       dimension: dimension
     });
+  }
+
+  isRequired(path: string): boolean {
+    // Assuming `pcForm` is a FormGroup or similar Angular reactive form object
+    const control = this.pcForm.get(path); // Get the form control using the provided path
+    if (control) {
+      // Check if the control has a value (truthy or falsy)
+      return !!control.value; // Convert the value to a boolean
+    }
+    return false; // Return false if the control doesn't exist
   }
 }

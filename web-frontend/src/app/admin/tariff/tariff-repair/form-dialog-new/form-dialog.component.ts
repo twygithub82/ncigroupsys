@@ -492,6 +492,14 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.pcForm.get("width_diameter_unit_cv")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
     this.pcForm.get("thickness")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
     this.pcForm.get("thickness_unit_cv")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
+    this.pcForm.get('length')?.valueChanges.subscribe(value => {
+      let len = `${this.pcForm?.get("length")?.value || ''}`;
+      if(len=='')
+      {
+        this.lengthUnitControl.reset();
+      }
+
+    });
   }
 
   updateDimensionAndAliasName(): void {
@@ -538,6 +546,16 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     return codeValueItems.find(item => item.code_val === codeValue);
 
+  }
+
+  isRequired(path: string): boolean {
+    // Assuming `pcForm` is a FormGroup or similar Angular reactive form object
+    const control = this.pcForm.get(path); // Get the form control using the provided path
+    if (control) {
+      // Check if the control has a value (truthy or falsy)
+      return !!control.value; // Convert the value to a boolean
+    }
+    return false; // Return false if the control doesn't exist
   }
 
 }
