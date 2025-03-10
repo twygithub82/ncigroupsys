@@ -163,6 +163,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
       tank_no: [''],
+      // eir_status_cv: [['PENDING', 'YET_TO_SURVEY']]
     });
   }
 
@@ -255,7 +256,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     if (this.searchForm!.get('eir_status_cv')?.value) {
-      where.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
+      where.eir_status_cv = { in: this.searchForm!.get('eir_status_cv')?.value };
     }
 
     if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
