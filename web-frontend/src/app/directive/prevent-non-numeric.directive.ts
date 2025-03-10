@@ -6,6 +6,7 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 })
 export class PreventNonNumericDirective {
   @Input() restrictNonNumeric = true;
+  @Input() disableScroll = true;
 
   constructor(private el: ElementRef) { }
 
@@ -23,6 +24,13 @@ export class PreventNonNumericDirective {
       if (clipboardData && /[eE]/.test(clipboardData)) {
         event.preventDefault();
       }
+    }
+  }
+
+  @HostListener('wheel', ['$event'])
+  onWheel(event: WheelEvent) {
+    if (this.disableScroll && this.el.nativeElement === document.activeElement) {
+      event.preventDefault(); // Prevent scrolling on focused number input
     }
   }
 }

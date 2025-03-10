@@ -25,7 +25,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Utility } from 'app/utilities/utility';
 // import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
@@ -42,12 +41,12 @@ import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
-import { SearchCriteriaService } from 'app/services/search-criteria.service';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { firstValueFrom } from 'rxjs';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import {MessageDialogComponent} from 'app/shared/components/message-dialog/message-dialog.component';
+import { SearchCriteriaService } from 'app/services/search-criteria.service';
+import { MessageDialogComponent } from 'app/shared/components/message-dialog/message-dialog.component';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { firstValueFrom } from 'rxjs';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -61,7 +60,6 @@ import {MessageDialogComponent} from 'app/shared/components/message-dialog/messa
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
@@ -102,7 +100,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   ccDS: CustomerCompanyDS;
   custCompDS: CustomerCompanyDS;
-  sotDS:StoringOrderTankDS;
+  sotDS: StoringOrderTankDS;
 
   packResidueItems: PackageResidueItem[] = [];
 
@@ -218,8 +216,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     CODE: 'COMMON-FORM.CODE',
     CATEGORY: 'COMMON-FORM.CATEGORY',
-    CUSTOMER_ASSIGNED:'COMMON-FORM.CUSTOMER-ASSIGNED',
-    WARNING:'COMMON-FORM.WARNING'
+    CUSTOMER_ASSIGNED: 'COMMON-FORM.CUSTOMER-ASSIGNED',
+    WARNING: 'COMMON-FORM.WARNING'
   }
 
   constructor(
@@ -239,7 +237,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
-    this.sotDS=new StoringOrderTankDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -462,7 +460,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   search() {
     const where: any = {
       type_cv: { neq: "SURVEYOR" }
-     
+
     };
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
@@ -476,7 +474,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       where.alias = { contains: this.pcForm!.value["alias"] };
     }
 
-   
+
 
     if (this.pcForm!.value["country"]) {
       where.country = { eq: this.pcForm!.value["country"] };
@@ -704,81 +702,77 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.customerCodeControl.reset();
   }
 
-  
-    async cancelItem(row: CustomerCompanyItem) {
-        // this.id = row.id;
-       
-         var CanDeleteCustomer:boolean = await this.CanDeleteCustomer(row.guid!);
-         if(!CanDeleteCustomer)
-         {
-            let tempDirection: Direction;
-            if (localStorage.getItem('isRtl') === 'true') {
-              tempDirection = 'rtl';
-            } else {
-              tempDirection = 'ltr';
-            }
-            const dialogRef = this.dialog.open(MessageDialogComponent, {
-              width: '500px',
-              data: {
-                headerText: this.translatedLangText.WARNING,
-                messageText:[this.translatedLangText.CUSTOMER_ASSIGNED],
-                act: "warn"
-              },
-              direction: tempDirection
-            });
-          dialogRef.afterClosed().subscribe(result=>{
-          });
-         }
-         else
-         {
-           this.deleteCustomerAndBillingBranch(row.guid!);
-         }
-    
+
+  async cancelItem(row: CustomerCompanyItem) {
+    // this.id = row.id;
+
+    var CanDeleteCustomer: boolean = await this.CanDeleteCustomer(row.guid!);
+    if (!CanDeleteCustomer) {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
       }
-    
-      deleteCustomerAndBillingBranch(customerGuid:string)
-      {
-        
-         this.ccDS.DeleteCustomerCompany([customerGuid]).subscribe(d=>{
-            let count =d.data.deleteCustomerCompany;
-            if(count>0)
-            {
-                this.handleSaveSuccess(count);
-                if (this.ccDS.totalCount > 0) {
-                  this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-                }
-            }
-         });
-      }
-  
-      async CanDeleteCustomer(guid: string): Promise<boolean> {
-        let retval: boolean = false;
-        
-        try {
-          // Use firstValueFrom to convert Observable to Promise
-          const result = await firstValueFrom(this.ccDS.CanDeleteCustomerCompany(guid));
-          retval=(result.data.value);
-        } catch (error) {
-          console.error("Error fetching Customer guid:", error);
+      const dialogRef = this.dialog.open(MessageDialogComponent, {
+        width: '500px',
+        data: {
+          headerText: this.translatedLangText.WARNING,
+          messageText: [this.translatedLangText.CUSTOMER_ASSIGNED],
+          act: "warn"
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
+    else {
+      this.deleteCustomerAndBillingBranch(row.guid!);
+    }
+
+  }
+
+  deleteCustomerAndBillingBranch(customerGuid: string) {
+
+    this.ccDS.DeleteCustomerCompany([customerGuid]).subscribe(d => {
+      let count = d.data.deleteCustomerCompany;
+      if (count > 0) {
+        this.handleSaveSuccess(count);
+        if (this.ccDS.totalCount > 0) {
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
-    
-        return retval;
       }
+    });
+  }
+
+  async CanDeleteCustomer(guid: string): Promise<boolean> {
+    let retval: boolean = false;
+
+    try {
+      // Use firstValueFrom to convert Observable to Promise
+      const result = await firstValueFrom(this.ccDS.CanDeleteCustomerCompany(guid));
+      retval = (result.data.value);
+    } catch (error) {
+      console.error("Error fetching Customer guid:", error);
+    }
+
+    return retval;
+  }
 
 
-    // CanDeleteCustomer(row: CustomerCompanyItem): boolean {
-    //       let retval: boolean = false;
-    //       var where: any = {};
-    //       try {
-    //         // Use firstValueFrom to convert Observable to Promise
-    //        retval = row.storing_order_tank?.length==0 && row.storing_orders?.length==0;
-            
-    //       } catch (error) {
-    //         console.error("Error fetching tariff buffer guid:", error);
-    //       }
-      
-    //       return retval;
-    //     }
+  // CanDeleteCustomer(row: CustomerCompanyItem): boolean {
+  //       let retval: boolean = false;
+  //       var where: any = {};
+  //       try {
+  //         // Use firstValueFrom to convert Observable to Promise
+  //        retval = row.storing_order_tank?.length==0 && row.storing_orders?.length==0;
+
+  //       } catch (error) {
+  //         console.error("Error fetching tariff buffer guid:", error);
+  //       }
+
+  //       return retval;
+  //     }
 
 }
 
