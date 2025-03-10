@@ -1637,17 +1637,19 @@ textarea,
 .mat-stepper-vertical,
 .mat-stepper-horizontal,
 .mat-mdc-card-title,
-.mat-mdc-dialog-container .mdc-dialog__content {
+.mat-mdc-dialog-container .mdc-dialog__content,
+.mat-mdc-snack-bar-container.snackbar-success .mdc-snackbar__surface {
   font-family: "Calibri", "Arial", sans-serif !important;
 }
 
 .mat-mdc-snack-bar-container.snackbar-success .mdc-snackbar__surface {
-  background-color: rgba(61, 176, 12, 0.8) !important;
+  background-color: rgb(144, 213, 255) !important;
+  text-align: center;
   // color: #333333 !important;
-  .mdc-snackbar__label {
-    font-weight: bold;
-    // color: #ffffff !important;
-  }
+  // .mdc-snackbar__label {
+  //   font-weight: bold;
+  //   // color: #ffffff !important;
+  // }
 }
 // .mat-mdc-snack-bar-container .mdc-snackbar__label {
 //   color: var(--mdc-snackbar-supporting-text-color);

@@ -26,7 +26,7 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-                    <mat-select formControlName="customer_code" multiple required>
+                    <mat-select formControlName="customer_code" multiple>
                       <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
                         <ng-container *ngIf="cc !== null">
                           {{ ccDS.displayName(cc) }}
@@ -42,7 +42,7 @@
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PROFILE_NAME }}</mat-label>
+                    <mat-label>{{translatedLangText.BUFFER_TYPE }}</mat-label>
                     <input matInput formControlName="profile_name" type="text">
                   </mat-form-field>
                 </div>

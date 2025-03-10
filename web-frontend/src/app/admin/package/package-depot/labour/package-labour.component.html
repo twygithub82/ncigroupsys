@@ -29,7 +29,7 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                    <mat-select formControlName="customer_code" multiple required>
+                    <mat-select formControlName="customer_code" multiple>
                       <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
                         {{ ccDS.displayName(cc) }}
                       </mat-option>
