@@ -250,9 +250,7 @@
                   <mat-error *ngIf="newQty.hasError('required')">
                     {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
                   </mat-error>
-
                 </mat-form-field>
-
               </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
                 <mat-form-field class="example-full-width" appearance="fill">
@@ -317,28 +315,29 @@
                   <!-- ID Column -->
                   <ng-container matColumnDef="seq">
                     <mat-header-cell *matHeaderCellDef mat-sort-header
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="desc">
                     <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                       {{translatedLangText.DESCRIPTION}}
                     </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row" class="">
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                       <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef [ngClass]="''"
                       class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="qty">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.QUANTITY}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-5-lg tbl-col-width-per-5-md tbl-col-width-per-5-sm'">
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.QTY}}:</span>
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
@@ -354,28 +353,22 @@
                             (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
                             (focus)="selectText($event)" type="number" min="0">
                           }
-
                         </mat-form-field>
                       </tlx-form-field>
                     </mat-cell>
-
-                    <!-- <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
-                      </mat-cell> -->
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
-                      [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm '"></mat-footer-cell>
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="qty_unit">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.UNIT_TYPE}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-5-lg tbl-col-width-per-5-md tbl-col-width-per-5-sm'">
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.UNIT_TYPE}}:</span>
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
-
                           <input class="text-end" tlxFormInput matInput [(ngModel)]="row.qty_unit_type_cv"
                             [disabled]="isDisabled()" (wheel)="preventDefault($event)" (focus)="selectText($event)"
                             [matAutocomplete]="unitCode1">
@@ -387,19 +380,19 @@
                             </mat-option>
                             }
                           </mat-autocomplete>
-
                         </mat-form-field>
                       </tlx-form-field>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm '"></mat-footer-cell>
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="unit_price">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.UNIT_PRICE}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm'">
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.QTY}}:</span>
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
@@ -416,26 +409,20 @@
                             (focus)="selectText($event)" type="number" min="0">
                           }
                         </mat-form-field>
-
                       </tlx-form-field>
                     </mat-cell>
-                    <!-- <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}}
-                      </mat-cell> -->
-                    <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} font-bold">{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold"
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="approve_part">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       mat-sort-header>
                       <mat-icon>more_vert</mat-icon>
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-
-
                       @if (row.approve_part === null || row.approve_part === undefined ||
                       IsApprovePart(row)){
                       <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
@@ -443,28 +430,27 @@
                       @else {
                       <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
                       }
-
                     </mat-cell>
-                    <mat-footer-cell *matFooterCellDef [ngClass]="''"
+                    <mat-footer-cell *matFooterCellDef
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="cost">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.COST}}
                     </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row" class="">
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span
                         class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateResidueItemCost(row))}}
                     </mat-cell>
-                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}">
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label"> </span>{{this.parse2Decimal( getTotalCost()) }}
                     </mat-footer-cell>
                   </ng-container>
-
                   <ng-container matColumnDef="actions">
-                    <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
+                    <mat-header-cell class="pr-0" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matHeaderCellDef>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let row;" class="justify-content-end">
+                    <mat-cell *matCellDef="let row;" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end'">
                       @if (residueDS.canAmend(this.residueItem!)) {
                       @if (!row.delete_dt){
                       <button mat-icon-button (click)="handleDelete($event, row, row.index)">
@@ -478,7 +464,7 @@
                       }
                       }
                     </mat-cell>
-                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
@@ -519,7 +505,8 @@
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
               @if (canExport()) {
-              <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5" (click)="onExport($event)">
+              <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                (click)="onExport($event)">
                 @if (!(residueDS.loading$ | async)) {
                 <i class="fas fa-file-export"></i>
                 } @else if ((residueDS.loading$ | async)) {
