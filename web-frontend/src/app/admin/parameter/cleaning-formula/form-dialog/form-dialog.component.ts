@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -16,16 +16,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { Utility } from 'app/utilities/utility';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { provideNgxMask } from 'ngx-mask';
 
 
 export interface DialogData {
@@ -66,7 +65,7 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-
+    PreventNonNumericDirective
   ],
 })
 export class FormDialogComponent {
@@ -95,7 +94,7 @@ export class FormDialogComponent {
   lastCargoControl = new UntypedFormControl();
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //  catDS :CleaningCategoryDS;
- // mthDS: CleaningMethodDS;
+  // mthDS: CleaningMethodDS;
   fmlDS: CleaningFormulaDS;
 
   translatedLangText: any = {};
@@ -187,10 +186,10 @@ export class FormDialogComponent {
     CLEANING_METHOD: 'COMMON-FORM.CLEANING-PROCESS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
-    MIN_DURATION:"COMMON-FORM.MIN-DURATION",
-    MAX_DURATION:"COMMON-FORM.MAX-DURATION",
-    CLEANING_FORMULA:"MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
-    DURATION:"COMMON-FORM.DURATION-MIN"
+    MIN_DURATION: "COMMON-FORM.MIN-DURATION",
+    MAX_DURATION: "COMMON-FORM.MAX-DURATION",
+    CLEANING_FORMULA: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
+    DURATION: "COMMON-FORM.DURATION-MIN"
   };
 
 
@@ -211,20 +210,20 @@ export class FormDialogComponent {
     this.selectedItem = data.selectedItem;
 
     this.pcForm = this.createCleaningFormula();
-  
-   // this.mthDS = new CleaningMethodDS(this.apollo);
-    this.fmlDS= new CleaningFormulaDS(this.apollo);
+
+    // this.mthDS = new CleaningMethodDS(this.apollo);
+    this.fmlDS = new CleaningFormulaDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
-    
+
   }
 
   createCleaningFormula(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: this.selectedItem,
-      duration: this.selectedItem?.duration||[''],
-      description: this.selectedItem?.description||[''],
-      
+      duration: this.selectedItem?.duration || [''],
+      description: this.selectedItem?.description || [''],
+
     });
   }
 
@@ -261,7 +260,7 @@ export class FormDialogComponent {
 
       console.log('valid');
       this.dialogRef.close(count);
-     
+
     }
   }
 
@@ -323,7 +322,7 @@ export class FormDialogComponent {
         }
       }
     });
-  
+
 
 
 

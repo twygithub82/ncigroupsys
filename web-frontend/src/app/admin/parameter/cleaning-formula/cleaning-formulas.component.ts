@@ -27,7 +27,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Apollo } from 'apollo-angular';
-import { CleaningCategoryDS } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -36,10 +35,10 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { CleaningFormulaDS,CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
 //import {messageReceived}  from '../../../data-sources/message-received';
 
 
@@ -71,12 +70,12 @@ import { CleaningFormulaDS,CleaningFormulaItem } from 'app/data-sources/cleaning
     ReactiveFormsModule,
     FormsModule,
     MatAutocompleteModule,
-    MatDividerModule,
+    MatDividerModule
   ]
 })
 export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-   // 'category_name',
+    // 'category_name',
     'category_description',
     'category_duration',
     'update_date'
@@ -126,12 +125,12 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     CLEANING_METHOD: 'COMMON-FORM.CLEANING-PROCESS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
-    FORMULA_NAME:"COMMON-FORM.FORMULA-NAME",
-    FORMULA_DESCRIPTION:"COMMON-FORM.FORMULA-DESCRIPTION",
-    MIN_DURATION:"COMMON-FORM.MIN-DURATION",
-    MAX_DURATION:"COMMON-FORM.MAX-DURATION",
-    CLEANING_FORMULA:"MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
-    DURATION:"COMMON-FORM.DURATION"
+    FORMULA_NAME: "COMMON-FORM.FORMULA-NAME",
+    FORMULA_DESCRIPTION: "COMMON-FORM.FORMULA-DESCRIPTION",
+    MIN_DURATION: "COMMON-FORM.MIN-DURATION",
+    MAX_DURATION: "COMMON-FORM.MAX-DURATION",
+    CLEANING_FORMULA: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
+    DURATION: "COMMON-FORM.DURATION"
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -146,14 +145,14 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
 
   clnMethodItem: CleaningMethodItem[] = [];
   catList: CleaningCategoryItem[] = [];
-  clnFormulaList:CleaningFormulaItem[]=[];
+  clnFormulaList: CleaningFormulaItem[] = [];
   soList: StoringOrderItem[] = [];
   // sotDS: StoringOrderTankDS;
   // ccDS: CustomerCompanyDS;
   // soDS: StoringOrderDS;
- // catDS: CleaningCategoryDS;
+  // catDS: CleaningCategoryDS;
   mthDS: CleaningMethodDS;
-  fmlDS:CleaningFormulaDS;
+  fmlDS: CleaningFormulaDS;
 
   pageIndex = 0;
   pageSize = 10;
@@ -182,7 +181,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     // this.ccDS = new CustomerCompanyDS(this.apollo);
     //this.catDS = new CleaningCategoryDS(this.apollo);
     this.mthDS = new CleaningMethodDS(this.apollo);
-    this.fmlDS=new CleaningFormulaDS(this.apollo);
+    this.fmlDS = new CleaningFormulaDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -220,8 +219,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     this.searchForm = this.fb.group({
       name: [''],
       description: [''],
-      duration_min:[''],
-      duration_max:[''],
+      duration_min: [''],
+      duration_max: [''],
 
     });
   }
@@ -248,13 +247,13 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     // });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
-    
+
   }
 
   public loadData() {
-   
+
     this.search();
-  
+
   }
 
   showNotification(
@@ -318,20 +317,20 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       where.description = { contains: this.searchForm!.value['description'] };
     }
 
-    if(this.searchForm!.value['min_duration']){
-      where.duration ={gte: Number(this.searchForm!.value['min_duration'])}
+    if (this.searchForm!.value['min_duration']) {
+      where.duration = { gte: Number(this.searchForm!.value['min_duration']) }
     }
 
-    if(this.searchForm!.value['max_duration']){
-      where.duration ={ngt: Number(this.searchForm!.value['max_duration'])}
+    if (this.searchForm!.value['max_duration']) {
+      where.duration = { ngt: Number(this.searchForm!.value['max_duration']) }
     }
 
     this.lastSearchCriteria = where;
-    this.performSearch( this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
   //searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,  previousPageIndex?: number) {
-    performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number){
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number) {
     this.previous_endCursor = this.endCursor;
     this.subs.sink = this.fmlDS.search(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
       this.clnFormulaList = data;
@@ -347,41 +346,41 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  
-    onPageEvent(event: PageEvent) {
-      const { pageIndex, pageSize } = event;
-      let first: number | undefined = undefined;
-      let after: string | undefined = undefined;
-      let last: number | undefined = undefined;
-      let before: string | undefined = undefined;
-  
-      // Check if the page size has changed
-      if (this.pageSize !== pageSize) {
-        // Reset pagination if page size has changed
-        this.pageIndex = 0;
-        first = pageSize;
-        after = undefined;
-        last = undefined;
-        before = undefined;
-      }
-       else {
-        if (pageIndex > this.pageIndex && this.hasNextPage) {
-          // Navigate forward
-          first = pageSize;
-          after = this.endCursor;
-        } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-          // Navigate backward
-          last = pageSize;
-          before = this.startCursor;
-        }else if (pageIndex === this.pageIndex) {
-          // Refresh the current page
-          first = pageSize;
-          after = this.previous_endCursor; // or undefined, depending on your API
-         }
-      }
-  
-      this.performSearch(pageSize, pageIndex, first, after, last, before);
+
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
     }
+    else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursor;
+      } else if (pageIndex === this.pageIndex) {
+        // Refresh the current page
+        first = pageSize;
+        after = this.previous_endCursor; // or undefined, depending on your API
+      }
+    }
+
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
+  }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -401,7 +400,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     var row = new CleaningMethodItem();
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width:'50wv',
+      width: '50wv',
       maxWidth: '600px',
       data: {
         action: 'new',
@@ -415,7 +414,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       if (result > 0) {
         this.handleSaveSuccess(result);
         this.refresh();
-       // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
 
       }
     });
@@ -432,7 +431,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width:'50wv',
+      width: '50wv',
       maxWidth: '600px',
       data: {
         action: 'new',
@@ -450,7 +449,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
         this.handleSaveSuccess(result);
         this.refresh();
         //this.search();
-       // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
 
       }
     });
