@@ -248,10 +248,10 @@
         "CLEANING-BILL": "Cleaning Bill",
         "REPAIR-BILL": "Repair Bill",
         "BILLED-TANK": "Billed Tank",
-        "INVOICES": "Invoices",
+        "INVOICES": "Invoice Summary",
         "PENDING-SUMMARY": "Pending Summary",
         "PENDING-DETAIL": "Pending Detail",
-        "PENDING": "Pending Estimate",
+        "PENDING": "Pending Invoices",
         "CUSTOMER-INVOICE": "Customer Invoice"
       }
     },

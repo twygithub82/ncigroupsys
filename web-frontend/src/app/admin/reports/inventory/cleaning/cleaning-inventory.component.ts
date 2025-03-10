@@ -398,7 +398,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
   search() {
 
     
-    var cond_counter = 0;
+    var cond_counter = 1;
     var report_type: string =this.searchForm!.get('report_type')?.value;
     const where: any = {};
     if(this.searchForm?.invalid)return;
@@ -406,83 +406,9 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
 
     if(report_type=="DETAIL")
     {
-    if (this.searchForm!.get('tank_no')?.value) {
-      where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-      cond_counter++;
-    }
-
-    
-
-    if (this.searchForm!.get('customer_code')?.value) {
-      // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
-      cond_counter++;
-    }
-
-    if (this.searchForm!.get('eir_no')?.value) {
-
-      var cond: any = { eir_no: { contains: this.searchForm!.get('eir_no')?.value } };
-      if (!where.in_gate) {
-        where.in_gate = {};
-        where.in_gate.some = {};
-        where.in_gate.some.and = [];
-      }
-
-      if (!where.out_gate) {
-        where.out_gate = {};
-        where.out_gate.some = {};
-        where.out_gate.some.and = [];
-      }
-      where.in_gate.some.and.push(cond);
-      where.out_gate.some.and.push(cond);
-      cond_counter++;
-    }
-
-    
-    var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
-    if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
-      var start_dt = new Date(this.searchForm!.get('clean_dt_start')?.value);
-      var end_dt = new Date(this.searchForm!.get('clean_dt_end')?.value);
-      var cond: any ={ some: {  complete_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true)  } } };
-      date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`;
-      if (!where.cleaning) where.cleaning = {};
-      where.cleaning = cond;
-      cond_counter++;
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
-
-
-  
-
-    if (this.searchForm!.get('last_cargo')?.value) {
-      where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
-      cond_counter++;
-    }
-
-    if (this.searchForm!.get('un_no')?.value) {
-      if(!where.tariff_cleaning) where.tariff_cleaning={};
-      where.tariff_cleaning.un_no= {contains:this.searchForm!.get('un_no')?.value};
-      //where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
-      cond_counter++;
-    }
-
-    if (this.searchForm!.get('class_no')?.value) {
-      if(!where.tariff_cleaning) where.tariff_cleaning={};
-      where.tariff_cleaning.class_cv= {in:this.searchForm!.get('class_no')?.value};
-      //where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
-      cond_counter++;
-    }
-
-    this.noCond = (cond_counter === 0);
-    if (this.noCond) return;
-    this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearchSOT(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,date);
-  }
-  else
-  {
-      this.lastSearchCriteria={};
+      where.tank_status_cv={neq:'RELEASED'};
       if (this.searchForm!.get('tank_no')?.value) {
-        this.lastSearchCriteria.tank_no =  this.searchForm!.get('tank_no')?.value ;
+        where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
         cond_counter++;
       }
 
@@ -490,49 +416,124 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
 
       if (this.searchForm!.get('customer_code')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
-        this.lastSearchCriteria.customer_code =  this.searchForm!.get('customer_code')?.value.code ;
+        where.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
         cond_counter++;
       }
 
       if (this.searchForm!.get('eir_no')?.value) {
-        this.lastSearchCriteria.eir_no = this.searchForm!.get('eir_no')?.value;
+
+        var cond: any = { eir_no: { contains: this.searchForm!.get('eir_no')?.value } };
+        if (!where.in_gate) {
+          where.in_gate = {};
+          where.in_gate.some = {};
+          where.in_gate.some.and = [];
+        }
+
+        if (!where.out_gate) {
+          where.out_gate = {};
+          where.out_gate.some = {};
+          where.out_gate.some.and = [];
+        }
+        where.in_gate.some.and.push(cond);
+        where.out_gate.some.and.push(cond);
         cond_counter++;
       }
 
+      
       var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
       if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
         var start_dt = new Date(this.searchForm!.get('clean_dt_start')?.value);
         var end_dt = new Date(this.searchForm!.get('clean_dt_end')?.value);
-        this.lastSearchCriteria.start_date= Utility.convertDate(start_dt);
-        this.lastSearchCriteria.end_date= Utility.convertDate(end_dt, true);
+        var cond: any ={ some: {  complete_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true)  } } };
         date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`;
+        if (!where.cleaning) where.cleaning = {};
+        where.cleaning = cond;
         cond_counter++;
+        //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
       }
 
 
     
 
       if (this.searchForm!.get('last_cargo')?.value) {
-        this.lastSearchCriteria.last_cargo = this.searchForm!.get('last_cargo')?.value.cargo;
+        where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
         cond_counter++;
       }
 
       if (this.searchForm!.get('un_no')?.value) {
-        this.lastSearchCriteria.un_no = this.searchForm!.get('un_no')?.value.cargo;
+        if(!where.tariff_cleaning) where.tariff_cleaning={};
+        where.tariff_cleaning.un_no= {contains:this.searchForm!.get('un_no')?.value};
+        //where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
         cond_counter++;
       }
 
       if (this.searchForm!.get('class_no')?.value) {
-      
-        this.lastSearchCriteria.class_no= this.searchForm!.get('class_no')?.value;
+        if(!where.tariff_cleaning) where.tariff_cleaning={};
+        where.tariff_cleaning.class_cv= {in:this.searchForm!.get('class_no')?.value};
         //where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
         cond_counter++;
       }
 
       this.noCond = (cond_counter === 0);
-      this.lastSearchCriteria.report_type=this.GetReportType(report_type);
-      this.performSearchCleaningInventorySummary(report_type,date);
-  }
+      if (this.noCond) return;
+      this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+      this.performSearchSOT(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,date);
+    }
+    else
+    {
+        this.lastSearchCriteria={};
+        if (this.searchForm!.get('tank_no')?.value) {
+          this.lastSearchCriteria.tank_no =  this.searchForm!.get('tank_no')?.value ;
+          cond_counter++;
+        }
+
+        
+
+        if (this.searchForm!.get('customer_code')?.value) {
+          // if(!where.storing_order_tank) where.storing_order_tank={};
+          this.lastSearchCriteria.customer_code =  this.searchForm!.get('customer_code')?.value.code ;
+          cond_counter++;
+        }
+
+        if (this.searchForm!.get('eir_no')?.value) {
+          this.lastSearchCriteria.eir_no = this.searchForm!.get('eir_no')?.value;
+          cond_counter++;
+        }
+
+        var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
+        if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
+          var start_dt = new Date(this.searchForm!.get('clean_dt_start')?.value);
+          var end_dt = new Date(this.searchForm!.get('clean_dt_end')?.value);
+          this.lastSearchCriteria.start_date= Utility.convertDate(start_dt);
+          this.lastSearchCriteria.end_date= Utility.convertDate(end_dt, true);
+          date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`;
+          cond_counter++;
+        }
+
+
+      
+
+        if (this.searchForm!.get('last_cargo')?.value) {
+          this.lastSearchCriteria.last_cargo = this.searchForm!.get('last_cargo')?.value.cargo;
+          cond_counter++;
+        }
+
+        if (this.searchForm!.get('un_no')?.value) {
+          this.lastSearchCriteria.un_no = this.searchForm!.get('un_no')?.value.cargo;
+          cond_counter++;
+        }
+
+        if (this.searchForm!.get('class_no')?.value) {
+        
+          this.lastSearchCriteria.class_no= this.searchForm!.get('class_no')?.value;
+          //where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
+          cond_counter++;
+        }
+
+        this.noCond = (cond_counter === 0);
+        this.lastSearchCriteria.report_type=this.GetReportType(report_type);
+        this.performSearchCleaningInventorySummary(report_type,date);
+    }
 
   }
 
