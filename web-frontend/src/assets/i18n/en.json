@@ -151,7 +151,8 @@
         "USER-EDIT": "Edit User",
         "BILLING-BRANCH": "Billing Branch",
         "BILLING-BRANCH-NEW": "New Billing Branch",
-        "BILLING-BRANCH-EDIT": "Edit Billing Branch"
+        "BILLING-BRANCH-EDIT": "Edit Billing Branch",
+        "UNIT-TYPE":"Unit Type"
       }
     },
     "MANAGEMENT": {
@@ -1051,7 +1052,10 @@
     "CLEANING-STEPS": "Cleaning Steps",
     "NO-CLEANING-STEPS": "No Cleaning Steps",
     "PROCESS": "Process",
-    "GATE-SURCHAGRGE-PENDING-REPORT":"Gate Surcharge Invice Pending Report"
+    "GATE-SURCHAGRGE-PENDING-REPORT":"Gate Surcharge Invice Pending Report",
+    "GATE-IN":"Gate In",
+    "GATE-OUT":"Gate Out",
+    "ISO-FORMAT":"ISO Format"
 
   },
   "CLEAN-PROCEDURES": {

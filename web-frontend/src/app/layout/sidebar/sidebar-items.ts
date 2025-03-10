@@ -181,8 +181,8 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },
       {
-        path: "admin/master/billing-branch",
-        title: "MENUITEMS.MASTER.LIST.BILLING-BRANCH",
+        path: "admin/master/unit-type",
+        title: "MENUITEMS.MASTER.LIST.UNIT-TYPE",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -190,7 +190,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: false
+        visible: true
       },
       {
         path: "admin/cleaning-steps",

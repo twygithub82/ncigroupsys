@@ -22,15 +22,15 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Utility } from 'app/utilities/utility';
 // import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 //import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 //import { Observable, Subscription } from 'rxjs';
@@ -41,19 +41,21 @@ import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 //import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
-import { PackageResidueItem } from 'app/data-sources/package-residue';
+import { PackageDepotItem } from 'app/data-sources/package-depot';
+import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
+import { TariffRepairDS, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-
 
 @Component({
-  selector: 'app-billing-branch',
+  selector: 'app-package-repair',
   standalone: true,
-  templateUrl: './billing-branch.component.html',
-  styleUrl: './billing-branch.component.scss',
+  templateUrl: './unit-type.component.html',
+  styleUrl: './unit-type.component.scss',
   imports: [
+    BreadcrumbComponent,
     MatTooltipModule,
     MatButtonModule,
     MatIconModule,
@@ -77,54 +79,74 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatProgressBarModule
   ]
 
 })
 
 
-export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
+export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    // 'select',
-    'desc',
-    'fName',
-    'lName',
-    'mobile',
-    // 'gender',
-    'bDate',
-
+    //'select',
+    'custCompanyName',
     'email',
-    // 'actions',
+    'fName',
+    'subgroup',
+    'gender',
+    'bDate',
+    'mobile',
+    'lastUpdate'
   ];
+
+  pageTitle = 'MENUITEMS.MASTER.LIST.UNIT-TYPE'
+  breadcrumsMiddleList = [
+    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
+    { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/unit-type' }
+  ]
+
+  minMaterialCost: number = -20;
+  maxMaterialCost: number = 20;
 
   customerCodeControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
-  descriptionControl = new UntypedFormControl();
+  profileNameControl = new UntypedFormControl();
+
+  lengthControl = new UntypedFormControl();
+  dimensionControl = new UntypedFormControl();
+
+  groupNameControl = new UntypedFormControl();
+  subGroupNameControl = new UntypedFormControl();
   handledItemControl = new UntypedFormControl();
 
-  storageCalCvList: CodeValuesItem[] = [];
-  handledItemCvList: CodeValuesItem[] = [];
-  CodeValuesDS?: CodeValuesDS;
+  lengthItems: TariffRepairLengthItem[] = [];
+  dimensionItems: string[] = [];
 
+  groupNameCvList: CodeValuesItem[] = [];
+  subGroupNameCvList: CodeValuesItem[] = [];
+  handledItemCvList: CodeValuesItem[] = [];
+  unitTypeCvList: CodeValuesItem[] = [];
+
+  storageCalCvList: CodeValuesItem[] = [];
+  CodeValuesDS: CodeValuesDS;
+  // packDepotDS : PackageDepotDS;
+  trfRepairDS: TariffRepairDS;
+  packRepairDS: PackageRepairDS;
   ccDS: CustomerCompanyDS;
-  // tariffResidueDS:TariffResidueDS;
-  // packResidueDS:PackageResidueDS;
+  //tariffDepotDS:TariffDepotDS;
   // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
 
-  packResidueItems: PackageResidueItem[] = [];
+  //packDepotItems:PackageDepotItem[]=[];
+  packRepairItems: PackageRepairItem[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
-  all_customer_companyList: CustomerCompanyItem[] = [];
-  all_branch_List: CustomerCompanyItem[] = [];
   cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { code: "ASC" };
+  lastOrderBy: any = { customer_company: { code: "ASC" } };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -132,7 +154,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   hasPreviousPage = false;
 
   searchField: string = "";
-  selection = new SelectionModel<PackageResidueItem>(true, []);
+  selection = new SelectionModel<PackageDepotItem>(true, []);
 
   id?: number;
   pcForm?: UntypedFormGroup;
@@ -142,7 +164,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
-    CUSTOMER: "COMMON-FORM.CUSTOMER",
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -207,6 +228,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
     LOLO_COST: "COMMON-FORM.LOLO-COST",
     STORAGE_COST: "COMMON-FORM.STORAGE-COST",
@@ -215,25 +237,35 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
     CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
     STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
+    COST: 'COMMON-FORM.COST',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    GROUP: "COMMON-FORM.GROUP",
+    SUB_GROUP: "COMMON-FORM.SUB-GROUP",
+    PART_NAME: "COMMON-FORM.PART-NAME",
+    MIN_COST: "COMMON-FORM.MIN-COST",
+    MAX_COST: "COMMON-FORM.MAX-COST",
+    LENGTH: "COMMON-FORM.LENGTH",
+    MIN_LENGTH: "COMMON-FORM.MIN-LENGTH",
+    MAX_LENGTH: "COMMON-FORM.MAX-LENGTH",
+    MIN_LABOUR: "COMMON-FORM.MIN-LABOUR",
+    MAX_LABOUR: "COMMON-FORM.MAX-LABOUR",
     HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
-    COST: "COMMON-FORM.COST",
-    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
-    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
-    CONTACT_PERSON: "COMMON-FORM.CONTACT-PERSON",
-    MOBILE_NO: "COMMON-FORM.MOBILE-NO",
-    COUNTRY: "COMMON-FORM.COUNTRY",
-    LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
-    FAX_NO: "COMMON-FORM.FAX-NO",
+    LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
+    MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
+    MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
+    DIMENSION: "COMMON-FORM.DIMENSION",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    BILLING_BRANCH: "COMMON-FORM.BILLING-BRANCH",
-    BRANCH_CODE: "COMMON-FORM.BRANCH-CODE",
-    SAME: "COMMON-FORM.SAME",
-    MAIN_CUSTOMER: "COMMON-FORM.MAIN-CUSTOMER"
+    PREINSPECT:'COMMON-FORM.PREINSPECTION',
+    LIFT_ON:'COMMON-FORM.LIFT-ON',
+    LIFT_OFF:'COMMON-FORM.LIFT-OFF',
+    GATE_IN:'COMMON-FORM.GATE-IN',
+    GATE_OUT:'COMMON-FORM.GATE-OUT',
+    ISO_FORMAT:'COMMON-FORM.ISO-FORMAT'
+    
   }
 
   constructor(
-    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
@@ -247,10 +279,11 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.tariffResidueDS = new TariffResidueDS(this.apollo);
-    // this.packResidueDS= new PackageResidueDS(this.apollo);
+    this.trfRepairDS = new TariffRepairDS(this.apollo);
+    this.packRepairDS = new PackageRepairDS(this.apollo);
+    //this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
-
+    // this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -262,41 +295,26 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
-    var state = history.state;
-    if (state.type == "billing-branch") {
-      let showResult = state.pagination.showResult;
-      if (showResult) {
-        this.searchCriteriaService = state.pagination.where;
-        this.pageIndex = state.pagination.pageIndex;
-        this.pageSize = state.pagination.pageSize;
-        this.hasPreviousPage = state.pagination.hasPreviousPage;
-        this.startCursor = state.pagination.startCursor;
-        this.endCursor = state.pagination.endCursor;
-        this.previous_endCursor = state.pagination.previous_endCursor;
-        this.paginator.pageSize = this.pageSize;
-        this.paginator.pageIndex = this.pageIndex;
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      }
-
-    }
-    else {
-      this.search();
-    }
+    this.search();
   }
 
   initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      branch_code: [''],
-      phone: [''],
-      fax_no: [''],
-      email: [''],
-      country: [''],
-      contact_person: [''],
-      mobile_no: [''],
-      description: this.descriptionControl,
+      group_name_cv: this.groupNameControl,
+      sub_group_name_cv: this.subGroupNameControl,
+      part_name: [''],
+      len: this.lengthControl,
+      dimension: this.dimensionControl,
+      min_len: [''],
+      max_len: [''],
+      min_labour: [''],
+      max_labour: [''],
+      min_cost: [''],
+      max_cost: [''],
       handled_item_cv: this.handledItemControl
+
     });
   }
 
@@ -307,7 +325,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   refresh() {
     this.loadData();
   }
-
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -328,6 +345,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     event.preventDefault(); // Prevents the form submission
   }
 
+
   adjustCost() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -335,10 +353,10 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    if (this.selection.isEmpty()) return;
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '720px',
-      height: 'auto',
+    //if(this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
+      width: '800px',
+
       data: {
         action: 'update',
         langText: this.langText,
@@ -355,52 +373,77 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
         //if(result.selectedValue>0)
         // {
         this.handleSaveSuccess(result);
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        if (this.packRepairItems.length > 1)
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         //}
       }
     });
   }
 
-  addBillingBranch(event: Event) {
-    event.stopPropagation(); // Stop the click event from propagating
-    // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/master/customer/billing-branch/new/'], {
-      state: {
-        id: '',
-        type: 'billing-branch',
-        pagination: {
-          where: this.lastSearchCriteria,
-          pageSize: this.pageSize,
-          pageIndex: this.pageIndex,
-          hasPreviousPage: this.hasPreviousPage,
-          startCursor: this.startCursor,
-          endCursor: this.endCursor,
-          previous_endCursor: this.previous_endCursor,
-          showResult: this.ccDS.totalCount > 0
-        }
+  editCallSelection() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    if (this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '800px',
+      data: {
+        action: 'update',
+        langText: this.langText,
+        selectedItems: this.selection.selected
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      }
+
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+        //if(result.selectedValue>0)
+        // {
+        this.handleSaveSuccess(result);
+        if (this.packRepairItems.length > 1)
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        //}
       }
     });
   }
 
+  editCall(row: PackageRepairItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    var rows: PackageRepairItem[] = [];
+    rows.push(row);
+    const dialogRef = this.dialog.open(FormDialogComponent, {
 
+      width: '800px',
 
-  editBillingBranch(row: CustomerCompanyItem) {
-    this.router.navigate([`/admin/master/customer/billing-branch/new/${row.guid} `], {
-      state: {
-        id: row.guid,
-        type: 'billing-branch',
-        selectedRow: row,
-        pagination: {
-          where: this.lastSearchCriteria,
-          pageSize: this.pageSize,
-          pageIndex: this.pageIndex,
-          hasPreviousPage: this.hasPreviousPage,
-          startCursor: this.startCursor,
-          endCursor: this.endCursor,
-          previous_endCursor: this.previous_endCursor,
+      data: {
+        action: 'update',
+        langText: this.langText,
+        selectedItems: rows
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      }
 
-          showResult: this.ccDS.totalCount > 0
-        }
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+        this.handleSaveSuccess(result);
+        //this.search();
+        if (this.packRepairItems.length > 1)
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
     });
   }
@@ -408,14 +451,13 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   deleteItem(row: any) {
 
   }
-
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
-  
+  /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packResidueItems.length;
+    const numRows = this.packRepairItems.length;
     return numSelected === numRows;
   }
 
@@ -427,65 +469,165 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   masterToggle() {
     this.isAllSelected()
       ? this.selection.clear()
-      : this.packResidueItems.forEach((row) =>
+      : this.packRepairItems.forEach((row) =>
         this.selection.select(row)
       );
   }
 
   search() {
+    if (!this.customerCodeControl.value?.length) return;
     const where: any = {};
-
-    where.and = [
-      { main_customer_guid: { neq: null } },
-      { main_customer_guid: { neq: "" } },
-      { type_cv: { in: ["BRANCH"] } }
-    ];
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
         const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         var guids = customerCodes.map(cc => cc.guid);
-        where.guid = { in: guids };
+        where.customer_company_guid = { in: guids };
       }
     }
 
-    if (this.pcForm!.value["branch_code"]) {
-      where.and = [{ code: { contains: this.pcForm!.value["branch_code"] } }, { type_cv: { eq: 'BRANCH' } }];
+    if (this.groupNameControl.value) {
+      if (this.groupNameControl.value.length > 0) {
+        const cdValues: CodeValuesItem[] = this.groupNameControl.value;
+        var codes = cdValues.map(cc => cc);
+        where.tariff_repair = where.tariff_repair || {};
+        where.tariff_repair.group_name_cv = { in: codes };
+      }
     }
 
-    // if (this.pcForm!.value["fax_no"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
-    // }
-
-    // if (this.pcForm!.value["phone"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
-    // }
-
-
-    // if (this.pcForm!.value["email"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
-    // }
-
-    if (this.pcForm!.value["country"]) {
-      where.country = { contains: this.pcForm!.value["country"] };
+    if (this.subGroupNameControl.value) {
+      if (this.subGroupNameControl.value.length > 0) {
+        const cdValues: CodeValuesItem[] = this.subGroupNameControl.value;
+        var codes = cdValues.map(cc => cc);
+        where.tariff_repair = where.tariff_repair || {};
+        where.tariff_repair.subgroup_name_cv = { in: codes };
+      }
     }
 
-    if (this.pcForm!.value["contact_person"]) {
-      where.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
+    if (this.pcForm!.value["part_name"]) {
+      const description: Text = this.pcForm!.value["part_name"];
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.part_name = { contains: description }
     }
 
+    // Handling material_cost
+    if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
+      const minCost: number = Number(this.pcForm!.value["min_cost"]);
+      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+      where.material_cost = { gte: minCost, lte: maxCost };
+    } else if (this.pcForm!.value["min_cost"]) {
+      const minCost: number = Number(this.pcForm!.value["min_cost"]);
+      where.material_cost = { gte: minCost };
+    } else if (this.pcForm!.value["max_cost"]) {
+      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+      where.material_cost = { lte: maxCost };
+    }
+
+    const unifiedConditions: any[] = [];
+
+    // Handling Dimension
+    if (this.pcForm!.value["dimension"]) {
+      let dimensionConditions: any = {};
+      let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
+
+      // Initialize tariff_repair if it doesn't exist
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.and = where.tariff_repair.and || [];
+
+      dimensionConditions.or = [];
+      selectedTarifRepairDimensionItems.forEach((item) => {
+        const condition: any = {};
+
+        // Only add condition if item is defined (non-undefined)
+        if (item !== undefined && item !== null && item !== '') {
+          condition.dimension = { eq: item };
+        }
+
+        if (Object.keys(condition).length > 0) {
+          dimensionConditions.or.push(condition);
+        }
+      });
+
+      // Push condition to 'and' if it has valid properties
+      if (dimensionConditions.or.length > 0) {
+        where.tariff_repair.and.push(dimensionConditions);
+      }
+    }
+
+    // Handling Length
+    if (this.pcForm!.value["len"]) {
+      let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
+
+      // Initialize tariff_repair if it doesn't exist
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.and = where.tariff_repair.and || [];
+
+      const lengthConditions: any = {};
+      lengthConditions.or = [];
+      selectedTarifRepairLengthItems.forEach((item) => {
+        const condition: any = {};
+
+        // Add condition for length if defined
+        if (item.length !== undefined) {
+          condition.length = { eq: item.length };
+        }
+
+        // Add condition for length_unit_cv if it exists
+        if (item.length_unit_cv) {
+          condition.length_unit_cv = { eq: item.length_unit_cv };
+        }
+
+        // Push condition to 'or' if it has valid properties
+        if (Object.keys(condition).length > 0) {
+          lengthConditions.or.push(condition);
+        }
+      });
+
+      // Push length conditions to 'and' if it has valid properties
+      if (lengthConditions.or.length > 0) {
+        where.tariff_repair.and.push(lengthConditions);
+      }
+    }
+    // Handling length
+    if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
+      const minLen: number = Number(this.pcForm!.value["min_len"]);
+      const maxLen: number = Number(this.pcForm!.value["max_len"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.length = { gte: minLen, lte: maxLen };
+    } else if (this.pcForm!.value["min_len"]) {
+      const minLen: number = Number(this.pcForm!.value["min_len"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.length = { gte: minLen };
+    } else if (this.pcForm!.value["max_len"]) {
+      const maxLen: number = Number(this.pcForm!.value["max_len"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.length = { lte: maxLen };
+    }
+
+    // Handling labour_hour
+    if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
+      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.labour_hour = { gte: minLabour, lte: maxLabour };
+    } else if (this.pcForm!.value["min_labour"]) {
+      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.labour_hour = { gte: minLabour };
+    } else if (this.pcForm!.value["max_labour"]) {
+      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.labour_hour = { lte: maxLabour };
+    }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.customer_companyList = data;
+    this.subs.sink = this.packRepairDS.SearchPackageRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+      this.packRepairItems = data;
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
-      this.endCursor = this.ccDS.pageInfo?.endCursor;
-      this.startCursor = this.ccDS.pageInfo?.startCursor;
-      this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
+      this.endCursor = this.packRepairDS.pageInfo?.endCursor;
+      this.startCursor = this.packRepairDS.pageInfo?.startCursor;
+      this.hasNextPage = this.packRepairDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.packRepairDS.pageInfo?.hasPreviousPage ?? false;
       this.pageIndex = 0;
       this.paginator.pageIndex = 0;
       this.selection.clear();
@@ -493,7 +635,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
         this.previous_endCursor = undefined;
     });
   }
-
   selectStorageCalculateCV_Description(valCode?: string): string {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
     if (this.storageCalCvList.length > 0) {
@@ -512,7 +653,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
       });
     }
   }
@@ -555,24 +695,19 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    if (this.lastSearchCriteria) {
-      this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    }
-    else {
-      this.search();
-    }
+    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
     //}
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
-    this.previous_endCursor = after;
-    this.subs.sink = this.ccDS.search(where, order, first, after, last, before).subscribe(data => {
-      this.customer_companyList = data;
-      this.endCursor = this.ccDS.pageInfo?.endCursor;
-      this.startCursor = this.ccDS.pageInfo?.startCursor;
-      this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
+    this.previous_endCursor = this.endCursor;
+    this.subs.sink = this.packRepairDS.SearchPackageRepair(where, order, first, after, last, before).subscribe(data => {
+      this.packRepairItems = data;
+      this.endCursor = this.packRepairDS.pageInfo?.endCursor;
+      this.startCursor = this.packRepairDS.pageInfo?.startCursor;
+      this.hasNextPage = this.packRepairDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.packRepairDS.pageInfo?.hasPreviousPage ?? false;
       this.pageIndex = pageIndex;
       this.paginator.pageIndex = this.pageIndex;
       this.selection.clear();
@@ -600,31 +735,75 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   }
 
   removeSelectedRows() {
-  }
 
+  }
   public loadData() {
-    var cond: any = {};
-   // cond.main_customer_guid = { neq: null };
-    cond.type_cv = { neq: "SURVEYOR" }
-    this.subs.sink = this.custCompDS.search(cond, { code: 'ASC' }, 100).subscribe(data => {
-      this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
-      this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
+
+    this.trfRepairDS.searchDistinctLength(undefined, undefined).subscribe(data => {
+      this.lengthItems = data;
     });
 
-    // this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});
+    this.trfRepairDS.searchDistinctDimension(undefined).subscribe(data => {
+      this.dimensionItems = data;
+    });
+
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+      // this.customer_companyList1 = data
+    });
+
+    // this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
 
     // const queries = [
-    //   { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
+    //   { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
 
     // ];
     // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
-    //   this.handledItemCvList=data;
+    // this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
+    //   this.storageCalCvList=data;
     // });
+    const queries = [
+      { alias: 'groupName', codeValType: 'GROUP_NAME' },
+      //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
+      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
+      { alias: 'unitType', codeValType: 'UNIT_TYPE' }
+    ];
+    this.CodeValuesDS?.getCodeValuesByType(queries);
+    this.CodeValuesDS?.connectAlias('groupName').subscribe(data => {
+      this.groupNameCvList = data;
 
+      const subqueries: any[] = [];
+      data.map(d => {
 
+        if (d.child_code) {
+          let q = { alias: d.child_code, codeValType: d.child_code };
+          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+          if (!hasMatch) {
+            subqueries.push(q);
 
+          }
+        }
+      });
+      if (subqueries.length > 0) {
+        this.CodeValuesDS?.getCodeValuesByType(subqueries)
+        subqueries.map(s => {
+          this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
+            this.subGroupNameCvList.push(...data);
+          });
+        });
+      }
+    });
+    this.CodeValuesDS?.connectAlias('subGroupName').subscribe(data => {
+      this.subGroupNameCvList = data;
+    });
+    this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
+
+      this.handledItemCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.CodeValuesDS.connectAlias('unitType').subscribe(data => {
+      this.unitTypeCvList = data;
+    });
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -660,13 +839,13 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   // context menu
   onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
-    // this.contextMenuPosition.x = event.clientX + 'px';
-    // this.contextMenuPosition.y = event.clientY + 'px';
-    // if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-    //   this.contextMenu.menuData = { item: item };
-    //   this.contextMenu.menu.focusFirstItem('mouse');
-    //   this.contextMenu.openMenu();
-    // }
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
+      this.contextMenu.menuData = { item: item };
+      this.contextMenu.menu.focusFirstItem('mouse');
+      this.contextMenu.openMenu();
+    }
   }
 
   onlyNumbersDashValidator(control: AbstractControl): { [key: string]: boolean } | null {
@@ -677,7 +856,28 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     return null;
   }
 
-  displayLastUpdated(r: PackageResidueItem) {
+  displayGroupNameCodeValue_Description(codeValue: String) {
+    return this.GetCodeValue_Description(codeValue, this.groupNameCvList);
+  }
+
+  displaySubGroupNameCodeValue_Description(codeValue: String) {
+    return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
+  }
+
+  getUnitTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.CodeValuesDS.getCodeDescription(codeVal, this.unitTypeCvList);
+  }
+
+  GetCodeValue_Description(codeValue: String, codeValueItems: CodeValuesItem[]) {
+    let retval: string = '';
+    const foundItem = codeValueItems.find(item => item.code_val === codeValue);
+    if (foundItem) {
+      retval = foundItem.description || '';
+    }
+    return retval;
+  }
+
+  displayLastUpdated(r: any) {
     var updatedt = r.update_dt;
     if (updatedt === null) {
       updatedt = r.create_dt;
@@ -716,26 +916,25 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.initPcForm();
+
     this.customerCodeControl.reset();
+    this.groupNameControl.reset();
+    this.subGroupNameControl.reset();
+    this.lengthControl.reset();
+    this.dimensionControl.reset();
+    this.handledItemControl.reset();
   }
 
-  getMainCustomerCode(row: CustomerCompanyItem): String | undefined {
-    const mainCustItem = this.getCustomerCompanyItem(row.main_customer_guid!);
-    if (mainCustItem) return mainCustItem.code;
-    return "-";
-  }
-
-  getCustomerCompanyItem(guid: string): CustomerCompanyItem | undefined {
-    if (this.customer_companyList?.length) {
-      const custCmp = this.all_customer_companyList?.filter((x: any) => x.guid === guid).map(item => {
-        return item;
-      });
-      if (custCmp?.length! > 0)
-        return custCmp[0];
-      else
-        return undefined;
-    }
-    return undefined;
-  }
 }
+// export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
+//   // Check if the list already contains the default value
+//   const containsDefault = list.some(item => item.code_val === val);
 
+//   // If the default value is not present, add it to the list
+//   if (!containsDefault) {
+//     // Create a new array with the default option added at the beginning
+//     return [{ code_val: val, description: desc }, ...list];
+//   }
+
+//   return list;
+// }
