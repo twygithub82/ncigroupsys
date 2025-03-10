@@ -10,6 +10,9 @@ using IDMS.Billing.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
 using CommonUtil.Core.Service;
 using IDMS.Models.Service;
+using Microsoft.EntityFrameworkCore.Internal;
+using IDMS.Models.Tariff;
+using IDMS.Models.Parameter;
 
 namespace IDMS.Billing.GqlTypes
 {
@@ -562,6 +565,88 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<CleanerPerformance>?> QueryCleanerPerformance(ApplicationBillingDBContext context, [Service] IConfiguration config,
+             [Service] IHttpContextAccessor httpContextAccessor, CleanerPerformanceRequest cleanerPerformanceRequest)
+        {
+
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                string completedStatus = "COMPLETED";
+
+                long sDate = cleanerPerformanceRequest.start_date;
+                long eDate = cleanerPerformanceRequest.end_date;
+
+                var query = (from r in context.cleaning
+                             join sot in context.storing_order_tank on r.sot_guid equals sot.guid
+                             join so in context.storing_order on sot.so_guid equals so.guid
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                             join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                             join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
+                             join cm in context.Set<cleaning_method>() on tc.cleaning_method_guid equals cm.guid
+                             join jo in context.job_order on r.job_order_guid equals jo.guid
+                             join t in context.team on jo.team_guid equals t.guid
+                             where r.status_cv == completedStatus && r.delete_dt == null &&
+                             r.complete_dt >= sDate && r.complete_dt <= eDate
+                             select new CleanerPerformance
+                             {
+                                 eir_no = ig.eir_no,
+                                 tank_no = sot.tank_no,
+                                 customer_code = cc.code,
+                                 eir_dt = ig.eir_dt,
+                                 cargo = tc.cargo,
+                                 complete_dt = r.complete_dt,
+                                 cost = r.cleaning_cost,
+                                 cleaner_name = r.complete_by,
+                                 method = cm.name,
+                                 bay = t.description
+                             }).AsQueryable();
+
+                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.customer_code))
+                {
+                    query = query.Where(tr => String.Equals(tr.customer_code, cleanerPerformanceRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.eir_no))
+                {
+                    query = query.Where(tr => tr.eir_no.Contains(cleanerPerformanceRequest.eir_no));
+                }
+                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.tank_no))
+                {
+                    query = query.Where(tr => tr.tank_no.Contains(cleanerPerformanceRequest.tank_no));
+                }
+                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.cargo_name))
+                {
+                    query = query.Where(tr => tr.cargo.Contains(cleanerPerformanceRequest.cargo_name));
+                }
+                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.method_name))
+                {
+                    query = query.Where(tr => tr.method.Contains(cleanerPerformanceRequest.method_name));
+                }
+                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.cleaning_bay))
+                {
+                    query = query.Where(tr => tr.bay.Contains(cleanerPerformanceRequest.cleaning_bay));
+                }
+                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.cleaner_name))
+                {
+                    query = query.Where(tr => tr.cleaner_name.Contains(cleanerPerformanceRequest.cleaner_name));
+                }
+
+                var resultList = await query.OrderBy(tr => tr.tank_no).ToListAsync();
+                return resultList;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
         public async Task<MonthlySalesList> QueryMonthlySalesReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
              [Service] IHttpContextAccessor httpContextAccessor, MonthlySalesRequest monthlySalesRequest)
         {
@@ -705,7 +790,7 @@ namespace IDMS.Billing.GqlTypes
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
 
-                foreach(var type in yearlySalesRequest.report_type)
+                foreach (var type in yearlySalesRequest.report_type)
                 {
                     var resultList = await RetriveSalesReportResult(context, type, startEpoch, endEpoch, yearlySalesRequest.customer_code);
 
@@ -1065,7 +1150,7 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        private async Task<List<TempReport>?> RetriveSalesReportResult(ApplicationBillingDBContext context, string reportType, long startEpoch, long endEpoch, string customerCode)
+        private async Task<List<TempReport>?> RetriveSalesReportResult(ApplicationBillingDBContext context, string processType, long startEpoch, long endEpoch, string customerCode)
         {
 
             try
@@ -1074,6 +1159,7 @@ namespace IDMS.Billing.GqlTypes
                 string qcCompletedStatus = "QC_COMPLETED";
 
                 var invalidStatus = new[] { "PENDING", "CANCELED", "NO_ACTION" };
+                var cancelStatus = new[] { "CANCELED", "NO_ACTION" };
 
                 var query = (from sot in context.storing_order_tank
                              join so in context.storing_order on sot.so_guid equals so.guid into soJoin
@@ -1088,22 +1174,21 @@ namespace IDMS.Billing.GqlTypes
                              }).AsQueryable();
 
 
-                if (reportType.EqualsIgnore(ProcessType.CLEANING))
+                if (processType.EqualsIgnore(ProcessType.CLEANING))
                 {
                     query = (from result in query
-                             join s in context.cleaning on result.sot_guid equals s.sot_guid
-                             where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null
+                                join s in context.cleaning on result.sot_guid equals s.sot_guid
+                                where cancelStatus.Contains(s.status_cv) && s.delete_dt == null
                                     && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
-                             select new TempReport
-                             {
-                                 sot_guid = result.sot_guid,
-                                 code = result.code,
-                                 cost = s.cleaning_cost ?? 0.0 + s.buffer_cost ?? 0.0,
-                                 date = (long)s.approve_dt
-                             }).AsQueryable();
-
+                                select new TempReport
+                                {
+                                    sot_guid = result.sot_guid,
+                                    code = result.code,
+                                    cost = s.cleaning_cost ?? 0.0 + s.buffer_cost ?? 0.0,
+                                    date = (long)s.approve_dt
+                                }).AsQueryable();
                 }
-                else if (reportType.EqualsIgnore(ProcessType.RESIDUE))
+                else if (processType.EqualsIgnore(ProcessType.RESIDUE))
                 {
                     query = (from result in query
                              join s in context.residue on result.sot_guid equals s.sot_guid
@@ -1117,9 +1202,8 @@ namespace IDMS.Billing.GqlTypes
                                  cost = (double)(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
                                  date = (long)s.approve_dt
                              }).AsQueryable();
-
                 }
-                else if (reportType.EqualsIgnore(ProcessType.STEAMING))
+                else if (processType.EqualsIgnore(ProcessType.STEAMING))
                 {
                     query = (from result in query
                              join s in context.steaming on result.sot_guid equals s.sot_guid
@@ -1134,7 +1218,7 @@ namespace IDMS.Billing.GqlTypes
                                  date = (long)s.approve_dt
                              }).AsQueryable();
                 }
-                else if (reportType.EqualsIgnore(ProcessType.REPAIR))
+                else if (processType.EqualsIgnore(ProcessType.REPAIR))
                 {
                     query = (from result in query
                              join s in context.repair on result.sot_guid equals s.sot_guid
@@ -1151,7 +1235,7 @@ namespace IDMS.Billing.GqlTypes
                                  date = (long)s.approve_dt
                              }).AsQueryable();
                 }
-                else if (reportType.EqualsIgnore(ProcessType.PREINSPECTION))
+                else if (processType.EqualsIgnore(ProcessType.PREINSPECTION))
                 {
                     query = (from result in query
                              join s in context.billing_sot on result.sot_guid equals s.sot_guid
@@ -1168,7 +1252,7 @@ namespace IDMS.Billing.GqlTypes
                              }).AsQueryable();
 
                 }
-                else if (reportType.EqualsIgnore(ProcessType.LOLO))
+                else if (processType.EqualsIgnore(ProcessType.LOLO))
                 {
                     query = (from result in query
                              join s in context.billing_sot on result.sot_guid equals s.sot_guid
@@ -1199,7 +1283,7 @@ namespace IDMS.Billing.GqlTypes
                 throw ex;
             }
         }
-    
+
         private List<DailyInventorySummary> MergeList(List<DailyInventorySummary> list1, List<DailyInventorySummary> list2, List<OpeningBalance?> openingBalances)
         {
             List<DailyInventorySummary> mergedList = new List<DailyInventorySummary>();

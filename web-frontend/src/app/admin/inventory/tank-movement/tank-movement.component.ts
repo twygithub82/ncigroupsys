@@ -309,12 +309,36 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
-    if (this.searchForm!.get('eir_status_cv')?.value) {
-      where.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
+    if (this.searchForm!.get('last_cargo')?.value) {
+      where.last_cargo_guid = { contains: this.searchForm!.get('last_cargo')?.value?.guid };
     }
 
-    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    if (this.searchForm!.get('tank_status_cv')?.value) {
+      where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
+    }
+
+    if (this.searchForm!.get('purpose')?.value) {
+      const purposes = this.searchForm!.get('purpose')?.value;
+      if (purposes.includes('STORAGE')) {
+        where.purpose_storage = { eq: true }
+      }
+      if (purposes.includes('CLEANING')) {
+        where.purpose_cleaning = { eq: true }
+      }
+      if (purposes.includes('STEAM')) {
+        where.purpose_steam = { eq: true }
+      }
+
+      const repairPurposes = [];
+      if (purposes.includes('REPAIR')) {
+        repairPurposes.push('REPAIR');
+      }
+      if (purposes.includes('OFFHIRE')) {
+        repairPurposes.push('OFFHIRE');
+      }
+      if (repairPurposes.length > 0) {
+        where.purpose_repair_cv = { in: repairPurposes };
+      }
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -323,6 +347,26 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
       }
       where.storing_order = soSearch;
+    }
+
+    if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_status_cv')?.value || this.searchForm!.get('eir_status_cv')?.value || this.searchForm!.get('yard_cv')?.value) {
+      const igSearch: any = {};
+      if (this.searchForm!.get('eir_no')?.value) {
+        igSearch.eir_no = { contains: this.searchForm!.get('eir_no')?.value };
+      }
+
+      // if (this.searchForm!.get('eir_status_cv')?.value) {
+      //   igSearch.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
+      // }
+
+      if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
+        igSearch.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value) };
+      }
+
+      if (this.searchForm!.get('yard_cv')?.value) {
+        igSearch.yard_cv = { contains: this.searchForm!.get('yard_cv')?.value };
+      }
+      where.in_gate = { some: igSearch };
     }
 
     // if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
