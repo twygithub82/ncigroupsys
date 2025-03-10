@@ -317,6 +317,85 @@ namespace IDMS.Inventory.GqlTypes
         }
 
 
+        public async Task<int> AddTank(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+             [Service] IHttpContextAccessor httpContextAccessor, tank newTank)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var tank = new tank();
+                tank = newTank;
+                tank.guid = Util.GenerateGUID();
+                tank.create_by = user;
+                tank.create_dt = currentDateTime;
+
+                await context.AddAsync(tank);
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateTank(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tank updateTank)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var tank = new tank() { guid = updateTank.guid };
+                context.Attach(tank);   
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.description = updateTank.description;
+                tank.unit_type = updateTank.unit_type;  
+                tank.tariff_depot_guid = updateTank.tariff_depot_guid;
+                tank.preinspect = updateTank.preinspect;
+                tank.lift_on = updateTank.lift_on;
+                tank.lift_off = updateTank.lift_off;
+                tank.gate_in = updateTank.gate_in;
+                tank.gate_out = updateTank.gate_out;
+                tank.iso_format = updateTank.iso_format;
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> DeleteTank(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string tankGuid)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var tank = new tank() { guid = tankGuid };
+                context.Attach(tank);
+       
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.delete_dt = currentDateTime;
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
 
         #region Private Local Functions
 
