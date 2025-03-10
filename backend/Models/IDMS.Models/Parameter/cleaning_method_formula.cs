@@ -18,5 +18,7 @@ namespace IDMS.Models.Parameter
         public cleaning_method? cleaning_method { get; set; }
         [UseFiltering]
         public cleaning_formula? cleaning_formula { get; set; }
+        [NotMapped]
+        public string? action { get; set; } 
     }
 }

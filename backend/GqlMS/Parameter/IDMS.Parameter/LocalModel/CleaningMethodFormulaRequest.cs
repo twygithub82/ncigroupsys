@@ -10,7 +10,7 @@ namespace IDMS.Parameter.GqlTypes.LocalModel
 {
     public class CleaningMethodFormulaRequest
     {
-        public string method_guid {  get; set; }
+        public cleaning_method cleaning_method { get; set; }
         public List<CleaningFormulaRequest> cleaning_formulas { get; set; }
     }
 
