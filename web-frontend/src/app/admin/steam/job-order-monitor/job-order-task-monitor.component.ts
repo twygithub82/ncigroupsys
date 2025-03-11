@@ -803,13 +803,8 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     return "";
   }
 
-  parse2Decimal(figure: number | string | undefined) {
-    if (typeof (figure) === 'string') {
-      return parseFloat(figure).toFixed(2);
-    } else if (typeof (figure) === 'number') {
-      return figure.toFixed(2);
-    }
-    return "";
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 
   filterDeleted(resultList: any[] | undefined): any {

@@ -478,7 +478,7 @@ export class Utility {
     return "";
   }
 
-  static formatCurrency(input: number | string | undefined, locale: string = 'en-US'): string {
+  static formatNumberDisplay(input: number | string | undefined, locale: string = 'en-US'): string {
     if (!input) {
       return '';
     }
@@ -490,7 +490,7 @@ export class Utility {
     }
   
     return new Intl.NumberFormat(locale, {
-      style: 'decimal', // Use 'decimal' instead of 'currency' to remove currency symbol
+      style: 'decimal', // Use 'decimal'
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(numericValue);

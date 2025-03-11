@@ -580,6 +580,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
+  
   displayUnitTypeFn(cc: CodeValuesItem): string {
     return cc?.description!;
   }
@@ -595,13 +596,10 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     return retval;
   }
 
-
   selectOwner($event: Event, row: RepairPartItem) {
     this.stopPropagation($event);
     row.owner = !(row.owner || false);
-    this.calculateCost();
   }
-
 
   checkCompulsoryEst(fields: string[]) {
     if (!this.newDesc.value) {
@@ -1372,17 +1370,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     Utility.selectText(event)
   }
 
-  parse2Decimal(figure: number | string) {
-    if (typeof (figure) === 'string') {
-      return parseFloat(figure).toFixed(2);
-    } else if (typeof (figure) === 'number') {
-      return figure.toFixed(2);
-    }
-    return "";
-  }
-
-  calculateCost() {
-
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 
   filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
