@@ -292,6 +292,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       material_cost_discount: [{ value: 0, disabled: true }],
       last_test: [''],
       next_test: [''],
+      // cost
       total_owner_hour: [0],
       total_lessee_hour: [0],
       total_hour: [0],
@@ -312,7 +313,28 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       discount_mat_cost: [0],
       net_owner_cost: [0],
       net_lessee_cost: [0],
-      net_cost: [0]
+      net_cost: [0],
+      total_owner_hour_est: [0],
+      total_lessee_hour_est: [0],
+      total_hour_est: [0],
+      total_owner_labour_cost_est: [0],
+      total_lessee_labour_cost_est: [0],
+      total_labour_cost_est: [0],
+      total_owner_mat_cost_est: [0],
+      total_lessee_mat_cost_est: [0],
+      total_mat_cost_est: [0],
+      total_owner_cost_est: [0],
+      total_lessee_cost_est: [0],
+      total_cost_est: [0],
+      discount_labour_owner_cost_est: [0],
+      discount_labour_lessee_cost_est: [0],
+      discount_labour_cost_est: [0],
+      discount_mat_owner_cost_est: [0],
+      discount_mat_lessee_cost_est: [0],
+      discount_mat_cost_est: [0],
+      net_owner_cost_est: [0],
+      net_lessee_cost_est: [0],
+      net_cost_est: [0],
     });
   }
 
@@ -476,7 +498,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.stopPropagation($event);
     row.owner = !(row.owner || false);
     this.calculateCost();
-    // this.getCalculateCost();
+    this.calculateCostEst();
   }
 
   editApproveDetails(event: Event, row: RepairPartItem, index: number) {
@@ -649,6 +671,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       re.status_cv = this.repairItem?.status_cv;
       re.owner_enable = this.isOwner;
       re.total_cost = Utility.convertNumber(this.repairForm?.get('net_cost')?.value, 2);
+      re.est_cost = Utility.convertNumber(this.repairForm?.get('net_cost_est')?.value, 2);
 
       this.repList?.forEach((rep: RepairPartItem) => {
         rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
@@ -750,7 +773,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         index: index
       }));
       this.calculateCost();
-      // this.getCalculateCost();
+      this.calculateCostEst();
     }
   }
 
@@ -903,13 +926,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     Utility.selectText(event)
   }
 
-  parse2Decimal(figure: number | string | undefined) {
-    if (typeof (figure) === 'string') {
-      return parseFloat(figure).toFixed(2);
-    } else if (typeof (figure) === 'number') {
-      return figure.toFixed(2);
-    }
-    return "";
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 
   calculateCost() {
@@ -925,7 +943,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     let discount_labour_cost = 0;
     let discount_mat_cost = 0;
     let net_cost = 0;
-
+    
     const totalOwner = this.repairDS.getTotal(ownerList);
     const total_owner_hour = totalOwner.hour;
     const total_owner_labour_cost = this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
@@ -987,6 +1005,79 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.checkApprovePart();
   }
 
+  calculateCostEst() {
+    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
+    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
+    const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
+    const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
+
+    let total_hour = 0;
+    let total_labour_cost = 0;
+    let total_mat_cost = 0;
+    let total_cost = 0;
+    let discount_labour_cost = 0;
+    let discount_mat_cost = 0;
+    let net_cost = 0;
+
+    const totalOwner = this.repairDS.getTotalEst(ownerList);
+    const total_owner_hour = totalOwner.hour;
+    const total_owner_labour_cost = this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
+    const total_owner_mat_cost = totalOwner.total_mat_cost;
+    const total_owner_cost = this.repairDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
+    const discount_labour_owner_cost = this.repairDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
+    const discount_mat_owner_cost = this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost);
+    const net_owner_cost = this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
+
+    this.repairForm?.get('total_owner_hour_est')?.setValue(this.parse2Decimal(total_owner_hour.toFixed(2)));
+    this.repairForm?.get('total_owner_labour_cost_est')?.setValue(this.parse2Decimal(total_owner_labour_cost.toFixed(2)));
+    this.repairForm?.get('total_owner_mat_cost_est')?.setValue(this.parse2Decimal(total_owner_mat_cost.toFixed(2)));
+    this.repairForm?.get('total_owner_cost_est')?.setValue(this.parse2Decimal(total_owner_cost.toFixed(2)));
+    this.repairForm?.get('discount_labour_owner_cost_est')?.setValue(this.parse2Decimal(discount_labour_owner_cost.toFixed(2)));
+    this.repairForm?.get('discount_mat_owner_cost_est')?.setValue(this.parse2Decimal(discount_mat_owner_cost.toFixed(2)));
+    this.repairForm?.get('net_owner_cost_est')?.setValue(this.parse2Decimal(net_owner_cost.toFixed(2)));
+
+    total_hour += total_owner_hour;
+    total_labour_cost += total_owner_labour_cost;
+    total_mat_cost += total_owner_mat_cost;
+    total_cost += total_owner_cost;
+    discount_labour_cost += discount_labour_owner_cost;
+    discount_mat_cost += discount_mat_owner_cost;
+    net_cost += net_owner_cost;
+
+    const totalLessee = this.repairDS.getTotal(lesseeList);
+    const total_lessee_hour = totalLessee.hour;
+    const total_lessee_labour_cost = this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
+    const total_lessee_mat_cost = totalLessee.total_mat_cost;
+    const total_lessee_cost = this.repairDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
+    const discount_labour_lessee_cost = this.repairDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
+    const discount_mat_lessee_cost = this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
+    const net_lessee_cost = this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
+
+    this.repairForm?.get('total_lessee_hour_est')?.setValue(this.parse2Decimal(total_lessee_hour.toFixed(2)));
+    this.repairForm?.get('total_lessee_labour_cost_est')?.setValue(this.parse2Decimal(total_lessee_labour_cost.toFixed(2)));
+    this.repairForm?.get('total_lessee_mat_cost_est')?.setValue(this.parse2Decimal(total_lessee_mat_cost.toFixed(2)));
+    this.repairForm?.get('total_lessee_cost_est')?.setValue(this.parse2Decimal(total_lessee_cost.toFixed(2)));
+    this.repairForm?.get('discount_labour_lessee_cost_est')?.setValue(this.parse2Decimal(discount_labour_lessee_cost.toFixed(2)));
+    this.repairForm?.get('discount_mat_lessee_cost_est')?.setValue(this.parse2Decimal(discount_mat_lessee_cost.toFixed(2)));
+    this.repairForm?.get('net_lessee_cost_est')?.setValue(this.parse2Decimal(net_lessee_cost.toFixed(2)));
+
+    total_hour += total_lessee_hour;
+    total_labour_cost += total_lessee_labour_cost;
+    total_mat_cost += total_lessee_mat_cost;
+    total_cost += total_lessee_cost;
+    discount_labour_cost += discount_labour_lessee_cost;
+    discount_mat_cost += discount_mat_lessee_cost;
+    net_cost += net_lessee_cost;
+
+    this.repairForm?.get('total_hour_est')?.setValue(this.parse2Decimal(total_hour.toFixed(2)));
+    this.repairForm?.get('total_labour_cost_est')?.setValue(this.parse2Decimal(total_labour_cost.toFixed(2)));
+    this.repairForm?.get('total_mat_cost_est')?.setValue(this.parse2Decimal(total_mat_cost.toFixed(2)));
+    this.repairForm?.get('total_cost_est')?.setValue(this.parse2Decimal(total_cost.toFixed(2)));
+    this.repairForm?.get('discount_labour_cost_est')?.setValue(this.parse2Decimal(discount_labour_cost.toFixed(2)));
+    this.repairForm?.get('discount_mat_cost_est')?.setValue(this.parse2Decimal(discount_mat_cost.toFixed(2)));
+    this.repairForm?.get('net_cost_est')?.setValue(this.parse2Decimal(net_cost.toFixed(2)));
+  }
+
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
   }
@@ -1012,7 +1103,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     if (!this.repairDS.canAmend(this.repairItem)) return;
     rep.approve_part = rep.approve_part !== null ? !rep.approve_part : false;
     this.updateData(this.repList);
-    // this.getCalculateCost();
   }
 
   checkApprovePart() {
@@ -1024,14 +1114,14 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   displayApproveQty(rep: RepairPartItem) {
-    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty || rep.quantity) : 0;
+    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty !== null && rep.approve_qty !== undefined ? rep.approve_qty : rep.quantity) : 0;
   }
 
   displayApproveHour(rep: RepairPartItem) {
-    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour || rep.hour) : 0;
+    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour !== null && rep.approve_hour !== undefined ? rep.approve_hour : rep.hour) : 0;
   }
 
   displayApproveCost(rep: RepairPartItem) {
-    return Utility.convertNumber((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost || rep.material_cost) : 0, 2);
+    return Utility.convertNumber((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost !== null && rep.approve_cost !== undefined ? rep.approve_cost : rep.material_cost) : 0, 2);
   }
 }

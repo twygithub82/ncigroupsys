@@ -296,6 +296,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       material_cost_discount: [0],
       last_test: [''],
       next_test: [''],
+      // cost
       total_owner_hour: [0],
       total_lessee_hour: [0],
       total_hour: [0],
@@ -317,6 +318,27 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       net_owner_cost: [0],
       net_lessee_cost: [0],
       net_cost: [0],
+      total_owner_hour_est: [0],
+      total_lessee_hour_est: [0],
+      total_hour_est: [0],
+      total_owner_labour_cost_est: [0],
+      total_lessee_labour_cost_est: [0],
+      total_labour_cost_est: [0],
+      total_owner_mat_cost_est: [0],
+      total_lessee_mat_cost_est: [0],
+      total_mat_cost_est: [0],
+      total_owner_cost_est: [0],
+      total_lessee_cost_est: [0],
+      total_cost_est: [0],
+      discount_labour_owner_cost_est: [0],
+      discount_labour_lessee_cost_est: [0],
+      discount_labour_cost_est: [0],
+      discount_mat_owner_cost_est: [0],
+      discount_mat_lessee_cost_est: [0],
+      discount_mat_cost_est: [0],
+      net_owner_cost_est: [0],
+      net_lessee_cost_est: [0],
+      net_cost_est: [0],
       repList: ['']
     });
   }
@@ -424,6 +446,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       debounceTime(300),
       tap(value => {
         this.calculateCost();
+        this.calculateCostEst();
       })
     ).subscribe();
 
@@ -432,6 +455,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       debounceTime(300),
       tap(value => {
         this.calculateCost();
+        this.calculateCostEst();
       })
     ).subscribe();
   }
@@ -704,6 +728,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.stopPropagation($event);
     row.owner = !(row.owner || false);
     this.calculateCost();
+    this.calculateCostEst();
   }
 
   addEstDetails(event: Event, row?: RepairPartItem) {
@@ -982,6 +1007,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         re.labour_cost = this.getLabourCost();
         re.total_hour = Utility.convertNumber(this.repairForm.get('total_hour')?.value, 2);
         re.total_cost = Utility.convertNumber(this.repairForm.get('net_cost')?.value, 2);
+        re.est_cost = Utility.convertNumber(this.repairForm.get('net_cost_est')?.value, 2);
         re.remarks = this.repairForm.get('remarks')?.value;
         re.owner_enable = this.isOwner;
         re.job_no = re.job_no ?? this.sotItem?.job_no;
@@ -1034,9 +1060,11 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       }));
 
       this.calculateCost();
+      this.calculateCostEst();
     } else {
       this.repList = [];
       this.calculateCost();
+      this.calculateCostEst();
     }
   }
 
@@ -1232,13 +1260,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     Utility.selectText(event)
   }
 
-  parse2Decimal(figure: number | string) {
-    if (typeof (figure) === 'string') {
-      return parseFloat(figure).toFixed(2);
-    } else if (typeof (figure) === 'number') {
-      return figure.toFixed(2);
-    }
-    return "";
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 
   calculateCost() {
@@ -1264,13 +1287,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     const discount_mat_owner_cost = this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost);
     const net_owner_cost = this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
 
-    this.repairForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-    this.repairForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-    this.repairForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-    this.repairForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-    this.repairForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-    this.repairForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-    this.repairForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
+    this.repairForm?.get('total_owner_hour')?.setValue(this.parse2Decimal(total_owner_hour.toFixed(2)));
+    this.repairForm?.get('total_owner_labour_cost')?.setValue(this.parse2Decimal(total_owner_labour_cost.toFixed(2)));
+    this.repairForm?.get('total_owner_mat_cost')?.setValue(this.parse2Decimal(total_owner_mat_cost.toFixed(2)));
+    this.repairForm?.get('total_owner_cost')?.setValue(this.parse2Decimal(total_owner_cost.toFixed(2)));
+    this.repairForm?.get('discount_labour_owner_cost')?.setValue(this.parse2Decimal(discount_labour_owner_cost.toFixed(2)));
+    this.repairForm?.get('discount_mat_owner_cost')?.setValue(this.parse2Decimal(discount_mat_owner_cost.toFixed(2)));
+    this.repairForm?.get('net_owner_cost')?.setValue(this.parse2Decimal(net_owner_cost.toFixed(2)));
 
     total_hour += total_owner_hour;
     total_labour_cost += total_owner_labour_cost;
@@ -1289,13 +1312,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     const discount_mat_lessee_cost = this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
     const net_lessee_cost = this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
 
-    this.repairForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-    this.repairForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-    this.repairForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-    this.repairForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-    this.repairForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-    this.repairForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-    this.repairForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
+    this.repairForm?.get('total_lessee_hour')?.setValue(this.parse2Decimal(total_lessee_hour.toFixed(2)));
+    this.repairForm?.get('total_lessee_labour_cost')?.setValue(this.parse2Decimal(total_lessee_labour_cost.toFixed(2)));
+    this.repairForm?.get('total_lessee_mat_cost')?.setValue(this.parse2Decimal(total_lessee_mat_cost.toFixed(2)));
+    this.repairForm?.get('total_lessee_cost')?.setValue(this.parse2Decimal(total_lessee_cost.toFixed(2)));
+    this.repairForm?.get('discount_labour_lessee_cost')?.setValue(this.parse2Decimal(discount_labour_lessee_cost.toFixed(2)));
+    this.repairForm?.get('discount_mat_lessee_cost')?.setValue(this.parse2Decimal(discount_mat_lessee_cost.toFixed(2)));
+    this.repairForm?.get('net_lessee_cost')?.setValue(this.parse2Decimal(net_lessee_cost.toFixed(2)));
 
     total_hour += total_lessee_hour;
     total_labour_cost += total_lessee_labour_cost;
@@ -1305,13 +1328,86 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     discount_mat_cost += discount_mat_lessee_cost;
     net_cost += net_lessee_cost;
 
-    this.repairForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-    this.repairForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-    this.repairForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-    this.repairForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-    this.repairForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-    this.repairForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-    this.repairForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
+    this.repairForm?.get('total_hour')?.setValue(this.parse2Decimal(total_hour.toFixed(2)));
+    this.repairForm?.get('total_labour_cost')?.setValue(this.parse2Decimal(total_labour_cost.toFixed(2)));
+    this.repairForm?.get('total_mat_cost')?.setValue(this.parse2Decimal(total_mat_cost.toFixed(2)));
+    this.repairForm?.get('total_cost')?.setValue(this.parse2Decimal(total_cost.toFixed(2)));
+    this.repairForm?.get('discount_labour_cost')?.setValue(this.parse2Decimal(discount_labour_cost.toFixed(2)));
+    this.repairForm?.get('discount_mat_cost')?.setValue(this.parse2Decimal(discount_mat_cost.toFixed(2)));
+    this.repairForm?.get('net_cost')?.setValue(this.parse2Decimal(net_cost.toFixed(2)));
+  }
+
+  calculateCostEst() {
+    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
+    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
+    const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
+    const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
+
+    let total_hour = 0;
+    let total_labour_cost = 0;
+    let total_mat_cost = 0;
+    let total_cost = 0;
+    let discount_labour_cost = 0;
+    let discount_mat_cost = 0;
+    let net_cost = 0;
+
+    const totalOwner = this.repairDS.getTotalEst(ownerList);
+    const total_owner_hour = totalOwner.hour;
+    const total_owner_labour_cost = this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
+    const total_owner_mat_cost = totalOwner.total_mat_cost;
+    const total_owner_cost = this.repairDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
+    const discount_labour_owner_cost = this.repairDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
+    const discount_mat_owner_cost = this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost);
+    const net_owner_cost = this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
+
+    this.repairForm?.get('total_owner_hour_est')?.setValue(this.parse2Decimal(total_owner_hour.toFixed(2)));
+    this.repairForm?.get('total_owner_labour_cost_est')?.setValue(this.parse2Decimal(total_owner_labour_cost.toFixed(2)));
+    this.repairForm?.get('total_owner_mat_cost_est')?.setValue(this.parse2Decimal(total_owner_mat_cost.toFixed(2)));
+    this.repairForm?.get('total_owner_cost_est')?.setValue(this.parse2Decimal(total_owner_cost.toFixed(2)));
+    this.repairForm?.get('discount_labour_owner_cost_est')?.setValue(this.parse2Decimal(discount_labour_owner_cost.toFixed(2)));
+    this.repairForm?.get('discount_mat_owner_cost_est')?.setValue(this.parse2Decimal(discount_mat_owner_cost.toFixed(2)));
+    this.repairForm?.get('net_owner_cost_est')?.setValue(this.parse2Decimal(net_owner_cost.toFixed(2)));
+
+    total_hour += total_owner_hour;
+    total_labour_cost += total_owner_labour_cost;
+    total_mat_cost += total_owner_mat_cost;
+    total_cost += total_owner_cost;
+    discount_labour_cost += discount_labour_owner_cost;
+    discount_mat_cost += discount_mat_owner_cost;
+    net_cost += net_owner_cost;
+
+    const totalLessee = this.repairDS.getTotalEst(lesseeList);
+    const total_lessee_hour = totalLessee.hour;
+    const total_lessee_labour_cost = this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
+    const total_lessee_mat_cost = totalLessee.total_mat_cost;
+    const total_lessee_cost = this.repairDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
+    const discount_labour_lessee_cost = this.repairDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
+    const discount_mat_lessee_cost = this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
+    const net_lessee_cost = this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
+
+    this.repairForm?.get('total_lessee_hour_est')?.setValue(this.parse2Decimal(total_lessee_hour.toFixed(2)));
+    this.repairForm?.get('total_lessee_labour_cost_est')?.setValue(this.parse2Decimal(total_lessee_labour_cost.toFixed(2)));
+    this.repairForm?.get('total_lessee_mat_cost_est')?.setValue(this.parse2Decimal(total_lessee_mat_cost.toFixed(2)));
+    this.repairForm?.get('total_lessee_cost_est')?.setValue(this.parse2Decimal(total_lessee_cost.toFixed(2)));
+    this.repairForm?.get('discount_labour_lessee_cost_est')?.setValue(this.parse2Decimal(discount_labour_lessee_cost.toFixed(2)));
+    this.repairForm?.get('discount_mat_lessee_cost_est')?.setValue(this.parse2Decimal(discount_mat_lessee_cost.toFixed(2)));
+    this.repairForm?.get('net_lessee_cost_est')?.setValue(this.parse2Decimal(net_lessee_cost.toFixed(2)));
+
+    total_hour += total_lessee_hour;
+    total_labour_cost += total_lessee_labour_cost;
+    total_mat_cost += total_lessee_mat_cost;
+    total_cost += total_lessee_cost;
+    discount_labour_cost += discount_labour_lessee_cost;
+    discount_mat_cost += discount_mat_lessee_cost;
+    net_cost += net_lessee_cost;
+
+    this.repairForm?.get('total_hour_est')?.setValue(this.parse2Decimal(total_hour.toFixed(2)));
+    this.repairForm?.get('total_labour_cost_est')?.setValue(this.parse2Decimal(total_labour_cost.toFixed(2)));
+    this.repairForm?.get('total_mat_cost_est')?.setValue(this.parse2Decimal(total_mat_cost.toFixed(2)));
+    this.repairForm?.get('total_cost_est')?.setValue(this.parse2Decimal(total_cost.toFixed(2)));
+    this.repairForm?.get('discount_labour_cost_est')?.setValue(this.parse2Decimal(discount_labour_cost.toFixed(2)));
+    this.repairForm?.get('discount_mat_cost_est')?.setValue(this.parse2Decimal(discount_mat_cost.toFixed(2)));
+    this.repairForm?.get('net_cost_est')?.setValue(this.parse2Decimal(net_cost.toFixed(2)));
   }
 
   filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
@@ -1336,6 +1432,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   getLabourCost(): number | undefined {
     return this.repairItem?.labour_cost || this.packageLabourItem?.cost;
+  }
+
+  getDisplayLabourCost(): string {
+    return this.parse2Decimal(this.getLabourCost())
   }
 
   hasMenuItems(row: any): boolean {

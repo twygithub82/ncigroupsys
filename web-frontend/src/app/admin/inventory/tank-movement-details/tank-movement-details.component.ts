@@ -945,13 +945,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return Utility.convertEpochToDateStr(input);
   }
 
-  parse2Decimal(figure: number | string) {
-    if (typeof (figure) === 'string') {
-      return parseFloat(figure).toFixed(2);
-    } else if (typeof (figure) === 'number') {
-      return figure.toFixed(2);
-    }
-    return "";
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 
   convertDisplayDate(input: number | Date | undefined): string | undefined {

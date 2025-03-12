@@ -351,7 +351,7 @@ export class Utility {
     // Handle string to number
     if (typeof input === 'string') {
       // Check if the string is a valid number
-      const num = Number(input);
+      const num = Number(input.replace(/,/g, ''));
       if (!isNaN(num)) {
         return parseFloat(num.toFixed(decimals)); // Convert to number and round
       }
@@ -469,7 +469,32 @@ export class Utility {
     return color;
   }
 
+  static parse2Decimal(figure: number | string | undefined) {
+    if (typeof (figure) === 'string') {
+      return parseFloat(figure).toFixed(2);
+    } else if (typeof (figure) === 'number') {
+      return figure.toFixed(2);
+    }
+    return "";
+  }
+
+  static formatNumberDisplay(input: number | string | undefined, locale: string = 'en-US'): string {
+    if (!input) {
+      return '';
+    }
   
+    const numericValue = typeof input === 'string' ? parseFloat(input.replace(/,/g, '')) : input;
+  
+    if (isNaN(numericValue)) {
+      return '';
+    }
+  
+    return new Intl.NumberFormat(locale, {
+      style: 'decimal', // Use 'decimal'
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(numericValue);
+  }
 }
 
 export const TANK_STATUS_IN_YARD = [
