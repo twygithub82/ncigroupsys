@@ -351,7 +351,7 @@ export class Utility {
     // Handle string to number
     if (typeof input === 'string') {
       // Check if the string is a valid number
-      const num = Number(input);
+      const num = Number(input.replace(/,/g, ''));
       if (!isNaN(num)) {
         return parseFloat(num.toFixed(decimals)); // Convert to number and round
       }

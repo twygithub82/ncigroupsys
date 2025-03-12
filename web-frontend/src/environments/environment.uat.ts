@@ -26,4 +26,12 @@ export const customerInfo = {
   eirDisclaimerVer: 'VER-2412-210206'
 };
 
+export const reportPreviewWindowDimension={
+  portrait_maxWidth:'1000px',
+  portrait_width_rate:'75wv',
+  landscape_maxWidth:'1200px',
+  landscape_width_rate:'85wv'
+};
+
+
 export const refreshTokenWithin: number = 1200000;

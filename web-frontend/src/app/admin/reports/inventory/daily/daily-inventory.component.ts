@@ -45,6 +45,7 @@ import { DailyDetailSummaryPdfComponent } from 'app/document-template/pdf/invent
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { reportPreviewWindowDimension } from 'environments/environment';
 
 @Component({
   selector: 'app-daily-inventory',
@@ -782,8 +783,9 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     }
 
     const dialogRef = this.dialog.open(DailyDetailInventoryPdfComponent, {
-      width: '150vw',
-      maxHeight: '90vh',
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_inventory: repCustomerInv,
         date: date,
@@ -811,8 +813,9 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     }
 
     const dialogRef = this.dialog.open(DailyDetailSummaryPdfComponent, {
-      width: '70vw',
-      maxHeight: '80vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_daily_inventory_summary: repDailyDetailSummary,
         type: invType,
@@ -842,8 +845,9 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
      }
  
      const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
-       width: '85vw',
-       maxHeight: '80vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
        data: {
         report_inventory: repDailInventory,
          date: date,
@@ -872,8 +876,9 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
      }
  
      const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
-       width: '85vw',
-       maxHeight: '80vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
        data: {
         report_inventory: repCustomerInventory,
          date: date,

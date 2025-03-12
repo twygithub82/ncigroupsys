@@ -456,7 +456,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         x.action = 'cancel';
       }
 
-      finalDamages.push(x);
+      if (x.guid || !x.guid && x.action !== 'cancel') {
+        finalDamages.push(x);
+      }
     });
 
     damages.forEach(dmg => {

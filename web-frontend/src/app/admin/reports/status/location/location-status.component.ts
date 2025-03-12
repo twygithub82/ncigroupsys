@@ -43,6 +43,7 @@ import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -753,8 +754,9 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     }
 
     const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
-      width: '85vw',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_customer_tank_activity: repStatus,
       },
@@ -780,9 +782,9 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     }
 
     const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
-      width: '85vw',
-      maxWidth:'600px',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_status: repStatus,
         yards: yardsCv

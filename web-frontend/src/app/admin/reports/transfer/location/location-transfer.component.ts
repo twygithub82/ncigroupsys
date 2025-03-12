@@ -44,6 +44,7 @@ import { TransferLocationPdfComponent } from 'app/document-template/pdf/transfer
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -149,7 +150,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     YARD: 'COMMON-FORM.YARD',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    TRANSFER_DATE:'COMMON-FORM.TRANSFER-DATE'
+    TRANSFER_DATE: 'COMMON-FORM.TRANSFER-DATE'
   }
 
   invForm?: UntypedFormGroup;
@@ -253,9 +254,9 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       eir_dt_end: [''],
       inv_type: ['MASTER_IN'],
       yard: [''],
-      purpose:[''],
-      trf_dt_start:[''],
-      trf_dt_end:['']
+      purpose: [''],
+      trf_dt_start: [''],
+      trf_dt_end: ['']
 
     });
   }
@@ -289,7 +290,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       })
     ).subscribe();
 
-    
+
   }
 
   public loadData() {
@@ -370,9 +371,9 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     // }
 
     if (this.searchForm?.get('customer_code')?.value) {
-      var cond: any =  { customer_company_guid:{eq:this.searchForm!.get('customer_code')?.value?.guid } };
-     
-      where.storing_order=cond;
+      var cond: any = { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value?.guid } };
+
+      where.storing_order = cond;
       cond_counter++;
     }
 
@@ -407,19 +408,22 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       cond_counter++;
     }
 
-    var date:string=''
-    if(this.searchForm?.get('trf_dt_start')?.value && this.searchForm?.get('trf_dt_end')?.value)
-    {
-      var start_dt=new Date(this.searchForm!.value['trf_dt_start']);
-      var end_dt=new Date(this.searchForm!.value['trf_dt_end']);
-      var cond: any = { some: {or:[
-                        { transfer_in_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } },
-                        { transfer_out_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } }
-                      ]} };
+    var date: string = ''
+    if (this.searchForm?.get('trf_dt_start')?.value && this.searchForm?.get('trf_dt_end')?.value) {
+      var start_dt = new Date(this.searchForm!.value['trf_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['trf_dt_end']);
+      var cond: any = {
+        some: {
+          or: [
+            { transfer_in_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } },
+            { transfer_out_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } }
+          ]
+        }
+      };
       date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('trf_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('trf_dt_end')?.value))}`;
-      
-        where.transfer = {};
-        where.transfer = cond;
+
+      where.transfer = {};
+      where.transfer = cond;
       cond_counter++;
     }
 
@@ -434,7 +438,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
-  performSearch(date :string) {
+  performSearch(date: string) {
     this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.sotList = data;
@@ -448,10 +452,10 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
   onPageEvent(event: PageEvent) {
-    
+
   }
 
-  
+
 
 
   translateLangText() {
@@ -497,9 +501,9 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       eir_dt_end: '',
       inv_type: ['MASTER_IN'],
       yard: '',
-      purpose:'', 
-      trf_dt_start:'',
-      trf_dt_end:''
+      purpose: '',
+      trf_dt_start: '',
+      trf_dt_end: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
@@ -512,8 +516,8 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     return numSelected === numRows;
   }
 
-  
- 
+
+
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -530,39 +534,39 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-   ProcessReportTransferYard(date: string) {
-      if (this.sotList.length === 0) return;
-  
-      var report_customer_tank_acts: report_customer_tank_activity[] = [];
-  
-      this.sotList.map(s => {
-  
-        if (s) {
-          var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
-          let newCust = false;
-          if (!repCust.code) {
-            repCust.code = s.storing_order?.customer_company?.code;
-            repCust.customer = s.storing_order?.customer_company?.name;
-            newCust = true;
-          }
-          repCust.number_tank ??= 0;
-          repCust.number_tank += 1;
-          if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
-          repCust.storing_order_tank?.push(s);
-          if (newCust) report_customer_tank_acts.push(repCust);
-  
-  
-  
-        }
-      });
-  
-  
-      this.onExportDetail(report_customer_tank_acts,date);
-  
-  
-    }
+  ProcessReportTransferYard(date: string) {
+    if (this.sotList.length === 0) return;
 
-  onExportDetail(repStatus: report_customer_tank_activity[],date:string) {
+    var report_customer_tank_acts: report_customer_tank_activity[] = [];
+
+    this.sotList.map(s => {
+
+      if (s) {
+        var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
+        let newCust = false;
+        if (!repCust.code) {
+          repCust.code = s.storing_order?.customer_company?.code;
+          repCust.customer = s.storing_order?.customer_company?.name;
+          newCust = true;
+        }
+        repCust.number_tank ??= 0;
+        repCust.number_tank += 1;
+        if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
+        repCust.storing_order_tank?.push(s);
+        if (newCust) report_customer_tank_acts.push(repCust);
+
+
+
+      }
+    });
+
+
+    this.onExportDetail(report_customer_tank_acts, date);
+
+
+  }
+
+  onExportDetail(repStatus: report_customer_tank_activity[], date: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -575,11 +579,12 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(TransferLocationPdfComponent, {
-      width: '85vw',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_transfer_location: repStatus,
-        date:date
+        date: date
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -603,8 +608,9 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
-      width: '85vw',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_status: repStatus,
         yards: yardsCv

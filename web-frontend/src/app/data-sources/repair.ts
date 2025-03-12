@@ -20,6 +20,7 @@ export class RepairGO {
   public material_cost_discount?: number;
   public labour_cost?: number;
   public total_cost?: number;
+  public est_cost?: number;
   public status_cv?: string;
   public remarks?: string;
   public owner_enable?: boolean;
@@ -49,6 +50,7 @@ export class RepairGO {
     this.material_cost_discount = item.material_cost_discount || 0;
     this.labour_cost = item.labour_cost || 0;
     this.total_cost = item.total_cost || 0;
+    this.est_cost = item.est_cost || 0;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
     this.owner_enable = item.owner_enable || false;
@@ -68,7 +70,6 @@ export class RepairGO {
     this.delete_dt = item.delete_dt;
     this.customer_billing_guid = item.customer_billing_guid;
     this.owner_billing_guid = item.owner_billing_guid;
-
   }
 }
 
@@ -1930,7 +1931,17 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     const totalSums = repairPartList?.filter(data => !data.delete_dt && (data.approve_part ?? true))?.reduce((totals: any, owner) => {
       return {
         hour: (totals.hour ?? 0) + (owner.approve_hour ?? owner.hour ?? 0),
-        total_mat_cost: totals.total_mat_cost + (((owner.approve_qty ?? owner.quantity ?? 0) * (owner.approve_cost ?? owner.material_cost ?? 0)))
+        total_mat_cost: totals.total_mat_cost + (((owner.approve_qty !== null && owner.approve_qty !== undefined ? owner.approve_qty : owner.quantity ?? 0) * (owner.approve_cost !== null && owner.approve_cost !== undefined ? owner.approve_cost : owner.material_cost ?? 0)))
+      };
+    }, { hour: 0, total_mat_cost: 0 }) || 0;
+    return totalSums;
+  }
+
+  getTotalEst(repairPartList: any[] | undefined): any {
+    const totalSums = repairPartList?.filter(data => !data.delete_dt)?.reduce((totals: any, owner) => {
+      return {
+        hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+        total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.material_cost ?? 0)))
       };
     }, { hour: 0, total_mat_cost: 0 }) || 0;
     return totalSums;

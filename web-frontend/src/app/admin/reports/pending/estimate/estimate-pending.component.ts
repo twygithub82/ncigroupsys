@@ -44,6 +44,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import {PendingEstimateReportPdfComponent} from 'app/document-template/pdf/pending-estimate-report-pdf/pending-estimate-report-pdf.component'
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { reportPreviewWindowDimension } from 'environments/environment';
 
 @Component({
   selector: 'app-estimate-pending',
@@ -700,9 +701,9 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     }
 
     const dialogRef = this.dialog.open(PendingEstimateReportPdfComponent, {
-      width: '85vw',
-      maxWidth:'1000px',
-      maxHeight: '80vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         sot: sot
       },
@@ -727,8 +728,9 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     }
 
     const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
-      width: '850px',
-      // height: '80vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_customer_tank_activity: repCustomerTankActivity,
         type: invType,

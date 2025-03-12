@@ -45,6 +45,7 @@ import { YardStatusDetailSummaryPdfComponent } from 'app/document-template/pdf/s
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -868,8 +869,9 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     const dialogRef = this.dialog.open(YardDetailInventoryPdfComponent, {
-      width: '85vw',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_yard_detail: repStatus,
       },
@@ -895,9 +897,9 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     const dialogRef = this.dialog.open(YardStatusDetailSummaryPdfComponent, {
-      width: '85vw',
-      maxWidth:'1200px',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_detail: repStatus,
       },
@@ -922,8 +924,9 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     const dialogRef = this.dialog.open(YardChartPdfComponent, {
-      width: '85vw',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_status: repStatus
       },

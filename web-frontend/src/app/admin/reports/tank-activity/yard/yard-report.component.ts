@@ -42,6 +42,7 @@ import { YardDetailPdfComponent } from 'app/document-template/pdf/tank-activity/
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -375,7 +376,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
     var invType: string = this.inventoryTypeCvList.find(i => i.code_val == (this.searchForm!.get('inv_type')?.value))?.description || '';
 
-    where.tank_status_cv = { nin: ['RELEASED','SO_GENERATED'] };
+    where.tank_status_cv = { nin: ['RELEASED', 'SO_GENERATED'] };
     if (this.searchForm!.get('inv_type')?.value == "MASTER_OUT") {
       queryType = 2;
       where.tank_status_cv = { eq: 'RELEASED' };
@@ -609,7 +610,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
 
 
-  
+
 
   ProcessReportCustomerTankActivity(invType: string, date: string, report_type: number, queryType: number) {
     if (this.sotList.length === 0) return;
@@ -659,8 +660,9 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     }
 
     const dialogRef = this.dialog.open(YardDetailPdfComponent, {
-      width: '85wv',
-      height: '80vh',
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_customer_tank_activity: repCustomerTankActivity,
         type: invType,
@@ -688,8 +690,9 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     }
 
     const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
-      width: '850px',
-      // height: '80vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_customer_tank_activity: repCustomerTankActivity,
         type: invType,

@@ -11,13 +11,13 @@
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
             <div class="row">
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                   <input matInput formControlName="tank_no">
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                   <input matInput formControlName="eir_no">
@@ -70,7 +70,7 @@
                   <mat-datepicker #eir_picker></mat-datepicker> -->
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.AV_DATE}}</mat-label>
                   <mat-date-range-input [rangePicker]="av_picker">
@@ -84,7 +84,7 @@
                   <mat-datepicker #av_picker></mat-datepicker> -->
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEAN_DATE}}</mat-label>
                   <mat-date-range-input [rangePicker]="clean_picker">
@@ -106,19 +106,19 @@
                   <mat-datepicker #repair_completed_picker></mat-datepicker>
                 </mat-form-field>
               </div> -->
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
                   <input matInput formControlName="capacity">
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
                   <input matInput formControlName="tare_weight">
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
                   <mat-date-range-input [rangePicker]="release_picker">
@@ -131,7 +131,7 @@
               </div>
               <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.CURRENT_STATUS}}</mat-label>
+                  <mat-label>{{translatedLangText.YARD_STATUS}}</mat-label>
                   <mat-select formControlName="tank_status_cv">
                     @for (codeValue of tankStatusCvList; track codeValue) {
                     <mat-option [value]="codeValue.code_val">
