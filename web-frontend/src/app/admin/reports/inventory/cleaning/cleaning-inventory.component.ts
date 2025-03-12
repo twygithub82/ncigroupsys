@@ -48,6 +48,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import {ReportDS,cleaning_report_summary_item} from 'app/data-sources/reports';
 import {CustomerWiseInventorySummaryPdfComponent} from 'app/document-template/pdf/inventory/cleaning-summary/customer-wise/customer-wise-inventory-summary-pdf.component';
 import {CargoUNWiseInventorySummaryPdfComponent} from 'app/document-template/pdf/inventory/cleaning-summary/cargo-un-wise/cargo-un-wise-inventory-summary-pdf.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
 @Component({
   selector: 'app-cleaning-inventory',
   standalone: true,
@@ -807,10 +808,11 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       tempDirection = 'ltr';
     }
 
+    
     const dialogRef = this.dialog.open(CleaningDetailInventoryPdfComponent, {
-      width: '90wv',
-      maxWidth:'1000px',
-      maxHeight: '80vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_inventory: repCln,
         date: date
@@ -835,9 +837,11 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       tempDirection = 'ltr';
     }
 
+  
     const dialogRef = this.dialog.open(CargoUNWiseInventorySummaryPdfComponent, {
-      width: '80vw',
-      maxHeight: '80vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_cleaning_item: repCln,
         date: date,
@@ -863,9 +867,11 @@ onExportCustomerWise(repCln: cleaning_report_summary_item[],date:string) {
       tempDirection = 'ltr';
     }
 
+   
     const dialogRef = this.dialog.open(CustomerWiseInventorySummaryPdfComponent, {
-      width: '80vw',
-      maxHeight: '80vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_cleaning_item: repCln,
         date: date

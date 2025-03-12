@@ -41,6 +41,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activity/customer-detail-pdf/customer-detail-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -143,6 +144,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
+    YARD_STATUS:'COMMON-FORM.YARD-STATUS'
     
   }
 
@@ -800,8 +802,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     }
 
     const dialogRef = this.dialog.open(CustomerDetailPdfComponent, {
-      width: '90vw',
-      height: '80vh',
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_customer_tank_activity: repCustomerTankActivity,
         type: report_type

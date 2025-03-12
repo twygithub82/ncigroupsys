@@ -142,7 +142,7 @@
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-form-field class="example-full-width" appearance="fill" required>
                       <mat-label>{{translatedLangText.BILLING_CURRENCY }}</mat-label>
                        <mat-select  formControlName="currency" >
                         <mat-option *ngFor="let cc of currencyList" [value]="cc">
@@ -151,6 +151,11 @@
                           </ng-container>
                         </mat-option>
                     </mat-select>
+                    @if (searchForm?.get('currency')?.hasError('required') ) {
+                      <mat-error>
+                        {{translatedLangText.BILLING_CURRENCY }} {{translatedLangText.IS_REQUIRED}}
+                      </mat-error>
+                      }
                     </mat-form-field>
                   </div>
                  

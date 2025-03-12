@@ -41,6 +41,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { reportPreviewWindowDimension } from 'environments/environment';
 
 @Component({
   selector: 'app-periodic-test-due-report',
@@ -553,9 +554,9 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     }
 
     const dialogRef = this.dialog.open(PeriodicTestDuePdfComponent, {
-      width: '85vw',
-      maxWidth:'1200px',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_inventory: repStatus,
       },
@@ -581,8 +582,9 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     }
 
     const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
-      width: '85vw',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_status: repStatus,
       },

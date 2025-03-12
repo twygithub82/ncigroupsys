@@ -44,8 +44,9 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import {ReportDS,tank_survey_summary,tank_survey_summary_group_by_survey_dt} from 'app/data-sources/reports'
+import { ReportDS, tank_survey_summary, tank_survey_summary_group_by_survey_dt } from 'app/data-sources/reports'
 import { TankSurveyPdfComponent } from 'app/document-template/pdf/tank-survey/tank-survey-pdf/tank-survey-pdf.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
 
 @Component({
   selector: 'app-tank-survey-report',
@@ -150,11 +151,11 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     YARD: 'COMMON-FORM.YARD',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    TRANSFER_DATE:'COMMON-FORM.TRANSFER-DATE',
-    REFERENCE:'COMMON-FORM.REFERENCE',
-    SURVEY_DATE:'COMMON-FORM.SURVEY-DATE',
-    SURVEY_TYPE:'COMMON-FORM.SURVEY-TYPE',
-    SURVEY_NAME:'COMMON-FORM.SURVEY-NAME'
+    TRANSFER_DATE: 'COMMON-FORM.TRANSFER-DATE',
+    REFERENCE: 'COMMON-FORM.REFERENCE',
+    SURVEY_DATE: 'COMMON-FORM.SURVEY-DATE',
+    SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
+    SURVEY_NAME: 'COMMON-FORM.SURVEY-NAME'
   }
 
   invForm?: UntypedFormGroup;
@@ -170,7 +171,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
-  repDS:ReportDS;
+  repDS: ReportDS;
 
   stmDS: SteamDS;
   plDS: PackageLabourDS;
@@ -182,7 +183,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
-  survey_nameList?:CustomerCompanyItem[];
+  survey_nameList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -210,7 +211,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  surveyList:tank_survey_summary[]=[];
+  surveyList: tank_survey_summary[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -233,7 +234,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.repDS= new ReportDS(this.apollo);
+    this.repDS = new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -264,9 +265,9 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       svy_dt_end: [''],
       inv_type: ['MASTER_IN'],
       yard: [''],
-      reference:[''],
-      svy_type:[''],
-      svy_name:this.surveyorControl
+      reference: [''],
+      svy_type: [''],
+      svy_name: this.surveyorControl
 
     });
   }
@@ -302,8 +303,10 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
           searchCriteria = value.code;
         }
 
-        var cond :any ={ and:[ {or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }]},
-                                {type_cv:{eq:'SURVEYOR'}}] };
+        var cond: any = {
+          and: [{ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] },
+          { type_cv: { eq: 'SURVEYOR' } }]
+        };
 
         this.subs.sink = this.ccDS.search(cond, { code: 'ASC' }).subscribe(data => {
           this.survey_nameList = data
@@ -312,7 +315,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       })
     ).subscribe();
 
-    
+
   }
 
   public loadData() {
@@ -397,25 +400,25 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     // }
 
     if (this.searchForm?.get('customer_code')?.value) {
-      dailytankSurveyReq.customer_code=this.searchForm!.get('customer_code')?.value.code;
+      dailytankSurveyReq.customer_code = this.searchForm!.get('customer_code')?.value.code;
       cond_counter++;
     }
 
     if (this.searchForm?.get('eir_no')?.value) {
-      dailytankSurveyReq.eir_no=this.searchForm!.get('eir_no')?.value 
+      dailytankSurveyReq.eir_no = this.searchForm!.get('eir_no')?.value
       cond_counter++;
     }
 
-    
+
     if (this.searchForm?.get('tank_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      dailytankSurveyReq.tank_no =  this.searchForm?.get('tank_no')?.value;
+      dailytankSurveyReq.tank_no = this.searchForm?.get('tank_no')?.value;
       cond_counter++;
     }
 
     if (this.searchForm?.get('svy_name')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      dailytankSurveyReq.surveyor_name =  this.searchForm?.get('svy_name')?.value;
+      dailytankSurveyReq.surveyor_name = this.searchForm?.get('svy_name')?.value;
       cond_counter++;
     }
 
@@ -442,21 +445,20 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
 
 
-    var date:string=''
-    if(this.searchForm?.get('svy_dt_start')?.value && this.searchForm?.get('svy_dt_end')?.value)
-    {
-      var start_dt=Utility.convertDate(new Date(this.searchForm!.value['svy_dt_start']));
-      var end_dt=Utility.convertDate(new Date(this.searchForm!.value['svy_dt_end']),true);
+    var date: string = ''
+    if (this.searchForm?.get('svy_dt_start')?.value && this.searchForm?.get('svy_dt_end')?.value) {
+      var start_dt = Utility.convertDate(new Date(this.searchForm!.value['svy_dt_start']));
+      var end_dt = Utility.convertDate(new Date(this.searchForm!.value['svy_dt_end']), true);
       date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('svy_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('svy_dt_end')?.value))}`;
-      dailytankSurveyReq.end_date=end_dt;
-      dailytankSurveyReq.start_date=start_dt;
+      dailytankSurveyReq.end_date = end_dt;
+      dailytankSurveyReq.start_date = start_dt;
       cond_counter++;
     }
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
-   // this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(dailytankSurveyReq,date);
+    // this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
+    this.performSearch(dailytankSurveyReq, date);
 
 
   }
@@ -464,7 +466,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
-  performSearch(dailytankSurveyReq:any,date :string) {
+  performSearch(dailytankSurveyReq: any, date: string) {
     this.subs.sink = this.repDS.searchTankSurveySummaryReport(dailytankSurveyReq)
       .subscribe(data => {
         this.surveyList = data;
@@ -479,10 +481,10 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onPageEvent(event: PageEvent) {
-    
+
   }
 
-  
+
 
 
   translateLangText() {
@@ -528,9 +530,9 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       svy_dt_end: '',
       inv_type: ['MASTER_IN'],
       yard: '',
-      reference:'', 
-      svy_type:'',
-      svy_name:''
+      reference: '',
+      svy_type: '',
+      svy_name: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
@@ -543,8 +545,8 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     return numSelected === numRows;
   }
 
-  
- 
+
+
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -561,35 +563,35 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-   ProcessReportTankSurvey(date: string) {
-      if (this.surveyList.length === 0) return;
-  
-      var report_summary: tank_survey_summary_group_by_survey_dt[] = [];
-  
-      this.surveyList.map(s => {
-  
-        if (s) {
-          var survey_dt = Utility.convertEpochToDateStr(s.survey_dt);
-          var repSvy: tank_survey_summary_group_by_survey_dt = report_summary.find(r => r.survey_dt === survey_dt) || new tank_survey_summary_group_by_survey_dt();
-          let newSvy = false;
-          if (!repSvy.survey_dt) {
-            repSvy.survey_dt = survey_dt;
-            newSvy = true;
-          }
-         
-          if (!repSvy.tank_survey_summaries)repSvy.tank_survey_summaries = [];
-          repSvy.tank_survey_summaries?.push(s);
-          if (newSvy) report_summary.push(repSvy);
-        }
-      });
-  
-  
-      this.onExportSummary(report_summary,date);
-  
-  
-    }
+  ProcessReportTankSurvey(date: string) {
+    if (this.surveyList.length === 0) return;
 
-  onExportSummary(repStatus: tank_survey_summary_group_by_survey_dt[],date:string) {
+    var report_summary: tank_survey_summary_group_by_survey_dt[] = [];
+
+    this.surveyList.map(s => {
+
+      if (s) {
+        var survey_dt = Utility.convertEpochToDateStr(s.survey_dt);
+        var repSvy: tank_survey_summary_group_by_survey_dt = report_summary.find(r => r.survey_dt === survey_dt) || new tank_survey_summary_group_by_survey_dt();
+        let newSvy = false;
+        if (!repSvy.survey_dt) {
+          repSvy.survey_dt = survey_dt;
+          newSvy = true;
+        }
+
+        if (!repSvy.tank_survey_summaries) repSvy.tank_survey_summaries = [];
+        repSvy.tank_survey_summaries?.push(s);
+        if (newSvy) report_summary.push(repSvy);
+      }
+    });
+
+
+    this.onExportSummary(report_summary, date);
+
+
+  }
+
+  onExportSummary(repStatus: tank_survey_summary_group_by_survey_dt[], date: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -603,9 +605,9 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     const dialogRef = this.dialog.open(TankSurveyPdfComponent, {
-      width: '85vw',
-      maxWidth:'1000px',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_tank_survey: repStatus,
         date: date

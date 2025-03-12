@@ -226,11 +226,26 @@
             @for(sotRow of sotRepList; track sotRow) {
             <mat-accordion>
               <mat-expansion-panel>
-                <mat-expansion-panel-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
-                  <mat-panel-title [ngClass]="'custom-title'">
+                <mat-expansion-panel-header class="pt-1 pe-1 pb-0 d-flex justify-content-between align-items-center">
+                  <mat-panel-title [ngClass]="'custom-title d-flex align-items-center'">
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+                      <span class="font-bold">{{translatedLangText.TANK_NO}}:</span>
                     {{sotRow.tank_no}}
+                     </div>
                   </mat-panel-title>
-                  <mat-panel-description>
+                  <mat-panel-description class="d-flex align-items-center gap-2">
+                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
+                      <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
+                      {{igDS.getInGateItem(sotRow.in_gate)?.eir_no}}
+                    </div>
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
+                      <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
+                      {{displayDate(igDS.getInGateItem(sotRow.in_gate)?.eir_dt)}}
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1">
+                      <span class="font-bold">{{translatedLangText.STATUS}}:</span>
+                      {{getTankStatusDescription(sotRow.tank_status_cv!)}}
+                    </div>
                   </mat-panel-description>
                 </mat-expansion-panel-header>
                 <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
@@ -241,26 +256,6 @@
                   </mat-card-header>
                   <mat-card-content>
                     <div class="row">
-                      <!-- <div class="col-xl-3-5 col-lg-3-5 col-md-6 col-sm-6 mb-1">
-                <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span> {{
-                ccDS.displayName(row.storing_order?.customer_company)}}
-              </div> -->
-                      <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
-                        <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
-                        {{igDS.getInGateItem(sotRow.in_gate)?.eir_no}}
-                      </div>
-                      <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
-                        <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
-                        {{displayDate(igDS.getInGateItem(sotRow.in_gate)?.eir_dt)}}
-                      </div>
-                      <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
-                <span class="font-bold">{{translatedLangText.JOB_NO}}:</span> {{
-                row.job_no}}
-              </div> -->
-                      <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1">
-                        <span class="font-bold">{{translatedLangText.STATUS}}:</span>
-                        {{getTankStatusDescription(sotRow.tank_status_cv!)}}
-                      </div>
                     </div>
                     <mat-divider></mat-divider>
                     @if ((filterDeleted(sotRow.repair || [])?.length ?? 0) > 0) {
