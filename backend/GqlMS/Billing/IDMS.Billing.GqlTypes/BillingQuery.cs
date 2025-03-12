@@ -611,7 +611,7 @@ namespace IDMS.Billing.GqlTypes
 
                 if (!string.IsNullOrEmpty(cleanerPerformanceRequest.customer_code))
                 {
-                    query = query.Where(tr => String.Equals(tr.customer_code, cleanerPerformanceRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                    query = query.Where(tr => tr.customer_code.Contains(cleanerPerformanceRequest.customer_code));
                 }
                 if (!string.IsNullOrEmpty(cleanerPerformanceRequest.eir_no))
                 {
@@ -1207,14 +1207,16 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = (from result in query
                              join s in context.steaming on result.sot_guid equals s.sot_guid
-                             join rp in context.Set<steaming_part>() on s.guid equals rp.steaming_guid
                              where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
-                                   s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && rp.delete_dt == null && (rp.approve_part == true || rp.approve_part == null)
+                             s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
+                             //join rp in context.Set<steaming_part>() on s.guid equals rp.steaming_guid
+                             //where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
+                             //      s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && rp.delete_dt == null && (rp.approve_part == true || rp.approve_part == null)
                              select new TempReport
                              {
                                  sot_guid = result.sot_guid,
                                  code = result.code,
-                                 cost = (double)(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
+                                 cost = s.total_cost ?? 0.0,   //(double)(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
                                  date = (long)s.approve_dt
                              }).AsQueryable();
                 }
@@ -1222,16 +1224,16 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = (from result in query
                              join s in context.repair on result.sot_guid equals s.sot_guid
-                             join rp in context.repair_part on s.guid equals rp.repair_guid
-                             //join jo in context.job_order on rp.job_order_guid equals jo.guid into joJoin
-                             //from jo in joJoin.DefaultIfEmpty()  // Left Join
                              where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
-                                   s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && rp.delete_dt == null && (rp.approve_part == true || rp.approve_part == null)
+                             s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
+                             //join rp in context.repair_part on s.guid equals rp.repair_guid
+                             //where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
+                             //      s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && rp.delete_dt == null && (rp.approve_part == true || rp.approve_part == null)
                              select new TempReport
                              {
                                  sot_guid = result.sot_guid,
                                  code = result.code,
-                                 cost = (double)(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
+                                 cost = s.total_cost ?? 0.0,  //(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
                                  date = (long)s.approve_dt
                              }).AsQueryable();
                 }
