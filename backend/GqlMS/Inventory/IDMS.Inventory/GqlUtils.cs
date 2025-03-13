@@ -386,6 +386,9 @@ namespace IDMS.Inventory.GqlTypes
                     var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
                                                        .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
                     ingateCleaning.buffer_cost = bufferPrice;
+                    ingateCleaning.est_buffer_cost = bufferPrice;
+                    ingateCleaning.est_cleaning_cost = adjustedPrice;
+
                     await context.AddAsync(ingateCleaning);
                 }
 
@@ -476,6 +479,7 @@ namespace IDMS.Inventory.GqlTypes
                     newSteam.status_cv = CurrentServiceStatus.APPROVED;
                     newSteam.job_no = newJob_no; //sot?.job_no;
                     newSteam.bill_to_guid = customerGuid;
+                    newSteam.est_cost = totalCost;
                     newSteam.total_cost = totalCost;
                     newSteam.approve_dt = ingate_date;
                     newSteam.approve_by = "system";
