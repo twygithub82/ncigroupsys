@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.Billing.GqlTypes.LocalModel
 {
-    public class CleanerPerformanceRequest
+    public class ZeroApprovalRequest
     {
         [NotMapped]
         public string? customer_code { get; set; }
@@ -12,16 +12,14 @@ namespace IDMS.Billing.GqlTypes.LocalModel
         [NotMapped]
         public string? eir_no { get; set; }
         [NotMapped]
-        public long start_date { get; set; }
+        public int year { get; set; }
         [NotMapped]
-        public long end_date { get; set; }
+        public int month { get; set; }
         [NotMapped]
         public string? last_cargo { get; set; }
         [NotMapped]
-        public string? method_name { get; set; }
+        public string report_type { get; set; }
         [NotMapped]
-        public string? cleaning_bay { get; set; }
-        [NotMapped]
-        public string? cleaner_name { get; set; }
+        public string? tank_status { get; set; }
     }
 }
