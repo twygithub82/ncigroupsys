@@ -27,6 +27,7 @@ namespace IDMS.Models.Service
         public double? material_cost_discount { get; set; }
         public double? labour_cost { get; set; }
         public double? total_cost { get; set; }
+        public double? est_cost { get; set; }   
         public string? remarks { get; set; }
         public bool? owner_enable { get; set; }
         public string? status_cv { get; set; }

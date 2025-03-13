@@ -17,6 +17,7 @@ namespace IDMS.Models.Service
         public string? remarks { get; set; }
         public string? job_no { get; set; }
         public double? total_cost { get; set; }
+        public double? est_cost { get; set; }
         public string? estimate_no { get; set; }
         public string? estimate_by { get; set; }
         public long? estimate_dt { get; set; }

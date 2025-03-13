@@ -77,7 +77,7 @@ namespace IDMS.Steaming.GqlTypes
                 context.steaming.Attach(approveSteam);
                 approveSteam.update_by = user;
                 approveSteam.update_dt = currentDateTime;
-
+                approveSteam.est_cost = steaming.est_cost;
                 approveSteam.total_cost = steaming.total_cost;
 
                 if (CurrentServiceStatus.PENDING.EqualsIgnore(steaming.status_cv))
@@ -166,8 +166,8 @@ namespace IDMS.Steaming.GqlTypes
                 updateSteaming.update_by = user;
                 updateSteaming.update_dt = currentDateTime;
                 updateSteaming.job_no = steaming.job_no;
-                //updateSteaming.invoice_by = steaming.invoice_by;
-                //updateSteaming.invoice_dt = steaming.invoice_dt;
+                updateSteaming.est_cost = steaming.est_cost;
+                updateSteaming.total_cost = steaming.total_cost;
                 updateSteaming.remarks = steaming.remarks;
                 updateSteaming.bill_to_guid = steaming.bill_to_guid;
 

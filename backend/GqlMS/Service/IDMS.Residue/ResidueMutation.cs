@@ -39,6 +39,8 @@ namespace IDMS.Residue.GqlTypes
                 newResidue.status_cv = CurrentServiceStatus.PENDING;
                 newResidue.allocate_by = residue.allocate_by;
                 newResidue.allocate_dt = residue.allocate_dt;
+                newResidue.est_cost = residue.est_cost;
+                newResidue.total_cost = residue.total_cost; 
                 newResidue.create_by = user;
                 newResidue.create_dt = currentDateTime;
 
@@ -96,6 +98,8 @@ namespace IDMS.Residue.GqlTypes
                 updatedResidue.job_no = residue.job_no;
                 updatedResidue.bill_to_guid = residue.bill_to_guid;
                 updatedResidue.remarks = residue.remarks;
+                updatedResidue.est_cost = residue.est_cost;
+                updatedResidue.total_cost = residue.total_cost;
 
                 //Handling For Template_est_part
                 foreach (var item in residue.residue_part)
@@ -164,6 +168,8 @@ namespace IDMS.Residue.GqlTypes
                     approveResidue.bill_to_guid = residue.bill_to_guid;
                     approveResidue.job_no = residue.job_no;
                     approveResidue.remarks = residue.remarks;
+                    approveResidue.est_cost = residue.est_cost; 
+                    approveResidue.total_cost = residue.total_cost;
 
                     //Only change when first time approve
                     if (CurrentServiceStatus.PENDING.EqualsIgnore(residue.status_cv))

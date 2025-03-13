@@ -20,8 +20,10 @@ namespace IDMS.Models.Service
 
         [ForeignKey("job_order")]
         public string? job_order_guid { get; set; }
-        public double? cleaning_cost { get; set; } = 0;
-        public double? buffer_cost { get; set; } = 0;
+        public double? cleaning_cost { get; set; }
+        public double? buffer_cost { get; set; }
+        public double? est_cleaning_cost { get; set; }
+        public double? est_buffer_cost { get; set; }
         public string? status_cv { get; set; }
         public string? remarks { get; set; }
         public string? job_no { get; set; }

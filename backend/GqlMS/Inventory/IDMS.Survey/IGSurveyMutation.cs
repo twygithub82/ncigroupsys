@@ -355,6 +355,8 @@ namespace IDMS.Survey.GqlTypes
                 var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
                                                    .Select(b => b.cost).FirstOrDefaultAsync();
                 ingateCleaning.buffer_cost = bufferPrice;
+                ingateCleaning.est_buffer_cost = bufferPrice;
+                ingateCleaning.est_cleaning_cost = adjustedPrice;
 
                 await context.AddAsync(ingateCleaning);
                 retval = 1;
@@ -427,6 +429,7 @@ namespace IDMS.Survey.GqlTypes
                 newSteam.status_cv = CurrentServiceStatus.APPROVED;
                 newSteam.bill_to_guid = customerGuid;
                 newSteam.job_no = sot?.job_no;
+                newSteam.est_cost = totalCost;
                 newSteam.total_cost = totalCost;
                 newSteam.approve_dt = ingate_date;
                 newSteam.approve_by = user;

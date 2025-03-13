@@ -75,6 +75,8 @@ namespace IDMS.Cleaning.GqlTypes
 
                 updateCleaning.job_no = cleaning.job_no;
                 updateCleaning.remarks = cleaning.remarks;
+                updateCleaning.est_buffer_cost = cleaning.est_buffer_cost;
+                updateCleaning.est_cleaning_cost = cleaning.est_cleaning_cost;
                 updateCleaning.update_by = user;
                 updateCleaning.update_dt = currentDateTime;
 
