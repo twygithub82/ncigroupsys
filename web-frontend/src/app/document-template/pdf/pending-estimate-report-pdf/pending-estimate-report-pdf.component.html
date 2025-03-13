@@ -31,16 +31,16 @@
           </tr>
           @for (itm of sotList; track itm;let index = $index) {
           <tr class="fixed_height_40px">
-            <td>{{ index + 1 }}</td> <!-- Row number -->
-            <td>{{ itm.tank_no }}</td>
-            <td>{{DisplayEIRNo(itm) }}</td>
-            <td>{{DisplayCustomerName(itm)}}</td>
-            <td>{{DisplayOwner(itm)}}</td>
-            <td>{{DisplayEIRDate(itm)}}</td>
-            <td>{{DisplayCleanDate(itm)}}</td>
-            <td>{{DisplayRepairType(itm)}}</td>
-            <td>{{DisplayRepairInDate(itm)}}</td>
-            <td>{{DisplayDays(itm)}}</td>
+            <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+            <td class="text-center">{{ itm.tank_no }}</td>
+            <td class="text-center">{{DisplayEIRNo(itm) }}</td>
+            <td class="text-center">{{DisplayCustomerName(itm)}}</td>
+            <td class="text-center">{{DisplayOwner(itm)}}</td>
+            <td class="text-center">{{DisplayEIRDate(itm)}}</td>
+            <td class="text-center">{{DisplayCleanDate(itm)}}</td>
+            <td class="text-center">{{DisplayRepairType(itm)}}</td>
+            <td class="text-center">{{DisplayRepairInDate(itm)}}</td>
+            <td class="text-center">{{DisplayDays(itm)}}</td>
           </tr>
           }
         </table>

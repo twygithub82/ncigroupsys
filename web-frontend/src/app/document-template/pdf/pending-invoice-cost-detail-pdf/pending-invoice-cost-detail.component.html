@@ -11,8 +11,7 @@
       <div class="pdf-body">
         <table  id="table_customer_info" class="table_customer_info">
           <tr>
-            <td class="text_right"> {{translatedLangText.CUSTOMER}} :</td>
-            <td class="text_left_width_wider"> {{bCust.customer}}</td>
+            <td class="text_left"> {{translatedLangText.CUSTOMER}} : {{bCust.customer}}</td>
             <td class="text_right"> {{translatedLangText.CUTOFF_DATE}} :{{cut_off_dt}}</td>
           </tr>
         </table>
@@ -24,27 +23,47 @@
       <table id="repair-part-table" class="repair-part-table">
         <tr class="group-header">
           <th class="th-w2">{{translatedLangText.NO}}</th>
+          <th class="th-w5">{{translatedLangText.JOB_NO}}</th>
           <th class="th-w8">{{translatedLangText.TANK_NO}}</th>
           <th class="th-w8">{{translatedLangText.EIR_NO}}</th>
+          <th class="th-w12">{{translatedLangText.LAST_CARGO}}</th>
           <th class="th-w6">{{translatedLangText.IN_DATE}}</th>
           <th class="th-w6">{{translatedLangText.OUT_DATE}}</th>
-          <th class="th-w6">{{translatedLangText.JOB_NO}}</th>
-          <th class="th-w8">{{translatedLangText.COST}}</th>
+          <th class="th-w6">{{translatedLangText.CLEAN_COST}}</th>
+          <th class="th-w6">{{translatedLangText.REPAIR_COST}}</th>
+          <th class="th-w7">{{translatedLangText.PREINSP_COST}}</th>
+          <th class="th-w6">{{translatedLangText.LOLO_COST}}</th>
+          <th class="th-w3">{{translatedLangText.DAYS}}</th>
+          <th class="th-w6">{{translatedLangText.STORAGE_COST}}</th>
+          <th class="th-w6">{{translatedLangText.STEAM_COST}}</th>
+          <th class="th-w7">{{translatedLangText.RESIDUE_COST}}</th>
+          <th class="th-w6">{{translatedLangText.GATEIO_S}}</th>
+          <th class="th-w8">{{translatedLangText.TOTAL}}</th>
         </tr>
         @for (itm of bCust.items; track itm;let index = $index) {
           <tr class="fixed_height_40px">
-            <td ><span class="overflow-text">{{ index + 1 }}</span></td> <!-- Row number -->
-            <td ><span class="overflow-text">{{ itm.tank_no }}</span></td> 
-            <td ><span class="overflow-text">{{ itm.eir_no }}</span></td> 
-            <td >{{ itm.in_date }}</td> 
-            <td >{{ itm.out_date }}</td> 
-            <td >{{ itm.job_no }}</td> 
-            <td >{{ (itm.total==="0.00"?'':itm.total) }}</td> 
+            <td class="text-center"><span class="overflow-text">{{ index + 1 }}</span></td> <!-- Row number -->
+            <td class="text-center"><span class="overflow-text">{{ itm.job_no }}</span></td> 
+            <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td> 
+            <td class="text-center"><span class="overflow-text">{{ itm.eir_no }}</span></td> 
+            <td class="text-center" ><span class="overflow-text" matTooltip={{itm.last_cargo}} >{{ itm.last_cargo }}</span></td> 
+            <td class="text-center">{{ itm.in_date }}</td> 
+            <td class="text-center">{{ itm.out_date }}</td> 
+            <td class="text-center">{{ displayCleanCost(itm) }}</td> 
+            <td class="text-center">{{ displayRepairCost(itm) }}</td> 
+            <td class="text-center">{{ displayPreinsCost(itm) }}</td> 
+            <td class="text-center">{{ displayLOLOCost(itm) }}</td> 
+            <td class="text-center">{{ itm.days }}</td> 
+            <td class="text-center">{{ displayStorageCost(itm)}}</td> 
+            <td class="text-center">{{displaySteamCost(itm)}}</td> 
+            <td class="text-center">{{ displayResidueCost(itm)}}</td> 
+            <td class="text-center">{{ displayGateIOCost(itm)}}</td> 
+            <td class="text-center">{{ (itm.total==="0.00"?'':itm.total) }}</td> 
           </tr>
         }
         <tr>
-          <td class="text-right-border" colspan="6">{{translatedLangText.TOTAL_COST}}</td>
-          <td>{{displayTotalCost(bCust)}}</td>
+          <td class="text-right-border" colspan="7">{{translatedLangText.TOTAL_COST}}</td>
+          <td class="text-center">{{displayTotalCost(bCust)}}</td>
         </tr>
       </table>
     

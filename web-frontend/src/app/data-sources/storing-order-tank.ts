@@ -3116,8 +3116,8 @@ const GET_STORING_ORDER_FOR_INVENTORY = gql`
 `;
 
 const GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING = gql`
-  query queryStoringOrderTank($where: storing_order_tankFilterInput) {
-    sotList: queryStoringOrderTank(where: $where) {
+  query queryStoringOrderTank($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         job_no
         preinspect_job_no
@@ -3514,13 +3514,13 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  searchStoringOrderTanksRepairOutstandingReport(where: any): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksRepairOutstandingReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING,
-        variables: { where },
+        variables: {where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

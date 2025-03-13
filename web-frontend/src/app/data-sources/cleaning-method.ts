@@ -59,7 +59,7 @@ export const GET_CLEANING_METHOD_QUERY = gql`
         name
         update_by
         update_dt
-        cleaning_method_formula (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]})
+        cleaning_method_formula (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}, order:{})
         {
           delete_dt
           formula_guid

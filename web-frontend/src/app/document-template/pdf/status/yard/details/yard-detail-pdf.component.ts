@@ -512,9 +512,9 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     return Utility.convertEpochToDateStr(input);
   }
 
-  parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
-  }
+  // parse2Decimal(input: number | string | undefined) {
+  //   return Utility.formatNumberDisplay(input);
+  // }
 
   async onDownloadClick() {
    // this.exportToPDF();

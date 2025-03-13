@@ -724,9 +724,9 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return "";
   }
 
-  parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
-  }
+  // parse2Decimal(input: number | string | undefined) {
+  //   return Utility.formatNumberDisplay(input);
+  // }
 
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
@@ -750,6 +750,10 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   displayApproveCost(rep: RepairPartItem) {
     return this.parse2Decimal((rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
+  }
+
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 
   toggleRep(row: RepairPartItem) {

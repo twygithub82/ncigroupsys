@@ -2,6 +2,7 @@ import { TranslateService } from "@ngx-translate/core";
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
 import { jsPDF } from 'jspdf';
+import { customerInfo } from 'environments/environment';
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -351,7 +352,7 @@ export class Utility {
     // Handle string to number
     if (typeof input === 'string') {
       // Check if the string is a valid number
-      const num = Number(input.replace(/,/g, ''));
+      const num = Number(input);
       if (!isNaN(num)) {
         return parseFloat(num.toFixed(decimals)); // Convert to number and round
       }
@@ -437,7 +438,11 @@ export class Utility {
     }
     return await response.blob();
   }
-
+ static formatNumberDisplay(input:number | string | undefined):string
+ {
+   const formattedNumber = Math.round(Number(input||0) * 100) / 100; 
+    return formattedNumber.toFixed(2);
+ }
   static getBackgroundColorFromNature(natureCv: string | undefined) {
     var color = 'orange';
     switch (natureCv) {
@@ -469,32 +474,90 @@ export class Utility {
     return color;
   }
 
-  static parse2Decimal(figure: number | string | undefined) {
-    if (typeof (figure) === 'string') {
-      return parseFloat(figure).toFixed(2);
-    } else if (typeof (figure) === 'number') {
-      return figure.toFixed(2);
-    }
-    return "";
-  }
+  static async  addHeaderWithCompanyLogo_Portriat(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService // Inject TranslateService
+  ): Promise<void>{
 
-  static formatNumberDisplay(input: number | string | undefined, locale: string = 'en-US'): string {
-    if (!input) {
-      return '';
+    const translatedLangText: any = {};
+    const langText = {
+      PHONE: 'COMMON-FORM.PHONE',
+      FAX: 'COMMON-FORM.FAX',
+      WEB: 'COMMON-FORM.WEB',
+      CRN: 'COMMON-FORM.CRN',
+    };
+
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
     }
+    // Set dashed line pattern
+    pdf.setLineDashPattern([1, 1], 0.5);
   
-    const numericValue = typeof input === 'string' ? parseFloat(input.replace(/,/g, '')) : input;
+    // Draw top line
+    pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
   
-    if (isNaN(numericValue)) {
-      return '';
-    }
+    // Define header height
+    const heightHeader: number = 30;
   
-    return new Intl.NumberFormat(locale, {
-      style: 'decimal', // Use 'decimal'
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(numericValue);
+    // Draw bottom line
+    pdf.line(leftMargin, topMargin + heightHeader,  (pageWidth - rightMargin), topMargin + heightHeader);
+  
+    // Add company name
+    pdf.setFontSize(18);
+    const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
+    let posX = pageWidth / 1.75;
+    let posY = topMargin + 8;
+    pdf.text(customerInfo.companyName, posX, posY);
+  
+    // Add company address
+    pdf.setFontSize(10);
+    posX -= 5;
+    posY += 7;
+    pdf.text(customerInfo.companyAddress, posX, posY);
+  
+    // Add phone, fax, and website
+    let nextLine = `${translatedLangText.PHONE}:${customerInfo.companyPhone} ${translatedLangText.FAX}:${customerInfo.companyFax} ${translatedLangText.WEB}:${customerInfo.companyWebsite}`;
+    posX -= 20;
+    posY += 5;
+    pdf.text(nextLine, posX, posY);
+  
+    // Add company UEN
+    nextLine = `${translatedLangText.CRN}:${customerInfo.companyUen}`;
+    posX += 35;
+    posY += 5;
+    pdf.text(nextLine, posX, posY);
+  
+    // Load and add company logo
+    const imgUrl = "assets/images/logo.png";
+    const img = new Image();
+  
+    // Wait for the image to load
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = imgUrl;
+    });
+  
+    // Add the image to the PDF
+    const posX1_img = leftMargin+5;
+    const posY1_img = topMargin+10;
+    const imgHeight = heightHeader-21;
+    const imgWidth = 60;
+    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
   }
+  
+  
 }
 
 export const TANK_STATUS_IN_YARD = [
@@ -505,3 +568,5 @@ export const TANK_STATUS_IN_YARD = [
   'STORAGE',
   'RO_GENERATED',
 ]
+
+

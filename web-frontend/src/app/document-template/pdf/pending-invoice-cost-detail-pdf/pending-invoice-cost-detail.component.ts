@@ -33,15 +33,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 export interface DialogData {
   billing_customers: report_billing_customer[],
   cut_off_dt:string
-  // repair_guid: string;
-  // customer_company_guid: string;
-  // sotDS: StoringOrderTankDS;
-  // repairDS: RepairDS;
-  // ccDS: CustomerCompanyDS;
-  // cvDS: CodeValuesDS;
-  // existingPdf?: any;
-  // estimate_no?: string;
-  // retrieveFile: boolean;
+ 
 }
 
 @Component({
@@ -830,7 +822,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
   
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    const pdf = new jsPDF('l', 'mm', 'a4'); // Changed orientation to portrait
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
   
@@ -1269,28 +1261,28 @@ async addHeaderWithCompanyLogo_Portriat(
    {
      let retval:string='';
 
-      retval = (item.clean_cost==="0.00" || item.clean_cost===undefined?'':`${item.clean_cost} (${item.clean_est_no})`)
+      retval = (item.clean_cost==="0.00" || item.clean_cost===undefined?'':`${item.clean_cost}`)
      return retval;
    }
    displayStorageCost(item:report_billing_item):string
    {
      let retval:string='';
 
-      retval = (item.storage_cost==="0.00" || item.storage_cost===undefined?'':`${item.storage_cost} (${item.storage_est_no})`)
+      retval = (item.storage_cost==="0.00" || item.storage_cost===undefined?'':`${item.storage_cost}`)
      return retval;
    }
    displaySteamCost(item:report_billing_item):string
    {
      let retval:string='';
 
-      retval = (item.steam_cost==="0.00"|| item.steam_cost===undefined?'':`${item.steam_cost} (${item.steam_est_no})`)
+      retval = (item.steam_cost==="0.00"|| item.steam_cost===undefined?'':`${item.steam_cost}`)
      return retval;
    }
    displayRepairCost(item:report_billing_item):string
    {
      let retval:string='';
 
-      retval = (item.repair_cost==="0.00" || item.repair_cost===undefined?'':`${item.repair_cost} (${item.repair_est_no})`)
+      retval = (item.repair_cost==="0.00" || item.repair_cost===undefined?'':`${item.repair_cost}`)
      return retval;
    }
 
@@ -1298,7 +1290,7 @@ async addHeaderWithCompanyLogo_Portriat(
    {
      let retval:string='';
 
-      retval = (item.residue_cost==="0.00" || item.residue_cost===undefined?'':`${item.residue_cost} (${item.residue_est_no})`)
+      retval = (item.residue_cost==="0.00" || item.residue_cost===undefined?'':`${item.residue_cost}`)
      return retval;
    }
 
@@ -1306,7 +1298,7 @@ async addHeaderWithCompanyLogo_Portriat(
    {
      let retval:string='';
 
-      retval = (item.lolo_cost==="0.00" || item.lolo_cost===undefined?'':`${item.lolo_cost} (${item.lolo_est_no})`)
+      retval = (item.lolo_cost==="0.00" || item.lolo_cost===undefined?'':`${item.lolo_cost}`)
      return retval;
    }
 
@@ -1314,9 +1306,17 @@ async addHeaderWithCompanyLogo_Portriat(
    {
      let retval:string='';
 
-      retval = (item.preins_cost==="0.00" || item.preins_cost===undefined?'':`${item.preins_cost} (${item.preins_est_no})`)
+      retval = (item.preins_cost==="0.00" || item.preins_cost===undefined?'':`${item.preins_cost}`)
      return retval;
    }
+
+   displayGateIOCost(item:report_billing_item):string
+      {
+        let retval:string='';
+   
+         retval = (item.gateio_cost==="0.00" || item.gateio_cost===undefined?'':`${item.gateio_cost}`)
+        return retval;
+      }
 
    displayTotalCost(Cust:report_billing_customer):string
    {

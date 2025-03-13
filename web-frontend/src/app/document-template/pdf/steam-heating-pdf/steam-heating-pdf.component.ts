@@ -513,9 +513,9 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     return Utility.convertEpochToDateStr(input);
   }
 
-  parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
-  }
+  // parse2Decimal(input: number | string | undefined) {
+  //   return Utility.formatNumberDisplay(input);
+  // }
 
   getTotalSteamDuration() {
     this.totalDuration = this.steamDS.getTotalSteamDuration(this.steamTempList);

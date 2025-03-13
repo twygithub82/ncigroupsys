@@ -42,27 +42,27 @@
         </tr>
         @for (itm of bCust.in_yard_storing_order_tank; track itm;let index = $index) {
         <tr class="fixed_height_40px">
-          <td>{{ index + 1 }}</td> <!-- Row number -->
+          <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
           <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
-          <td>{{ DisplayEIRNo(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayOwner(itm) }}</span></td>
-          <td>{{DisplayInDate(itm)}}</td>
-          <td><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
-          <td><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td>
-          <td>{{ DisplayCleanDate(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
-          <td>{{ DisplayEstimateDate(itm) }}</td>
-          <td>{{ DisplayApprovalDate(itm) }}</td>
-          <td>{{ DisplayAVDate(itm) }}</td>
-          <td><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
-          <td><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
-          <td>{{DisplayCleanCertBooking(itm)}}</td>
-          <td><span class="overflow-text">{{ DisplayReleaseBooking(itm) }}</span></td>
-          <td>{{ DisplayReleaseDate(itm) }}</td>
-          <td>{{ DisplayReleaseRef(itm) }}</td>
-          <td>{{ DisplayCurrentStatus(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayTankPurpose(itm) }}</span></td>
+          <td class="text-center">{{ DisplayEIRNo(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayOwner(itm) }}</span></td>
+          <td class="text-center">{{DisplayInDate(itm)}}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td>
+          <td class="text-center">{{ DisplayCleanDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
+          <td class="text-center">{{ DisplayEstimateDate(itm) }}</td>
+          <td class="text-center">{{ DisplayApprovalDate(itm) }}</td>
+          <td class="text-center">{{ DisplayAVDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
+          <td class="text-center">{{DisplayCleanCertBooking(itm)}}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayReleaseBooking(itm) }}</span></td>
+          <td class="text-center">{{ DisplayReleaseDate(itm) }}</td>
+          <td class="text-center">{{ DisplayReleaseRef(itm) }}</td>
+          <td class="text-center">{{ DisplayCurrentStatus(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayTankPurpose(itm) }}</span></td>
         </tr>
         }
       </table>

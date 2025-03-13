@@ -519,7 +519,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairOutstandingReport(this.lastSearchCriteria)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairOutstandingReport(this.lastSearchCriteria,{},first)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
@@ -701,8 +701,8 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     }
 
     const dialogRef = this.dialog.open(PendingEstimateReportPdfComponent, {
-      width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         sot: sot

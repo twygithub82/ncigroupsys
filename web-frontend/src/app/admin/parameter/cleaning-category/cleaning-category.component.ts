@@ -394,9 +394,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
         first = pageSize;
         after = this.previous_endCursor;
 
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
 

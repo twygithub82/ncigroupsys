@@ -50,29 +50,29 @@
         </tr>
         @for (itm of bCust.in_yard_storing_order_tank; track itm;let index = $index) {
         <tr class="fixed_height_40px">
-          <td>{{ index + 1 }}</td> <!-- Row number -->
-          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
-          <td>{{ DisplayInDate(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayCapacity(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayTareWeight(itm) }}</span></td>
-          <td><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td>
-          <td>{{ DisplayCleanDate(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
-          <td>{{ DisplayEstimateDate(itm) }}</td>
-          <td>{{ DisplayApprovalDate(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayApprovalRef(itm) }}</span></td>
-          <td>{{ DisplayAVDate(itm) }}</td>
-          <td><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
-          <td><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
-          <td>{{ DisplayCleanCertDate(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayReleaseBooking(itm) }}</span></td>
-          <td>{{ DisplayReleaseDate(itm) }}</td>
-          <td>{{ DisplayReleaseRef(itm) }}</td>
-          <td>{{ DisplayCurrentStatus(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
-          <td><span class="overflow-text">{{ displayTankPurpose(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
+          <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+          <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td class="text-center">{{ DisplayInDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayCapacity(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayTareWeight(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td>
+          <td class="text-center">{{ DisplayCleanDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
+          <td class="text-center">{{ DisplayEstimateDate(itm) }}</td>
+          <td class="text-center">{{ DisplayApprovalDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayApprovalRef(itm) }}</span></td>
+          <td class="text-center">{{ DisplayAVDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
+          <td class="text-center">{{ DisplayCleanCertDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayReleaseBooking(itm) }}</span></td>
+          <td class="text-center">{{ DisplayReleaseDate(itm) }}</td>
+          <td class="text-center">{{ DisplayReleaseRef(itm) }}</td>
+          <td class="text-center">{{ DisplayCurrentStatus(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ displayTankPurpose(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
         </tr>
             @for(rp of itm.repair; track rp;let idx = $index)
             {
@@ -87,8 +87,8 @@
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
-                  <td><span class="overflow-text">{{ DisplayRepairEstimateNo(rp) }}</span></td>
-                  <td>{{ DisplayRepairEstimateDate(rp)}}</td>
+                  <td class="text-center"><span class="overflow-text">{{ DisplayRepairEstimateNo(rp) }}</span></td>
+                  <td class="text-center">{{ DisplayRepairEstimateDate(rp)}}</td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
@@ -98,10 +98,10 @@
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
-                  <td>{{ DisplayCurrentStatus(itm) }}</td>
+                  <td class="text-center">{{ DisplayCurrentStatus(itm) }}</td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
-                  <td><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
+                  <td class="text-center"><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
                 </tr>
                 }
               }
@@ -154,30 +154,30 @@
         </tr>
         @for (itm of bCust.released_storing_order_tank; track itm;let index = $index) {
         <tr class="fixed_height_40px">
-          <td>{{ index + 1 }}</td>
-          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
-          <td>{{ DisplayInDate(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayCapacity(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayTareWeight(itm) }}</span></td>
-          <td><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo
+          <td class="text-center">{{ index + 1 }}</td>
+          <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td class="text-center">{{ DisplayInDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayCapacity(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayTareWeight(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo
               }}</span></td>
-          <td>{{ DisplayCleanDate(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
-          <td>{{ DisplayEstimateDate(itm) }}</td>
-          <td>{{ DisplayApprovalDate(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayApprovalRef(itm) }}</span></td>
-          <td>{{ DisplayAVDate(itm) }}</td>
-          <td><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
-          <td><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
-          <td>{{ DisplayCleanCertDate(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayReleaseBooking(itm) }}</span></td>
-          <td>{{ DisplayReleaseDate(itm) }}</td>
-          <td>{{ DisplayReleaseRef(itm) }}</td>
-          <td>{{ DisplayCurrentStatus(itm) }}</td>
-          <td><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
-          <td><span class="overflow-text">{{ displayTankPurpose(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
+          <td class="text-center">{{ DisplayCleanDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
+          <td class="text-center">{{ DisplayEstimateDate(itm) }}</td>
+          <td class="text-center">{{ DisplayApprovalDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayApprovalRef(itm) }}</span></td>
+          <td class="text-center">{{ DisplayAVDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
+          <td class="text-center">{{ DisplayCleanCertDate(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayReleaseBooking(itm) }}</span></td>
+          <td class="text-center">{{ DisplayReleaseDate(itm) }}</td>
+          <td class="text-center">{{ DisplayReleaseRef(itm) }}</td>
+          <td class="text-center">{{ DisplayCurrentStatus(itm) }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ displayTankPurpose(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
         </tr>
         @for(rp of itm.repair; track rp;let idx = $index)
             {
@@ -192,8 +192,8 @@
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
-                  <td><span class="overflow-text">{{ DisplayRepairEstimateNo(rp) }}</span></td>
-                  <td>{{ DisplayRepairEstimateDate(rp) }}</td>
+                  <td class="text-center"><span class="overflow-text">{{ DisplayRepairEstimateNo(rp) }}</span></td>
+                  <td class="text-center">{{ DisplayRepairEstimateDate(rp) }}</td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
@@ -206,7 +206,7 @@
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
-                  <td><span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
+                  <td class="text-center"> <span class="overflow-text">{{ DisplayYard(itm) }}</span></td>
                 </tr>
                 }
               }

@@ -742,9 +742,9 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     return Utility.convertEpochToDateStr(input);
   }
 
-  parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
-  }
+  // parse2Decimal(input: number | string | undefined) {
+  //   return Utility.formatNumberDisplay(input);
+  // }
 
   calculateCost() {
     // this.repairCost = this.steamDS.calculateCost(this.repairItem, this.repairItem?.repair_part);

@@ -33,15 +33,15 @@
         </tr>
         @for (itm of report_summary_item; track itm;let index = $index) {
           <tr>
-            <td>{{ index + 1 }}</td> <!-- Row number -->
-            <td>{{ itm.code }}</td> 
-            <td>{{ itm.name }}</td> 
-            <td>{{ itm.count }}</td> 
+            <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+            <td class="text-center">{{ itm.code }}</td> 
+            <td class="text-center">{{ itm.name }}</td> 
+            <td class="text-center">{{ itm.count }}</td> 
           </tr>
         }
         <tr>
           <td class="text-right text-bold" colSpan=3>{{translatedLangText.TOTAL}}</td>
-          <td>{{displayTotalValue()}}</td>
+          <td class="text-center">{{displayTotalValue()}}</td>
 
         </tr>
       </table>

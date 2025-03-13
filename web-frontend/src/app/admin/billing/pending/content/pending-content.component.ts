@@ -44,6 +44,7 @@ import { PendingInvoiceCostDetailPdfComponent } from 'app/document-template/pdf/
 import { PendingSummaryPdfComponent } from 'app/document-template/pdf/pending-summary-pdf/pending-summary-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -1055,9 +1056,9 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     const dialogRef = this.dialog.open(PendingInvoiceCostDetailPdfComponent, {
-      width: '85vw',
-      maxWidth:'800px',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         billing_customers: repCustomers,
         cut_off_dt: Utility.convertDateToStr(new Date(cut_off_dt))
@@ -1086,8 +1087,9 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     const dialogRef = this.dialog.open(PendingSummaryPdfComponent, {
-      width: '65vw',
-      maxHeight: '85vh',
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         billing_customers: repCustomers,
         cut_off_dt: Utility.convertDateToStr(new Date(cut_off_dt))

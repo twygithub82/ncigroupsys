@@ -362,7 +362,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     let queryType = 1;
     const where: any = {};
 
-
+    if(this.searchForm?.invalid) return;
     // where.tank_status_cv = { neq: "RELEASED" };
     // if (this.searchForm?.get('customer_code')?.value) {
     //   // if(!where.storing_order_tank) where.storing_order_tank={};

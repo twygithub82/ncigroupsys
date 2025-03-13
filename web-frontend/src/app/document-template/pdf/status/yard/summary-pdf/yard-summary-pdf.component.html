@@ -38,29 +38,29 @@
           @for(yard of itm.yards; track yard)
           {
           <tr>
-            <td>{{ GetIndex() }}</td> <!-- Row number -->
-            <td>{{ itm.code }}</td> 
-            <td>{{ itm.customer }}</td> 
-            <td>{{ displayLocation(yard) }}</td> 
-            <td>{{ yard.noTank_steam }}</td> 
-            <td>{{ yard.noTank_clean }}</td> 
-            <td>{{ yard.noTank_repair }}</td> 
-            <td>{{ yard.noTank_storage }}</td> 
-            <td>{{ displayInYardTotal(yard) }}</td> 
-            <td>{{ yard.noTank_pending }}</td> 
-            <td>{{ yard.noTank_withRO }}</td> 
+            <td class="text-center">{{ GetIndex() }}</td> <!-- Row number -->
+            <td class="text-center">{{ itm.code }}</td> 
+            <td class="text-center">{{ itm.customer }}</td> 
+            <td class="text-center">{{ displayLocation(yard) }}</td> 
+            <td class="text-center">{{ yard.noTank_steam }}</td> 
+            <td class="text-center">{{ yard.noTank_clean }}</td> 
+            <td class="text-center">{{ yard.noTank_repair }}</td> 
+            <td class="text-center">{{ yard.noTank_storage }}</td> 
+            <td class="text-center">{{ displayInYardTotal(yard) }}</td> 
+            <td class="text-center">{{ yard.noTank_pending }}</td> 
+            <td class="text-center">{{ yard.noTank_withRO }}</td> 
           </tr>
           }
         }
         <tr class="group-header">
           <td colspan ="4" class="text-right">{{ translatedLangText.TOTAL }}</td> 
-          <td>{{displayTotalSteam()}}</td>
-          <td>{{displayTotalClean()}}</td>
-          <td>{{displayTotalRepair()}}</td>
-          <td>{{displayTotalStorage()}}</td>
-          <td>{{displayTotal()}}</td>
-          <td>{{displayTotalPending()}}</td>
-          <td>{{displayTotalWithRO()}}</td>
+          <td class="text-center">{{displayTotalSteam()}}</td>
+          <td class="text-center">{{displayTotalClean()}}</td>
+          <td class="text-center">{{displayTotalRepair()}}</td>
+          <td class="text-center">{{displayTotalStorage()}}</td>
+          <td class="text-center">{{displayTotal()}}</td>
+          <td class="text-center">{{displayTotalPending()}}</td>
+          <td class="text-center">{{displayTotalWithRO()}}</td>
         </tr>
       </table>
     

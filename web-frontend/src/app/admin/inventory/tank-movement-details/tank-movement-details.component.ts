@@ -945,9 +945,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return Utility.convertEpochToDateStr(input);
   }
 
-  parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
-  }
+  // parse2Decimal(input: number | string | undefined) {
+  //   return Utility.formatNumberDisplay(input);
+  // }
 
   convertDisplayDate(input: number | Date | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input as number);
@@ -1032,6 +1032,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     input.value = '';
   }
 
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
+  
   updatePurposeDialog(event: Event, type: string, action: string) {
     this.preventDefault(event);
     // TODO :: Add purpose logic

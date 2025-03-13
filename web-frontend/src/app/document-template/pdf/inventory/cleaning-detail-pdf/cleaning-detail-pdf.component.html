@@ -28,14 +28,14 @@
         </tr>
         @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
         <tr class="fixed_height_40px">
-          <td>{{ index + 1 }}</td> <!-- Row number -->
-          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
-          <td><span class="overflow-text">{{ DisplayCustomerName(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayCleanIn(itm) }}</span></td>
-          <td>{{ DisplayCleanDate(itm) }}</td>
-          <td>{{ DipslayCleanDuration(itm) }}</td>
-          <td>{{ itm.tariff_cleaning?.un_no }}</td>
-          <td><span class="overflow-text">{{ DisplayCleanMethod(itm) }}</span></td>
+          <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+          <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayCustomerName(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayCleanIn(itm) }}</span></td>
+          <td class="text-center">{{ DisplayCleanDate(itm) }}</td>
+          <td class="text-center">{{ DipslayCleanDuration(itm) }}</td>
+          <td class="text-center">{{ itm.tariff_cleaning?.un_no }}</td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayCleanMethod(itm) }}</span></td>
         </tr>
         }
       </table>

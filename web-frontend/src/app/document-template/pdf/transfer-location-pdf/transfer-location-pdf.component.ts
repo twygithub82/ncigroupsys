@@ -511,9 +511,9 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     return Utility.convertEpochToDateStr(input);
   }
 
-  parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
-  }
+  // parse2Decimal(input: number | string | undefined) {
+  //   return Utility.formatNumberDisplay(input);
+  // }
 
   async onDownloadClick() {
     this.exportToPDF_r1();

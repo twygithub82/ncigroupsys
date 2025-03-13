@@ -52,25 +52,25 @@
         </tr>
         @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
           <tr class="fixed_height_40px">
-            <td>{{ index + 1 }}</td> <!-- Row number -->
-            <td>{{ itm.tank_no }}</td> 
-            <td>{{ DisplayInDate(itm) }}</td> 
-            <td><span class="overflow-text" matTooltip={{DisplayTakeInRef(itm)}}>{{ DisplayTakeInRef(itm) }}</span></td> 
-            <td>{{ DisplayCapacity(itm) }}</td> 
-            <td><span class="overflow-text" matTooltip={{DisplayTareWeight(itm)}}>{{ DisplayTareWeight(itm) }}</span></td> 
-            <td><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td> 
-            <td>{{ DisplayCleanDate(itm) }}</td>
-            <td><span class="overflow-text" matTooltip={{DisplayEstimateNo(itm)}}>{{ DisplayEstimateNo(itm) }}</span></td>
-            <td>{{ DisplayEstimateDate(itm) }}</td>
-            <td>{{ DisplayApprovalDate(itm) }}</td>
-            <td>{{ DisplayApprovalRef(itm) }}</td>
-            <td>{{ DisplayAVDate(itm) }}</td>
-            <td><span class="overflow-text" matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
-            <td>{{ DisplayReleaseDate(itm) }}</td>
-            <td>{{ DisplayReleaseRef(itm) }}</td>
-            <td>{{ DisplayCurrentStatus(itm) }}</td>
-            <td><span class="overflow-text" matTooltip={{DisplayRemarks(itm)}}>{{ DisplayRemarks(itm) }}</span></td>
-            <td>{{ displayTankPurpose(itm) }}</td>
+            <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+            <td class="text-center">{{ itm.tank_no }}</td> 
+            <td class="text-center">{{ DisplayInDate(itm) }}</td> 
+            <td class="text-center"><span class="overflow-text" matTooltip={{DisplayTakeInRef(itm)}}>{{ DisplayTakeInRef(itm) }}</span></td> 
+            <td class="text-center">{{ DisplayCapacity(itm) }}</td> 
+            <td class="text-center"><span class="overflow-text" matTooltip={{DisplayTareWeight(itm)}}>{{ DisplayTareWeight(itm) }}</span></td> 
+            <td class="text-center"><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td> 
+            <td class="text-center">{{ DisplayCleanDate(itm) }}</td>
+            <td class="text-center"><span class="overflow-text" matTooltip={{DisplayEstimateNo(itm)}}>{{ DisplayEstimateNo(itm) }}</span></td>
+            <td class="text-center">{{ DisplayEstimateDate(itm) }}</td>
+            <td class="text-center">{{ DisplayApprovalDate(itm) }}</td>
+            <td class="text-center">{{ DisplayApprovalRef(itm) }}</td>
+            <td class="text-center">{{ DisplayAVDate(itm) }}</td>
+            <td class="text-center"><span class="overflow-text" matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
+            <td class="text-center">{{ DisplayReleaseDate(itm) }}</td>
+            <td class="text-center">{{ DisplayReleaseRef(itm) }}</td>
+            <td class="text-center">{{ DisplayCurrentStatus(itm) }}</td>
+            <td class="text-center"><span class="overflow-text" matTooltip={{DisplayRemarks(itm)}}>{{ DisplayRemarks(itm) }}</span></td>
+            <td class="text-center">{{ displayTankPurpose(itm) }}</td>
           </tr>
         }
       </table>

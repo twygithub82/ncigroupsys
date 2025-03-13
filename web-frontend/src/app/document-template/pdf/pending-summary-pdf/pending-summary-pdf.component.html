@@ -37,16 +37,16 @@
         </tr>
         @for (rep of repBillingCustomers; track rep;let index = $index) {
           <tr>
-            <td>{{ index + 1 }}</td> <!-- Row number -->
-            <td>{{ DisplayCustomer(rep) }}</td>
-            <td>{{ DisplayPreinspectionNo(rep) }}</td>
-            <td>{{ DisplayLOLONo(rep) }}</td>
-            <td>{{ DisplayStorageNo(rep) }}</td>
-            <td>{{ DisplayResidueNo(rep) }}</td>
-            <td>{{ DisplaySteamNo(rep) }}</td>
-            <td>{{ DisplayCleanNo(rep) }}</td>
-            <td>{{ DisplayRepairNo(rep) }}</td>
-            <td>{{ DisplayGateIONo(rep) }}</td>
+            <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+            <td class="text-center">{{ DisplayCustomer(rep) }}</td>
+            <td class="text-center">{{ DisplayPreinspectionNo(rep) }}</td>
+            <td class="text-center">{{ DisplayLOLONo(rep) }}</td>
+            <td class="text-center">{{ DisplayStorageNo(rep) }}</td>
+            <td class="text-center">{{ DisplayResidueNo(rep) }}</td>
+            <td class="text-center">{{ DisplaySteamNo(rep) }}</td>
+            <td class="text-center">{{ DisplayCleanNo(rep) }}</td>
+            <td class="text-center">{{ DisplayRepairNo(rep) }}</td>
+            <td class="text-center">{{ DisplayGateIONo(rep) }}</td>
           </tr>
         }
       </table>

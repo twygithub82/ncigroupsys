@@ -48,23 +48,23 @@
         </tr>
         @for (itm of bCust.items; track itm;let index = $index) {
           <tr class="fixed_height_40px">
-            <td>{{ index + 1 }}</td> <!-- Row number -->
+            <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
             <td><span class="overflow-text">{{ itm.job_no }}</span></td> 
             <td><span class="overflow-text">{{ itm.tank_no }}</span></td> 
             <td><span class="overflow-text">{{ itm.eir_no }}</span></td> 
             <td><span class="overflow-text"  matTooltip={{itm.last_cargo}}>{{ itm.last_cargo }}</span></td> 
-            <td><span class="overflow-text">{{ itm.in_date }}</span></td> 
-            <td><span class="overflow-text">{{ itm.out_date }}</span></td> 
-            <td>{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
-            <td>{{ (itm.repair_cost==="0.00"?'':itm.repair_cost) }}</td> 
-            <td>{{ (itm.preins_cost==="0.00"?'':itm.preins_cost) }}</td> 
-            <td>{{ (itm.lolo_cost==="0.00"?'':itm.lolo_cost) }}</td> 
-            <td>{{ itm.days }}</td> 
-            <td>{{ (itm.storage_cost==="0.00"?'':itm.storage_cost)}}</td> 
-            <td>{{ (itm.steam_cost==="0.00"?'':itm.steam_cost)}}</td> 
-            <td>{{ (itm.residue_cost==="0.00"?'':itm.residue_cost)}}</td> 
-            <td>{{ (itm.gateio_cost==="0.00"?'':itm.gateio_cost)}}</td> 
-            <td>{{ (itm.total==="0.00"?'':itm.total) }}</td> 
+            <td><span class="overflow-text text-center">{{ itm.in_date }}</span></td> 
+            <td><span class="overflow-text text-center">{{ itm.out_date }}</span></td> 
+            <td class="text-center">{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
+            <td class="text-center">{{ (itm.repair_cost==="0.00"?'':itm.repair_cost) }}</td> 
+            <td class="text-center">{{ (itm.preins_cost==="0.00"?'':itm.preins_cost) }}</td> 
+            <td class="text-center">{{ (itm.lolo_cost==="0.00"?'':itm.lolo_cost) }}</td> 
+            <td class="text-center">{{ itm.days }}</td> 
+            <td class="text-center">{{ (itm.storage_cost==="0.00"?'':itm.storage_cost)}}</td> 
+            <td class="text-center">{{ (itm.steam_cost==="0.00"?'':itm.steam_cost)}}</td> 
+            <td class="text-center">{{ (itm.residue_cost==="0.00"?'':itm.residue_cost)}}</td> 
+            <td class="text-center">{{ (itm.gateio_cost==="0.00"?'':itm.gateio_cost)}}</td> 
+            <td class="text-center">{{ (itm.total==="0.00"?'':itm.total) }}</td> 
           </tr>
         }
       </table>

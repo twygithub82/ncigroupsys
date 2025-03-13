@@ -46,18 +46,18 @@
 
         @for (itm of bCust.periodic_test_due; track itm; let index = $index) {
         <tr>
-          <td>{{ index + 1 }}</td>
-          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
-          <td><span class="overflow-text">{{ DisplayEIRNo(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayEIRDate(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayOwner(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayLastTest(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayLastTestDate(itm)}}</span></td>
-          <td><span class="overflow-text">{{ DisplayClass(itm)}}</span></td>
-          <td><span class="overflow-text">{{ DisplayNextTest(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayNextTestDate(itm)}}</span></td>
-          <td><span class="overflow-text">{{ DisplayDueDays(itm) }}</span></td>
-          <td><span class="overflow-text">{{ DisplayDueType(itm) }}</span></td>
+          <td class="text-center">{{ index + 1 }}</td>
+          <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayEIRNo(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayEIRDate(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayOwner(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayLastTest(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayLastTestDate(itm)}}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayClass(itm)}}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayNextTest(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayNextTestDate(itm)}}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayDueDays(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayDueType(itm) }}</span></td>
 
         </tr>
         }

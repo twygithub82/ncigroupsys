@@ -33,16 +33,16 @@
         </tr>
         @for (itm of bCust.tank_survey_summaries; track itm;let index = $index) {
         <tr class="fixed_height_40px">
-          <td>{{ index + 1 }}</td> <!-- Row number -->
-          <td><span class="overflow-text">{{ itm.customer_code }}</span></td>
-          <td><span class="overflow-text">{{itm.tank_no }}</span></td>
-          <td><span class="overflow-text">{{ itm.eir_no }}</span></td>
-          <td><span class="overflow-text">{{ itm.survey_type }}</span></td>
-          <td><span class="overflow-text">{{ itm.visit }}</span></td>
-          <td><span class="overflow-text">{{ itm.status }}</span></td>
-          <td><span class="overflow-text">{{ itm.surveryor }}</span></td>
+          <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+          <td class="text-center"><span class="overflow-text">{{ itm.customer_code }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{itm.tank_no }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ itm.eir_no }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ itm.survey_type }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ itm.visit }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ itm.status }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ itm.surveryor }}</span></td>
           <!-- <td><span class="overflow-text">{{ itm.reference }}</span></td> -->
-          <td><span class="overflow-text">{{ DisplayCleanDate(itm) }}</span></td>
+          <td class="text-center"><span class="overflow-text">{{ DisplayCleanDate(itm) }}</span></td>
         </tr>
         }
       </table>

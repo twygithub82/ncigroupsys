@@ -26,17 +26,17 @@
           </tr>
           @for (itm of report_inventory; track itm;let index = $index) {
           <tr class="fixed_height_40px">
-            <td>{{ index + 1 }}</td> <!-- Row number -->
-            <td>{{ itm.code }}</td>
-            <td>{{itm.name }}</td>
-            <td>{{displayInGate(itm)}}</td>
-            <td>{{displayOutGate(itm)}}</td>
+            <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+            <td class="text-center">{{ itm.code }}</td>
+            <td class="text-center">{{itm.name }}</td>
+            <td class="text-center">{{displayInGate(itm)}}</td>
+            <td class="text-center">{{displayOutGate(itm)}}</td>
           </tr>
           }
           <tr>
             <td class="text-right text-bold" colspan="3">{{translatedLangText.TOTAL}}</td>
-            <td>{{displayTotalInGate()}}</td>
-            <td>{{displayTotalOutGate()}}</td>
+            <td class="text-center">{{displayTotalInGate()}}</td>
+            <td class="text-center">{{displayTotalOutGate()}}</td>
           </tr>
         </table>
         <div>&nbsp;</div>
@@ -54,22 +54,22 @@
             @if(report_inventory[0].opening_balance){
               @for (itm of report_inventory[0].opening_balance; track itm;let index = $index) {
                 <tr class="fixed_height_40px">
-                  <td>{{ index + 1 }}</td> <!-- Row number -->
-                  <td>{{ itm.yard }}</td>
-                  <td>{{itm.open_balance }}</td>
-                  <td>{{itm.in_count}}</td>
-                  <td>{{itm.out_count}}</td>
-                  <td>{{displayClosingBalanceForYard(itm)}}</td>
+                  <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+                  <td class="text-center">{{ itm.yard }}</td>
+                  <td class="text-center">{{itm.open_balance }}</td>
+                  <td class="text-center">{{itm.in_count}}</td>
+                  <td class="text-center">{{itm.out_count}}</td>
+                  <td class="text-center">{{displayClosingBalanceForYard(itm)}}</td>
                 </tr>
                 }
             }
           }
             <tr>
               <td class="text-right text-bold" colspan="2">{{translatedLangText.TOTAL}}</td>
-              <td>{{displayOpeningBalance()}}</td>
-              <td>{{displayTotalInGate()}}</td>
-              <td>{{displayTotalOutGate()}}</td>
-              <td>{{displayClosingBalance()}}</td>
+              <td class="text-center">{{displayOpeningBalance()}}</td>
+              <td class="text-center">{{displayTotalInGate()}}</td>
+              <td class="text-center">{{displayTotalOutGate()}}</td>
+              <td class="text-center">{{displayClosingBalance()}}</td>
             </tr>
         </table>
       </div>

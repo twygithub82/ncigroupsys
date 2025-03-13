@@ -697,9 +697,9 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     return Utility.convertEpochToDateStr(input);
   }
 
-  parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
-  }
+  // parse2Decimal(input: number | string | undefined) {
+  //   return Utility.formatNumberDisplay(input);
+  // }
 
   calculateCost() {
     // this.repairCost = this.steamDS.calculateCost(this.repairItem, this.repairItem?.repair_part);

@@ -1175,28 +1175,28 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
    {
      let retval:string='';
 
-      retval = (item.clean_cost==="0.00" || item.clean_cost===undefined?'':`${item.clean_cost} (${item.clean_est_no})`)
+      retval = (item.clean_cost==="0.00" || item.clean_cost===undefined?'':`${item.clean_cost}`)
      return retval;
    }
    displayStorageCost(item:report_billing_item):string
    {
      let retval:string='';
 
-      retval = (item.storage_cost==="0.00" || item.storage_cost===undefined?'':`${item.storage_cost} (${item.storage_est_no})`)
+      retval = (item.storage_cost==="0.00" || item.storage_cost===undefined?'':`${item.storage_cost}`)
      return retval;
    }
    displaySteamCost(item:report_billing_item):string
    {
      let retval:string='';
 
-      retval = (item.steam_cost==="0.00"|| item.steam_cost===undefined?'':`${item.steam_cost} (${item.steam_est_no})`)
+      retval = (item.steam_cost==="0.00"|| item.steam_cost===undefined?'':`${item.steam_cost}`)
      return retval;
    }
    displayRepairCost(item:report_billing_item):string
    {
      let retval:string='';
 
-      retval = (item.repair_cost==="0.00" || item.repair_cost===undefined?'':`${item.repair_cost} (${item.repair_est_no})`)
+      retval = (item.repair_cost==="0.00" || item.repair_cost===undefined?'':`${item.repair_cost}`)
      return retval;
    }
 
@@ -1204,7 +1204,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
    {
      let retval:string='';
 
-      retval = (item.residue_cost==="0.00" || item.residue_cost===undefined?'':`${item.residue_cost} (${item.residue_est_no})`)
+      retval = (item.residue_cost==="0.00" || item.residue_cost===undefined?'':`${item.residue_cost} `)
      return retval;
    }
 
@@ -1212,7 +1212,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
    {
      let retval:string='';
 
-      retval = (item.lolo_cost==="0.00" || item.lolo_cost===undefined?'':`${item.lolo_cost} (${item.lolo_est_no})`)
+      retval = (item.lolo_cost==="0.00" || item.lolo_cost===undefined?'':`${item.lolo_cost} `)
      return retval;
    }
 
@@ -1220,7 +1220,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
    {
      let retval:string='';
 
-      retval = (item.preins_cost==="0.00" || item.preins_cost===undefined?'':`${item.preins_cost} (${item.preins_est_no})`)
+      retval = (item.preins_cost==="0.00" || item.preins_cost===undefined?'':`${item.preins_cost} `)
      return retval;
    }
 
