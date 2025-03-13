@@ -28,6 +28,8 @@ namespace IDMS.Models.Service
         public long? complete_dt { get; set; }
         public long? na_dt { get; set; }
         public string? estimate_no { get; set; }
+        public double? total_cost { get; set; }
+        public double? est_cost { get; set; }
 
         [ForeignKey("customer_billing")]
         public string? customer_billing_guid { get; set; }
