@@ -13,6 +13,8 @@ using IDMS.Models.Service;
 using IDMS.Models.Tariff;
 using IDMS.Models.Parameter;
 using IDMS.Billing.GqlTypes.BillingResult;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Reflection.Metadata.Ecma335;
 
 namespace IDMS.Billing.GqlTypes
 {
@@ -180,7 +182,7 @@ namespace IDMS.Billing.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 List<PeriodicTestDueSummary> result = new List<PeriodicTestDueSummary>();
 
-                var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
                 long currentDateTime = DateTime.Now.ToEpochTime();
                 long nextTestThreshold = (long)(Math.Floor(2.5 * 365.25 * 86400));
                 long secInDay = 86400;
@@ -198,7 +200,7 @@ namespace IDMS.Billing.GqlTypes
                                                            join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
                                                            from i in iGroup.DefaultIfEmpty()
                                                            where tf.yard_cv != null
-                                                                 && !excludeStatus.Contains(sot.tank_status_cv) && i.delete_dt == null
+                                                                 && !StatusCondition.BeforeTankIn.Contains(sot.tank_status_cv) && i.delete_dt == null
                                                            select (new PeriodicTestDueSummary
                                                            {
                                                                tank_no = tf.tank_no,
@@ -275,7 +277,7 @@ namespace IDMS.Billing.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 List<DailyTankSurveySummary> result = new List<DailyTankSurveySummary>();
 
-                var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
                 string surveryorCodeValType = "TEST_CLASS";
                 string tankStatusCV = "ACCEPTED";
 
@@ -292,7 +294,7 @@ namespace IDMS.Billing.GqlTypes
                                                            join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
                                                            from i in iGroup.DefaultIfEmpty()
                                                            where sot.status_cv == tankStatusCV
-                                                               && !excludeStatus.Contains(sot.tank_status_cv)
+                                                               && !StatusCondition.BeforeTankIn.Contains(sot.tank_status_cv)
                                                                && sd.survey_dt >= sDate
                                                                && sd.survey_dt <= eDate
                                                                && (i.delete_dt == null)
@@ -366,8 +368,6 @@ namespace IDMS.Billing.GqlTypes
                 long sDate = dailyInventoryRequest.start_date; //StartDateExtract(dailyInventoryRequest.start_date);
                 long eDate = dailyInventoryRequest.end_date; //EndDateExtract(dailyInventoryRequest.end_date);
 
-
-
                 List<OpeningBalance?> openingBalances = new List<OpeningBalance?>();
                 var OB = await QueryOpeningBalance(context, sDate);
                 openingBalances = await QueryYardCount(context, dailyInventoryRequest.inventory_type, sDate, eDate, OB);
@@ -388,6 +388,7 @@ namespace IDMS.Billing.GqlTypes
 
                 if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.IN) || dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.ALL))
                 {
+                    //Master in here need to check eir_status = published ?? and publish_dt != null ???
                     query = query.Where(sot => context.in_gate
                                     .Where(i => (i.delete_dt == null || i.delete_dt == 0) && i.eir_dt >= sDate && i.eir_dt <= eDate)
                                     .Select(i => i.so_tank_guid)
@@ -565,7 +566,6 @@ namespace IDMS.Billing.GqlTypes
         }
 
 
-
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -647,7 +647,6 @@ namespace IDMS.Billing.GqlTypes
         }
 
 
-
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -660,15 +659,15 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}",
-                    $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
+                //List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}",
+                //    $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
 
                 // Check if all elements in inputList are within the process list
-                if (!process.ContainsIgnore(zeroApprovalRequest.report_type))
+                if (!ProcessType.ProcessList.ContainsIgnore(zeroApprovalRequest.report_type))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
                 //string completedStatus = "COMPLETED";
-                var invalidStatus = new[] { "PENDING", "CANCELED", "NO_ACTION" };
+                //var invalidStatus = new[] { "PENDING", "CANCELED", "NO_ACTION" };
 
                 int year = zeroApprovalRequest.year;
                 int month = zeroApprovalRequest.month;
@@ -686,7 +685,7 @@ namespace IDMS.Billing.GqlTypes
                 if (zeroApprovalRequest.report_type.EqualsIgnore(ProcessType.REPAIR))
                 {
                     query = (from r in context.repair
-                             where !invalidStatus.Contains(r.status_cv) && r.delete_dt == null && r.approve_dt != null && r.total_cost == 0.0
+                             where !StatusCondition.BeforeApprove.Contains(r.status_cv) && r.delete_dt == null && r.approve_dt != null && r.total_cost == 0.0
                              && r.approve_dt >= startEpoch && r.approve_dt <= endEpoch
                              select new SelectedZeroApprovalEstimate
                              {
@@ -701,7 +700,7 @@ namespace IDMS.Billing.GqlTypes
                 else if (zeroApprovalRequest.report_type.EqualsIgnore(ProcessType.RESIDUE))
                 {
                     query = (from r in context.residue
-                             where !invalidStatus.Contains(r.status_cv) && r.delete_dt == null && r.approve_dt != null && r.total_cost == 0.0
+                             where !StatusCondition.BeforeApprove.Contains(r.status_cv) && r.delete_dt == null && r.approve_dt != null && r.total_cost == 0.0
                              && r.approve_dt >= startEpoch && r.approve_dt <= endEpoch
                              select new SelectedZeroApprovalEstimate
                              {
@@ -716,7 +715,7 @@ namespace IDMS.Billing.GqlTypes
                 else if (zeroApprovalRequest.report_type.EqualsIgnore(ProcessType.STEAMING))
                 {
                     query = (from r in context.steaming
-                             where !invalidStatus.Contains(r.status_cv) && r.delete_dt == null && r.approve_dt != null && r.total_cost == 0.0
+                             where !StatusCondition.BeforeApprove.Contains(r.status_cv) && r.delete_dt == null && r.approve_dt != null && r.total_cost == 0.0
                              && r.approve_dt >= startEpoch && r.approve_dt <= endEpoch
                              select new SelectedZeroApprovalEstimate
                              {
@@ -731,7 +730,7 @@ namespace IDMS.Billing.GqlTypes
                 else if (zeroApprovalRequest.report_type.EqualsIgnore(ProcessType.CLEANING))
                 {
                     query = (from r in context.cleaning
-                             where !invalidStatus.Contains(r.status_cv) && r.delete_dt == null && r.approve_dt != null && r.cleaning_cost == 0.0
+                             where !StatusCondition.BeforeApprove.Contains(r.status_cv) && r.delete_dt == null && r.approve_dt != null && r.cleaning_cost == 0.0
                              && r.approve_dt >= startEpoch && r.approve_dt <= endEpoch
                              select new SelectedZeroApprovalEstimate
                              {
@@ -745,25 +744,25 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 var res = (from result in query
-                               join sot in context.storing_order_tank on result.guid equals sot.guid
-                               join so in context.storing_order on sot.so_guid equals so.guid
-                               join cc in context.customer_company on so.customer_company_guid equals cc.guid
-                               join ig in context.in_gate on sot.guid equals ig.so_tank_guid
-                               join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
-                               select new ZeroApprovalCost
-                                   {
-                                       tank_no = sot.tank_no,
-                                       eir_no = ig.eir_no,
-                                       eir_dt = ig.eir_dt,
-                                       complete_dt = result.complete_dt,
-                                       approve_dt = result.approve_dt,
-                                       estimate_no = result.estimate_no,
-                                       est_cost = result.est_cost,
-                                       customer_code = cc.code,
-                                       customer_name = cc.name,
-                                       last_cargo = tc.cargo
+                           join sot in context.storing_order_tank on result.guid equals sot.guid
+                           join so in context.storing_order on sot.so_guid equals so.guid
+                           join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                           join ig in context.in_gate on sot.guid equals ig.so_tank_guid
+                           join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
+                           select new ZeroApprovalCost
+                           {
+                               tank_no = sot.tank_no,
+                               eir_no = ig.eir_no,
+                               eir_dt = ig.eir_dt,
+                               complete_dt = result.complete_dt,
+                               approve_dt = result.approve_dt,
+                               estimate_no = result.estimate_no,
+                               est_cost = result.est_cost,
+                               customer_code = cc.code,
+                               customer_name = cc.name,
+                               last_cargo = tc.cargo
 
-                                   }).AsQueryable();
+                           }).AsQueryable();
 
 
                 if (!string.IsNullOrEmpty(zeroApprovalRequest.customer_code))
@@ -804,17 +803,187 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
+
+        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        //[UseProjection]
+        //[UseFiltering]
+        //[UseSorting]
+        public async Task<CustomerMonthlySales> QueryCustomerMonthlySalesReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, CustomerMonthlySalesRequest customerMonthlySalesRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                MonthlySalesList monthlySalesReportResult = new MonthlySalesList();
+
+                int year = customerMonthlySalesRequest.year;
+                int month = customerMonthlySalesRequest.month;
+
+                // Get the start date of the month (1st of the month)
+                DateTime startOfMonth = new DateTime(year, month, 1);
+                // Get the end date of the month (last day of the month)
+                DateTime endOfMonth = startOfMonth.AddMonths(1).AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
+                // Convert the start and end dates to Unix Epoch (seconds since 1970-01-01)
+                long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
+                long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
+
+                List<string> reportTypes = new List<string> { "tankin", "cleaning", "steaming", "residue", "inservice", "offhire" };
+
+                List<List<CustomerSales>> customerSales = new List<List<CustomerSales>>();
+
+                foreach (var type in reportTypes)
+                {
+                    var resultList = await RetriveSalesReportResult(context, type, startEpoch, endEpoch, customerMonthlySalesRequest.customer_code);
+
+                    List<CustomerSales> salesByCustomer = new List<CustomerSales>();
+                    if (type.EqualsIgnore("cleaning"))
+                    {
+                        salesByCustomer = resultList
+                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        .Select(g => new CustomerSales
+                                        {
+                                            code = g.Key,
+                                            name = g.Select(n => n.cc_name).FirstOrDefault(),
+                                            clean_count = g.Count(),
+                                            clean_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                                        })
+                                        .OrderBy(g => g.code) // Sort by date
+                                        .ToList();
+                    }
+                    else if (type.EqualsIgnore("steaming"))
+                    {
+                        salesByCustomer = resultList
+                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        .Select(g => new CustomerSales
+                                        {
+                                            code = g.Key,
+                                            name = g.Select(n => n.cc_name).FirstOrDefault(),
+                                            steam_count = g.Count(),
+                                            steam_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                                        })
+                                        .OrderBy(g => g.code) // Sort by date
+                                        .ToList();
+                    }
+                    else if (type.EqualsIgnore("residue"))
+                    {
+                        salesByCustomer = resultList
+                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        .Select(g => new CustomerSales
+                                        {
+                                            code = g.Key,
+                                            name = g.Select(n => n.cc_name).FirstOrDefault(),
+                                            residue_count = g.Count(),
+                                            residue_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                                        })
+                                        .OrderBy(g => g.code) // Sort by date
+                                        .ToList();
+                    }
+                    else if (type.EqualsIgnore("inservice"))
+                    {
+                        salesByCustomer = resultList
+                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        .Select(g => new CustomerSales
+                                        {
+                                            code = g.Key,
+                                            name = g.Select(n => n.cc_name).FirstOrDefault(),
+                                            in_service_count = g.Count(),
+                                            in_service_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                                        })
+                                        .OrderBy(g => g.code) // Sort by date
+                                        .ToList();
+                    }
+                    else if (type.EqualsIgnore("offhire"))
+                    {
+                        salesByCustomer = resultList
+                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        .Select(g => new CustomerSales
+                                        {
+                                            code = g.Key,
+                                            name = g.Select(n => n.cc_name).FirstOrDefault(),
+                                            offhire_count = g.Count(),
+                                            offhire_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                                        })
+                                        .OrderBy(g => g.code) // Sort by date
+                                        .ToList();
+                    }
+                    else if (type.EqualsIgnore("tankin"))
+                    {
+                        salesByCustomer = resultList
+                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        .Select(g => new CustomerSales
+                                        {
+                                            code = g.Key,
+                                            name = g.Select(n => n.cc_name).FirstOrDefault(),
+                                            tank_in_count = g.Count(),
+                                            //repair_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                                        })
+                                        .OrderBy(g => g.code) // Sort by date
+                                        .ToList();
+                    }
+
+                    customerSales.Add(salesByCustomer);
+                }
+
+                var combinedList = customerSales
+                     .SelectMany(list => list) // Flatten the lists into one sequence
+                                               //.Union(list2)
+                                               //.Union(list3)
+                    .GroupBy(x => x.code)
+                    .Select(group => new CustomerSales
+                    {
+                        code = group.Key,
+                        name = group.FirstOrDefault()?.name ?? "", // Select the name from the first available entry
+                        tank_in_count = group.Where(x => x.tank_in_count > 0).Sum(x => x.tank_in_count),
+                        clean_count = group.Where(x => x.clean_count > 0).Sum(x => x.clean_count),
+                        clean_cost = Math.Ceiling(group.Where(x => x.clean_cost > 0).Sum(x => x.clean_cost)),
+                        steam_count = group.Where(x => x.steam_count > 0).Sum(x => x.steam_count),
+                        steam_cost = Math.Ceiling(group.Where(x => x.steam_cost > 0).Sum(x => x.steam_cost)),
+                        residue_count = group.Where(x => x.residue_count > 0).Sum(x => x.residue_count),
+                        residue_cost = Math.Ceiling(group.Where(x => x.residue_cost > 0).Sum(x => x.residue_cost)),
+                        in_service_count = group.Where(x => x.in_service_count > 0).Sum(x => x.in_service_count),
+                        in_service_cost = Math.Ceiling(group.Where(x => x.in_service_cost > 0).Sum(x => x.in_service_cost)),
+                        offhire_count = group.Where(x => x.offhire_count > 0).Sum(x => x.offhire_count),
+                        offhire_cost = Math.Ceiling(group.Where(x => x.offhire_cost > 0).Sum(x => x.offhire_cost))
+
+                    })
+                    .ToList();
+
+                CustomerMonthlySales customerMonthlySales = new CustomerMonthlySales();
+                customerMonthlySales.customer_sales = combinedList.OrderBy(x => x.code).ToList();
+                customerMonthlySales.total_tank_in = combinedList.Sum(x => x.tank_in_count);
+                customerMonthlySales.total_steam_count = combinedList.Sum(x => x.steam_count);
+                customerMonthlySales.total_steam_cost = combinedList.Sum(x => x.steam_cost);
+                customerMonthlySales.total_clean_count = combinedList.Sum(x => x.clean_count);
+                customerMonthlySales.total_clean_cost = combinedList.Sum(x => x.clean_cost);
+                customerMonthlySales.total_residue_count = combinedList.Sum(x => x.residue_count);
+                customerMonthlySales.total_residue_cost = combinedList.Sum(x => x.residue_cost);
+                customerMonthlySales.total_in_service_count = combinedList.Sum(x => x.in_service_count);
+                customerMonthlySales.total_in_service_cost = combinedList.Sum(x => x.in_service_cost);
+                customerMonthlySales.total_offhire_count = combinedList.Sum(x => x.offhire_count);
+                customerMonthlySales.total_offhire_cost = combinedList.Sum(x => x.offhire_cost);
+
+                return customerMonthlySales;
+
+                //return combinedList.OrderBy(x => x.code).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
         public async Task<MonthlySalesList> QueryMonthlySalesReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
              [Service] IHttpContextAccessor httpContextAccessor, MonthlySalesRequest monthlySalesRequest)
         {
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}",
-                    $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
+                //List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.RESIDUE}" ,
+                //    $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
 
                 // Check if all elements in inputList are within the process list
-                if (!monthlySalesRequest.report_type.All(i => process.ContainsIgnore(i)))
+                if (!monthlySalesRequest.report_type.All(i => ProcessType.ProcessList.ContainsIgnore(i)))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
                 MonthlySalesList monthlySalesReportResult = new MonthlySalesList();
@@ -923,11 +1092,11 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}",
-                    $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
+                //List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}",
+                //    $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
 
                 // Check if all elements in inputList are within the process list
-                if (!yearlySalesRequest.report_type.All(i => process.ContainsIgnore(i)))
+                if (!yearlySalesRequest.report_type.All(i => ProcessType.ProcessList.ContainsIgnore(i)))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
                 YearlySalesList yearlySalesReportResult = new YearlySalesList();
@@ -1039,8 +1208,8 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}", $"{ProcessType.RESIDUE}" };
-                if (!process.ContainsIgnore(monthlyRevenueRequest.report_type))
+                //List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}", $"{ProcessType.RESIDUE}" };
+                if (!ProcessType.ProcessList.ContainsIgnore(monthlyRevenueRequest.report_type))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
                 int year = monthlyRevenueRequest.year;
@@ -1127,8 +1296,9 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}" };
-                if (!process.ContainsIgnore(yearlyRevenueRequest.report_type))
+                //List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}" };
+
+                if (!ProcessType.ProcessList.ContainsIgnore(yearlyRevenueRequest.report_type))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
                 int year = yearlyRevenueRequest.year;
@@ -1314,9 +1484,10 @@ namespace IDMS.Billing.GqlTypes
             {
                 string completedStatus = "COMPLETED";
                 string qcCompletedStatus = "QC_COMPLETED";
+                string yetSurvey = "YET_TO_SURVEY";
 
-                var invalidStatus = new[] { "PENDING", "CANCELED", "NO_ACTION" };
-                var cancelStatus = new[] { "CANCELED", "NO_ACTION" };
+                //var invalidStatus = new[] { "PENDING", "CANCELED", "NO_ACTION" };
+                //var cancelStatus = new[] { "CANCELED", "NO_ACTION" };
 
                 var query = (from sot in context.storing_order_tank
                              join so in context.storing_order on sot.so_guid equals so.guid into soJoin
@@ -1327,6 +1498,8 @@ namespace IDMS.Billing.GqlTypes
                              {
                                  sot_guid = sot.guid,
                                  code = cc.code,
+                                 cc_name = cc.name,
+                                 purpose_repair = sot.purpose_repair_cv
                                  //date = (long)s.complete_dt
                              }).AsQueryable();
 
@@ -1335,12 +1508,13 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = (from result in query
                              join s in context.cleaning on result.sot_guid equals s.sot_guid
-                             where cancelStatus.Contains(s.status_cv) && s.delete_dt == null
-                                 && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
+                             where !StatusCondition.Cancelled.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
+                             s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
                              select new TempReport
                              {
                                  sot_guid = result.sot_guid,
                                  code = result.code,
+                                 cc_name = result.cc_name,
                                  cost = s.cleaning_cost ?? 0.0 + s.buffer_cost ?? 0.0,
                                  date = (long)s.approve_dt
                              }).AsQueryable();
@@ -1349,14 +1523,17 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = (from result in query
                              join s in context.residue on result.sot_guid equals s.sot_guid
-                             join rp in context.Set<residue_part>() on s.guid equals rp.residue_guid
-                             where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
-                                   s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && rp.delete_dt == null && (rp.approve_part == true || rp.approve_part == null)
+                             where !StatusCondition.BeforeApprove.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
+                             s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
+                             //join rp in context.Set<residue_part>() on s.guid equals rp.residue_guid
+                             //where !StatusCondition.BeforeApprove.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
+                             //      s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && rp.delete_dt == null && (rp.approve_part == true || rp.approve_part == null)
                              select new TempReport
                              {
                                  sot_guid = result.sot_guid,
                                  code = result.code,
-                                 cost = (double)(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
+                                 cc_name = result.cc_name,
+                                 cost = s.total_cost ?? 0.0, //(double)(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
                                  date = (long)s.approve_dt
                              }).AsQueryable();
                 }
@@ -1364,7 +1541,7 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = (from result in query
                              join s in context.steaming on result.sot_guid equals s.sot_guid
-                             where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
+                             where !StatusCondition.BeforeApprove.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
                              s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
                              //join rp in context.Set<steaming_part>() on s.guid equals rp.steaming_guid
                              //where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
@@ -1373,6 +1550,7 @@ namespace IDMS.Billing.GqlTypes
                              {
                                  sot_guid = result.sot_guid,
                                  code = result.code,
+                                 cc_name = result.cc_name,
                                  cost = s.total_cost ?? 0.0,   //(double)(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
                                  date = (long)s.approve_dt
                              }).AsQueryable();
@@ -1381,7 +1559,7 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = (from result in query
                              join s in context.repair on result.sot_guid equals s.sot_guid
-                             where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
+                             where !StatusCondition.BeforeApprove.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
                              s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
                              //join rp in context.repair_part on s.guid equals rp.repair_guid
                              //where !invalidStatus.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
@@ -1390,6 +1568,7 @@ namespace IDMS.Billing.GqlTypes
                              {
                                  sot_guid = result.sot_guid,
                                  code = result.code,
+                                 cc_name = result.cc_name,
                                  cost = s.total_cost ?? 0.0,  //(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
                                  date = (long)s.approve_dt
                              }).AsQueryable();
@@ -1400,13 +1579,14 @@ namespace IDMS.Billing.GqlTypes
                              join s in context.billing_sot on result.sot_guid equals s.sot_guid
                              join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
                              from ig in igJoin.DefaultIfEmpty()  // Left Join
-                             where s.preinspection == true && ig.delete_dt == null && ig.eir_status_cv != "YET_TO_SURVEY" && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
+                             where s.preinspection == true && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
                                  && s.delete_dt == null
                              select new TempReport
                              {
                                  sot_guid = result.sot_guid,
                                  cost = s.preinspection_cost ?? 0.0,
                                  code = result.code,
+                                 cc_name = result.cc_name,
                                  date = (long)ig.eir_dt
                              }).AsQueryable();
 
@@ -1417,14 +1597,62 @@ namespace IDMS.Billing.GqlTypes
                              join s in context.billing_sot on result.sot_guid equals s.sot_guid
                              join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
                              from ig in igJoin.DefaultIfEmpty()  // Left Join
-                             where (s.lift_off == true || s.lift_on == true) && ig.delete_dt == null && ig.eir_status_cv != "YET_TO_SURVEY" && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
+                             where (s.lift_off == true || s.lift_on == true) && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
                                  && s.delete_dt == null
                              select new TempReport
                              {
                                  sot_guid = result.sot_guid,
                                  cost = ((s.lift_on == true ? 1.0 : 0.0) * s.lift_on_cost ?? 0.0) + ((s.lift_off == true ? 1.0 : 0.0) * s.lift_off_cost ?? 0.0),
                                  code = result.code,
+                                 cc_name = result.cc_name,
                                  date = (long)ig.eir_dt
+                             }).AsQueryable();
+
+                }
+                else if (processType.EqualsIgnore("tankin"))
+                {
+                    query = (from result in query
+                             join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
+                             where ig.delete_dt == null && ig.eir_status_cv == "PUBLISHED" && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
+                             && ig.publish_dt != null
+                             select new TempReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 code = result.code,
+                                 cc_name = result.cc_name,
+                                 date = (long)ig.eir_dt
+                             }).AsQueryable();
+
+                }
+                else if (processType.EqualsIgnore("inservice"))
+                {
+                    query = (from result in query
+                             join s in context.repair on result.sot_guid equals s.sot_guid
+                             where !StatusCondition.BeforeApprove.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
+                             s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && result.purpose_repair.Equals("REPAIR")
+                             select new TempReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 code = result.code,
+                                 cc_name = result.cc_name,
+                                 cost = s.total_cost ?? 0.0,  //(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
+                                 date = (long)s.approve_dt
+                             }).AsQueryable();
+
+                }
+                else if (processType.EqualsIgnore("offhire"))
+                {
+                    query = (from result in query
+                             join s in context.repair on result.sot_guid equals s.sot_guid
+                             where !StatusCondition.BeforeApprove.Contains(s.status_cv) && s.delete_dt == null && s.approve_dt != null &&
+                             s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && result.purpose_repair.ToLower().Equals("OFFHIRE")
+                             select new TempReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 code = result.code,
+                                 cc_name = result.cc_name,
+                                 cost = s.total_cost ?? 0.0,  //(rp.approve_qty ?? 0 * rp.approve_cost ?? 0.0),
+                                 date = (long)s.approve_dt
                              }).AsQueryable();
 
                 }
@@ -1480,6 +1708,45 @@ namespace IDMS.Billing.GqlTypes
 
             return mergedList;
         }
+
+
+        //private List<DailyInventorySummary> MergeList(List<DailyInventorySummary> list1, List<DailyInventorySummary> list2, List<OpeningBalance?> openingBalances)
+        //{
+        //    List<DailyInventorySummary> mergedList = new List<DailyInventorySummary>();
+        //    try
+        //    {
+        //        mergedList = (from l1 in list1
+        //                      join l2 in list2 on l1.code equals l2.code into joined
+        //                      from l2 in joined.DefaultIfEmpty()
+        //                      select new DailyInventorySummary
+        //                      {
+        //                          code = l1.code,
+        //                          name = l1.name,
+        //                          in_gate_count = l1.in_gate_count,
+        //                          out_gate_count = l2?.out_gate_count ?? 0,
+        //                          opening_balance = openingBalances
+        //                      })
+        //                   .Union(
+        //                       from l2 in list2
+        //                       where !list1.Any(l1 => l1.code == l2.code)
+        //                       select new DailyInventorySummary
+        //                       {
+        //                           code = l2.code,
+        //                           name = l2.name,
+        //                           in_gate_count = 0,
+        //                           out_gate_count = l2.out_gate_count,
+        //                           opening_balance = openingBalances
+        //                       }
+        //                   )
+        //                   .ToList();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+
+        //    return mergedList;
+        //}
 
         private async Task<List<OpeningBalance>> QueryOpeningBalance(ApplicationBillingDBContext context, long inventoryDate)
         {

@@ -39,4 +39,12 @@ namespace IDMS.Billing.GqlTypes.LocalModel
         public int end_month { get; set; }
         public string? customer_code { get; set; }
     }
+
+    public class CustomerMonthlySalesRequest
+    {
+        public int year { get; set; }
+        public int month { get; set; }
+        public string? customer_code { get; set; }
+    }
+
 }
