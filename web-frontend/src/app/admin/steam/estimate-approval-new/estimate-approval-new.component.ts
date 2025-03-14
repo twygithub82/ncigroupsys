@@ -1005,7 +1005,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       newSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
       newSteamItem.status_cv = "PENDING";
       newSteamItem.sot_guid = this.sotItem?.guid;
-      newSteamItem.total_cost = this.getTotalCost();
+      newSteamItem.est_cost = this.getTotalCost();
       newSteamItem.steaming_part = [];
       this.deList.forEach(data => {
         var steamPart: SteamPartItem = new SteamPartItem(data);
@@ -1033,7 +1033,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       updSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
       updSteamItem.sot_guid = this.sotItem?.guid;
       updSteamItem.steaming_part = [];
-      updSteamItem.total_cost = this.getTotalCost();
+      updSteamItem.est_cost = this.getTotalCost();
       this.deList.forEach(data => {
         var steamPart: SteamPartItem = new SteamPartItem(data);
         steamPart.action = !data.action ? '' : data.action;
@@ -1689,6 +1689,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           job_order: undefined
         })
       });
+      re.total_cost= this.getTotalCost();
       console.log(re)
       this.steamDS.approveSteaming(re).subscribe(result => {
         console.log(result)
