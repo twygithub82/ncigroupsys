@@ -47,22 +47,22 @@
         @for (itm of bCust.items; track itm;let index = $index) {
           <tr>
             <td>{{ index + 1 }}</td> <!-- Row number -->
-            <td>{{ itm.job_no }}</td> 
+            <td class="text-center">{{ itm.job_no }}</td> 
             <td>{{ itm.tank_no }}</td> 
-            <td>{{ itm.eir_no }}</td> 
-            <td>{{ itm.last_cargo }}</td> 
-            <td>{{ itm.in_date }}</td> 
-            <td>{{ itm.out_date }}</td> 
-            <td>{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
-            <td>{{ (itm.repair_cost==="0.00"?'':itm.repair_cost) }}</td> 
-            <td>{{ (itm.preins_cost==="0.00"?'':itm.preins_cost) }}</td> 
-            <td>{{ (itm.lolo_cost==="0.00"?'':itm.lolo_cost) }}</td> 
-            <td>{{ itm.days }}</td> 
-            <td>{{ (itm.storage_cost==="0.00"?'':itm.storage_cost)}}</td> 
-            <td>{{ (itm.steam_cost==="0.00"?'':itm.steam_cost)}}</td> 
-            <td>{{ (itm.residue_cost==="0.00"?'':itm.residue_cost)}}</td> 
-            <td>{{ (itm.gateio_cost==="0.00"?'':itm.gateio_cost)}}</td> 
-            <td>{{ (itm.total==="0.00"?'':itm.total) }}</td> 
+            <td class="text-center">{{ itm.eir_no }}</td> 
+            <td class="text-center">{{ itm.last_cargo }}</td> 
+            <td class="text-center">{{ itm.in_date }}</td> 
+            <td class="text-center">{{ itm.out_date }}</td> 
+            <td class="text-center">{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
+            <td class="text-center">{{ (itm.repair_cost==="0.00"?'':itm.repair_cost) }}</td> 
+            <td class="text-center">{{ (itm.preins_cost==="0.00"?'':itm.preins_cost) }}</td> 
+            <td class="text-center">{{ (itm.lolo_cost==="0.00"?'':itm.lolo_cost) }}</td> 
+            <td class="text-center">{{ itm.days }}</td> 
+            <td class="text-center">{{ (itm.storage_cost==="0.00"?'':itm.storage_cost)}}</td> 
+            <td class="text-center">{{ (itm.steam_cost==="0.00"?'':itm.steam_cost)}}</td> 
+            <td class="text-center">{{ (itm.residue_cost==="0.00"?'':itm.residue_cost)}}</td> 
+            <td class="text-center">{{ (itm.gateio_cost==="0.00"?'':itm.gateio_cost)}}</td> 
+            <td class="text-center">{{ (itm.total==="0.00"?'':itm.total) }}</td> 
           </tr>
         }
       </table>

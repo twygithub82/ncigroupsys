@@ -37,7 +37,7 @@
         </tr>
         @for (rep of repBillingCustomers; track rep;let index = $index) {
           <tr>
-            <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+            <td>{{ index + 1 }}</td> <!-- Row number -->
             <td class="text-center">{{ DisplayCustomer(rep) }}</td>
             <td class="text-center">{{ DisplayPreinspectionNo(rep) }}</td>
             <td class="text-center">{{ DisplayLOLONo(rep) }}</td>

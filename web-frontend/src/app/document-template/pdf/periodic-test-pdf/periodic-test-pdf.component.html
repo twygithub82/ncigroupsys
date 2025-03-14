@@ -46,8 +46,8 @@
 
         @for (itm of bCust.periodic_test_due; track itm; let index = $index) {
         <tr>
-          <td class="text-center">{{ index + 1 }}</td>
-          <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td>{{ index + 1 }}</td>
+          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
           <td class="text-center"><span class="overflow-text">{{ DisplayEIRNo(itm) }}</span></td>
           <td class="text-center"><span class="overflow-text">{{ DisplayEIRDate(itm) }}</span></td>
           <td class="text-center"><span class="overflow-text">{{ DisplayOwner(itm) }}</span></td>

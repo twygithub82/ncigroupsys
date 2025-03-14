@@ -48,13 +48,13 @@
         </tr>
         @for (itm of bCust.items; track itm;let index = $index) {
           <tr class="fixed_height_40px">
-            <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
-            <td><span class="overflow-text">{{ itm.job_no }}</span></td> 
+            <td >{{ index + 1 }}</td> <!-- Row number -->
+            <td class="text-center"><span class="overflow-text">{{ itm.job_no }}</span></td> 
             <td><span class="overflow-text">{{ itm.tank_no }}</span></td> 
-            <td><span class="overflow-text">{{ itm.eir_no }}</span></td> 
-            <td><span class="overflow-text"  matTooltip={{itm.last_cargo}}>{{ itm.last_cargo }}</span></td> 
-            <td><span class="overflow-text text-center">{{ itm.in_date }}</span></td> 
-            <td><span class="overflow-text text-center">{{ itm.out_date }}</span></td> 
+            <td class="text-center"><span class="overflow-text">{{ itm.eir_no }}</span></td> 
+            <td class="text-center"><span class="overflow-text"  matTooltip={{itm.last_cargo}}>{{ itm.last_cargo }}</span></td> 
+            <td class="text-center"><span class="overflow-text text-center">{{ itm.in_date }}</span></td> 
+            <td class="text-center"><span class="overflow-text text-center">{{ itm.out_date }}</span></td> 
             <td class="text-center">{{ (itm.clean_cost==="0.00"?'':itm.clean_cost) }}</td> 
             <td class="text-center">{{ (itm.repair_cost==="0.00"?'':itm.repair_cost) }}</td> 
             <td class="text-center">{{ (itm.preins_cost==="0.00"?'':itm.preins_cost) }}</td> 

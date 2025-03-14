@@ -54,7 +54,7 @@
             @if(report_inventory[0].opening_balance){
               @for (itm of report_inventory[0].opening_balance; track itm;let index = $index) {
                 <tr class="fixed_height_40px">
-                  <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
+                  <td>{{ index + 1 }}</td> <!-- Row number -->
                   <td class="text-center">{{ itm.yard }}</td>
                   <td class="text-center">{{itm.open_balance }}</td>
                   <td class="text-center">{{itm.in_count}}</td>

@@ -41,8 +41,8 @@
         {
         @for (itm of y.storing_order_tank; track itm) {
           <tr class="fixed_height_40px">
-            <td class="text-center">{{ getCounter() }}</td> <!-- Row number -->
-            <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td>
+            <td>{{ getCounter() }}</td> <!-- Row number -->
+            <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
             <td class="text-center">{{ DisplayLocation(y.code!) }}</td>
             <td class="text-center">{{ DisplayEIRNo(itm) }}</td>
             <td class="text-center"><span class="overflow-text">{{ DisplayOwner(itm) }}</span></td>

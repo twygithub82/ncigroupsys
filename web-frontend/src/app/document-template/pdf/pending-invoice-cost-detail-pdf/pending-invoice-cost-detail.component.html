@@ -42,9 +42,9 @@
         </tr>
         @for (itm of bCust.items; track itm;let index = $index) {
           <tr class="fixed_height_40px">
-            <td class="text-center"><span class="overflow-text">{{ index + 1 }}</span></td> <!-- Row number -->
+            <td ><span class="overflow-text">{{ index + 1 }}</span></td> <!-- Row number -->
             <td class="text-center"><span class="overflow-text">{{ itm.job_no }}</span></td> 
-            <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td> 
+            <td ><span class="overflow-text">{{ itm.tank_no }}</span></td> 
             <td class="text-center"><span class="overflow-text">{{ itm.eir_no }}</span></td> 
             <td class="text-center" ><span class="overflow-text" matTooltip={{itm.last_cargo}} >{{ itm.last_cargo }}</span></td> 
             <td class="text-center">{{ itm.in_date }}</td> 
@@ -61,10 +61,10 @@
             <td class="text-center">{{ (itm.total==="0.00"?'':itm.total) }}</td> 
           </tr>
         }
-        <tr>
+        <!-- <tr>
           <td class="text-right-border" colspan="7">{{translatedLangText.TOTAL_COST}}</td>
           <td class="text-center">{{displayTotalCost(bCust)}}</td>
-        </tr>
+        </tr> -->
       </table>
     
   </div>

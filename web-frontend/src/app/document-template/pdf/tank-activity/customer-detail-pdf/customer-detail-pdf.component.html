@@ -154,8 +154,8 @@
         </tr>
         @for (itm of bCust.released_storing_order_tank; track itm;let index = $index) {
         <tr class="fixed_height_40px">
-          <td class="text-center">{{ index + 1 }}</td>
-          <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td>{{ index + 1 }}</td>
+          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
           <td class="text-center">{{ DisplayInDate(itm) }}</td>
           <td class="text-center"><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
           <td class="text-center"><span class="overflow-text">{{ DisplayCapacity(itm) }}</span></td>

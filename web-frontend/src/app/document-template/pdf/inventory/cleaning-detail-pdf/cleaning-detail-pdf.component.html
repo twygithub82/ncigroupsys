@@ -28,8 +28,8 @@
         </tr>
         @for (itm of bCust.storing_order_tank; track itm;let index = $index) {
         <tr class="fixed_height_40px">
-          <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
-          <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td>{{ index + 1 }}</td> <!-- Row number -->
+          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
           <td class="text-center"><span class="overflow-text">{{ DisplayCustomerName(itm) }}</span></td>
           <td class="text-center"><span class="overflow-text">{{ DisplayCleanIn(itm) }}</span></td>
           <td class="text-center">{{ DisplayCleanDate(itm) }}</td>
