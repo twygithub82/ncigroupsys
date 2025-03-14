@@ -25,7 +25,8 @@ export class ResidueGO {
   public remarks?: string;
   public sot_guid?: string;
   public status_cv?: string;
-
+  public est_cost?:number;
+  public total_cost?:number;
 
   public create_dt?: number;
   public create_by?: string;
@@ -59,6 +60,8 @@ export class ResidueGO {
     this.remarks = item.remarks;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
+    this.est_cost=item.est_cost;
+    this.total_cost=item.total_cost;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -141,6 +144,8 @@ const SEARCH_RESIDUE_BILLING_QUERY = gql`
         complete_dt
         delete_dt
         estimate_no
+        est_cost
+        total_cost
         guid
         job_no
         remarks
@@ -267,6 +272,8 @@ export const GET_RESIDUE_EST = gql`
         create_dt
         delete_dt
         estimate_no
+        est_cost
+        total_cost
         guid
         job_no
         remarks
@@ -406,6 +413,8 @@ export const GET_RESIDUE_EST_JOB_ORDER = gql`
       create_dt
       delete_dt
       estimate_no
+      est_cost
+      total_cost
       guid
       job_no
       remarks
@@ -547,6 +556,8 @@ export const GET_RESIDUE_FOR_MOVEMENT = gql`
         create_dt
         delete_dt
         estimate_no
+        est_cost
+        total_cost
         guid
         job_no
         remarks
@@ -629,6 +640,8 @@ export const GET_RESIDUE_FOR_PDF = gql`
         create_dt
         delete_dt
         estimate_no
+        est_cost
+        total_cost
         guid
         job_no
         remarks

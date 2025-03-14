@@ -44,6 +44,8 @@ export class SteamGO {
   public update_by?: string;
   public delete_dt?: number;
 
+   public est_cost?:number;
+   
   // public aspnetusers_guid?: string;
   // public estimate_no?: string;
   // public labour_cost_discount?: number;
@@ -70,6 +72,7 @@ export class SteamGO {
     this.begin_by = item.begin_by;
     this.begin_dt = item.begin_dt;
     this.na_dt = item.na_dt;
+    this.est_cost=item.est_cost;
     this.total_cost = item.total_cost;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
@@ -189,6 +192,8 @@ export const GET_STEAM_BILLING_EST = gql`
           remarks
           type_cv
         }
+        est_cost
+        total_cost
         complete_by
         complete_dt
         create_by
@@ -374,6 +379,8 @@ export const GET_STEAM_EST = gql`
         remarks
         sot_guid
         status_cv
+        est_cost
+        total_cost
         update_by
         update_dt
         storing_order_tank {
@@ -519,6 +526,8 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
       remarks
       sot_guid
       status_cv
+      est_cost
+      total_cost
       update_by
       update_dt
       storing_order_tank {
@@ -660,6 +669,8 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         estimate_by
         estimate_dt
         estimate_no
+        est_cost
+        total_cost
         guid
         job_no
         na_dt
@@ -752,6 +763,7 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
         remarks
         sot_guid
         status_cv
+        est_cost
         total_cost
         update_by
         update_dt

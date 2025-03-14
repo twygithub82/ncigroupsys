@@ -22,6 +22,8 @@ export class InGateCleaningGO {
   public approve_by?: string;
   public approve_dt?: number;
   public bill_to_guid?: string;
+  public est_buffer_cost?:number;
+  public est_cleaning_cost?:number;
   public buffer_cost?: number;
   public cleaning_cost?: number;
   public complete_by?: string;
@@ -61,6 +63,8 @@ export class InGateCleaningGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+    this.est_buffer_cost=item.est_buffer_cost;
+    this.est_cleaning_cost=item.est_cleaning_cost;
     this.customer_billing_guid = item.customer_billing_guid;
     this.owner_billing_guid = item.owner_billing_guid;
   }
@@ -133,6 +137,8 @@ const SEARCH_CLEANING_BILLING_QUERY = gql`
         }
         buffer_cost
         cleaning_cost
+        est_buffer_cost
+        est_cleaning_cost
         complete_by
         complete_dt
         create_by
@@ -241,6 +247,8 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
         bill_to_guid
         buffer_cost
         cleaning_cost
+        est_buffer_cost
+        est_cleaning_cost
         complete_by
         complete_dt
         create_by
@@ -436,6 +444,8 @@ const GET_IN_GATE_CLEANING_BY_SOT = gql`
         bill_to_guid
         buffer_cost
         cleaning_cost
+        est_buffer_cost
+        est_cleaning_cost
         complete_by
         complete_dt
         create_by
@@ -503,6 +513,8 @@ const GET_IN_GATE_CLEANING_BY_ID_FOR_ESTIMATE_PDF = gql`
         bill_to_guid
         buffer_cost
         cleaning_cost
+        est_buffer_cost
+        est_cleaning_cost
         complete_by
         complete_dt
         create_by

@@ -487,6 +487,14 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       dailyInvReq.end_date=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
       cond_counter++;
     }
+    else
+    {
+      var startdt=new Date(2000,1,1,0,0,0,0);
+      var enddt=new Date();
+        dailyInvReq.start_date=Utility.convertDate(startdt)||Utility.convertDate(new Date());
+        dailyInvReq.end_date=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
+       // cond_counter++;
+    }
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
@@ -680,7 +688,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
 
     var startdt=new Date( this.searchForm!.value['inv_dt']);
     var enddt=new Date( this.searchForm!.value['inv_dt']);
-     var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date());
+     var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date(2000,1,1,0,0,0,0));
     var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
     var openBal:number =0;
     this.sotList.map(s => {

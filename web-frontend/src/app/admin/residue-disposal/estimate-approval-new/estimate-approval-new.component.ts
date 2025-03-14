@@ -1068,17 +1068,21 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       newResidueItem.status_cv = "PENDING";
       newResidueItem.sot_guid = this.sotItem?.guid;
       newResidueItem.residue_part = [];
+
+      
+
       this.deList.forEach(data => {
         var residuePart: ResiduePartItem = new ResiduePartItem(data);
 
         if (typeof residuePart.qty_unit_type_cv == 'object') {
           residuePart.qty_unit_type_cv = data.qty_unit_type_cv?.code_val;
         }
+        residuePart.approve_part =((data.approve_part==null||data.approve_part==1)?true:false);
         //  delete residuePart.qty_unit_type_cv;
         newResidueItem.residue_part?.push(residuePart);
 
       });
-
+       newResidueItem.est_cost=this.getTotalCost();
       delete newResidueItem.customer_company;
 
       this.residueDS.addResidue(newResidueItem).subscribe(result => {
@@ -1104,11 +1108,13 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         if (typeof residuePart.qty_unit_type_cv == 'object') {
           residuePart.qty_unit_type_cv = data.qty_unit_type_cv?.code_val;
         }
+
+        residuePart.approve_part =((data.approve_part==null||data.approve_part==1)?true:false);
         // delete residuePart.qty_unit_type_cv;
         updResidueItem.residue_part?.push(residuePart);
 
       });
-
+      updResidueItem.est_cost=this.getTotalCost();
       delete updResidueItem.customer_company;
       delete updResidueItem.storing_order_tank;
 
@@ -1676,7 +1682,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         })
       });
       delete re.storing_order_tank;
-
+      re.total_cost = this.getTotalCost();
       console.log(re)
       this.residueDS.approveResidue(re).subscribe(result => {
         console.log(result)

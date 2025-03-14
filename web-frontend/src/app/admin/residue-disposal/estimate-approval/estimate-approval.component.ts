@@ -947,11 +947,14 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     re.status_cv = row?.status_cv;
     // re.job_no=this.residueEstForm?.get("job_no")?.value
     //  re.remarks=this.residueEstForm?.get("remarks")?.value
+    var total_cost:number =0;
     re.residue_part?.forEach((rep: any) => {
       rep.action = 'EDIT';
       rep.approve_qty = (this.IsApproved(row) ? rep.approve_qty : rep.quantity);
       // rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
       rep.approve_cost = (this.IsApproved(row) ? rep.approve_cost : rep.cost);
+      rep.approve_part= (rep.approve_part==null||rep.approve_part?true:false);
+      if(rep.approve_part==1)  total_cost += rep.approve_qty* rep.approve_cost;
     })
 
     re.residue_part = re.residue_part?.map((rep: ResiduePartItem) => {
@@ -963,6 +966,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
         approve_cost: rep.approve_cost
       })
     });
+    re.total_cost=total_cost;
     delete re.storing_order_tank;
     console.log(re)
     this.residueDS.approveResidue(re).subscribe(result => {
