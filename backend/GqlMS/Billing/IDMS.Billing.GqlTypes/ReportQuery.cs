@@ -17,6 +17,8 @@ namespace IDMS.Billing.GqlTypes
     [ExtendObjectType(typeof(BillingQuery))]
     public class ReportQuery
     {
+        #region Performance Report
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -96,8 +98,6 @@ namespace IDMS.Billing.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
-
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
@@ -188,13 +188,207 @@ namespace IDMS.Billing.GqlTypes
                                    temp.SteamPerformance.Themometer = new Themometer { begin_temp = str.FirstMeterTemp, close_temp = str.LastMeterTemp };
                                    temp.SteamPerformance.Top = new Top { begin_temp = str.FirstTopTemp, close_temp = str.LastTopTemp };
                                    temp.SteamPerformance.Bottom = new Bottom { begin_temp = str.FirstBottomTemp, close_temp = str.LastBottomTemp };
-                                   temp.SteamPerformance.duration = ConvertIntoDuration((str.LastRecordTime - str.FirstRecordTime) ?? 0); 
+                                   temp.SteamPerformance.duration = ConvertIntoDuration((str.LastRecordTime - str.FirstRecordTime) ?? 0);
                                }
                                return temp.SteamPerformance;
                            })
                        .ToList();
 
                 return joinedResults;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        #endregion
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<DailyTeamRevenue>> QueryDailyTeamRevenue(ApplicationBillingDBContext context, [Service] IConfiguration config,
+          [Service] IHttpContextAccessor httpContextAccessor, DailyTeamRevenuRequest dailyTeamRevenueRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                List<DailyTeamRevenue> result = new List<DailyTeamRevenue>();
+
+                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+                //string surveryorCodeValType = "TEST_CLASS";
+                string repairStatus = "QC_COMPLETED";
+
+                //long sDate = dailyTeamRevenueRequest.start_date;
+                //long eDate = dailyTeamRevenueRequest.end_date;
+
+                var query = (from r in context.repair
+                             join rp in context.repair_part on r.guid equals rp.repair_guid
+                             join jo in context.job_order on rp.job_order_guid equals jo.guid
+                             join t in context.team on jo.team_guid equals t.guid
+                             join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
+                             join so in context.storing_order on sot.so_guid equals so.guid into soGroup
+                             from so in soGroup.DefaultIfEmpty()
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
+                             from cc in ccGroup.DefaultIfEmpty()
+                             where r.delete_dt == null && r.status_cv == repairStatus && !string.IsNullOrEmpty(sot.purpose_repair_cv)
+                             select new DailyTeamRevenue
+                             {
+                                 estimate_no = r.estimate_no,
+                                 tank_no = sot.tank_no,
+                                 code = cc.code,
+                                 estimate_date = r.create_dt,  // Assuming `CreateDt` is part of `Repair`
+                                 qc_by = jo.qc_by,
+                                 repair_cost = r.total_cost,  // Assuming `TotalCost` is part of `StoringOrderTank`
+                                 team = t.description,
+                                 repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+
+                             }).AsQueryable();
+
+                if (dailyTeamRevenueRequest.qc_start_date != null && dailyTeamRevenueRequest.qc_end_date != null)
+                {
+                    query = query.Where(tr => tr.qc_date >= dailyTeamRevenueRequest.qc_start_date && tr.qc_date <= dailyTeamRevenueRequest.qc_end_date);
+                }
+
+                if (!string.IsNullOrEmpty(dailyTeamRevenueRequest.customer_code))
+                {
+                    query = query.Where(tr => String.Equals(tr.code, dailyTeamRevenueRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTeamRevenueRequest.tank_no))
+                {
+                    query = query.Where(tr => tr.tank_no.Contains(dailyTeamRevenueRequest.tank_no));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTeamRevenueRequest.eir_no))
+                {
+                    query = query.Where(tr => tr.eir_no.Contains(dailyTeamRevenueRequest.eir_no));
+                }
+
+                if (dailyTeamRevenueRequest.repair_type != null && dailyTeamRevenueRequest.repair_type.Any())
+                {
+                    query = query.Where(tr => dailyTeamRevenueRequest.repair_type.Contains(tr.repair_type));
+                }
+
+                if (dailyTeamRevenueRequest.estimate_start_date != null && dailyTeamRevenueRequest.estimate_end_date != null)
+                {
+                    query = query.Where(tr => tr.estimate_date >= dailyTeamRevenueRequest.estimate_start_date && tr.estimate_date <= dailyTeamRevenueRequest.estimate_end_date);
+                }
+
+                if (dailyTeamRevenueRequest.approved_start_date != null && dailyTeamRevenueRequest.approved_end_date != null)
+                {
+                    query = query.Where(tr => tr.approved_date >= dailyTeamRevenueRequest.approved_start_date && tr.approved_date <= dailyTeamRevenueRequest.approved_end_date);
+                }
+
+                if (dailyTeamRevenueRequest.allocation_start_date != null && dailyTeamRevenueRequest.allocation_end_date != null)
+                {
+                    query = query.Where(tr => tr.allocation_date >= dailyTeamRevenueRequest.allocation_start_date && tr.allocation_date <= dailyTeamRevenueRequest.allocation_end_date);
+                }
+
+                if (dailyTeamRevenueRequest.team != null && dailyTeamRevenueRequest.team.Any())
+                {
+                    query = query.Where(tr => dailyTeamRevenueRequest.team.Contains(tr.team));
+                }
+
+                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.estimate_date).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<DailyTeamApproval>> QueryDailyTeamApproval(ApplicationBillingDBContext context, [Service] IConfiguration config,
+          [Service] IHttpContextAccessor httpContextAccessor, DailyTeamApprovalRequest dailyTeamApprovalRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                List<DailyTeamApproval> result = new List<DailyTeamApproval>();
+
+                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+                //string surveryorCodeValType = "TEST_CLASS";
+                //string repairStatus = "QC_COMPLETED";
+
+                //long sDate = dailyTeamRevenueRequest.start_date;
+                //long eDate = dailyTeamRevenueRequest.end_date;
+
+                var query = (from r in context.repair
+                             join rp in context.repair_part on r.guid equals rp.repair_guid
+                             join jo in context.job_order on rp.job_order_guid equals jo.guid
+                             join t in context.team on jo.team_guid equals t.guid
+                             join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
+                             join so in context.storing_order on sot.so_guid equals so.guid into soGroup
+                             from so in soGroup.DefaultIfEmpty()
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
+                             from cc in ccGroup.DefaultIfEmpty()
+                             where r.delete_dt == null && !StatusCondition.BeforeApprove.Contains(r.status_cv) && r.approve_dt != null
+                             && !string.IsNullOrEmpty(sot.purpose_repair_cv)
+                             select new DailyTeamApproval
+                             {
+                                 estimate_no = r.estimate_no,
+                                 tank_no = sot.tank_no,
+                                 code = cc.code,
+                                 estimate_date = r.create_dt,
+                                 repair_cost = r.total_cost,
+                                 status = r.status_cv,
+                                 repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+
+                             }).AsQueryable();
+
+                if (dailyTeamApprovalRequest.approved_start_date != null && dailyTeamApprovalRequest.approved_end_date != null)
+                {
+                    query = query.Where(tr => tr.approved_date >= dailyTeamApprovalRequest.approved_start_date && tr.approved_date <= dailyTeamApprovalRequest.approved_end_date);
+                }
+
+                if (!string.IsNullOrEmpty(dailyTeamApprovalRequest.customer_code))
+                {
+                    query = query.Where(tr => String.Equals(tr.code, dailyTeamApprovalRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTeamApprovalRequest.tank_no))
+                {
+                    query = query.Where(tr => tr.tank_no.Contains(dailyTeamApprovalRequest.tank_no));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTeamApprovalRequest.eir_no))
+                {
+                    query = query.Where(tr => tr.eir_no.Contains(dailyTeamApprovalRequest.eir_no));
+                }
+
+                if (dailyTeamApprovalRequest.repair_type != null && dailyTeamApprovalRequest.repair_type.Any())
+                {
+                    query = query.Where(tr => dailyTeamApprovalRequest.repair_type.Contains(tr.repair_type));
+                }
+
+                if (dailyTeamApprovalRequest.estimate_start_date != null && dailyTeamApprovalRequest.estimate_end_date != null)
+                {
+                    query = query.Where(tr => tr.estimate_date >= dailyTeamApprovalRequest.estimate_start_date && tr.estimate_date <= dailyTeamApprovalRequest.estimate_end_date);
+                }
+
+                if (dailyTeamApprovalRequest.allocation_start_date != null && dailyTeamApprovalRequest.allocation_end_date != null)
+                {
+                    query = query.Where(tr => tr.allocation_date >= dailyTeamApprovalRequest.allocation_start_date && tr.allocation_date <= dailyTeamApprovalRequest.allocation_end_date);
+                }
+
+                if (dailyTeamApprovalRequest.qc_start_date != null && dailyTeamApprovalRequest.qc_end_date != null)
+                {
+                    query = query.Where(tr => tr.qc_date >= dailyTeamApprovalRequest.qc_start_date && tr.qc_date <= dailyTeamApprovalRequest.qc_end_date);
+                }
+
+                if (dailyTeamApprovalRequest.team != null && dailyTeamApprovalRequest.team.Any())
+                {
+                    query = query.Where(tr => dailyTeamApprovalRequest.team.Contains(tr.team));
+                }
+
+                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.estimate_date).ToListAsync();
             }
             catch (Exception ex)
             {
