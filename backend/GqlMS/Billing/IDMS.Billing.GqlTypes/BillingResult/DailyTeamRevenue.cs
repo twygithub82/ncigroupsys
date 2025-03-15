@@ -10,6 +10,8 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         [NotMapped]
         public string? qc_by { get; set; }
         [NotMapped]
+        public string? eir_no { get; set; }
+        [NotMapped]
         [GraphQLIgnore]
         public long? qc_date { get; set; }
         [NotMapped]
@@ -29,18 +31,19 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public long? qc_date { get; set; }
         [NotMapped]
         [GraphQLIgnore]
+        public string? eir_no { get; set; }
+        [NotMapped]
+        [GraphQLIgnore]
         public string? team { get; set; }
     }
 
     public class DailyTeamRevenueApproval
     {
-
         [NotMapped]
         public string? estimate_no { get; set; }
         [NotMapped]
         public string? tank_no { get; set; }
-        [NotMapped]
-        public string? eir_no { get; set; }
+
         [NotMapped]
         public string? code { get; set; }
         [NotMapped]

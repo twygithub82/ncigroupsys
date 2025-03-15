@@ -10,6 +10,7 @@ using IDMS.Models.Tariff;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Service;
 using IDMS.Models.Parameter;
+using Newtonsoft.Json.Linq;
 
 
 namespace IDMS.Billing.GqlTypes
@@ -233,19 +234,28 @@ namespace IDMS.Billing.GqlTypes
                              from so in soGroup.DefaultIfEmpty()
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
+                             join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
                              where r.delete_dt == null && r.status_cv == repairStatus && !string.IsNullOrEmpty(sot.purpose_repair_cv)
                              select new DailyTeamRevenue
                              {
                                  estimate_no = r.estimate_no,
                                  tank_no = sot.tank_no,
                                  code = cc.code,
-                                 estimate_date = r.create_dt,  // Assuming `CreateDt` is part of `Repair`
+                                 estimate_date = r.create_dt,
+                                 approved_date = r.approve_dt,
+                                 allocation_date = r.allocate_dt,
                                  qc_by = jo.qc_by,
-                                 repair_cost = r.total_cost,  // Assuming `TotalCost` is part of `StoringOrderTank`
+                                 qc_date = jo.qc_dt,
+                                 eir_no = ig.eir_no,
+                                 repair_cost = r.total_cost, 
                                  team = t.description,
                                  repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
 
                              }).AsQueryable();
+                if (dailyTeamRevenueRequest.approved_start_date != null && dailyTeamRevenueRequest.approved_end_date != null)
+                {
+                    query = query.Where(tr => tr.approved_date >= dailyTeamRevenueRequest.approved_start_date && tr.approved_date <= dailyTeamRevenueRequest.approved_end_date);
+                }
 
                 if (dailyTeamRevenueRequest.qc_start_date != null && dailyTeamRevenueRequest.qc_end_date != null)
                 {
@@ -277,11 +287,6 @@ namespace IDMS.Billing.GqlTypes
                     query = query.Where(tr => tr.estimate_date >= dailyTeamRevenueRequest.estimate_start_date && tr.estimate_date <= dailyTeamRevenueRequest.estimate_end_date);
                 }
 
-                if (dailyTeamRevenueRequest.approved_start_date != null && dailyTeamRevenueRequest.approved_end_date != null)
-                {
-                    query = query.Where(tr => tr.approved_date >= dailyTeamRevenueRequest.approved_start_date && tr.approved_date <= dailyTeamRevenueRequest.approved_end_date);
-                }
-
                 if (dailyTeamRevenueRequest.allocation_start_date != null && dailyTeamRevenueRequest.allocation_end_date != null)
                 {
                     query = query.Where(tr => tr.allocation_date >= dailyTeamRevenueRequest.allocation_start_date && tr.allocation_date <= dailyTeamRevenueRequest.allocation_end_date);
@@ -292,7 +297,7 @@ namespace IDMS.Billing.GqlTypes
                     query = query.Where(tr => dailyTeamRevenueRequest.team.Contains(tr.team));
                 }
 
-                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.estimate_date).ToListAsync();
+                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.approved_date).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -329,6 +334,7 @@ namespace IDMS.Billing.GqlTypes
                              from so in soGroup.DefaultIfEmpty()
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
+                             join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
                              where r.delete_dt == null && !StatusCondition.BeforeApprove.Contains(r.status_cv) && r.approve_dt != null
                              && !string.IsNullOrEmpty(sot.purpose_repair_cv)
                              select new DailyTeamApproval
@@ -337,7 +343,12 @@ namespace IDMS.Billing.GqlTypes
                                  tank_no = sot.tank_no,
                                  code = cc.code,
                                  estimate_date = r.create_dt,
+                                 approved_date = r.approve_dt,
+                                 allocation_date = r.allocate_dt,
+                                 qc_date = jo.qc_dt,
+                                 eir_no = ig.eir_no,
                                  repair_cost = r.total_cost,
+                                 team = t.description,
                                  status = r.status_cv,
                                  repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
 
@@ -388,7 +399,7 @@ namespace IDMS.Billing.GqlTypes
                     query = query.Where(tr => dailyTeamApprovalRequest.team.Contains(tr.team));
                 }
 
-                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.estimate_date).ToListAsync();
+                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.approved_date).ToListAsync();
             }
             catch (Exception ex)
             {

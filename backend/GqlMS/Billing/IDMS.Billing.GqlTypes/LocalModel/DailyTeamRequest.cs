@@ -34,9 +34,9 @@ namespace IDMS.Billing.GqlTypes.LocalModel
         [NotMapped]
         public long? allocation_end_date { get; set; }
         [NotMapped]
-        public long? approved_start_date { get; set; }
+        public long approved_start_date { get; set; }
         [NotMapped]
-        public long? approved_end_date { get; set; }
+        public long approved_end_date { get; set; }
         [NotMapped]
         public long? qc_start_date { get; set; }
         [NotMapped]
