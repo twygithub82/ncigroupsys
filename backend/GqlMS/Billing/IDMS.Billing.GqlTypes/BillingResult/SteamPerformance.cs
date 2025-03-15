@@ -20,7 +20,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         [NotMapped]
         public string? last_cargo { get; set; }
         [NotMapped]
-        public double? duration { get; set; }
+        public string? duration { get; set; }
         [NotMapped]
         public long? complete_dt { get; set; }
         [NotMapped]
@@ -70,8 +70,10 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public double? FirstMeterTemp { get; set; }
         public double? FirstTopTemp { get; set; }
         public double? FirstBottomTemp { get; set; }
+        public long? FirstRecordTime { get; set; }
         public double? LastMeterTemp { get; set; }
         public double? LastTopTemp { get; set; }
         public double? LastBottomTemp { get; set; }
+        public long? LastRecordTime { get; set; }
     }
 }

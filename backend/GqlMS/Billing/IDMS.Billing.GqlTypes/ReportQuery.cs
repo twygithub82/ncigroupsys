@@ -139,7 +139,6 @@ namespace IDMS.Billing.GqlTypes
                                  customer_code = cc.code,
                                  last_cargo = tc.cargo,
                                  cost = r.total_cost,
-                                 duration = jo.working_hour,
                                  bay = t.description
                              }).AsQueryable();
 
@@ -168,13 +167,13 @@ namespace IDMS.Billing.GqlTypes
                     query = query.Where(tr => tr.yard.Contains(steamPerformanceRequest.yard));
                 }
 
-
                 var resultList = await query.OrderBy(tr => tr.job_order_guid).ToListAsync();
 
+                //Get the diff temperature result set
                 List<string> guids = resultList.Select(x => x.job_order_guid).ToList();
                 var steamingTempResults = await GetSteamingTempResults1(context, guids);
 
-
+                //Combine the main result set with temperature result set
                 var joinedResults = resultList
                        .GroupJoin(steamingTempResults,
                                   r => r.job_order_guid,
@@ -189,11 +188,11 @@ namespace IDMS.Billing.GqlTypes
                                    temp.SteamPerformance.Themometer = new Themometer { begin_temp = str.FirstMeterTemp, close_temp = str.LastMeterTemp };
                                    temp.SteamPerformance.Top = new Top { begin_temp = str.FirstTopTemp, close_temp = str.LastTopTemp };
                                    temp.SteamPerformance.Bottom = new Bottom { begin_temp = str.FirstBottomTemp, close_temp = str.LastBottomTemp };
+                                   temp.SteamPerformance.duration = ConvertIntoDuration((str.LastRecordTime - str.FirstRecordTime) ?? 0); 
                                }
                                return temp.SteamPerformance;
                            })
                        .ToList();
-
 
                 return joinedResults;
             }
@@ -203,7 +202,7 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        public async Task<List<SteamingTempResult>> GetSteamingTempResults(ApplicationBillingDBContext context, List<string> jobOrderGuids)
+        private async Task<List<SteamingTempResult>> GetSteamingTempResults(ApplicationBillingDBContext context, List<string> jobOrderGuids)
         {
             var results = await context.Set<steaming_temp>()
                 .Where(s => jobOrderGuids.Contains(s.job_order_guid))
@@ -223,7 +222,7 @@ namespace IDMS.Billing.GqlTypes
             return results;
         }
 
-        public async Task<List<SteamingTempResult>> GetSteamingTempResults1(ApplicationBillingDBContext context, List<string> jobOrderGuids)
+        private async Task<List<SteamingTempResult>> GetSteamingTempResults1(ApplicationBillingDBContext context, List<string> jobOrderGuids)
         {
             // Subquery to get the first report date for each job_order_guid
             var firstReportDt = context.Set<steaming_temp>()
@@ -257,13 +256,45 @@ namespace IDMS.Billing.GqlTypes
                     FirstMeterTemp = g.Where(s => s.s.report_dt == s.fr.MinReportDt).Min(s => (double?)s.s.meter_temp),
                     FirstTopTemp = g.Where(s => s.s.report_dt == s.fr.MinReportDt).Min(s => (double?)s.s.top_temp),
                     FirstBottomTemp = g.Where(s => s.s.report_dt == s.fr.MinReportDt).Min(s => (double?)s.s.bottom_temp),
+                    FirstRecordTime = g.Where(s => s.s.report_dt == s.fr.MinReportDt).Min(s => (long?)s.s.report_dt),
                     LastMeterTemp = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (double?)s.s.meter_temp),
                     LastTopTemp = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (double?)s.s.top_temp),
-                    LastBottomTemp = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (double?)s.s.bottom_temp)
+                    LastBottomTemp = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (double?)s.s.bottom_temp),
+                    LastRecordTime = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (long?)s.s.report_dt)
                 })
                 .ToList();
 
             return query;
+        }
+
+        private string ConvertIntoDuration(long datetime)
+        {
+            TimeSpan timeSpan = TimeSpan.FromSeconds(datetime);
+
+            // Calculate days, hours, and minutes
+            int days = (int)timeSpan.TotalDays;
+            int hours = timeSpan.Hours;
+            int minutes = timeSpan.Minutes;
+
+            // Build the result based on non-zero values
+            string result = "";
+
+            if (days > 0)
+            {
+                result += $"{days}d:";
+            }
+
+            if (hours > 0 || days > 0) // Only show hours if there are days or if hours are non-zero
+            {
+                result += $"{hours:D2}h:";
+            }
+
+            if (minutes > 0 || hours > 0 || days > 0) // Only show minutes if there are hours or days or minutes are non-zero
+            {
+                result += $"{minutes:D2}m";
+            }
+
+            return result;
         }
     }
 }
