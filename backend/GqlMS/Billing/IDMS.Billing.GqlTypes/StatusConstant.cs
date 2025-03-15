@@ -43,5 +43,7 @@ namespace IDMS.Billing.GqlTypes
         public static List<string> BeforeApprove = new List<string> { "PENDING", "CANCELED", "NO_ACTION" };
         public static List<string> Cancelled = new List<string> { "CANCELED", "NO_ACTION" };
         public static List<string> BeforeTankIn = new List<string> { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+        public static List<string> NotInYard = new List<string> { "RELEASED", "OUT_GATE", "OUT_SURVEY" };
+        public static List<string> InYard = new List<string> { "RELEASED", "OUT_GATE", "OUT_SURVEY" };
     }
 }

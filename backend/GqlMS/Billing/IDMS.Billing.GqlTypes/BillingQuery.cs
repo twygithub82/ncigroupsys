@@ -5,16 +5,13 @@ using IDMS.Models.DB;
 using Microsoft.AspNetCore.Http;
 using IDMS.Models.Billing;
 using IDMS.Billing.Application;
-using IDMS.Models;
 using IDMS.Billing.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
 using CommonUtil.Core.Service;
-using IDMS.Models.Service;
 using IDMS.Models.Tariff;
 using IDMS.Models.Parameter;
 using IDMS.Billing.GqlTypes.BillingResult;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Reflection.Metadata.Ecma335;
+
 
 namespace IDMS.Billing.GqlTypes
 {
@@ -566,85 +563,7 @@ namespace IDMS.Billing.GqlTypes
         }
 
 
-        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        [UseProjection]
-        [UseFiltering]
-        [UseSorting]
-        public async Task<List<CleanerPerformance>?> QueryCleanerPerformance(ApplicationBillingDBContext context, [Service] IConfiguration config,
-             [Service] IHttpContextAccessor httpContextAccessor, CleanerPerformanceRequest cleanerPerformanceRequest)
-        {
-
-            try
-            {
-                GqlUtils.IsAuthorize(config, httpContextAccessor);
-
-                string completedStatus = "COMPLETED";
-
-                long sDate = cleanerPerformanceRequest.start_date;
-                long eDate = cleanerPerformanceRequest.end_date;
-
-                var query = (from r in context.cleaning
-                             join sot in context.storing_order_tank on r.sot_guid equals sot.guid
-                             join so in context.storing_order on sot.so_guid equals so.guid
-                             join cc in context.customer_company on so.customer_company_guid equals cc.guid
-                             join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
-                             join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
-                             join cm in context.Set<cleaning_method>() on tc.cleaning_method_guid equals cm.guid
-                             join jo in context.job_order on r.job_order_guid equals jo.guid
-                             join t in context.team on jo.team_guid equals t.guid
-                             where r.status_cv == completedStatus && r.delete_dt == null &&
-                             r.complete_dt >= sDate && r.complete_dt <= eDate
-                             select new CleanerPerformance
-                             {
-                                 eir_no = ig.eir_no,
-                                 tank_no = sot.tank_no,
-                                 customer_code = cc.code,
-                                 eir_dt = ig.eir_dt,
-                                 last_cargo = tc.cargo,
-                                 complete_dt = r.complete_dt,
-                                 cost = r.cleaning_cost,
-                                 cleaner_name = r.complete_by,
-                                 method = cm.name,
-                                 bay = t.description
-                             }).AsQueryable();
-
-                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.customer_code))
-                {
-                    query = query.Where(tr => tr.customer_code.Contains(cleanerPerformanceRequest.customer_code));
-                }
-                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.eir_no))
-                {
-                    query = query.Where(tr => tr.eir_no.Contains(cleanerPerformanceRequest.eir_no));
-                }
-                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.tank_no))
-                {
-                    query = query.Where(tr => tr.tank_no.Contains(cleanerPerformanceRequest.tank_no));
-                }
-                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.last_cargo))
-                {
-                    query = query.Where(tr => tr.last_cargo.Contains(cleanerPerformanceRequest.last_cargo));
-                }
-                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.method_name))
-                {
-                    query = query.Where(tr => tr.method.Contains(cleanerPerformanceRequest.method_name));
-                }
-                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.cleaning_bay))
-                {
-                    query = query.Where(tr => tr.bay.Contains(cleanerPerformanceRequest.cleaning_bay));
-                }
-                if (!string.IsNullOrEmpty(cleanerPerformanceRequest.cleaner_name))
-                {
-                    query = query.Where(tr => tr.cleaner_name.Contains(cleanerPerformanceRequest.cleaner_name));
-                }
-
-                var resultList = await query.OrderBy(tr => tr.tank_no).ToListAsync();
-                return resultList;
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-            }
-        }
+     
 
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
@@ -803,11 +722,6 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-
-        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        //[UseProjection]
-        //[UseFiltering]
-        //[UseSorting]
         public async Task<CustomerMonthlySales> QueryCustomerMonthlySalesReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, CustomerMonthlySalesRequest customerMonthlySalesRequest)
         {
@@ -1085,6 +999,7 @@ namespace IDMS.Billing.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
+
         public async Task<YearlySalesList> QueryYearlySalesReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
              [Service] IHttpContextAccessor httpContextAccessor, YearlySalesRequest yearlySalesRequest)
         {
@@ -1708,45 +1623,6 @@ namespace IDMS.Billing.GqlTypes
 
             return mergedList;
         }
-
-
-        //private List<DailyInventorySummary> MergeList(List<DailyInventorySummary> list1, List<DailyInventorySummary> list2, List<OpeningBalance?> openingBalances)
-        //{
-        //    List<DailyInventorySummary> mergedList = new List<DailyInventorySummary>();
-        //    try
-        //    {
-        //        mergedList = (from l1 in list1
-        //                      join l2 in list2 on l1.code equals l2.code into joined
-        //                      from l2 in joined.DefaultIfEmpty()
-        //                      select new DailyInventorySummary
-        //                      {
-        //                          code = l1.code,
-        //                          name = l1.name,
-        //                          in_gate_count = l1.in_gate_count,
-        //                          out_gate_count = l2?.out_gate_count ?? 0,
-        //                          opening_balance = openingBalances
-        //                      })
-        //                   .Union(
-        //                       from l2 in list2
-        //                       where !list1.Any(l1 => l1.code == l2.code)
-        //                       select new DailyInventorySummary
-        //                       {
-        //                           code = l2.code,
-        //                           name = l2.name,
-        //                           in_gate_count = 0,
-        //                           out_gate_count = l2.out_gate_count,
-        //                           opening_balance = openingBalances
-        //                       }
-        //                   )
-        //                   .ToList();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-
-        //    return mergedList;
-        //}
 
         private async Task<List<OpeningBalance>> QueryOpeningBalance(ApplicationBillingDBContext context, long inventoryDate)
         {
