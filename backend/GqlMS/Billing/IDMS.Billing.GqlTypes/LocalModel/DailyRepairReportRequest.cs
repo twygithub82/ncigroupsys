@@ -3,19 +3,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.Billing.GqlTypes.LocalModel
 {
-    public class DailyTeamRevenuRequest: DailyRevenueApproval
+    public class DailyTeamRevenuRequest: DailyRepair
     {
         [NotMapped]
         public List<string?>? team { get; set; }
     }
 
-    public class DailyTeamApprovalRequest : DailyRevenueApproval
+    public class DailyTeamApprovalRequest : DailyRepair
     {
         [NotMapped]
         public List<string?>? team { get; set; }
     }
 
-    public class DailyRevenueApproval
+    public class DailyQCDetailRequest : DailyRepair
+    {
+        [NotMapped]
+        public List<string?>? team { get; set; }
+    }
+
+    public class DailyRepair
     {
         [NotMapped]
         public List<string?>? repair_type { get; set; }

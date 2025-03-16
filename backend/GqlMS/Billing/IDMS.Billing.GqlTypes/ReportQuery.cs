@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Service;
 using IDMS.Models.Parameter;
 using Newtonsoft.Json.Linq;
+using IDMS.Models.Master;
+using IDMS.Models.Shared;
 
 
 namespace IDMS.Billing.GqlTypes
@@ -204,6 +206,146 @@ namespace IDMS.Billing.GqlTypes
         }
 
 
+
+        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        //[UseProjection]
+        //[UseFiltering]
+        //[UseSorting]
+        public async Task<SurveyorPerformanceResult?> QuerySurveyorPerformance(ApplicationBillingDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, SurveyorPerformanceSummaryRequest surveyorPerfSummaryRequest)
+        {
+
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                string completedStatus = "COMPLETED";
+
+                //long sDate = surveyorPerfSummaryRequest.start_date;
+                //long eDate = surveyorPerfSummaryRequest.end_date;
+
+                int year = surveyorPerfSummaryRequest.year;
+                int start_month = surveyorPerfSummaryRequest.start_month;
+                int end_month = surveyorPerfSummaryRequest.end_month;
+
+                // Get the start date of the month (1st of the month)
+                DateTime startOfMonth = new DateTime(year, start_month, 1);
+                // Get the end date of the month (last day of the month)
+                // Get the number of days in the specified month
+                int daysInMonth = DateTime.DaysInMonth(year, end_month);
+                DateTime endOfMonth = new DateTime(year, end_month, daysInMonth).AddHours(23).AddMinutes(59).AddSeconds(59);
+                // Convert the start and end dates to Unix Epoch (seconds since 1970-01-01)
+                long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
+                long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
+
+                var query = (from r in context.repair
+                                 //join rp in context.Set<repair_part>() on r.guid equals rp.repair_guid
+                             join sot in context.storing_order_tank on r.sot_guid equals sot.guid
+                             join so in context.storing_order on sot.so_guid equals so.guid
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                             join us in context.Set<aspnetusers>() on r.aspnetusers_guid equals us.Id
+                             //join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
+                             //join jo in context.job_order on sp.job_order_guid equals jo.guid
+                             //join t in context.team on jo.team_guid equals t.guid
+                             where r.delete_dt == null && r.create_dt != null && r.create_dt >= startEpoch && r.create_dt <= endEpoch
+                             orderby r.create_dt
+                             select new TempSurveyorPerformance
+                             {
+                                 date = (long)r.create_dt,
+                                 customer_code = cc.code,
+                                 surveyor_name = us.UserName,
+                                 est_cost = r.est_cost,
+                                 appv_cost = r.total_cost,
+                                 diff_cost = r.est_cost ?? 0.0 - r.total_cost,
+                                 repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+
+                             }).AsQueryable();
+
+
+                if (!string.IsNullOrEmpty(surveyorPerfSummaryRequest.customer_code))
+                {
+                    query = query.Where(tr => tr.customer_code.Contains(surveyorPerfSummaryRequest.customer_code));
+                }
+                if (surveyorPerfSummaryRequest.repair_type != null && surveyorPerfSummaryRequest.repair_type.Any())
+                {
+                    query = query.Where(tr => surveyorPerfSummaryRequest.repair_type.Contains(tr.repair_type));
+                }
+                if (surveyorPerfSummaryRequest.surveyor_name != null && surveyorPerfSummaryRequest.surveyor_name.Any())
+                {
+                    query = query.Where(tr => surveyorPerfSummaryRequest.surveyor_name.Contains(tr.surveyor_name));
+                }
+
+                var resultList = await query.ToListAsync();
+
+                //This to make sure the result list have data
+                if (!resultList.Any())
+                    return null;
+
+                // Convert epoch timestamp to local date (yyyy-MM-dd)
+                foreach (var item in resultList)
+                {
+                    // Convert epoch timestamp to DateTimeOffset (local time zone)
+                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date).ToLocalTime();
+                    // Format the date as yyyy-MM-dd and replace the code with date
+                    item.month = dateTimeOffset.ToString("MMMM");
+                }
+                var groupedNodes = resultList
+                       .GroupBy(n => new { n.month, n.surveyor_name })  // Group by formatted date
+                       .Select(g => new
+                       {
+                           Month = g.Key.month,
+                           Surveyor = g.Key.surveyor_name,
+                           Count = g.Count(),
+                           Est_Cost = g.Select(n => n.est_cost).Sum(), // Get distinct SotGuids
+                           Appr_Cost = g.Select(n => n.appv_cost).Sum(),
+                           Diff_Cost = g.Select(n => n.diff_cost).Sum(),
+
+                       })
+                       .GroupBy(x => x.Month) // Further group by Month
+                       .Select(g => new SurveyorPerformanceByMonth
+                       {
+                           month = g.Key,
+                           SurveyorList = g.Select(x => new SurveyorList
+                           {
+                               surveyor_name = x.Surveyor,        // Just keep Surveyor, no Month here
+                               est_count = x.Count,
+                               est_cost = x.Est_Cost,
+                               appv_cost = x.Appr_Cost,
+                               diff_cost = x.Diff_Cost,
+                               average = x.Appr_Cost / x.Count,
+                               rejected = x.Diff_Cost < 0 ? 0 : x.Diff_Cost / x.Est_Cost
+                           }).ToList(),
+                           monthly_total_est_count = g.Sum(x => x.Count),
+                           monthly_total_est_cost = g.Sum(x => x.Est_Cost),
+                           monthly_total_appv_cost = g.Sum(x => x.Appr_Cost),
+                           monthly_total_diff_cost = g.Sum(x => x.Diff_Cost),
+                           monthly_total_average = g.Sum(x => x.Appr_Cost) / g.Sum(x => x.Count),
+                           //monthly_total_rejected = g.Sum(x => x.Diff_Cost < 0 ? 0 : x.Diff_Cost) / g.Sum(x => x.Est_Cost)
+                           monthly_total_rejected = (g.Sum(x => x.Diff_Cost)) < 0 ? 0 : g.Sum(x => x.Diff_Cost) / g.Sum(x => x.Est_Cost)
+                       })
+                       .ToList();
+
+                SurveyorPerformanceResult surveyorPerformanceResult = new SurveyorPerformanceResult();
+                surveyorPerformanceResult.monthly_results = groupedNodes;
+                surveyorPerformanceResult.grand_total_est_count = groupedNodes.Sum(g => g.monthly_total_est_count);
+                surveyorPerformanceResult.grand_total_est_cost = groupedNodes.Sum(g => g.monthly_total_est_cost);
+                surveyorPerformanceResult.grand_total_appv_cost = groupedNodes.Sum(g => g.monthly_total_appv_cost);
+                surveyorPerformanceResult.grand_total_diff_cost = groupedNodes.Sum(g => g.monthly_total_diff_cost);
+                surveyorPerformanceResult.grand_total_average = surveyorPerformanceResult.grand_total_appv_cost < 0 ? 0 : surveyorPerformanceResult.grand_total_appv_cost
+                                                                / surveyorPerformanceResult.grand_total_est_count;
+                surveyorPerformanceResult.grand_total_rejected = surveyorPerformanceResult.grand_total_diff_cost < 0 ? 0 : surveyorPerformanceResult.grand_total_diff_cost
+                                                                / surveyorPerformanceResult.grand_total_est_cost;
+
+
+                return surveyorPerformanceResult;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
         #endregion
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
@@ -247,19 +389,20 @@ namespace IDMS.Billing.GqlTypes
                                  qc_by = jo.qc_by,
                                  qc_date = jo.qc_dt,
                                  eir_no = ig.eir_no,
-                                 repair_cost = r.total_cost, 
+                                 repair_cost = r.total_cost,
                                  team = t.description,
                                  repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
 
                              }).AsQueryable();
-                if (dailyTeamRevenueRequest.approved_start_date != null && dailyTeamRevenueRequest.approved_end_date != null)
-                {
-                    query = query.Where(tr => tr.approved_date >= dailyTeamRevenueRequest.approved_start_date && tr.approved_date <= dailyTeamRevenueRequest.approved_end_date);
-                }
 
                 if (dailyTeamRevenueRequest.qc_start_date != null && dailyTeamRevenueRequest.qc_end_date != null)
                 {
                     query = query.Where(tr => tr.qc_date >= dailyTeamRevenueRequest.qc_start_date && tr.qc_date <= dailyTeamRevenueRequest.qc_end_date);
+                }
+
+                if (dailyTeamRevenueRequest.approved_start_date != null && dailyTeamRevenueRequest.approved_end_date != null)
+                {
+                    query = query.Where(tr => tr.approved_date >= dailyTeamRevenueRequest.approved_start_date && tr.approved_date <= dailyTeamRevenueRequest.approved_end_date);
                 }
 
                 if (!string.IsNullOrEmpty(dailyTeamRevenueRequest.customer_code))
@@ -304,7 +447,6 @@ namespace IDMS.Billing.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
@@ -397,6 +539,106 @@ namespace IDMS.Billing.GqlTypes
                 if (dailyTeamApprovalRequest.team != null && dailyTeamApprovalRequest.team.Any())
                 {
                     query = query.Where(tr => dailyTeamApprovalRequest.team.Contains(tr.team));
+                }
+
+                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.approved_date).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<DailyTeamApproval>> QueryDailyQCDetail(ApplicationBillingDBContext context, [Service] IConfiguration config,
+          [Service] IHttpContextAccessor httpContextAccessor, DailyQCDetailRequest dailyQCDetailRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                List<DailyTeamApproval> result = new List<DailyTeamApproval>();
+
+                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+                //string surveryorCodeValType = "TEST_CLASS";
+                string repairStatus = "QC_COMPLETED";
+
+                //long sDate = dailyTeamRevenueRequest.start_date;
+                //long eDate = dailyTeamRevenueRequest.end_date;
+
+                var query = (from r in context.repair
+                             join rp in context.repair_part on r.guid equals rp.repair_guid
+                             join jo in context.job_order on rp.job_order_guid equals jo.guid
+                             join t in context.team on jo.team_guid equals t.guid
+                             join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
+                             join so in context.storing_order on sot.so_guid equals so.guid into soGroup
+                             from so in soGroup.DefaultIfEmpty()
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
+                             from cc in ccGroup.DefaultIfEmpty()
+                             join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                             where r.delete_dt == null && r.status_cv == repairStatus && !string.IsNullOrEmpty(sot.purpose_repair_cv)
+                             select new DailyTeamApproval
+                             {
+                                 estimate_no = r.estimate_no,
+                                 tank_no = sot.tank_no,
+                                 code = cc.code,
+                                 estimate_date = r.create_dt,
+                                 approved_date = r.approve_dt,
+                                 allocation_date = r.allocate_dt,
+                                 qc_date = jo.qc_dt,
+                                 eir_no = ig.eir_no,
+                                 repair_cost = r.total_cost,
+                                 team = t.description,
+                                 status = r.status_cv,
+                                 repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+
+                             }).AsQueryable();
+
+                if (dailyQCDetailRequest.approved_start_date != null && dailyQCDetailRequest.approved_end_date != null)
+                {
+                    query = query.Where(tr => tr.approved_date >= dailyQCDetailRequest.approved_start_date && tr.approved_date <= dailyQCDetailRequest.approved_end_date);
+                }
+
+                if (!string.IsNullOrEmpty(dailyQCDetailRequest.customer_code))
+                {
+                    query = query.Where(tr => String.Equals(tr.code, dailyQCDetailRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(dailyQCDetailRequest.tank_no))
+                {
+                    query = query.Where(tr => tr.tank_no.Contains(dailyQCDetailRequest.tank_no));
+                }
+
+                if (!string.IsNullOrEmpty(dailyQCDetailRequest.eir_no))
+                {
+                    query = query.Where(tr => tr.eir_no.Contains(dailyQCDetailRequest.eir_no));
+                }
+
+                if (dailyQCDetailRequest.repair_type != null && dailyQCDetailRequest.repair_type.Any())
+                {
+                    query = query.Where(tr => dailyQCDetailRequest.repair_type.Contains(tr.repair_type));
+                }
+
+                if (dailyQCDetailRequest.estimate_start_date != null && dailyQCDetailRequest.estimate_end_date != null)
+                {
+                    query = query.Where(tr => tr.estimate_date >= dailyQCDetailRequest.estimate_start_date && tr.estimate_date <= dailyQCDetailRequest.estimate_end_date);
+                }
+
+                if (dailyQCDetailRequest.allocation_start_date != null && dailyQCDetailRequest.allocation_end_date != null)
+                {
+                    query = query.Where(tr => tr.allocation_date >= dailyQCDetailRequest.allocation_start_date && tr.allocation_date <= dailyQCDetailRequest.allocation_end_date);
+                }
+
+                if (dailyQCDetailRequest.qc_start_date != null && dailyQCDetailRequest.qc_end_date != null)
+                {
+                    query = query.Where(tr => tr.qc_date >= dailyQCDetailRequest.qc_start_date && tr.qc_date <= dailyQCDetailRequest.qc_end_date);
+                }
+
+                if (dailyQCDetailRequest.team != null && dailyQCDetailRequest.team.Any())
+                {
+                    query = query.Where(tr => dailyQCDetailRequest.team.Contains(tr.team));
                 }
 
                 return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.approved_date).ToListAsync();
