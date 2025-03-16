@@ -501,6 +501,8 @@ export class Utility {
         translatedLangText[key] = langText[key]; // Fallback to the original key
       }
     }
+
+    pdf.setLineWidth(0.1);
     // Set dashed line pattern
     pdf.setLineDashPattern([1, 1], 0.5);
   
@@ -508,7 +510,7 @@ export class Utility {
     pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
   
     // Define header height
-    const heightHeader: number = 30;
+    const heightHeader: number = 28;
   
     // Draw bottom line
     pdf.line(leftMargin, topMargin + heightHeader,  (pageWidth - rightMargin), topMargin + heightHeader);
@@ -557,8 +559,115 @@ export class Utility {
     pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
   }
   
+
+  static addText(pdf: jsPDF, content:string,topPos:number,leftPost:number,fontSize:number)
+  {
+    pdf.setFontSize(fontSize); // Title font size 
+    pdf.text(content, leftPost, topPos); // Position it at the top
+  }
+
+ static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition:number) {
+    pdf.setFontSize(14); // Title font size 
+    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+
+    
+    pdf.text(title, titleX, topPosition); // Position it at the top
+
+    pdf.setLineDashPattern([0, 0], 0);
+    // Draw underline for the title
+    pdf.setLineWidth(0.1); // Set line width for underline
+    pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+}
+
+
+
+static async  addHeaderWithCompanyLogo_Landscape(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService // Inject TranslateService
+  ): Promise<void>{
+
+    const translatedLangText: any = {};
+    const langText = {
+      PHONE: 'COMMON-FORM.PHONE',
+      FAX: 'COMMON-FORM.FAX',
+      WEB: 'COMMON-FORM.WEB',
+      CRN: 'COMMON-FORM.CRN',
+    };
+
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
+    }
+    pdf.setLineWidth(0.1);
+    // Set dashed line pattern
+    pdf.setLineDashPattern([1, 1], 0.5);
+  
+    // Draw top line
+    pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
+  
+    // Define header height
+    const heightHeader: number = 28;
+  
+    // Draw bottom line
+    pdf.line(leftMargin, topMargin + heightHeader,  (pageWidth - rightMargin), topMargin + heightHeader);
+  
+    // Add company name
+    pdf.setFontSize(18);
+    const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
+    let posX = pageWidth / 1.75;
+    let posY = topMargin + 8;
+    pdf.text(customerInfo.companyName, posX, posY);
+  
+    // Add company address
+    pdf.setFontSize(10);
+    posX -= 5;
+    posY += 7;
+    pdf.text(customerInfo.companyAddress, posX, posY);
+  
+    // Add phone, fax, and website
+    let nextLine = `${translatedLangText.PHONE}:${customerInfo.companyPhone} ${translatedLangText.FAX}:${customerInfo.companyFax} ${translatedLangText.WEB}:${customerInfo.companyWebsite}`;
+    posX -= 20;
+    posY += 5;
+    pdf.text(nextLine, posX, posY);
+  
+    // Add company UEN
+    nextLine = `${translatedLangText.CRN}:${customerInfo.companyUen}`;
+    posX += 35;
+    posY += 5;
+    pdf.text(nextLine, posX, posY);
+  
+    // Load and add company logo
+    const imgUrl = "assets/images/logo.png";
+    const img = new Image();
+  
+    // Wait for the image to load
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = imgUrl;
+    });
+  
+    // Add the image to the PDF
+    const posX1_img = leftMargin+5;
+    const posY1_img = topMargin+10;
+    const imgHeight = heightHeader-21;
+    const imgWidth = 60;
+    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
+  }
   
 }
+
 
 export const TANK_STATUS_IN_YARD = [
   'STEAM',

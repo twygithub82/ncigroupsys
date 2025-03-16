@@ -28,6 +28,8 @@ import { RepairPartItem } from 'app/data-sources/repair-part';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+//import autoTable from 'jspdf-autotable'; // Import autoTable
+import autoTable, { Styles } from 'jspdf-autotable';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -810,6 +812,175 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 297; // A4 width in mm (landscape)
+    const pageHeight = 220; // A4 height in mm (landscape)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 8;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+  
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+  
+    const pdf = new jsPDF('l', 'mm', 'a4');
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+  
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+  
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    const progressValue = 100 / cardElements.length;
+  
+    const reportTitle = this.GetReportTitle();
+    const headers = [[
+      this.translatedLangText.NO,
+      this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
+      this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
+      this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
+      this.translatedLangText.CLEAN_COST, this.translatedLangText.REPAIR_COST,
+      this.translatedLangText.PREINSP_COST, this.translatedLangText.LOLO_COST,
+      this.translatedLangText.DAYS, this.translatedLangText.STORAGE_COST,
+      this.translatedLangText.STEAM_COST, this.translatedLangText.RESIDUE_COST,
+      this.translatedLangText.GATEIO_S, this.translatedLangText.TOTAL
+    ]];
+  
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+    };
+  
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+  
+    
+    await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
+    await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 45;
+    let minHeightHeaderCol=9;
+    
+    for (let n = 0; n < this.repBillingCustomers.length; n++) {
+      const data: any[][] = []; // Explicitly define data as a 2D array
+      //let startY = lastTableFinalY + 15; // Start Y position for the current table
+      let cust = this.repBillingCustomers[n];
+  
+          // Calculate space required for customer name and table
+    const customerNameHeight = 10; // Height required for customer name
+    const tableHeight = cust.items!.length * tableRowHeight + tableHeaderHeight; // Approximate table height
+
+    // Check if there is enough space on the current page
+    if (lastTableFinalY + customerNameHeight + tableHeight > maxContentHeight) {
+      // Add a new page if there isn't enough space
+      pdf.addPage();
+      pageNumber++;
+      lastTableFinalY = topMargin; // Reset Y position for the new page
+    }
+    
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
+
+    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
+    pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+
+    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+  
+      for (let b = 0; b < cust.items!.length; b++) {
+        var itm = cust.items?.[b]!;
+        data.push([
+          (b+1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
+          itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
+          this.displayCleanCost(itm) || "", this.displayRepairCost(itm) || "", this.displayPreinsCost(itm) || "",
+          this.displayLOLOCost(itm) || "", itm.days, this.displayStorageCost(itm) || "",
+          this.displaySteamCost(itm) || "", this.displayResidueCost(itm) || "", this.displayGateIOCost(itm) || "",
+          (itm.total === "0.00" ? '' : itm.total)
+        ]);
+      }
+      pdf.setDrawColor(0, 0, 0); // red line color
+
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0, 0], 0);
+      // Add table using autoTable plugin
+      autoTable(pdf, {
+        head: headers,
+        body: data,
+        startY: startY, // Start table at the current startY value
+        theme: 'grid',
+        styles: { 
+          fontSize: 5.5,
+           minCellHeight: minHeightHeaderCol
+         
+        },
+        columnStyles: {
+            // Set columns 0 to 16 to be center aligned
+            0: { halign: 'left' },
+            1: { halign: 'center' },
+            2: { halign: 'left' },
+            3: { halign: 'center' },
+            4: { halign: 'left', cellWidth: 40 },
+            5: { halign: 'center' },
+            6: { halign: 'center' },
+            7: { halign: 'center' },
+            8: { halign: 'center' },
+            9: { halign: 'center' },
+            10: { halign: 'center' },
+            11: { halign: 'center' },
+            12: { halign: 'center' },
+            13: { halign: 'center' },
+            14: { halign: 'center' },
+            15: { halign: 'center' },
+            16: { halign: 'center' },
+        },
+        headStyles: headStyles, // Custom header styles
+        bodyStyles: { 
+          fillColor: [255, 255, 255],
+          halign: 'left', // Left-align content for body by default
+          valign: 'middle', // Vertically align content
+         },
+        didDrawPage: (data: any) => {
+          const pageCount = pdf.getNumberOfPages();
+        
+          if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+          // Capture the final Y position of the table
+          lastTableFinalY = data.cursor.y;
+          var pg = pagePositions.find(p=>p.page==pageCount);
+          if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+        },
+      });
+  
+    }
+  
+    const totalPages = pdf.getNumberOfPages();
+  
+   
+    pagePositions.forEach(({ page, x, y }) => {
+      pdf.setDrawColor(0, 0, 0); // black line color
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0, 0], 0);
+      pdf.setFontSize(8);
+      pdf.setPage(page);
+      var lineBuffer=13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    });
+  
+    this.generatingPdfProgress = 100;
+    pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+  }
+
+ 
+
+  async exportToPDF_r2(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10; 
