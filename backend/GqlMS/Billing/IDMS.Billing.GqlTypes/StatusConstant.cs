@@ -24,6 +24,8 @@ namespace IDMS.Billing.GqlTypes
         public const string GATE = "GATE";
         public const string PREINSPECTION = "PREINSPECTION";
         public const string STORAGE = "STORAGE";
+
+        public static List<string> ProcessList = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
     }
 
     public class ReportType
@@ -34,5 +36,14 @@ namespace IDMS.Billing.GqlTypes
         public const string CUSTOMER_WISE = "CUSTOMER";
         public const string CARGO_WISE = "CARGO";
         public const string UN_WISE = "UN";
+    }
+
+    public class StatusCondition
+    {
+        public static List<string> BeforeApprove = new List<string> { "PENDING", "CANCELED", "NO_ACTION" };
+        public static List<string> Cancelled = new List<string> { "CANCELED", "NO_ACTION" };
+        public static List<string> BeforeTankIn = new List<string> { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+        public static List<string> NotInYard = new List<string> { "RELEASED", "OUT_GATE", "OUT_SURVEY" };
+        public static List<string> InYard = new List<string> { "RELEASED", "OUT_GATE", "OUT_SURVEY" };
     }
 }

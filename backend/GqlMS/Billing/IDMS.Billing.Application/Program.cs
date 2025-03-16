@@ -45,6 +45,7 @@ namespace IDMS.Billing.Applicaton
                                 MaxPageSize = 50000
                             })
                             .AddQueryType<BillingQuery>()
+                            .AddTypeExtension<ReportQuery>()
                             .AddMutationType<BillingMutation>();
 
             builder.Services.AddAuthentication(options =>

@@ -89,10 +89,12 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         [NotMapped]
         public string code { get; set; }
         [NotMapped]
+        public string cc_name { get; set; }
+        [NotMapped]
         public long date { get; set; }
+        [NotMapped]
+        public string purpose_repair { get; set; }
     }
-
-
 
     public class ResultPerDay
     {
@@ -116,4 +118,61 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public double cost { get; set; }
     }
 
+    public class CustomerSales
+    {
+        [NotMapped]
+        public string code { get; set; }
+        [NotMapped]
+        public string name { get; set; }
+        [NotMapped]
+        public int tank_in_count { get; set; }
+        [NotMapped]
+        public int clean_count { get; set; }
+        [NotMapped]
+        public double clean_cost { get; set; } //cost
+        [NotMapped]
+        public int steam_count { get; set; }
+        [NotMapped]
+        public double steam_cost { get; set; } //cost
+        [NotMapped]
+        public int residue_count { get; set; }
+        [NotMapped]
+        public double residue_cost { get; set; } //cost
+        [NotMapped]
+        public int in_service_count { get; set; }
+        [NotMapped]
+        public double in_service_cost { get; set; } //cost
+        [NotMapped]
+        public int offhire_count { get; set; }
+        [NotMapped]
+        public double offhire_cost { get; set; } //cost
+    }
+
+    public class CustomerMonthlySales
+    {
+        [NotMapped]
+        public List<CustomerSales> customer_sales { get; set; }
+        [NotMapped]
+        public int total_tank_in {  get; set; }
+        [NotMapped]
+        public int total_steam_count { get; set; }
+        [NotMapped]
+        public double total_steam_cost { get; set; }
+        [NotMapped]
+        public int total_clean_count { get; set; }
+        [NotMapped]
+        public double total_clean_cost { get; set; }
+        [NotMapped]
+        public int total_residue_count { get; set; }
+        [NotMapped]
+        public double total_residue_cost { get; set; }
+        [NotMapped]
+        public int total_in_service_count { get; set; }
+        [NotMapped]
+        public double total_in_service_cost { get; set; }
+        [NotMapped]
+        public int total_offhire_count { get; set; }
+        [NotMapped]
+        public double total_offhire_cost { get; set; }
+    }
 }
