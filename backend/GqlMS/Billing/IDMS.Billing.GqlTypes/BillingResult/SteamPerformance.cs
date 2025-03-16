@@ -33,11 +33,11 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         [GraphQLIgnore]
         public string? yard { get; set; }
         [NotMapped]
-        public Themometer? Themometer { get; set; }
+        public Themometer? themometer { get; set; }
         [NotMapped]
-        public Top? Top { get; set; }
+        public Top? top { get; set; }
         [NotMapped]
-        public Bottom? Bottom { get; set; }
+        public Bottom? bottom { get; set; }
     }
 
     public class Themometer
