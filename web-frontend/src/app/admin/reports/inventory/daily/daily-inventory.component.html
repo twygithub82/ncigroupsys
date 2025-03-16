@@ -71,22 +71,22 @@
               </div>
               <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center  ms-auto justify-content-end">
-                <button mat-mini-fab color="primary" (click)="search_overview_summary()"
+                <button mat-mini-fab color="primary" (click)="search_overview_summary()"  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async)"
                   matTooltip={{translatedLangText.OVERVIEW_SUMMARY}}>
                   <mat-icon>show_chart</mat-icon>
                 </button>
-                <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail_summary()"
+                <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail_summary()"  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async)"
                   matTooltip={{translatedLangText.DETAIL_SUMMARY}}>
                   <mat-icon>assessment</mat-icon>
                 </button>
-                <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"
+                <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async)"
                   matTooltip={{translatedLangText.DETAIL_REPORT}}>
                   <mat-icon>assignment</mat-icon>
                 </button>
                 <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
                   <mat-icon>cached</mat-icon>
                 </button> -->
-                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)"
+                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)" [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async)"
                   matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>

@@ -318,6 +318,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
+
+      this.onDownloadClick();
   }
 
   removeEstimateWithZeroTotal(cust:report_billing_customer[]):report_billing_customer[]
@@ -825,7 +827,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     this.generatingPdfProgress = 0;
   
     const pdf = new jsPDF('l', 'mm', 'a4');
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
   
     let reportTitleCompanyLogo = 32;
@@ -833,7 +835,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let tableRowHeight = 8.5;
   
     const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
+   // const progressValue = 100 / cardElements.length;
   
     const reportTitle = this.GetReportTitle();
     const headers = [[
@@ -973,172 +975,15 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     });
   
     this.generatingPdfProgress = 100;
-    pdf.save(fileName);
+    //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf);
+    this.dialogRef.close();
   }
 
  
 
-  async exportToPDF_r2(fileName: string = 'document.pdf') {
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10; 
-    const rightMargin = 10;
-    const topMargin = 10;
-    const bottomMargin = 15;
-    const contentWidth = pageWidth - leftMargin - rightMargin; 
-    const maxContentHeight = pageHeight - topMargin - bottomMargin; 
-  
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-  
-    const pdf = new jsPDF('l', 'mm', 'a4'); // Changed orientation to portrait
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-  
-    let reportTitleCompanyLogo=32;
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 8.5;
-  
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
-  
-    const reportTitle = this.GetReportTitle();
-  
-    
-    //this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-    let currentY = topMargin; 
-    let scale = this.scale;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-
-    for (let i = 0; i < cardElements.length; i++) {
-        await this.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin);
-        let currentY = topMargin+reportTitleCompanyLogo; 
-        const card = cardElements[i];
-
-        const canvas = await html2canvas(card, { scale: scale });
-        let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-        const imgHeight = (canvas.height * contentWidth) / canvas.width;
-
-        if (currentY + imgHeight > maxContentHeight) {
-            let currentY_canvas = 0;
-            let nextPage = false;
-            const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
-            let tableRowHeight_canvas =((tableRowHeight * canvas.width) / contentWidth);
-
-            const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
-            const pageTHeaderHeight = tableHeaderHeight;
-
-            do {
-                nextPage = false;
-
-                if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
-                    imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
-                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
-                    currentY += pageTHeaderHeight;
-                    currentY_canvas += tableHeaderHeight_canvas;
-
-                    const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
-                    const remainingTableHeight_canvas = canvas.height - currentY_canvas;
-                    const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
-                    let cpImgHeight_canvas =copyTableHeight_canvas;
-                    if(copyTableHeight_canvas==remainingPageImgHeight_canvas)
-                    {
-                       cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
-                    }
-                    let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
-                    const cpImgRow_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, tableRowHeight_canvas);
-                    imgData = cpImgRow_canvas.toDataURL('image/jpeg', this.imageQuality);
-                    const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
-                    imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
-                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
-
-                    currentY_canvas += cpImgHeight_canvas;
-                    currentY += cpImgHeight;
-
-                    nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
-                } else {
-                  //  if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-                        pdf.addPage();
-                        pageNumber++;
-                        //this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                        await this.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin);
-                        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                        currentY = topMargin+reportTitleCompanyLogo;
-                        currentY_canvas -= tableHeaderHeight_canvas;
-                        nextPage = (currentY + imgHeight > maxContentHeight);
-                    // }
-
-                    // nextPage = (currentY + imgHeight > maxContentHeight);
-                     if (!nextPage) {
-                         pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-                         currentY += imgHeight + 5;
-                     }
-                }
-
-                // if (nextPage) {
-                //     pdf.addPage();
-                //     currentY = topMargin;
-                //     pageNumber++;
-                //     this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                //     currentY_canvas -= tableHeaderHeight_canvas;
-                //     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                // } else {
-                //     currentY += 5;
-                // }
-
-            } while (nextPage);
-
-        } else {
-            if(i>0)
-            {
-                pdf.addPage();
-                pageNumber++;
-               
-                pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-               
-            }
-
-            currentY = topMargin+reportTitleCompanyLogo;
-            await this.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin);
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-
-        }
-
-        this.generatingPdfProgress += progressValue;
-    }
-
-    const totalPages = pdf.getNumberOfPages();
-
-    pagePositions.forEach(({ page, x, y }) => {
-        pdf.setPage(page);
-        pdf.setFontSize(10);
-        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-        pdf.setLineDashPattern([1, 1], 0.5);
-        pdf.line(leftMargin, y-4, (pageWidth - rightMargin), y-4);
-    });
-
-    this.generatingPdfProgress = 100;
-    pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-}
-
-async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:number): Promise<HTMLCanvasElement> {
-    
-  
-  const splitCanvas = document.createElement('canvas');
-  splitCanvas.width = sw;
-  splitCanvas.height = sh;
-
-  const ctx = splitCanvas.getContext('2d');
-  if (ctx) {
-      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
-  }
-
-  return splitCanvas;
-}
   
 addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
   const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
@@ -1228,85 +1073,7 @@ async addHeaderWithCompanyLogo_Portriat(
     pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
   }
 
-  async exportToPDF_r3(fileName: string = 'document.pdf') {
-    const pageWidth = 297; // A4 width in mm (landscape)
-    const pageHeight = 210; // A4 height in mm (landscape)
-    const leftMargin = 10; // Left margin
-    const rightMargin = 10; // Right margin
-    const topMargin = 20; // Top margin for header
-    const bottomMargin = 20; // Bottom margin for footer
-    const contentWidth = pageWidth - leftMargin - rightMargin; // Usable width
-    const maxContentHeight = pageHeight - topMargin - bottomMargin; // Usable height
 
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-    let totalPages = 1;
-
-    // Store page positions for later text update
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
-
-    const reportTitle =this.translatedLangText.REPORT_TITLE;// Set your report title here
-
-    // Add header to the first page
-    this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-
-    let currentY = topMargin; // Start Y position after the header
-
-    for (let i = 0; i < cardElements.length; i++) {
-        const card = cardElements[i];
-
-        // Convert card to image (JPEG format)
-        const canvas = await html2canvas(card, { scale: this.scale });
-        const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
-
-        const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-
-        // Check if the card fits on the current page
-        if (currentY + imgHeight > maxContentHeight) {
-            // Add page number to the current page before creating a new one
-            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
-
-            // Add a new page
-            pdf.addPage();
-            pageNumber++;
-            totalPages++;
-
-            // Reset Y position for the new page
-            currentY = topMargin;
-
-            // Add the report title and underline to the new page
-            this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-        }
-
-        // Add the card image to the PDF
-        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-
-        // Update the Y position for the next card
-        currentY += imgHeight + 10; // Add a small gap between cards
-
-        // Update progress
-        this.generatingPdfProgress += progressValue;
-    }
-
-    // Add page numbers in a second pass
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 }); // Add last page number
-    pagePositions.forEach(({ page, x, y }) => {
-        pdf.setPage(page);
-        pdf.setFontSize(10);
-        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-    });
-
-    // Save the PDF
-    this.generatingPdfProgress = 100;
-    pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-}
 
 
 

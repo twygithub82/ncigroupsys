@@ -580,7 +580,29 @@ export class Utility {
     pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
 }
 
+static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition:number,fontSize:number) {
+  pdf.setFontSize(fontSize); // Title font size 
+  const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
+  const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
+  
+  pdf.text(text, titleX, topPosition); // Position it at the top
+
+  // pdf.setLineDashPattern([0, 0], 0);
+  // Draw underline for the title
+  // pdf.setLineWidth(0.1); // Set line width for underline
+  // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+}
+
+static previewPDF(pdf:jsPDF)
+{
+  const pdfBlob = pdf.output('blob');
+  const blobUrl = URL.createObjectURL(pdfBlob);
+  // Open the PDF in a new browser tab
+   window.open(blobUrl, '_blank');
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+
+}
 
 static async  addHeaderWithCompanyLogo_Landscape(
     pdf: jsPDF,

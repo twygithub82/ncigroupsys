@@ -1,7 +1,7 @@
-<div mat-dialog-title class="ms-3 mt-3">
-  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+<div mat-dialog-title class="ms-3 mt-3" hidden>
+  <h4>{{translatedLangText.PREVIEW_PDF}} :  </h4>
 </div>
-<div #pdfTable id="pdfTable" mat-dialog-content>
+<div #pdfTable id="pdfTable" mat-dialog-content hidden>
   <div id="pdf-form-body" class="pdf-container pdf-body">
     @for (bCust of report_customer_tank_activity; track bCust) {
     
@@ -50,8 +50,8 @@
         </tr>
         @for (itm of bCust.in_yard_storing_order_tank; track itm;let index = $index) {
         <tr class="fixed_height_40px">
-          <td class="text-center">{{ index + 1 }}</td> <!-- Row number -->
-          <td class="text-center"><span class="overflow-text">{{ itm.tank_no }}</span></td>
+          <td>{{ index + 1 }}</td> <!-- Row number -->
+          <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
           <td class="text-center">{{ DisplayInDate(itm) }}</td>
           <td class="text-center"><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
           <td class="text-center"><span class="overflow-text">{{ DisplayCapacity(itm) }}</span></td>
@@ -217,7 +217,7 @@
   }
   </div>
 </div>
-<div mat-dialog-actions class="m-2 align-right">
+<div mat-dialog-actions class="m-2 align-right" hidden>
   <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
     [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>

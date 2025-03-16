@@ -28,6 +28,7 @@ import { report_customer_tank_activity } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import autoTable, { Styles } from 'jspdf-autotable';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -333,17 +334,18 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     this.invType=data.type;
     this.date=data.date;
     this.queryType=data.queryType;
-
+    
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-    this.getCodeValuesData();
+   
   }
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-   
+    await this.getCodeValuesData();
+    this.onDownloadClick();
   }
 
   async generatePDF(): Promise<void> {
@@ -827,7 +829,221 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
+
   async exportToPDF_r1(fileName: string = 'document.pdf') {
+        const pageWidth = 297; // A4 width in mm (landscape)
+        const pageHeight = 220; // A4 height in mm (landscape)
+        const leftMargin = 5;
+        const rightMargin = 5;
+        const topMargin = 8;
+        const bottomMargin = 5;
+        const contentWidth = pageWidth - leftMargin - rightMargin;
+        const maxContentHeight = pageHeight - topMargin - bottomMargin;
+      
+        this.generatingPdfLoadingSubject.next(true);
+        this.generatingPdfProgress = 0;
+      
+        const pdf = new jsPDF('l', 'mm', 'a4');
+       // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+        let pageNumber = 1;
+      
+        let reportTitleCompanyLogo = 32;
+        let tableHeaderHeight = 12;
+        let tableRowHeight = 8.5;
+      
+        const pagePositions: { page: number; x: number; y: number }[] = [];
+     //   const progressValue = 100 / cardElements.length;
+      
+        const reportTitle = this.GetReportTitle();
+        const headers = [[
+          this.translatedLangText.NO,this.translatedLangText.TANK_NO, 
+          this.translatedLangText.IN_DATE,this.translatedLangText.TAKE_IN_REFERENCE, 
+          this.translatedLangText.CAPACITY,this.translatedLangText.TARE_WEIGHT,
+          this.translatedLangText.LAST_CARGO,this.translatedLangText.CLEAN_DATE, 
+          this.translatedLangText.ESTIMATE_NO,this.translatedLangText.ESTIMATE_DATE, 
+          this.translatedLangText.APPROVAL_DATE, this.translatedLangText.APPROVAL_REFERENCE,
+          this.translatedLangText.AV_DATE,this.translatedLangText.LAST_TEST,
+          this.translatedLangText.RELEASE_DATE,
+          this.translatedLangText.RELEASE_REFERENCE, this.translatedLangText.CURRENT_STATUS,
+          this.translatedLangText.REMARKS, this.translatedLangText.PURPOSE
+        ]];
+      
+        const comStyles : any={ 
+          0: { halign: 'left' ,cellWidth:6},
+          1: { halign: 'left',cellWidth: 15 },
+          2: { halign: 'center',cellWidth: 12 },
+          3: { halign: 'center',cellWidth: 12 },
+          4: { halign: 'center',cellWidth: 12  },
+          5: { halign: 'center',cellWidth: 12 },
+          6: { halign: 'left',cellWidth: 30 },
+          7: { halign: 'center',cellWidth: 12 },
+          8: { halign: 'center',cellWidth: 15 },
+          9: { halign: 'center',cellWidth: 12 },
+          10: { halign: 'center',cellWidth: 12 },
+          11: { halign: 'center',cellWidth: 12 },
+          12: { halign: 'center',cellWidth: 12 },
+          13: { halign: 'center',cellWidth: 12 },
+          14: { halign: 'center',cellWidth: 12 },
+          15: { halign: 'center',cellWidth: 12 },
+          16: { halign: 'center',cellWidth: 12 },
+          17: { halign: 'left',cellWidth: 15 },
+          18: { halign: 'left',cellWidth: 15 },
+          };
+          
+  
+        // Define headStyles with valid fontStyle
+        const headStyles: Partial<Styles> = {
+          fillColor: [211, 211, 211], // Background color
+          textColor: 0, // Text color (white)
+          fontStyle: "bold", // Valid fontStyle value
+          halign: 'center', // Centering header text
+        };
+      
+        let currentY = topMargin;
+        let scale = this.scale;
+        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+        var gap=8;
+        
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
+        await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+        // Variable to store the final Y position of the last table
+        let lastTableFinalY = 45;
+        let minHeightHeaderCol=9;
+        let fontSize=5;
+        
+        lastTableFinalY +=8;
+        pdf.setFontSize(8);
+        const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date} - (${this.invType})`;
+        Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+  
+        for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
+            if (n>0) lastTableFinalY+=8;
+            const data: any[][] = []; // Explicitly define data as a 2D array
+            //let startY = lastTableFinalY + 15; // Start Y position for the current table
+            let cust = this.report_customer_tank_activity[n];
+      
+              // Calculate space required for customer name and table
+            var subTitleHeight = 20; // Height required for customer name
+            var tableHeight = ((cust.storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); // Approximate table height
+        
+            // Check if there is enough space on the current page
+            if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
+              // Add a new page if there isn't enough space
+              pdf.addPage();
+              pageNumber++;
+              lastTableFinalY = topMargin; // Reset Y position for the new page
+              if (n>0) lastTableFinalY+=8;
+            }
+            
+            
+            //lastTableFinalY+=gap;
+            pdf.setFontSize(10);
+            pdf.setTextColor(0, 0, 0); // Black text
+            pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY ); // Add customer name 10mm below the last table
+            let startY =0;
+            if((cust.storing_order_tank?.length||0)>0)
+            {
+              // lastTableFinalY+=5;
+              // pdf.setFontSize(8);
+              // var subTitle =  `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.IN_YARD}`;
+              // pdf.text(subTitle, leftMargin, lastTableFinalY);
+              lastTableFinalY+=2;            
+              startY = lastTableFinalY; // Start table 20mm below the customer name
+          
+              for (let b = 0; b < (cust.storing_order_tank?.length||0); b++) {
+                var itm = cust.storing_order_tank?.[b]!;
+                data.push([
+                  (b+1).toString(), itm.tank_no || "",this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
+                  this.DisplayCapacity(itm)|| "", this.DisplayTareWeight(itm) || "", itm.tariff_cleaning?.cargo || "",
+                  this.DisplayCleanDate(itm) || "", this.DisplayEstimateNo(itm) || "", this.DisplayEstimateDate(itm) || "",
+                  this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm)||"", this.DisplayAVDate(itm) || "",this.DisplayLastTest(itm) || "",
+                  this.DisplayReleaseDate(itm)||"",this.DisplayReleaseRef(itm)||"",this.DisplayCurrentStatus(itm)||"",
+                  this.DisplayRemarks(itm)||"",this.displayTankPurpose(itm)||""
+                ]);
+  
+                if(itm.repair)
+                {
+                  if(itm.repair?.length||0>1)
+                    {
+                      for(let r=1;r<itm.repair!.length;r++)
+                      {
+                      var rp = itm.repair?.[r]!;
+                      data.push([
+                        "", "","","","", "","","",
+                        rp.estimate_no|| "", this.displayDate(rp.create_dt) || "", "",
+                        "","","","","",this.DisplayCurrentStatus(itm)  || "","", ""
+                      ]);
+                    }
+                  }
+                }
+              }
+              pdf.setDrawColor(0, 0, 0); // red line color
+        
+              pdf.setLineWidth(0.1);
+              pdf.setLineDashPattern([0, 0], 0);
+              // Add table using autoTable plugin
+              autoTable(pdf, {
+                head: headers,
+                body: data,
+                startY: startY, // Start table at the current startY value
+                theme: 'grid',
+                styles: { 
+                  fontSize: fontSize,
+                  minCellHeight: minHeightHeaderCol
+                
+                },
+                columnStyles:comStyles,
+                headStyles: headStyles, // Custom header styles
+                bodyStyles: { 
+                  fillColor: [255, 255, 255],
+                  halign: 'left', // Left-align content for body by default
+                  valign: 'middle', // Vertically align content
+                },
+                didDrawPage: (data: any) => {
+                  const pageCount = pdf.getNumberOfPages();
+                
+                  if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                  // Capture the final Y position of the table
+                  lastTableFinalY = data.cursor.y;
+                  var pg = pagePositions.find(p=>p.page==pageCount);
+                  if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                },
+              });
+            }
+  
+      
+        }
+      
+        const totalPages = pdf.getNumberOfPages();
+      
+       
+        pagePositions.forEach(({ page, x, y }) => {
+          pdf.setDrawColor(0, 0, 0); // black line color
+          pdf.setLineWidth(0.1);
+          pdf.setLineDashPattern([0, 0], 0);
+          pdf.setFontSize(8);
+          pdf.setPage(page);
+          var lineBuffer=13;
+          pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+          pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+        });
+      
+        this.generatingPdfProgress = 100;
+        Utility.previewPDF(pdf);
+  
+    //     const pdfBlob = pdf.output('blob');
+    //     const blobUrl = URL.createObjectURL(pdfBlob);
+    // // Open the PDF in a new browser tab
+    // window.open(blobUrl, '_blank');
+    // setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+  
+      //  pdf.save(fileName);
+        this.generatingPdfProgress = 0;
+        this.generatingPdfLoadingSubject.next(false);
+        this.dialogRef.close();
+      }
+
+  async exportToPDF_r2(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
     const leftMargin = 10; 
