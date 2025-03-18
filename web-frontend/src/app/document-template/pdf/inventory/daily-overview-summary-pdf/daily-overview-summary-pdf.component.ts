@@ -847,8 +847,8 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
         
         
         const comStyles : any={ 
-        0: { halign: 'left' ,cellWidth:25, minCellHeight:minHeightBodyCell},
-        1: { halign: 'left',cellWidth: 'auto', minCellHeight:minHeightBodyCell },
+        0: { halign: 'center' ,cellWidth:25, minCellHeight:minHeightBodyCell},
+        1: { halign: 'center',cellWidth: 'auto', minCellHeight:minHeightBodyCell },
        };
         
        const data: any[][] = [];
@@ -877,7 +877,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
                 headStyles: headStyles, // Custom header styles
                 bodyStyles: { 
                   fillColor: [255, 255, 255],
-                  halign: 'left', // Left-align content for body by default
+                  halign: 'center', // Left-align content for body by default
                   valign: 'middle', // Vertically align content
                 },
                 didDrawPage: (data: any) => {

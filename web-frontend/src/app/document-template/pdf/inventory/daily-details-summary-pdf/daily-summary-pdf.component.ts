@@ -958,7 +958,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
                 //let startY = lastTableFinalY + 15; // Start Y position for the current table
               let itm = this.report_inventory[0].opening_balance?.[n];
               subData.push([
-                (++idx).toString(), itm!.yard || "", itm!.open_balance || "0", 
+                (++idx).toString(), this.DisplayYard(String(itm!.yard!)) || "", itm!.open_balance || "0", 
                 itm!.in_count || "0",itm!.out_count || "0",this.displayClosingBalanceForYard(itm) || "0"
               ]);
             }
@@ -1795,5 +1795,10 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
      var outGate=this.displayTotalOutGate();
      return openBal+inGate-outGate;
    }
+
+   DisplayYard(yard: string): string {
+   
+       return this.cvDS.getCodeDescription(yard, this.yardCvList) || '';;
+     }
   
 }
