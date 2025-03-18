@@ -217,6 +217,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
   cleaningSumList:cleaning_report_summary_item[]=[];
+  isGeneratingReport=false;
 
   constructor(
     public httpClient: HttpClient,
@@ -397,16 +398,17 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   search() {
-
+    
     
     var cond_counter = 1;
     var report_type: string =this.searchForm!.get('report_type')?.value;
     const where: any = {};
     if(this.searchForm?.invalid)return;
-    
+    this.isGeneratingReport=true;
 
     if(report_type=="DETAIL")
     {
+      where.cleaning={any:true};
       where.tank_status_cv={neq:'RELEASED'};
       if (this.searchForm!.get('tank_no')?.value) {
         where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
@@ -476,12 +478,16 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       }
 
       this.noCond = (cond_counter === 0);
-      if (this.noCond) return;
+      if (this.noCond) {
+        this.isGeneratingReport=false;
+        return;
+      }
       this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
       this.performSearchSOT(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,date);
     }
     else
     {
+        where.cleaning={any:true};
         this.lastSearchCriteria={};
         if (this.searchForm!.get('tank_no')?.value) {
           this.lastSearchCriteria.tank_no =  this.searchForm!.get('tank_no')?.value ;
@@ -509,6 +515,12 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
           this.lastSearchCriteria.end_date= Utility.convertDate(end_dt, true);
           date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`;
           cond_counter++;
+        }else
+        {
+          var start_dt = new Date(2000,1,1,0,0,0);
+          var end_dt = new Date();
+          this.lastSearchCriteria.start_date= Utility.convertDate(start_dt);
+          this.lastSearchCriteria.end_date= Utility.convertDate(end_dt, true);
         }
 
 
@@ -532,6 +544,10 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
         }
 
         this.noCond = (cond_counter === 0);
+        if (this.noCond) {
+          this.isGeneratingReport=false;
+          return;
+        }
         this.lastSearchCriteria.report_type=this.GetReportType(report_type);
         this.performSearchCleaningInventorySummary(report_type,date);
     }
@@ -767,7 +783,10 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
 
 
   ProcessReportCleaningInventoryDetail(date:string) {
-    if (this.sotList.length === 0) return;
+    if (this.sotList.length === 0) {
+     this.isGeneratingReport=false;
+      return;
+    }
 
     var report_inv_cln_dtl: report_inventory_cleaning_detail[] = [];
 
@@ -821,7 +840,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+        this.isGeneratingReport=false;
     });
   }
 
@@ -851,7 +870,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 
@@ -880,7 +899,7 @@ onExportCustomerWise(repCln: cleaning_report_summary_item[],date:string) {
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 

@@ -43,6 +43,7 @@ import {
   ApexGrid,  ApexMarkers,  ApexNonAxisChartSeries,  ApexResponsive,
   NgApexchartsModule} from 'ng-apexcharts';
 import{BarChartModule, Color, LegendPosition, ScaleType} from '@swimlane/ngx-charts'
+import autoTable, { Styles } from 'jspdf-autotable';
 
   export type HorizontalBarOptions={
     showXAxis?:boolean;
@@ -391,6 +392,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
+
+      this.onDownloadClick();
     
   }
 
@@ -794,7 +797,253 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
+
   async exportToPDF_r1(fileName: string = 'document.pdf') {
+        const pageWidth = 210; // A4 width in mm (portrait)
+        const pageHeight = 297; // A4 height in mm (portrait)
+        const leftMargin = 10; 
+        const rightMargin = 10;
+        const topMargin = 5;
+        const bottomMargin = 5;
+        const contentWidth = pageWidth - leftMargin - rightMargin; 
+        const maxContentHeight = pageHeight - topMargin - bottomMargin; 
+      
+        this.generatingPdfLoadingSubject.next(true);
+        this.generatingPdfProgress = 0;
+      
+        const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+          //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+          let pageNumber = 1;
+        
+          let reportTitleCompanyLogo = 32;
+          let tableHeaderHeight = 12;
+          let tableRowHeight = 8.5;
+          let minHeightHeaderCol=3;
+          let minHeightBodyCell=9;
+          let fontSz=7;
+          const pagePositions: { page: number; x: number; y: number }[] = [];
+         // const progressValue = 100 / cardElements.length;
+        
+          const reportTitle = this.GetReportTitle();
+          const headers = [[
+            this.translatedLangText.NO, this.translatedLangText.CUSTOMER_CODE,
+            this.translatedLangText.CUSTOMER, this.translatedLangText.IN_GATE,
+            this.translatedLangText.OUT_GATE
+          ]];
+    
+          const comStyles:any= {
+            // Set columns 0 to 16 to be center aligned
+            0: { halign: 'left' ,cellWidth:10, minCellHeight:minHeightBodyCell },
+            1: { halign: 'center', minCellHeight:minHeightBodyCell },
+            2: { halign: 'center', minCellHeight:minHeightBodyCell },
+            3: { halign: 'center', minCellHeight:minHeightBodyCell },
+            4: { halign: 'center', minCellHeight:minHeightBodyCell},
+        };
+        
+          // Define headStyles with valid fontStyle
+          const headStyles: Partial<Styles> = {
+            fillColor: [211, 211, 211], // Background color
+            textColor: 0, // Text color (white)
+            fontStyle: "bold", // Valid fontStyle value
+            halign: 'center', // Centering header text
+            lineColor:201,
+            lineWidth:0.1
+          };
+          
+          let currentY = topMargin;
+          let scale = this.scale;
+          pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+        
+          
+          await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
+          await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+          
+          // Variable to store the final Y position of the last table
+          let lastTableFinalY = 45;
+          let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+          const data: any[][] = []; // Explicitly define data as a 2D array
+          // pdf.setFontSize(8);
+          // pdf.setTextColor(0, 0, 0); // Black text
+          // const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
+          // pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+      
+          var idx=0;
+          for (let n = 0; n < this.report_inventory.length; n++) {
+           
+            //let startY = lastTableFinalY + 15; // Start Y position for the current table
+            let itm = this.report_inventory[n];
+                  data.push([
+                    (++idx).toString(), itm.code || "", itm.name || "0", 
+                    this.displayInGate(itm)|| "0",this.displayOutGate(itm)|| "0"
+                  ]);
+          }
+  
+          data.push([this.translatedLangText.TOTAL,"","",this.displayTotalInGate(),this.displayTotalOutGate()]);
+         autoTable(pdf, {
+            head: headers,
+            body: data,
+            startY: startY, // Start table at the current startY value
+            theme: 'grid',
+            styles: { 
+              fontSize: fontSz,
+               minCellHeight: minHeightHeaderCol
+             
+            },
+            columnStyles:comStyles,
+            headStyles: headStyles, // Custom header styles
+            bodyStyles: { 
+              fillColor: [255, 255, 255],
+              //halign: 'left', // Left-align content for body by default
+              //valign: 'middle', // Vertically align content
+             },
+             didParseCell: (data: any) => {
+              let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+              if (data.row.index === lastRowIndex)
+              {
+                 data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+                 data.cell.styles.fontStyle = 'bold';
+                  if(data.column.index === 0) {
+                  data.cell.colSpan = 3;  // Merge 4 columns into one
+                  data.cell.styles.halign = 'right'; // Center text horizontally
+                  data.cell.styles.valign = 'top'; // Center text vertically
+                  
+                }
+              }
+              if (data.row.index === idx && data.column.index > 0 && data.column.index <= 2) {
+                data.cell.text = ''; // Remove text from hidden columns
+                data.cell.colSpan = 0; // Hide these columns
+              }
+            },
+            didDrawPage: (d: any) => {
+              const pageCount = pdf.getNumberOfPages();
+                
+              lastTableFinalY = d.cursor.y;
+          
+              var pg = pagePositions.find(p=>p.page==pageCount);
+              if(!pg){
+                pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                if(pageCount>1)
+                {
+                  Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                }
+              } 
+              
+            },
+          });
+
+          if(this.report_inventory.length>0)
+          {
+            if((this.report_inventory[0].opening_balance?.length||0)>0){
+
+              startY = lastTableFinalY+5;
+              const subHeaders = [[
+                this.translatedLangText.NO, this.translatedLangText.LOCATION,
+                this.translatedLangText.OPENING_BALANCE, this.translatedLangText.IN_GATE,
+                this.translatedLangText.OUT_GATE,this.translatedLangText.CLOSING_BALANCE
+              ]];
+        
+              const subComStyles:any= {
+                // Set columns 0 to 16 to be center aligned
+                0: { halign: 'left', cellWidth:10 , minCellHeight:minHeightBodyCell},
+                1: { halign: 'center' , minCellHeight:minHeightBodyCell},
+                2: { halign: 'center', cellWidth:30 , minCellHeight:minHeightBodyCell},
+                3: { halign: 'center', cellWidth:30 , minCellHeight:minHeightBodyCell},
+                4: { halign: 'center',cellWidth:30 , minCellHeight:minHeightBodyCell},
+                5: { halign: 'center',cellWidth:30 , minCellHeight:minHeightBodyCell},
+            };
+            idx=0;
+            const subData:any[][]=[];
+            for(let n = 0; n < (this.report_inventory[0].opening_balance?.length||0); n++)
+            {
+                //let startY = lastTableFinalY + 15; // Start Y position for the current table
+              let itm = this.report_inventory[0].opening_balance?.[n];
+              subData.push([
+                (++idx).toString(), itm!.yard || "", itm!.open_balance || "0", 
+                itm!.in_count || "0",itm!.out_count || "0",this.displayClosingBalanceForYard(itm) || "0"
+              ]);
+            }
+            subData.push([this.translatedLangText.TOTAL,"",this.displayOpeningBalance(),this.displayTotalInGate(),
+              this.displayTotalOutGate(),this.displayClosingBalance()]);
+
+              autoTable(pdf, {
+                head: subHeaders,
+                body: subData,
+                startY: startY, // Start table at the current startY value
+                theme: 'grid',
+                styles: { 
+                  fontSize: fontSz,
+                   minCellHeight: minHeightHeaderCol
+                },
+                columnStyles:subComStyles,
+                headStyles: headStyles, // Custom header styles
+                bodyStyles: { 
+                  fillColor: [255, 255, 255],
+                  //halign: 'left', // Left-align content for body by default
+                  //valign: 'middle', // Vertically align content
+                 },
+                 didParseCell: (data: any) => {
+                  let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+                  if (data.row.index === lastRowIndex)
+                  {
+                     data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+                     data.cell.styles.fontStyle = 'bold';
+                      if(data.column.index === 0) {
+                      data.cell.colSpan = 2;  // Merge 4 columns into one
+                      data.cell.styles.halign = 'right'; // Center text horizontally
+                      data.cell.styles.valign = 'top'; // Center text vertically
+                      
+                    }
+                  }
+                  if (data.row.index === idx && data.column.index > 0 && data.column.index <2) {
+                    data.cell.text = ''; // Remove text from hidden columns
+                    data.cell.colSpan = 0; // Hide these columns
+                  }
+                },
+                didDrawPage: (d: any) => {
+                  const pageCount = pdf.getNumberOfPages();
+                    
+                  lastTableFinalY = d.cursor.y;
+              
+                  var pg = pagePositions.find(p=>p.page==pageCount);
+                  if(!pg){
+                    pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                    if(pageCount>1)
+                    {
+                      Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                    }
+                  } 
+                  
+                },
+              });
+
+           }
+          }
+
+        
+          const totalPages = pdf.getNumberOfPages();
+        
+         
+          pagePositions.forEach(({ page, x, y }) => {
+            pdf.setDrawColor(0, 0, 0); // black line color
+            pdf.setLineWidth(0.1);
+            pdf.setLineDashPattern([0, 0], 0);
+            pdf.setFontSize(8);
+            pdf.setPage(page);
+            var lineBuffer=13;
+            pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+            pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+          });
+        
+          this.generatingPdfProgress = 100;
+          //pdf.save(fileName);
+          this.generatingPdfProgress = 0;
+          this.generatingPdfLoadingSubject.next(false);
+          Utility.previewPDF(pdf);
+          this.dialogRef.close();
+  }
+
+        
+  async exportToPDF_r3(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10; 
@@ -824,6 +1073,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     let scale = this.scale;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
+    var CurrentPage=1;
+    var buffer =20;
     for (let i = 0; i < cardElements.length; i++) {
         const card = cardElements[i];
 

@@ -21,6 +21,7 @@ import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import autoTable, { Styles } from 'jspdf-autotable';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -281,7 +282,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
- 
+  
   // bar chart start
   // public barChartOptions: ChartConfiguration['options'] = {
   //   responsive: true,
@@ -382,12 +383,16 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-    
+   
   }
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-   
+    
+  }
+
+  ngAfterViewInit() {
+   // this.onDownloadClick();
   }
 
   public loadData() {
@@ -786,6 +791,138 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   async exportToPDF_r1(fileName: string = 'document.pdf') {
+        const pageWidth = 297; // A4 width in mm (landscape)
+        const pageHeight = 220; // A4 height in mm (landscape)
+        const leftMargin = 5;
+        const rightMargin = 5;
+        const topMargin = 8;
+        const bottomMargin = 5;
+        const contentWidth = pageWidth - leftMargin - rightMargin;
+        const tablewidth=70;
+        const chartContentWidth=contentWidth - tablewidth-2;
+        const maxContentHeight = pageHeight - topMargin - bottomMargin;
+      
+        this.generatingPdfLoadingSubject.next(true);
+        this.generatingPdfProgress = 0;
+      
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+        let pageNumber = 1;
+      
+        let reportTitleCompanyLogo = 32;
+        let tableHeaderHeight = 12;
+        let tableRowHeight = 8.5;
+        let minHeightHeaderCol=3;
+        let minHeightBodyCell=9;
+        let fontSz=6;
+        const pagePositions: { page: number; x: number; y: number }[] = [];
+     //   const progressValue = 100 / cardElements.length;
+      
+        const reportTitle = this.GetReportTitle();
+        const headers = [[
+          this.translatedLangText.DESCRIPTION,
+          this.translatedLangText.NO_OF_TANKS
+        ]];
+      
+        // Define headStyles with valid fontStyle
+        const headStyles: Partial<Styles> = {
+          fillColor: [211, 211, 211], // Background color
+          textColor: 0, // Text color (white)
+          fontStyle: "bold", // Valid fontStyle value
+          halign: 'center', // Centering header text
+          lineColor:201,
+          lineWidth:0.1
+        };
+      
+        let currentY = topMargin;
+        let scale = this.scale;
+        
+        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+        var gap=8;
+        
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
+        await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+        // Variable to store the final Y position of the last table
+        let lastTableFinalY = 50;
+        
+        
+        const comStyles : any={ 
+        0: { halign: 'left' ,cellWidth:25, minCellHeight:minHeightBodyCell},
+        1: { halign: 'left',cellWidth: 'auto', minCellHeight:minHeightBodyCell },
+       };
+        
+       const data: any[][] = [];
+         data.push([this.translatedLangText.OPENING_BALANCE,this.displayOpeningBalance()]);
+         data.push([this.translatedLangText.IN_GATE,this.displayTotalInGate()]);
+         data.push([this.translatedLangText.OUT_GATE,this.displayTotalOutGate()]);
+         data.push([this.translatedLangText.CLOSING_BALANCE,this.displayClosingBalance()]);
+         
+         
+        let startY= lastTableFinalY;
+        let startX=pageWidth-rightMargin-70;
+         //Add table using autoTable plugin
+
+              autoTable(pdf, {
+                head: headers,
+                body: data,
+                startY: startY, // Start table at the current startY value
+                margin: { left: startX },
+                theme: 'grid',
+                styles: { 
+                  fontSize: fontSz,
+                  minCellHeight: minHeightHeaderCol
+                
+                },
+                columnStyles:comStyles,
+                headStyles: headStyles, // Custom header styles
+                bodyStyles: { 
+                  fillColor: [255, 255, 255],
+                  halign: 'left', // Left-align content for body by default
+                  valign: 'middle', // Vertically align content
+                },
+                didDrawPage: (data: any) => {
+                  const pageCount = pdf.getNumberOfPages();
+                
+                  if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                  // Capture the final Y position of the table
+                  lastTableFinalY = data.cursor.y;
+                  var pg = pagePositions.find(p=>p.page==pageCount);
+                  if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                },
+              });
+              if(cardElements.length>0)
+              {
+                const card = cardElements[0];
+                const canvas = await html2canvas(card, { scale: scale });
+                let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+                const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
+                pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
+              }
+
+         const totalPages = pdf.getNumberOfPages();
+       
+       
+        pagePositions.forEach(({ page, x, y }) => {
+          pdf.setDrawColor(0, 0, 0); // black line color
+          pdf.setLineWidth(0.1);
+          pdf.setLineDashPattern([0, 0], 0);
+          pdf.setFontSize(8);
+          pdf.setPage(page);
+          var lineBuffer=13;
+          pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+          pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+        });
+      
+        this.generatingPdfProgress = 100;
+        Utility.previewPDF(pdf);
+  
+  
+        this.generatingPdfProgress = 0;
+        this.generatingPdfLoadingSubject.next(false);
+        this.dialogRef.close();
+      }
+
+  async exportToPDF_r3(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10; 
@@ -1195,6 +1332,12 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
         },
       }
       this.barChartOptions.series=series;
+      this.barChartOptions!.chart!.events={
+       
+        animationEnd: () => {
+         this.onChartRendered();
+        }
+      }
     }
    }
 
@@ -1220,6 +1363,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
         type: 'bar',
         height: 350,
         foreColor: '#9aa0ac',
+      
       },
       plotOptions: {
         bar: {
@@ -1319,5 +1463,9 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
      return totalOutGate;
      
    }
+
+   onChartRendered() {
+    this.onDownloadClick();
+  }
   
 }

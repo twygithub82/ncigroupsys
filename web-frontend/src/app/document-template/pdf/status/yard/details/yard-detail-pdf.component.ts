@@ -27,6 +27,7 @@ import { report_status, report_customer_tank_activity } from 'app/data-sources/r
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import autoTable, { Styles } from 'jspdf-autotable';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -337,6 +338,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
    await this.getCodeValuesData();
    this.indexCounter=0;
    this.report_yard_detail = this.data.report_yard_detail;
+   this.onDownloadClick();
   }
 
   async getImageBase64(url: string): Promise<string> {
@@ -615,8 +617,234 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     this.generatingPdfLoadingSubject.next(false);
 }
 
-// Helper function to add the header (title and underline) to a page
 async exportToPDF_r1(fileName: string = 'document.pdf') {
+      const pageWidth = 297; // A4 width in mm (landscape)
+      const pageHeight = 220; // A4 height in mm (landscape)
+      const leftMargin = 5;
+      const rightMargin = 5;
+      const topMargin = 8;
+      const bottomMargin = 5;
+      const contentWidth = pageWidth - leftMargin - rightMargin;
+      const maxContentHeight = pageHeight - topMargin - bottomMargin;
+    
+      this.generatingPdfLoadingSubject.next(true);
+      this.generatingPdfProgress = 0;
+    
+      const pdf = new jsPDF('l', 'mm', 'a4');
+     // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+      let pageNumber = 1;
+    
+      let reportTitleCompanyLogo = 32;
+      let tableHeaderHeight = 12;
+      let tableRowHeight = 8.5;
+      let minHeightHeaderCol=3;
+      let fontSize=5;
+      let minHeightBodyCell=9;
+
+      const pagePositions: { page: number; x: number; y: number }[] = [];
+   //   const progressValue = 100 / cardElements.length;
+    
+      const reportTitle = this.GetReportTitle();
+      const headers = [[
+        this.translatedLangText.NO,
+        this.translatedLangText.TANK_NO, this.translatedLangText.LOCATION,
+        this.translatedLangText.EIR_NO, this.translatedLangText.OWNER,
+        this.translatedLangText.IN_DATE, this.translatedLangText.TAKE_IN_REFERENCE,
+        this.translatedLangText.LAST_CARGO, this.translatedLangText.CLEAN_DATE,
+        this.translatedLangText.ESTIMATE_NO,
+        this.translatedLangText.ESTIMATE_DATE, this.translatedLangText.APPROVAL_DATE, 
+        this.translatedLangText.AV_DATE,this.translatedLangText.LAST_TEST,
+        this.translatedLangText.NEXT_TEST,this.translatedLangText.CURRENT_STATUS,
+        this.translatedLangText.REMARKS, this.translatedLangText.PURPOSE
+      ]];
+    
+      // Define headStyles with valid fontStyle
+      const headStyles: Partial<Styles> = {
+        fillColor: [211, 211, 211], // Background color
+        textColor: 0, // Text color (white)
+        fontStyle: "bold", // Valid fontStyle value
+        halign: 'center', // Centering header text
+        lineColor:201,
+        lineWidth:0.1
+      };
+    
+      let currentY = topMargin;
+      let scale = this.scale;
+      pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+      var gap=8;
+      
+      await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
+      await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+      // Variable to store the final Y position of the last table
+      let lastTableFinalY = 45;
+      
+      const comStyles : any={ 
+      0: { halign: 'left' ,cellWidth:6 , minCellHeight:minHeightBodyCell},
+      1: { halign: 'left',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+      2: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      3: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      4: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell },
+      5: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      6: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      7: { halign: 'left',cellWidth: 30 , minCellHeight:minHeightBodyCell},
+      8: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      9: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      10: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      11: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      12: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      13: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      14: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      15: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      16: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      17: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+     
+    };
+      
+      // lastTableFinalY +=8;
+       var CurrentPage=1;
+      // pdf.setFontSize(8);
+      // const invDate =`${this.translatedLangText.INVENTORY_DATE}:${this.date}`;
+      // Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+
+      for (let n = 0; n < this.report_yard_detail.length; n++) {
+          lastTableFinalY+=8;
+          const data: any[][] = []; // Explicitly define data as a 2D array
+          //let startY = lastTableFinalY + 15; // Start Y position for the current table
+          let cust = this.report_yard_detail[n];
+    
+            // Calculate space required for customer name and table
+          var subTitleHeight = 20; // Height required for customer name
+
+          const sum = cust.yards?.reduce((acc, y) => acc + (y.storing_order_tank?.length||0), 0);
+          var tableHeight = ((sum||0) * tableRowHeight + tableHeaderHeight); // Approximate table height
+      
+          
+          // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
+          
+          //   if (n>0) pdf.addPage();
+          //   pageNumber++;
+          //   lastTableFinalY = topMargin; // Reset Y position for the new page
+          //   if (n>0) lastTableFinalY+=8;
+          //   else lastTableFinalY=45;
+          // }
+          var repPage = pdf.getNumberOfPages();
+        // if(repPage==1)lastTableFinalY=45;
+          
+          if((repPage==CurrentPage) && (pageHeight-bottomMargin-topMargin)<(lastTableFinalY+20+topMargin))
+          {
+            pdf.addPage();
+            lastTableFinalY=5+topMargin;
+          }
+          else
+          {
+            CurrentPage=repPage;
+          }
+          
+          lastTableFinalY+=8;
+          pdf.setFontSize(10);
+          pdf.setTextColor(0, 0, 0); // Black text
+          pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY ); // Add customer name 10mm below the last table
+          lastTableFinalY+=3;
+          let startY =0;
+          if((cust.yards?.length||0)>0)
+          {
+            // lastTableFinalY+=5;
+            // pdf.setFontSize(8);
+            // var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`;
+            // pdf.text(subTitle, leftMargin, lastTableFinalY);
+            // lastTableFinalY+=2;            
+            startY = lastTableFinalY; // Start table 20mm below the customer name
+             var idx=0;
+            for (let b = 0; b < (cust.yards?.length||0); b++) {
+              var y = cust.yards?.[b]!;
+              for(let n=0; n< (y.storing_order_tank?.length||0);n++)
+              {
+                 var itm = y.storing_order_tank?.[n];
+              data.push([
+                (++idx).toString(), itm?.tank_no || "",this.DisplayLocation(y.code!) || "", this.DisplayEIRNo(itm!) || "",
+                this.DisplayOwner(itm!)|| "", this.DisplayInDate(itm!) || "", this.DisplayTakeInRef(itm!) || "",
+                itm?.tariff_cleaning?.cargo || "", this.DisplayCleanDate(itm!) || "", this.DisplayEstimateNo(itm!) || "",
+                this.DisplayEstimateDate(itm!) || "", this.DisplayApprovalDate(itm!), this.DisplayAVDate(itm!) || "",
+                this.DisplayLastTest(itm!) || "", this.DisplayNextTest(itm!) || "", this.DisplayCurrentStatus(itm!) || "",
+                this.DisplayRemarks(itm!)||"",this.DisplayTankPurpose(itm)||""
+              ]);
+             }
+
+             
+            }
+            pdf.setDrawColor(0, 0, 0); // red line color
+      
+            pdf.setLineWidth(0.1);
+            pdf.setLineDashPattern([0, 0], 0);
+            // Add table using autoTable plugin
+            autoTable(pdf, {
+              head: headers,
+              body: data,
+              startY: startY, // Start table at the current startY value
+              margin: { left: leftMargin },
+              theme: 'grid',
+              styles: { 
+                fontSize: fontSize,
+                minCellHeight: minHeightHeaderCol
+              
+              },
+              columnStyles:comStyles,
+              headStyles: headStyles, // Custom header styles
+              bodyStyles: { 
+                fillColor: [255, 255, 255],
+                halign: 'left', // Left-align content for body by default
+                valign: 'middle', // Vertically align content
+              },
+              didDrawPage: (data: any) => {
+                const pageCount = pdf.getNumberOfPages();
+              
+                lastTableFinalY = data.cursor.y;
+            
+                var pg = pagePositions.find(p=>p.page==pageCount);
+                if(!pg){
+                  pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                  if(pageCount>1)
+                  {
+                    Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                  }
+                } 
+              },
+            });
+          }
+        }
+    
+      const totalPages = pdf.getNumberOfPages();
+    
+     
+      pagePositions.forEach(({ page, x, y }) => {
+        pdf.setDrawColor(0, 0, 0); // black line color
+        pdf.setLineWidth(0.1);
+        pdf.setLineDashPattern([0, 0], 0);
+        pdf.setFontSize(8);
+        pdf.setPage(page);
+        var lineBuffer=13;
+        pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+        pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      });
+    
+      this.generatingPdfProgress = 100;
+      Utility.previewPDF(pdf);
+
+  //     const pdfBlob = pdf.output('blob');
+  //     const blobUrl = URL.createObjectURL(pdfBlob);
+  // // Open the PDF in a new browser tab
+  // window.open(blobUrl, '_blank');
+  // setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+
+    //  pdf.save(fileName);
+      this.generatingPdfProgress = 0;
+      this.generatingPdfLoadingSubject.next(false);
+      this.dialogRef.close();
+    }
+
+    
+// Helper function to add the header (title and underline) to a page
+async exportToPDF_r2(fileName: string = 'document.pdf') {
   const pageWidth = 297; // A4 width in mm (landscape)
   const pageHeight = 220; // A4 height in mm (landscape)
   const leftMargin = 10; 
@@ -952,18 +1180,49 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
   }
 
   
+ 
   DisplayLastTest(sot: StoringOrderTankItem): string {
     var lastTest: string = '';
     this.removeDeletedInGateAndOutGate(sot);
-   // if (this.queryType == 1) {
-      lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+
+    if (sot.in_gate?.length) {
+      var last_test_dt :Date = new Date();
+      if(sot.in_gate?.[0]?.in_gate_survey?.test_dt)
+      {
+        last_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date||new Date();
+      }
+      
+      lastTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+      lastTest +=  ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`;//` ${Utility.convertDateToStr(last_test_dt)}`;
+      if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
+      {
+        lastTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
+      }
+    //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+  }
+
+  if (sot.out_gate?.length) {
+    var last_test_dt :Date = new Date();
+    if(sot.out_gate?.[0]?.out_gate_survey?.test_dt)
+    {
+      last_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date||new Date();
+    }
+    
+    lastTest = sot.out_gate?.[0]?.out_gate_survey?.test_class_cv||"";
+    lastTest +=` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`; //` ${Utility.convertDateToStr(last_test_dt)}`;
+    if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
+      {
+         lastTest +=` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
+      }
+  }
+    // if (this.queryType == 1) {
+    //   //lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
     // }
     // else {
     //   lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
     // }
     return lastTest;
   }
-
 
   DisplayPostInsp(sot: StoringOrderTankItem): string {
 
@@ -1002,13 +1261,38 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
 
   DisplayNextTest(sot: StoringOrderTankItem): string {
     var nextTest: string = '';
+    var yearsToAdd=2.5;
+    var next_test_dt :Date = new Date();
     this.removeDeletedInGateAndOutGate(sot);
     if (sot.in_gate?.length) {
-      nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+        
+        if(sot.in_gate?.[0]?.in_gate_survey?.test_dt)
+        {
+          next_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date||new Date();
+        }
+        
+        next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
+        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+        nextTest +=  ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;//` ${Utility.convertDateToStr(next_test_dt)}`;
+        if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
+          {
+        nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;
+          }
+      //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
     }
 
     if (sot.out_gate?.length) {
-      nextTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+        if(sot.out_gate?.[0]?.out_gate_survey?.test_dt)
+        {
+          next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date||new Date();
+        }
+        next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
+        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+        nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;
+        if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
+          {
+        nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;
+          }
     }
     return nextTest;
   }

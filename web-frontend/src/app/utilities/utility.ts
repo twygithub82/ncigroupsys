@@ -4,6 +4,7 @@ import { Observable, from, map } from "rxjs";
 import { jsPDF } from 'jspdf';
 import { customerInfo } from 'environments/environment';
 
+
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
     return template.replace(/{(\d+)}/g, (match, index) => {
@@ -17,6 +18,14 @@ export class Utility {
       const v = c === 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
+  }
+
+  static convertDateToStr_MonthYear(date: Date | undefined): string {
+    if (!date) return "";
+   // const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${year}`;
   }
 
   static convertDateToStr(date: Date | undefined): string {
@@ -580,6 +589,20 @@ export class Utility {
     pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
 }
 
+static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition:number,fontSize:number) {
+  pdf.setFontSize(fontSize); // Title font size 
+  const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
+  const titleX = (pageWidth - titleWidth)-rightMargin ; // Centering the title
+
+  
+  pdf.text(text, titleX, topPosition); // Position it at the top
+
+  // pdf.setLineDashPattern([0, 0], 0);
+  // Draw underline for the title
+  // pdf.setLineWidth(0.1); // Set line width for underline
+  // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+}
+
 static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition:number,fontSize:number) {
   pdf.setFontSize(fontSize); // Title font size 
   const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
@@ -594,14 +617,30 @@ static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMarg
   // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
 }
 
-static previewPDF(pdf:jsPDF)
-{
+
+
+static previewPDF(pdf: jsPDF) {
   const pdfBlob = pdf.output('blob');
   const blobUrl = URL.createObjectURL(pdfBlob);
-  // Open the PDF in a new browser tab
-   window.open(blobUrl, '_blank');
-  setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
 
+  // Try opening in a new window
+  const newWindow = window.open(blobUrl, '_blank');
+
+  if (!newWindow) {
+    // Fallback to an iframe
+    // const iframe = document.createElement('iframe');
+    // iframe.src = blobUrl;
+    // iframe.style.width = '100%';
+    // iframe.style.height = '500px';
+    // iframe.style.border = 'none';
+    // document.body.appendChild(iframe);
+    console.log('pdf preview - fail to open new window')
+  }
+
+  // Cleanup the URL after some time
+  setTimeout(() => {
+    URL.revokeObjectURL(blobUrl);
+  }, 10000); // Increased delay to ensure the PDF loads
 }
 
 static async  addHeaderWithCompanyLogo_Landscape(

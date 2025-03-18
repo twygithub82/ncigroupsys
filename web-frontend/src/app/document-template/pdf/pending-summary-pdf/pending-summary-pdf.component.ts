@@ -861,6 +861,9 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
       let reportTitleCompanyLogo = 32;
       let tableHeaderHeight = 12;
       let tableRowHeight = 8.5;
+      let minHeightHeaderCol=3;
+      let minHeightBodyCell=9;
+      let fontSize=5.5;
     
       const pagePositions: { page: number; x: number; y: number }[] = [];
      // const progressValue = 100 / cardElements.length;
@@ -877,16 +880,16 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
       const comStyles:any= {
         // Set columns 0 to 16 to be center aligned
-        0: { halign: 'left' },
-        1: { halign: 'center' },
-        2: { halign: 'center' },
-        3: { halign: 'center' },
-        4: { halign: 'center'},
-        5: { halign: 'center' },
-        6: { halign: 'center' },
-        7: { halign: 'center' },
-        8: { halign: 'center' },
-        9: { halign: 'center' },
+        0: { halign: 'left' , minCellHeight:minHeightBodyCell},
+        1: { halign: 'center' , minCellHeight:minHeightBodyCell},
+        2: { halign: 'center' , minCellHeight:minHeightBodyCell},
+        3: { halign: 'center' , minCellHeight:minHeightBodyCell},
+        4: { halign: 'center' , minCellHeight:minHeightBodyCell},
+        5: { halign: 'center' , minCellHeight:minHeightBodyCell},
+        6: { halign: 'center' , minCellHeight:minHeightBodyCell},
+        7: { halign: 'center' , minCellHeight:minHeightBodyCell},
+        8: { halign: 'center' , minCellHeight:minHeightBodyCell},
+        9: { halign: 'center' , minCellHeight:minHeightBodyCell},
     };
     
       // Define headStyles with valid fontStyle
@@ -895,6 +898,8 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
         textColor: 0, // Text color (white)
         fontStyle: "bold", // Valid fontStyle value
         halign: 'center', // Centering header text
+        lineColor:201,
+        lineWidth:0.1
       };
     
       let currentY = topMargin;
@@ -907,7 +912,6 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
       
       // Variable to store the final Y position of the last table
       let lastTableFinalY = 45;
-      let minHeightHeaderCol=9;
       let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
       const data: any[][] = []; // Explicitly define data as a 2D array
       pdf.setFontSize(8);
@@ -958,7 +962,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
         startY: startY, // Start table at the current startY value
         theme: 'grid',
         styles: { 
-          fontSize: 5.5,
+          fontSize: fontSize,
            minCellHeight: minHeightHeaderCol
          
         },

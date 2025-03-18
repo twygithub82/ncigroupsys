@@ -1,10 +1,10 @@
-<div mat-dialog-title class="ms-3 mt-3">
+<div mat-dialog-title class="ms-3 mt-3" hidden>
   <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
 </div>
 <div #pdfTable id="pdfTable" mat-dialog-content>
   
 
-  <div id="pdf-form-body" class="pdf-container pdf-body">
+  <div id="pdf-form-body" class="pdf-container pdf-body" hidden>
     <!-- @for (bCust of report_customer_tank_activity; track bCust) { -->
   <div class="card">
      
@@ -62,7 +62,7 @@
 
  
 </div>
-<div mat-dialog-actions class="m-2 align-right">
+<div mat-dialog-actions class="m-2 align-right" hidden>
   <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
     [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>

@@ -833,7 +833,10 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-  
+    let minHeightHeaderCol=3;
+    let minHeightBodyCell=9;
+    let fontSize=5.5;
+
     const pagePositions: { page: number; x: number; y: number }[] = [];
    // const progressValue = 100 / cardElements.length;
   
@@ -856,6 +859,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
       halign: 'center', // Centering header text
+      lineColor:201,
+      lineWidth:0.1
     };
   
     let currentY = topMargin;
@@ -867,7 +872,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
-    let minHeightHeaderCol=9;
+    
     
     for (let n = 0; n < this.repBillingCustomers.length; n++) {
       const data: any[][] = []; // Explicitly define data as a 2D array
@@ -917,29 +922,29 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         startY: startY, // Start table at the current startY value
         theme: 'grid',
         styles: { 
-          fontSize: 5.5,
+          fontSize: fontSize,
            minCellHeight: minHeightHeaderCol
          
         },
         columnStyles: {
             // Set columns 0 to 16 to be center aligned
-            0: { halign: 'left' },
-            1: { halign: 'center' },
-            2: { halign: 'left' },
-            3: { halign: 'center' },
-            4: { halign: 'left', cellWidth: 40 },
-            5: { halign: 'center' },
-            6: { halign: 'center' },
-            7: { halign: 'center' },
-            8: { halign: 'center' },
-            9: { halign: 'center' },
-            10: { halign: 'center' },
-            11: { halign: 'center' },
-            12: { halign: 'center' },
-            13: { halign: 'center' },
-            14: { halign: 'center' },
-            15: { halign: 'center' },
-            16: { halign: 'center' },
+            0: { halign: 'left' , minCellHeight:minHeightBodyCell},
+            1: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            2: { halign: 'left' , minCellHeight:minHeightBodyCell},
+            3: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            4: { halign: 'left', cellWidth: 40 , minCellHeight:minHeightBodyCell},
+            5: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            6: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            7: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            8: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            9: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            10: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            11: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            12: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            13: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            14: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            15: { halign: 'center' , minCellHeight:minHeightBodyCell},
+            16: { halign: 'center' , minCellHeight:minHeightBodyCell},
         },
         headStyles: headStyles, // Custom header styles
         bodyStyles: { 

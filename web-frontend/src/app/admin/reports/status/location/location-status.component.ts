@@ -200,7 +200,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-
+  isGeneratingReport =false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -370,6 +370,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
   search(report_type: number) {
 
+    this.isGeneratingReport=true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
@@ -417,7 +418,11 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     }
 
     this.noCond = (cond_counter === 0);
-    if (this.noCond) return;
+    if (this.noCond)
+      {
+        this.isGeneratingReport=false;
+         return;
+      }
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
 
@@ -680,7 +685,12 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
 
   ProcessReportStatus(report_type: number) {
-    if (this.sotList.length === 0) return;
+    if (this.sotList.length === 0) 
+      {
+        this.isGeneratingReport=false;
+        return;
+
+      }
 
     var repStatus: report_status[] = [];
 
@@ -764,7 +774,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+        this.isGeneratingReport=false;
     });
   }
 
@@ -793,7 +803,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 

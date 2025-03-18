@@ -207,6 +207,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
+  isGeneratingReport =false;
 
   constructor(
     public httpClient: HttpClient,
@@ -369,7 +370,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   }
 
   search(report_type: number) {
-
+    this.isGeneratingReport=true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
@@ -441,7 +442,10 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       //   cond_counter++
       // }
       this.noCond = (cond_counter === 0);
-      if (this.noCond) return;
+      if (this.noCond) {
+        this.isGeneratingReport=false;
+        return;
+      }
 
       this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
       this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date,tnxType);
@@ -497,7 +501,11 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     }
 
     this.noCond = (cond_counter === 0);
-    if (this.noCond) return;
+    if (this.noCond) 
+      {
+        this.isGeneratingReport=false;
+        return;
+      }
     this.subs.sink = this.reportDS.searchDailyInventorySummaryReport(dailyInvReq)
     .subscribe(data => {
       if(data.length>0)
@@ -511,6 +519,10 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
         {
            this.onExportSummary(this.dailySumList, invType!, date!, queryType!,tnxType!);
         }
+      }
+      else
+      {
+        this.isGeneratingReport=false;
       }
    });
 
@@ -681,13 +693,22 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   }
 
   ProcessReportCustomerInventory(invType: string, date: string, report_type: number, queryType: number,tnxType:string) {
-    if (this.sotList.length === 0) return;
+    if (this.sotList.length === 0) 
+      {
+        this.isGeneratingReport=false;
+        return;
+      }
 
     var report_customer_tank_inventory: report_customer_inventory[] = [];
     var report_yard_inventory:report_inventory_yard[]=[];
 
     var startdt=new Date( this.searchForm!.value['inv_dt']);
     var enddt=new Date( this.searchForm!.value['inv_dt']);
+    if(!this.searchForm!.value['inv_dt'])
+    {
+      startdt=new Date(2020,1,1,0,0,0);
+      enddt=new Date();
+    }
      var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date(2000,1,1,0,0,0,0));
     var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
     var openBal:number =0;
@@ -773,6 +794,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
    else
    {
     this.sotList=[];
+    this.isGeneratingReport=false;
    }
 
 
@@ -804,7 +826,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 
@@ -835,7 +857,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 
@@ -855,18 +877,29 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
      const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+     maxHeight:reportPreviewWindowDimension.report_maxHeight,
        data: {
         report_inventory: repDailInventory,
          date: date,
          queryType: queryType
 
        },
+      //  panelClass: 'out-of-screen-dialog', // Apply the custom CSS class
        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-       direction: tempDirection
+     //  direction: tempDirection
      });
+     dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    //  dialogRef.afterOpened().subscribe(() => {
+    //   dialogRef.updatePosition({
+    //     top: '-9999px',  // Move far above the screen
+    //     left: '-9999px'  // Move far to the left of the screen
+    //   });
+    // });
      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
- 
+      this.isGeneratingReport=false;
      });
   }
 
@@ -885,7 +918,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
  
      const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      maxWidth:'10px',
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
        data: {
         report_inventory: repCustomerInventory,
@@ -897,7 +930,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
        direction: tempDirection
      });
      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
- 
+      this.isGeneratingReport=false;
      });
   }
 

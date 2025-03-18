@@ -842,6 +842,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         let reportTitleCompanyLogo = 32;
         let tableHeaderHeight = 12;
         let tableRowHeight = 8.5;
+        let minHeightBodyCell=9;
       
         const pagePositions: { page: number; x: number; y: number }[] = [];
        // const progressValue = 100 / cardElements.length;
@@ -854,10 +855,10 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
   
         const comStyles:any= {
           // Set columns 0 to 16 to be center aligned
-          0: { halign: 'left' },
-          1: { halign: 'center' },
-          2: { halign: 'center' },
-          3: { halign: 'center' },
+          0: { halign: 'left' , minCellHeight:minHeightBodyCell },
+          1: { halign: 'center', minCellHeight:minHeightBodyCell },
+          2: { halign: 'center', minCellHeight:minHeightBodyCell },
+          3: { halign: 'center', minCellHeight:minHeightBodyCell },
       };
       
         // Define headStyles with valid fontStyle
@@ -866,6 +867,8 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
           textColor: 0, // Text color (white)
           fontStyle: "bold", // Valid fontStyle value
           halign: 'center', // Centering header text
+          lineColor:201,
+          lineWidth:0.1
         };
       
         let currentY = topMargin;
@@ -878,7 +881,9 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         
         // Variable to store the final Y position of the last table
         let lastTableFinalY = 45;
-        let minHeightHeaderCol=9;
+        let minHeightHeaderCol=3;
+        
+        let fontSz=5.5;
         let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
         const data: any[][] = []; // Explicitly define data as a 2D array
         pdf.setFontSize(8);
@@ -894,18 +899,6 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
               // Calculate space required for customer name and table
             const customerNameHeight = 10; // Height required for customer name
             const tableHeight = this.report_customer_tank_activity!.length * tableRowHeight + tableHeaderHeight; // Approximate table height
-        
-            // // Check if there is enough space on the current page
-            // if (lastTableFinalY + customerNameHeight + tableHeight > maxContentHeight) {
-            //   // Add a new page if there isn't enough space
-            //   pdf.addPage();
-            //   pageNumber++;
-            //   lastTableFinalY = topMargin; // Reset Y position for the new page
-            // }
-            
-            // pdf.setFontSize(8);
-            // pdf.setTextColor(0, 0, 0); // Black text
-            // pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
         
           
                 data.push([
@@ -926,7 +919,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
           startY: startY, // Start table at the current startY value
           theme: 'grid',
           styles: { 
-            fontSize: 5.5,
+            fontSize: fontSz,
              minCellHeight: minHeightHeaderCol
            
           },
@@ -939,12 +932,17 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
            },
           didDrawPage: (data: any) => {
             const pageCount = pdf.getNumberOfPages();
-          
-            if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-            // Capture the final Y position of the table
+              
             lastTableFinalY = data.cursor.y;
+        
             var pg = pagePositions.find(p=>p.page==pageCount);
-            if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+            if(!pg){
+              pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+              if(pageCount>1)
+              {
+                Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+              }
+            } 
           },
         });
       

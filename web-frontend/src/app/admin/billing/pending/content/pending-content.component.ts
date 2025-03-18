@@ -162,7 +162,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-
+  isGeneratingReport=false;
 
   constructor(
     public httpClient: HttpClient,
@@ -326,6 +326,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   search(reportType: number) {
+    this.isGeneratingReport=true;
     const where: any = {};
 
     where.and = [];
@@ -916,7 +917,11 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   export_report(reportType: number) {
-    if (!this.sotList.length) return;
+    if (!this.sotList.length) 
+      { 
+        this.isGeneratingReport=false;
+        return;
+      }
 
     this.getAllClientLabourCost().then(() => {
       var repCustomers: report_billing_customer[] = []
@@ -1067,7 +1072,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 
@@ -1098,7 +1103,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+        this.isGeneratingReport=false;
     });
   }
 }

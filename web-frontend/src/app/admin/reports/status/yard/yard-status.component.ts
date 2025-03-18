@@ -201,7 +201,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   invoiceNoControl = new FormControl('', [Validators.required]);
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
-
+  isGeneratingReport =false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -364,7 +364,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   search(report_type: number) {
-
+    this.isGeneratingReport=true;
     let queryType = 1;
     const where: any = {};
 
@@ -782,7 +782,11 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   ProcessReportStatus(report_type: number) {
-    if (this.sotList.length === 0) return;
+    if (this.sotList.length === 0) 
+      {
+        this.isGeneratingReport=false;
+        return;
+      }
 
     var repStatus: report_status[] = [];
 
@@ -879,7 +883,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+        this.isGeneratingReport=false;
     });
   }
 
@@ -907,7 +911,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 
@@ -933,8 +937,13 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
 
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport=false;
     });
   }
 

@@ -1,7 +1,8 @@
-<div mat-dialog-title class="ms-3 mt-3">
+<div mat-dialog-title class="ms-3 mt-3" hidden>
   <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
 </div>
-<div #pdfTable id="pdfTable" mat-dialog-content>
+
+<div #pdfTable id="pdfTable" class="invisible-pdf" mat-dialog-content>
   
   <div class="row clearfix">
     
@@ -13,14 +14,14 @@
               [dataLabels]="barChartOptions.dataLabels!" [plotOptions]="barChartOptions.plotOptions!"
               [yaxis]="barChartOptions.yaxis!" [legend]="barChartOptions.legend!" [fill]="barChartOptions.fill!"
               [stroke]="barChartOptions.stroke!" [tooltip]="barChartOptions.tooltip!" [grid]="barChartOptions.grid!"
-              [xaxis]="barChartOptions.xaxis!">
+              [xaxis]="barChartOptions.xaxis!" (chartRendered)="onChartRendered()">
             </apx-chart>
           </div>
         </div>
       </div>
     </div>
-    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3">
-      <div class="card">
+    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3" hidden>
+      <div class="card1">
         <table id="repair-part-table" class="repair-part-table">
           <tr class="group-header">
             <th class="th-w3">{{translatedLangText.OPENING_BALANCE}}</th>

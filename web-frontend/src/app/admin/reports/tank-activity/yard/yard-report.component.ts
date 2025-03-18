@@ -198,7 +198,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-
+  isGeneratingReport=false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -365,7 +365,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   }
 
   search(report_type: number) {
-
+    this.isGeneratingReport=true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
@@ -428,7 +428,10 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       cond_counter++
     }
     this.noCond = (cond_counter === 0);
-    if (this.noCond) return;
+    if (this.noCond)  {
+      this.isGeneratingReport=false;
+      return;
+    } 
 
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date);
@@ -613,7 +616,10 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
 
   ProcessReportCustomerTankActivity(invType: string, date: string, report_type: number, queryType: number) {
-    if (this.sotList.length === 0) return;
+    if (this.sotList.length === 0) 
+      { this.isGeneratingReport=false;
+        return;
+      }
 
     var report_customer_tank_acts: report_customer_tank_activity[] = [];
 
@@ -673,7 +679,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 
@@ -703,7 +709,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 

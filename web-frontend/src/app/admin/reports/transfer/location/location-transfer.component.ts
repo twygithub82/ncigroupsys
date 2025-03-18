@@ -23,6 +23,7 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { fixObservableSubclass } from '@apollo/client/utilities';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -202,7 +203,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-
+  isGeneratingReport=false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -357,12 +358,13 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search(report_type: number) {
-
+    
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
 
     if(this.searchForm?.invalid) return;
+    this.isGeneratingReport=true;
     // where.tank_status_cv = { neq: "RELEASED" };
     // if (this.searchForm?.get('customer_code')?.value) {
     //   // if(!where.storing_order_tank) where.storing_order_tank={};
@@ -428,7 +430,10 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.noCond = (cond_counter === 0);
-    if (this.noCond) return;
+    if (this.noCond) {
+      this.isGeneratingReport=false;
+      return;
+    }
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(date);
 
@@ -535,7 +540,10 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
 
 
   ProcessReportTransferYard(date: string) {
-    if (this.sotList.length === 0) return;
+    if (this.sotList.length === 0){
+      this.isGeneratingReport=false;
+     return;
+    }
 
     var report_customer_tank_acts: report_customer_tank_activity[] = [];
 
@@ -590,7 +598,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 
@@ -619,7 +627,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 

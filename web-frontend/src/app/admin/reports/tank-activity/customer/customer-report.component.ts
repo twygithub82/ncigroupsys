@@ -198,7 +198,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-
+  isGeneratingReport=false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -391,7 +391,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   }
 
   search() {
-
+    this.isGeneratingReport=true;
     var cond_counter = 0;
     var report_type: string = "ALL";
     const where: any = {};
@@ -555,7 +555,11 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     }
 
     this.noCond = (cond_counter === 0);
-    if (this.noCond) return;
+    if (this.noCond)
+      {
+        this.isGeneratingReport=false;
+        return;
+      } 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
 
@@ -751,7 +755,11 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
 
   ProcessReportCustomerTankActivity(report_type: string) {
-    if (this.sotList.length === 0) return;
+    if (this.sotList.length === 0) 
+      {
+        this.isGeneratingReport=false;
+        return;
+      }
 
     var report_customer_tank_acts: report_customer_tank_activity[] = [];
 
@@ -813,7 +821,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 

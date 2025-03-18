@@ -205,7 +205,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-
+  isGeneratingReport=false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -382,7 +382,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   search(report_type: number) {
-
+    this.isGeneratingReport=true;
     var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
@@ -509,7 +509,10 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     //   cond_counter++
     // }
     this.noCond = (cond_counter === 0);
-    if (this.noCond) return;
+    if (this.noCond) {
+     this.isGeneratingReport=false;
+      return;
+    }
 
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType);
@@ -711,7 +714,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 
@@ -741,7 +744,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 

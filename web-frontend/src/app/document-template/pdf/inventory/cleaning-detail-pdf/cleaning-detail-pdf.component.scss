@@ -287,3 +287,7 @@ text-overflow: ellipsis;
 white-space: normal; /* Allows text wrapping */
 max-width: 100%; /* Adjust width as needed */
 }
+
+::ng-deep .mat-dialog-title {
+    background: transparent !important;
+  }

@@ -601,6 +601,7 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
       let reportTitleCompanyLogo = 32;
       let tableHeaderHeight = 12;
       let tableRowHeight = 8.5;
+      let minHeightBodyCell=9;
     
       const pagePositions: { page: number; x: number; y: number }[] = [];
    //   const progressValue = 100 / cardElements.length;
@@ -621,29 +622,29 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
       ]];
     
       const comStyles : any={ 
-        0: { halign: 'left' ,cellWidth:6},
-        1: { halign: 'left',cellWidth: 11 },
-        2: { halign: 'center',cellWidth: 11 },
-        3: { halign: 'center',cellWidth: 11 },
-        4: { halign: 'center',cellWidth: 11  },
-        5: { halign: 'center',cellWidth: 11 },
-        6: { halign: 'center',cellWidth: 11 },
-        7: { halign: 'left',cellWidth: 25 },
-        8: { halign: 'center',cellWidth: 11 },
-        9: { halign: 'center',cellWidth: 11 },
-        10: { halign: 'center',cellWidth: 11 },
-        11: { halign: 'center',cellWidth: 11 },
-        12: { halign: 'center',cellWidth: 11 },
-        13: { halign: 'center',cellWidth: 11 },
-        14: { halign: 'center',cellWidth: 11 },
-        15: { halign: 'center',cellWidth: 11 },
-        16: { halign: 'center',cellWidth: 11 },
-        17: { halign: 'center',cellWidth: 11 },
-        18: { halign: 'center',cellWidth: 11 },
-        19: { halign: 'center',cellWidth: 11 },
-        20: { halign: 'center',cellWidth: 15 },
-        21: { halign: 'left',cellWidth: 15 },
-        22: { halign: 'left',cellWidth: 11 }};
+        0: { halign: 'left' ,cellWidth:6  , minCellHeight:minHeightBodyCell},
+        1: { halign: 'left',cellWidth: 18  , minCellHeight:minHeightBodyCell},
+        2: { halign: 'center',cellWidth: 13  , minCellHeight:minHeightBodyCell},
+        3: { halign: 'center',cellWidth: 13  , minCellHeight:minHeightBodyCell},
+        4: { halign: 'center',cellWidth: 11  , minCellHeight:minHeightBodyCell },
+        5: { halign: 'center',cellWidth: 11  , minCellHeight:minHeightBodyCell},
+        6: { halign: 'left',cellWidth: 25  , minCellHeight:minHeightBodyCell},
+        7: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        8: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        9: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        10: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        11: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        12: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        13: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        14: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        15: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        16: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        17: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        18: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        19: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        20: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        21: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        22: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell}};
         
 
       // Define headStyles with valid fontStyle
@@ -652,6 +653,8 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
         textColor: 0, // Text color (white)
         fontStyle: "bold", // Valid fontStyle value
         halign: 'center', // Centering header text
+        lineColor:201,
+        lineWidth:0.1
       };
     
       let currentY = topMargin;
@@ -663,7 +666,7 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
       await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
       // Variable to store the final Y position of the last table
       let lastTableFinalY = 45;
-      let minHeightHeaderCol=9;
+      let minHeightHeaderCol=3;
       let fontSize=5;
       
       lastTableFinalY +=8;
@@ -671,6 +674,8 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
       // const invDate =`${this.translatedLangText.INVENTORY_DATE}:${this.date}`;
       // Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
 
+      var buffer=30;
+      var CurrentPage=1;
       for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
           if (n>0) lastTableFinalY+=8;
           const data: any[][] = []; // Explicitly define data as a 2D array
@@ -681,17 +686,31 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
           var subTitleHeight = 20; // Height required for customer name
           var tableHeight = ((cust.in_yard_storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); // Approximate table height
       
-          // Check if there is enough space on the current page
-          if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
-            // Add a new page if there isn't enough space
+          // // Check if there is enough space on the current page
+          // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
+          //   // Add a new page if there isn't enough space
+          //   pdf.addPage();
+          //   pageNumber++;
+          //   lastTableFinalY = topMargin; // Reset Y position for the new page
+          //   if (n>0) lastTableFinalY+=8;
+          // }
+
+
+          var repPage = pdf.getNumberOfPages();
+          //if(repPage==1)lastTableFinalY=45;
+          
+          if((repPage==CurrentPage) && (pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
+          {
             pdf.addPage();
-            pageNumber++;
-            lastTableFinalY = topMargin; // Reset Y position for the new page
-            if (n>0) lastTableFinalY+=8;
+            lastTableFinalY=5+topMargin;
+          }
+          else
+          {
+            CurrentPage=repPage;
           }
           
           
-          //lastTableFinalY+=gap;
+          lastTableFinalY+=8;
           pdf.setFontSize(10);
           pdf.setTextColor(0, 0, 0); // Black text
           pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY ); // Add customer name 10mm below the last table
@@ -742,6 +761,7 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
               head: headers,
               body: data,
               startY: startY, // Start table at the current startY value
+              margin: { left: leftMargin },
               theme: 'grid',
               styles: { 
                 fontSize: fontSize,
@@ -758,25 +778,45 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
               didDrawPage: (data: any) => {
                 const pageCount = pdf.getNumberOfPages();
               
-                if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-                // Capture the final Y position of the table
                 lastTableFinalY = data.cursor.y;
+            
                 var pg = pagePositions.find(p=>p.page==pageCount);
-                if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                if(!pg){
+                  pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                  if(pageCount>1)
+                  {
+                    Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                  }
+                } 
               },
             });
           }
 
         if((cust.released_storing_order_tank?.length||0)>0){
           subTitleHeight=10;
-          tableHeight = ((cust.released_storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); 
-          if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
-            // Add a new page if there isn't enough space
+
+          var repPage = pdf.getNumberOfPages();
+         // if(repPage==1)lastTableFinalY=45;
+          
+          //if((repPage==CurrentPage) && (pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
+          if((pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
+          {
             pdf.addPage();
-            pageNumber++;
-            lastTableFinalY = topMargin; // Reset Y position for the new page
-            if (n>0) lastTableFinalY+=8;
+            lastTableFinalY=5+topMargin;
           }
+          else
+          {
+            CurrentPage=repPage;
+          }
+
+          // tableHeight = ((cust.released_storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); 
+          // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
+          //   // Add a new page if there isn't enough space
+          //   pdf.addPage();
+          //   pageNumber++;
+          //   lastTableFinalY = topMargin; // Reset Y position for the new page
+          //   if (n>0) lastTableFinalY+=8;
+          // }
 
           lastTableFinalY+=5;
           pdf.setFontSize(8);
@@ -819,6 +859,7 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
               body: repData,
               startY: startY, // Start table at the current startY value
               theme: 'grid',
+              margin: { left: leftMargin },
               styles: { 
                 fontSize: fontSize,
                 minCellHeight: minHeightHeaderCol
@@ -832,13 +873,26 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
                 valign: 'middle', // Vertically align content
               },
               didDrawPage: (data: any) => {
+
                 const pageCount = pdf.getNumberOfPages();
               
-                if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-                // Capture the final Y position of the table
                 lastTableFinalY = data.cursor.y;
+            
                 var pg = pagePositions.find(p=>p.page==pageCount);
-                if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                if(!pg){
+                  pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                  if(pageCount>1)
+                  {
+                    Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                  }
+                } 
+                // const pageCount = pdf.getNumberOfPages();
+              
+                // if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                // // Capture the final Y position of the table
+                // lastTableFinalY = data.cursor.y;
+                // var pg = pagePositions.find(p=>p.page==pageCount);
+                // if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
               },
             });
         }
@@ -1406,7 +1460,7 @@ async splitCanvas(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTMLCa
       }
       
       lastTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-      lastTest += ` ${Utility.convertDateToStr(last_test_dt)}`;
+      lastTest +=  ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`;//` ${Utility.convertDateToStr(last_test_dt)}`;
       if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
       {
         lastTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
@@ -1422,7 +1476,7 @@ async splitCanvas(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTMLCa
     }
     
     lastTest = sot.out_gate?.[0]?.out_gate_survey?.test_class_cv||"";
-    lastTest += ` ${Utility.convertDateToStr(last_test_dt)}`;
+    lastTest +=` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`; //` ${Utility.convertDateToStr(last_test_dt)}`;
     if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
       {
          lastTest +=` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
@@ -1451,7 +1505,7 @@ async splitCanvas(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTMLCa
         
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
         nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-        nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
+        nextTest +=  ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;//` ${Utility.convertDateToStr(next_test_dt)}`;
         if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
           {
         nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;
@@ -1466,7 +1520,7 @@ async splitCanvas(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTMLCa
         }
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
         nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-        nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
+        nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;
         if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
           {
         nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;

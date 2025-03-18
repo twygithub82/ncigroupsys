@@ -35,11 +35,11 @@
               </div>
               <div
                 class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                <button mat-mini-fab color="primary" (click)="search(1)" [disabled]="(sotDS.loading$ | async) "
+                <button mat-mini-fab color="primary" (click)="search(1)" [disabled]="((sotDS.loading$ | async)||(isGeneratingReport)) "
                   matTooltip={{translatedLangText.PENDING_INVOICE_SUMMARY}}>
                   <mat-icon>assessment</mat-icon>
                 </button>
-                <button mat-mini-fab class="m-l-10" color="primary" (click)="search(2)" [disabled]="(sotDS.loading$ | async) "
+                <button mat-mini-fab class="m-l-10" color="primary" (click)="search(2)" [disabled]="((sotDS.loading$ | async)||(isGeneratingReport)) "
                   matTooltip={{translatedLangText.PENDING_INVOICE_DETAIL}}>
                   <mat-icon>assignment</mat-icon>
                 </button>
@@ -138,7 +138,7 @@
         </div>
         }
         <!-- Loading spinner -->
-        @if (sotDS.loading$ | async) {
+        @if ((sotDS.loading$ | async)||(isGeneratingReport)) {
         <div class="tbl-spinner">
           <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
           </mat-progress-spinner>

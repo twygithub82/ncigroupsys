@@ -538,7 +538,9 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
       let reportTitleCompanyLogo = 32;
       let tableHeaderHeight = 12;
       let tableRowHeight = 8.5;
-    
+      let minHeightHeaderCol=3;
+          let minHeightBodyCell=9;
+          let fontSz=5;
       const pagePositions: { page: number; x: number; y: number }[] = [];
    //   const progressValue = 100 / cardElements.length;
     
@@ -563,6 +565,8 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
         textColor: 0, // Text color (white)
         fontStyle: "bold", // Valid fontStyle value
         halign: 'center', // Centering header text
+        lineColor:201,
+        lineWidth:0.1
       };
     
       let currentY = topMargin;
@@ -574,55 +578,69 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
       await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
       // Variable to store the final Y position of the last table
       let lastTableFinalY = 45;
-      let minHeightHeaderCol=9;
-      let fontSize=5;
+      
+      
       const comStyles : any={ 
-      0: { halign: 'left' ,cellWidth:6},
-      1: { halign: 'left',cellWidth: 12 },
-      2: { halign: 'center',cellWidth: 12 },
-      3: { halign: 'center',cellWidth: 12 },
-      4: { halign: 'center',cellWidth: 12  },
-      5: { halign: 'center',cellWidth: 12 },
-      6: { halign: 'left',cellWidth: 30 },
-      7: { halign: 'center',cellWidth: 12 },
-      8: { halign: 'center',cellWidth: 12 },
-      9: { halign: 'center',cellWidth: 12 },
-      10: { halign: 'center',cellWidth: 12 },
-      11: { halign: 'center',cellWidth: 12 },
-      12: { halign: 'center',cellWidth: 12 },
-      13: { halign: 'center',cellWidth: 12 },
-      14: { halign: 'center',cellWidth: 12 },
-      15: { halign: 'center',cellWidth: 12 },
-      16: { halign: 'center',cellWidth: 12 },
-      17: { halign: 'center',cellWidth: 12 },
-      18: { halign: 'center',cellWidth: 12 },
-      19: { halign: 'left',cellWidth: 15 },
-      20: { halign: 'left',cellWidth: 15 }};
+      0: { halign: 'left' ,cellWidth:6 , minCellHeight:minHeightBodyCell},
+      1: { halign: 'left',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      2: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      3: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      4: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+      5: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      6: { halign: 'left',cellWidth: 30 , minCellHeight:minHeightBodyCell},
+      7: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      8: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      9: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      10: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      11: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      12: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      13: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      14: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      15: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      16: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      17: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      18: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      19: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      20: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell}};
       
       lastTableFinalY +=8;
       pdf.setFontSize(8);
       const invDate =`${this.translatedLangText.INVENTORY_DATE}:${this.date}`;
       Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
 
+      var CurrentPage=1;
+      var buffer =20;
       for (let n = 0; n < this.report_customer_inventory.length; n++) {
           if (n>0) lastTableFinalY+=8;
           const data: any[][] = []; // Explicitly define data as a 2D array
           //let startY = lastTableFinalY + 15; // Start Y position for the current table
           let cust = this.report_customer_inventory[n];
     
-            // Calculate space required for customer name and table
-          var subTitleHeight = 20; // Height required for customer name
-          var tableHeight = ((cust.in_yard_storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); // Approximate table height
+          //   // Calculate space required for customer name and table
+          // var subTitleHeight = 20; // Height required for customer name
+          // var tableHeight = ((cust.in_yard_storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); // Approximate table height
       
-          // Check if there is enough space on the current page
-          if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
-            // Add a new page if there isn't enough space
-            pdf.addPage();
-            pageNumber++;
-            lastTableFinalY = topMargin; // Reset Y position for the new page
-            if (n>0) lastTableFinalY+=8;
-          }
+          // // Check if there is enough space on the current page
+          // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
+          //   // Add a new page if there isn't enough space
+          //   if(n>0) pdf.addPage();
+          //   pageNumber++;
+          //   lastTableFinalY = topMargin; // Reset Y position for the new page
+          //   if (n>0) lastTableFinalY+=8;
+          // }
           
+          var repPage = pdf.getNumberOfPages();
+          // if(repPage==1)lastTableFinalY=45;
+            
+            if((repPage==CurrentPage) && (pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
+            {
+              pdf.addPage();
+              lastTableFinalY=5+topMargin;
+            }
+            else
+            {
+              CurrentPage=repPage;
+            }
           
           //lastTableFinalY+=gap;
           pdf.setFontSize(10);
@@ -676,8 +694,9 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
               body: data,
               startY: startY, // Start table at the current startY value
               theme: 'grid',
+              margin: { left: leftMargin },
               styles: { 
-                fontSize: fontSize,
+                fontSize: fontSz,
                 minCellHeight: minHeightHeaderCol
               
               },
@@ -691,25 +710,44 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
               didDrawPage: (data: any) => {
                 const pageCount = pdf.getNumberOfPages();
               
-                if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-                // Capture the final Y position of the table
                 lastTableFinalY = data.cursor.y;
+            
                 var pg = pagePositions.find(p=>p.page==pageCount);
-                if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                if(!pg){
+                  pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                  if(pageCount>1)
+                  {
+                    Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                  }
+                } 
               },
             });
           }
 
         if((cust.released_storing_order_tank?.length||0)>0){
-          subTitleHeight=10;
-          tableHeight = ((cust.released_storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); 
-          if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
-            // Add a new page if there isn't enough space
-            pdf.addPage();
-            pageNumber++;
-            lastTableFinalY = topMargin; // Reset Y position for the new page
-            if (n>0) lastTableFinalY+=8;
-          }
+          // subTitleHeight=10;
+          // tableHeight = ((cust.released_storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); 
+          // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
+          //   // Add a new page if there isn't enough space
+          //   pdf.addPage();
+          //   pageNumber++;
+          //   lastTableFinalY = topMargin; // Reset Y position for the new page
+          //   if (n>0) lastTableFinalY+=8;
+          // }
+
+          var repPage = pdf.getNumberOfPages();
+          // if(repPage==1)lastTableFinalY=45;
+            
+          // if((repPage==CurrentPage) && (pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
+          if((pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
+            {
+              pdf.addPage();
+              lastTableFinalY=5+topMargin;
+            }
+            else
+            {
+              CurrentPage=repPage;
+            }
 
           lastTableFinalY+=5;
           pdf.setFontSize(8);
@@ -752,8 +790,9 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
               body: repData,
               startY: startY, // Start table at the current startY value
               theme: 'grid',
+              margin: { left: leftMargin },
               styles: { 
-                fontSize: fontSize,
+                fontSize: fontSz,
                 minCellHeight: minHeightHeaderCol
               
               },
@@ -767,11 +806,16 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
               didDrawPage: (data: any) => {
                 const pageCount = pdf.getNumberOfPages();
               
-                if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-                // Capture the final Y position of the table
                 lastTableFinalY = data.cursor.y;
+            
                 var pg = pagePositions.find(p=>p.page==pageCount);
-                if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                if(!pg){
+                  pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+                  if(pageCount>1)
+                  {
+                    Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                  }
+                } 
               },
             });
         }
