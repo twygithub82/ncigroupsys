@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static IDMS.Billing.GqlTypes.BillingResult.SurveyorPerformanceDetail;
 
 namespace IDMS.Billing.GqlTypes.BillingResult
 {
@@ -24,10 +25,41 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public string? repair_type { get; set; }
     }
 
-    public class SurveyorPerformanceResult
+    [NotMapped]
+    public class TempSurveyorPerformanceDetail : SurveyorDetail
+    {
+        public string? customer_code { get; set; }
+        public string? surveyor_name { get; set; }
+    }
+
+    [NotMapped]
+    public class SurveyorPerformanceDetail
+    {
+        public string? surveyor { get; set; }
+        public List<SurveyorDetail>? surveyor_details { get; set; }
+        public double? total_est_cost { get; set; }
+        public double? total_appv_cost { get; set; }
+    }
+
+    [NotMapped]
+    public class SurveyorDetail
+    {
+        public string? tank_no { get; set; }
+        public string? eir_no { get; set; }
+        public long? eir_date { get; set; }
+        public string? est_type { get; set; }
+        public string? est_no { get; set; }
+        public string? est_status { get; set; }
+        public long? est_date { get; set; }
+        public double? est_cost { get; set; }
+        public long? appv_date { get; set; }
+        public double? appv_cost { get; set; }
+    }
+
+    public class SurveyorPerformanceSummary
     {
         [NotMapped]
-        public List<SurveyorPerformanceByMonth> monthly_results { get; set; }
+        public List<MonthlySummary> monthly_summary { get; set; }
         [NotMapped]
         public int grand_total_est_count { get; set; }
         [NotMapped]
@@ -42,7 +74,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public double? grand_total_rejected { get; set; }
     }
 
-    public class SurveyorPerformanceByMonth
+    public class MonthlySummary
     {
         [NotMapped]
         public string? month { get; set; }

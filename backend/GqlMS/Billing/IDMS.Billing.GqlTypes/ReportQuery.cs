@@ -13,6 +13,7 @@ using IDMS.Models.Parameter;
 using Newtonsoft.Json.Linq;
 using IDMS.Models.Master;
 using IDMS.Models.Shared;
+using static IDMS.Billing.GqlTypes.BillingResult.SurveyorPerformanceDetail;
 
 
 namespace IDMS.Billing.GqlTypes
@@ -188,9 +189,9 @@ namespace IDMS.Billing.GqlTypes
                            {
                                if (str != null)
                                {
-                                   temp.SteamPerformance.Themometer = new Themometer { begin_temp = str.FirstMeterTemp, close_temp = str.LastMeterTemp };
-                                   temp.SteamPerformance.Top = new Top { begin_temp = str.FirstTopTemp, close_temp = str.LastTopTemp };
-                                   temp.SteamPerformance.Bottom = new Bottom { begin_temp = str.FirstBottomTemp, close_temp = str.LastBottomTemp };
+                                   temp.SteamPerformance.themometer = new Themometer { begin_temp = str.FirstMeterTemp, close_temp = str.LastMeterTemp };
+                                   temp.SteamPerformance.top = new Top { begin_temp = str.FirstTopTemp, close_temp = str.LastTopTemp };
+                                   temp.SteamPerformance.bottom = new Bottom { begin_temp = str.FirstBottomTemp, close_temp = str.LastBottomTemp };
                                    temp.SteamPerformance.duration = ConvertIntoDuration((str.LastRecordTime - str.FirstRecordTime) ?? 0);
                                }
                                return temp.SteamPerformance;
@@ -211,7 +212,7 @@ namespace IDMS.Billing.GqlTypes
         //[UseProjection]
         //[UseFiltering]
         //[UseSorting]
-        public async Task<SurveyorPerformanceResult?> QuerySurveyorPerformance(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        public async Task<SurveyorPerformanceSummary?> QuerySurveyorPerformanceSummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
                 [Service] IHttpContextAccessor httpContextAccessor, SurveyorPerformanceSummaryRequest surveyorPerfSummaryRequest)
         {
 
@@ -219,8 +220,7 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                string completedStatus = "COMPLETED";
-
+                //string completedStatus = "COMPLETED";
                 //long sDate = surveyorPerfSummaryRequest.start_date;
                 //long eDate = surveyorPerfSummaryRequest.end_date;
 
@@ -244,9 +244,6 @@ namespace IDMS.Billing.GqlTypes
                              join so in context.storing_order on sot.so_guid equals so.guid
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid
                              join us in context.Set<aspnetusers>() on r.aspnetusers_guid equals us.Id
-                             //join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
-                             //join jo in context.job_order on sp.job_order_guid equals jo.guid
-                             //join t in context.team on jo.team_guid equals t.guid
                              where r.delete_dt == null && r.create_dt != null && r.create_dt >= startEpoch && r.create_dt <= endEpoch
                              orderby r.create_dt
                              select new TempSurveyorPerformance
@@ -302,7 +299,7 @@ namespace IDMS.Billing.GqlTypes
 
                        })
                        .GroupBy(x => x.Month) // Further group by Month
-                       .Select(g => new SurveyorPerformanceByMonth
+                       .Select(g => new MonthlySummary
                        {
                            month = g.Key,
                            SurveyorList = g.Select(x => new SurveyorList
@@ -325,8 +322,8 @@ namespace IDMS.Billing.GqlTypes
                        })
                        .ToList();
 
-                SurveyorPerformanceResult surveyorPerformanceResult = new SurveyorPerformanceResult();
-                surveyorPerformanceResult.monthly_results = groupedNodes;
+                SurveyorPerformanceSummary surveyorPerformanceResult = new SurveyorPerformanceSummary();
+                surveyorPerformanceResult.monthly_summary = groupedNodes;
                 surveyorPerformanceResult.grand_total_est_count = groupedNodes.Sum(g => g.monthly_total_est_count);
                 surveyorPerformanceResult.grand_total_est_cost = groupedNodes.Sum(g => g.monthly_total_est_cost);
                 surveyorPerformanceResult.grand_total_appv_cost = groupedNodes.Sum(g => g.monthly_total_appv_cost);
@@ -338,6 +335,133 @@ namespace IDMS.Billing.GqlTypes
 
 
                 return surveyorPerformanceResult;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<SurveyorPerformanceDetail>?> QuerySurveyorPerformanceDetail(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        [Service] IHttpContextAccessor httpContextAccessor, SurveyorPerformanceDetailRequest surveyorPerfDetailRequest)
+        {
+
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                string estimateStatus = "CANCELED";
+                long sDate = surveyorPerfDetailRequest.start_date;
+                long eDate = surveyorPerfDetailRequest.end_date;
+
+                //int year = surveyorPerfDetailRequest.year;
+                //int start_month = surveyorPerfDetailRequest.start_month;
+                //int end_month = surveyorPerfDetailRequest.end_month;
+
+                //// Get the start date of the month (1st of the month)
+                //DateTime startOfMonth = new DateTime(year, start_month, 1);
+                //// Get the end date of the month (last day of the month)
+                //// Get the number of days in the specified month
+                //int daysInMonth = DateTime.DaysInMonth(year, end_month);
+                //DateTime endOfMonth = new DateTime(year, end_month, daysInMonth).AddHours(23).AddMinutes(59).AddSeconds(59);
+                //// Convert the start and end dates to Unix Epoch (seconds since 1970-01-01)
+                //long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
+                //long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
+
+                var query = (from r in context.repair
+                                 //join rp in context.Set<repair_part>() on r.guid equals rp.repair_guid
+                             join sot in context.storing_order_tank on r.sot_guid equals sot.guid
+                             join so in context.storing_order on sot.so_guid equals so.guid
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                             join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                             join us in context.Set<aspnetusers>() on r.aspnetusers_guid equals us.Id
+                             where r.delete_dt == null && r.status_cv != estimateStatus && r.create_dt != null && r.create_dt >= sDate && r.create_dt <= eDate
+                             orderby r.create_dt
+                             select new TempSurveyorPerformanceDetail
+                             {
+                                 tank_no = sot.tank_no,
+                                 eir_date = (long)ig.eir_dt,
+                                 eir_no = ig.eir_no,
+                                 est_no = r.estimate_no,
+                                 est_date = r.create_dt,
+                                 appv_date = r.approve_dt,
+                                 est_cost = r.est_cost,
+                                 appv_cost = r.total_cost,
+                                 customer_code = cc.code,
+                                 surveyor_name = us.UserName,
+                                 est_status = r.status_cv,
+                                 est_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+                             }).AsQueryable();
+
+
+                if (!string.IsNullOrEmpty(surveyorPerfDetailRequest.customer_code))
+                {
+                    query = query.Where(tr => tr.customer_code.Contains(surveyorPerfDetailRequest.customer_code));
+                }
+                if (!string.IsNullOrEmpty(surveyorPerfDetailRequest.tank_no))
+                {
+                    query = query.Where(tr => tr.tank_no.Contains(surveyorPerfDetailRequest.tank_no));
+                }
+                if (!string.IsNullOrEmpty(surveyorPerfDetailRequest.eir_no))
+                {
+                    query = query.Where(tr => tr.eir_no.Contains(surveyorPerfDetailRequest.eir_no));
+                }
+                if (surveyorPerfDetailRequest.repair_type != null && surveyorPerfDetailRequest.repair_type.Any())
+                {
+                    query = query.Where(tr => surveyorPerfDetailRequest.repair_type.Contains(tr.est_type));
+                }
+                if (surveyorPerfDetailRequest.surveyor_name != null && surveyorPerfDetailRequest.surveyor_name.Any())
+                {
+                    query = query.Where(tr => surveyorPerfDetailRequest.surveyor_name.Contains(tr.surveyor_name));
+                }
+                if (surveyorPerfDetailRequest.estimate_status != null && surveyorPerfDetailRequest.estimate_status.Any())
+                {
+                    query = query.Where(tr => surveyorPerfDetailRequest.estimate_status.Contains(tr.est_status));
+                }
+
+                var resultList = await query.ToListAsync();
+
+                //This to make sure the result list have data
+                if (!resultList.Any())
+                    return null;
+
+                //// Convert epoch timestamp to local date (yyyy-MM-dd)
+                //foreach (var item in resultList)
+                //{
+                //    // Convert epoch timestamp to DateTimeOffset (local time zone)
+                //    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)item.eir_date).ToLocalTime();
+                //    // Format the date as yyyy-MM-dd and replace the code with date
+                //    item.month = dateTimeOffset.ToString("MMMM");
+                //}
+
+                var surveyorPerformanceDetail = resultList
+                       .GroupBy(n => new { n.surveyor_name })  // Group by formatted date
+                       .Select(g => new SurveyorPerformanceDetail
+                       {
+                           surveyor = g.Key.surveyor_name,
+                           surveyor_details = g.Select(x => new SurveyorDetail
+                           {
+                               tank_no = x.tank_no,
+                               eir_no = x.eir_no,
+                               eir_date = x.eir_date,
+                               est_type = x.est_type,
+                               est_no = x.est_no,
+                               est_date = x.est_date,
+                               est_cost = x.est_cost,
+                               appv_date = x.appv_date,
+                               appv_cost = x.appv_cost,
+                               est_status = x.est_status
+                           }).ToList(),
+                           total_est_cost = g.Select(x => x.est_cost).Sum(), // Get distinct SotGuids
+                           total_appv_cost = g.Select(x => x.appv_cost).Sum(),
+                       }).ToList();
+
+                return surveyorPerformanceDetail; //surveyorPerformanceResult;
             }
             catch (Exception ex)
             {
