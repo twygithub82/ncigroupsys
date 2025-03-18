@@ -919,10 +919,10 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
            itm.yards?.forEach(yard=>{
           
                 data.push([
-                  (idx++).toString(), itm.code || "", itm.customer || "", this.displayLocation(yard)|| "",
-                  yard.noTank_steam || "",yard.noTank_clean||"", yard.noTank_repair || "",
-                  yard.noTank_storage || "",this.displayInYardTotal(yard) || "", yard.noTank_pending || "",
-                  yard.noTank_withRO || ""
+                  (++idx).toString(), itm.code || "", itm.customer || "", this.displayLocation(yard)|| "",
+                  yard.noTank_steam || "0",yard.noTank_clean||"0", yard.noTank_repair || "0",
+                  yard.noTank_storage || "0",this.displayInYardTotal(yard) || "0", yard.noTank_pending || "0",
+                  yard.noTank_withRO || "0"
                   
                 ]);
            });

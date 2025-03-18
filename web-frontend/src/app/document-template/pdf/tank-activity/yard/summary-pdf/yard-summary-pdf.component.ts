@@ -889,8 +889,9 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         pdf.setFontSize(8);
         pdf.setTextColor(0, 0, 0); // Black text
         const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date} - (${this.invType})`;
-        Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+        Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,startY-3,8);
     
+        var total_tank=0;
         for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
          
           //let startY = lastTableFinalY + 15; // Start Y position for the current table
@@ -900,18 +901,18 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
             const customerNameHeight = 10; // Height required for customer name
             const tableHeight = this.report_customer_tank_activity!.length * tableRowHeight + tableHeaderHeight; // Approximate table height
         
-          
+            total_tank+=cust.number_tank||0;
                 data.push([
                   (n+1).toString(), cust.code || "", cust.customer || "", cust.number_tank || ""
                 ]);
               
       
         }
-  
-        pdf.setDrawColor(0, 0, 0); // red line color
+        data.push([this.translatedLangText.TOTAL,"","",total_tank]);
+        // pdf.setDrawColor(0, 0, 0); // red line color
     
-        pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0, 0], 0);
+        // pdf.setLineWidth(0.1);
+        // pdf.setLineDashPattern([0, 0], 0);
         // Add table using autoTable plugin
         autoTable(pdf, {
           head: headers,
@@ -930,6 +931,24 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
             halign: 'left', // Left-align content for body by default
             valign: 'middle', // Vertically align content
            },
+           didParseCell: (data: any) => {
+            let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+            if (data.row.index === lastRowIndex)
+            {
+               data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+               data.cell.styles.fontStyle = 'bold';
+                if(data.column.index === 0) {
+                data.cell.colSpan = 3;  // Merge 4 columns into one
+                data.cell.styles.halign = 'right'; // Center text horizontally
+                data.cell.styles.valign = 'middle'; // Center text vertically
+                
+              }
+            }
+            if (data.row.index === lastRowIndex && data.column.index > 0 && data.column.index < 3) {
+              data.cell.text = ''; // Remove text from hidden columns
+              data.cell.colSpan = 0; // Hide these columns
+            }
+          },
           didDrawPage: (data: any) => {
             const pageCount = pdf.getNumberOfPages();
               

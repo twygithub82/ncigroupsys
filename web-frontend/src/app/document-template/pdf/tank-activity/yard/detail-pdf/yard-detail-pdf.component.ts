@@ -872,11 +872,11 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           0: { halign: 'left' ,cellWidth:6 , minCellHeight:minHeightBodyCell},
           1: { halign: 'left',cellWidth: 18, minCellHeight:minHeightBodyCell },
           2: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          3: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          3: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
           4: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell },
-          5: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          5: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
           6: { halign: 'left',cellWidth: 30 , minCellHeight:minHeightBodyCell},
-          7: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          7: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
           8: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
           9: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
           10: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
@@ -885,7 +885,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           13: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
           14: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
           15: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          16: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          16: { halign: 'center',cellWidth: 18 , minCellHeight:minHeightBodyCell},
           17: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
           18: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
           };
@@ -916,7 +916,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         lastTableFinalY +=8;
         pdf.setFontSize(8);
         const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date} - (${this.invType})`;
-        Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+        Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
   
         var CurrentPage=1;
         var buffer=20
@@ -1005,6 +1005,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
                 body: data,
                 startY: startY, // Start table at the current startY value
                 theme: 'grid',
+                margin:{left:leftMargin},
                 styles: { 
                   fontSize: fontSize,
                   minCellHeight: minHeightHeaderCol
