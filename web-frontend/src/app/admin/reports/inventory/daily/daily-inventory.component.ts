@@ -370,6 +370,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   }
 
   search(report_type: number) {
+    if(this.searchForm?.invalid) return;
     this.isGeneratingReport=true;
     var cond_counter = 0;
     let queryType = 1;
@@ -377,6 +378,8 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     this.selectedEstimateItem = undefined;
     this.selectedEstimateLabourCost = 0;
     this.stmEstList = [];
+    this.sotList=[];
+    this.dailySumList=[];
     this.selection.clear();
 
     var invType: string = this.inventoryTypeCvList.find(i => i.code_val == (this.searchForm!.get('inv_type')?.value))?.description || '';
@@ -419,6 +422,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
           if(!where.or)where.or=[];
           //where.in_gate = {};
           where.or.push({and:[{in_gate:cond},{in_gate:{any:true}}]}); //in Gate
+          
         }
         
         if(queryType==2 || queryType==3){
@@ -725,12 +729,19 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
           repCust.customer = s.storing_order?.customer_company?.name;
           newCust = true;
         }
-        if(s.in_gate?.[0]?.eir_dt!>=start_dt && s.in_gate?.[0]?.eir_dt!<=end_dt)// in gate
+        if(["Master In","All"].includes(tnxType))
         {
-          repCust.tank_no_in_gate!+=1;
-          repCust.tank_no_total!+=1;
+          if(s.in_gate?.[0]?.eir_dt!>=start_dt && s.in_gate?.[0]?.eir_dt!<=end_dt)// in gate
+          {
+            repCust.tank_no_in_gate!+=1;
+            repCust.tank_no_total!+=1;
+            if(!repCust.in_gate_storing_order_tank)repCust.in_gate_storing_order_tank=[];
+            repCust.in_gate_storing_order_tank?.push(s);
+          }
         }
       
+        if(["Master Out","All"].includes(tnxType))
+        {
         if(s.out_gate?.[0]?.eir_dt!>=start_dt && s.out_gate?.[0]?.eir_dt!<=end_dt) // out gate
           {
             repCust.tank_no_out_gate!+=1;
@@ -738,13 +749,17 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
             if(!repCust.released_storing_order_tank)repCust.released_storing_order_tank=[];
             repCust.released_storing_order_tank?.push(s);
           }
+        }
         
-        if(s.in_gate?.[0]?.eir_dt!>=start_dt && (s.out_gate?.length==0||s.out_gate?.[0]?.eir_dt!>end_dt)) //in yard
+       if(["Master In","All"].includes(tnxType))
         {
-          repCust.tank_no_in_yard!+=1;
-         // repCust.tank_no_total!+=1;
-          if(!repCust.in_yard_storing_order_tank)repCust.in_yard_storing_order_tank=[];
-          repCust.in_yard_storing_order_tank?.push(s);
+          if(s.in_gate?.[0]?.eir_dt!>=start_dt && (s.out_gate?.length==0||s.out_gate?.[0]?.eir_dt!>end_dt)) //in yard
+          {
+            repCust.tank_no_in_yard!+=1;
+          // repCust.tank_no_total!+=1;
+            if(!repCust.in_yard_storing_order_tank)repCust.in_yard_storing_order_tank=[];
+            repCust.in_yard_storing_order_tank?.push(s);
+          }
         }
 
         if( s.create_dt!<start_dt && (s.in_gate?.length==0||s.in_gate?.[0]?.eir_dt!>end_dt)) //pending
@@ -892,12 +907,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       top: '-9999px',  // Move far above the screen
       left: '-9999px'  // Move far to the left of the screen
     });
-    //  dialogRef.afterOpened().subscribe(() => {
-    //   dialogRef.updatePosition({
-    //     top: '-9999px',  // Move far above the screen
-    //     left: '-9999px'  // Move far to the left of the screen
-    //   });
-    // });
+    
      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isGeneratingReport=false;
      });

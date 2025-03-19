@@ -786,7 +786,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
             let tableRowHeight = 8.5;
             let minHeightHeaderCol=3;
             let minHeightBodyCell=9;
-            let fontSz=7;
+            let fontSz=6;
           
             const pagePositions: { page: number; x: number; y: number }[] = [];
            // const progressValue = 100 / cardElements.length;
@@ -802,16 +802,16 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       
             const comStyles:any= {
               // Set columns 0 to 16 to be center aligned
-              0: { halign: 'left' ,cellWidth:10, minCellHeight:minHeightBodyCell },
-              1: { halign: 'left' , minCellHeight:minHeightBodyCell},
-              2: { halign: 'left' , minCellHeight:minHeightBodyCell},
-              3: { halign: 'center' ,cellWidth:25 , minCellHeight:minHeightBodyCell},
+              0: { halign: 'left' ,cellWidth:8, minCellHeight:minHeightBodyCell },
+              1: { halign: 'left' , cellWidth:25,minCellHeight:minHeightBodyCell},
+              2: { halign: 'left' , cellWidth:25,minCellHeight:minHeightBodyCell},
+              3: { halign: 'center',cellWidth:35, minCellHeight:minHeightBodyCell},
               4: { halign: 'center',cellWidth:12 , minCellHeight:minHeightBodyCell},
-              5: { halign: 'center' ,cellWidth:18 , minCellHeight:minHeightBodyCell},
-              6: { halign: 'center',cellWidth:18 , minCellHeight:minHeightBodyCell},
+              5: { halign: 'center' ,cellWidth:15 , minCellHeight:minHeightBodyCell},
+              6: { halign: 'center',cellWidth:15 , minCellHeight:minHeightBodyCell},
               7: { halign: 'center',cellWidth:18 , minCellHeight:minHeightBodyCell },
-              8: { halign: 'center',cellWidth:18 , minCellHeight:minHeightBodyCell},
-              9: { halign: 'center',cellWidth:18, minCellHeight:minHeightBodyCell }
+              8: { halign: 'center',cellWidth:20, minCellHeight:minHeightBodyCell},
+              9: { halign: 'center',cellWidth:10, minCellHeight:minHeightBodyCell }
           };
           
             // Define headStyles with valid fontStyle
@@ -1727,8 +1727,10 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       let today = new Date();
       today.setHours(0, 0, 0, 0); 
 
+      var accDt=(sot.repair?.[0]?.allocate_dt || 0)*1000;
+      
       // Convert allocate_dt to a Date object
-      let allocateDt = new Date(sot.repair?.[0]?.allocate_dt || 0);
+      let allocateDt = new Date(accDt);
 
       // Check if allocateDt is a valid date
       if (isNaN(allocateDt.getTime())) {

@@ -187,7 +187,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   billingParty: string = "CUSTOMER";
 
   pageIndex = 0;
-  pageSize = 100;
+  pageSize = 10000;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;

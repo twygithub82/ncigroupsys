@@ -196,8 +196,10 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
     EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
     IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
     OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    // ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
+    // ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
     MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
     DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
     REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
@@ -234,21 +236,31 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
     TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
-    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
-    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
+    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
+    //APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
+    //APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
+    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE',
     AV_DATE: 'COMMON-FORM.AV-DATE',
-    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE-S',
-    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE-S',
+    //RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE-S',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
+    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE',
+    //RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE-S',
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S',
+    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING',
+    //RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S',
+    CLEAN_CERT_DATE:'COMMON-FORM.CLEAN-CERT-DATE',
+    YARD:'COMMON-FORM.YARD',
+    IN_YARD:'COMMON-FORM.IN-YARD',
+    RELEASED:'COMMON-FORM.RELEASED',
     AVAILABLE_IN_YARD:'COMMON-FORM.AVAILABLE-IN-YARD',
     RELEASED_TANK:'COMMON-FORM.RELEASED-TANK',
     DAILY_INVENTORY:'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY',
     CLEAN_CERT_BOOKING:'COMMON-FORM.CLEAN-CERT-BOOKING',
     INVENTORY_DATE:'COMMON-FORM.INVENTORY-DATE',
-    REFERENCE:'COMMON-FORM.REFERENCE'
+    REFERENCE:'COMMON-FORM.REFERENCE',
+    OUT_GATE:'COMMON-FORM.OUT-GATE'
   }
 
 
@@ -321,7 +333,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.initialize(data);
+    //this.initialize(data);
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -334,6 +346,11 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+    await this.getCodeValuesData();
+    this.report_customer_inventory = this.data.report_inventory;
+    this.date = this.data.date;
+    this.tnxType=this.data.tnxType;
+    this.onDownloadClick();
   }
 
   async getImageBase64(url: string): Promise<string> {
@@ -349,8 +366,9 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
   }
 
   initialize(data:DialogData) {
-    this.loadData(data)
-   
+   // this.loadData(data)
+    
+
   }
 
   public loadData(dataDlg:DialogData) {
@@ -358,19 +376,17 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'yardCv', codeValType: 'YARD' },
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       // { alias: 'yardCv', codeValType: 'YARD' },
       // { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
+
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       if(data.length)
         {
           this.purposeOptionCvList = data;
-          this.report_customer_inventory = dataDlg.report_inventory;
-          this.date = dataDlg.date;
-          this.tnxType=dataDlg.tnxType;
-          this.onDownloadClick();
+         
           //this.processHorizontalBarValue(this.report_summary_status);
           //this.processCustomerStatus(this.report_summary_status);
         }
@@ -419,7 +435,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
       firstValueFrom(this.cvDS.connectAlias('TankStatusCv')).then(data => {
         this.TankStatusCvList = data || [];
       }),
-      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
+      firstValueFrom(this.cvDS.connectAlias('purposeOptionCv')).then(data => {
         this.purposeOptionCvList = data || [];
       }),
       firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
@@ -582,7 +598,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
       
       const comStyles : any={ 
       0: { halign: 'left' ,cellWidth:6 , minCellHeight:minHeightBodyCell},
-      1: { halign: 'left',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      1: { halign: 'left',cellWidth: 18 , minCellHeight:minHeightBodyCell},
       2: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
       3: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
       4: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
@@ -647,17 +663,20 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
           pdf.setTextColor(0, 0, 0); // Black text
           pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY ); // Add customer name 10mm below the last table
           let startY =0;
-          if((cust.in_yard_storing_order_tank?.length||0)>0)
+          if((cust.in_gate_storing_order_tank?.length||0)>0)
           {
             lastTableFinalY+=5;
             pdf.setFontSize(8);
-            var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`;
+            //var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`; 
+            var subTitle =  `${this.translatedLangText.IN_GATE}`;
             pdf.text(subTitle, leftMargin, lastTableFinalY);
             lastTableFinalY+=2;            
             startY = lastTableFinalY; // Start table 20mm below the customer name
         
-            for (let b = 0; b < (cust.in_yard_storing_order_tank?.length||0); b++) {
-              var itm = cust.in_yard_storing_order_tank?.[b]!;
+            // for (let b = 0; b < (cust.in_yard_storing_order_tank?.length||0); b++) {
+            //   var itm = cust.in_yard_storing_order_tank?.[b]!;
+            for (let b = 0; b < (cust.in_gate_storing_order_tank?.length||0); b++) {
+                 var itm = cust.in_gate_storing_order_tank?.[b]!;
               data.push([
                 (b+1).toString(), itm.tank_no || "",this.DisplayEIRNo(itm) || "", this.DisplayOwner(itm) || "",
                 this.DisplayInDate(itm)|| "", this.DisplayTakeInRef(itm) || "", itm.tariff_cleaning?.cargo || "",
@@ -751,7 +770,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
 
           lastTableFinalY+=5;
           pdf.setFontSize(8);
-          subTitle =  `${this.translatedLangText.RELEASED_TANK}`;
+          subTitle =  `${this.translatedLangText.OUT_GATE}`;
           pdf.text(subTitle, leftMargin, lastTableFinalY);
 
           const repData: any[][] = [];
@@ -1221,7 +1240,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
 
   DisplayTakeInRef(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
-    return sot.in_gate?.[0]?.in_gate_survey?.take_in_reference || '';
+    return sot.job_no || '';
 
 
   }
@@ -1325,7 +1344,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
         }
         
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+       // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
         nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
         if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
           {
@@ -1335,12 +1354,13 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
     }
 
     if (sot.out_gate?.length) {
+        nextTest="";
         if(sot.out_gate?.[0]?.out_gate_survey?.test_dt)
         {
           next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date||new Date();
         }
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+       // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
         nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
         if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
           {

@@ -23,6 +23,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import autoTable, { Styles } from 'jspdf-autotable';
 import {
+  ApexAnnotations,
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
   ApexFill,
@@ -41,6 +42,7 @@ import {
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
  
 export type ChartOptions = {
+  animations?:any;
   series?: ApexAxisChartSeries;
   series2?: ApexNonAxisChartSeries;
   chart?: ApexChart;
@@ -1331,6 +1333,11 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
           text: `${this.translatedLangText.NO_OF_TANKS}`,
         },
       }
+      if(series.length==1)
+         if(series[0].data.length==1)
+         {
+           series[0].data.push(0);
+         }
       this.barChartOptions.series=series;
       this.barChartOptions!.chart!.events={
        
@@ -1345,6 +1352,11 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
    InitialDefaultData()
    {
     this.barChartOptions = {
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800
+      },
       series: [
         {
           name: 'Net Profit',
@@ -1365,11 +1377,13 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
         foreColor: '#9aa0ac',
       
       },
+     
       plotOptions: {
         bar: {
           horizontal: false,
           columnWidth: '10%',
           borderRadius: 5,
+          distributed: true
         },
       },
       dataLabels: {

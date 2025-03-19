@@ -524,6 +524,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
           let newTnx = false;
           if (!repTransaction.customer_code) {
             repTransaction.customer_code = s.customer_code;
+            repTransaction.customer_name=s.customer_name;
             newTnx = true;
           }
           if (!repTransaction.periodic_test_due) repTransaction.periodic_test_due = [];

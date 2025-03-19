@@ -260,21 +260,21 @@ white-space: normal; /* Allows text wrapping */
 max-width: 100%; /* Adjust width as needed */
 }
 
-.invisible-pdf {
-    background-color: transparent;
-    //position: absolute;
-    // left: -9999px;  /* Moves it off-screen */
-    opacity: 0;      /* Hides it visually */
-    // pointer-events: none; /* Prevents interactions */
-    // height: auto;
-    // width: auto;
-  }
+// .invisible-pdf {
+//     background-color: transparent;
+//     //position: absolute;
+//     // left: -9999px;  /* Moves it off-screen */
+//     opacity: 0;      /* Hides it visually */
+//     // pointer-events: none; /* Prevents interactions */
+//     // height: auto;
+//     // width: auto;
+//   }
 
-  .transparent-dialog .mat-dialog-container {
-    background-color: transparent;
-    box-shadow: none;
-  }
+//   .transparent-dialog .mat-dialog-container {
+//     background-color: transparent;
+//     box-shadow: none;
+//   }
 
-  ::ng-deep .mat-dialog-container {
-    background: transparent !important;
-  }
+//   ::ng-deep .mat-dialog-container {
+//     background: transparent !important;
+//   }

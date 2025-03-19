@@ -631,8 +631,8 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
              for(let i = 0; i < (cust.storing_order_tank?.length||0); i++){
                var itm = cust.storing_order_tank?.[i];
                 data.push([
-                  (i++).toString(), this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
-                  this.DipslayCleanDuration(itm!) || "",itm?.tariff_cleaning?.un_no||"", this.DisplayCleanMethod(itm!) || ""
+                  (i++).toString(), itm?.tank_no||"", this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
+                  this.DipslayCleanDuration(itm!) || "-",itm?.tariff_cleaning?.un_no||"", this.DisplayCleanMethod(itm!) || ""
                 ]);
               }
               
@@ -1159,7 +1159,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
 
   DipslayCleanDuration(sot:StoringOrderTankItem)
   {
-    var start_dt =sot.cleaning?.[0]?.create_dt;
+    var start_dt = sot.cleaning?.[0]?.approve_dt||sot.cleaning?.[0]?.create_dt||0;
     var end_dt =sot.cleaning?.[0]?.complete_dt;
     if (start_dt === undefined || end_dt === undefined) {
       console.log("Start or end timestamp is missing.");
@@ -1176,13 +1176,14 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       // Convert the duration to days
       const durationDays = durationMs / (1000 * 60 * 60 * 24);
       const roundedDuration = Math.ceil(durationDays);
-      return roundedDuration;
+      return roundedDuration>0?roundedDuration:0;
 
   }
 
   DisplayCleanIn(sot:StoringOrderTankItem)
   {
-    return  Utility.convertEpochToDateStr(sot.cleaning?.[0]?.create_dt);
+   var cln_dt:number = sot.cleaning?.[0]?.approve_dt||sot.cleaning?.[0]?.create_dt||0;
+    return  Utility.convertEpochToDateStr(cln_dt);
   }
 
   DisplayCustomerName(sot:StoringOrderTankItem)

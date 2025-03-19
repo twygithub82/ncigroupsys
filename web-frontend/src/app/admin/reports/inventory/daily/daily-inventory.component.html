@@ -40,9 +40,15 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVENTORY_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="inventory_picker" formControlName="inv_dt">
+                  <input matInput [matDatepicker]="inventory_picker" formControlName="inv_dt" required>
                   <mat-datepicker-toggle matSuffix [for]="inventory_picker"></mat-datepicker-toggle>
                   <mat-datepicker #inventory_picker></mat-datepicker>
+                  @if (searchForm?.get('inv_dt')?.hasError('required')) {
+                    <mat-error>
+                      {{this.translatedLangText.INVENTORY_DATE}} {{this.translatedLangText.SO_REQUIRED}}
+                    </mat-error>
+                    }
+
                 </mat-form-field>
               </div>
 
@@ -307,7 +313,7 @@
           </table>
         </div>
         <!-- No result -->
-        @if (!(sotDS.loading$ | async) && (!sotList.length && !dailySumList.length)) {
+        @if ((!(sotDS.loading$ | async)||!(reportDS.loading$ | async )) && (!sotList.length && !dailySumList.length)) {
         <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>

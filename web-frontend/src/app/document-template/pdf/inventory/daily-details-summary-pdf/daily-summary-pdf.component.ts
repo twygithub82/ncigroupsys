@@ -862,10 +862,10 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           let lastTableFinalY = 45;
           let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
           const data: any[][] = []; // Explicitly define data as a 2D array
-          // pdf.setFontSize(8);
-          // pdf.setTextColor(0, 0, 0); // Black text
-          // const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
-          // pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+           pdf.setFontSize(8);
+           pdf.setTextColor(0, 0, 0); // Black text
+          const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
+           pdf.text(invDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
       
           var idx=0;
           for (let n = 0; n < this.report_inventory.length; n++) {

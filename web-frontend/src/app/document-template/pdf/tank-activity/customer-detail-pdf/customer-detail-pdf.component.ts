@@ -207,8 +207,10 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
     IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
     OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    // ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
+    // ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
     MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
     DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
     REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
@@ -245,15 +247,20 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
-    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
-    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
+    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
+    //APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
+    //APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
+    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE',
     AV_DATE: 'COMMON-FORM.AV-DATE',
-    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE-S',
-    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE-S',
+    //RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE-S',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
+    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE',
+    //RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE-S',
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S',
+    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING',
+    //RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S',
     CLEAN_CERT_DATE:'COMMON-FORM.CLEAN-CERT-DATE',
     YARD:'COMMON-FORM.YARD',
     IN_YARD:'COMMON-FORM.IN-YARD',
@@ -1504,7 +1511,7 @@ async splitCanvas(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTMLCa
         }
         
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+       // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
         nextTest +=  ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;//` ${Utility.convertDateToStr(next_test_dt)}`;
         if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
           {
@@ -1514,12 +1521,13 @@ async splitCanvas(canvas: HTMLCanvasElement, splitRatio: number): Promise<HTMLCa
     }
 
     if (sot.out_gate?.length) {
+      nextTest="";
         if(sot.out_gate?.[0]?.out_gate_survey?.test_dt)
         {
           next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date||new Date();
         }
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+        //nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
         nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;
         if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
           {

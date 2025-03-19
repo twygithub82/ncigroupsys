@@ -16,6 +16,7 @@ export class report_customer_inventory{
   tank_no_pending?:number=0;
   tank_no_ro?:number=0;
   tank_no_total?:number=0;
+  in_gate_storing_order_tank?:StoringOrderTankItem[];
   in_yard_storing_order_tank?:StoringOrderTankItem[];
   released_storing_order_tank?:StoringOrderTankItem[];
 
@@ -31,6 +32,7 @@ export class report_customer_inventory{
     this.tank_no_pending=Number(item.tank_no_pending||0);
     this.tank_no_ro=Number(item.tank_no_ro||0);
     this.tank_no_total=Number(item.tank_no_total||0);
+    this.in_gate_storing_order_tank=item.in_gate_storing_order_tank;
     this.in_yard_storing_order_tank=item.in_yard_storing_order_tank;
     this.released_storing_order_tank=item.released_storing_order_tank;
   }
@@ -181,11 +183,13 @@ export class daily_inventory_summary{
 }
 
 export class report_periodic_test_due_group_customer{
-  customer_code?:String;
+  customer_code?:string;
+  customer_name?:string;
   periodic_test_due?:periodic_test_due_item[];
 
   constructor(item: Partial<report_periodic_test_due_group_customer> = {}) {
     this.customer_code=item.customer_code;
+    this.customer_name=item.customer_name;
     this.periodic_test_due=item.periodic_test_due;
   }
 }
@@ -193,6 +197,7 @@ export class report_periodic_test_due_group_customer{
 export class periodic_test_due_item{
         class_cv?:string;
         customer_code?:string;
+        customer_name?:string;
         due_days?:string;
         due_type?:string;
         eir_dt?:number;
@@ -207,6 +212,7 @@ export class periodic_test_due_item{
   constructor(item: Partial<periodic_test_due_item> = {}) {
     this.class_cv=item.class_cv;
     this.customer_code=item.customer_code;
+    this.customer_name=item.customer_name;
     this.due_days=item.due_days;
     this.due_type=item.due_type;
     this.eir_dt=item.eir_dt;
@@ -293,6 +299,7 @@ export const GET_PERIODIC_TEST_DUE_SUMMARY = gql`
        nodes {
         class_cv
         customer_code
+        customer_name
         due_days
         due_type
         eir_dt

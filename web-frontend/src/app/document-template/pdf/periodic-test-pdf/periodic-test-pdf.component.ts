@@ -1209,7 +1209,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   DisplayCustomerName(repCustomer: report_periodic_test_due_group_customer) {
-    return `${repCustomer.customer_code}`;
+    return `${repCustomer.customer_name}`;
   }
 
   DisplayEIRNo(itm:periodic_test_due_item)

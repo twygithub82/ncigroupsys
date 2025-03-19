@@ -392,8 +392,8 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     this.selection.clear();
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
-
-   
+    
+    where.repair={status_cv :{in:["JOB_IN_PROGRESS","ASSIGNED"]}};
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       cond_counter++;
@@ -420,7 +420,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       // Convert dates to epoch timestamps (in seconds)
       const maxEpoch = Math.floor(maxDate.getTime() / 1000); // Convert to seconds
       const minEpoch = Math.floor(minDate.getTime() / 1000); // Convert to seconds
-       where.repair={some:{allocate_dt:{
+       where.repair={any:true,some:{allocate_dt:{
         lte: minEpoch, // Greater than or equal to minEpoch
         gte: maxEpoch, // Less than or equal to maxEpoch
 
@@ -436,7 +436,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       // Calculate min and max dates based on min_days and max_days
       minDate.setDate(today.getDate() - this.searchForm!.get('min_days')?.value);
       const minEpoch = Math.floor(minDate.getTime() / 1000); // Convert to seconds
-      where.repair={some:{allocate_dt:{
+      where.repair={any:true,some:{allocate_dt:{
         gte: minEpoch, // Greater than or equal to minEpoch
        }}}
        cond_counter++;
@@ -451,10 +451,13 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       // Calculate min and max dates based on min_days and max_days
       maxDate.setDate(today.getDate() - this.searchForm!.get('max_days')?.value);
       const maxEpoch = Math.floor(maxDate.getTime() / 1000); // Convert to seconds
-      where.repair={some:{allocate_dt:{
+      where.repair={any:true,some:{allocate_dt:{
         lte: maxEpoch, // Less than or equal to maxEpoch
        }}}
        cond_counter++;
+    }else
+    {
+      where.repair={any:true};
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
@@ -514,7 +517,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       return;
     }
 
-    this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
+    this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType);
   }
 

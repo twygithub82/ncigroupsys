@@ -213,6 +213,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   noCond: boolean = false;
   surveyList: tank_survey_summary[] = [];
 
+  isGeneratingReport=false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -387,6 +388,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
   search(report_type: number) {
 
+    this.isGeneratingReport=true;
     var cond_counter = 0;
     let queryType = 1;
     var dailytankSurveyReq: any = {};
@@ -418,14 +420,14 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     if (this.searchForm?.get('svy_name')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      dailytankSurveyReq.surveyor_name = this.searchForm?.get('svy_name')?.value;
+      dailytankSurveyReq.surveyor_name = this.searchForm?.get('svy_name')?.value?.name||"";
       cond_counter++;
     }
 
 
     if (this.searchForm?.get('svy_type')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      dailytankSurveyReq.survey_type = this.searchForm?.get('svy_type')?.value;
+      dailytankSurveyReq.survey_type = this.searchForm?.get('svy_type')?.value?.map((a: any) => a.code_val) || [];
       cond_counter++;
     }
 
@@ -456,7 +458,10 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     this.noCond = (cond_counter === 0);
-    if (this.noCond) return;
+    if (this.noCond) {
+     this.isGeneratingReport=false;
+      return;
+    }
     // this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(dailytankSurveyReq, date);
 
@@ -564,7 +569,11 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
 
   ProcessReportTankSurvey(date: string) {
-    if (this.surveyList.length === 0) return;
+    if (this.surveyList.length === 0)
+      {
+        this.isGeneratingReport=false;
+        return;
+      } 
 
     var report_summary: tank_survey_summary_group_by_survey_dt[] = [];
 
@@ -616,7 +625,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport=false;
     });
   }
 

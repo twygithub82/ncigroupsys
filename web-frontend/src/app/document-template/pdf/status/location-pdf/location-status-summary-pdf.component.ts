@@ -879,40 +879,48 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
         // const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
         // pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     
+        const yard_no_tank: { key: string; value: number }[]=[];
+         var total_tank_no=0;
         for (let n = 0; n < this.report_summary_status.length; n++) {
          
           //let startY = lastTableFinalY + 15; // Start Y position for the current table
           let itm = this.report_summary_status[n];
       
-              // Calculate space required for customer name and table
-         //   const customerNameHeight = 10; // Height required for customer name
-         //   const tableHeight = cust.items!.length * tableRowHeight + tableHeaderHeight; // Approximate table height
-        
-            // // Check if there is enough space on the current page
-            // if (lastTableFinalY + customerNameHeight + tableHeight > maxContentHeight) {
-            //   // Add a new page if there isn't enough space
-            //   pdf.addPage();
-            //   pageNumber++;
-            //   lastTableFinalY = topMargin; // Reset Y position for the new page
-            // }
-            
-            // pdf.setFontSize(8);
-            // pdf.setTextColor(0, 0, 0); // Black text
-            // pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
-        
-          
+           
                 data.push([
                   (n+1).toString(), itm.code || "", itm.customer || ""                  
                 ]);
 
-                this.yards.forEach(y=>{
-                  data[n].push(this.displayTankNo(y,itm.yards));
+                this.yards.forEach(y => {
+                  let t = yard_no_tank.find(a => a.key === y.code_val);
+                  
+                  // If not found, create a new entry
+                  if (!t) {
+                    t = { key: y.code_val!, value: 0 };
+                    yard_no_tank.push(t);
+                  }
+                
+                  // Get the number of tanks for the yard
+                  const yard = itm.yards?.find(a => a.code === y.code_val);
+                  const noTank = yard?.storing_order_tank?.length || 0;
+                
+                  // Update the value in yard_no_tank
+                  t.value += noTank;
+                
+                  // Push the noTank value to the data array
+                  data[n].push(noTank);
                 });
-
+                total_tank_no+=itm.number_tank||0;
                 data[n].push(itm.number_tank);
               
       
         }
+
+        data.push([this.translatedLangText.TOTAL,"",""]);
+        yard_no_tank.forEach(y=>{
+        data[this.report_summary_status.length].push(y.value);});
+        data[this.report_summary_status.length].push(total_tank_no);
+
   
         pdf.setDrawColor(0, 0, 0); // red line color
     
@@ -936,6 +944,24 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
             halign: 'left', // Left-align content for body by default
             valign: 'middle', // Vertically align content
            },
+           didParseCell: (data: any) => {
+            let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+            if (data.row.index === lastRowIndex)
+            {
+               data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+               data.cell.styles.fontStyle = 'bold';
+                if(data.column.index === 0) {
+                data.cell.colSpan = 3;  // Merge 4 columns into one
+                data.cell.styles.halign = 'right'; // Center text horizontally
+                data.cell.styles.valign = 'middle'; // Center text vertically
+                
+              }
+            }
+            if (data.row.index === lastRowIndex && data.column.index > 0 && data.column.index <= 2) {
+              data.cell.text = ''; // Remove text from hidden columns
+              data.cell.colSpan = 0; // Hide these columns
+            }
+          },
           didDrawPage: (data: any) => {
             const pageCount = pdf.getNumberOfPages();
           
