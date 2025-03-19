@@ -64,9 +64,9 @@ export class SteamGO {
     this.allocate_by = item.allocate_by;
     this.allocate_dt = item.allocate_dt;
     this.approve_by = item.approve_by;
-    this.approve_dt = item.approve_dt || 0;
+    this.approve_dt = item.approve_dt;
     this.complete_by = item.complete_by;
-    this.complete_dt = item.complete_dt || 0;
+    this.complete_dt = item.complete_dt;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
     this.begin_by = item.begin_by;
