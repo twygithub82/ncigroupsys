@@ -204,6 +204,7 @@ namespace IDMS.Billing.GqlTypes
                                                                eir_dt = i.eir_dt,
                                                                eir_no = i.eir_no,
                                                                customer_code = cc.code,
+                                                               customer_name = cc.name,
                                                                owner_code = occ.code,
                                                                last_test_type = tf.last_test_cv == "2.5" ? "2.5 Year (Air)" :
                                                                             tf.next_test_cv == "5" ? "5 Year (Hydro)" : null,
@@ -241,14 +242,12 @@ namespace IDMS.Billing.GqlTypes
                         query = query.Where(tf => tf.next_test_type.Contains("5") && !tf.next_test_type.Contains("Air"));
                 }
 
-
-                result = await query.OrderBy(i => i.customer_code).ToListAsync();
-
                 if (!string.IsNullOrEmpty(periodicTestDueRequest.due_type))
                 {
                     result = result.Where(i => i.due_type.EqualsIgnore(periodicTestDueRequest.due_type)).ToList();
                 }
 
+                result = await query.OrderBy(i => i.customer_code).ToListAsync();
                 var groupedByCustomerCode = result
                     .GroupBy(test => test.customer_code)
                     .ToList();
@@ -1391,6 +1390,7 @@ namespace IDMS.Billing.GqlTypes
                 }
                 else if (processType.EqualsIgnore(ProcessType.PREINSPECTION))
                 {
+                    //NEED CHECK
                     query = (from result in query
                              join s in context.billing_sot on result.sot_guid equals s.sot_guid
                              join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
@@ -1409,6 +1409,7 @@ namespace IDMS.Billing.GqlTypes
                 }
                 else if (processType.EqualsIgnore(ProcessType.LOLO))
                 {
+                    //NEED CHECK
                     query = (from result in query
                              join s in context.billing_sot on result.sot_guid equals s.sot_guid
                              join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
