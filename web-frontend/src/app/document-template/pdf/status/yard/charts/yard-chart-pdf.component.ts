@@ -53,6 +53,7 @@ export type HorizontalBarOptions = {
   timeline?: boolean;
   colorScheme?: Color;
   showLabels?: boolean;
+  showDataLabel?:boolean;
   // data goes here
   single?: any;
   hbarxAxisLabel?: string;
@@ -344,7 +345,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   date: string = '';
   invType: string = '';
   chartAnimatedCounter=0;
-
+  
 
   constructor(
     public dialogRef: MatDialogRef<YardChartPdfComponent>,
@@ -356,6 +357,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer) {
     super();
+    
 
     this.translateLangText();
     this.InitialDefaultData();
@@ -376,10 +378,15 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
+
+
     
   }
   ngAfterViewInit() {
-  
+    var timeout=4000;
+    setTimeout(() => {
+      this.onDownloadClick();
+    }, timeout);
     //this.onDownloadClick();
    }
   async ngOnInit() {
@@ -788,20 +795,20 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   async exportToPDF_r1(fileName: string = 'document.pdf') {
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10; 
+    const pageWidth = 297; // A4 width in mm (landscape)
+    const pageHeight = 220; // A4 height in mm (landscape)
+    const leftMargin = 10;
     const rightMargin = 10;
-    const topMargin = 5;
+    const topMargin = 8;
     const bottomMargin = 5;
-    const contentWidth = pageWidth - leftMargin - rightMargin; 
-    const maxContentHeight = pageHeight - topMargin - bottomMargin; 
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
   
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
   
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.clearfix');
+    const pdf = new jsPDF('l', 'mm', 'a4');
+   
     let pageNumber = 1;
   
     let reportTitleCompanyLogo = 32;
@@ -811,19 +818,9 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     const pagePositions: { page: number; x: number; y: number }[] = [];
  //   const progressValue = 100 / cardElements.length;
   
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.clearfix');
     const reportTitle = this.GetReportTitle();
-    // const headers = [[
-    //   this.translatedLangText.DESCRIPTION,
-    //   this.translatedLangText.NO_OF_TANKS
-    // ]];
-  
-    // // Define headStyles with valid fontStyle
-    // const headStyles: Partial<Styles> = {
-    //   fillColor: [211, 211, 211], // Background color
-    //   textColor: 0, // Text color (white)
-    //   fontStyle: "bold", // Valid fontStyle value
-    //   halign: 'center', // Centering header text
-    // };
+    
   
     let currentY = topMargin;
     let scale = this.scale;
@@ -832,12 +829,16 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     var gap=8;
     
     await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-    await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+    Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 50;
     let minHeightHeaderCol=9;
     let fontSize=6;
-    let startY= lastTableFinalY;
+    let startY= lastTableFinalY+8;
+
+    const repGenDate =`${this.translatedLangText.DATE}:${this.GeneratedDate()}`;
+     Utility.AddTextAtCenterPage(pdf,repGenDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+
     let chartContentWidth=pageWidth-leftMargin-rightMargin;
           if(cardElements.length>0)
           {
@@ -863,18 +864,6 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
             // Add the image to the PDF
             pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
 
-            // const card2 = cardElements[1];
-            // const canvas2 = await html2canvas(card2, { scale: scale });
-            // let imgData2 = canvas2.toDataURL('image/jpeg', this.imageQuality);
-            // const imgHeight2 = (canvas2.height * chartContentWidth) / canvas2.width;
-            // pdf.addImage(imgData2, 'JPEG', leftMargin + chartContentWidth+5, startY, chartContentWidth, imgHeight2);
-
-
-            // const card3 = cardElements[2];
-            // const canvas3 = await html2canvas(card3, { scale: scale });
-            // let imgData3 = canvas3.toDataURL('image/jpeg', this.imageQuality);
-            // const imgHeight3 = (canvas3.height * chartContentWidth) / canvas3.width;
-            // pdf.addImage(imgData3, 'JPEG', leftMargin, startY+imgHeight2 , chartContentWidth, imgHeight3);
           }
 
      const totalPages = pdf.getNumberOfPages();
@@ -893,6 +882,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf);
+    //pdf.save(fileName);
 
 
     this.generatingPdfProgress = 0;
@@ -1241,6 +1231,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
     // radar chart
 
     this.columnChartOptions = {
+     
       chart: {
         height: 350,
         type: 'bar',
@@ -1261,6 +1252,10 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
               position: 'bottom',
               offsetX: -5,
               offsetY: 0,
+              itemMargin: {
+                horizontal: 50, // Reduce horizontal spacing between legend items
+                vertical: 10,
+              },
             },
           },
         },
@@ -1320,9 +1315,20 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
         // },
       },
       legend: {
+        offsetY: 10,
+        show: true,
         position: 'bottom',
-        offsetY: 0,
-      },
+        formatter: function (seriesName: string, opts?: any) {
+          return seriesName; // Return the series name as is
+        },
+        fontSize: '8px', // Adjust font size
+        width: 300, // Set a fixed width for the legend container
+        height:50,
+        itemMargin: {
+          horizontal: 2, // Reduce horizontal spacing between legend items
+          vertical: 0,
+        },
+        },
       fill: {
         opacity: 1,
       },
@@ -1336,6 +1342,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       showLegend: false,
       showXAxisLabel: true,
       showYAxisLabel: true,
+      showDataLabel:true,
       legendPosition: LegendPosition.Right,
       timeline : true,
       colorScheme:  {
@@ -1378,11 +1385,16 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
 
   onChartRendered()
   {
-     this.chartAnimatedCounter++;
-     if(this.chartAnimatedCounter==2)
-     {
-       this.onDownloadClick();
-     }
+  //    this.chartAnimatedCounter++;
+  //  // if(this.chartAnimatedCounter==2)
+  //    {
+  //      var timeout=3000;
+  //       setTimeout(() => {
+  //         this.onDownloadClick();
+  //       }, timeout);
+        
+  //      //this.onDownloadClick();
+  //    }
   }
 
 }

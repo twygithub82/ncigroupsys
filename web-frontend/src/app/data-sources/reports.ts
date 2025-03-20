@@ -265,8 +265,8 @@ constructor(item: Partial<tank_survey_summary> = {}) {
 }
 
 export const GET_CLEANING_INVENTORY_REPORT = gql`
-  query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!) {
-    resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest) {
+  query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
+    resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
       nodes {
         code
         count
@@ -294,8 +294,8 @@ export const GET_DAILY_INVENTORY_SUMMARY = gql`
 `
 
 export const GET_PERIODIC_TEST_DUE_SUMMARY = gql`
-  query queryPeriodicTestDueSummary($periodicTestDueRequest: PeriodicTestDueRequestInput!) {
-    resultList: queryPeriodicTestDueSummary(periodicTestDueRequest: $periodicTestDueRequest) {
+  query queryPeriodicTestDueSummary($periodicTestDueRequest: PeriodicTestDueRequestInput!,$first:Int) {
+    resultList: queryPeriodicTestDueSummary(periodicTestDueRequest: $periodicTestDueRequest,first:$first) {
        nodes {
         class_cv
         customer_code
@@ -316,8 +316,8 @@ export const GET_PERIODIC_TEST_DUE_SUMMARY = gql`
 `
 
 export const GET_TANK_SURVEY_SUMMARY = gql`
-  query queryDailyTankSurveySummary($dailyTankSurveyRequest: DailyTankSurveyRequestInput!) {
-    resultList: queryDailyTankSurveySummary(dailyTankSurveyRequest: $dailyTankSurveyRequest) {
+  query queryDailyTankSurveySummary($dailyTankSurveyRequest: DailyTankSurveyRequestInput!,$first:Int) {
+    resultList: queryDailyTankSurveySummary(dailyTankSurveyRequest: $dailyTankSurveyRequest,first:$first) {
       nodes {
         clean_dt
         customer_code
@@ -335,17 +335,19 @@ export const GET_TANK_SURVEY_SUMMARY = gql`
 
 
 export class ReportDS extends BaseDataSource<any> {
+
+  private first: number=20000;
   constructor(private apollo: Apollo) {
     super();
   }
 
   searchDailyInventorySummaryReport(dailyInventoryRequest:any): Observable<daily_inventory_summary[]> {
     this.loadingSubject.next(true);
-
+    var first=this.first;
     return this.apollo
       .query<any>({
         query: GET_DAILY_INVENTORY_SUMMARY,
-        variables: { dailyInventoryRequest },
+        variables: { dailyInventoryRequest,first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -367,11 +369,11 @@ export class ReportDS extends BaseDataSource<any> {
 
  searchPeriodicTestDueSummaryReport(periodicTestDueRequest:any): Observable<periodic_test_due_item[]> {
     this.loadingSubject.next(true);
-
+    var first=this.first;
     return this.apollo
       .query<any>({
         query: GET_PERIODIC_TEST_DUE_SUMMARY,
-        variables: { periodicTestDueRequest },
+        variables: { periodicTestDueRequest,first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -394,11 +396,11 @@ export class ReportDS extends BaseDataSource<any> {
 
   searchCleaningInventorySummaryReport(cleaningInventoryRequest:any): Observable<cleaning_report_summary_item[]> {
     this.loadingSubject.next(true);
-
+    var first=this.first;
     return this.apollo
       .query<any>({
         query: GET_CLEANING_INVENTORY_REPORT,
-        variables: { cleaningInventoryRequest },
+        variables: { cleaningInventoryRequest,first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -420,11 +422,11 @@ export class ReportDS extends BaseDataSource<any> {
 
   searchTankSurveySummaryReport(dailyTankSurveyRequest:any): Observable<tank_survey_summary[]> {
     this.loadingSubject.next(true);
-
+    var first=this.first;
     return this.apollo
       .query<any>({
         query: GET_TANK_SURVEY_SUMMARY,
-        variables: { dailyTankSurveyRequest },
+        variables: { dailyTankSurveyRequest,first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

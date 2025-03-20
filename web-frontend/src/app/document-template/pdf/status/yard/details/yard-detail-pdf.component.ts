@@ -664,6 +664,7 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
         textColor: 0, // Text color (white)
         fontStyle: "bold", // Valid fontStyle value
         halign: 'center', // Centering header text
+        valign:'middle',
         lineColor:201,
         lineWidth:0.1
       };
@@ -679,24 +680,24 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
       let lastTableFinalY = 45;
       
       const comStyles : any={ 
-      0: { halign: 'left' ,cellWidth:6 , minCellHeight:minHeightBodyCell},
-      1: { halign: 'left',cellWidth: 18 , minCellHeight:minHeightBodyCell},
-      2: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      3: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      4: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell },
-      5: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      6: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      7: { halign: 'left',cellWidth: 30 , minCellHeight:minHeightBodyCell},
-      8: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      9: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      10: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      11: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      12: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      13: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      14: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      15: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      16: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      17: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      0: { halign: 'center' ,valign:'middle' ,cellWidth:6 , minCellHeight:minHeightBodyCell},
+      1: { halign: 'left'   ,valign:'middle' ,cellWidth: 18 , minCellHeight:minHeightBodyCell},
+      2: { halign: 'center' ,valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      3: { halign: 'center' ,valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      4: { halign: 'center' ,valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell },
+      5: { halign: 'center' ,valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      6: { halign: 'center' ,valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      7: { halign: 'left'   ,valign:'middle' ,cellWidth: 30 , minCellHeight:minHeightBodyCell},
+      8: { halign: 'center' ,valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      9: { halign: 'center' ,valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      10: { halign: 'center',valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      11: { halign: 'center',valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      12: { halign: 'center',valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      13: { halign: 'center',valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      14: { halign: 'center',valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      15: { halign: 'center',valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      16: { halign: 'left'  ,valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      17: { halign: 'left'  ,valign:'middle' ,cellWidth: 15 , minCellHeight:minHeightBodyCell},
      
     };
       
@@ -1131,8 +1132,8 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
 
   DisplayTakeInRef(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
-    return sot.in_gate?.[0]?.in_gate_survey?.take_in_reference || '';
-
+    //return sot.in_gate?.[0]?.in_gate_survey?.take_in_reference || '';
+    return sot.job_no || '';
 
   }
 

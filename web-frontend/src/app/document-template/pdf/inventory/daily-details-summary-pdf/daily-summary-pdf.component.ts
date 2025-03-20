@@ -833,11 +833,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     
           const comStyles:any= {
             // Set columns 0 to 16 to be center aligned
-            0: { halign: 'left' ,cellWidth:10, minCellHeight:minHeightBodyCell },
-            1: { halign: 'center', minCellHeight:minHeightBodyCell },
-            2: { halign: 'center', minCellHeight:minHeightBodyCell },
-            3: { halign: 'center', minCellHeight:minHeightBodyCell },
-            4: { halign: 'center', minCellHeight:minHeightBodyCell},
+            0: { halign: 'center',valign:'middle' ,cellWidth:10, minCellHeight:minHeightBodyCell },
+            1: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
+            2: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
+            3: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
+            4: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell},
         };
         
           // Define headStyles with valid fontStyle
@@ -846,6 +846,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
             textColor: 0, // Text color (white)
             fontStyle: "bold", // Valid fontStyle value
             halign: 'center', // Centering header text
+            valign:'middle',
             lineColor:201,
             lineWidth:0.1
           };
@@ -862,10 +863,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           let lastTableFinalY = 45;
           let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
           const data: any[][] = []; // Explicitly define data as a 2D array
-           pdf.setFontSize(8);
-           pdf.setTextColor(0, 0, 0); // Black text
+          //  pdf.setFontSize(8);
+          //  pdf.setTextColor(0, 0, 0); // Black text
           const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
-           pdf.text(invDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+          Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin+5,lastTableFinalY + 10,8)
+          // pdf.text(invDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
       
           var idx=0;
           for (let n = 0; n < this.report_inventory.length; n++) {
@@ -902,10 +904,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
               {
                  data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
                  data.cell.styles.fontStyle = 'bold';
+                 data.cell.styles.valign = 'middle'; // Center text vertically
                   if(data.column.index === 0) {
                   data.cell.colSpan = 3;  // Merge 4 columns into one
                   data.cell.styles.halign = 'right'; // Center text horizontally
-                  data.cell.styles.valign = 'top'; // Center text vertically
+                 
                   
                 }
               }
@@ -987,10 +990,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
                   {
                      data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
                      data.cell.styles.fontStyle = 'bold';
+                     data.cell.styles.valign = 'middle'; // Center text vertically
                       if(data.column.index === 0) {
                       data.cell.colSpan = 2;  // Merge 4 columns into one
                       data.cell.styles.halign = 'right'; // Center text horizontally
-                      data.cell.styles.valign = 'top'; // Center text vertically
+                     
                       
                     }
                   }

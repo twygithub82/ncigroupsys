@@ -833,7 +833,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
             const pagePositions: { page: number; x: number; y: number }[] = [];
            // const progressValue = 100 / cardElements.length;
           
-            const reportTitle = this.GetWiseTitle();
+            const reportTitle = this.GetReportTitle();
             const headers = [[
               this.translatedLangText.NO, this.getNameTitle(),
               this.translatedLangText.NO_OF_TANKS
@@ -841,9 +841,9 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
       
             const comStyles:any= {
               // Set columns 0 to 16 to be center aligned
-              0: { halign: 'left' ,cellWidth:10 , minCellHeight:minHeightBodyCell},
-              1: { halign: 'center' , minCellHeight:minHeightBodyCell},
-              2: { halign: 'center' , minCellHeight:minHeightBodyCell}
+              0: { halign: 'center' ,valign:'middle',cellWidth:10 , minCellHeight:minHeightBodyCell},
+              1: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+              2: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell}
           };
           
             // Define headStyles with valid fontStyle
@@ -852,6 +852,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
               textColor: 0, // Text color (white)
               fontStyle: "bold", // Valid fontStyle value
               halign: 'center', // Centering header text
+              valign:'middle',
               lineColor:201,
               lineWidth:0.1
             };
@@ -869,10 +870,13 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
             
             let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
             const data: any[][] = []; // Explicitly define data as a 2D array
-             pdf.setFontSize(8);
-             pdf.setTextColor(0, 0, 0); // Black text
+            //  pdf.setFontSize(8);
+            //  pdf.setTextColor(0, 0, 0); // Black text
              const clnDate = `${this.translatedLangText.CLEANING_PERIOD}:${this.date}`; // Replace with your actual cutoff date
-             pdf.text(clnDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+             Utility.AddTextAtRightCornerPage(pdf,clnDate,pageWidth,leftMargin, rightMargin+5,startY-3,8);
+             const SubTitle = this.GetWiseTitle();
+             Utility.AddTextAtCenterPage(pdf,SubTitle,pageWidth,leftMargin, rightMargin,startY-12,9);
+            // pdf.text(clnDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
         
             var idx=0;
             for (let n = 0; n < this.report_summary_item.length; n++) {
@@ -908,10 +912,11 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
                 {
                    data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
                    data.cell.styles.fontStyle = 'bold';
-                    if(data.column.index === 0) {
+                   data.cell.styles.valign = 'middle'; // Center text vertically
+                   if(data.column.index === 0) {
                     data.cell.colSpan = 2;  // Merge 4 columns into one
                     data.cell.styles.halign = 'right'; // Center text horizontally
-                    data.cell.styles.valign = 'top'; // Center text vertically
+                    
                     
                   }
                 }
@@ -1330,6 +1335,8 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       return this.translatedLangText.CARGO;
     }
   }
+
+  
   
   //  displayTankNo(yard_cv:CodeValuesItem, yards: report_status_yard[] | undefined): string | undefined {
   //    var result = yards?.find(y=>y.code==yard_cv.code_val);

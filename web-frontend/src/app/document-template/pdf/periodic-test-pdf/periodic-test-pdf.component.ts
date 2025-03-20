@@ -597,6 +597,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
          textColor: 0, // Text color (white)
          fontStyle: "bold", // Valid fontStyle value
          halign: 'center', // Centering header text
+         valign:'middle',
          lineColor:201,
          lineWidth:0.1
        };
@@ -613,18 +614,18 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
        let minHeightHeaderCol=3;
        let fontSize=5;
        const comStyles : any={ 
-       0: { halign: 'left' ,cellWidth:10},
-       1: { halign: 'left',cellWidth: 18 },
-       2: { halign: 'left',cellWidth: 18 },
-       3: { halign: 'center',cellWidth: 15 },
-       4: { halign: 'center',cellWidth: 15  },
-       5: { halign: 'center',cellWidth: 17 },
-       6: { halign: 'center',cellWidth: 15 },
-       7: { halign: 'center',cellWidth: 15 },
-       8: { halign: 'center',cellWidth: 17 },
-       9: { halign: 'center',cellWidth: 15 },
-       10: { halign: 'center',cellWidth: 15 },
-       11: { halign: 'center',cellWidth: 15 },
+       0: { halign: 'center',valign:'middle' ,cellWidth:10},
+       1: { halign: 'left'  ,valign:'middle' ,cellWidth: 18 },
+       2: { halign: 'left'  ,valign:'middle' ,cellWidth: 18 },
+       3: { halign: 'center',valign:'middle',cellWidth: 15 },
+       4: { halign: 'center',valign:'middle',cellWidth: 15  },
+       5: { halign: 'center',valign:'middle',cellWidth: 17 },
+       6: { halign: 'center',valign:'middle',cellWidth: 15 },
+       7: { halign: 'center',valign:'middle',cellWidth: 15 },
+       8: { halign: 'center',valign:'middle',cellWidth: 17 },
+       9: { halign: 'center',valign:'middle',cellWidth: 15 },
+       10:{ halign: 'center',valign:'middle',cellWidth: 15 },
+       11:{ halign: 'center',valign:'middle',cellWidth: 15 },
        
        };
        
@@ -668,17 +669,18 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
              }
            
            //lastTableFinalY+=gap;
+           lastTableFinalY+=2;
            pdf.setFontSize(10);
            pdf.setTextColor(0, 0, 0); // Black text
-           pdf.text(`${this.translatedLangText.CUSTOMER} : ${this.DisplayCustomerName(cust)}`, leftMargin, lastTableFinalY ); // Add customer name 10mm below the last table
+           pdf.text(`${this.translatedLangText.CUSTOMER} : ${this.DisplayCustomerName(cust)}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
            let startY =0;
            if((cust.periodic_test_due?.length||0)>0)
            {
-             lastTableFinalY+=5;
-             pdf.setFontSize(8);
-             var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`;
-             pdf.text(subTitle, leftMargin, lastTableFinalY);
-             lastTableFinalY+=2;            
+             lastTableFinalY+=3;
+            //  pdf.setFontSize(8);
+            //  var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`;
+            //  pdf.text(subTitle, leftMargin, lastTableFinalY);
+            //  lastTableFinalY+=2;            
              startY = lastTableFinalY; // Start table 20mm below the customer name
          
              for (let b = 0; b < (cust.periodic_test_due?.length||0); b++) {
@@ -687,7 +689,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
                  (b+1).toString(), itm.tank_no || "",this.DisplayEIRNo(itm) || "", this.DisplayEIRDate(itm) || "",
                  this.DisplayOwner(itm)|| "", this.DisplayLastTest(itm) || "", this.DisplayLastTestDate(itm) || "",
                  this.DisplayLastTestDate(itm) || "", this.DisplayNextTest(itm) || "", this.DisplayNextTestDate(itm) || "",
-                 this.DisplayDueDays(itm) || "0", this.DisplayDueType(itm)||"-"
+                 this.DisplayDueDays(itm) || "0", this.DisplayDueType(itm)||""
                ]);
              }
              pdf.setDrawColor(0, 0, 0); // red line color

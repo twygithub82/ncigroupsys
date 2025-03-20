@@ -237,3 +237,10 @@ tr.th {
   ::ng-deep .mat-dialog-container {
     background: transparent !important;
   }
+
+  ::ng-deep .data-label {
+    font-size: 12px; /* Adjust font size */
+    font-weight: bold; /* Make labels bold */
+    fill: #333; /* Change text color */
+    transform: translate(5px, 0); /* Adjust horizontal padding */
+  }

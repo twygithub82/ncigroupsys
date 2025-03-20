@@ -880,16 +880,16 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
       const comStyles:any= {
         // Set columns 0 to 16 to be center aligned
-        0: { halign: 'left' , minCellHeight:minHeightBodyCell},
-        1: { halign: 'center' , minCellHeight:minHeightBodyCell},
-        2: { halign: 'center' , minCellHeight:minHeightBodyCell},
-        3: { halign: 'center' , minCellHeight:minHeightBodyCell},
-        4: { halign: 'center' , minCellHeight:minHeightBodyCell},
-        5: { halign: 'center' , minCellHeight:minHeightBodyCell},
-        6: { halign: 'center' , minCellHeight:minHeightBodyCell},
-        7: { halign: 'center' , minCellHeight:minHeightBodyCell},
-        8: { halign: 'center' , minCellHeight:minHeightBodyCell},
-        9: { halign: 'center' , minCellHeight:minHeightBodyCell},
+        0: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+        1: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+        2: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+        3: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+        4: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+        5: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+        6: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+        7: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+        8: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+        9: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
     };
     
       // Define headStyles with valid fontStyle
@@ -898,6 +898,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
         textColor: 0, // Text color (white)
         fontStyle: "bold", // Valid fontStyle value
         halign: 'center', // Centering header text
+        valign:'middle',
         lineColor:201,
         lineWidth:0.1
       };

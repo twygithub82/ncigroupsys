@@ -834,10 +834,10 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
         
               const comStyles:any= {
                 // Set columns 0 to 16 to be center aligned
-                0: { halign: 'left' ,cellWidth:10, minCellHeight:minHeightBodyCell },
-                1: { halign: 'center', minCellHeight:minHeightBodyCell },
-                2: { halign: 'center', minCellHeight:minHeightBodyCell },
-                3: { halign: 'center', minCellHeight:minHeightBodyCell }
+                0: { halign: 'center',valign:'middle' ,cellWidth:10, minCellHeight:minHeightBodyCell },
+                1: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
+                2: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
+                3: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell }
             };
             
               // Define headStyles with valid fontStyle
@@ -846,6 +846,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
                 textColor: 0, // Text color (white)
                 fontStyle: "bold", // Valid fontStyle value
                 halign: 'center', // Centering header text
+                valign:'middle',
                 lineColor:201,
                 lineWidth:0.1
               };
@@ -857,7 +858,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
               
               await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
               await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
-              
+              Utility.AddTextAtCenterPage(pdf,this.translatedLangText.CUSTOMER_WISE,pageWidth,leftMargin,rightMargin,topMargin+42,9);
               // Variable to store the final Y position of the last table
               let lastTableFinalY = 45;
               
@@ -867,8 +868,8 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
               pdf.setFontSize(8);
               pdf.setTextColor(0, 0, 0); // Black text
               const clnDate = `${this.translatedLangText.CLEANING_PERIOD}:${this.date}`; // Replace with your actual cutoff date
-              pdf.text(clnDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-            
+             // pdf.text(clnDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+              Utility.AddTextAtRightCornerPage(pdf,clnDate,pageWidth,leftMargin, rightMargin+4,startY-3,8);
               var idx=0;
               for (let n = 0; n < this.report_summary_item.length; n++) {
                
@@ -903,10 +904,11 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
                   {
                      data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
                      data.cell.styles.fontStyle = 'bold';
+                     data.cell.styles.valign = 'middle'; // Center text vertically
                       if(data.column.index === 0) {
                       data.cell.colSpan = 3;  // Merge 4 columns into one
                       data.cell.styles.halign = 'right'; // Center text horizontally
-                      data.cell.styles.valign = 'top'; // Center text vertically
+                      
                       
                     }
                   }

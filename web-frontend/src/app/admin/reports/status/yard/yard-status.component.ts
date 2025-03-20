@@ -928,8 +928,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     const dialogRef = this.dialog.open(YardChartPdfComponent, {
-      width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_status: repStatus

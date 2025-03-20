@@ -185,7 +185,8 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
     LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE-S',
-    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE-S',
+    //TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE-S',
+    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
     OPERATOR: 'COMMON-FORM.OPERATOR',
     TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
     YES: 'COMMON-FORM.YES',
@@ -208,8 +209,10 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
     IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
     OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    // ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
+    // ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
     MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
     DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
     REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
@@ -246,15 +249,21 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
-    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
-    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
+    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
+    //APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
+    //APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
+    APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE',
     AV_DATE: 'COMMON-FORM.AV-DATE',
-    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE-S',
-    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE-S',
+    //RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE-S',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
+    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE',
+    //RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE-S',
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S'
+    RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING',
+    //RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S',
+    CLEAN_CERT_DATE:'COMMON-FORM.CLEAN-CERT-DATE',
   }
 
   
@@ -869,25 +878,25 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         ]];
       
         const comStyles : any={ 
-          0: { halign: 'left' ,cellWidth:6 , minCellHeight:minHeightBodyCell},
-          1: { halign: 'left',cellWidth: 18, minCellHeight:minHeightBodyCell },
-          2: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          3: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-          4: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell },
-          5: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-          6: { halign: 'left',cellWidth: 30 , minCellHeight:minHeightBodyCell},
-          7: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-          8: { halign: 'center',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-          9: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          10: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          11: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          12: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          13: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          14: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          15: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          16: { halign: 'center',cellWidth: 18 , minCellHeight:minHeightBodyCell},
-          17: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-          18: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+          0: { halign: 'center' ,valign:'middle',cellWidth:6 , minCellHeight:minHeightBodyCell},
+          1: { halign: 'left'   ,valign:'middle',cellWidth: 18, minCellHeight:minHeightBodyCell },
+          2: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          3: { halign: 'center' ,valign:'middle',cellWidth: 20 , minCellHeight:minHeightBodyCell},
+          4: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell },
+          5: { halign: 'center' ,valign:'middle',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+          6: { halign: 'left'   ,valign:'middle',cellWidth: 33 , minCellHeight:minHeightBodyCell},
+          7: { halign: 'center' ,valign:'middle',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+          8: { halign: 'center' ,valign:'middle',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+          9: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          10: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          11: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          12: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          13: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          14: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          15: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          16: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+          17: { halign: 'left'  ,valign:'middle',cellWidth: 22 , minCellHeight:minHeightBodyCell},
+          18: { halign: 'left'  ,valign:'middle',cellWidth: 17 , minCellHeight:minHeightBodyCell},
           };
           
   
@@ -897,6 +906,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           textColor: 0, // Text color (white)
           fontStyle: "bold", // Valid fontStyle value
           halign: 'center', // Centering header text
+          valign:'middle',
           lineColor:201,
           lineWidth:0.1
         };
@@ -915,9 +925,12 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         
         lastTableFinalY +=8;
         pdf.setFontSize(8);
-        const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date} - (${this.invType})`;
+        const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date}`;
         Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
   
+        const invType=`(${this.invType})`
+        Utility.AddTextAtCenterPage(pdf,invType,pageWidth,leftMargin,rightMargin,lastTableFinalY-2,9);
+
         var CurrentPage=1;
         var buffer=20
         for (let n = 0; n < this.report_customer_tank_activity.length; n++) {

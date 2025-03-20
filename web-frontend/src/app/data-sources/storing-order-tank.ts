@@ -2720,6 +2720,7 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
          approve_dt
          complete_dt
          estimate_no
+         job_no
          create_dt
          delete_dt
         }
@@ -2887,6 +2888,7 @@ const GET_STORING_ORDER_TANKS_FOR_STATUS_DETAIL = gql`
          approve_dt
          complete_dt
          estimate_no
+         job_no
          create_dt
          delete_dt
         }
@@ -2971,6 +2973,7 @@ const GET_STORING_ORDER_TANKS_FOR_STATUS_DETAIL = gql`
             walkway_cv
             capacity
             take_in_reference
+            test_class_cv
           }
         }
       }
@@ -3270,6 +3273,11 @@ const GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER = gql`
           eir_no
           eir_dt
           guid
+          delete_dt
+        }
+        out_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
           delete_dt
         }
       }

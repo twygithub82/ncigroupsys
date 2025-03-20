@@ -629,7 +629,7 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
       ]];
     
       const comStyles : any={ 
-        0: { halign: 'left' ,cellWidth:6  , minCellHeight:minHeightBodyCell},
+        0: { halign: 'center' ,cellWidth:6  , minCellHeight:minHeightBodyCell},
         1: { halign: 'left',cellWidth: 18  , minCellHeight:minHeightBodyCell},
         2: { halign: 'center',cellWidth: 13  , minCellHeight:minHeightBodyCell},
         3: { halign: 'center',cellWidth: 13  , minCellHeight:minHeightBodyCell},
@@ -649,8 +649,8 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
         17: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
         18: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
         19: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
-        20: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
-        21: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        20: { halign: 'left',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+        21: { halign: 'left',cellWidth: 12  , minCellHeight:minHeightBodyCell},
         22: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell}};
         
 
@@ -660,6 +660,7 @@ async exportToPDF_r1(fileName: string = 'document.pdf') {
         textColor: 0, // Text color (white)
         fontStyle: "bold", // Valid fontStyle value
         halign: 'center', // Centering header text
+        valign:'middle',
         lineColor:201,
         lineWidth:0.1
       };

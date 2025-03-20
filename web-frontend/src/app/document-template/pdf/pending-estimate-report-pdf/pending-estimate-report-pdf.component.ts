@@ -802,16 +802,16 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       
             const comStyles:any= {
               // Set columns 0 to 16 to be center aligned
-              0: { halign: 'left' ,cellWidth:8, minCellHeight:minHeightBodyCell },
-              1: { halign: 'left' , cellWidth:25,minCellHeight:minHeightBodyCell},
-              2: { halign: 'left' , cellWidth:25,minCellHeight:minHeightBodyCell},
-              3: { halign: 'center',cellWidth:35, minCellHeight:minHeightBodyCell},
-              4: { halign: 'center',cellWidth:12 , minCellHeight:minHeightBodyCell},
-              5: { halign: 'center' ,cellWidth:15 , minCellHeight:minHeightBodyCell},
-              6: { halign: 'center',cellWidth:15 , minCellHeight:minHeightBodyCell},
-              7: { halign: 'center',cellWidth:18 , minCellHeight:minHeightBodyCell },
-              8: { halign: 'center',cellWidth:20, minCellHeight:minHeightBodyCell},
-              9: { halign: 'center',cellWidth:10, minCellHeight:minHeightBodyCell }
+              0: { halign: 'center',valign:'middle' ,cellWidth:8, minCellHeight:minHeightBodyCell },
+              1: { halign: 'left'  ,valign:'middle', cellWidth:25,minCellHeight:minHeightBodyCell},
+              2: { halign: 'left'  ,valign:'middle', cellWidth:25,minCellHeight:minHeightBodyCell},
+              3: { halign: 'center',valign:'middle',cellWidth:35, minCellHeight:minHeightBodyCell},
+              4: { halign: 'center',valign:'middle',cellWidth:12 , minCellHeight:minHeightBodyCell},
+              5: { halign: 'center',valign:'middle' ,cellWidth:15 , minCellHeight:minHeightBodyCell},
+              6: { halign: 'center',valign:'middle',cellWidth:15 , minCellHeight:minHeightBodyCell},
+              7: { halign: 'center',valign:'middle',cellWidth:18 , minCellHeight:minHeightBodyCell },
+              8: { halign: 'center',valign:'middle',cellWidth:20, minCellHeight:minHeightBodyCell},
+              9: { halign: 'center',valign:'middle',cellWidth:10, minCellHeight:minHeightBodyCell }
           };
           
             // Define headStyles with valid fontStyle
@@ -820,6 +820,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
               textColor: 0, // Text color (white)
               fontStyle: "bold", // Valid fontStyle value
               halign: 'center', // Centering header text
+              valign:'middle',
               lineColor:201,
               lineWidth:0.1
             };
@@ -1725,12 +1726,13 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
      {
       if(!sot.repair?.[0]?.allocate_dt) return '';
       let today = new Date();
-      today.setHours(0, 0, 0, 0); 
+      today.setHours(23, 59, 59, 59); 
 
       var accDt=(sot.repair?.[0]?.allocate_dt || 0)*1000;
       
       // Convert allocate_dt to a Date object
       let allocateDt = new Date(accDt);
+      
 
       // Check if allocateDt is a valid date
       if (isNaN(allocateDt.getTime())) {

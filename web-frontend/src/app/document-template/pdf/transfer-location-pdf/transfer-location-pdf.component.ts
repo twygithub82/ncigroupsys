@@ -256,7 +256,10 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     FROM_YARD:'COMMON-FORM.FROM-YARD',
     TO_YARD:'COMMON-FORM.TO-YARD',
     TRANSFER_PERIOD:'COMMON-FORM.TRANSFER-PERIOD',
-    LOCATION_TRANSFER:'COMMON-FORM.LOCATION_TRANSFER'
+    LOCATION_TRANSFER:'COMMON-FORM.LOCATION_TRANSFER',
+    STORAGE_DAYS:'COMMON-FORM.STORAGE-DAYS',
+    EIR:'COMMON-FORM.EIR',
+    TRANSFER:'COMMON-FORM.TRANSFER'
   }
 
 
@@ -559,19 +562,38 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
      //   const progressValue = 100 / cardElements.length;
       
         const reportTitle = this.GetReportTitle();
-        const headers = [[
-          this.translatedLangText.NO,
-          this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
-          this.translatedLangText.FROM_YARD, this.translatedLangText.TO_YARD,
-          this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE
-        ]];
+        // const headers = [[
+        //   this.translatedLangText.NO,
+        //   this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
+        //   this.translatedLangText.FROM_YARD, this.translatedLangText.TO_YARD,
+        //   this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE
+        // ]];
       
+        const headers = [
+          [
+            { content:this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+            { content:this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },          
+            { content:this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+            { content:this.translatedLangText.EIR,colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+            { content: this.translatedLangText.FROM_YARD, rowSpan: 2, styles: { halign: 'center' } },
+            { content: this.translatedLangText.TO_YARD, rowSpan: 2, styles: { halign: 'center' } },
+            { content:this.translatedLangText.TRANSFER, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+            { content:this.translatedLangText.STORAGE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+          ],
+          [
+            // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
+            this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
+             this.translatedLangText.IN_DATE,this.translatedLangText.OUT_DATE, // Sub-headers for NEXT_PERIODIC_TEST
+           
+          ]
+        ];
         // Define headStyles with valid fontStyle
         const headStyles: Partial<Styles> = {
           fillColor: [211, 211, 211], // Background color
           textColor: 0, // Text color (white)
           fontStyle: "bold", // Valid fontStyle value
           halign: 'center', // Centering header text
+          valign:'middle',
           lineColor:201,
           lineWidth:0.1
         };
@@ -589,13 +611,16 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
         let minHeightBodyCell=9;
         let fontSize=7;
         const comStyles : any={ 
-        0: { halign: 'left' ,cellWidth:10 , minCellHeight:minHeightBodyCell},
-        1: { halign: 'left' , minCellHeight:minHeightBodyCell},
-        2: { halign: 'center',cellWidth: 30 , minCellHeight:minHeightBodyCell},
-        3: { halign: 'center',cellWidth: 18 , minCellHeight:minHeightBodyCell},
-        4: { halign: 'center',cellWidth: 18 , minCellHeight:minHeightBodyCell},
-        5: { halign: 'center',cellWidth: 18 , minCellHeight:minHeightBodyCell},
-        6: { halign: 'center',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+        0: { halign: 'center',valign:'middle' ,cellWidth:10 , minCellHeight:minHeightBodyCell},
+        1: { halign: 'left'  ,valign:'middle', minCellHeight:minHeightBodyCell},
+        2: { halign: 'center',valign:'middle',cellWidth: 24 , minCellHeight:minHeightBodyCell},
+        3: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+        4: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+        5: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+        6: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+        7: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+        8: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+        9: { halign: 'center',valign:'middle',cellWidth: 15 , minCellHeight:minHeightBodyCell},
         };
         
         lastTableFinalY +=8;
@@ -644,8 +669,9 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
               for (let b = 0; b < (cust.storing_order_tank?.length||0); b++) {
                 var itm = cust.storing_order_tank?.[b]!;
                 data.push([
-                  (b+1).toString(), itm.tank_no || "",this.DisplayEIRNo(itm) || "", this.DisplayFromYard(itm) || "",
-                  this.DisplayToYard(itm)|| "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || ""
+                  (b+1).toString(), itm.tank_no || "",this.DisplayEIRNo(itm) || "", 
+                  this.DisplayEIRDateIn(itm),this.DisplayEIRDateOut(itm),this.DisplayFromYard(itm) || "",
+                  this.DisplayToYard(itm)|| "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || "",this.DisplayStorageDays(itm)||""
                 ]);
               }
               pdf.setDrawColor(0, 0, 0); // red line color
@@ -1213,9 +1239,44 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     return `${Utility.convertEpochToDateStr(sot.transfer?.[0]?.transfer_in_dt)||''}`;
   }
 
+  DisplayEIRDateIn(sot:StoringOrderTankItem)
+  {
+    
+   //this.removeDeletedInGateAndOutGate(sot);
+    return `${Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt)||''}`;
+  }
+
+  DisplayEIRDateOut(sot:StoringOrderTankItem)
+  {
+    
+   //this.removeDeletedInGateAndOutGate(sot);
+    return `${Utility.convertEpochToDateStr(sot.out_gate?.[0]?.eir_dt)||''}`;
+  }
+
   DisplayDateOut(sot:StoringOrderTankItem)
   {
    //this.removeDeletedInGateAndOutGate(sot);
    return `${Utility.convertEpochToDateStr(sot.transfer?.[0]?.transfer_out_dt)||''}`;
+  }
+
+  DisplayStorageDays(sot:StoringOrderTankItem)
+  {
+    var start_dt = sot.in_gate?.[0]?.eir_dt;
+    var end_dt =sot.out_gate?.[0]?.eir_dt||Math.floor(new Date().setHours(0, 0, 0, 0) / 1000);
+    if (start_dt === undefined || end_dt === undefined) {
+      return "";
+     }
+
+     const startDate = new Date(start_dt * 1000); // Convert seconds to milliseconds
+     const endDate = new Date(end_dt * 1000); // Convert seconds to milliseconds
+     startDate.setHours(0, 0, 0, 0); // Set time to 00:00:00.000
+     endDate.setHours(23, 59, 59, 999); // Set time to 23:59:59.999
+     // Calculate the duration in milliseconds
+     const durationMs = endDate.getTime() - startDate.getTime();
+
+     // Convert the duration to days
+     const durationDays = durationMs / (1000 * 60 * 60 * 24);
+     const roundedDuration = Math.ceil(durationDays);
+     return roundedDuration>0?roundedDuration:0;
   }
 }

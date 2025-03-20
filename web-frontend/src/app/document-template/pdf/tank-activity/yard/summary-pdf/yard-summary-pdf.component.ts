@@ -855,10 +855,10 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
   
         const comStyles:any= {
           // Set columns 0 to 16 to be center aligned
-          0: { halign: 'left' , minCellHeight:minHeightBodyCell },
-          1: { halign: 'center', minCellHeight:minHeightBodyCell },
-          2: { halign: 'center', minCellHeight:minHeightBodyCell },
-          3: { halign: 'center', minCellHeight:minHeightBodyCell },
+          0: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell },
+          1: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
+          2: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
+          3: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
       };
       
         // Define headStyles with valid fontStyle
@@ -867,6 +867,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
           textColor: 0, // Text color (white)
           fontStyle: "bold", // Valid fontStyle value
           halign: 'center', // Centering header text
+          valign:'middle',
           lineColor:201,
           lineWidth:0.1
         };
@@ -888,8 +889,12 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         const data: any[][] = []; // Explicitly define data as a 2D array
         pdf.setFontSize(8);
         pdf.setTextColor(0, 0, 0); // Black text
-        const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date} - (${this.invType})`;
-        Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,startY-3,8);
+        const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date}`;
+        Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin+5,startY-3,8);
+
+        const invType=`(${this.invType})`
+        Utility.AddTextAtCenterPage(pdf,invType,pageWidth,leftMargin,rightMargin,startY-11,9);
+
     
         var total_tank=0;
         for (let n = 0; n < this.report_customer_tank_activity.length; n++) {

@@ -1039,7 +1039,7 @@
     "RELEASED": "Released",
     "PENDING": "Pending",
     "WITH-RO": "With RO",
-    "YARD-DETAIL-REPORT": "Yard Detail Report",
+    "YARD-DETAIL-REPORT": "Yard Status Detail Report",
     "LOCATION_TRANSFER": "Location Transfer",
     "PROCESS-NAME": "Process Name",
     "PROCESS-DESCRIPTION": "Process Description",
@@ -1055,7 +1055,9 @@
     "GATE-SURCHAGRGE-PENDING-REPORT":"Gate Surcharge Invoice Pending Report",
     "GATE-IN":"Gate In",
     "GATE-OUT":"Gate Out",
-    "ISO-FORMAT":"ISO Format"
+    "ISO-FORMAT":"ISO Format",
+    "TRANSFER":"Transfer",
+    "EIR":"EIR"
 
   },
   "CLEAN-PROCEDURES": {

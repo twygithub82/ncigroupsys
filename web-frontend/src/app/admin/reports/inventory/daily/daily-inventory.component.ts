@@ -899,9 +899,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
          queryType: queryType
 
        },
-      //  panelClass: 'out-of-screen-dialog', // Apply the custom CSS class
-       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-     //  direction: tempDirection
+   
      });
      dialogRef.updatePosition({
       top: '-9999px',  // Move far above the screen

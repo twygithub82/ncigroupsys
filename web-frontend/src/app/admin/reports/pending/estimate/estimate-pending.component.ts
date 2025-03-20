@@ -393,7 +393,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
     
-    where.repair={status_cv :{in:["JOB_IN_PROGRESS","ASSIGNED"]}};
+    where.repair={some:{status_cv :{in:["JOB_IN_PROGRESS","ASSIGNED"]}},any:true};
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       cond_counter++;
@@ -420,11 +420,17 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       // Convert dates to epoch timestamps (in seconds)
       const maxEpoch = Math.floor(maxDate.getTime() / 1000); // Convert to seconds
       const minEpoch = Math.floor(minDate.getTime() / 1000); // Convert to seconds
-       where.repair={any:true,some:{allocate_dt:{
-        lte: minEpoch, // Greater than or equal to minEpoch
-        gte: maxEpoch, // Less than or equal to maxEpoch
-
-       }}}
+      //  where.repair.some={allocate_dt:{
+      //   lte: minEpoch, // Greater than or equal to minEpoch
+      //   gte: maxEpoch, // Less than or equal to maxEpoch
+      //  }}
+       where.repair.some = {
+        ...where.repair.some,
+        allocate_dt:{
+          lte: minEpoch, // Greater than or equal to minEpoch
+          gte: maxEpoch, // Less than or equal to maxEpoch
+         }
+      };
        cond_counter++;
     }
     else if (this.searchForm!.get('min_days')?.value)
@@ -436,9 +442,16 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       // Calculate min and max dates based on min_days and max_days
       minDate.setDate(today.getDate() - this.searchForm!.get('min_days')?.value);
       const minEpoch = Math.floor(minDate.getTime() / 1000); // Convert to seconds
-      where.repair={any:true,some:{allocate_dt:{
-        gte: minEpoch, // Greater than or equal to minEpoch
-       }}}
+
+      where.repair.some = {
+        ...where.repair.some,
+       allocate_dt:{
+          lte: minEpoch, // Greater than or equal to minEpoch
+         }
+      };
+      // where.repair.some={allocate_dt:{
+      //   gte: minEpoch, // Greater than or equal to minEpoch
+      //  }}
        cond_counter++;
 
     }
@@ -451,13 +464,15 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       // Calculate min and max dates based on min_days and max_days
       maxDate.setDate(today.getDate() - this.searchForm!.get('max_days')?.value);
       const maxEpoch = Math.floor(maxDate.getTime() / 1000); // Convert to seconds
-      where.repair={any:true,some:{allocate_dt:{
-        lte: maxEpoch, // Less than or equal to maxEpoch
-       }}}
+
+      where.repair.some = {
+        ...where.repair.some,
+        allocate_dt:{
+          gte: maxEpoch, // Less than or equal to maxEpoch
+         }
+      };
+     
        cond_counter++;
-    }else
-    {
-      where.repair={any:true};
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
@@ -698,7 +713,11 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(sot?.length<=0) return;
+    if(sot?.length<=0){
+      this.isGeneratingReport=false;
+      return;
+
+    } 
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';

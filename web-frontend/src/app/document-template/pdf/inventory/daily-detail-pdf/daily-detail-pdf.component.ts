@@ -581,6 +581,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
         textColor: 0, // Text color (white)
         fontStyle: "bold", // Valid fontStyle value
         halign: 'center', // Centering header text
+        valign:'middle',
         lineColor:201,
         lineWidth:0.1
       };
@@ -597,27 +598,27 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
       
       
       const comStyles : any={ 
-      0: { halign: 'left' ,cellWidth:6 , minCellHeight:minHeightBodyCell},
-      1: { halign: 'left',cellWidth: 18 , minCellHeight:minHeightBodyCell},
-      2: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      3: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      4: { halign: 'center',cellWidth: 12  , minCellHeight:minHeightBodyCell},
-      5: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      6: { halign: 'left',cellWidth: 30 , minCellHeight:minHeightBodyCell},
-      7: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      8: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      9: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      10: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      11: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      12: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      13: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      14: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      15: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      16: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      17: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      18: { halign: 'center',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      19: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      20: { halign: 'left',cellWidth: 15 , minCellHeight:minHeightBodyCell}};
+      0: { halign: 'center' ,valign:'middle',cellWidth:6 , minCellHeight:minHeightBodyCell},
+      1: { halign: 'left'   ,valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+      2: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      3: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      4: { halign: 'center' ,valign:'middle',cellWidth: 12  , minCellHeight:minHeightBodyCell},
+      5: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      6: { halign: 'left'   ,valign:'middle',cellWidth: 30 , minCellHeight:minHeightBodyCell},
+      7: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      8: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      9: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      10: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      11: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      12: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      13: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      14: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      15: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      16: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      17: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      18: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      19: { halign: 'left'  ,valign:'middle',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      20: { halign: 'left'  ,valign:'middle',cellWidth: 15 , minCellHeight:minHeightBodyCell}};
       
       lastTableFinalY +=8;
       pdf.setFontSize(8);
@@ -667,8 +668,8 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
           {
             lastTableFinalY+=5;
             pdf.setFontSize(8);
-            //var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`; 
-            var subTitle =  `${this.translatedLangText.IN_GATE}`;
+            var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`; 
+           // var subTitle =  `${this.translatedLangText.IN_GATE}`;
             pdf.text(subTitle, leftMargin, lastTableFinalY);
             lastTableFinalY+=2;            
             startY = lastTableFinalY; // Start table 20mm below the customer name
@@ -770,7 +771,8 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
 
           lastTableFinalY+=5;
           pdf.setFontSize(8);
-          subTitle =  `${this.translatedLangText.OUT_GATE}`;
+          subTitle =  `${this.translatedLangText.RELEASED_TANK}`;
+         // subTitle =  `${this.translatedLangText.OUT_GATE}`;
           pdf.text(subTitle, leftMargin, lastTableFinalY);
 
           const repData: any[][] = [];
@@ -1300,7 +1302,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
       }
       
       lastTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-      lastTest += ` ${Utility.convertDateToStr(last_test_dt)}`;
+      lastTest += ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`;
       if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
       {
         lastTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
@@ -1316,7 +1318,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
     }
     
     lastTest = sot.out_gate?.[0]?.out_gate_survey?.test_class_cv||"";
-    lastTest += ` ${Utility.convertDateToStr(last_test_dt)}`;
+    lastTest += ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`;
     if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
       {
          lastTest +=` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv=="2.5"?"(A)":"(H)")}`;
@@ -1345,7 +1347,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
         
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
        // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-        nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
+        nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;
         if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
           {
         nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;
@@ -1361,7 +1363,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
         }
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
        // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-        nextTest += ` ${Utility.convertDateToStr(next_test_dt)}`;
+        nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;
         if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
           {
         nextTest +=` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv=="2.5"?"(A)":"(H)")}`;

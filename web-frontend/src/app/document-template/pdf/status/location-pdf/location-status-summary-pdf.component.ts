@@ -831,10 +831,10 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
         const reportTitle = this.GetReportTitle();
         const comStyles:any= {
           // Set columns 0 to 16 to be center aligned
-          0: { halign: 'left' , minCellHeight:minHeightBodyCell},
-          1: { halign: 'center', minCellHeight:minHeightBodyCell },
-          2: { halign: 'center', minCellHeight:minHeightBodyCell },
-          3: { halign: 'center', minCellHeight:minHeightBodyCell },
+          0: { halign: 'center',valign:'middle' ,cellWidth:10, minCellHeight:minHeightBodyCell},
+          1: { halign: 'center',valign:'middle', cellWidth:30,minCellHeight:minHeightBodyCell },
+          2: { halign: 'center',valign:'middle', cellWidth:80, minCellHeight:minHeightBodyCell },
+          3: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
       };
 
         const headers = [[
@@ -857,6 +857,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
           textColor: 0, // Text color (white)
           fontStyle: "bold", // Valid fontStyle value
           halign: 'center', // Centering header text
+          valign:'middle',
           lineColor:201,
           lineWidth:0.1
         };
@@ -874,10 +875,11 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
         
         let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
         const data: any[][] = []; // Explicitly define data as a 2D array
-        // pdf.setFontSize(8);
-        // pdf.setTextColor(0, 0, 0); // Black text
-        // const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
-        // pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+
+        pdf.setFontSize(8);
+        pdf.setTextColor(0, 0, 0); // Black text
+        const repGeneratedDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`; // Replace with your actual cutoff date
+        Utility.AddTextAtRightCornerPage(pdf,repGeneratedDate,pageWidth,leftMargin,rightMargin+5,startY-2,9);
     
         const yard_no_tank: { key: string; value: number }[]=[];
          var total_tank_no=0;

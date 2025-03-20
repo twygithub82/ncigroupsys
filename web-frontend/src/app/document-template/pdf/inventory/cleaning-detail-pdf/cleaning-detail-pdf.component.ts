@@ -570,13 +570,14 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
   
         const comStyles:any= {
           // Set columns 0 to 16 to be center aligned
-          0: { halign: 'left', minCellHeight:minHeightBodyCell },
-          1: { halign: 'left' , minCellHeight:minHeightBodyCell},
-          2: { halign: 'center', minCellHeight:minHeightBodyCell },
-          3: { halign: 'center' , minCellHeight:minHeightBodyCell},
-          4: { halign: 'center', minCellHeight:minHeightBodyCell},
-          5: { halign: 'center' , minCellHeight:minHeightBodyCell},
-          6: { halign: 'center' , minCellHeight:minHeightBodyCell},
+          0: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell },
+          1: { halign: 'left'   ,valign:'middle', minCellHeight:minHeightBodyCell},
+          2: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell },
+          3: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+          4: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+          5: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+          6: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
+          7: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
       };
       
         // Define headStyles with valid fontStyle
@@ -585,6 +586,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
           textColor: 0, // Text color (white)
           fontStyle: "bold", // Valid fontStyle value
           halign: 'center', // Centering header text
+          valign:'middle',
           lineColor:201,
           lineWidth:0.1
         };
@@ -601,44 +603,47 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
         let lastTableFinalY = 45;
         
         let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-        const data: any[][] = []; // Explicitly define data as a 2D array
+        
         pdf.setFontSize(8);
         pdf.setTextColor(0, 0, 0); // Black text
         const cutoffDate = `${this.translatedLangText.CLEAN_DATE}:${this.date}`; // Replace with your actual cutoff date
-        pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+        //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+        Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin, rightMargin+4,startY-5,8);
     
+        var buffer=10;
+        var CurrentPage=1;
         for (let n = 0; n < this.report_inventory_cln_dtl.length; n++) {
-         
+          if (n>0) lastTableFinalY+=8;
           //let startY = lastTableFinalY + 15; // Start Y position for the current table
           let cust = this.report_inventory_cln_dtl[n];
       
-              // Calculate space required for customer name and table
-           // const customerNameHeight = 10; // Height required for customer name
-           // const tableHeight = cust.items!.length * tableRowHeight + tableHeaderHeight; // Approximate table height
-        
-            // // Check if there is enough space on the current page
-            // if (lastTableFinalY + customerNameHeight + tableHeight > maxContentHeight) {
-            //   // Add a new page if there isn't enough space
-            //   pdf.addPage();
-            //   pageNumber++;
-            //   lastTableFinalY = topMargin; // Reset Y position for the new page
-            // }
-            
+  
+          var repPage = pdf.getNumberOfPages();
+          //if(repPage==1)lastTableFinalY=45;
+          
+          if((repPage==CurrentPage) && (pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
+          {
+            pdf.addPage();
+            lastTableFinalY=5+topMargin;
+          }
+          else
+          {
+            CurrentPage=repPage;
+          }
+             lastTableFinalY+=5;
+             startY = lastTableFinalY+3;
              pdf.setFontSize(8);
              pdf.setTextColor(0, 0, 0); // Black text
-             pdf.text(`${cust.cargo}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
-        
+             pdf.text(`${cust.cargo}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+             const data: any[][] = []; // Explicitly define data as a 2D array
              for(let i = 0; i < (cust.storing_order_tank?.length||0); i++){
                var itm = cust.storing_order_tank?.[i];
                 data.push([
-                  (i++).toString(), itm?.tank_no||"", this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
-                  this.DipslayCleanDuration(itm!) || "-",itm?.tariff_cleaning?.un_no||"", this.DisplayCleanMethod(itm!) || ""
+                  (i+1).toString(), itm?.tank_no||"", this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
+                  this.DipslayCleanDuration(itm!) || "",itm?.tariff_cleaning?.un_no||"", this.DisplayCleanMethod(itm!) || ""
                 ]);
               }
               
-      
-        
-  
         pdf.setDrawColor(0, 0, 0); // red line color
     
         pdf.setLineWidth(0.1);
@@ -664,12 +669,17 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
            },
           didDrawPage: (data: any) => {
             const pageCount = pdf.getNumberOfPages();
-          
-            if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-            // Capture the final Y position of the table
+                
             lastTableFinalY = data.cursor.y;
+        
             var pg = pagePositions.find(p=>p.page==pageCount);
-            if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+            if(!pg){
+              pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+              if(pageCount>1)
+              {
+                Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+              }
+            } 
           },
         });
       }
@@ -1169,7 +1179,8 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       // Convert epoch timestamps to Date objects
       const startDate = new Date(start_dt * 1000); // Convert seconds to milliseconds
       const endDate = new Date(end_dt * 1000); // Convert seconds to milliseconds
-
+      startDate.setHours(0, 0, 0, 0); // Set time to 00:00:00.000
+      endDate.setHours(23, 59, 59, 999); // Set time to 23:59:59.999
       // Calculate the duration in milliseconds
       const durationMs = endDate.getTime() - startDate.getTime();
 
