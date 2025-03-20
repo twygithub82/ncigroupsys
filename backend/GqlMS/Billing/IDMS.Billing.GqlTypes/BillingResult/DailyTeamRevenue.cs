@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.Billing.GqlTypes.BillingResult
 {
-    public class DailyTeamRevenue : DailyTeamRevenueApproval
+    public class DailyTeamRevenue : RepairDetails
     {
         [NotMapped]
         public long? estimate_date { get; set; }
@@ -19,7 +19,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public string? team { get; set; }
     }
 
-    public class DailyTeamApproval : DailyTeamRevenueApproval
+    public class DailyTeamApproval : RepairDetails
     {
         [NotMapped]
         public string? status { get; set; }
@@ -37,7 +37,20 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public string? team { get; set; }
     }
 
-    public class DailyTeamRevenueApproval
+    [NotMapped]
+    public class DailyQCDetail: RepairDetails
+    {
+        public long? estimate_date { get; set; }
+        public string? qc_by { get; set; }
+        public int? appv_hour { get; set; }
+        public double? appv_material_cost { get; set; }
+        [GraphQLIgnore]
+        public string? eir_no { get; set; }
+        [GraphQLIgnore]
+        public long? qc_date { get; set; }
+    }
+
+    public class RepairDetails
     {
         [NotMapped]
         public string? estimate_no { get; set; }

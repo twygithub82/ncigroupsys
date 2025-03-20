@@ -15,3 +15,7 @@ CHANGE COLUMN `buffer_cost` `buffer_cost` DOUBLE NULL DEFAULT NULL ;
 ALTER TABLE `idms`.`residue` 
 ADD COLUMN `total_cost` DOUBLE NULL DEFAULT NULL AFTER `estimate_no`,
 ADD COLUMN `est_cost` DOUBLE NULL DEFAULT NULL AFTER `total_cost`;
+
+ALTER TABLE `idms`.`repair` 
+ADD COLUMN `total_material_cost` DOUBLE NULL DEFAULT NULL AFTER `total_hour`,
+ADD COLUMN `total_labour_cost` DOUBLE NULL DEFAULT NULL AFTER `total_material_cost`;

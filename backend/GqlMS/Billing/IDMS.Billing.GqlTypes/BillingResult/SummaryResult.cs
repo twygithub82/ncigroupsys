@@ -25,31 +25,21 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public List<OpeningBalance?>? opening_balance { get; set; }
     }
 
+    [NotMapped]
     public class PeriodicTestDueSummary
     {
-        [NotMapped]
         public string? customer_code { get; set; }
-        [NotMapped]
+        public string? customer_name { get; set; }
         public string? owner_code { get; set; }
-        [NotMapped]
         public string? tank_no { get; set; }
-        [NotMapped]
         public string? eir_no { get; set; }
-        [NotMapped]
         public long? eir_dt { get; set; }
-        [NotMapped]
         public string? class_cv { get; set; }
-        [NotMapped]
         public string? last_test_type { get; set; }
-        [NotMapped]
         public string? next_test_type { get; set; }
-        [NotMapped]
         public long? test_dt { get; set; }
-        [NotMapped]
         public long? next_test_dt { get; set; }
-        [NotMapped]
         public string? due_type { get; set; }
-        [NotMapped]
         public string? due_days { get; set; }
     }
 

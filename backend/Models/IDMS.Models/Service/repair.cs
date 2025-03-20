@@ -26,13 +26,15 @@ namespace IDMS.Models.Service
         public double? labour_cost_discount { get; set; }
         public double? material_cost_discount { get; set; }
         public double? labour_cost { get; set; }
-        public double? total_cost { get; set; }
         public double? est_cost { get; set; }   
+        public double? total_cost { get; set; }
+        public double? total_hour { get; set; }
+        public double? total_material_cost { get; set; }
+        public double? total_labour_cost { get; set; }
         public string? remarks { get; set; }
         public bool? owner_enable { get; set; }
         public string? status_cv { get; set; }
         public string? job_no { get; set; }
-        public double? total_hour { get; set; }
         public long? complete_dt { get; set; }
         public long? na_dt { get; set; }
         public string? approve_by { get; set; }
