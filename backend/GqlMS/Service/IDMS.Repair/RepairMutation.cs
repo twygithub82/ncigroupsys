@@ -35,7 +35,6 @@ namespace IDMS.Repair.GqlTypes
                 newRepair.estimate_no = repair.estimate_no;
                 newRepair.labour_cost_discount = repair.labour_cost_discount;
                 newRepair.material_cost_discount = repair.material_cost_discount;
-                newRepair.est_cost = repair.est_cost;
                 newRepair.total_cost = repair.total_cost;
                 newRepair.labour_cost = repair.labour_cost;
                 newRepair.owner_enable = repair.owner_enable;
@@ -43,6 +42,12 @@ namespace IDMS.Repair.GqlTypes
                 newRepair.total_hour = repair.total_hour;
                 newRepair.job_no = repair.job_no;
                 newRepair.status_cv = CurrentServiceStatus.PENDING;
+
+                //----------------------------------------------------
+                newRepair.est_cost = repair.est_cost;
+                newRepair.total_labour_cost = repair.total_labour_cost;
+                newRepair.total_material_cost = repair.total_material_cost;
+
                 await context.repair.AddAsync(newRepair);
 
                 //Handling For Template_est_part
@@ -110,12 +115,15 @@ namespace IDMS.Repair.GqlTypes
 
                     appvRepair.update_by = user;
                     appvRepair.update_dt = currentDateTime;
-
                     appvRepair.owner_enable = repair.owner_enable;
-                    appvRepair.est_cost = repair.est_cost;
                     appvRepair.total_cost = repair.total_cost;
                     appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.remarks = repair.remarks;
+
+                    //-----------------------------------------------
+                    appvRepair.est_cost = repair.est_cost;
+                    appvRepair.total_labour_cost = repair.total_labour_cost;
+                    appvRepair.total_material_cost = repair.total_material_cost;
 
                     if (CurrentServiceStatus.PENDING.EqualsIgnore(repair.status_cv))
                     {
@@ -180,13 +188,18 @@ namespace IDMS.Repair.GqlTypes
                 updateRepair.labour_cost_discount = repair.labour_cost_discount;
                 updateRepair.material_cost_discount = repair.material_cost_discount;
                 updateRepair.total_cost = repair.total_cost;
-                updateRepair.est_cost = repair.est_cost;
                 updateRepair.labour_cost = repair.labour_cost;
                 updateRepair.estimate_no = repair.estimate_no;
                 updateRepair.remarks = repair.remarks;
                 updateRepair.total_hour = repair.total_hour;
                 updateRepair.job_no = repair.job_no;
-                updateRepair.owner_enable = repair.owner_enable;    
+                updateRepair.owner_enable = repair.owner_enable;
+
+                //-----------------------------------------------
+                updateRepair.est_cost = repair.est_cost;
+                updateRepair.total_labour_cost = repair.total_labour_cost;
+                updateRepair.total_material_cost = repair.total_material_cost;
+
 
                 if (repair.repair_part != null)
                 {
