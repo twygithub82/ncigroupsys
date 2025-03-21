@@ -729,9 +729,13 @@ export class Utility {
     const imgWidth = 60;
     pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
   }
-
 }
 
+export const TANK_STATUS_PRE_IN_YARD = [
+  'SO_GENERATED',
+  'IN_GATE',
+  'IN_SURVEY',
+]
 
 export const TANK_STATUS_IN_YARD = [
   'STEAM',
@@ -742,4 +746,8 @@ export const TANK_STATUS_IN_YARD = [
   'RO_GENERATED',
 ]
 
-
+export const TANK_STATUS_POST_IN_YARD = [
+  'OUT_GATE',
+  'OUT_SURVEY',
+  'RELEASED',
+]

@@ -4,7 +4,7 @@ export const environment = {
   apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
   fileManagerURL: 'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
   graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
-  
+
   graphqlWsUrl: 'wss://tlx-idms-global-notification.azurewebsites.net/graphql',
 };
 
@@ -26,12 +26,12 @@ export const customerInfo = {
   eirDisclaimerVer: 'VER-2412-210206'
 };
 
-export const reportPreviewWindowDimension={
-  portrait_maxWidth:'1100px',
-  portrait_width_rate:'70vw',
-  landscape_maxWidth:'1400px',
-  landscape_width_rate:'85vw',
-  report_maxHeight:'85vh'
+export const reportPreviewWindowDimension = {
+  portrait_maxWidth: '1100px',
+  portrait_width_rate: '70vw',
+  landscape_maxWidth: '1400px',
+  landscape_width_rate: '85vw',
+  report_maxHeight: '85vh'
 };
 
 export const refreshTokenWithin: number = 1200000;
