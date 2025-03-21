@@ -39,7 +39,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activity/customer-detail-pdf/customer-detail-pdf.component';
-import { Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -422,7 +422,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       report_type = "RELEASED";
       var cond: any = { eq: "RELEASED" };
       if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
-        cond = { neq: "RELEASED" };
+        cond = {in:TANK_STATUS_IN_YARD}; //{ neq: "RELEASED" };
         report_type = "IN_YARD";
       }
       if (where.tank_status_cv) where.tank_status_cv = {};

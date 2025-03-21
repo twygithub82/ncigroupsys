@@ -42,7 +42,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CleaningDetailInventoryPdfComponent } from 'app/document-template/pdf/inventory/cleaning-detail-pdf/cleaning-detail-pdf.component';
 import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activity/customer-detail-pdf/customer-detail-pdf.component';
-import { Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import {ReportDS,cleaning_report_summary_item} from 'app/data-sources/reports';
@@ -409,7 +409,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     if(report_type=="DETAIL")
     {
       where.cleaning={any:true};
-      where.tank_status_cv={neq:'RELEASED'};
+      where.tank_status_cv={in:TANK_STATUS_IN_YARD}; //{neq:'RELEASED'};
       if (this.searchForm!.get('tank_no')?.value) {
         where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
         cond_counter++;

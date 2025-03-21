@@ -43,7 +43,7 @@ import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/cha
 import { YardDetailInventoryPdfComponent } from 'app/document-template/pdf/status/yard/details/yard-detail-pdf.component';
 import { YardStatusDetailSummaryPdfComponent } from 'app/document-template/pdf/status/yard/summary-pdf/yard-summary-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -368,8 +368,11 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     let queryType = 1;
     const where: any = {};
 
-
-    where.tank_status_cv = { neq: "RELEASED" };
+    where.or=[];
+    where.or.push({tank_status_cv:{in:TANK_STATUS_IN_YARD}});
+    where.or.push({status_cv:{eq:'WAITING'}});
+    // where.tank_status_cv = {in:TANK_STATUS_IN_YARD }//{ neq: "RELEASED" };
+    // where.status_cv={eq:'WAITING'};
     if (this.searchForm?.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
       where.customer_company = { code: { eq: this.searchForm?.get('customer_code')?.value.code } };
@@ -793,7 +796,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.sotList.map(s => {
 
       if (s) {
-        if (!s.in_gate?.[0]?.yard_cv) return;
+      //  if (!s.in_gate?.[0]?.yard_cv) return;
         var repCust: report_status = repStatus.find(r => r.code === s.storing_order?.customer_company?.code) || new report_status();
         let newCust = false;
         if (!repCust.code) {
@@ -804,42 +807,53 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
         }
         repCust.number_tank ??= 0;
         repCust.number_tank += 1;
-        var yard: report_status_yard = repCust.yards?.find(y => y.code === s.in_gate?.[0].yard_cv) || new report_status_yard();
+        var yard: report_status_yard = repCust.yards?.find(y => y.code === (s.in_gate?.[0]?.yard_cv||" ")) || new report_status_yard();
         let newYard = false;
         if (!yard.code) {
-          yard.code = s.in_gate?.[0].yard_cv;
+          yard.code = s.in_gate?.[0]?.yard_cv||" ";
           yard.storing_order_tank = [];
           newYard = true;
         }
-        switch (s.tank_status_cv) {
-          case "STEAM":
-            yard.noTank_steam! += 1;
-            break;
-          case "OFFHIRE":
-          case "REPAIR":
-            yard.noTank_repair! += 1;
-            break;
-          case "CLEANING":
-            yard.noTank_clean! += 1;
-            break;
-          case "STORAGE":
-            yard.noTank_storage! += 1;
-            break;
-          case "IN_SURVEY":
-            yard.noTank_in_survey! += 1;
-            break;
-          case "RO_GENERATED":
-              yard.noTank_withRO! += 1;
+        if(s.status_cv=="WAITING")
+        {
+
+          yard.noTank_pending! += 1;
+        }
+        else
+        {
+          switch (s.tank_status_cv) {
+            case "STEAM":
+              yard.noTank_steam! += 1;
               break;
-          default:
-            if(s.status_cv=="WAITING")
-            {
-              yard.noTank_pending! += 1;
-            }
-            break;
+            case "OFFHIRE":
+            case "REPAIR":
+              yard.noTank_repair! += 1;
+              break;
+            case "CLEANING":
+              yard.noTank_clean! += 1;
+              break;
+            case "STORAGE":
+              yard.noTank_storage! += 1;
+              break;
+            case "IN_SURVEY":
+              yard.noTank_in_survey! += 1;
+              break;
+            case "RO_GENERATED":
+                yard.noTank_withRO! += 1;
+                break;
+            // default:
+            //   if(s.status_cv=="WAITING")
+            //   {
+            //     yard.noTank_pending! += 1;
+            //   }
+            //   break;
+          }
         }
         yard.storing_order_tank?.push(s);
-        if (newYard) repCust.yards?.push(yard);
+        if (newYard) 
+          {
+             repCust.yards?.push(yard);
+          }
         if (newCust) repStatus.push(repCust);
       }
     });
@@ -847,6 +861,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.searchForm?.get('customer_code')?.value) {
       repStatus = repStatus.filter(s => s.code == this.searchForm?.get('customer_code')?.value.code);
     }
+    repStatus.forEach(r=> r.yards?.sort((a, b) => (a.code || "").localeCompare(b.code || "")));
     if (report_type == 1) {
       this.onExportSummary(repStatus);
     }

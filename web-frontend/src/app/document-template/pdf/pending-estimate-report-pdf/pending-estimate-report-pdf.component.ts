@@ -365,7 +365,9 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-
+    await this.getCodeValuesData();
+    this.sotList=this.data.sot;
+    this.onDownloadClick();
   }
 
   public loadData(sot: StoringOrderTankItem[]) {
@@ -379,11 +381,11 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      if (data.length) {
-        this.purposeOptionCvList = data;
-        this.sotList = sot;
-        this.onDownloadClick();
-      }
+      if(data.length)
+        {
+          this.purposeOptionCvList = data;
+         
+        }
     });
 
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -415,9 +417,9 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
     // Wrap all alias connections in promises
     const promises = [
-
-
-      firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
+     
+   
+      firstValueFrom(this.cvDS.connectAlias('purposeOptionCv')).then(data => {
         this.purposeOptionCvList = data || [];
 
       }),

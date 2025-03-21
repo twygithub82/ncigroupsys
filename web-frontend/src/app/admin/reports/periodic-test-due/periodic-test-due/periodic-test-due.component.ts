@@ -365,12 +365,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     const periodicTestDueReq: any = {};
 
 
-    // where.tank_status_cv = { neq: "RELEASED" };
-    // if (this.searchForm?.get('customer_code')?.value) {
-    //   // if(!where.storing_order_tank) where.storing_order_tank={};
-    //   where.customer_company = { code: { eq: this.searchForm?.get('customer_code')?.value.code } };
-    //   cond_counter++;
-    // }
+    
 
     if (this.searchForm?.get('customer_code')?.value) {
      

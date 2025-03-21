@@ -544,15 +544,15 @@ export class Utility {
     }
   }
 
-  static previewPDF(pdf: jsPDF, filename: string) {
+  static previewPDF(pdf: jsPDF,fileName: string = 'document.pdf') {
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
 
-    // Try opening in a new window
-    const newWindow = window.open(blobUrl, '_blank', 'noopener,noreferrer');
+  // Try opening in a new window
+  const newWindow = window.open(blobUrl, '_blank');
 
     if (!newWindow) {
-      pdf.save(filename);
+      pdf.save(fileName);
     } else {
       // Cleanup the URL after some time
       setTimeout(() => {
