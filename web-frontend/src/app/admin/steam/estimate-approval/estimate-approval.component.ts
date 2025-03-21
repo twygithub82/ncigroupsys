@@ -268,7 +268,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
         this.paginator.pageIndex = this.pageIndex;
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
-
     }
   }
 
@@ -588,7 +587,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
           this.sotList = data.map(sot => {
             sot.steaming = sot.steaming?.map(stm => {
-
               if (steamingStatusFilter.length) {
                 if (steamingStatusFilter.includes(stm.status_cv)) {
                   var stm_part = [...stm.steaming_part!];
@@ -603,6 +601,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
                 return { ...stm, net_cost: this.calculateNetCost(stm) };
               }
             });
+
+            console.log(sot.steaming)
 
             return sot;
           });
@@ -712,9 +712,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   calculateNetCostWithLabourCost(steam: SteamItem, LabourCost: number): any {
-
     const total = this.IsApproved(steam) ? this.steamDS.getApprovalTotalWithLabourCost(steam?.steaming_part, LabourCost) : this.steamDS.getTotalWithLabourCost(steam?.steaming_part, LabourCost)
-    return total.total_mat_cost.toFixed(2);
+    return Utility.formatNumberDisplay(total.total_mat_cost);
 
     // const custGuid = steam.storing_order_tank?.storing_order?.customer_company_guid;
 
@@ -730,9 +729,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   calculateNetCost(steam: SteamItem): any {
-
-    const total = this.IsApproved(steam) ? this.steamDS.getApprovalTotal(steam?.steaming_part) : this.steamDS.getTotal(steam?.steaming_part)
-    return total.total_mat_cost.toFixed(2);
+    const total = this.IsApproved(steam) ? this.steamDS.getApprovalTotal(steam?.steaming_part) : this.steamDS.getTotal(steam?.steaming_part);
+    return Utility.formatNumberDisplay(total.total_mat_cost);
 
     // const custGuid = steam.storing_order_tank?.storing_order?.customer_company_guid;
 
@@ -943,7 +941,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   getCustomerLabourPackage(sot: StoringOrderTankItem) {
-
     const customer_company_guid = sot.storing_order?.customer_company?.guid;
     const where = {
       and: [
