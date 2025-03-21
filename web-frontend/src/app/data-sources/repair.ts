@@ -21,6 +21,8 @@ export class RepairGO {
   public labour_cost?: number;
   public total_cost?: number;
   public est_cost?: number;
+  public total_material_cost?: number;
+  public total_labour_cost?: number;
   public status_cv?: string;
   public remarks?: string;
   public owner_enable?: boolean;
@@ -51,6 +53,8 @@ export class RepairGO {
     this.labour_cost = item.labour_cost || 0;
     this.total_cost = item.total_cost || 0;
     this.est_cost = item.est_cost || 0;
+    this.total_material_cost = item.total_material_cost || 0;
+    this.total_labour_cost = item.total_labour_cost || 0;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
     this.owner_enable = item.owner_enable || false;
@@ -143,7 +147,6 @@ export class RepairCostTableItem extends RepairGO {
   public net_lessee_cost?: string;
 
   public total_hour_table?: string;
-  public total_labour_cost?: string;
   public total_mat_cost?: string;
   public total_cost_table?: string;
   public discount_labour_cost?: string;
@@ -197,6 +200,9 @@ export const GET_REPAIR_BILLING = gql`
         sot_guid
         status_cv
         total_cost
+        est_cost
+        total_labour_cost
+        total_material_cost
         update_by
         update_dt
         approve_dt
@@ -329,6 +335,9 @@ export const GET_REPAIR = gql`
         sot_guid
         status_cv
         total_cost
+        est_cost
+        total_labour_cost
+        total_material_cost
         update_by
         update_dt
         approve_dt
@@ -383,6 +392,9 @@ export const GET_REPAIR_BY_ID = gql`
         sot_guid
         status_cv
         total_cost
+        est_cost
+        total_labour_cost
+        total_material_cost
         update_by
         update_dt
         repair_part {
@@ -540,6 +552,9 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
         sot_guid
         status_cv
         total_cost
+        est_cost
+        total_labour_cost
+        total_material_cost
         update_by
         update_dt
         bill_to_guid
@@ -875,6 +890,9 @@ export const GET_REPAIR_FOR_JOB_ORDER = gql`
         sot_guid
         status_cv
         total_cost
+        est_cost
+        total_labour_cost
+        total_material_cost
         update_by
         update_dt
         approve_by
@@ -1122,6 +1140,9 @@ const GET_REPAIR_FOR_MOVEMENT = gql`
         sot_guid
         status_cv
         total_cost
+        est_cost
+        total_labour_cost
+        total_material_cost
         update_by
         update_dt
         bill_to_guid
@@ -1293,6 +1314,9 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
         sot_guid
         status_cv
         total_cost
+        est_cost
+        total_labour_cost
+        total_material_cost
         update_by
         update_dt
         repair_part(where: { delete_dt: { eq: null } }) {
@@ -2089,7 +2113,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     net_cost += net_lessee_cost;
 
     costResult.total_hour_table = total_hour.toFixed(2);
-    costResult.total_labour_cost = total_labour_cost.toFixed(2);
+    costResult.total_labour_cost = total_labour_cost;
     costResult.total_mat_cost = total_mat_cost.toFixed(2);
     costResult.total_cost_table = total_cost.toFixed(2);
     costResult.discount_labour_cost = discount_labour_cost.toFixed(2);

@@ -44,9 +44,9 @@ import {
   NgApexchartsModule
 } from 'ng-apexcharts';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
- 
+
 export type ChartOptions = {
-  animations?:any;
+  animations?: any;
   series?: ApexAxisChartSeries;
   series2?: ApexNonAxisChartSeries;
   chart?: ApexChart;
@@ -65,13 +65,13 @@ export type ChartOptions = {
   labels: string[];
   responsive: ApexResponsive[];
 };
-  
+
 
 export interface DialogData {
   report_inventory: daily_inventory_summary[],
-  date:string,
+  date: string,
   queryType: number
- 
+
 }
 
 @Component({
@@ -90,7 +90,7 @@ export interface DialogData {
     NgApexchartsModule
   ],
 })
-export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit ,AfterViewInit  {
+export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
   translatedLangText: any = {};
   barChartOptions!: Partial<ChartOptions>;
 
@@ -261,37 +261,37 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE:'COMMON-FORM.IN-DATE',
-    OUT_DATE:'COMMON-FORM.OUT-DATE',
-    TOTAL:'COMMON-FORM.TOTAL',
-    DAYS:'COMMON-FORM.DAYS',
-    GATEIO:'COMMON-FORM.GATEIO',
-    INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
-    SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    INVENTORY_DATE:'COMMON-FORM.INVENTORY-DATE',
-    TANK_STATUS:'COMMON-FORM.TANK-STATUS',
-    YARD_STATUS:'COMMON-FORM.YARD-STATUS',
-    TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER',
-    OVERVIEW_SUMMARY:'COMMON-FORM.OVERVIEW-SUMMARY',
-    DAILY_INVENTORY:'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY',
-    OPENING_BALANCE:'COMMON-FORM.OPENING-BALANCE',
-    CLOSING_BALANCE:'COMMON-FORM.CLOSING-BALANCE',
-    
-    
-    
+    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
+    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
+    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
+    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
+    IN_DATE: 'COMMON-FORM.IN-DATE',
+    OUT_DATE: 'COMMON-FORM.OUT-DATE',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    DAYS: 'COMMON-FORM.DAYS',
+    GATEIO: 'COMMON-FORM.GATEIO',
+    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
+    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
+    INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
+    YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
+    TOP_TEN_CUSTOMER: 'COMMON-FORM.TOP-TEN-CUSTOMER',
+    OVERVIEW_SUMMARY: 'COMMON-FORM.OVERVIEW-SUMMARY',
+    DAILY_INVENTORY: 'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY',
+    OPENING_BALANCE: 'COMMON-FORM.OPENING-BALANCE',
+    CLOSING_BALANCE: 'COMMON-FORM.CLOSING-BALANCE',
+
+
+
 
   }
 
- 
-  
+
+
   type?: string | null;
-  
+
   cvDS: CodeValuesDS;
   repair_guid?: string | null;
   customer_company_guid?: string | null;
@@ -332,11 +332,11 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_inventory:daily_inventory_summary[]=[];
-  date:string='';
-  invType:string='';
-  queryType:number=0;
-  
+  report_inventory: daily_inventory_summary[] = [];
+  date: string = '';
+  invType: string = '';
+  queryType: number = 0;
+
 
   constructor(
     public dialogRef: MatDialogRef<DailyOverviewSummaryPdfComponent>,
@@ -348,42 +348,42 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer) {
     super();
-    
+
     this.translateLangText();
     this.InitialDefaultData();
-    
-     this.cvDS = new CodeValuesDS(this.apollo);
-    this.report_inventory= data.report_inventory;
+
+    this.cvDS = new CodeValuesDS(this.apollo);
+    this.report_inventory = data.report_inventory;
     this.date = data.date;
-    this.queryType=data.queryType;
-    
+    this.queryType = data.queryType;
+
     this.processBarCharValue(this.report_inventory);
     this.loadData();
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-   
+
   }
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-    
-    
+
+
   }
 
   @ViewChild('chart') chart!: ChartComponent; // Access the chart instance
 
   async ngAfterViewInit() {
-   // this.onDownloadClick();
-   var delay=3000;
-   
-   setTimeout(()=>{this.onDownloadClick();},delay);
-  //  if (this.chart && this.chart.chart) {
-  //   this.chart.chart.
-  // }
-  //  await this.chart.render();
-  //  setTimeout(()=>{this.onDownloadClick();},300);
+    // this.onDownloadClick();
+    var delay = 3000;
+
+    setTimeout(() => { this.onDownloadClick(); }, delay);
+    //  if (this.chart && this.chart.chart) {
+    //   this.chart.chart.
+    // }
+    //  await this.chart.render();
+    //  setTimeout(()=>{this.onDownloadClick();},300);
   }
 
   public loadData() {
@@ -397,24 +397,22 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      if(data.length)
-        {
-          this.purposeOptionCvList = data;
-          //this.processHorizontalBarValue(this.report_summary_status);
-          //this.processCustomerStatus(this.report_summary_status);
-        }
+      if (data.length) {
+        this.purposeOptionCvList = data;
+        //this.processHorizontalBarValue(this.report_summary_status);
+        //this.processCustomerStatus(this.report_summary_status);
+      }
     });
 
     this.cvDS.connectAlias('yardCv').subscribe(data => {
-      if(data.length)
-      {
+      if (data.length) {
         this.yardCvList = data;
-      // this.processTankStatus(this.report_summary_status);
+        // this.processTankStatus(this.report_summary_status);
       }
-      
+
     });
- 
-    
+
+
   }
 
   async getCodeValuesData(): Promise<void> {
@@ -428,25 +426,25 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
       // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
       // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'yardCv', codeValType: 'YARD' },
     ];
 
     await this.cvDS.getCodeValuesByTypeAsync(queries);
 
     // Wrap all alias connections in promises
     const promises = [
-     
-   
+
+
       firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
         this.purposeOptionCvList = data || [];
-        
+
       }),
 
       firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
         this.yardCvList = data || [];
-        
+
       }),
-      
+
     ];
 
     // Wait for all promises to resolve
@@ -658,7 +656,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     }
   }
 
- 
+
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -669,7 +667,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-  
+
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {
@@ -680,14 +678,14 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     return -1;
   }
 
-  
+
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
- 
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -713,7 +711,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
 
   async onDownloadClick() {
     this.exportToPDF_r1();
-   
+
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -728,7 +726,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     URL.revokeObjectURL(url);
   }
 
-  
+
 
   async uploadPdf(group_guid: string, pdfBlob: Blob) {
     const pdfDescription = 'REPAIR_ESTIMATE';
@@ -782,238 +780,228 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   async exportToPDF_r1(fileName: string = 'document.pdf') {
-        const pageWidth = 297; // A4 width in mm (landscape)
-        const pageHeight = 220; // A4 height in mm (landscape)
-        const leftMargin = 5;
-        const rightMargin = 5;
-        const topMargin = 8;
-        const bottomMargin = 5;
-        const contentWidth = pageWidth - leftMargin - rightMargin;
-        const tablewidth=55;
-        const chartContentWidth=contentWidth - tablewidth-2;
-        const maxContentHeight = pageHeight - topMargin - bottomMargin;
-      
-        this.generatingPdfLoadingSubject.next(true);
-        this.generatingPdfProgress = 0;
-      
-        const pdf = new jsPDF('l', 'mm', 'a4');
-        const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-        let pageNumber = 1;
-      
-        let reportTitleCompanyLogo = 32;
-        let tableHeaderHeight = 12;
-        let tableRowHeight = 8.5;
-        let minHeightHeaderCol=3;
-        let minHeightBodyCell=9;
-        let fontSz=6;
-        const pagePositions: { page: number; x: number; y: number }[] = [];
-     //   const progressValue = 100 / cardElements.length;
-      
-        const reportTitle = this.GetReportTitle();
-        const headers = [[
-          this.translatedLangText.DESCRIPTION,
-          this.translatedLangText.NO_OF_TANKS
-        ]];
-      
-        // Define headStyles with valid fontStyle
-        const headStyles: Partial<Styles> = {
-          fillColor: [211, 211, 211], // Background color
-          textColor: 0, // Text color (white)
-          fontStyle: "bold", // Valid fontStyle value
-          halign: 'center', // Centering header text
-          valign:'middle',
-          lineColor:201,
-          lineWidth:0.1
-        };
-      
-        let currentY = topMargin;
-        let scale = this.scale;
-        
-        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-        var gap=8;
-        
-        await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-        await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
-        // Variable to store the final Y position of the last table
-        let lastTableFinalY = 50;
-        
-        
-        const comStyles : any={ 
-        0: { halign: 'center' ,cellWidth:25, minCellHeight:minHeightBodyCell},
-        1: { halign: 'center',cellWidth: 'auto', minCellHeight:minHeightBodyCell },
-       };
-        
-       const data: any[][] = [];
-         data.push([this.translatedLangText.OPENING_BALANCE,this.displayOpeningBalance()]);
-         data.push([this.translatedLangText.IN_GATE,this.displayTotalInGate()]);
-         data.push([this.translatedLangText.OUT_GATE,this.displayTotalOutGate()]);
-         data.push([this.translatedLangText.CLOSING_BALANCE,this.displayClosingBalance()]);
-         
-         
-        let startY= lastTableFinalY +8;
-        let startX=pageWidth-rightMargin-tablewidth;
-         //Add table using autoTable plugin
+    const pageWidth = 297; // A4 width in mm (landscape)
+    const pageHeight = 220; // A4 height in mm (landscape)
+    const leftMargin = 5;
+    const rightMargin = 5;
+    const topMargin = 8;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const tablewidth = 55;
+    const chartContentWidth = contentWidth - tablewidth - 2;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-        pdf.setFontSize(8);
-        pdf.setTextColor(0, 0, 0); // Black text
-        const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
-        Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,9);
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
 
-              autoTable(pdf, {
-                head: headers,
-                body: data,
-                startY: startY, // Start table at the current startY value
-                margin: { left: startX },
-                theme: 'grid',
-                styles: { 
-                  fontSize: fontSz,
-                  minCellHeight: minHeightHeaderCol
-                
-                },
-                columnStyles:comStyles,
-                headStyles: headStyles, // Custom header styles
-                bodyStyles: { 
-                  fillColor: [255, 255, 255],
-                  halign: 'center', // Left-align content for body by default
-                  valign: 'middle', // Vertically align content
-                },
-                didDrawPage: (data: any) => {
-                  const pageCount = pdf.getNumberOfPages();
-                
-                  if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-                  // Capture the final Y position of the table
-                  lastTableFinalY = data.cursor.y;
-                  var pg = pagePositions.find(p=>p.page==pageCount);
-                  if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
-                },
-              });
-              if(cardElements.length>0)
-              {
-                const card = cardElements[0];
-                const canvas = await html2canvas(card, { scale: scale });
-                let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-                const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-                pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
-              }
+    const pdf = new jsPDF('l', 'mm', 'a4');
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
 
-         const totalPages = pdf.getNumberOfPages();
-       
-       
-        pagePositions.forEach(({ page, x, y }) => {
-          pdf.setDrawColor(0, 0, 0); // black line color
-          pdf.setLineWidth(0.1);
-          pdf.setLineDashPattern([0, 0], 0);
-          pdf.setFontSize(8);
-          pdf.setPage(page);
-          var lineBuffer=13;
-          pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-          pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-        });
-      
-        this.generatingPdfProgress = 100;
-        Utility.previewPDF(pdf);
-  
-  
-        this.generatingPdfProgress = 0;
-        this.generatingPdfLoadingSubject.next(false);
-        this.dialogRef.close();
-      }
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let minHeightHeaderCol = 3;
+    let minHeightBodyCell = 9;
+    let fontSz = 6;
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    //   const progressValue = 100 / cardElements.length;
 
- 
-   GeneratedDate():string
-   {
-     return  Utility.convertDateToStr(new Date());
-   }
-   GetReportTitle():string
-   {
-     return `${this.translatedLangText.DAILY_INVENTORY} ${this.translatedLangText.SUMMARY_REPORT}`
-   }
+    const reportTitle = this.GetReportTitle();
+    const headers = [[
+      this.translatedLangText.DESCRIPTION,
+      this.translatedLangText.NO_OF_TANKS
+    ]];
 
-   processBarCharValue(repInv:daily_inventory_summary[])
-   {
-    if (this.barChartOptions.xaxis)   
-      {
-    // const topTenReports = repStatus
-    // .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
-    // .slice(0, 10); // Get the top 10
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
 
-    var categories:any =[
-    ];
-    // repInv.map(p=>
-        
-    //   categories.push(p.code)
-    // );
-    
-     var series:any=[];
-     var in_gate_tank_no:number[]=[];
-     var out_gate_tank_no:number[]=[];
-     var all_values:number[]=[];
-     repInv.map(c=>{
-      categories.push(c.code)
-      in_gate_tank_no.push(c.in_gate_count||0);
-      out_gate_tank_no.push(c.out_gate_count||0);
-      all_values.push(c.in_gate_count||0);
-      all_values.push(c.out_gate_count||0);
+    let currentY = topMargin;
+    let scale = this.scale;
+
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+    var gap = 8;
+
+    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 50;
+
+
+    const comStyles: any = {
+      0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: 'auto', minCellHeight: minHeightBodyCell },
+    };
+
+    const data: any[][] = [];
+    data.push([this.translatedLangText.OPENING_BALANCE, this.displayOpeningBalance()]);
+    data.push([this.translatedLangText.IN_GATE, this.displayTotalInGate()]);
+    data.push([this.translatedLangText.OUT_GATE, this.displayTotalOutGate()]);
+    data.push([this.translatedLangText.CLOSING_BALANCE, this.displayClosingBalance()]);
+
+
+    let startY = lastTableFinalY + 8;
+    let startX = pageWidth - rightMargin - tablewidth;
+    //Add table using autoTable plugin
+
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
+
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      margin: { left: startX },
+      theme: 'grid',
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'center', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+      },
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+        // Capture the final Y position of the table
+        lastTableFinalY = data.cursor.y;
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+      },
+    });
+    if (cardElements.length > 0) {
+      const card = cardElements[0];
+      const canvas = await html2canvas(card, { scale: scale });
+      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+      const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
+      pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
+    }
+
+    const totalPages = pdf.getNumberOfPages();
+
+
+    pagePositions.forEach(({ page, x, y }) => {
+      pdf.setDrawColor(0, 0, 0); // black line color
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0, 0], 0);
+      pdf.setFontSize(8);
+      pdf.setPage(page);
+      var lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    });
+
+    this.generatingPdfProgress = 100;
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    this.dialogRef.close();
+  }
+
+  GeneratedDate(): string {
+    return Utility.convertDateToStr(new Date());
+  }
+  GetReportTitle(): string {
+    return `${this.translatedLangText.DAILY_INVENTORY} ${this.translatedLangText.SUMMARY_REPORT}`
+  }
+
+  processBarCharValue(repInv: daily_inventory_summary[]) {
+    if (this.barChartOptions.xaxis) {
+      // const topTenReports = repStatus
+      // .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
+      // .slice(0, 10); // Get the top 10
+
+      var categories: any = [
+      ];
+      // repInv.map(p=>
+
+      //   categories.push(p.code)
+      // );
+
+      var series: any = [];
+      var in_gate_tank_no: number[] = [];
+      var out_gate_tank_no: number[] = [];
+      var all_values: number[] = [];
+      repInv.map(c => {
+        categories.push(c.code)
+        in_gate_tank_no.push(c.in_gate_count || 0);
+        out_gate_tank_no.push(c.out_gate_count || 0);
+        all_values.push(c.in_gate_count || 0);
+        all_values.push(c.out_gate_count || 0);
 
       });
 
       const maxValue = Math.max(...all_values); // Find the maximum value in the data
       const maxYAxisValue = maxValue * 1.1; // Add 10% to the maximum value
-     
-     var series:any;
-     if(this.queryType==3)
-     {
-     series=[
-      {
-        name:this.translatedLangText.IN_GATE,
-        data:in_gate_tank_no
-      },
-      {
-        name:this.translatedLangText.OUT_GATE,
-        data:out_gate_tank_no
-      }
-     ];
-    } else if(this.queryType==1)
-    {
-      series=[
-        {
-          name:this.translatedLangText.IN_GATE,
-          data:in_gate_tank_no
-        },
-        {
-          name:this.translatedLangText.OUT_GATE,
-          data:[]
-        }
-       ];
-    }
-    else
-    {
-      series=[
-        {
-          name:this.translatedLangText.IN_GATE,
-          data:[]
-        },
-        {
-          name:this.translatedLangText.OUT_GATE,
-          data:out_gate_tank_no
-        }
-       ];
-    }
-    
-        this.barChartOptions.xaxis =  {
-          type: 'category',
-          categories: categories,
-          labels: {
-            style: {
-              colors: '#9aa0ac',
-            },
-          },
-        };
-        //categories;
 
-      this.barChartOptions.yaxis= {
+      var series: any;
+      if (this.queryType == 3) {
+        series = [
+          {
+            name: this.translatedLangText.IN_GATE,
+            data: in_gate_tank_no
+          },
+          {
+            name: this.translatedLangText.OUT_GATE,
+            data: out_gate_tank_no
+          }
+        ];
+      } else if (this.queryType == 1) {
+        series = [
+          {
+            name: this.translatedLangText.IN_GATE,
+            data: in_gate_tank_no
+          },
+          {
+            name: this.translatedLangText.OUT_GATE,
+            data: []
+          }
+        ];
+      }
+      else {
+        series = [
+          {
+            name: this.translatedLangText.IN_GATE,
+            data: []
+          },
+          {
+            name: this.translatedLangText.OUT_GATE,
+            data: out_gate_tank_no
+          }
+        ];
+      }
+
+      this.barChartOptions.xaxis = {
+        type: 'category',
+        categories: categories,
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      };
+      //categories;
+
+      this.barChartOptions.yaxis = {
         max: maxYAxisValue,
-        min:0,
+        min: 0,
         title: {
           text: `${this.translatedLangText.NO_OF_TANKS}`,
         },
@@ -1032,22 +1020,21 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
       //    {
       //      series[0].data.push(0);
       //    }
-      this.barChartOptions.series=series;
-      this.barChartOptions!.chart!.events={
-       
+      this.barChartOptions.series = series;
+      this.barChartOptions!.chart!.events = {
+
         animationEnd: () => {
-         this.onChartRendered();
+          this.onChartRendered();
         }
       }
     }
-   }
+  }
 
-   
-   InitialDefaultData()
-   {
-   
+
+  InitialDefaultData() {
+
     this.barChartOptions = {
-       legend: {
+      legend: {
         offsetY: 10,
         show: true,
         position: 'bottom',
@@ -1056,12 +1043,12 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
         },
         fontSize: '9px', // Adjust font size
         width: 300, // Set a fixed width for the legend container
-        height:50,
+        height: 50,
         itemMargin: {
           horizontal: 2, // Reduce horizontal spacing between legend items
           vertical: 0,
         },
-        },
+      },
       animations: {
         enabled: false,
         easing: 'linear',
@@ -1135,7 +1122,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
         labels: {
           style: {
             colors: '#9aa0ac',
-           
+
           },
         },
       },
@@ -1162,51 +1149,47 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
         },
       },
     };
-   }
-
-   displayOpeningBalance()
-   {
-     var OpenBal:number=0;
-     OpenBal = this.report_inventory?.[0]?.opening_balance?.reduce((total, item) => {
-      return total + (item.open_balance??0);
-    }, 0)||0;
-  
-     return OpenBal;
-   }
-
-   displayClosingBalance()
-   {
-     var openBal=this.displayOpeningBalance();
-     var inGate=this.displayTotalInGate();
-     var outGate=this.displayTotalOutGate();
-     return openBal+inGate-outGate;
-   }
-
-   displayTotalInGate()
-   {
-    var totalInGate:number=0;
-    totalInGate = this.report_inventory?.reduce((total, item) => {
-      return total + (item.in_gate_count??0);
-    }, 0)||0;
-  
-     return totalInGate;
-     
-   }
-
-   displayTotalOutGate()
-   {
-    var totalOutGate:number=0;
-    totalOutGate = this.report_inventory?.reduce((total, item) => {
-      return total + (item.out_gate_count??0);
-    }, 0)||0;
-  
-     return totalOutGate;
-     
-   }
-
-   onChartRendered() {
-   // setTimeout(()=>{this.onDownloadClick();},300);
-   
   }
-  
+
+  displayOpeningBalance() {
+    var OpenBal: number = 0;
+    OpenBal = this.report_inventory?.[0]?.opening_balance?.reduce((total, item) => {
+      return total + (item.open_balance ?? 0);
+    }, 0) || 0;
+
+    return OpenBal;
+  }
+
+  displayClosingBalance() {
+    var openBal = this.displayOpeningBalance();
+    var inGate = this.displayTotalInGate();
+    var outGate = this.displayTotalOutGate();
+    return openBal + inGate - outGate;
+  }
+
+  displayTotalInGate() {
+    var totalInGate: number = 0;
+    totalInGate = this.report_inventory?.reduce((total, item) => {
+      return total + (item.in_gate_count ?? 0);
+    }, 0) || 0;
+
+    return totalInGate;
+
+  }
+
+  displayTotalOutGate() {
+    var totalOutGate: number = 0;
+    totalOutGate = this.report_inventory?.reduce((total, item) => {
+      return total + (item.out_gate_count ?? 0);
+    }, 0) || 0;
+
+    return totalOutGate;
+
+  }
+
+  onChartRendered() {
+    // setTimeout(()=>{this.onDownloadClick();},300);
+
+  }
+
 }

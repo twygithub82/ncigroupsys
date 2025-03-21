@@ -1008,6 +1008,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         re.total_hour = Utility.convertNumber(this.repairForm.get('total_hour')?.value, 2);
         re.total_cost = Utility.convertNumber(this.repairForm.get('net_cost')?.value, 2);
         re.est_cost = Utility.convertNumber(this.repairForm.get('net_cost_est')?.value, 2);
+        re.total_labour_cost = Utility.convertNumber(this.repairForm.get('total_labour_cost')?.value, 2);
+        re.total_material_cost = Utility.convertNumber(this.repairForm.get('total_mat_cost')?.value, 2);
         re.remarks = this.repairForm.get('remarks')?.value;
         re.owner_enable = this.isOwner;
         re.job_no = re.job_no ?? this.sotItem?.job_no;
@@ -1023,7 +1025,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         // remove the object
         re.aspnetsuser = undefined;
 
-        console.log(re);
+        console.log('repair onFormSubmit: ', re);
         if (re.guid) {
           this.repairDS.updateRepair(re, cc).subscribe(result => {
             console.log(result)

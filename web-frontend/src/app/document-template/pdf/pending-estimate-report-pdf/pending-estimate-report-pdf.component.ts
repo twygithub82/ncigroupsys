@@ -43,41 +43,41 @@ import {
 } from 'ng-apexcharts';
 import autoTable, { Styles } from 'jspdf-autotable';
 
-  export type HorizontalBarOptions={
-    showXAxis?:boolean;
-    showYAxis?:boolean;
-    gradient?:boolean ;
-    showLegend?:boolean ;
-    showXAxisLabel?:boolean;
-    showYAxisLabel?:boolean ;
-    legendPosition: LegendPosition ;
-    timeline?:boolean ;
-    colorScheme?: Color;
-    showLabels?:boolean ;
-    // data goes here
-    single?:any ;
-    hbarxAxisLabel?:string;
-  };
+export type HorizontalBarOptions = {
+  showXAxis?: boolean;
+  showYAxis?: boolean;
+  gradient?: boolean;
+  showLegend?: boolean;
+  showXAxisLabel?: boolean;
+  showYAxisLabel?: boolean;
+  legendPosition: LegendPosition;
+  timeline?: boolean;
+  colorScheme?: Color;
+  showLabels?: boolean;
+  // data goes here
+  single?: any;
+  hbarxAxisLabel?: string;
+};
 
-  export type ChartOptions = {
-    series?: ApexAxisChartSeries;
-    series2?: ApexNonAxisChartSeries;
-    chart?: ApexChart;
-    dataLabels?: ApexDataLabels;
-    plotOptions?: ApexPlotOptions;
-    yaxis?: ApexYAxis;
-    xaxis?: ApexXAxis;
-    fill?: ApexFill;
-    tooltip?: ApexTooltip;
-    stroke?: ApexStroke;
-    legend?: ApexLegend;
-    title?: ApexTitleSubtitle;
-    colors?: string[];
-    grid?: ApexGrid;
-    markers?: ApexMarkers;
-    labels: string[];
-    responsive: ApexResponsive[];
-  };
+export type ChartOptions = {
+  series?: ApexAxisChartSeries;
+  series2?: ApexNonAxisChartSeries;
+  chart?: ApexChart;
+  dataLabels?: ApexDataLabels;
+  plotOptions?: ApexPlotOptions;
+  yaxis?: ApexYAxis;
+  xaxis?: ApexXAxis;
+  fill?: ApexFill;
+  tooltip?: ApexTooltip;
+  stroke?: ApexStroke;
+  legend?: ApexLegend;
+  title?: ApexTitleSubtitle;
+  colors?: string[];
+  grid?: ApexGrid;
+  markers?: ApexMarkers;
+  labels: string[];
+  responsive: ApexResponsive[];
+};
 
 export interface DialogData {
   sot: StoringOrderTankItem[]
@@ -259,35 +259,35 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE:'COMMON-FORM.IN-DATE',
-    OUT_DATE:'COMMON-FORM.OUT-DATE',
-    TOTAL:'COMMON-FORM.TOTAL',
-    DAYS:'COMMON-FORM.DAYS',
-    GATEIO:'COMMON-FORM.GATEIO',
-    INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
-    SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
-    TANK_STATUS:'COMMON-FORM.TANK-STATUS',
-    YARD_STATUS:'COMMON-FORM.YARD-STATUS',
-    TOP_TEN_CUSTOMER:'COMMON-FORM.TOP-TEN-CUSTOMER',
-    CLEAN_DATE:'COMMON-FORM.CLEAN-DATE',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    REPAIR_IN_DATE:'COMMON-FORM.REPAIR-IN-DATE',
-    REPAIR_ESTIMATE_OUTSTANDING_TANK_LIST:'COMMON-FORM.REPAIR-ESTIMATE-OUTSTANDING-TANK-LIST'
-    
+    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
+    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
+    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
+    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
+    IN_DATE: 'COMMON-FORM.IN-DATE',
+    OUT_DATE: 'COMMON-FORM.OUT-DATE',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    DAYS: 'COMMON-FORM.DAYS',
+    GATEIO: 'COMMON-FORM.GATEIO',
+    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
+    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
+    INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
+    YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
+    TOP_TEN_CUSTOMER: 'COMMON-FORM.TOP-TEN-CUSTOMER',
+    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    REPAIR_IN_DATE: 'COMMON-FORM.REPAIR-IN-DATE',
+    REPAIR_ESTIMATE_OUTSTANDING_TANK_LIST: 'COMMON-FORM.REPAIR-ESTIMATE-OUTSTANDING-TANK-LIST'
+
 
   }
 
   public pieChartOptions!: Partial<ChartOptions>;
   public columnChartOptions!: Partial<ChartOptions>;
-  public horizontalBarOptions!:Partial<HorizontalBarOptions>;
-  
+  public horizontalBarOptions!: Partial<HorizontalBarOptions>;
+
   type?: string | null;
   // steamDS: SteamDS;
   // steamPartDS: SteamPartDS;
@@ -333,9 +333,9 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  sotList:StoringOrderTankItem[]=[];
-  
-  
+  sotList: StoringOrderTankItem[] = [];
+
+
 
   constructor(
     public dialogRef: MatDialogRef<PendingEstimateReportPdfComponent>,
@@ -347,20 +347,20 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer) {
     super();
-    
+
     this.translateLangText();
     this.InitialDefaultData();
-    
+
     // this.ccDS = new CustomerCompanyDS(this.apollo);
-     this.cvDS = new CodeValuesDS(this.apollo);
-    
-    
+    this.cvDS = new CodeValuesDS(this.apollo);
+
+
     this.loadData(data.sot);
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-    
+
   }
 
   async ngOnInit() {
@@ -370,7 +370,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     this.onDownloadClick();
   }
 
-  public loadData(sot:StoringOrderTankItem[]) {
+  public loadData(sot: StoringOrderTankItem[]) {
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'yardCv', codeValType: 'YARD' },
@@ -389,15 +389,14 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     });
 
     this.cvDS.connectAlias('yardCv').subscribe(data => {
-      if(data.length)
-      {
+      if (data.length) {
         this.yardCvList = data;
-      // this.processTankStatus(this.report_summary_status);
+        // this.processTankStatus(this.report_summary_status);
       }
-      
+
     });
- 
-    
+
+
   }
 
   async getCodeValuesData(): Promise<void> {
@@ -411,7 +410,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
       // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'yardCv', codeValType: 'YARD' },
     ];
 
     await this.cvDS.getCodeValuesByTypeAsync(queries);
@@ -422,14 +421,14 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
    
       firstValueFrom(this.cvDS.connectAlias('purposeOptionCv')).then(data => {
         this.purposeOptionCvList = data || [];
-        
+
       }),
 
       firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
         this.yardCvList = data || [];
-        
+
       }),
-      
+
     ];
 
     // Wait for all promises to resolve
@@ -641,7 +640,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     }
   }
 
- 
+
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -652,7 +651,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-  
+
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {
@@ -663,14 +662,14 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     return -1;
   }
 
-  
+
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
- 
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -696,7 +695,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
   async onDownloadClick() {
     this.exportToPDF_r1();
-   
+
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -711,7 +710,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     URL.revokeObjectURL(url);
   }
 
-  
+
 
   async uploadPdf(group_guid: string, pdfBlob: Blob) {
     const pdfDescription = 'REPAIR_ESTIMATE';
@@ -765,295 +764,294 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-   async exportToPDF_r1(fileName: string = 'document.pdf') {
-          const pageWidth = 210; // A4 width in mm (portrait)
-          const pageHeight = 297; // A4 height in mm (portrait)
-          const leftMargin = 10; 
-          const rightMargin = 10;
-          const topMargin = 5;
-          const bottomMargin = 5;
-          const contentWidth = pageWidth - leftMargin - rightMargin; 
-          const maxContentHeight = pageHeight - topMargin - bottomMargin; 
-        
-          this.generatingPdfLoadingSubject.next(true);
-          this.generatingPdfProgress = 0;
-        
-          const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-            //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-            let pageNumber = 1;
-          
-            let reportTitleCompanyLogo = 32;
-            let tableHeaderHeight = 12;
-            let tableRowHeight = 8.5;
-            let minHeightHeaderCol=3;
-            let minHeightBodyCell=9;
-            let fontSz=6;
-          
-            const pagePositions: { page: number; x: number; y: number }[] = [];
-           // const progressValue = 100 / cardElements.length;
-          
-            const reportTitle = this.GetReportTitle();
-            const headers = [[
-              this.translatedLangText.NO, this.translatedLangText.TANK_NO,
-              this.translatedLangText.EIR_NO, this.translatedLangText.CUSTOMER,
-              this.translatedLangText.OWNER,this.translatedLangText.EIR_DATE,
-              this.translatedLangText.CLEAN_DATE,this.translatedLangText.REPAIR_TYPE,
-              this.translatedLangText.REPAIR_IN_DATE,this.translatedLangText.DAYS
-            ]];
-      
-            const comStyles:any= {
-              // Set columns 0 to 16 to be center aligned
-              0: { halign: 'center',valign:'middle' ,cellWidth:8, minCellHeight:minHeightBodyCell },
-              1: { halign: 'left'  ,valign:'middle', cellWidth:25,minCellHeight:minHeightBodyCell},
-              2: { halign: 'left'  ,valign:'middle', cellWidth:25,minCellHeight:minHeightBodyCell},
-              3: { halign: 'center',valign:'middle',cellWidth:35, minCellHeight:minHeightBodyCell},
-              4: { halign: 'center',valign:'middle',cellWidth:12 , minCellHeight:minHeightBodyCell},
-              5: { halign: 'center',valign:'middle' ,cellWidth:15 , minCellHeight:minHeightBodyCell},
-              6: { halign: 'center',valign:'middle',cellWidth:15 , minCellHeight:minHeightBodyCell},
-              7: { halign: 'center',valign:'middle',cellWidth:18 , minCellHeight:minHeightBodyCell },
-              8: { halign: 'center',valign:'middle',cellWidth:20, minCellHeight:minHeightBodyCell},
-              9: { halign: 'center',valign:'middle',cellWidth:10, minCellHeight:minHeightBodyCell }
-          };
-          
-            // Define headStyles with valid fontStyle
-            const headStyles: Partial<Styles> = {
-              fillColor: [211, 211, 211], // Background color
-              textColor: 0, // Text color (white)
-              fontStyle: "bold", // Valid fontStyle value
-              halign: 'center', // Centering header text
-              valign:'middle',
-              lineColor:201,
-              lineWidth:0.1
-            };
-            
-            let currentY = topMargin;
-            let scale = this.scale;
-            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-          
-            
-            await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-            await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
-            
-            // Variable to store the final Y position of the last table
-            let lastTableFinalY = 45;
-            
-            let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
-            const data: any[][] = []; // Explicitly define data as a 2D array
-            // pdf.setFontSize(8);
-            // pdf.setTextColor(0, 0, 0); // Black text
-            // const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
-            // pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-        
-            var idx=0;
-            for (let n = 0; n < this.sotList.length; n++) {
-             
-              //let startY = lastTableFinalY + 15; // Start Y position for the current table
-              let itm = this.sotList[n];
-                    data.push([
-                      (++idx).toString(),itm.tank_no||"", this.DisplayEIRNo(itm) || "", this.DisplayCustomerName(itm) || "", 
-                      this.DisplayOwner(itm) || "",this.DisplayEIRDate(itm) || "",this.DisplayCleanDate(itm) || "",
-                      this.DisplayRepairType(itm) || "",this.DisplayRepairInDate(itm) || "",this.DisplayDays(itm) || "0",
-                    ]);
-            }
-            
-           autoTable(pdf, {
-              head: headers,
-              body: data,
-              startY: startY, // Start table at the current startY value
-              theme: 'grid',
-              styles: { 
-                fontSize: fontSz,
-                 minCellHeight: minHeightHeaderCol
-              },
-              columnStyles:comStyles,
-              headStyles: headStyles, // Custom header styles
-              bodyStyles: { 
-                fillColor: [255, 255, 255],
-               },
-              didDrawPage: (d: any) => {
-                const pageCount = pdf.getNumberOfPages();
-                  
-                lastTableFinalY = d.cursor.y;
-            
-                var pg = pagePositions.find(p=>p.page==pageCount);
-                if(!pg){
-                  pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
-                  if(pageCount>1)
-                  {
-                    Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-                  }
-                } 
-                
-              },
-            });
-  
-           
-  
-          
-            const totalPages = pdf.getNumberOfPages();
-          
-           
-            pagePositions.forEach(({ page, x, y }) => {
-              pdf.setDrawColor(0, 0, 0); // black line color
-              pdf.setLineWidth(0.1);
-              pdf.setLineDashPattern([0, 0], 0);
-              pdf.setFontSize(8);
-              pdf.setPage(page);
-              var lineBuffer=13;
-              pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-              pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-            });
-          
-            this.generatingPdfProgress = 100;
-            //pdf.save(fileName);
-            this.generatingPdfProgress = 0;
-            this.generatingPdfLoadingSubject.next(false);
-            Utility.previewPDF(pdf);
-            this.dialogRef.close();
+  async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let minHeightHeaderCol = 3;
+    let minHeightBodyCell = 9;
+    let fontSz = 6;
+
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
+
+    const reportTitle = this.GetReportTitle();
+    const headers = [[
+      this.translatedLangText.NO, this.translatedLangText.TANK_NO,
+      this.translatedLangText.EIR_NO, this.translatedLangText.CUSTOMER,
+      this.translatedLangText.OWNER, this.translatedLangText.EIR_DATE,
+      this.translatedLangText.CLEAN_DATE, this.translatedLangText.REPAIR_TYPE,
+      this.translatedLangText.REPAIR_IN_DATE, this.translatedLangText.DAYS
+    ]];
+
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
+      1: { halign: 'left', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      2: { halign: 'left', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 35, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell }
+    };
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+
+    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 45;
+
+    let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
+    const data: any[][] = []; // Explicitly define data as a 2D array
+    // pdf.setFontSize(8);
+    // pdf.setTextColor(0, 0, 0); // Black text
+    // const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
+    // pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+
+    var idx = 0;
+    for (let n = 0; n < this.sotList.length; n++) {
+
+      //let startY = lastTableFinalY + 15; // Start Y position for the current table
+      let itm = this.sotList[n];
+      data.push([
+        (++idx).toString(), itm.tank_no || "", this.DisplayEIRNo(itm) || "", this.DisplayCustomerName(itm) || "",
+        this.DisplayOwner(itm) || "", this.DisplayEIRDate(itm) || "", this.DisplayCleanDate(itm) || "",
+        this.DisplayRepairType(itm) || "", this.DisplayRepairInDate(itm) || "", this.DisplayDays(itm) || "0",
+      ]);
     }
-    
+
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+      },
+      didDrawPage: (d: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        lastTableFinalY = d.cursor.y;
+
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+          }
+        }
+
+      },
+    });
+
+
+
+
+    const totalPages = pdf.getNumberOfPages();
+
+
+    pagePositions.forEach(({ page, x, y }) => {
+      pdf.setDrawColor(0, 0, 0); // black line color
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0, 0], 0);
+      pdf.setFontSize(8);
+      pdf.setPage(page);
+      var lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    });
+
+    this.generatingPdfProgress = 100;
+    //pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.dialogRef.close();
+  }
+
   async exportToPDF_r3(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10; 
+    const leftMargin = 10;
     const rightMargin = 10;
     const topMargin = 20;
     const bottomMargin = 20;
-    const contentWidth = pageWidth - leftMargin - rightMargin; 
-    const maxContentHeight = pageHeight - topMargin - bottomMargin; 
-  
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
-  
+
     const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
-  
+
     let tableHeaderHeight = 7.6153;
     let tableRowHeight = 5.8974;
-  
+
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
-  
+
     const reportTitle = this.GetReportTitle();
-  
+
     this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-    let currentY = topMargin; 
+    let currentY = topMargin;
     let scale = this.scale;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
     for (let i = 0; i < cardElements.length; i++) {
-        const card = cardElements[i];
+      const card = cardElements[i];
 
-        const canvas = await html2canvas(card, { scale: scale });
-        let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-        const imgHeight = (canvas.height * contentWidth) / canvas.width;
+      const canvas = await html2canvas(card, { scale: scale });
+      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+      const imgHeight = (canvas.height * contentWidth) / canvas.width;
 
-        if (currentY + imgHeight > maxContentHeight) {
-            let currentY_canvas = 0;
-            let nextPage = false;
-            const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
-            let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
+      if (currentY + imgHeight > maxContentHeight) {
+        let currentY_canvas = 0;
+        let nextPage = false;
+        const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
+        let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
 
-            const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
-            const pageTHeaderHeight = tableHeaderHeight;
+        const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
+        const pageTHeaderHeight = tableHeaderHeight;
 
-            do {
-                nextPage = false;
+        do {
+          nextPage = false;
 
-                if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
-                    imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
-                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
-                    currentY += pageTHeaderHeight;
-                    currentY_canvas += tableHeaderHeight_canvas;
+          if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
+            imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
+            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
+            currentY += pageTHeaderHeight;
+            currentY_canvas += tableHeaderHeight_canvas;
 
-                    const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
-                    const remainingTableHeight_canvas = canvas.height - currentY_canvas;
-                    const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
-                    let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
-                    let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
+            const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
+            const remainingTableHeight_canvas = canvas.height - currentY_canvas;
+            const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
+            let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
+            let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
 
-                    const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
-                    imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
-                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
+            const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
+            imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
+            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
 
-                    currentY_canvas += cpImgHeight_canvas;
-                    currentY += cpImgHeight;
+            currentY_canvas += cpImgHeight_canvas;
+            currentY += cpImgHeight;
 
-                    nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
-                } else {
-                    if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-                        pdf.addPage();
-                        pageNumber++;
-                        this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                        currentY = topMargin;
-                    }
-
-                    nextPage = (currentY + imgHeight > maxContentHeight);
-                    if (!nextPage) {
-                        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-                        currentY += imgHeight + 5;
-                    }
-                }
-
-                if (nextPage) {
-                    pdf.addPage();
-                    currentY = topMargin;
-                    pageNumber++;
-                    this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                    currentY_canvas -= tableHeaderHeight_canvas;
-                    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                } else {
-                    currentY += 5;
-                }
-
-            } while (nextPage);
-
-        } else {
+            nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
+          } else {
             if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-                pdf.addPage();
-                pageNumber++;
-                this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                currentY = topMargin;
+              pdf.addPage();
+              pageNumber++;
+              this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+              pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+              currentY = topMargin;
             }
 
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-            currentY += imgHeight + 5;
+            nextPage = (currentY + imgHeight > maxContentHeight);
+            if (!nextPage) {
+              pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+              currentY += imgHeight + 5;
+            }
+          }
+
+          if (nextPage) {
+            pdf.addPage();
+            currentY = topMargin;
+            pageNumber++;
+            this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+            currentY_canvas -= tableHeaderHeight_canvas;
+            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+          } else {
+            currentY += 5;
+          }
+
+        } while (nextPage);
+
+      } else {
+        if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
+          pdf.addPage();
+          pageNumber++;
+          this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+          pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+          currentY = topMargin;
         }
 
-        this.generatingPdfProgress += progressValue;
+        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+        currentY += imgHeight + 5;
+      }
+
+      this.generatingPdfProgress += progressValue;
     }
 
     const totalPages = pdf.getNumberOfPages();
 
     pagePositions.forEach(({ page, x, y }) => {
-        pdf.setPage(page);
-        pdf.setFontSize(10);
-        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+      pdf.setPage(page);
+      pdf.setFontSize(10);
+      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
 
     this.generatingPdfProgress = 100;
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-}
-
-async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:number): Promise<HTMLCanvasElement> {
-    
-  
-  const splitCanvas = document.createElement('canvas');
-  splitCanvas.width = sw;
-  splitCanvas.height = sh;
-
-  const ctx = splitCanvas.getContext('2d');
-  if (ctx) {
-      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
   }
 
-  return splitCanvas;
-}
+  async CopyCanvas(canvas: HTMLCanvasElement, sx: number, sy: number, sw: number, sh: number): Promise<HTMLCanvasElement> {
+
+
+    const splitCanvas = document.createElement('canvas');
+    splitCanvas.width = sw;
+    splitCanvas.height = sh;
+
+    const ctx = splitCanvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
+    }
+
+    return splitCanvas;
+  }
   async exportToPDF_r2(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -1084,47 +1082,47 @@ async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:
     let currentY = topMargin; // Start Y position after the header
 
     for (let i = 0; i < cardElements.length; i++) {
-        const card = cardElements[i];
+      const card = cardElements[i];
 
-        // Convert card to image (JPEG format)
-        const canvas = await html2canvas(card, { scale: this.scale });
-        const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
+      // Convert card to image (JPEG format)
+      const canvas = await html2canvas(card, { scale: this.scale });
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
 
-        const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
-        // Check if the card fits on the current page
-        if (currentY + imgHeight > maxContentHeight) {
-            // Add page number to the current page before creating a new one
-            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
+      // Check if the card fits on the current page
+      if (currentY + imgHeight > maxContentHeight) {
+        // Add page number to the current page before creating a new one
+        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
 
-            // Add a new page
-            pdf.addPage();
-            pageNumber++;
-            totalPages++;
+        // Add a new page
+        pdf.addPage();
+        pageNumber++;
+        totalPages++;
 
-            // Reset Y position for the new page
-            currentY = topMargin;
+        // Reset Y position for the new page
+        currentY = topMargin;
 
-            // Add the report title and underline to the new page
-            this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-        }
+        // Add the report title and underline to the new page
+        this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+      }
 
-        // Add the card image to the PDF
-        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+      // Add the card image to the PDF
+      pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
 
-        // Update the Y position for the next card
-        currentY += imgHeight + 10; // Add a small gap between cards
+      // Update the Y position for the next card
+      currentY += imgHeight + 10; // Add a small gap between cards
 
-        // Update progress
-        this.generatingPdfProgress += progressValue;
+      // Update progress
+      this.generatingPdfProgress += progressValue;
     }
 
     // Add page numbers in a second pass
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 }); // Add last page number
     pagePositions.forEach(({ page, x, y }) => {
-        pdf.setPage(page);
-        pdf.setFontSize(10);
-        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+      pdf.setPage(page);
+      pdf.setFontSize(10);
+      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
 
     // Save the PDF
@@ -1132,10 +1130,10 @@ async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-}
+  }
 
-// Helper function to add the header (title and underline) to a page
-addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
+  // Helper function to add the header (title and underline) to a page
+  addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
@@ -1145,7 +1143,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
     // Draw underline for the title
     pdf.setLineWidth(0.5); // Set line width for underline
     pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
-}
+  }
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
@@ -1156,36 +1154,36 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 0;
-  
+
     // Store page positions for later text update
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
-  
+
     const reportTitle = this.GetReportTitle();  // Set your report title here
-  
+
     // Set font for the title
     pdf.setFontSize(14); // Title font size
-  
+
     for (let i = 0; i < cardElements.length; i++) {
       const card = cardElements[i];
-  
+
       // Convert card to image (JPEG format)
       const canvas = await html2canvas(card, { scale: this.scale });
       const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
-  
+
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-  
+
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
       const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
-  
-      const pos=15;
+
+      const pos = 15;
       pdf.text(reportTitle, titleX, pos); // Position it at the top
-  
+
       // Draw underline for the title
       pdf.setLineWidth(0.5); // Set line width for underline
-      pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
-  
+      pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+
       // If card height exceeds A4 page height, split across multiple pages
       if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
@@ -1193,17 +1191,17 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
           const sectionCanvas = document.createElement('canvas');
           sectionCanvas.width = canvas.width;
           sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
-  
+
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
-  
+
           const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
-  
+
           pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
-  
+
           // Store page position for page numbering
           pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-  
+
           yPosition += sectionCanvas.height;
           if (yPosition < canvas.height) {
             pdf.addPage();
@@ -1215,203 +1213,192 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
-  
+
         // Store page position for page numbering
         pagePositions.push({ page: pageNumber, x: 200, y: 287 });
       }
       pageNumber++;
       this.generatingPdfProgress += progressValue;
     }
-  
+
     totalPages = pageNumber - 1;
-  
+
     // Add page numbers in a second pass
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setPage(page);
       pdf.setFontSize(10);
       pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
-  
+
     this.generatingPdfProgress = 100;
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
   }
 
- 
-   GeneratedDate():string
-   {
-     return  Utility.convertDateToStr(new Date());
-   }
-   GetReportTitle():string
-   {
-     return `${this.translatedLangText.REPAIR_ESTIMATE_OUTSTANDING_TANK_LIST}`
-   }
 
-   processCustomerStatus(repStatus:report_status[])
-   {
-    if (this.columnChartOptions.xaxis)   
-      {
-    const topTenReports = repStatus
-    .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
-    .slice(0, 10); // Get the top 10
+  GeneratedDate(): string {
+    return Utility.convertDateToStr(new Date());
+  }
+  GetReportTitle(): string {
+    return `${this.translatedLangText.REPAIR_ESTIMATE_OUTSTANDING_TANK_LIST}`
+  }
 
-    var categories:any =[
-    ];
-    topTenReports.map(p=>
-        
-      categories.push(p.code)
-    );
-    
-     var series:any=[];
+  processCustomerStatus(repStatus: report_status[]) {
+    if (this.columnChartOptions.xaxis) {
+      const topTenReports = repStatus
+        .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
+        .slice(0, 10); // Get the top 10
 
-     this.purposeOptionCvList.map(c=>{
+      var categories: any = [
+      ];
+      topTenReports.map(p =>
 
-      var values:number[]=[];
-      switch(c.code_val)
-        {
+        categories.push(p.code)
+      );
+
+      var series: any = [];
+
+      this.purposeOptionCvList.map(c => {
+
+        var values: number[] = [];
+        switch (c.code_val) {
           case "STEAM":
-               topTenReports.forEach(t=>{
-                var value:number =0;
-                 t.yards?.forEach(y=>{
-                    value+=Number(y.noTank_steam||0);
-                 });
-                 values.push(value);
-               });
-               series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_steam || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
           case "CLEANING":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_clean||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_clean || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
           case "REPAIR":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_repair||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_repair || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
           case "STORAGE":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_storage||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_storage || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
           case "IN_SURVEY":
-            topTenReports.forEach(t=>{
-              var value:number =0;
-               t.yards?.forEach(y=>{
-                  value+=Number(y.noTank_in_survey||0);
-               });
-               values.push(value);
-             });
-             series.push({name:c.description,data:values});
+            topTenReports.forEach(t => {
+              var value: number = 0;
+              t.yards?.forEach(y => {
+                value += Number(y.noTank_in_survey || 0);
+              });
+              values.push(value);
+            });
+            series.push({ name: c.description, data: values });
             break;
         }
-     });
-    
-    
-        this.columnChartOptions.xaxis =  {
-          type: 'category',
-          categories: categories,
-          labels: {
-            style: {
-              colors: '#9aa0ac',
-            },
-          },
-        };
-        //categories;
+      });
 
-      
-      this.columnChartOptions.series=series;
+
+      this.columnChartOptions.xaxis = {
+        type: 'category',
+        categories: categories,
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      };
+      //categories;
+
+
+      this.columnChartOptions.series = series;
     }
-   }
-   processTankStatus(repStatus:report_status[])
-   {
-    var yardInfo:any =[
+  }
+  processTankStatus(repStatus: report_status[]) {
+    var yardInfo: any = [
     ];
-    this.yardCvList.map(p=>{
-        
-      yardInfo.push({code:p.code_val,name:p.description,value:0 });
+    this.yardCvList.map(p => {
+
+      yardInfo.push({ code: p.code_val, name: p.description, value: 0 });
     });
-    repStatus.map(r=>{
-      r.yards?.map(y=>{
-        var yInfo = yardInfo.find((i:{ code: string,name:string,value:number })=>(i.code===y.code ));
-        if(yInfo)
-        {
-           yInfo.value += Number(y.noTank_repair)+Number(y.noTank_steam)+Number(y.noTank_clean)+Number(y.noTank_storage)+Number(y.noTank_in_survey);
+    repStatus.map(r => {
+      r.yards?.map(y => {
+        var yInfo = yardInfo.find((i: { code: string, name: string, value: number }) => (i.code === y.code));
+        if (yInfo) {
+          yInfo.value += Number(y.noTank_repair) + Number(y.noTank_steam) + Number(y.noTank_clean) + Number(y.noTank_storage) + Number(y.noTank_in_survey);
         }
       });
     });
-    var labels:any=[];
-    var series:any=[];
-    yardInfo.forEach((y:{ code: string,name:string,value:number })=>{
+    var labels: any = [];
+    var series: any = [];
+    yardInfo.forEach((y: { code: string, name: string, value: number }) => {
       labels.push(y.name);
       series.push(y.value);
     });
 
-     this.pieChartOptions.labels=labels;
-     this.pieChartOptions.series2=series;
-   }
+    this.pieChartOptions.labels = labels;
+    this.pieChartOptions.series2 = series;
+  }
 
-   processHorizontalBarValue(repStatus:report_status[])
-   {
-      var singleValues:any =[
-      ];
-      this.purposeOptionCvList.map(p=>{
-          
-          singleValues.push({name:p.description,value:0 });
-      });
-      repStatus.map(r=>{
-        r.yards?.map(y=>{
-        this.purposeOptionCvList.map(p=>{
-          var s = singleValues.find((g:{ name: string })=>(g.name===p.description ));
-          if(s)
-          {
-            switch(p.code_val)
-            {
+  processHorizontalBarValue(repStatus: report_status[]) {
+    var singleValues: any = [
+    ];
+    this.purposeOptionCvList.map(p => {
+
+      singleValues.push({ name: p.description, value: 0 });
+    });
+    repStatus.map(r => {
+      r.yards?.map(y => {
+        this.purposeOptionCvList.map(p => {
+          var s = singleValues.find((g: { name: string }) => (g.name === p.description));
+          if (s) {
+            switch (p.code_val) {
               case "STEAM":
-                s.value +=y.noTank_steam;
+                s.value += y.noTank_steam;
                 break;
               case "CLEANING":
-                s.value +=y.noTank_clean;
+                s.value += y.noTank_clean;
                 break;
               case "OFFHIRE":
               case "REPAIR":
-                s.value +=y.noTank_repair;
+                s.value += y.noTank_repair;
                 break;
               case "STORAGE":
-                s.value +=y.noTank_storage;
+                s.value += y.noTank_storage;
                 break;
               case "IN_SURVEY":
-                s.value +=y.noTank_in_survey;
+                s.value += y.noTank_in_survey;
                 break;
             }
           }
         });
 
-        });
-          //let s = singleValues.find(s=>s.name===r.)
       });
+      //let s = singleValues.find(s=>s.name===r.)
+    });
 
-      this.horizontalBarOptions.single=singleValues.filter((s:{name:string})=>s.name!="Offhire");
+    this.horizontalBarOptions.single = singleValues.filter((s: { name: string }) => s.name != "Offhire");
 
-   }
-   InitialDefaultData()
-   {
+  }
+  InitialDefaultData() {
     // pie chart
     this.pieChartOptions = {
       chart: {
@@ -1561,25 +1548,25 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       },
     };
 
-    this.horizontalBarOptions={
-      hbarxAxisLabel:this.translatedLangText.NO_OF_TANKS,
-      showXAxis : true,
-      showYAxis : true,
-      gradient : false,
-      showLegend : false,
-      showXAxisLabel : true,
-      showYAxisLabel : true,
+    this.horizontalBarOptions = {
+      hbarxAxisLabel: this.translatedLangText.NO_OF_TANKS,
+      showXAxis: true,
+      showYAxis: true,
+      gradient: false,
+      showLegend: false,
+      showXAxisLabel: true,
+      showYAxisLabel: true,
       legendPosition: LegendPosition.Right,
-      timeline : true,
-      colorScheme:  {
+      timeline: true,
+      colorScheme: {
         domain: ['#9370DB', '#87CEFA', '#FA8072', '#FF7F50', '#90EE90', '#9370DB'],
         group: ScaleType.Ordinal,
         selectable: true,
         name: 'Customer Usage',
       },
-      showLabels : true,
+      showLabels: true,
       // data goes here
-       single : [
+      single: [
         {
           name: 'China',
           value: 2243772,
@@ -1607,9 +1594,9 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       ]
     };
 
-   }
+  }
 
-   
+
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
     sot.in_gate = sot?.in_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
     sot.out_gate = sot?.out_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
@@ -1617,137 +1604,133 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
     sot.repair = sot?.repair?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
   }
 
-     DisplayInDate(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt!)!;
-   
-     }
-   
-     DisplayCleanDate(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt!)!;
-     }
-   
-     
-   
-     DisplayRepairInDate(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return Utility.convertEpochToDateStr(sot.repair?.[0]?.allocate_dt)||'';
-   
-     }
-   
-     DisplayTareWeight(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return `${sot.in_gate?.[0]?.in_gate_survey?.tare_weight || ''}`;
-   
-   
-     }
-   
-     DisplayCapacity(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return `${sot.in_gate?.[0]?.in_gate_survey?.capacity || ''}`;
-   
-   
-     }
-   
-     DisplayEstimateNo(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return `${sot.repair?.[0]?.estimate_no || ''}`;
-   
-     }
-   
-     DisplayEstimateDate(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return Utility.convertEpochToDateStr(sot.repair?.[0]?.create_dt!)!;;
-     }
-   
-   
-     DisplayApprovalDate(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return Utility.convertEpochToDateStr(sot.repair?.[0]?.approve_dt!)!;;
-   
-   
-     }
-   
-     DisplayApprovalRef(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return `${sot.repair?.[0]?.job_no || ''}`;
-     }
-   
-     DisplayAVDate(sot: StoringOrderTankItem): string {
-   
-       return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;;
-     }
-   
-     DisplayPostInsp(sot: StoringOrderTankItem): string {
-   
-       return '';
-     }
-     DisplayReleaseDate(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return Utility.convertEpochToDateStr(sot.out_gate?.[0]?.eir_dt!)!;
-   
-     }
-     DisplayReleaseRef(sot: StoringOrderTankItem): string {
-       this.removeDeletedInGateAndOutGate(sot);
-       return sot.release_job_no || '';
-     }
-    
-     DisplayRemarks(sot: StoringOrderTankItem): string {
-   
-       return sot?.remarks || '';
-     }
-   
-     DisplayCustomerName(sot: StoringOrderTankItem) {
-       return `${sot.storing_order?.customer_company?.name})`
-     }
-   
-     DisplayEIRNo(sot:StoringOrderTankItem)
-     {
-      this.removeDeletedInGateAndOutGate(sot);
-       return `${sot.in_gate?.[0]?.eir_no||''}`;
-     }
+  DisplayInDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt!)!;
 
-     DisplayEIRDate(sot:StoringOrderTankItem)
-     {
-      this.removeDeletedInGateAndOutGate(sot);
-      return Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt!)!;
-     }
+  }
 
-     DisplayRepairType(sot:StoringOrderTankItem)
-     {
-        return this.cvDS.getCodeDescription(sot.purpose_repair_cv,this.purposeOptionCvList);
-     }
-   
-     DisplayOwner(sot: StoringOrderTankItem) {
-       return `${sot.customer_company?.code||''}`
-     }
+  DisplayCleanDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt!)!;
+  }
 
-     DisplayDays(sot:StoringOrderTankItem)
-     {
-      if(!sot.repair?.[0]?.allocate_dt) return '';
-      let today = new Date();
-      today.setHours(23, 59, 59, 59); 
 
-      var accDt=(sot.repair?.[0]?.allocate_dt || 0)*1000;
-      
-      // Convert allocate_dt to a Date object
-      let allocateDt = new Date(accDt);
-      
 
-      // Check if allocateDt is a valid date
-      if (isNaN(allocateDt.getTime())) {
-        return '';
-      } else {
-        // Reset time for accurate day difference calculation
-        allocateDt.setHours(0, 0, 0, 0);
+  DisplayRepairInDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.allocate_dt) || '';
 
-        // Calculate the difference in days
-        let daysDifference = Math.floor((today.getTime() - allocateDt.getTime()) / (1000 * 60 * 60 * 24));
-      
-        console.log("Days difference:", daysDifference);
-        return String(daysDifference);
-      }
-     }
-  
+  }
+
+  DisplayTareWeight(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return `${sot.in_gate?.[0]?.in_gate_survey?.tare_weight || ''}`;
+
+
+  }
+
+  DisplayCapacity(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return `${sot.in_gate?.[0]?.in_gate_survey?.capacity || ''}`;
+
+
+  }
+
+  DisplayEstimateNo(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return `${sot.repair?.[0]?.estimate_no || ''}`;
+
+  }
+
+  DisplayEstimateDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.create_dt!)!;;
+  }
+
+
+  DisplayApprovalDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.approve_dt!)!;;
+
+
+  }
+
+  DisplayApprovalRef(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return `${sot.repair?.[0]?.job_no || ''}`;
+  }
+
+  DisplayAVDate(sot: StoringOrderTankItem): string {
+
+    return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;;
+  }
+
+  DisplayPostInsp(sot: StoringOrderTankItem): string {
+
+    return '';
+  }
+  DisplayReleaseDate(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.out_gate?.[0]?.eir_dt!)!;
+
+  }
+  DisplayReleaseRef(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return sot.release_job_no || '';
+  }
+
+  DisplayRemarks(sot: StoringOrderTankItem): string {
+
+    return sot?.remarks || '';
+  }
+
+  DisplayCustomerName(sot: StoringOrderTankItem) {
+    return `${sot.storing_order?.customer_company?.name})`
+  }
+
+  DisplayEIRNo(sot: StoringOrderTankItem) {
+    this.removeDeletedInGateAndOutGate(sot);
+    return `${sot.in_gate?.[0]?.eir_no || ''}`;
+  }
+
+  DisplayEIRDate(sot: StoringOrderTankItem) {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.in_gate?.[0]?.eir_dt!)!;
+  }
+
+  DisplayRepairType(sot: StoringOrderTankItem) {
+    return this.cvDS.getCodeDescription(sot.purpose_repair_cv, this.purposeOptionCvList);
+  }
+
+  DisplayOwner(sot: StoringOrderTankItem) {
+    return `${sot.customer_company?.code || ''}`
+  }
+
+  DisplayDays(sot: StoringOrderTankItem) {
+    if (!sot.repair?.[0]?.allocate_dt) return '';
+    let today = new Date();
+    today.setHours(23, 59, 59, 59);
+
+    var accDt = (sot.repair?.[0]?.allocate_dt || 0) * 1000;
+
+    // Convert allocate_dt to a Date object
+    let allocateDt = new Date(accDt);
+
+
+    // Check if allocateDt is a valid date
+    if (isNaN(allocateDt.getTime())) {
+      return '';
+    } else {
+      // Reset time for accurate day difference calculation
+      allocateDt.setHours(0, 0, 0, 0);
+
+      // Calculate the difference in days
+      let daysDifference = Math.floor((today.getTime() - allocateDt.getTime()) / (1000 * 60 * 60 * 24));
+
+      console.log("Days difference:", daysDifference);
+      return String(daysDifference);
+    }
+  }
+
 }

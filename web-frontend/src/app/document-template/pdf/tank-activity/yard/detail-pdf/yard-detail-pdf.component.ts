@@ -1066,7 +1066,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         });
       
         this.generatingPdfProgress = 100;
-        Utility.previewPDF(pdf);
+        Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
   
     //     const pdfBlob = pdf.output('blob');
     //     const blobUrl = URL.createObjectURL(pdfBlob);

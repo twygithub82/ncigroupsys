@@ -53,7 +53,7 @@ export type HorizontalBarOptions = {
   timeline?: boolean;
   colorScheme?: Color;
   showLabels?: boolean;
-  showDataLabel?:boolean;
+  showDataLabel?: boolean;
   // data goes here
   single?: any;
   hbarxAxisLabel?: string;
@@ -344,8 +344,8 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   report_summary_status: report_status[] = [];
   date: string = '';
   invType: string = '';
-  chartAnimatedCounter=0;
-  
+  chartAnimatedCounter = 0;
+
 
   constructor(
     public dialogRef: MatDialogRef<YardChartPdfComponent>,
@@ -357,7 +357,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer) {
     super();
-    
+
 
     this.translateLangText();
     this.InitialDefaultData();
@@ -380,7 +380,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
 
 
-    
+
   }
   ngAfterViewInit() {
     var timeout=5000;
@@ -388,7 +388,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       this.onDownloadClick();
     }, timeout);
     //this.onDownloadClick();
-   }
+  }
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     // await this.getCodeValuesData();
@@ -397,7 +397,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     // this.processTankStatus(this.report_summary_status);
     // this.chartAnimatedCounter=0;
 
-    
+
   }
 
   public loadData() {
@@ -412,7 +412,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       if (data.length) {
-        this.chartAnimatedCounter=0;
+        this.chartAnimatedCounter = 0;
         this.purposeOptionCvList = data;
         this.processHorizontalBarValue(this.report_summary_status);
         this.processCustomerStatus(this.report_summary_status);
@@ -725,8 +725,8 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   async onDownloadClick() {
-   // this.exportToPDF();
-   this.exportToPDF_r1();
+    // this.exportToPDF();
+    this.exportToPDF_r1();
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -803,85 +803,84 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     const bottomMargin = 5;
     const contentWidth = pageWidth - leftMargin - rightMargin;
     const maxContentHeight = pageHeight - topMargin - bottomMargin;
-  
+
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
-  
+
     const pdf = new jsPDF('l', 'mm', 'a4');
-   
+
     let pageNumber = 1;
-  
+
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-  
+
     const pagePositions: { page: number; x: number; y: number }[] = [];
- //   const progressValue = 100 / cardElements.length;
-  
+    //   const progressValue = 100 / cardElements.length;
+
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.clearfix');
     const reportTitle = this.GetReportTitle();
-    
-  
+
+
     let currentY = topMargin;
     let scale = this.scale;
-    
+
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-    var gap=8;
-    
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-    Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+    var gap = 8;
+
+    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 50;
-    let minHeightHeaderCol=9;
-    let fontSize=6;
-    let startY= lastTableFinalY+8;
+    let minHeightHeaderCol = 9;
+    let fontSize = 6;
+    let startY = lastTableFinalY + 8;
 
-    const repGenDate =`${this.translatedLangText.DATE}:${this.GeneratedDate()}`;
-     Utility.AddTextAtCenterPage(pdf,repGenDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+    const repGenDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`;
+    Utility.AddTextAtCenterPage(pdf, repGenDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
 
-    let chartContentWidth=pageWidth-leftMargin-rightMargin;
-          if(cardElements.length>0)
-          {
-            const card1 = cardElements[0];
-            const canvas1 = await html2canvas(card1, { scale: scale });
-            const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+    let chartContentWidth = pageWidth - leftMargin - rightMargin;
+    if (cardElements.length > 0) {
+      const card1 = cardElements[0];
+      const canvas1 = await html2canvas(card1, { scale: scale });
+      const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
 
-            // Calculate aspect ratio
-            const aspectRatio = canvas1.width / canvas1.height;
+      // Calculate aspect ratio
+      const aspectRatio = canvas1.width / canvas1.height;
 
-            // Calculate scaled height based on available width
-            let imgHeight1 = chartContentWidth / aspectRatio;
+      // Calculate scaled height based on available width
+      let imgHeight1 = chartContentWidth / aspectRatio;
 
-            // Check if the scaled height exceeds the available page height
-            const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-            if (imgHeight1 > maxPageHeight) {
-                // Adjust height to fit within the page
-                imgHeight1 = maxPageHeight;
-                // Recalculate width to maintain aspect ratio
-                chartContentWidth = imgHeight1 * aspectRatio;
-            }
+      // Check if the scaled height exceeds the available page height
+      const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+      if (imgHeight1 > maxPageHeight) {
+        // Adjust height to fit within the page
+        imgHeight1 = maxPageHeight;
+        // Recalculate width to maintain aspect ratio
+        chartContentWidth = imgHeight1 * aspectRatio;
+      }
 
-            // Add the image to the PDF
-            pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+      // Add the image to the PDF
+      pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
 
-          }
+    }
 
-     const totalPages = pdf.getNumberOfPages();
-   
-   
+    const totalPages = pdf.getNumberOfPages();
+
+
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0, 0], 0);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer=13;
+      var lineBuffer = 13;
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
-  
+
     this.generatingPdfProgress = 100;
-    Utility.previewPDF(pdf);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     //pdf.save(fileName);
 
 
@@ -889,19 +888,19 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     this.generatingPdfLoadingSubject.next(false);
     this.dialogRef.close();
   }
- 
 
-addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
-  const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-  const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
-  pdf.setFontSize(14); // Title font size
-  pdf.text(title, titleX, 15); // Position it at the top
+  addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
+    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
-  // Draw underline for the title
-  pdf.setLineWidth(0.5); // Set line width for underline
-  pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
-}
+    pdf.setFontSize(14); // Title font size
+    pdf.text(title, titleX, 15); // Position it at the top
+
+    // Draw underline for the title
+    pdf.setLineWidth(0.5); // Set line width for underline
+    pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
+  }
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
@@ -1074,10 +1073,10 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       });
 
 
-      this.columnChartOptions!.chart!.events={
-       
+      this.columnChartOptions!.chart!.events = {
+
         animationEnd: () => {
-         this.onChartRendered();
+          this.onChartRendered();
         }
       }
 
@@ -1120,10 +1119,10 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
 
     this.pieChartOptions.labels = labels;
     this.pieChartOptions.series2 = series;
-    this.pieChartOptions!.chart!.events={
-       
+    this.pieChartOptions!.chart!.events = {
+
       animationEnd: () => {
-       this.onChartRendered();
+        this.onChartRendered();
       }
     }
   }
@@ -1231,7 +1230,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
     // radar chart
 
     this.columnChartOptions = {
-     
+
       chart: {
         height: 350,
         type: 'bar',
@@ -1323,12 +1322,12 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
         },
         fontSize: '8px', // Adjust font size
         width: 300, // Set a fixed width for the legend container
-        height:50,
+        height: 50,
         itemMargin: {
           horizontal: 2, // Reduce horizontal spacing between legend items
           vertical: 0,
         },
-        },
+      },
       fill: {
         opacity: 1,
       },
@@ -1342,10 +1341,10 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       showLegend: false,
       showXAxisLabel: true,
       showYAxisLabel: true,
-      showDataLabel:true,
+      showDataLabel: true,
       legendPosition: LegendPosition.Right,
-      timeline : true,
-      colorScheme:  {
+      timeline: true,
+      colorScheme: {
         domain: ['#008ffb', '#00e396', '#feb019', '#ff4560'],
         group: ScaleType.Ordinal,
         selectable: true,
@@ -1383,18 +1382,17 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
 
   }
 
-  onChartRendered()
-  {
-  //    this.chartAnimatedCounter++;
-  //  // if(this.chartAnimatedCounter==2)
-  //    {
-  //      var timeout=3000;
-  //       setTimeout(() => {
-  //         this.onDownloadClick();
-  //       }, timeout);
-        
-  //      //this.onDownloadClick();
-  //    }
+  onChartRendered() {
+    //    this.chartAnimatedCounter++;
+    //  // if(this.chartAnimatedCounter==2)
+    //    {
+    //      var timeout=3000;
+    //       setTimeout(() => {
+    //         this.onDownloadClick();
+    //       }, timeout);
+
+    //      //this.onDownloadClick();
+    //    }
   }
 
 }

@@ -23,15 +23,15 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard,report_status } from 'app/data-sources/reports';
+import { report_status_yard, report_status } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import {autoTable,Styles }from 'jspdf-autotable';
+import { autoTable, Styles } from 'jspdf-autotable';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-   report_summary_detail: report_status[],
+  report_summary_detail: report_status[],
 
 
   // repair_guid: string;
@@ -228,29 +228,29 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE:'COMMON-FORM.IN-DATE',
-    OUT_DATE:'COMMON-FORM.OUT-DATE',
-    TOTAL:'COMMON-FORM.TOTAL',
-    DAYS:'COMMON-FORM.DAYS',
-    GATEIO:'COMMON-FORM.GATEIO',
-    INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
-    SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
-    YARD_STATUS:'COMMON-FORM.YARD-STATUS',
-    DETAIL_SUMMARY:'COMMON-FORM.DETAIL-SUMMARY',
-    STEAM:'COMMON-FORM.STEAM',
-    REPAIR:'COMMON-FORM.REPAIR',
-    CLEANING:'COMMON-FORM.CLEANING',
-    STORAGE:'COMMON-FORM.STORAGE',
-    PENDING:'COMMON-FORM.PENDING',
-    WITH_RO:'COMMON-FORM.WITH-RO',
-    LOCATION:'COMMON-FORM.LOCATION'
+    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
+    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
+    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
+    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
+    IN_DATE: 'COMMON-FORM.IN-DATE',
+    OUT_DATE: 'COMMON-FORM.OUT-DATE',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    DAYS: 'COMMON-FORM.DAYS',
+    GATEIO: 'COMMON-FORM.GATEIO',
+    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
+    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
+    INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
+    YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
+    DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
+    STEAM: 'COMMON-FORM.STEAM',
+    REPAIR: 'COMMON-FORM.REPAIR',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    PENDING: 'COMMON-FORM.PENDING',
+    WITH_RO: 'COMMON-FORM.WITH-RO',
+    LOCATION: 'COMMON-FORM.LOCATION'
 
   }
 
@@ -299,12 +299,12 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  reportStatus:report_status[]=[];
-  index:number=0;
+  reportStatus: report_status[] = [];
+  index: number = 0;
   // date:string='';
   // invType:string='';
 
-  
+
 
   constructor(
     public dialogRef: MatDialogRef<YardStatusDetailSummaryPdfComponent>,
@@ -326,8 +326,8 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
     // this.existingPdf = data.existingPdf;
-    
-   
+
+
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -338,15 +338,14 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
   async ngOnInit() {
     await this.getCodeValuesData();
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-    this.reportStatus= this.data.report_summary_detail;
+    this.reportStatus = this.data.report_summary_detail;
     this.onDownloadClick();
-   
+
   }
 
-  ngAfterViewInit()
-  {
+  ngAfterViewInit() {
 
-    
+
   }
 
   async generatePDF(): Promise<void> {
@@ -660,7 +659,7 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-  
+
   }
 
   // getGroupSeq(codeVal: string | undefined): number | undefined {
@@ -761,7 +760,7 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
 
   async onDownloadClick() {
     this.exportToPDF_r1();
-   
+
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -776,7 +775,7 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     URL.revokeObjectURL(url);
   }
 
-  
+
 
   async uploadPdf(group_guid: string, pdfBlob: Blob) {
     const pdfDescription = 'REPAIR_ESTIMATE';
@@ -830,189 +829,187 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-  
-    async exportToPDF_r1(fileName: string = 'document.pdf') {
-      const pageWidth = 210; // A4 width in mm (portrait)
-      const pageHeight = 297; // A4 height in mm (portrait)
-      const leftMargin = 10; 
-      const rightMargin = 10;
-      const topMargin = 5;
-      const bottomMargin = 5;
-      const contentWidth = pageWidth - leftMargin - rightMargin; 
-      const maxContentHeight = pageHeight - topMargin - bottomMargin; 
-    
-      this.generatingPdfLoadingSubject.next(true);
-      this.generatingPdfProgress = 0;
-    
-      const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-        //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-        let pageNumber = 1;
-      
-        let reportTitleCompanyLogo = 32;
-        let tableHeaderHeight = 12;
-        let tableRowHeight = 8.5;
-        let minHeightBodyCell=9;
-        let minHeightHeaderCol=3;
-        let fontSz=5.5;
-        const pagePositions: { page: number; x: number; y: number }[] = [];
-       // const progressValue = 100 / cardElements.length;
-      
-        const reportTitle = this.GetReportTitle();
-        const headers = [[
-          this.translatedLangText.NO, this.translatedLangText.CUSTOMER_CODE,
-          this.translatedLangText.CUSTOMER, this.translatedLangText.LOCATION,
-          this.translatedLangText.STEAM, this.translatedLangText.CLEANING,
-          this.translatedLangText.REPAIR, this.translatedLangText.STORAGE,
-          this.translatedLangText.TOTAL, this.translatedLangText.PENDING,
-          this.translatedLangText.WITH_RO
-        ]];
-  
-        const comStyles:any= {
-          // Set columns 0 to 16 to be center aligned
-          0: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-          1: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-          2: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-          3: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-          4: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell},
-          5: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-          6: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-          7: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-          8: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-          9: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-          10: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell},
-      };
-      
-        // Define headStyles with valid fontStyle
-        const headStyles: Partial<Styles> = {
-          fillColor: [211, 211, 211], // Background color
-          textColor: 0, // Text color (white)
-          fontStyle: "bold", // Valid fontStyle value
-          halign: 'center', // Centering header text
-          valign:'middle',
-          lineColor:201,
-          lineWidth:0.1
-        };
-      
-        let currentY = topMargin;
-        let scale = this.scale;
-        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-      
-        
-        await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-        await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
-        
-        // Variable to store the final Y position of the last table
-        let lastTableFinalY = 45;
-        
-        let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-        const data: any[][] = []; // Explicitly define data as a 2D array
-        pdf.setFontSize(8);
-        pdf.setTextColor(0, 0, 0); // Black text
-        const repGeneratedDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`; // Replace with your actual cutoff date
-        Utility.AddTextAtRightCornerPage(pdf,repGeneratedDate,pageWidth,leftMargin,rightMargin+5,startY-2,9);
-    
-        var idx=0;
-        for (let n = 0; n < this.reportStatus.length; n++) {
-         
-          //let startY = lastTableFinalY + 15; // Start Y position for the current table
-          let itm = this.reportStatus[n];
-      
-           itm.yards?.forEach(yard=>{
-          
-                data.push([
-                  (++idx).toString(), itm.code || "", itm.customer || "", this.displayLocation(yard)|| "",
-                  yard.noTank_steam || "0",yard.noTank_clean||"0", yard.noTank_repair || "0",
-                  yard.noTank_storage || "0",this.displayInYardTotal(yard) || "0", yard.noTank_pending || "0",
-                  yard.noTank_withRO || "0"
-                  
-                ]);
-           });
-      
+
+  async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let minHeightBodyCell = 9;
+    let minHeightHeaderCol = 3;
+    let fontSz = 5.5;
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
+
+    const reportTitle = this.GetReportTitle();
+    const headers = [[
+      this.translatedLangText.NO, this.translatedLangText.CUSTOMER_CODE,
+      this.translatedLangText.CUSTOMER, this.translatedLangText.LOCATION,
+      this.translatedLangText.STEAM, this.translatedLangText.CLEANING,
+      this.translatedLangText.REPAIR, this.translatedLangText.STORAGE,
+      this.translatedLangText.TOTAL, this.translatedLangText.PENDING,
+      this.translatedLangText.WITH_RO
+    ]];
+
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    };
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+
+    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 45;
+
+    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+    const data: any[][] = []; // Explicitly define data as a 2D array
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    const repGeneratedDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`; // Replace with your actual cutoff date
+    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
+
+    var idx = 0;
+    for (let n = 0; n < this.reportStatus.length; n++) {
+
+      //let startY = lastTableFinalY + 15; // Start Y position for the current table
+      let itm = this.reportStatus[n];
+
+      itm.yards?.forEach(yard => {
+
+        data.push([
+          (++idx).toString(), itm.code || "", itm.customer || "", this.displayLocation(yard) || "",
+          yard.noTank_steam || "0", yard.noTank_clean || "0", yard.noTank_repair || "0",
+          yard.noTank_storage || "0", this.displayInYardTotal(yard) || "0", yard.noTank_pending || "0",
+          yard.noTank_withRO || "0"
+
+        ]);
+      });
+
+    }
+
+
+    data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
+    this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
+    this.displayTotalWithRO()]);
+
+    pdf.setDrawColor(0, 0, 0); // red line color
+
+    pdf.setLineWidth(0.1);
+    pdf.setLineDashPattern([0, 0], 0);
+    // Add table using autoTable plugin
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        //halign: 'left', // Left-align content for body by default
+        //valign: 'middle', // Vertically align content
+      },
+      didParseCell: (data: any) => {
+        let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        if (data.row.index === lastRowIndex) {
+          data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+          data.cell.styles.fontStyle = 'bold';
+          if (data.column.index === 0) {
+            data.cell.colSpan = 4;  // Merge 4 columns into one
+            data.cell.styles.halign = 'right'; // Center text horizontally
+            data.cell.styles.valign = 'top'; // Center text vertically
+
+          }
+        }
+        if (data.row.index === idx && data.column.index > 0 && data.column.index <= 3) {
+          data.cell.text = ''; // Remove text from hidden columns
+          data.cell.colSpan = 0; // Hide these columns
+        }
+      },
+      didDrawPage: (d: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        lastTableFinalY = d.cursor.y;
+
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+          }
         }
 
+      },
+    });
 
-        data.push([this.translatedLangText.TOTAL,"","","",this.displayTotalSteam(),this.displayTotalClean(),
-                  this.displayTotalRepair(),this.displayTotalStorage(),this.displayTotal(),this.displayTotalPending(),
-                  this.displayTotalWithRO()]);
+    const totalPages = pdf.getNumberOfPages();
 
-        pdf.setDrawColor(0, 0, 0); // red line color
-    
-        pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0, 0], 0);
-        // Add table using autoTable plugin
-        autoTable(pdf, {
-          head: headers,
-          body: data,
-          startY: startY, // Start table at the current startY value
-          theme: 'grid',
-          styles: { 
-            fontSize: fontSz,
-             minCellHeight: minHeightHeaderCol
-           
-          },
-          columnStyles:comStyles,
-          headStyles: headStyles, // Custom header styles
-          bodyStyles: { 
-            fillColor: [255, 255, 255],
-            //halign: 'left', // Left-align content for body by default
-            //valign: 'middle', // Vertically align content
-           },
-           didParseCell: (data: any) => {
-            let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-            if (data.row.index === lastRowIndex)
-            {
-               data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
-               data.cell.styles.fontStyle = 'bold';
-                if(data.column.index === 0) {
-                data.cell.colSpan = 4;  // Merge 4 columns into one
-                data.cell.styles.halign = 'right'; // Center text horizontally
-                data.cell.styles.valign = 'top'; // Center text vertically
-                
-              }
-            }
-            if (data.row.index === idx && data.column.index > 0 && data.column.index <= 3) {
-              data.cell.text = ''; // Remove text from hidden columns
-              data.cell.colSpan = 0; // Hide these columns
-            }
-          },
-          didDrawPage: (d: any) => {
-            const pageCount = pdf.getNumberOfPages();
-              
-            lastTableFinalY = d.cursor.y;
-        
-            var pg = pagePositions.find(p=>p.page==pageCount);
-            if(!pg){
-              pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
-              if(pageCount>1)
-              {
-                Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-              }
-            } 
-            
-          },
-        });
-      
-        const totalPages = pdf.getNumberOfPages();
-      
-       
-        pagePositions.forEach(({ page, x, y }) => {
-          pdf.setDrawColor(0, 0, 0); // black line color
-          pdf.setLineWidth(0.1);
-          pdf.setLineDashPattern([0, 0], 0);
-          pdf.setFontSize(8);
-          pdf.setPage(page);
-          var lineBuffer=13;
-          pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-          pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-        });
-      
-        this.generatingPdfProgress = 100;
-        //pdf.save(fileName);
-        this.generatingPdfProgress = 0;
-        this.generatingPdfLoadingSubject.next(false);
-        Utility.previewPDF(pdf);
-        this.dialogRef.close();
-      }
+
+    pagePositions.forEach(({ page, x, y }) => {
+      pdf.setDrawColor(0, 0, 0); // black line color
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0, 0], 0);
+      pdf.setFontSize(8);
+      pdf.setPage(page);
+      var lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    });
+
+    this.generatingPdfProgress = 100;
+    //pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.dialogRef.close();
+  }
 
   async exportToPDF_r2(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -1044,47 +1041,47 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     let currentY = topMargin; // Start Y position after the header
 
     for (let i = 0; i < cardElements.length; i++) {
-        const card = cardElements[i];
+      const card = cardElements[i];
 
-        // Convert card to image (JPEG format)
-        const canvas = await html2canvas(card, { scale: this.scale });
-        const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
+      // Convert card to image (JPEG format)
+      const canvas = await html2canvas(card, { scale: this.scale });
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
 
-        const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
-        // Check if the card fits on the current page
-        if (currentY + imgHeight > maxContentHeight) {
-            // Add page number to the current page before creating a new one
-            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
+      // Check if the card fits on the current page
+      if (currentY + imgHeight > maxContentHeight) {
+        // Add page number to the current page before creating a new one
+        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
 
-            // Add a new page
-            pdf.addPage();
-            pageNumber++;
-            totalPages++;
+        // Add a new page
+        pdf.addPage();
+        pageNumber++;
+        totalPages++;
 
-            // Reset Y position for the new page
-            currentY = topMargin;
+        // Reset Y position for the new page
+        currentY = topMargin;
 
-            // Add the report title and underline to the new page
-            this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-        }
+        // Add the report title and underline to the new page
+        this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+      }
 
-        // Add the card image to the PDF
-        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+      // Add the card image to the PDF
+      pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
 
-        // Update the Y position for the next card
-        currentY += imgHeight + 10; // Add a small gap between cards
+      // Update the Y position for the next card
+      currentY += imgHeight + 10; // Add a small gap between cards
 
-        // Update progress
-        this.generatingPdfProgress += progressValue;
+      // Update progress
+      this.generatingPdfProgress += progressValue;
     }
 
     // Add page numbers in a second pass
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 }); // Add last page number
     pagePositions.forEach(({ page, x, y }) => {
-        pdf.setPage(page);
-        pdf.setFontSize(10);
-        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+      pdf.setPage(page);
+      pdf.setFontSize(10);
+      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
 
     // Save the PDF
@@ -1092,10 +1089,10 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-}
+  }
 
-// Helper function to add the header (title and underline) to a page
-addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
+  // Helper function to add the header (title and underline) to a page
+  addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
@@ -1105,7 +1102,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
     // Draw underline for the title
     pdf.setLineWidth(0.5); // Set line width for underline
     pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
-}
+  }
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -1117,36 +1114,36 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 0;
-  
+
     // Store page positions for later text update
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
-  
+
     const reportTitle = this.GetReportTitle();  // Set your report title here
-  
+
     // Set font for the title
     pdf.setFontSize(14); // Title font size
-  
+
     for (let i = 0; i < cardElements.length; i++) {
       const card = cardElements[i];
-  
+
       // Convert card to image (JPEG format)
       const canvas = await html2canvas(card, { scale: this.scale });
       const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
-  
+
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-  
+
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
       const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
-  
-      const pos=15;
+
+      const pos = 15;
       // pdf.text(reportTitle, titleX, pos); // Position it at the top
-  
+
       // // Draw underline for the title
       // pdf.setLineWidth(0.5); // Set line width for underline
       // pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
-  
+
       // If card height exceeds A4 page height, split across multiple pages
       if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
@@ -1154,178 +1151,168 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
           const sectionCanvas = document.createElement('canvas');
           sectionCanvas.width = canvas.width;
           sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
-  
+
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
-  
+
           const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
-  
+
           pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
-  
+
           // Store page position for page numbering
           pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-  
+
           yPosition += sectionCanvas.height;
           if (yPosition < canvas.height) {
             pdf.addPage();
             pageNumber++;
             pdf.text(reportTitle, titleX, 10); // Add title on new page
             pdf.setLineWidth(0.5); // Set line width for underline
-            pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
+            pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
           }
         }
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
         pdf.text(reportTitle, titleX, pos); // Position it at the top
-  
+
         // Draw underline for the title
         pdf.setLineWidth(0.5); // Set line width for underline
-        pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
-    
+        pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+
         // Store page position for page numbering
         pagePositions.push({ page: pageNumber, x: 200, y: 287 });
       }
       pageNumber++;
       this.generatingPdfProgress += progressValue;
     }
-  
+
     totalPages = pageNumber - 1;
-  
+
     // Add page numbers in a second pass
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setPage(page);
       pdf.setFontSize(10);
       pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
-  
+
     this.generatingPdfProgress = 100;
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
   }
 
- 
-   GeneratedDate():string
-   {
-     return  Utility.convertDateToStr(new Date());
-   }
-   GetReportTitle():string
-   {
-     return `${this.translatedLangText.YARD_STATUS} ${this.translatedLangText.DETAIL_SUMMARY}`
-   }
-   
-   displayLocation(yard:report_status_yard):string
-   {
+
+  GeneratedDate(): string {
+    return Utility.convertDateToStr(new Date());
+  }
+  GetReportTitle(): string {
+    return `${this.translatedLangText.YARD_STATUS} ${this.translatedLangText.DETAIL_SUMMARY}`
+  }
+
+  displayLocation(yard: report_status_yard): string {
     return this.cvDS.getCodeDescription(yard.code, this.yardCvList) || '';;
-   }
-   displayInYardTotal(yard:report_status_yard):number
-   {
-      var total =0;
+  }
+  displayInYardTotal(yard: report_status_yard): number {
+    var total = 0;
 
-      total = (yard.noTank_storage||0)+(yard.noTank_clean||0)+(yard.noTank_steam||0)+(yard.noTank_repair||0);
-      return total;
+    total = (yard.noTank_storage || 0) + (yard.noTank_clean || 0) + (yard.noTank_steam || 0) + (yard.noTank_repair || 0);
+    return total;
 
-   }
+  }
 
-   ResetIndex()
-   {
-     this.index=0;
-   }
+  ResetIndex() {
+    this.index = 0;
+  }
 
-   GetIndex()
-   {
-     this.index+=1;
-     return this.index;
-   }
+  GetIndex() {
+    this.index += 1;
+    return this.index;
+  }
 
-   displayTotalSteam()
-   {
-     var retval=0;
-     this.reportStatus.forEach(r=>{
+  displayTotalSteam() {
+    var retval = 0;
+    this.reportStatus.forEach(r => {
 
-         r.yards?.forEach(y=>{
-            retval +=y.noTank_steam||0;
-         })
+      r.yards?.forEach(y => {
+        retval += y.noTank_steam || 0;
+      })
 
-     });
+    });
 
-     return retval;
+    return retval;
 
-   }
-          displayTotalClean()
-          {
-            var retval=0;
-            this.reportStatus.forEach(r=>{
-       
-                r.yards?.forEach(y=>{
-                   retval +=y.noTank_clean||0;
-                })
-       
-            });
-       
-            return retval;
-          }
-          displayTotalRepair()
-          {
-            var retval=0;
-            this.reportStatus.forEach(r=>{
-       
-                r.yards?.forEach(y=>{
-                   retval +=y.noTank_repair||0;
-                })
-       
-            });
-       
-            return retval;
-          }
-          displayTotalStorage()
-          {
-            var retval=0;
-            this.reportStatus.forEach(r=>{
-       
-                r.yards?.forEach(y=>{
-                   retval +=y.noTank_storage||0;
-                })
-       
-            });
-       
-            return retval;
-          }
-          displayTotal(){
-            var retval=0;
-            this.reportStatus.forEach(r=>{
-       
-                r.yards?.forEach(y=>{
-                   retval +=(y.noTank_repair||0)+(y.noTank_storage||0)+(y.noTank_clean||0)+(y.noTank_steam||0);
-                })
-       
-            });
-       
-            return retval;
-          }
-          displayTotalPending(){
-            var retval=0;
-            this.reportStatus.forEach(r=>{
-       
-                r.yards?.forEach(y=>{
-                   retval +=y.noTank_pending||0;
-                })
-       
-            });
-       
-            return retval;
-          }
-          displayTotalWithRO(){
-            var retval=0;
-            this.reportStatus.forEach(r=>{
-       
-                r.yards?.forEach(y=>{
-                   retval +=y.noTank_withRO||0;
-                })
-       
-            });
-       
-            return retval;
-          }
+  }
+  displayTotalClean() {
+    var retval = 0;
+    this.reportStatus.forEach(r => {
+
+      r.yards?.forEach(y => {
+        retval += y.noTank_clean || 0;
+      })
+
+    });
+
+    return retval;
+  }
+  displayTotalRepair() {
+    var retval = 0;
+    this.reportStatus.forEach(r => {
+
+      r.yards?.forEach(y => {
+        retval += y.noTank_repair || 0;
+      })
+
+    });
+
+    return retval;
+  }
+  displayTotalStorage() {
+    var retval = 0;
+    this.reportStatus.forEach(r => {
+
+      r.yards?.forEach(y => {
+        retval += y.noTank_storage || 0;
+      })
+
+    });
+
+    return retval;
+  }
+  displayTotal() {
+    var retval = 0;
+    this.reportStatus.forEach(r => {
+
+      r.yards?.forEach(y => {
+        retval += (y.noTank_repair || 0) + (y.noTank_storage || 0) + (y.noTank_clean || 0) + (y.noTank_steam || 0);
+      })
+
+    });
+
+    return retval;
+  }
+  displayTotalPending() {
+    var retval = 0;
+    this.reportStatus.forEach(r => {
+
+      r.yards?.forEach(y => {
+        retval += y.noTank_pending || 0;
+      })
+
+    });
+
+    return retval;
+  }
+  displayTotalWithRO() {
+    var retval = 0;
+    this.reportStatus.forEach(r => {
+
+      r.yards?.forEach(y => {
+        retval += y.noTank_withRO || 0;
+      })
+
+    });
+
+    return retval;
+  }
 }

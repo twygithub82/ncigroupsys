@@ -988,7 +988,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         //pdf.save(fileName);
         this.generatingPdfProgress = 0;
         this.generatingPdfLoadingSubject.next(false);
-        Utility.previewPDF(pdf);
+        Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
         this.dialogRef.close();
       }
 
