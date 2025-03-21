@@ -27,11 +27,11 @@ export const customerInfo = {
 };
 
 export const reportPreviewWindowDimension = {
-  portrait_maxWidth: '1000px',
-  portrait_width_rate: '75wv',
-  landscape_maxWidth: '1200px',
-  landscape_width_rate: '85wv'
+  portrait_maxWidth: '1100px',
+  portrait_width_rate: '70vw',
+  landscape_maxWidth: '1400px',
+  landscape_width_rate: '85vw',
+  report_maxHeight: '85vh'
 };
-
 
 export const refreshTokenWithin: number = 1200000;
