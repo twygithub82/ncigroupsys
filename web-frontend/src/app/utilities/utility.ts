@@ -501,7 +501,7 @@ export class Utility {
     pdf.setLineDashPattern([0, 0], 0);
     // Draw underline for the title
     pdf.setLineWidth(0.1); // Set line width for underline
-    pdf.line(titleX, topPosition + 2, titleX + titleWidth, topPosition + 2); // Draw the line under the title
+    pdf.line(titleX, topPosition + 2, titleX + titleWidth+1, topPosition + 2); // Draw the line under the title
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {

@@ -1243,14 +1243,14 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
   DisplayLastTest(itm: periodic_test_due_item): string {
     // var lastTest: string = '';
     // lastTest =this.cvDS.getCodeDescription(itm.last_test_type!, this.testTypeCvList) || '';
-    return `${itm?.last_test_type || '-'}`;
+    return `${itm?.last_test_type || ''}`;
   }
 
   DisplayNextTest(itm: periodic_test_due_item): string {
     // var nextTest: string = '';
     // nextTest =this.cvDS.getCodeDescription(itm.next_test_type!, this.testTypeCvList) || '';
 
-    return `${itm?.next_test_type || '-'}`;
+    return `${itm?.next_test_type || ''}`;
 
   }
 
