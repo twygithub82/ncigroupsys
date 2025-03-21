@@ -605,8 +605,8 @@ namespace IDMS.Billing.GqlTypes
                              join ig in context.out_gate on sot.guid equals ig.so_tank_guid
                              join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
                              where ro.create_dt >= sDate && ro.create_dt <= eDate &&
-                             string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no == orderTrackingRequest.job_no &&
-                             string.IsNullOrEmpty(orderTrackingRequest.ro_no) || ro.ro_no == orderTrackingRequest.ro_no
+                             (string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no.Contains(orderTrackingRequest.job_no)) &&
+                             (string.IsNullOrEmpty(orderTrackingRequest.ro_no) || ro.ro_no.Contains(orderTrackingRequest.ro_no))
                              select new OrderTrackingResult
                              {
                                  tank_no = sot.tank_no,
@@ -623,7 +623,8 @@ namespace IDMS.Billing.GqlTypes
                                  status = sot.status_cv,
                                  purpose_cleaning = sot.purpose_cleaning,
                                  purpose_steaming = sot.purpose_steam,
-                                 purpose_repair = sot.purpose_repair_cv
+                                 purpose_repair = sot.purpose_repair_cv,
+                                 purpose_storage = sot.purpose_storage
                              }).AsQueryable();
                 }
                 else
@@ -636,8 +637,8 @@ namespace IDMS.Billing.GqlTypes
                              join ig in context.in_gate on sot.guid equals ig.so_tank_guid
                              join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
                              where so.create_dt >= sDate && so.create_dt <= eDate &&
-                             string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no == orderTrackingRequest.job_no &&
-                             string.IsNullOrEmpty(orderTrackingRequest.so_no) || so.so_no == orderTrackingRequest.so_no
+                             (string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no.Contains(orderTrackingRequest.job_no)) &&
+                             (string.IsNullOrEmpty(orderTrackingRequest.so_no) || so.so_no.Contains(orderTrackingRequest.so_no))
                              select new OrderTrackingResult
                              {
                                  tank_no = sot.tank_no,
@@ -654,7 +655,8 @@ namespace IDMS.Billing.GqlTypes
                                  status = sot.status_cv,
                                  purpose_cleaning = sot.purpose_cleaning,
                                  purpose_steaming = sot.purpose_steam,
-                                 purpose_repair = sot.purpose_repair_cv
+                                 purpose_repair = sot.purpose_repair_cv,
+                                 purpose_storage = sot.purpose_storage
                              }).AsQueryable();
                 }
                    
@@ -681,7 +683,7 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 var resultList = await query.OrderBy(tr => tr.order_date).ToListAsync();
-
+                resultList.ForEach(result => result.CompileFinalPurpose());
                 return resultList;
             }
             catch (Exception ex)
