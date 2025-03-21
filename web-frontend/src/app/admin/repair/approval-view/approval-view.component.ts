@@ -672,6 +672,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       re.owner_enable = this.isOwner;
       re.total_cost = Utility.convertNumber(this.repairForm?.get('net_cost')?.value, 2);
       re.est_cost = Utility.convertNumber(this.repairForm?.get('net_cost_est')?.value, 2);
+      re.total_labour_cost = Utility.convertNumber(this.repairForm?.get('total_labour_cost')?.value, 2);
+      re.total_material_cost = Utility.convertNumber(this.repairForm?.get('total_mat_cost')?.value, 2);
 
       this.repList?.forEach((rep: RepairPartItem) => {
         rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
