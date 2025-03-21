@@ -345,6 +345,10 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+    await this.getCodeValuesData();
+    this.report_tank_summaries=this.data.report_tank_survey;
+    this.date=this.data.date;
+    this.onDownloadClick();
   }
 
   async getImageBase64(url: string): Promise<string> {
@@ -378,9 +382,9 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       if(data.length)
         {
           this.surveyTypeCvList = data;
-          this.report_tank_summaries=dataDlg.report_tank_survey;
-          this.date=dataDlg.date;
-          this.onDownloadClick();
+          // this.report_tank_summaries=dataDlg.report_tank_survey;
+          // this.date=dataDlg.date;
+          // this.onDownloadClick();
           //this.processHorizontalBarValue(this.report_summary_status);
           //this.processCustomerStatus(this.report_summary_status);
         }
@@ -404,6 +408,8 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     //  { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'TankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'surveyTypeCv', codeValType: 'SURVEY_TYPE' },
+      { alias: 'surveyStatusCv', codeValType: 'SURVEY_STATUS' },
       // { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
       // { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
       // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
@@ -462,6 +468,12 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       }),
       firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
         this.unitTypeCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('surveyStatusCv')).then(data => {
+        this.surveyStatusCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('surveyTypeCv')).then(data => {
+        this.surveyTypeCvList = data || [];
       })
     ];
 
@@ -592,7 +604,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
           var gap=8;
           
-          await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
+          await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
           await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
           // Variable to store the final Y position of the last table
           let lastTableFinalY = 45;

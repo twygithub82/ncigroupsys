@@ -1253,11 +1253,11 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
 
   DisplayEIRNo(sot:StoringOrderTankItem)
   {
-    return `${sot.in_gate?.[0]?.eir_no}`;
+    return `${sot.in_gate?.[0]?.eir_no||""}`;
   }
 
   DisplayOwner(sot: StoringOrderTankItem) {
-    return `${sot.customer_company?.code}`
+    return `${sot.customer_company?.code||""}`
   }
 
   DisplayNextTest(sot: StoringOrderTankItem): string {
@@ -1273,7 +1273,7 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
         }
         
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+       // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
         nextTest +=  ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;//` ${Utility.convertDateToStr(next_test_dt)}`;
         if(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv)
           {
@@ -1283,12 +1283,13 @@ addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, righ
     }
 
     if (sot.out_gate?.length) {
+      nextTest='';
         if(sot.out_gate?.[0]?.out_gate_survey?.test_dt)
         {
           next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date||new Date();
         }
         next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-        nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+       // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
         nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;
         if(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv)
           {

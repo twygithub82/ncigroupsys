@@ -41,7 +41,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -376,7 +376,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     const where: any = {};
 
 
-    where.tank_status_cv = { neq: "RELEASED" };
+    where.tank_status_cv = {in:TANK_STATUS_IN_YARD}; //{ neq: "RELEASED" };
     
     if (this.searchForm?.get('customer_code')?.value) {
       var cond: any =  { customer_company_guid:{eq:this.searchForm!.get('customer_code')?.value?.guid } };

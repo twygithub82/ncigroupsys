@@ -553,7 +553,7 @@ static previewPDF(pdf: jsPDF) {
   const blobUrl = URL.createObjectURL(pdfBlob);
 
   // Try opening in a new window
-  const newWindow = window.open(blobUrl, '_blank','noopener,noreferrer');
+  const newWindow = window.open(blobUrl, '_blank');
 
   if (!newWindow) {
     pdf.save("doc.pdf");

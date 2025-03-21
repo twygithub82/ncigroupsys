@@ -334,7 +334,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS = new CodeValuesDS(this.apollo);
     
     this.date = data.date;
-    this.loadData(data.report_transfer_location);
+   // this.loadData(data.report_transfer_location);
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -344,6 +344,9 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+    await this.getCodeValuesData();
+    this.report_transfer_location=this.data.report_transfer_location;
+    this.onDownloadClick();
   }
 
   async getImageBase64(url: string): Promise<string> {
@@ -377,11 +380,11 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     // });
 
     this.cvDS.connectAlias('yardCv').subscribe(data => {
-      if(data.length)
+      if(data.length>0)
       {
         this.yardCvList = data;
-        this.report_transfer_location=report_transfer_location;
-        this.onDownloadClick();
+        // this.report_transfer_location=report_transfer_location;
+        // this.onDownloadClick();
       // this.processTankStatus(this.report_summary_status);
       }
       
@@ -454,6 +457,9 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       }),
       firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
         this.unitTypeCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
+        this.yardCvList = data || [];
       })
     ];
 
@@ -603,7 +609,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
         pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
         var gap=8;
         
-        await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
+        await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
         await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
         // Variable to store the final Y position of the last table
         let lastTableFinalY = 45;

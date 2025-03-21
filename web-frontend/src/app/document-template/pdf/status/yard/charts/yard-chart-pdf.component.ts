@@ -383,7 +383,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     
   }
   ngAfterViewInit() {
-    var timeout=4000;
+    var timeout=5000;
     setTimeout(() => {
       this.onDownloadClick();
     }, timeout);
