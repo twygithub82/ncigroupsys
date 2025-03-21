@@ -4,7 +4,10 @@ using HotChocolate.Types;
 using IDMS.Billing.Application;
 using IDMS.Billing.GqlTypes.BillingResult;
 using IDMS.Billing.GqlTypes.LocalModel;
+using IDMS.Models;
 using IDMS.Models.DB;
+using IDMS.Models.Inventory;
+using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -295,7 +298,6 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-
         private async Task<(List<TempInventoryResult>?, List<TempInventoryResult>?)> ProcessInventoryResults(ApplicationBillingDBContext context, IQueryable<TempInventoryResult> query, string inventoryType,
                 long startEpoch, long endEpoch, DateTime startOfMonth, DateTime endOfMonth)
         {
@@ -577,112 +579,116 @@ namespace IDMS.Billing.GqlTypes
             return mergedResults.ToList();
         }
 
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<OrderTrackingResult>?> QueryOrderTracking(ApplicationBillingDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, OrderTrackingRequest orderTrackingRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
 
+                long sDate = orderTrackingRequest.start_date;
+                long eDate = orderTrackingRequest.end_date;
 
+                IQueryable<OrderTrackingResult> query;
 
+                if (orderTrackingRequest.order_type.EqualsIgnore("ro"))
+                {
+                    query = (from ro in context.Set<release_order>()
+                             join ros in context.Set<release_order_sot>() on ro.guid equals ros.ro_guid
+                             join sot in context.storing_order_tank on ros.sot_guid equals sot.guid
+                             join so in context.Set<storing_order>() on sot.so_guid equals so.guid
+                             join cc in context.customer_company on ro.customer_company_guid equals cc.guid
+                             join ig in context.out_gate on sot.guid equals ig.so_tank_guid
+                             join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
+                             where ro.create_dt >= sDate && ro.create_dt <= eDate &&
+                             string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no == orderTrackingRequest.job_no &&
+                             string.IsNullOrEmpty(orderTrackingRequest.ro_no) || ro.ro_no == orderTrackingRequest.ro_no
+                             select new OrderTrackingResult
+                             {
+                                 tank_no = sot.tank_no,
+                                 eir_no = ig.eir_no,
+                                 eir_date = ig.eir_dt,
+                                 release_date = ro.release_dt,
+                                 customer_code = cc.code,
+                                 customer_name = cc.name,
+                                 last_cargo = tc.cargo,
+                                 order_no = ro.ro_no,
+                                 order_date = ro.create_dt,
+                                 cancel_date = ro.delete_dt,
+                                 cancel_remarks = ro.remarks,
+                                 status = sot.status_cv,
+                                 purpose_cleaning = sot.purpose_cleaning,
+                                 purpose_steaming = sot.purpose_steam,
+                                 purpose_repair = sot.purpose_repair_cv
+                             }).AsQueryable();
+                }
+                else
+                {
+                    query = (from so in context.storing_order
+                             join sot in context.storing_order_tank on so.guid equals sot.so_guid
+                             join ros in context.Set<release_order_sot>() on sot.guid equals ros.sot_guid
+                             join ro in context.Set<release_order>() on ros.ro_guid equals ro.guid
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                             join ig in context.in_gate on sot.guid equals ig.so_tank_guid
+                             join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
+                             where so.create_dt >= sDate && so.create_dt <= eDate &&
+                             string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no == orderTrackingRequest.job_no &&
+                             string.IsNullOrEmpty(orderTrackingRequest.so_no) || so.so_no == orderTrackingRequest.so_no
+                             select new OrderTrackingResult
+                             {
+                                 tank_no = sot.tank_no,
+                                 eir_no = ig.eir_no,
+                                 eir_date = ig.eir_dt,
+                                 release_date = ro.release_dt,
+                                 customer_code = cc.code,
+                                 customer_name = cc.name,
+                                 last_cargo = tc.cargo,
+                                 order_no = so.so_no,
+                                 order_date = so.create_dt,
+                                 cancel_date = so.delete_dt,
+                                 cancel_remarks = so.remarks,
+                                 status = sot.status_cv,
+                                 purpose_cleaning = sot.purpose_cleaning,
+                                 purpose_steaming = sot.purpose_steam,
+                                 purpose_repair = sot.purpose_repair_cv
+                             }).AsQueryable();
+                }
+                   
 
-        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        //[UseProjection]
-        //[UseFiltering]
-        //[UseSorting]
-        //public async Task<List<SteamPerformance>?> QuerySteamPerformance(ApplicationBillingDBContext context, [Service] IConfiguration config,
-        //        [Service] IHttpContextAccessor httpContextAccessor, SteamPerformanceRequest steamPerformanceRequest)
-        //{
+                if (!string.IsNullOrEmpty(orderTrackingRequest.customer_code))
+                {
+                    query = query.Where(tr => tr.customer_code.Contains(orderTrackingRequest.customer_code));
+                }
+                if (!string.IsNullOrEmpty(orderTrackingRequest.eir_no))
+                {
+                    query = query.Where(tr => tr.eir_no.Contains(orderTrackingRequest.eir_no));
+                }
+                if (!string.IsNullOrEmpty(orderTrackingRequest.tank_no))
+                {
+                    query = query.Where(tr => tr.tank_no.Contains(orderTrackingRequest.tank_no));
+                }
+                if (!string.IsNullOrEmpty(orderTrackingRequest.last_cargo))
+                {
+                    query = query.Where(tr => tr.last_cargo.Contains(orderTrackingRequest.last_cargo));
+                }
+                if (orderTrackingRequest.status != null && orderTrackingRequest.status.Any())
+                {
+                    query = query.Where(tr => orderTrackingRequest.status.Contains(tr.status));
+                }
 
-        //    try
-        //    {
-        //        GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var resultList = await query.OrderBy(tr => tr.order_date).ToListAsync();
 
-        //        string completedStatus = "COMPLETED";
-
-        //        long sDate = steamPerformanceRequest.start_date;
-        //        long eDate = steamPerformanceRequest.end_date;
-
-        //        var query = (from r in context.steaming
-        //                     join sot in context.storing_order_tank on r.sot_guid equals sot.guid
-        //                     join so in context.storing_order on sot.so_guid equals so.guid
-        //                     join cc in context.customer_company on so.customer_company_guid equals cc.guid
-        //                     join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
-        //                     join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
-        //                     join sp in context.Set<steaming_part>() on r.guid equals sp.steaming_guid
-        //                     join jo in context.job_order on sp.job_order_guid equals jo.guid
-        //                     join t in context.team on jo.team_guid equals t.guid
-        //                     where r.estimate_no.StartsWith("SE") && r.status_cv.Equals(completedStatus)
-        //                     && r.delete_dt == null && sp.delete_dt == null && r.complete_dt >= sDate && r.complete_dt <= eDate
-        //                     select new SteamPerformance
-        //                     {
-        //                         job_order_guid = jo.guid,
-        //                         tank_no = sot.tank_no,
-        //                         require_temp = sot.required_temp,
-        //                         complete_dt = r.complete_dt,
-        //                         eir_no = ig.eir_no,
-        //                         eir_dt = ig.eir_dt,
-        //                         yard = ig.yard_cv,
-        //                         customer_code = cc.code,
-        //                         last_cargo = tc.cargo,
-        //                         cost = r.total_cost,
-        //                         bay = t.description
-        //                     }).AsQueryable();
-
-        //        if (!string.IsNullOrEmpty(steamPerformanceRequest.customer_code))
-        //        {
-        //            query = query.Where(tr => tr.customer_code.Contains(steamPerformanceRequest.customer_code));
-        //        }
-        //        if (!string.IsNullOrEmpty(steamPerformanceRequest.eir_no))
-        //        {
-        //            query = query.Where(tr => tr.eir_no.Contains(steamPerformanceRequest.eir_no));
-        //        }
-        //        if (!string.IsNullOrEmpty(steamPerformanceRequest.tank_no))
-        //        {
-        //            query = query.Where(tr => tr.tank_no.Contains(steamPerformanceRequest.tank_no));
-        //        }
-        //        if (!string.IsNullOrEmpty(steamPerformanceRequest.last_cargo))
-        //        {
-        //            query = query.Where(tr => tr.last_cargo.Contains(steamPerformanceRequest.last_cargo));
-        //        }
-        //        if (steamPerformanceRequest.steaming_point != null)
-        //        {
-        //            query = query.Where(tr => steamPerformanceRequest.steaming_point.Contains(tr.bay));
-        //        }
-        //        if (!string.IsNullOrEmpty(steamPerformanceRequest.yard))
-        //        {
-        //            query = query.Where(tr => tr.yard.Contains(steamPerformanceRequest.yard));
-        //        }
-
-        //        var resultList = await query.OrderBy(tr => tr.job_order_guid).ToListAsync();
-
-        //        //Get the diff temperature result set
-        //        List<string> guids = resultList.Select(x => x.job_order_guid).ToList();
-        //        var steamingTempResults = await GetSteamingTempResults1(context, guids);
-
-        //        //Combine the main result set with temperature result set
-        //        var joinedResults = resultList
-        //               .GroupJoin(steamingTempResults,
-        //                          r => r.job_order_guid,
-        //                          str => str.JobOrderGuid,
-        //                          (sp, strGroup) => new { SteamPerformance = sp, SteamingTempResults = strGroup })
-        //               .SelectMany(
-        //                   temp => temp.SteamingTempResults.DefaultIfEmpty(),
-        //                   (temp, str) =>
-        //                   {
-        //                       if (str != null)
-        //                       {
-        //                           temp.SteamPerformance.themometer = new Themometer { begin_temp = str.FirstMeterTemp, close_temp = str.LastMeterTemp };
-        //                           temp.SteamPerformance.top = new Top { begin_temp = str.FirstTopTemp, close_temp = str.LastTopTemp };
-        //                           temp.SteamPerformance.bottom = new Bottom { begin_temp = str.FirstBottomTemp, close_temp = str.LastBottomTemp };
-        //                           temp.SteamPerformance.duration = ConvertIntoDuration((str.LastRecordTime - str.FirstRecordTime) ?? 0);
-        //                       }
-        //                       return temp.SteamPerformance;
-        //                   })
-        //               .ToList();
-
-        //        return joinedResults;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-        //    }
-        //}
+                return resultList;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
 
 
 
