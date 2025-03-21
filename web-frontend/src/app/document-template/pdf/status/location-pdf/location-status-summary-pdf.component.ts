@@ -32,8 +32,8 @@ import autoTable, { Styles } from 'jspdf-autotable';
 
 export interface DialogData {
   report_summary_status: report_status[],
-  yards:CodeValuesItem[]
-  
+  yards: CodeValuesItem[]
+
 }
 
 @Component({
@@ -219,22 +219,22 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE:'COMMON-FORM.IN-DATE',
-    OUT_DATE:'COMMON-FORM.OUT-DATE',
-    TOTAL:'COMMON-FORM.TOTAL',
-    DAYS:'COMMON-FORM.DAYS',
-    GATEIO:'COMMON-FORM.GATEIO',
-    INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
-    SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
-    LOCATION_STATUS:'COMMON-FORM.LOCATION-STATUS'
-    
+    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
+    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
+    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
+    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
+    IN_DATE: 'COMMON-FORM.IN-DATE',
+    OUT_DATE: 'COMMON-FORM.OUT-DATE',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    DAYS: 'COMMON-FORM.DAYS',
+    GATEIO: 'COMMON-FORM.GATEIO',
+    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
+    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
+    INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
+    LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS'
+
 
   }
 
@@ -283,11 +283,11 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  report_summary_status:report_status[]=[];
-  yards:CodeValuesItem[]=[];
-  
+  report_summary_status: report_status[] = [];
+  yards: CodeValuesItem[] = [];
 
-  
+
+
 
   constructor(
     public dialogRef: MatDialogRef<LocationStatusSummaryPdfComponent>,
@@ -309,9 +309,9 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
     // this.existingPdf = data.existingPdf;
-    this.report_summary_status= data.report_summary_status;
-    this.yards=data.yards;
-    
+    this.report_summary_status = data.report_summary_status;
+    this.yards = data.yards;
+
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -321,11 +321,10 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-   
+
   }
 
-  ngAfterViewInit()
-  {
+  ngAfterViewInit() {
 
     this.onDownloadClick();
   }
@@ -641,7 +640,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-  
+
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {
@@ -667,7 +666,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     return "";
   }
 
-  
+
 
   getTestTypeDescription(codeVal: string): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
@@ -733,7 +732,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
 
   async onDownloadClick() {
     this.exportToPDF_r1();
-   
+
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -748,7 +747,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     URL.revokeObjectURL(url);
   }
 
-  
+
 
   async uploadPdf(group_guid: string, pdfBlob: Blob) {
     const pdfDescription = 'REPAIR_ESTIMATE';
@@ -802,343 +801,343 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-   async exportToPDF_r1(fileName: string = 'document.pdf') {
-      const pageWidth = 210; // A4 width in mm (portrait)
-      const pageHeight = 297; // A4 height in mm (portrait)
-      const leftMargin = 10; 
-      const rightMargin = 10;
-      const topMargin = 5;
-      const bottomMargin = 5;
-      const contentWidth = pageWidth - leftMargin - rightMargin; 
-      const maxContentHeight = pageHeight - topMargin - bottomMargin; 
-    
-      this.generatingPdfLoadingSubject.next(true);
-      this.generatingPdfProgress = 0;
-    
-      const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-        //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-        let pageNumber = 1;
-      
-        let reportTitleCompanyLogo = 32;
-        let tableHeaderHeight = 12;
-        let tableRowHeight = 8.5;
-        let minHeightHeaderCol=3;
-        let fontSize=5;
-        let minHeightBodyCell=9;
-        const pagePositions: { page: number; x: number; y: number }[] = [];
-       // const progressValue = 100 / cardElements.length;
-      
-        const reportTitle = this.GetReportTitle();
-        const comStyles:any= {
-          // Set columns 0 to 16 to be center aligned
-          0: { halign: 'center',valign:'middle' ,cellWidth:10, minCellHeight:minHeightBodyCell},
-          1: { halign: 'center',valign:'middle', cellWidth:30,minCellHeight:minHeightBodyCell },
-          2: { halign: 'center',valign:'middle', cellWidth:80, minCellHeight:minHeightBodyCell },
-          3: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
-      };
+  async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-        const headers = [[
-          this.translatedLangText.NO,
-          this.translatedLangText.CUSTOMER_CODE, this.translatedLangText.CUSTOMER
-        ]];
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
 
-        this.yards.forEach(y=>{
-          headers[0].push(y.description);
-          const lastColumnIndex = Object.keys(comStyles).length;
-          comStyles[lastColumnIndex] ={ halign: 'center' }; 
-        });
-        headers[0].push(this.translatedLangText.TOTAL);
-       
-      
-      
-        // Define headStyles with valid fontStyle
-        const headStyles: Partial<Styles> = {
-          fillColor: [211, 211, 211], // Background color
-          textColor: 0, // Text color (white)
-          fontStyle: "bold", // Valid fontStyle value
-          halign: 'center', // Centering header text
-          valign:'middle',
-          lineColor:201,
-          lineWidth:0.1
-        };
-      
-        let currentY = topMargin;
-        let scale = this.scale;
-        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-      
-        
-        await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-        await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
-        
-        // Variable to store the final Y position of the last table
-        let lastTableFinalY = 45;
-        
-        let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-        const data: any[][] = []; // Explicitly define data as a 2D array
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
 
-        pdf.setFontSize(8);
-        pdf.setTextColor(0, 0, 0); // Black text
-        const repGeneratedDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`; // Replace with your actual cutoff date
-        Utility.AddTextAtRightCornerPage(pdf,repGeneratedDate,pageWidth,leftMargin,rightMargin+5,startY-2,9);
-    
-        const yard_no_tank: { key: string; value: number }[]=[];
-         var total_tank_no=0;
-        for (let n = 0; n < this.report_summary_status.length; n++) {
-         
-          //let startY = lastTableFinalY + 15; // Start Y position for the current table
-          let itm = this.report_summary_status[n];
-      
-           
-                data.push([
-                  (n+1).toString(), itm.code || "", itm.customer || ""                  
-                ]);
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let minHeightHeaderCol = 3;
+    let fontSize = 5;
+    let minHeightBodyCell = 9;
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
 
-                this.yards.forEach(y => {
-                  let t = yard_no_tank.find(a => a.key === y.code_val);
-                  
-                  // If not found, create a new entry
-                  if (!t) {
-                    t = { key: y.code_val!, value: 0 };
-                    yard_no_tank.push(t);
-                  }
-                
-                  // Get the number of tanks for the yard
-                  const yard = itm.yards?.find(a => a.code === y.code_val);
-                  const noTank = yard?.storing_order_tank?.length || 0;
-                
-                  // Update the value in yard_no_tank
-                  t.value += noTank;
-                
-                  // Push the noTank value to the data array
-                  data[n].push(noTank);
-                });
-                total_tank_no+=itm.number_tank||0;
-                data[n].push(itm.number_tank);
-              
-      
+    const reportTitle = this.GetReportTitle();
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 80, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    };
+
+    const headers = [[
+      this.translatedLangText.NO,
+      this.translatedLangText.CUSTOMER_CODE, this.translatedLangText.CUSTOMER
+    ]];
+
+    this.yards.forEach(y => {
+      headers[0].push(y.description);
+      const lastColumnIndex = Object.keys(comStyles).length;
+      comStyles[lastColumnIndex] = { halign: 'center' };
+    });
+    headers[0].push(this.translatedLangText.TOTAL);
+
+
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+
+    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 45;
+
+    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+    const data: any[][] = []; // Explicitly define data as a 2D array
+
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    const repGeneratedDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`; // Replace with your actual cutoff date
+    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
+
+    const yard_no_tank: { key: string; value: number }[] = [];
+    var total_tank_no = 0;
+    for (let n = 0; n < this.report_summary_status.length; n++) {
+
+      //let startY = lastTableFinalY + 15; // Start Y position for the current table
+      let itm = this.report_summary_status[n];
+
+
+      data.push([
+        (n + 1).toString(), itm.code || "", itm.customer || ""
+      ]);
+
+      this.yards.forEach(y => {
+        let t = yard_no_tank.find(a => a.key === y.code_val);
+
+        // If not found, create a new entry
+        if (!t) {
+          t = { key: y.code_val!, value: 0 };
+          yard_no_tank.push(t);
         }
 
-        data.push([this.translatedLangText.TOTAL,"",""]);
-        yard_no_tank.forEach(y=>{
-        data[this.report_summary_status.length].push(y.value);});
-        data[this.report_summary_status.length].push(total_tank_no);
+        // Get the number of tanks for the yard
+        const yard = itm.yards?.find(a => a.code === y.code_val);
+        const noTank = yard?.storing_order_tank?.length || 0;
 
-  
-        pdf.setDrawColor(0, 0, 0); // red line color
-    
-        pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0, 0], 0);
-        // Add table using autoTable plugin
-        autoTable(pdf, {
-          head: headers,
-          body: data,
-          startY: startY, // Start table at the current startY value
-          theme: 'grid',
-          styles: { 
-            fontSize: fontSize,
-             minCellHeight: minHeightHeaderCol
-           
-          },
-          columnStyles:comStyles,
-          headStyles: headStyles, // Custom header styles
-          bodyStyles: { 
-            fillColor: [255, 255, 255],
-            halign: 'left', // Left-align content for body by default
-            valign: 'middle', // Vertically align content
-           },
-           didParseCell: (data: any) => {
-            let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-            if (data.row.index === lastRowIndex)
-            {
-               data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
-               data.cell.styles.fontStyle = 'bold';
-                if(data.column.index === 0) {
-                data.cell.colSpan = 3;  // Merge 4 columns into one
-                data.cell.styles.halign = 'right'; // Center text horizontally
-                data.cell.styles.valign = 'middle'; // Center text vertically
-                
-              }
-            }
-            if (data.row.index === lastRowIndex && data.column.index > 0 && data.column.index <= 2) {
-              data.cell.text = ''; // Remove text from hidden columns
-              data.cell.colSpan = 0; // Hide these columns
-            }
-          },
-          didDrawPage: (data: any) => {
-            const pageCount = pdf.getNumberOfPages();
-          
-            if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-            // Capture the final Y position of the table
-            lastTableFinalY = data.cursor.y;
-            var pg = pagePositions.find(p=>p.page==pageCount);
-            if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
-          },
-        });
-      
-        const totalPages = pdf.getNumberOfPages();
-      
-       
-        pagePositions.forEach(({ page, x, y }) => {
-          pdf.setDrawColor(0, 0, 0); // black line color
-          pdf.setLineWidth(0.1);
-          pdf.setLineDashPattern([0, 0], 0);
-          pdf.setFontSize(8);
-          pdf.setPage(page);
-          var lineBuffer=13;
-          pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-          pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-        });
-      
-        this.generatingPdfProgress = 100;
-        //pdf.save(fileName);
-        this.generatingPdfProgress = 0;
-        this.generatingPdfLoadingSubject.next(false);
-        Utility.previewPDF(pdf);
-        this.dialogRef.close();
-      }
-      
+        // Update the value in yard_no_tank
+        t.value += noTank;
+
+        // Push the noTank value to the data array
+        data[n].push(noTank);
+      });
+      total_tank_no += itm.number_tank || 0;
+      data[n].push(itm.number_tank);
+
+
+    }
+
+    data.push([this.translatedLangText.TOTAL, "", ""]);
+    yard_no_tank.forEach(y => {
+      data[this.report_summary_status.length].push(y.value);
+    });
+    data[this.report_summary_status.length].push(total_tank_no);
+
+
+    pdf.setDrawColor(0, 0, 0); // red line color
+
+    pdf.setLineWidth(0.1);
+    pdf.setLineDashPattern([0, 0], 0);
+    // Add table using autoTable plugin
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      styles: {
+        fontSize: fontSize,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+      },
+      didParseCell: (data: any) => {
+        let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        if (data.row.index === lastRowIndex) {
+          data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+          data.cell.styles.fontStyle = 'bold';
+          if (data.column.index === 0) {
+            data.cell.colSpan = 3;  // Merge 4 columns into one
+            data.cell.styles.halign = 'right'; // Center text horizontally
+            data.cell.styles.valign = 'middle'; // Center text vertically
+
+          }
+        }
+        if (data.row.index === lastRowIndex && data.column.index > 0 && data.column.index <= 2) {
+          data.cell.text = ''; // Remove text from hidden columns
+          data.cell.colSpan = 0; // Hide these columns
+        }
+      },
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+        // Capture the final Y position of the table
+        lastTableFinalY = data.cursor.y;
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+      },
+    });
+
+    const totalPages = pdf.getNumberOfPages();
+
+
+    pagePositions.forEach(({ page, x, y }) => {
+      pdf.setDrawColor(0, 0, 0); // black line color
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0, 0], 0);
+      pdf.setFontSize(8);
+      pdf.setPage(page);
+      var lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    });
+
+    this.generatingPdfProgress = 100;
+    //pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.dialogRef.close();
+  }
+
   async exportToPDF_r3(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10; 
+    const leftMargin = 10;
     const rightMargin = 10;
     const topMargin = 20;
     const bottomMargin = 20;
-    const contentWidth = pageWidth - leftMargin - rightMargin; 
-    const maxContentHeight = pageHeight - topMargin - bottomMargin; 
-  
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
-  
+
     const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
-  
+
     let tableHeaderHeight = 7.6153;
     let tableRowHeight = 5.8974;
-  
+
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
-  
+
     const reportTitle = this.GetReportTitle();
-  
+
     this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-    let currentY = topMargin; 
+    let currentY = topMargin;
     let scale = this.scale;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
     for (let i = 0; i < cardElements.length; i++) {
-        const card = cardElements[i];
+      const card = cardElements[i];
 
-        const canvas = await html2canvas(card, { scale: scale });
-        let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-        const imgHeight = (canvas.height * contentWidth) / canvas.width;
+      const canvas = await html2canvas(card, { scale: scale });
+      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+      const imgHeight = (canvas.height * contentWidth) / canvas.width;
 
-        if (currentY + imgHeight > maxContentHeight) {
-            let currentY_canvas = 0;
-            let nextPage = false;
-            const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
-            let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
+      if (currentY + imgHeight > maxContentHeight) {
+        let currentY_canvas = 0;
+        let nextPage = false;
+        const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
+        let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
 
-            const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
-            const pageTHeaderHeight = tableHeaderHeight;
+        const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
+        const pageTHeaderHeight = tableHeaderHeight;
 
-            do {
-                nextPage = false;
+        do {
+          nextPage = false;
 
-                if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
-                    imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
-                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
-                    currentY += pageTHeaderHeight;
-                    currentY_canvas += tableHeaderHeight_canvas;
+          if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
+            imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
+            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
+            currentY += pageTHeaderHeight;
+            currentY_canvas += tableHeaderHeight_canvas;
 
-                    const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
-                    const remainingTableHeight_canvas = canvas.height - currentY_canvas;
-                    const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
-                    let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
-                    let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
+            const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
+            const remainingTableHeight_canvas = canvas.height - currentY_canvas;
+            const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
+            let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
+            let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
 
-                    const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
-                    imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
-                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
+            const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
+            imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
+            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
 
-                    currentY_canvas += cpImgHeight_canvas;
-                    currentY += cpImgHeight;
+            currentY_canvas += cpImgHeight_canvas;
+            currentY += cpImgHeight;
 
-                    nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
-                } else {
-                    if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-                        pdf.addPage();
-                        pageNumber++;
-                        this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                        currentY = topMargin;
-                    }
-
-                    nextPage = (currentY + imgHeight > maxContentHeight);
-                    if (!nextPage) {
-                        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-                        currentY += imgHeight + 5;
-                    }
-                }
-
-                if (nextPage) {
-                    pdf.addPage();
-                    currentY = topMargin;
-                    pageNumber++;
-                    this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                    currentY_canvas -= tableHeaderHeight_canvas;
-                    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                } else {
-                    currentY += 5;
-                }
-
-            } while (nextPage);
-
-        } else {
+            nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
+          } else {
             if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-                pdf.addPage();
-                pageNumber++;
-                this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                currentY = topMargin;
+              pdf.addPage();
+              pageNumber++;
+              this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+              pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+              currentY = topMargin;
             }
 
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-            currentY += imgHeight + 5;
+            nextPage = (currentY + imgHeight > maxContentHeight);
+            if (!nextPage) {
+              pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+              currentY += imgHeight + 5;
+            }
+          }
+
+          if (nextPage) {
+            pdf.addPage();
+            currentY = topMargin;
+            pageNumber++;
+            this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+            currentY_canvas -= tableHeaderHeight_canvas;
+            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+          } else {
+            currentY += 5;
+          }
+
+        } while (nextPage);
+
+      } else {
+        if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
+          pdf.addPage();
+          pageNumber++;
+          this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+          pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+          currentY = topMargin;
         }
 
-        this.generatingPdfProgress += progressValue;
+        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+        currentY += imgHeight + 5;
+      }
+
+      this.generatingPdfProgress += progressValue;
     }
 
     const totalPages = pdf.getNumberOfPages();
 
     pagePositions.forEach(({ page, x, y }) => {
-        pdf.setPage(page);
-        pdf.setFontSize(10);
-        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+      pdf.setPage(page);
+      pdf.setFontSize(10);
+      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
 
     this.generatingPdfProgress = 100;
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-}
-
-async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:number): Promise<HTMLCanvasElement> {
-    
-  
-  const splitCanvas = document.createElement('canvas');
-  splitCanvas.width = sw;
-  splitCanvas.height = sh;
-
-  const ctx = splitCanvas.getContext('2d');
-  if (ctx) {
-      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
   }
 
-  return splitCanvas;
-}
+  async CopyCanvas(canvas: HTMLCanvasElement, sx: number, sy: number, sw: number, sh: number): Promise<HTMLCanvasElement> {
+
+
+    const splitCanvas = document.createElement('canvas');
+    splitCanvas.width = sw;
+    splitCanvas.height = sh;
+
+    const ctx = splitCanvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
+    }
+
+    return splitCanvas;
+  }
   async exportToPDF_r2(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -1169,47 +1168,47 @@ async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:
     let currentY = topMargin; // Start Y position after the header
 
     for (let i = 0; i < cardElements.length; i++) {
-        const card = cardElements[i];
+      const card = cardElements[i];
 
-        // Convert card to image (JPEG format)
-        const canvas = await html2canvas(card, { scale: this.scale });
-        const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
+      // Convert card to image (JPEG format)
+      const canvas = await html2canvas(card, { scale: this.scale });
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
 
-        const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
-        // Check if the card fits on the current page
-        if (currentY + imgHeight > maxContentHeight) {
-            // Add page number to the current page before creating a new one
-            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
+      // Check if the card fits on the current page
+      if (currentY + imgHeight > maxContentHeight) {
+        // Add page number to the current page before creating a new one
+        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
 
-            // Add a new page
-            pdf.addPage();
-            pageNumber++;
-            totalPages++;
+        // Add a new page
+        pdf.addPage();
+        pageNumber++;
+        totalPages++;
 
-            // Reset Y position for the new page
-            currentY = topMargin;
+        // Reset Y position for the new page
+        currentY = topMargin;
 
-            // Add the report title and underline to the new page
-            this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-        }
+        // Add the report title and underline to the new page
+        this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+      }
 
-        // Add the card image to the PDF
-        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+      // Add the card image to the PDF
+      pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
 
-        // Update the Y position for the next card
-        currentY += imgHeight + 10; // Add a small gap between cards
+      // Update the Y position for the next card
+      currentY += imgHeight + 10; // Add a small gap between cards
 
-        // Update progress
-        this.generatingPdfProgress += progressValue;
+      // Update progress
+      this.generatingPdfProgress += progressValue;
     }
 
     // Add page numbers in a second pass
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 }); // Add last page number
     pagePositions.forEach(({ page, x, y }) => {
-        pdf.setPage(page);
-        pdf.setFontSize(10);
-        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+      pdf.setPage(page);
+      pdf.setFontSize(10);
+      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
 
     // Save the PDF
@@ -1217,10 +1216,10 @@ async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-}
+  }
 
-// Helper function to add the header (title and underline) to a page
-addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
+  // Helper function to add the header (title and underline) to a page
+  addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
@@ -1230,7 +1229,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
     // Draw underline for the title
     pdf.setLineWidth(0.5); // Set line width for underline
     pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
-}
+  }
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -1242,36 +1241,36 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 0;
-  
+
     // Store page positions for later text update
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
-  
+
     const reportTitle = this.GetReportTitle();  // Set your report title here
-  
+
     // Set font for the title
     pdf.setFontSize(14); // Title font size
-  
+
     for (let i = 0; i < cardElements.length; i++) {
       const card = cardElements[i];
-  
+
       // Convert card to image (JPEG format)
       const canvas = await html2canvas(card, { scale: this.scale });
       const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
-  
+
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-  
+
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
       const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
-  
-      const pos=15;
+
+      const pos = 15;
       pdf.text(reportTitle, titleX, pos); // Position it at the top
-  
+
       // Draw underline for the title
       pdf.setLineWidth(0.5); // Set line width for underline
-      pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
-  
+      pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+
       // If card height exceeds A4 page height, split across multiple pages
       if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
@@ -1279,17 +1278,17 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
           const sectionCanvas = document.createElement('canvas');
           sectionCanvas.width = canvas.width;
           sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
-  
+
           const sectionCtx = sectionCanvas.getContext('2d');
           sectionCtx?.drawImage(canvas, 0, -yPosition);
-  
+
           const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
-  
+
           pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
-  
+
           // Store page position for page numbering
           pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-  
+
           yPosition += sectionCanvas.height;
           if (yPosition < canvas.height) {
             pdf.addPage();
@@ -1301,52 +1300,48 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
-  
+
         // Store page position for page numbering
         pagePositions.push({ page: pageNumber, x: 200, y: 287 });
       }
       pageNumber++;
       this.generatingPdfProgress += progressValue;
     }
-  
+
     totalPages = pageNumber - 1;
-  
+
     // Add page numbers in a second pass
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setPage(page);
       pdf.setFontSize(10);
       pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
-  
+
     this.generatingPdfProgress = 100;
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
   }
 
- 
-   GeneratedDate():string
-   {
-     return  Utility.convertDateToStr(new Date());
-   }
-   GetReportTitle():string
-   {
-     return `${this.translatedLangText.LOCATION_STATUS} ${this.translatedLangText.SUMMARY_REPORT}`
-   }
 
-   displayTankNo(yard_cv:CodeValuesItem, yards: report_status_yard[] | undefined): string | undefined {
-     var result = yards?.find(y=>y.code==yard_cv.code_val);
-
-     if(result)
-     {
-      return `${result?.storing_order_tank?.length||0}`;
-     }
-     else
-     {
-       return '0';
-     }
-
-    
+  GeneratedDate(): string {
+    return Utility.convertDateToStr(new Date());
   }
-  
+  GetReportTitle(): string {
+    return `${this.translatedLangText.LOCATION_STATUS} ${this.translatedLangText.SUMMARY_REPORT}`
+  }
+
+  displayTankNo(yard_cv: CodeValuesItem, yards: report_status_yard[] | undefined): string | undefined {
+    var result = yards?.find(y => y.code == yard_cv.code_val);
+
+    if (result) {
+      return `${result?.storing_order_tank?.length || 0}`;
+    }
+    else {
+      return '0';
+    }
+
+
+  }
+
 }

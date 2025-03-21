@@ -4,7 +4,6 @@
 <div #pdfTable id="pdfTable" mat-dialog-content hidden>
   <div id="pdf-form-body" class="pdf-container pdf-body">
     @for (bCust of report_customer_tank_activity; track bCust) {
-    
     @if(bCust.in_yard_storing_order_tank?.length!>0)
     {
     <div class="card">

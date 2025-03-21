@@ -34,8 +34,8 @@ import autoTable, { Styles } from 'jspdf-autotable';
 
 export interface DialogData {
   billing_customers: report_billing_customer[],
-  cut_off_dt:string
- 
+  cut_off_dt: string
+
 }
 
 @Component({
@@ -222,28 +222,28 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE:'COMMON-FORM.IN-DATE',
-    OUT_DATE:'COMMON-FORM.OUT-DATE',
-    TOTAL:'COMMON-FORM.TOTAL',
-    DAYS:'COMMON-FORM.DAYS',
-    CLEAN_COST:'COMMON-FORM.CLEAN-COST-REPORT',
-    REPAIR_COST:'COMMON-FORM.REPAIR-COST-REPORT',
-    PREINSP_COST:'COMMON-FORM.PREINSP-COST-REPORT',
-    STORAGE_COST:'COMMON-FORM.STORAGE-COST-REPORT',
-    REPORT_TITLE:'COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT',
-    CUTOFF_DATE:'COMMON-FORM.CUTOFF-DATE',
-    GATEIO_S:'COMMON-FORM.GATEIO-S',
-    GATE_SURCHAGRGE_PENDING_REPORT:"COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
-    TOTAL_COST:"COMMON-FORM.TOTAL-COST"
+    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
+    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
+    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
+    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
+    IN_DATE: 'COMMON-FORM.IN-DATE',
+    OUT_DATE: 'COMMON-FORM.OUT-DATE',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    DAYS: 'COMMON-FORM.DAYS',
+    CLEAN_COST: 'COMMON-FORM.CLEAN-COST-REPORT',
+    REPAIR_COST: 'COMMON-FORM.REPAIR-COST-REPORT',
+    PREINSP_COST: 'COMMON-FORM.PREINSP-COST-REPORT',
+    STORAGE_COST: 'COMMON-FORM.STORAGE-COST-REPORT',
+    REPORT_TITLE: 'COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT',
+    CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
+    GATEIO_S: 'COMMON-FORM.GATEIO-S',
+    GATE_SURCHAGRGE_PENDING_REPORT: "COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
+    TOTAL_COST: "COMMON-FORM.TOTAL-COST"
 
   }
 
-  cut_off_dt:string;
+  cut_off_dt: string;
   type?: string | null;
   steamDS: SteamDS;
   steamPartDS: SteamPartDS;
@@ -279,7 +279,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
   scale = 2;
   imageQuality = 0.75;
-  maxItemPerPage=25;
+  maxItemPerPage = 25;
 
   generatedPDF: any;
   existingPdf?: any;
@@ -290,9 +290,9 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repBillingCustomers:report_billing_customer[]=[];
+  repBillingCustomers: report_billing_customer[] = [];
 
-  
+
 
   constructor(
     public dialogRef: MatDialogRef<PendingInvoiceCostDetailPdfComponent>,
@@ -310,20 +310,19 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    
-    this.repBillingCustomers= this.removeEstimateWithZeroTotal(data.billing_customers);
-    this.cut_off_dt=data.cut_off_dt;
+
+    this.repBillingCustomers = this.removeEstimateWithZeroTotal(data.billing_customers);
+    this.cut_off_dt = data.cut_off_dt;
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
 
-      this.onDownloadClick();
+    this.onDownloadClick();
   }
 
-  removeEstimateWithZeroTotal(cust:report_billing_customer[]):report_billing_customer[]
-  {
+  removeEstimateWithZeroTotal(cust: report_billing_customer[]): report_billing_customer[] {
     let retval: report_billing_customer[] = cust.map(c => {
       // Filter the items array and return a new object with modified items
       return {
@@ -331,12 +330,12 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         items: c.items?.filter(i => i.total !== "0.00") // Filter items where total is not "0.00"
       };
     });
-    
+
     return retval;
   }
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-    
+
   }
 
   async generatePDF(): Promise<void> {
@@ -650,7 +649,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-  
+
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {
@@ -740,7 +739,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
   async onDownloadClick() {
     this.exportToPDF_r1();
-   
+
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -755,7 +754,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     URL.revokeObjectURL(url);
   }
 
-  
+
 
   async uploadPdf(group_guid: string, pdfBlob: Blob) {
     const pdfDescription = 'REPAIR_ESTIMATE';
@@ -822,24 +821,24 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     const bottomMargin = 5;
     const contentWidth = pageWidth - leftMargin - rightMargin;
     const maxContentHeight = pageHeight - topMargin - bottomMargin;
-  
+
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
-  
+
     const pdf = new jsPDF('l', 'mm', 'a4');
     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
-  
+
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightHeaderCol=3;
-    let minHeightBodyCell=9;
-    let fontSize=5.5;
+    let minHeightHeaderCol = 3;
+    let minHeightBodyCell = 9;
+    let fontSize = 5.5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
-   // const progressValue = 100 / cardElements.length;
-  
+    // const progressValue = 100 / cardElements.length;
+
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.NO,
@@ -852,59 +851,59 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       this.translatedLangText.STEAM_COST, this.translatedLangText.RESIDUE_COST,
       this.translatedLangText.GATEIO_S, this.translatedLangText.TOTAL
     ]];
-  
+
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
       halign: 'center', // Centering header text
-      valign:'middle',
-      lineColor:201,
-      lineWidth:0.1
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
     };
-  
+
     let currentY = topMargin;
     let scale = this.scale;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-  
-    
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-    await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+
+
+    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
-    
-    
+
+
     for (let n = 0; n < this.repBillingCustomers.length; n++) {
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let cust = this.repBillingCustomers[n];
-  
-          // Calculate space required for customer name and table
-    const customerNameHeight = 10; // Height required for customer name
-    const tableHeight = cust.items!.length * tableRowHeight + tableHeaderHeight; // Approximate table height
 
-    // Check if there is enough space on the current page
-    if (lastTableFinalY + customerNameHeight + tableHeight > maxContentHeight) {
-      // Add a new page if there isn't enough space
-      pdf.addPage();
-      pageNumber++;
-      lastTableFinalY = topMargin; // Reset Y position for the new page
-    }
-    
-    pdf.setFontSize(8);
-    pdf.setTextColor(0, 0, 0); // Black text
-    pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
+      // Calculate space required for customer name and table
+      const customerNameHeight = 10; // Height required for customer name
+      const tableHeight = cust.items!.length * tableRowHeight + tableHeaderHeight; // Approximate table height
 
-    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
-    pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+      // Check if there is enough space on the current page
+      if (lastTableFinalY + customerNameHeight + tableHeight > maxContentHeight) {
+        // Add a new page if there isn't enough space
+        pdf.addPage();
+        pageNumber++;
+        lastTableFinalY = topMargin; // Reset Y position for the new page
+      }
 
-    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-  
+      pdf.setFontSize(8);
+      pdf.setTextColor(0, 0, 0); // Black text
+      pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
+
+      const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
+      pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+
+      let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+
       for (let b = 0; b < cust.items!.length; b++) {
         var itm = cust.items?.[b]!;
         data.push([
-          (b+1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
+          (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
           itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
           this.displayCleanCost(itm) || "", this.displayRepairCost(itm) || "", this.displayPreinsCost(itm) || "",
           this.displayLOLOCost(itm) || "", itm.days, this.displayStorageCost(itm) || "",
@@ -922,158 +921,155 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         body: data,
         startY: startY, // Start table at the current startY value
         theme: 'grid',
-        styles: { 
+        styles: {
           fontSize: fontSize,
-           minCellHeight: minHeightHeaderCol
-         
+          minCellHeight: minHeightHeaderCol
+
         },
         columnStyles: {
-            // Set columns 0 to 16 to be center aligned
-            0: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-            1: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-            2: { halign: 'left'   ,valign:'middle', minCellHeight:minHeightBodyCell},
-            3: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-            4: { halign: 'left'   ,valign:'middle', cellWidth: 40 , minCellHeight:minHeightBodyCell},
-            5: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-            6: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-            7: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-            8: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-            9: { halign: 'center' ,valign:'middle', minCellHeight:minHeightBodyCell},
-            10: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell},
-            11: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell},
-            12: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell},
-            13: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell},
-            14: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell},
-            15: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell},
-            16: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell},
+          // Set columns 0 to 16 to be center aligned
+          0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
+          3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          4: { halign: 'left', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
+          5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         },
         headStyles: headStyles, // Custom header styles
-        bodyStyles: { 
+        bodyStyles: {
           fillColor: [255, 255, 255],
           halign: 'left', // Left-align content for body by default
           valign: 'middle', // Vertically align content
-         },
+        },
         didDrawPage: (data: any) => {
           const pageCount = pdf.getNumberOfPages();
-        
-          if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+
+          if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
           // Capture the final Y position of the table
           lastTableFinalY = data.cursor.y;
-          var pg = pagePositions.find(p=>p.page==pageCount);
-          if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+          var pg = pagePositions.find(p => p.page == pageCount);
+          if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
         },
       });
-  
+
     }
-  
+
     const totalPages = pdf.getNumberOfPages();
-  
-   
+
+
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0, 0], 0);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer=13;
+      var lineBuffer = 13;
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
-  
+
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 
- 
+  addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
+    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
-  
-addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
-  const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-  const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+    pdf.setFontSize(14); // Title font size
+    pdf.text(title, titleX, 15); // Position it at the top
 
-  pdf.setFontSize(14); // Title font size
-  pdf.text(title, titleX, 15); // Position it at the top
+    // Draw underline for the title
+    pdf.setLineWidth(0.5); // Set line width for underline
+    pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
+  }
 
-  // Draw underline for the title
-  pdf.setLineWidth(0.5); // Set line width for underline
-  pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
-}
-  
-async addHeaderWithCompanyLogo_Portriat(
-  pdf: jsPDF,
-  pageWidth: number,
-  topMargin: number,
-  bottomMargin: number,
-  leftMargin: number,
-  rightMargin: number
-) {
-  // Set dashed line pattern
-  pdf.setLineDashPattern([1, 1], 0.5);
+  async addHeaderWithCompanyLogo_Portriat(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number
+  ) {
+    // Set dashed line pattern
+    pdf.setLineDashPattern([1, 1], 0.5);
 
-  // Draw top line
-  pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
+    // Draw top line
+    pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
 
-  // Define header height
-  const heightHeader: number = 30;
+    // Define header height
+    const heightHeader: number = 30;
 
-  // Draw bottom line
-  pdf.line(leftMargin, topMargin + heightHeader,  (pageWidth - rightMargin), topMargin + heightHeader);
+    // Draw bottom line
+    pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
 
-  // Add company name
-  pdf.setFontSize(18);
-  const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
-  let posX = pageWidth / 1.75;
-  let posY = topMargin + 8;
-  pdf.text(customerInfo.companyName, posX, posY);
+    // Add company name
+    pdf.setFontSize(18);
+    const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
+    let posX = pageWidth / 1.75;
+    let posY = topMargin + 8;
+    pdf.text(customerInfo.companyName, posX, posY);
 
-  // Add company address
-  pdf.setFontSize(10);
-  posX -= 5;
-  posY += 7;
-  pdf.text(customerInfo.companyAddress, posX, posY);
+    // Add company address
+    pdf.setFontSize(10);
+    posX -= 5;
+    posY += 7;
+    pdf.text(customerInfo.companyAddress, posX, posY);
 
-  // Add phone, fax, and website
-  let nextLine = `${this.translatedLangText.PHONE}:${customerInfo.companyPhone} ${this.translatedLangText.FAX}:${customerInfo.companyFax} ${this.translatedLangText.WEB}:${customerInfo.companyWebsite}`;
-  posX -= 20;
-  posY += 5;
-  pdf.text(nextLine, posX, posY);
+    // Add phone, fax, and website
+    let nextLine = `${this.translatedLangText.PHONE}:${customerInfo.companyPhone} ${this.translatedLangText.FAX}:${customerInfo.companyFax} ${this.translatedLangText.WEB}:${customerInfo.companyWebsite}`;
+    posX -= 20;
+    posY += 5;
+    pdf.text(nextLine, posX, posY);
 
-  // Add company UEN
-  nextLine = `${this.translatedLangText.CRN}:${customerInfo.companyUen}`;
-  posX += 35;
-  posY += 5;
-  pdf.text(nextLine, posX, posY);
+    // Add company UEN
+    nextLine = `${this.translatedLangText.CRN}:${customerInfo.companyUen}`;
+    posX += 35;
+    posY += 5;
+    pdf.text(nextLine, posX, posY);
 
-  // Load and add company logo
-  const imgUrl = "assets/images/logo.png";
-  const img = new Image();
+    // Load and add company logo
+    const imgUrl = "assets/images/logo.png";
+    const img = new Image();
 
-  // Wait for the image to load
-  await new Promise<void>((resolve, reject) => {
-    img.onload = () => resolve();
-    img.onerror = () => reject(new Error('Failed to load image'));
-    img.src = imgUrl;
-  });
+    // Wait for the image to load
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = imgUrl;
+    });
 
-  // Add the image to the PDF
-  const posX1_img = leftMargin+5;
-  const posY1_img = topMargin+10;
-  const imgHeight = heightHeader-21;
-  const imgWidth = 60;
-  pdf.addImage(img, 'PNG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
-}
+    // Add the image to the PDF
+    const posX1_img = leftMargin + 5;
+    const posY1_img = topMargin + 10;
+    const imgHeight = heightHeader - 21;
+    const imgWidth = 60;
+    pdf.addImage(img, 'PNG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
+  }
 
   addHeader(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-  
+
     pdf.setFontSize(14); // Title font size
     pdf.text(title, titleX, 15); // Position it at the top
-  
+
     // Draw underline for the title
     pdf.setLineWidth(0.5); // Set line width for underline
     pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
@@ -1093,43 +1089,43 @@ async addHeaderWithCompanyLogo_Portriat(
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
     let totalPages = 0;
-  
+
     // Store page positions for later text update
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
-  
+
     const reportTitle = this.translatedLangText.REPORT_TITLE;  // Set your report title here
-  
+
     // Set font for the title
     pdf.setFontSize(14); // Title font size
-  
+
     for (let i = 0; i < cardElements.length; i++) {
       const card = cardElements[i];
-  
+
       // Convert card to image (JPEG format)
       const canvas = await html2canvas(card, { scale: this.scale });
       const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
-  
+
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-  
+
       // Add the report title at the top of every page, centered
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
       const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
-  
-      const pos=15;
+
+      const pos = 15;
       // pdf.text(reportTitle, titleX, pos); // Position it at the top
-  
+
       // // Draw underline for the title
       // pdf.setLineWidth(0.5); // Set line width for underline
       // pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
-  
+
       // If card height exceeds A4 page height, split across multiple pages
       if (imgHeight > 270) { // 297mm (A4 height) - 20mm (top & bottom margins)
         let yPosition = 0;
-        let maxItemPerPage=this.maxItemPerPage;
-        let counter=1;
-        while (yPosition !=-1) {
-         // Serialize the element to XML string
+        let maxItemPerPage = this.maxItemPerPage;
+        let counter = 1;
+        while (yPosition != -1) {
+          // Serialize the element to XML string
           const serializer = new XMLSerializer();
           const xmlString = serializer.serializeToString(card);
 
@@ -1144,133 +1140,123 @@ async addHeaderWithCompanyLogo_Portriat(
           const rows = clonedCard.querySelectorAll("tr.ng-star-inserted");
 
           rows.forEach((row: Element, index: number) => {
-            if (index<((counter-1)*maxItemPerPage)|| index >= (counter*maxItemPerPage)) {
+            if (index < ((counter - 1) * maxItemPerPage) || index >= (counter * maxItemPerPage)) {
               row.remove();
             }
           });
-          
+
           this.pdfTable.nativeElement.appendChild(clonedCard);
           const canvas = await html2canvas(clonedCard, { scale: this.scale });
           const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
-      
+
           const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
           pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
-  
+
           // Store page position for page numbering
           pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-          const bal = rows.length-(counter*maxItemPerPage);
-          if(bal>0)pdf.addPage();
+          const bal = rows.length - (counter * maxItemPerPage);
+          if (bal > 0) pdf.addPage();
           else break;
           counter++;
         }
       } else {
         if (i > 0) pdf.addPage(); // New page for each card
         pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
-  
+
         pdf.text(reportTitle, titleX, pos); // Position it at the top
-  
+
         // Draw underline for the title
         pdf.setLineWidth(0.5); // Set line width for underline
-        pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
+        pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
         // Store page position for page numbering
         pagePositions.push({ page: pageNumber, x: 200, y: 287 });
       }
       pageNumber++;
       this.generatingPdfProgress += progressValue;
     }
-  
+
     totalPages = pageNumber - 1;
-  
+
     // Add page numbers in a second pass
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setPage(page);
       pdf.setFontSize(10);
       pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
-  
+
     this.generatingPdfProgress = 100;
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
   }
 
- 
 
-   GeneratedDate():string
-   {
-     return  Utility.convertDateToStr(new Date());
-   }
 
-   displayCleanCost(item:report_billing_item):string
-   {
-     let retval:string='';
+  GeneratedDate(): string {
+    return Utility.convertDateToStr(new Date());
+  }
 
-      retval = (item.clean_cost==="0.00" || item.clean_cost===undefined?'':`${item.clean_cost}`)
-     return retval;
-   }
-   displayStorageCost(item:report_billing_item):string
-   {
-     let retval:string='';
+  displayCleanCost(item: report_billing_item): string {
+    let retval: string = '';
 
-      retval = (item.storage_cost==="0.00" || item.storage_cost===undefined?'':`${item.storage_cost}`)
-     return retval;
-   }
-   displaySteamCost(item:report_billing_item):string
-   {
-     let retval:string='';
+    retval = (item.clean_cost === "0.00" || item.clean_cost === undefined ? '' : `${item.clean_cost}`)
+    return retval;
+  }
+  displayStorageCost(item: report_billing_item): string {
+    let retval: string = '';
 
-      retval = (item.steam_cost==="0.00"|| item.steam_cost===undefined?'':`${item.steam_cost}`)
-     return retval;
-   }
-   displayRepairCost(item:report_billing_item):string
-   {
-     let retval:string='';
+    retval = (item.storage_cost === "0.00" || item.storage_cost === undefined ? '' : `${item.storage_cost}`)
+    return retval;
+  }
+  displaySteamCost(item: report_billing_item): string {
+    let retval: string = '';
 
-      retval = (item.repair_cost==="0.00" || item.repair_cost===undefined?'':`${item.repair_cost}`)
-     return retval;
-   }
+    retval = (item.steam_cost === "0.00" || item.steam_cost === undefined ? '' : `${item.steam_cost}`)
+    return retval;
+  }
+  displayRepairCost(item: report_billing_item): string {
+    let retval: string = '';
 
-   displayResidueCost(item:report_billing_item):string
-   {
-     let retval:string='';
+    retval = (item.repair_cost === "0.00" || item.repair_cost === undefined ? '' : `${item.repair_cost}`)
+    return retval;
+  }
 
-      retval = (item.residue_cost==="0.00" || item.residue_cost===undefined?'':`${item.residue_cost}`)
-     return retval;
-   }
+  displayResidueCost(item: report_billing_item): string {
+    let retval: string = '';
 
-   displayLOLOCost(item:report_billing_item):string
-   {
-     let retval:string='';
+    retval = (item.residue_cost === "0.00" || item.residue_cost === undefined ? '' : `${item.residue_cost}`)
+    return retval;
+  }
 
-      retval = (item.lolo_cost==="0.00" || item.lolo_cost===undefined?'':`${item.lolo_cost}`)
-     return retval;
-   }
+  displayLOLOCost(item: report_billing_item): string {
+    let retval: string = '';
 
-   displayPreinsCost(item:report_billing_item):string
-   {
-     let retval:string='';
+    retval = (item.lolo_cost === "0.00" || item.lolo_cost === undefined ? '' : `${item.lolo_cost}`)
+    return retval;
+  }
 
-      retval = (item.preins_cost==="0.00" || item.preins_cost===undefined?'':`${item.preins_cost}`)
-     return retval;
-   }
+  displayPreinsCost(item: report_billing_item): string {
+    let retval: string = '';
 
-   displayGateIOCost(item:report_billing_item):string
-      {
-        let retval:string='';
-   
-         retval = (item.gateio_cost==="0.00" || item.gateio_cost===undefined?'':`${item.gateio_cost}`)
-        return retval;
-      }
+    retval = (item.preins_cost === "0.00" || item.preins_cost === undefined ? '' : `${item.preins_cost}`)
+    return retval;
+  }
 
-   displayTotalCost(Cust:report_billing_customer):string
-   {
-     const total = Cust.items?.reduce((accumulator, item) => {
+  displayGateIOCost(item: report_billing_item): string {
+    let retval: string = '';
+
+    retval = (item.gateio_cost === "0.00" || item.gateio_cost === undefined ? '' : `${item.gateio_cost}`)
+    return retval;
+  }
+
+  displayTotalCost(Cust: report_billing_customer): string {
+    const total = Cust.items?.reduce((accumulator, item) => {
       return accumulator + (Number(item.total || 0)); // Add item.total to the accumulator (default to 0 if item.total is undefined)
     }, 0); // Start with an initial value of 0
-  
+
     // Return the total as a string
 
-    return (total||0).toFixed(2);
-   }
-  
+    return (total || 0).toFixed(2);
+  }
+
 }
