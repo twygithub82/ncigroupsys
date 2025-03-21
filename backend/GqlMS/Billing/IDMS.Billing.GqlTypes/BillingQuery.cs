@@ -207,7 +207,7 @@ namespace IDMS.Billing.GqlTypes
                                                                customer_name = cc.name,
                                                                owner_code = occ.code,
                                                                last_test_type = tf.last_test_cv == "2.5" ? "2.5 Year (Air)" :
-                                                                            tf.next_test_cv == "5" ? "5 Year (Hydro)" : null,
+                                                                            tf.last_test_cv == "5" ? "5 Year (Hydro)" : null,
                                                                class_cv = tf.test_class_cv,
                                                                test_dt = tf.test_dt,
                                                                next_test_type = tf.next_test_cv == "2.5" ? "2.5 Year (Air)" :
@@ -1016,7 +1016,7 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        public async Task<MonthlyRevenue> QueryMonthlyRevenueReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        public async Task<MonthlyRevenue> QueryMonthlyProcessReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
              [Service] IHttpContextAccessor httpContextAccessor, MontlyRevenueRequest monthlyRevenueRequest)
         {
             try
@@ -1104,7 +1104,7 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        public async Task<YearlyRevenue> QueryYearlyRevenueReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        public async Task<YearlyRevenue> QueryYearlyProcessReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, YearlyRevenueRequest yearlyRevenueRequest)
         {
             try
