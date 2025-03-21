@@ -751,8 +751,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           console.log(`sot: `, data)
           this.sot = data[0];
+          this.canAddPurpose('steaming');
           
-
           this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
           this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
             console.log(`packageDepot: `, data)
@@ -809,6 +809,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           console.log(`cleaning: `, data)
           this.cleaningItem = data;
+          this.canAddPurpose('cleaning');
         }
       });
       this.subs.sink = this.repairDS.getRepairForMovement(this.sot_guid).subscribe(data => {
@@ -816,6 +817,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           console.log(`repair: `, data);
           this.repairItem = data;
           this.displayColumnChanged();
+          this.canAddPurpose('repair');
         }
       });
       this.subs.sink = this.bkDS.getBookingForMovement(this.sot_guid).subscribe(data => {
@@ -1628,7 +1630,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (selectedPurpose !== 'repair') {
           return !value;
         } else {
-          return value === '';
+          return value === '' || value === undefined || value === null;
         }
       }
     }
