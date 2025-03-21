@@ -544,7 +544,7 @@ export class Utility {
     }
   }
 
-  static previewPDF(pdf: jsPDF, filename: string) {
+  static previewPDF(pdf: jsPDF,fileName: string = 'document.pdf') {
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
 
@@ -552,7 +552,7 @@ export class Utility {
   const newWindow = window.open(blobUrl, '_blank');
 
     if (!newWindow) {
-      pdf.save(filename);
+      pdf.save(fileName);
     } else {
       // Cleanup the URL after some time
       setTimeout(() => {
