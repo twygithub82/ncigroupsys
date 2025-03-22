@@ -1760,19 +1760,18 @@ textarea,
   position: relative;
 }
 
-// .nav .menuIcon {
-//   font-size: 21px !important;
-// }
-
-// .nav-toggle {
-//   display: inline-block !important;
-
-//   button {
-//     transform: translate(-30%, -50%) !important;
-//     position: fixed !important;
-//   }
-// }
-
 .nav-item.nav-toggle a {
   margin-left: 18px !important;
+}
+
+.w-40 {
+  width: 40% !important;
+}
+
+.w-30 {
+  width: 30% !important;
+}
+
+.w-33 {
+  width: 33.33333% !important;
 }
