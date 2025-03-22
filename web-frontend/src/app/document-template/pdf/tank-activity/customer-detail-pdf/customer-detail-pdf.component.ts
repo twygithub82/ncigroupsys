@@ -1428,7 +1428,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     var lastTest: string = '';
     this.removeDeletedInGateAndOutGate(sot);
 
-    if (sot.in_gate?.length) {
+    if (sot.in_gate?.[0]?.in_gate_survey) {
       var last_test_dt: Date = new Date();
       if (sot.in_gate?.[0]?.in_gate_survey?.test_dt) {
         last_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date || new Date();
@@ -1442,7 +1442,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
     }
 
-    if (sot.out_gate?.length) {
+    if (sot.out_gate?.[0]?.out_gate_survey) {
       var last_test_dt: Date = new Date();
       if (sot.out_gate?.[0]?.out_gate_survey?.test_dt) {
         last_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date || new Date();
@@ -1468,8 +1468,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     var yearsToAdd = 2.5;
     var next_test_dt: Date = new Date();
     this.removeDeletedInGateAndOutGate(sot);
-    if (sot.in_gate?.length) {
-
+    if (sot.in_gate?.[0]?.in_gate_survey) {
       if (sot.in_gate?.[0]?.in_gate_survey?.test_dt) {
         next_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date || new Date();
       }
@@ -1483,7 +1482,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
     }
 
-    if (sot.out_gate?.length) {
+    if (sot.out_gate?.[0]?.out_gate_survey) {
       nextTest = "";
       if (sot.out_gate?.[0]?.out_gate_survey?.test_dt) {
         next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date || new Date();
@@ -1517,7 +1516,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
   DisplayRemarks(sot: StoringOrderTankItem): string {
 
-    return sot?.remarks || '';
+    return sot?.tank_note || '';
   }
 
   DisplayCustomerName(repCustomer: report_customer_tank_activity) {
