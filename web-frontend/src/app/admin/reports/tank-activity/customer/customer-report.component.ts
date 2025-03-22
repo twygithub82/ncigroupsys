@@ -39,7 +39,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activity/customer-detail-pdf/customer-detail-pdf.component';
-import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD,TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -420,7 +420,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     if (this.searchForm!.get('depot_status_cv')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
       report_type = "RELEASED";
-      var cond: any = { eq: "RELEASED" };
+      var cond: any = { in: TANK_STATUS_POST_IN_YARD };
       if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
         cond = {in:TANK_STATUS_IN_YARD}; //{ neq: "RELEASED" };
         report_type = "IN_YARD";
@@ -779,10 +779,20 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
         if (!repCust.in_yard_storing_order_tank) repCust.in_yard_storing_order_tank = [];
         if (!repCust.released_storing_order_tank) repCust.released_storing_order_tank = [];
         if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
-        if(s.tank_status_cv=="RELEASED")
-        {repCust.released_storing_order_tank?.push(s);}
-        else
-        {repCust.in_yard_storing_order_tank?.push(s);}
+
+        if(TANK_STATUS_IN_YARD.includes(s.tank_status_cv!))
+        {
+          repCust.in_yard_storing_order_tank?.push(s);
+          
+        }
+        else if (TANK_STATUS_POST_IN_YARD.includes(s.tank_status_cv!))
+        {
+          repCust.released_storing_order_tank?.push(s);
+        }
+        // if(s.tank_status_cv=="RELEASED")
+        // {repCust.released_storing_order_tank?.push(s);}
+        // else
+        // {repCust.in_yard_storing_order_tank?.push(s);}
         repCust.storing_order_tank?.push(s);
         if (newCust) report_customer_tank_acts.push(repCust);
 

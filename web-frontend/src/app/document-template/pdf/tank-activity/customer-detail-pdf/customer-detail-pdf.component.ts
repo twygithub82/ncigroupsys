@@ -1426,34 +1426,36 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   DisplayLastTest(sot: StoringOrderTankItem): string {
     var lastTest: string = '';
-    this.removeDeletedInGateAndOutGate(sot);
 
-    if (sot.in_gate?.[0]?.in_gate_survey) {
-      var last_test_dt: Date = new Date();
-      if (sot.in_gate?.[0]?.in_gate_survey?.test_dt) {
-        last_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date || new Date();
-      }
+    lastTest = Utility.DisplayLastTest(sot);
+    // this.removeDeletedInGateAndOutGate(sot);
 
-      lastTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv || "";
-      lastTest += ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`;//` ${Utility.convertDateToStr(last_test_dt)}`;
-      if (sot.in_gate?.[0]?.in_gate_survey?.last_test_cv) {
-        lastTest += ` ${(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv == "2.5" ? "(A)" : "(H)")}`;
-      }
-      //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    }
+    // if (sot.in_gate?.[0]?.in_gate_survey) {
+    //   var last_test_dt: Date = new Date();
+    //   if (sot.in_gate?.[0]?.in_gate_survey?.test_dt) {
+    //     last_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date || new Date();
+    //   }
 
-    if (sot.out_gate?.[0]?.out_gate_survey) {
-      var last_test_dt: Date = new Date();
-      if (sot.out_gate?.[0]?.out_gate_survey?.test_dt) {
-        last_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date || new Date();
-      }
+    //   lastTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv || "";
+    //   lastTest += ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`;//` ${Utility.convertDateToStr(last_test_dt)}`;
+    //   if (sot.in_gate?.[0]?.in_gate_survey?.last_test_cv) {
+    //     lastTest += ` ${(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv == "2.5" ? "(A)" : "(H)")}`;
+    //   }
+    //   //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+    // }
 
-      lastTest = sot.out_gate?.[0]?.out_gate_survey?.test_class_cv || "";
-      lastTest += ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`; //` ${Utility.convertDateToStr(last_test_dt)}`;
-      if (sot.out_gate?.[0]?.out_gate_survey?.last_test_cv) {
-        lastTest += ` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv == "2.5" ? "(A)" : "(H)")}`;
-      }
-    }
+    // if (sot.out_gate?.[0]?.out_gate_survey) {
+    //   var last_test_dt: Date = new Date();
+    //   if (sot.out_gate?.[0]?.out_gate_survey?.test_dt) {
+    //     last_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date || new Date();
+    //   }
+
+    //   lastTest = sot.out_gate?.[0]?.out_gate_survey?.test_class_cv || "";
+    //   lastTest += ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`; //` ${Utility.convertDateToStr(last_test_dt)}`;
+    //   if (sot.out_gate?.[0]?.out_gate_survey?.last_test_cv) {
+    //     lastTest += ` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv == "2.5" ? "(A)" : "(H)")}`;
+    //   }
+    // }
     // if (this.queryType == 1) {
     //   //lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
     // }
@@ -1465,35 +1467,36 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   DisplayNextTest(sot: StoringOrderTankItem): string {
     var nextTest: string = '';
-    var yearsToAdd = 2.5;
-    var next_test_dt: Date = new Date();
-    this.removeDeletedInGateAndOutGate(sot);
-    if (sot.in_gate?.[0]?.in_gate_survey) {
-      if (sot.in_gate?.[0]?.in_gate_survey?.test_dt) {
-        next_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date || new Date();
-      }
+    nextTest = Utility.DisplayNextTest(sot);
+    // var yearsToAdd = 2.5;
+    // var next_test_dt: Date = new Date();
+    // this.removeDeletedInGateAndOutGate(sot);
+    // if (sot.in_gate?.[0]?.in_gate_survey) {
+    //   if (sot.in_gate?.[0]?.in_gate_survey?.test_dt) {
+    //     next_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date || new Date();
+    //   }
 
-      next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-      // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-      nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;//` ${Utility.convertDateToStr(next_test_dt)}`;
-      if (sot.in_gate?.[0]?.in_gate_survey?.last_test_cv) {
-        nextTest += ` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv == "2.5" ? "(A)" : "(H)")}`;
-      }
-      //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    }
+    //   next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
+    //   // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+    //   nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;//` ${Utility.convertDateToStr(next_test_dt)}`;
+    //   if (sot.in_gate?.[0]?.in_gate_survey?.last_test_cv) {
+    //     nextTest += ` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv == "2.5" ? "(A)" : "(H)")}`;
+    //   }
+    //   //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+    // }
 
-    if (sot.out_gate?.[0]?.out_gate_survey) {
-      nextTest = "";
-      if (sot.out_gate?.[0]?.out_gate_survey?.test_dt) {
-        next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date || new Date();
-      }
-      next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-      //nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-      nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;
-      if (sot.out_gate?.[0]?.out_gate_survey?.last_test_cv) {
-        nextTest += ` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv == "2.5" ? "(A)" : "(H)")}`;
-      }
-    }
+    // if (sot.out_gate?.[0]?.out_gate_survey) {
+    //   nextTest = "";
+    //   if (sot.out_gate?.[0]?.out_gate_survey?.test_dt) {
+    //     next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date || new Date();
+    //   }
+    //   next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
+    //   //nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
+    //   nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;
+    //   if (sot.out_gate?.[0]?.out_gate_survey?.last_test_cv) {
+    //     nextTest += ` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv == "2.5" ? "(A)" : "(H)")}`;
+    //   }
+    // }
     return nextTest;
   }
 

@@ -1122,13 +1122,14 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
 
   DisplayLastTest(sot: StoringOrderTankItem): string {
     var lastTest: string = '';
-    this.removeDeletedInGateAndOutGate(sot);
-    if (this.queryType == 1) {
-      lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
-    }
-    else {
-      lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
-    }
+    lastTest=Utility.DisplayLastTest(sot);
+    // this.removeDeletedInGateAndOutGate(sot);
+    // if (this.queryType == 1) {
+    //   lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+    // }
+    // else {
+    //   lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
+    // }
     return lastTest;
   }
 
@@ -1203,14 +1204,15 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
 
   DisplayNextTest(sot: StoringOrderTankItem): string {
     var nextTest: string = '';
-    this.removeDeletedInGateAndOutGate(sot);
-    if (sot.in_gate?.length) {
-      nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    }
+    nextTest=Utility.DisplayNextTest(sot);
+    // this.removeDeletedInGateAndOutGate(sot);
+    // if (sot.in_gate?.length) {
+    //   nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+    // }
 
-    if (sot.out_gate?.length) {
-      nextTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    }
+    // if (sot.out_gate?.length) {
+    //   nextTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.next_test_cv, this.testTypeCvList) || '';
+    // }
     return nextTest;
   }
 

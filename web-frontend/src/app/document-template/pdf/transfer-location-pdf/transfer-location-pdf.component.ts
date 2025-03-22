@@ -629,7 +629,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     lastTableFinalY += 8;
     pdf.setFontSize(8);
     const invDate = `${this.translatedLangText.TRANSFER_PERIOD}:${this.date}`;
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+5, lastTableFinalY, 8);
 
     var CurrentPage = 1;
     var buffer = 20;

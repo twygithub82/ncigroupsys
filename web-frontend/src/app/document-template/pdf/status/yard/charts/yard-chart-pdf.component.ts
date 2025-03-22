@@ -383,11 +383,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
   }
   ngAfterViewInit() {
-    var timeout=5000;
-    setTimeout(() => {
-      this.onDownloadClick();
-    }, timeout);
-    //this.onDownloadClick();
+   
   }
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
@@ -795,11 +791,11 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   async exportToPDF_r1(fileName: string = 'document.pdf') {
-    const pageWidth = 297; // A4 width in mm (landscape)
-    const pageHeight = 220; // A4 height in mm (landscape)
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10;
     const rightMargin = 10;
-    const topMargin = 8;
+    const topMargin = 5;
     const bottomMargin = 5;
     const contentWidth = pageWidth - leftMargin - rightMargin;
     const maxContentHeight = pageHeight - topMargin - bottomMargin;
@@ -807,7 +803,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
 
-    const pdf = new jsPDF('l', 'mm', 'a4');
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
 
     let pageNumber = 1;
 
@@ -818,7 +814,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
 
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.clearfix');
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     const reportTitle = this.GetReportTitle();
 
 
@@ -840,8 +836,18 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     Utility.AddTextAtCenterPage(pdf, repGenDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
 
     let chartContentWidth = pageWidth - leftMargin - rightMargin;
-    if (cardElements.length > 0) {
-      const card1 = cardElements[0];
+    pagePositions.push({page:1,x:0,y:0});
+    for(var i=0; i<cardElements.length;i++)
+    //if (cardElements.length > 0) 
+      {
+        
+        if(i>0) 
+        {
+          pdf.addPage();
+          Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+          pagePositions.push({page:pdf.getNumberOfPages(),x:0,y:0});
+        }
+      const card1 = cardElements[i];
       const canvas1 = await html2canvas(card1, { scale: scale });
       const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
 
@@ -868,7 +874,10 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     const totalPages = pdf.getNumberOfPages();
 
 
-    pagePositions.forEach(({ page, x, y }) => {
+    //pagePositions.forEach(({ page, x, y }) => {
+    for(var pg=0;pg<pdf.getNumberOfPages();pg++)
+    {
+      var page=pg+1;
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0, 0], 0);
@@ -877,8 +886,8 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       var lineBuffer = 13;
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
-
+    //});
+    }
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     //pdf.save(fileName);
@@ -1383,16 +1392,16 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   onChartRendered() {
-    //    this.chartAnimatedCounter++;
-    //  // if(this.chartAnimatedCounter==2)
-    //    {
-    //      var timeout=3000;
-    //       setTimeout(() => {
-    //         this.onDownloadClick();
-    //       }, timeout);
+        this.chartAnimatedCounter++;
+    if(this.chartAnimatedCounter==2)
+       {
+         var timeout=3000;
+          setTimeout(() => {
+            this.onDownloadClick();
+          }, timeout);
 
-    //      //this.onDownloadClick();
-    //    }
+         //this.onDownloadClick();
+       }
   }
 
 }
