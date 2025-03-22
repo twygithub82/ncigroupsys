@@ -347,12 +347,10 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   }
 
   search(report_type: number) {
-
     this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
-
 
     where.tank_status_cv = { in: TANK_STATUS_IN_YARD }; //{ neq: "RELEASED" };
 
@@ -378,13 +376,11 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     if (this.searchForm?.get('yard')?.value) {
       var yards: string[] = this.searchForm!.get('yard')?.value?.map((y: any) => y.code_val) || [];
 
-      var cond: any = { yard_cv: { in: yards } };
-      if (!where.in_gate) {
-        where.in_gate = {};
-        where.in_gate.some = {};
-        where.in_gate.some.and = [];
+      where.tank_info = {
+        and: [
+          { yard_cv: { in: yards } }
+        ]
       }
-      where.in_gate.some.and.push(cond);
       cond_counter++;
     }
 
