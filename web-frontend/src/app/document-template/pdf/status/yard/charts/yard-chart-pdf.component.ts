@@ -1139,7 +1139,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     // pie chart
     this.pieChartOptions = {
       chart: {
-        width: 750,
+        width: 550,
         type: 'pie',
         foreColor: '#9aa0ac',
         toolbar: {
