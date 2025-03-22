@@ -361,7 +361,7 @@ export class Utility {
     // Handle string to number
     if (typeof input === 'string') {
       // Check if the string is a valid number
-      const num = Number(input);
+      const num = Number(input.replace(/,/g, ''));
       if (!isNaN(num)) {
         return parseFloat(num.toFixed(decimals)); // Convert to number and round
       }
@@ -447,10 +447,25 @@ export class Utility {
     }
     return await response.blob();
   }
-  static formatNumberDisplay(input: number | string | undefined): string {
-    const formattedNumber = Math.round(Number(input || 0) * 100) / 100;
-    return formattedNumber.toFixed(2);
+
+  static formatNumberDisplay(input: number | string | undefined, locale: string = 'en-US'): string {
+    if (!input) {
+      return '';
+    }
+
+    const numericValue = typeof input === 'string' ? parseFloat(input.replace(/,/g, '')) : input;
+
+    if (isNaN(numericValue)) {
+      return '';
+    }
+
+    return new Intl.NumberFormat(locale, {
+      style: 'decimal',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(numericValue);
   }
+
   static getBackgroundColorFromNature(natureCv: string | undefined) {
     var color = 'orange';
     switch (natureCv) {
@@ -482,9 +497,6 @@ export class Utility {
     return color;
   }
 
-
-
-
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number) {
     pdf.setFontSize(fontSize); // Title font size 
     pdf.text(content, leftPost, topPos); // Position it at the top
@@ -495,20 +507,18 @@ export class Utility {
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
-
     pdf.text(title, titleX, topPosition); // Position it at the top
 
     pdf.setLineDashPattern([0, 0], 0);
     // Draw underline for the title
     pdf.setLineWidth(0.1); // Set line width for underline
-    pdf.line(titleX, topPosition + 2, titleX + titleWidth+1, topPosition + 2); // Draw the line under the title
+    pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) - rightMargin; // Centering the title
-
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
@@ -522,7 +532,6 @@ export class Utility {
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
@@ -544,12 +553,12 @@ export class Utility {
     }
   }
 
-  static previewPDF(pdf: jsPDF,fileName: string = 'document.pdf') {
+  static previewPDF(pdf: jsPDF, fileName: string = 'document.pdf') {
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
 
-  // Try opening in a new window
-  const newWindow = window.open(blobUrl, '_blank');
+    // Try opening in a new window
+    const newWindow = window.open(blobUrl, '_blank');
 
     if (!newWindow) {
       pdf.save(fileName);

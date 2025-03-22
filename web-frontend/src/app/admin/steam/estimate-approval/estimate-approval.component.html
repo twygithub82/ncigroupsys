@@ -142,7 +142,6 @@
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.TANK_STATUS }}</mat-label>
                       <mat-select formControlName="tank_status" multiple>
-
                         @for (ts of tankStatusCvList; track ts) {
                         @if (availableTankStatus.includes(ts.code_val ?? '')) {
                         <mat-option [value]="ts.code_val">

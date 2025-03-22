@@ -46,5 +46,4 @@ export const reportPreviewWindowDimension = {
   report_maxHeight: '85vh'
 };
 
-
 export const refreshTokenWithin: number = 1200000;

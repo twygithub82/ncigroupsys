@@ -102,9 +102,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     'unit_price',
     'hour',
     'cost',
-    'approve_part',
-    "actions"
-
+    'approve_part'
   ];
   footerColumns1 = [
     'seq',
@@ -114,8 +112,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     'unit_price',
     'hour',
     'cost',
-    "actions"
-
+    'approve_part'
   ];
 
 

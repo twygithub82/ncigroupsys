@@ -207,7 +207,7 @@ namespace IDMS.Billing.GqlTypes
                                                                customer_name = cc.name,
                                                                owner_code = occ.code,
                                                                last_test_type = tf.last_test_cv == "2.5" ? "2.5 Year (Air)" :
-                                                                            tf.next_test_cv == "5" ? "5 Year (Hydro)" : null,
+                                                                            tf.last_test_cv == "5" ? "5 Year (Hydro)" : null,
                                                                class_cv = tf.test_class_cv,
                                                                test_dt = tf.test_dt,
                                                                next_test_type = tf.next_test_cv == "2.5" ? "2.5 Year (Air)" :
@@ -1016,19 +1016,19 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        public async Task<MonthlyRevenue> QueryMonthlyRevenueReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
-             [Service] IHttpContextAccessor httpContextAccessor, MontlyRevenueRequest monthlyRevenueRequest)
+        public async Task<MonthlyRevenue> QueryMonthlyProcessReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
+             [Service] IHttpContextAccessor httpContextAccessor, MonthlyProcessRequest monthlyProcessRequest)
         {
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
                 //List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}", $"{ProcessType.RESIDUE}" };
-                if (!ProcessType.ProcessList.ContainsIgnore(monthlyRevenueRequest.report_type))
+                if (!ProcessType.ProcessList.ContainsIgnore(monthlyProcessRequest.report_type))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
-                int year = monthlyRevenueRequest.year;
-                int month = monthlyRevenueRequest.month;
+                int year = monthlyProcessRequest.year;
+                int month = monthlyProcessRequest.month;
                 string completedStatus = "COMPLETED";
                 string qcCompletedStatus = "QC_COMPLETED";
 
@@ -1042,7 +1042,7 @@ namespace IDMS.Billing.GqlTypes
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
 
-                var resultList = await RetriveRevenueReportResult(context, monthlyRevenueRequest.report_type, startEpoch, endEpoch, monthlyRevenueRequest.customer_code);
+                var resultList = await RetriveRevenueReportResult(context, monthlyProcessRequest.report_type, startEpoch, endEpoch, monthlyProcessRequest.customer_code);
 
                 // Convert epoch timestamp to local date (yyyy-MM-dd)
                 foreach (var item in resultList)
@@ -1104,8 +1104,8 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        public async Task<YearlyRevenue> QueryYearlyRevenueReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, YearlyRevenueRequest yearlyRevenueRequest)
+        public async Task<YearlyRevenue> QueryYearlyProcessReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, YearlyProcessRequest yearlyProcessRequest)
         {
             try
             {
@@ -1113,12 +1113,12 @@ namespace IDMS.Billing.GqlTypes
 
                 //List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}" };
 
-                if (!ProcessType.ProcessList.ContainsIgnore(yearlyRevenueRequest.report_type))
+                if (!ProcessType.ProcessList.ContainsIgnore(yearlyProcessRequest.report_type))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
-                int year = yearlyRevenueRequest.year;
-                int start_month = yearlyRevenueRequest.start_month;
-                int end_month = yearlyRevenueRequest.end_month;
+                int year = yearlyProcessRequest.year;
+                int start_month = yearlyProcessRequest.start_month;
+                int end_month = yearlyProcessRequest.end_month;
                 string completedStatus = "COMPLETED";
                 string qcCompletedStatus = "QC_COMPLETED";
 
@@ -1134,7 +1134,7 @@ namespace IDMS.Billing.GqlTypes
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
 
-                var resultList = await RetriveRevenueReportResult(context, yearlyRevenueRequest.report_type, startEpoch, endEpoch, yearlyRevenueRequest.customer_code);
+                var resultList = await RetriveRevenueReportResult(context, yearlyProcessRequest.report_type, startEpoch, endEpoch, yearlyProcessRequest.customer_code);
 
                 // Convert epoch timestamp to local date (yyyy-MM-dd)
                 foreach (var item in resultList)
