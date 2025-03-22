@@ -1128,28 +1128,28 @@ export const ROUTES: RouteInfo[] = [
       }
     ].filter(item => item.visible !== false),
   },
-  // {
-  //   path: "admin/admin-reports",
-  //   title: "MENUITEMS.ADMIN-REPORTS.TEXT",
-  //   iconType: "material",
-  //   icon: "assessment",
-  //   class: "menu-toggle",
-  //   groupTitle: false,
-  //   badge: "",
-  //   badgeClass: "",
-  //   submenu: [
-  //     {
-  //       path: "admin/admin-reports/steam-monthly",
-  //       title: "MENUITEMS.ADMIN-REPORTS.LIST.STEAM-MONTHLY",
-  //       iconType: "",
-  //       icon: "",
-  //       class: "ml-menu",
-  //       groupTitle: false,
-  //       badge: "",
-  //       badgeClass: "",
-  //       submenu: [],
-  //       visible: true
-  //     }
-  //   ].filter(item => item.visible !== false),
-  // },
+  {
+    path: "admin/admin-reports",
+    title: "MENUITEMS.ADMIN-REPORTS.TEXT",
+    iconType: "material",
+    icon: "assessment",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/admin-reports/main-monthly",
+        title: "MENUITEMS.ADMIN-REPORTS.LIST.MONTHLY-REPORTS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: true
+      }
+    ].filter(item => item.visible !== false),
+  },
 ];

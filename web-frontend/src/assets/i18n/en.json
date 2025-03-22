@@ -283,7 +283,9 @@
     "ADMIN-REPORTS": {
       "TEXT": "Admin Reports",
       "LIST": {
-        "STEAM-MONTHLY": "Steam Monthly"
+        "STEAM-MONTHLY": "Steam Monthly",
+        "MONTHLY-REPORTS":"Monthly Reports",
+        "YEARLY-REPORTS":"Yearly Reports"
       }
     }
   },
@@ -1057,7 +1059,21 @@
     "GATE-OUT":"Gate Out",
     "ISO-FORMAT":"ISO Format",
     "TRANSFER":"Transfer",
-    "EIR":"EIR"
+    "EIR":"EIR",
+    "YEAR":"Year",
+    "MONTH":"Month",
+    "STEAM-REPORT":"Steam Report",
+    "REPAIR-REPORT":"Repair Report",
+    "RESIDUE-REPORT":"Residue Disposal Report",
+    "CLEAN-REPORT":"Cleaning Report",
+    "STEAM-MONTHLY-OVERVIEW-REPORT":"Steam Monthly Overview Report",
+    "STEAM-MONTHLY-DETAILS-REPORT":"Steam Monthly Details Report",
+    "REPAIR-MONTHLY-OVERVIEW-REPORT":"Repair Monthly Overview Report",
+    "REPAIR-MONTHLY-DETAILS-REPORT":"Repair Monthly Details Report",
+    "CLEAN-MONTHLY-OVERVIEW-REPORT":"Cleaning Monthly Overview Report",
+    "CLEAN-MONTHLY-DETAILS-REPORT":"Cleaning Monthly Details Report",
+    "RESIDUE-MONTHLY-OVERVIEW-REPORT":"Residue Disposal Monthly Overview Report",
+    "RESIDUE-MONTHLY-DETAILS-REPORT":"Residue Disposal Monthly Details Report"
 
   },
   "CLEAN-PROCEDURES": {

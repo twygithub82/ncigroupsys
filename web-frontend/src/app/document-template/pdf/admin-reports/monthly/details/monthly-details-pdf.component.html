@@ -1,0 +1,88 @@
+<div mat-dialog-title class="ms-3 mt-3" hidden>
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  
+
+  <div id="pdf-form-body" class="pdf-container pdf-body" hidden>
+    <!-- @for (bCust of report_customer_tank_activity; track bCust) { -->
+  <div class="card">
+     
+      <div class="pdf-body">
+        <table  id="table_customer_info" class="table_customer_info">
+          <tr>
+            <td>  &nbsp; </td>
+            <td> &nbsp;</td>
+            <td class="sp20">&nbsp;</td>
+            <td class="sp">&nbsp;</td>
+            <td class="sp20">{{translatedLangText.DATE}} :{{GeneratedDate()}}</td>
+          </tr>
+        </table>
+      </div> 
+      <table id="repair-part-table" class="repair-part-table">
+        <tr class="group-header">
+          <th>{{translatedLangText.NO}}</th>
+          <th>{{translatedLangText.CUSTOMER_CODE}}</th>
+          <th>{{translatedLangText.CUSTOMER}}</th>
+          <th>{{translatedLangText.LOCATION}}</th>
+          <th>{{translatedLangText.STEAM}}</th>
+          <th>{{translatedLangText.CLEANING}}</th>
+          <th>{{translatedLangText.REPAIR}}</th>
+          <th>{{translatedLangText.STORAGE}}</th>
+          <th>{{translatedLangText.TOTAL}}</th>
+          <th>{{translatedLangText.PENDING}}</th>
+          <th>{{translatedLangText.WITH_RO}}</th>
+        </tr>
+        {{ResetIndex()}}
+        @for (itm of reportStatus; track itm;let index = $index) {
+          @for(yard of itm.yards; track yard)
+          {
+          <tr>
+            <td>{{ GetIndex() }}</td> <!-- Row number -->
+            <td class="text-center">{{ itm.code }}</td> 
+            <td class="text-center">{{ itm.customer }}</td> 
+            <td class="text-center">{{ displayLocation(yard) }}</td> 
+            <td class="text-center">{{ yard.noTank_steam }}</td> 
+            <td class="text-center">{{ yard.noTank_clean }}</td> 
+            <td class="text-center">{{ yard.noTank_repair }}</td> 
+            <td class="text-center">{{ yard.noTank_storage }}</td> 
+            <td class="text-center">{{ displayInYardTotal(yard) }}</td> 
+            <td class="text-center">{{ yard.noTank_pending }}</td> 
+            <td class="text-center">{{ yard.noTank_withRO }}</td> 
+          </tr>
+          }
+        }
+        <tr class="group-header">
+          <td colspan ="4" class="text-right">{{ translatedLangText.TOTAL }}</td> 
+          <td class="text-center">{{displayTotalSteam()}}</td>
+          <td class="text-center">{{displayTotalClean()}}</td>
+          <td class="text-center">{{displayTotalRepair()}}</td>
+          <td class="text-center">{{displayTotalStorage()}}</td>
+          <td class="text-center">{{displayTotal()}}</td>
+          <td class="text-center">{{displayTotalPending()}}</td>
+          <td class="text-center">{{displayTotalWithRO()}}</td>
+        </tr>
+      </table>
+    
+  </div>
+  <!-- } -->
+  </div>
+
+ 
+</div>
+<div mat-dialog-actions class="m-2 align-right" hidden>
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+        file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>

@@ -264,6 +264,32 @@ constructor(item: Partial<tank_survey_summary> = {}) {
   } 
 }
 
+export class ResultPerDay{
+  cost?:number;
+  count?:number;
+  date?:string;
+  day?:string;
+  constructor(item: Partial<ResultPerDay> = {}) {
+    this.cost=item.cost;
+    this.count=item.count;
+    this.date=item.date;
+    this.day=item.day;
+    
+    } 
+
+}
+export class AdminReportMonthlyReport{
+  average?:number;
+  total?:number;
+  result_per_day?:ResultPerDay;
+
+constructor(item: Partial<AdminReportMonthlyReport> = {}) {
+  this.average=item.average;
+  this.total=item.total;
+  this.result_per_day=item.result_per_day;
+  } 
+}
+
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
@@ -328,6 +354,21 @@ export const GET_TANK_SURVEY_SUMMARY = gql`
         survey_type
         tank_no
         visit
+      }
+    }
+  }
+`
+
+export const GET_ADMIN_REPORT_MONTHLY_PROCESS = gql`
+  query queryMonthlyProcessReport($monthlyRevenueRequest: MonthlyRevenueRequestInput!) {
+    resultList: queryMonthlyProcessReport(monthlyRevenueRequest: $monthlyRevenueRequest) {
+      average
+      total
+      result_per_day {
+        cost
+        count
+        date
+        day
       }
     }
   }
@@ -447,6 +488,31 @@ export class ReportDS extends BaseDataSource<any> {
   }
 
 
+  searchAdminReportMonthlyProcess(monthlyRevenueRequest:any): Observable<AdminReportMonthlyReport> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_MONTHLY_PROCESS,
+        variables: { monthlyRevenueRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList;
+        })
+      );
+  }
 }
 
 
