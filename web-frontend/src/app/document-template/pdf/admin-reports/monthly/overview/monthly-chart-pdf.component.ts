@@ -24,6 +24,7 @@ import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { AdminReportMonthlyReport, report_status } from 'app/data-sources/reports';
+import { Styles ,autoTable } from 'jspdf-autotable';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -41,6 +42,7 @@ import {
   NgApexchartsModule,
   
 } from 'ng-apexcharts';
+
 
 
 
@@ -281,6 +283,7 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
     IN_DATE: 'COMMON-FORM.IN-DATE',
     OUT_DATE: 'COMMON-FORM.OUT-DATE',
     TOTAL: 'COMMON-FORM.TOTAL',
+    MONTH:'COMMON-FORM.MONTH',
     DAYS: 'COMMON-FORM.DAYS',
     GATEIO: 'COMMON-FORM.GATEIO',
     INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
@@ -290,6 +293,12 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     TOP_TEN_CUSTOMER: 'COMMON-FORM.TOP-TEN-CUSTOMER',
+    TOTAL_TANK:'COMMON-FORM.TOTAL-TANK',
+    AVERAGE:'COMMON-FORM.AVERAGE',
+    STEAM_MONTHLY_OVERVIEW_REPORT:'COMMON-FORM.STEAM-MONTHLY-OVERVIEW-REPORT',
+    RESIDUE_MONTHLY_OVERVIEW_REPORT:'COMMON-FORM.RESIDUE-MONTHLY-OVERVIEW-REPORT',
+    REPAIR_MONTHLY_OVERVIEW_REPORT:'COMMON-FORM.REPAIR-MONTHLY-OVERVIEW-REPORT',
+    CLEAN_MONTHLY_OVERVIEW_REPORT:'COMMON-FORM.CLEAN-MONTHLY-OVERVIEW-REPORT',
   }
 
   // public pieChartOptions!: Partial<ChartOptions>;
@@ -807,8 +816,9 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
     let fontSize = 6;
     let startY = lastTableFinalY + 8;
 
-    const repGenDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`;
-    Utility.AddTextAtCenterPage(pdf, repGenDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
+    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
+
 
     let chartContentWidth = pageWidth - leftMargin - rightMargin;
     pagePositions.push({ page: 1, x: 0, y: 0 });
@@ -840,6 +850,74 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
       // Add the image to the PDF
       pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
     }
+
+
+    
+    let minHeightBodyCell = 9;
+    let fontSz = 6;
+    const headers = [[
+          this.translatedLangText.DESCRIPTION,
+          this.translatedLangText.NO_OF_TANKS
+        ]];
+    
+        // Define headStyles with valid fontStyle
+        const headStyles: Partial<Styles> = {
+          fillColor: [211, 211, 211], // Background color
+          textColor: 0, // Text color (white)
+          fontStyle: "bold", // Valid fontStyle value
+          halign: 'center', // Centering header text
+          valign: 'middle',
+          lineColor: 201,
+          lineWidth: 0.1
+        };
+
+    const comStyles: any = {
+      0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: 'auto', minCellHeight: minHeightBodyCell },
+    };
+
+    const data: any[][] = [];
+    data.push([this.translatedLangText.TOTAL_TANK, this.repData?.total]);
+    data.push([this.translatedLangText.AVERAGE, this.repData?.average]);
+   
+        let tablewidth=55;
+        startY = lastTableFinalY + 10;
+        let startX = pageWidth - rightMargin - tablewidth;
+        //Add table using autoTable plugin
+    
+        // pdf.setFontSize(8);
+        // pdf.setTextColor(0, 0, 0); // Black text
+        // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
+        // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
+    
+        autoTable(pdf, {
+          head: headers,
+          body: data,
+          startY: startY, // Start table at the current startY value
+          margin: { left: startX },
+          theme: 'grid',
+          styles: {
+            fontSize: fontSz,
+            minCellHeight: minHeightHeaderCol
+    
+          },
+          columnStyles: comStyles,
+          headStyles: headStyles, // Custom header styles
+          bodyStyles: {
+            fillColor: [255, 255, 255],
+            halign: 'center', // Left-align content for body by default
+            valign: 'middle', // Vertically align content
+          },
+          didDrawPage: (data: any) => {
+            const pageCount = pdf.getNumberOfPages();
+    
+            if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            // Capture the final Y position of the table
+            lastTableFinalY = data.cursor.y;
+            var pg = pagePositions.find(p => p.page == pageCount);
+            if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          },
+        });
 
     const totalPages = pdf.getNumberOfPages();
 
@@ -976,16 +1054,16 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
     switch(this.repType)
     {
       case "CLEANING":
-         title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`
+         title = `${this.translatedLangText.CLEAN_MONTHLY_OVERVIEW_REPORT}`
         break;
         case "STEAM":
-          title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
+          title = `${this.translatedLangText.STEAM_MONTHLY_OVERVIEW_REPORT}`
         break;
         case "REPAIR":
-          title = `${this.translatedLangText.REPAIR_MONTHLY_DETAILS_REPORT}`
+          title = `${this.translatedLangText.REPAIR_MONTHLY_OVERVIEW_REPORT}`
         break;
         case "RESIDUE":
-          title = `${this.translatedLangText.RESIDUE_MONTHLY_DETAILS_REPORT}`
+          title = `${this.translatedLangText.RESIDUE_MONTHLY_OVERVIEW_REPORT}`
         break;
     }
     return `${title}`

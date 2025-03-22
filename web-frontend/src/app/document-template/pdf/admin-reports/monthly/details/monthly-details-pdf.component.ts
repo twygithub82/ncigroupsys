@@ -335,7 +335,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
 
   async ngOnInit() {
     await this.getCodeValuesData();
-    this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+    //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
     this.date= this.data.date;
     this.repType=this.data.repType;
@@ -655,7 +655,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     const data: any[][] = []; // Explicitly define data as a 2D array
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const repGeneratedDate = `${this.translatedLangText.MONTH}:${this.date}`; // Replace with your actual cutoff date
+    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
 
     var idx = 0;
@@ -701,9 +701,10 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
       },
       didParseCell: (data: any) => {
         let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        // if (data.row.index === lastRowIndex) {
-        //   data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
-        //   data.cell.styles.fontStyle = 'bold';
+         if (data.row.raw[2] === "Sunday") {
+           data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+           data.cell.styles.fontStyle = 'bold';
+         }
         //   if (data.column.index === 0) {
         //     data.cell.colSpan = 4;  // Merge 4 columns into one
         //     data.cell.styles.halign = 'right'; // Center text horizontally

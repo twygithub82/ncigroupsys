@@ -1062,6 +1062,7 @@
     "EIR":"EIR",
     "YEAR":"Year",
     "MONTH":"Month",
+    "DAY":"Day",
     "STEAM-REPORT":"Steam Report",
     "REPAIR-REPORT":"Repair Report",
     "RESIDUE-REPORT":"Residue Disposal Report",
@@ -1073,7 +1074,9 @@
     "CLEAN-MONTHLY-OVERVIEW-REPORT":"Cleaning Monthly Overview Report",
     "CLEAN-MONTHLY-DETAILS-REPORT":"Cleaning Monthly Details Report",
     "RESIDUE-MONTHLY-OVERVIEW-REPORT":"Residue Disposal Monthly Overview Report",
-    "RESIDUE-MONTHLY-DETAILS-REPORT":"Residue Disposal Monthly Details Report"
+    "RESIDUE-MONTHLY-DETAILS-REPORT":"Residue Disposal Monthly Details Report",
+    "TOTAL-TANK":"Total Tank",
+    "AVERAGE":"Average"
 
   },
   "CLEAN-PROCEDURES": {

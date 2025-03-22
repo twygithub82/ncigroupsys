@@ -399,7 +399,7 @@ export const GET_RESIDUE_EST = gql`
 `;
 
 export const GET_RESIDUE_EST_JOB_ORDER = gql`
-  query queryResidue($where: residueFilterInput,$residue_part_where:inventory_residue_partFilterInput) {
+  query queryResidue($where: residueFilterInput,$residue_part_where:residue_partFilterInput) {
     resultList: queryResidue(where: $where) {
       nodes {
        allocate_by
