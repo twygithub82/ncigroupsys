@@ -590,8 +590,10 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
+                string CANCELED = "CANCELED";
                 long sDate = orderTrackingRequest.start_date;
                 long eDate = orderTrackingRequest.end_date;
+
 
                 IQueryable<OrderTrackingResult> query;
 
@@ -618,8 +620,8 @@ namespace IDMS.Billing.GqlTypes
                                  last_cargo = tc.cargo,
                                  order_no = ro.ro_no,
                                  order_date = ro.create_dt,
-                                 cancel_date = ro.delete_dt,
-                                 cancel_remarks = ro.remarks,
+                                 cancel_date = ro.status_cv.Equals(CANCELED) ? ro.update_dt : null,
+                                 cancel_remarks = ro.status_cv.Equals(CANCELED) ? ro.remarks : "",
                                  status = sot.status_cv,
                                  purpose_cleaning = sot.purpose_cleaning,
                                  purpose_steaming = sot.purpose_steam,
@@ -650,8 +652,8 @@ namespace IDMS.Billing.GqlTypes
                                  last_cargo = tc.cargo,
                                  order_no = so.so_no,
                                  order_date = so.create_dt,
-                                 cancel_date = so.delete_dt,
-                                 cancel_remarks = so.remarks,
+                                 cancel_date = so.status_cv.Equals(CANCELED) ? so.update_dt : null,
+                                 cancel_remarks = so.status_cv.Equals(CANCELED) ? so.remarks : "",
                                  status = sot.status_cv,
                                  purpose_cleaning = sot.purpose_cleaning,
                                  purpose_steaming = sot.purpose_steam,
@@ -659,7 +661,7 @@ namespace IDMS.Billing.GqlTypes
                                  purpose_storage = sot.purpose_storage
                              }).AsQueryable();
                 }
-                   
+
 
                 if (!string.IsNullOrEmpty(orderTrackingRequest.customer_code))
                 {
@@ -694,6 +696,86 @@ namespace IDMS.Billing.GqlTypes
 
 
 
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<OrderTrackingResult>?> QueryWeeklyPerformance(ApplicationBillingDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, WeeklyPerformanceRequest weeklyPerformanceRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                int year = weeklyPerformanceRequest.year;
+                int month = weeklyPerformanceRequest.month;
+                string completedStatus = "COMPLETED";
+                string qcCompletedStatus = "QC_COMPLETED";
+
+                // Get the start date of the month (1st of the month)
+                DateTime startOfMonth = new DateTime(year, month, 1);
+                // Get the end date of the month (last day of the month)
+                DateTime endOfMonth = startOfMonth.AddMonths(1).AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
+                // Convert the start and end dates to Unix Epoch (seconds since 1970-01-01)
+                long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
+                long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
+
+                //IQueryable<OrderTrackingResult> query;
+
+                var query = (from s in context.cleaning
+                             join sot in context.storing_order_tank on s.sot_guid equals sot.guid
+                             join so in context.storing_order on sot.so_guid equals so.guid
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                             where s.complete_dt >= startEpoch && s.complete_dt <= endEpoch && s.status_cv.Equals(completedStatus) && s.delete_dt == null
+                             && (string.IsNullOrEmpty(weeklyPerformanceRequest.customer_code) || cc.code.Contains(weeklyPerformanceRequest.customer_code))
+                             select new
+                             {
+                                 s.sot_guid,
+                                 s.complete_dt,
+                             }).AsQueryable();
+
+                var query1 = (from s in context.repair
+                              join sot in context.storing_order_tank on s.sot_guid equals sot.guid
+                              join so in context.storing_order on sot.so_guid equals so.guid
+                              join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                              where s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && !StatusCondition.BeforeApprove.Contains(s.status_cv) && s.delete_dt == null
+                              && (string.IsNullOrEmpty(weeklyPerformanceRequest.customer_code) || cc.code.Contains(weeklyPerformanceRequest.customer_code))
+                              select new
+                              {
+                                  s.sot_guid,
+                                  s.approve_dt,
+                              }).AsQueryable();
+
+                //if (!string.IsNullOrEmpty(weeklyPerformanceRequest.customer_code))
+                //{
+                //    query = query.Where(tr => tr.customer_code.Contains(weeklyPerformanceRequest.customer_code));
+                //}
+                //if (!string.IsNullOrEmpty(orderTrackingRequest.eir_no))
+                //{
+                //    query = query.Where(tr => tr.eir_no.Contains(orderTrackingRequest.eir_no));
+                //}
+                //if (!string.IsNullOrEmpty(orderTrackingRequest.tank_no))
+                //{
+                //    query = query.Where(tr => tr.tank_no.Contains(orderTrackingRequest.tank_no));
+                //}
+                //if (!string.IsNullOrEmpty(orderTrackingRequest.last_cargo))
+                //{
+                //    query = query.Where(tr => tr.last_cargo.Contains(orderTrackingRequest.last_cargo));
+                //}
+                //if (orderTrackingRequest.status != null && orderTrackingRequest.status.Any())
+                //{
+                //    query = query.Where(tr => orderTrackingRequest.status.Contains(tr.status));
+                //}
+
+                //var resultList = await query.OrderBy(tr => tr.order_date).ToListAsync();
+                //resultList.ForEach(result => result.CompileFinalPurpose());
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
         ////[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         ////[UseProjection]
         ////[UseFiltering]

@@ -826,10 +826,10 @@ export class Utility {
 export const TANK_STATUS_PRE_IN_YARD = [
   'SO_GENERATED',
   'IN_GATE',
-  
 ]
 
 export const TANK_STATUS_IN_YARD = [
+  'IN_SURVEY',
   'STEAM',
   'RESIDUE',
   'CLEANING',
