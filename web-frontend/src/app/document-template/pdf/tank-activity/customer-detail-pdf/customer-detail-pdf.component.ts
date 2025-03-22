@@ -1516,7 +1516,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
   DisplayRemarks(sot: StoringOrderTankItem): string {
 
-    return sot?.remarks || '';
+    return sot?.tank_note || '';
   }
 
   DisplayCustomerName(repCustomer: report_customer_tank_activity) {
