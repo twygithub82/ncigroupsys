@@ -34,13 +34,10 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-//import {messageReceived}  from '../../../data-sources/message-received';
-
 
 @Component({
   selector: 'app-cleaning-methods',
@@ -125,8 +122,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     CLEANING_METHOD: 'COMMON-FORM.CLEANING-PROCESS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
-    PROCESS_NAME:"COMMON-FORM.PROCESS-NAME",
-    PROCESS_DESCRIPTION:"COMMON-FORM.PROCESS-DESCRIPTION"
+    PROCESS_NAME: "COMMON-FORM.PROCESS-NAME",
+    PROCESS_DESCRIPTION: "COMMON-FORM.PROCESS-DESCRIPTION"
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -151,7 +148,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { sequence: "ASC" };
+  lastOrderBy: any = { description: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -233,7 +230,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     // });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
-    
+
   }
 
   public loadData() {
@@ -296,8 +293,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
     var order = this.lastOrderBy;
 
-
-
     if (this.searchForm!.value['name']) {
       where.name = { contains: this.searchForm!.value['name'] };
     }
@@ -305,7 +300,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     if (this.searchForm!.value['description']) {
       where.description = { contains: this.searchForm!.value['description'] };
     }
-    this.searchData(where,order,undefined,undefined,undefined,undefined,this.pageIndex,undefined);
+    this.searchData(where, order, undefined, undefined, undefined, undefined, this.pageIndex, undefined);
 
     // if(this.searchForm!.value['min_cost']){
     //   where.cost ={gte: Number(this.searchForm!.value['min_cost'])}
@@ -334,9 +329,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
     this.subs.sink = this.mthDS.search(where, order, first, after, last, before).subscribe(data => {
-      
-      this.clnMethodItem =data.map(i=>{
-        i.cleaning_method_formula?.sort((a,b)=> a.sequence! - b.sequence!);
+      this.clnMethodItem = data.map(i => {
+        i.cleaning_method_formula?.sort((a, b) => a.sequence! - b.sequence!);
         return i;
       });
       this.endCursor = this.mthDS.pageInfo?.endCursor;
@@ -380,7 +374,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
         first = pageSize;
         after = this.previous_endCursor;
-     
+
       }
     }
 
