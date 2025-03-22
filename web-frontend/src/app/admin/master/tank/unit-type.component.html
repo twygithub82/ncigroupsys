@@ -88,7 +88,26 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+                        <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                          [matAutocomplete]="customerCode" required>
+                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                          @for (cc of customer_companyList; track cc) {
+                          <mat-option [value]="cc">
+                            {{ccDS.displayName(cc)}}
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                        @if (pcForm?.get('customer_code')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.CUSTOMER }} {{translatedLangText.CARGO_REQUIRED }}
+                          </mat-error>
+                          }
+                      </mat-form-field>
+                    </div>
+                    <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
                         <mat-select formControlName="customer_code" multiple required>
@@ -104,7 +123,7 @@
                         </mat-error>
                         }
                       </mat-form-field>
-                    </div>
+                    </div> -->
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
@@ -162,11 +181,12 @@
                     <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                       }}:</span>{{row.customer_company.code}}</mat-cell>
                 </ng-container> -->
+                
                 <ng-container matColumnDef="custCompanyName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.UNIT_TYPE
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.UNIT_TYPE
+                    <span class="mobile-label">{{this.translatedLangText.CUSTOMER
                       }}:</span>{{custCompDS.displayName(row.customer_company)}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="dimension">
@@ -188,47 +208,47 @@
                       }}:</span>{{row.tariff_repair.length}}</mat-cell>
                 </ng-container> -->
                 <ng-container matColumnDef="email">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PREINSPECT}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.GROUP}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.PREINSPECT}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.GROUP}}:</span>
                     {{this.displayGroupNameCodeValue_Description(row.tariff_repair.group_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subgroup">
                   <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.LIFT_ON}}</mat-header-cell>
+                    mat-sort-header>{{this.translatedLangText.SUB_GROUP}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.LIFT_ON}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.SUB_GROUP}}:</span>
                     {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair.subgroup_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="fName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LIFT_OFF
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DESCRIPTION
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.LIFT_OFF
+                    <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
                       }}:</span>{{row.tariff_repair.alias}} {{row.tariff_repair.length}}
                     {{getUnitTypeDescription(row.tariff_repair.length_unit_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="gender">
                   <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.GATE_IN}}</mat-header-cell>
+                    mat-sort-header>{{this.translatedLangText.LABOUR}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.GATE_IN}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.LABOUR}}:</span>
                     {{row.labour_hour}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="bDate">
                   <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.GATE_OUT}}</mat-header-cell>
+                    mat-sort-header>{{this.translatedLangText.COST}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.GATE_OUT}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.COST}}:</span>
                     {{row.material_cost?.toFixed(2)}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="mobile">
+                <!-- <ng-container matColumnDef="mobile">
                   <mat-header-cell *matHeaderCellDef
                     mat-sort-header>{{this.translatedLangText.ISO_FORMAT}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.ISO_FORMAT}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>
-                </ng-container>
+                </ng-container> -->
                 <ng-container matColumnDef="lastUpdate">
                   <mat-header-cell *matHeaderCellDef
                     mat-sort-header>{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>

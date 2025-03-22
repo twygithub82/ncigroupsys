@@ -348,7 +348,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
     });
 
-    this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+    this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' },100).subscribe(data => {
       if (this.cMethodDS.totalCount > 0) {
         this.cMethodList = data;
       }

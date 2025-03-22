@@ -915,10 +915,11 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     let lastTableFinalY = 45;
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-    pdf.setFontSize(8);
-    pdf.setTextColor(0, 0, 0); // Black text
+    // pdf.setFontSize(8);
+    // pdf.setTextColor(0, 0, 0); // Black text
     const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
-    pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+    //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+    Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,lastTableFinalY + 10,8);
 
     for (let n = 0; n < this.repBillingCustomers.length; n++) {
 

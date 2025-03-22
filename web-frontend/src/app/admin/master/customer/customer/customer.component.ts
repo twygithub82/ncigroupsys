@@ -47,6 +47,7 @@ import { MessageDialogComponent } from 'app/shared/components/message-dialog/mes
 import { ComponentUtil } from 'app/utilities/component-util';
 import { firstValueFrom } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -248,6 +249,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.initializeFilterCustomerCompany();
     var state = history.state;
     if (state.type == "customer-company") {
       let showResult = state.pagination.showResult;
@@ -268,6 +270,26 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       this.search();
     }
   }
+
+  initializeFilterCustomerCompany() {
+        this.pcForm!.get('customer_code')!.valueChanges.pipe(
+          startWith(''),
+          debounceTime(300),
+          tap(value => {
+            var searchCriteria = '';
+            if (typeof value === 'string') {
+              searchCriteria = value;
+            } else {
+              searchCriteria = value.code;
+            }
+            this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+              this.customer_companyList = data
+            });
+          })
+        ).subscribe();
+    
+  
+      }
 
   initPcForm() {
     this.pcForm = this.fb.group({
@@ -463,12 +485,13 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
     };
     if (this.customerCodeControl.value) {
-      if (this.customerCodeControl.value.length > 0) {
-        const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        var guids = customerCodes.map(cc => cc.guid);
-        where.guid = { in: guids };
-      }
-    }
+      // if (this.customerCodeControl.value.length > 0) 
+       {
+         const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
+         //var guids = customerCodes.map(cc => cc.guid);
+         where.guid = { eq: customerCode.guid };
+       }
+     }
 
     if (this.pcForm!.value["alias"]) {
       where.alias = { contains: this.pcForm!.value["alias"] };

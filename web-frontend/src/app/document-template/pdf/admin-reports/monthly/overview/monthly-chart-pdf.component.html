@@ -1,0 +1,23 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  <div class="row clearfix">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+
+      <div class="card">
+        <div class="header">
+          <h2>{{this.translatedLangText.TANK_STATUS}}</h2>
+        </div>
+        <div class="body">
+          <div style="height: 80vh">
+            <apx-chart [series]="lineChart2Options.series!" [chart]="lineChart2Options.chart!"
+                [grid]="lineChart2Options.grid!" [xaxis]="lineChart2Options.xaxis!" [title]="lineChart2Options.title!"
+                [yaxis]="lineChart2Options.yaxis!">
+              </apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

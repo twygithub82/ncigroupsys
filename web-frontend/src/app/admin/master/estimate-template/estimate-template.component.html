@@ -29,6 +29,20 @@
                 <form class="ms-0" [formGroup]="mtForm!" #formDirective="ngForm">
                   <div class="row">
                     <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+                        <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                          [matAutocomplete]="customerCode">
+                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                          @for (cc of customer_companyList; track cc) {
+                          <mat-option [value]="cc">
+                            {{ccDS.displayName(cc)}}
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <!-- <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
                         <mat-select formControlName="customer_code" multiple>
@@ -39,7 +53,7 @@
                           </mat-option>
                         </mat-select>
                       </mat-form-field>
-                    </div>
+                    </div> -->
                     <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>

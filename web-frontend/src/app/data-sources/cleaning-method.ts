@@ -24,8 +24,8 @@ export const UPDATE_CLEANING_METHOD = gql`
   `;
 
 export const GET_CLEANING_METHOD_QUERY = gql`
-  query queryCleaningMethod($where:cleaning_methodFilterInput , $order:[cleaning_methodSortInput!]) 
-  {queryCleaningMethod(where: $where , order: $order) {
+  query queryCleaningMethod($where:cleaning_methodFilterInput , $order:[cleaning_methodSortInput!],$first:Int) 
+  {queryCleaningMethod(where: $where , order: $order,first:$first) {
     nodes {
        create_by
         create_dt
@@ -150,12 +150,12 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
         super();
     }
 
-    loadItems(where?: any, order?: any): Observable<CleaningMethodItem[]> {
+    loadItems(where?: any, order?: any,first?:any): Observable<CleaningMethodItem[]> {
         this.loadingSubject.next(true);
         return this.apollo
             .query<any>({
                 query: GET_CLEANING_METHOD_QUERY,
-                variables: { where, order },
+                variables: { where, order ,first},
                 fetchPolicy: 'no-cache' // Ensure fresh data
             })
             .pipe(

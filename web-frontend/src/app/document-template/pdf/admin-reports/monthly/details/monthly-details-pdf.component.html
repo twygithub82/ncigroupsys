@@ -34,11 +34,11 @@
           <th>{{translatedLangText.WITH_RO}}</th>
         </tr>
         {{ResetIndex()}}
-        @for (itm of reportStatus; track itm;let index = $index) {
+        <!-- @for (itm of reportStatus; track itm;let index = $index) {
           @for(yard of itm.yards; track yard)
           {
           <tr>
-            <td>{{ GetIndex() }}</td> <!-- Row number -->
+            <td>{{ GetIndex() }}</td> 
             <td class="text-center">{{ itm.code }}</td> 
             <td class="text-center">{{ itm.customer }}</td> 
             <td class="text-center">{{ displayLocation(yard) }}</td> 
@@ -61,7 +61,7 @@
           <td class="text-center">{{displayTotal()}}</td>
           <td class="text-center">{{displayTotalPending()}}</td>
           <td class="text-center">{{displayTotalWithRO()}}</td>
-        </tr>
+        </tr> -->
       </table>
     
   </div>

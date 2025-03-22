@@ -41,11 +41,12 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { DailyDetailInventoryPdfComponent } from 'app/document-template/pdf/inventory/daily-detail-pdf/daily-detail-pdf.component';
 import { DailyOverviewSummaryPdfComponent } from 'app/document-template/pdf/inventory/daily-overview-summary-pdf/daily-overview-summary-pdf.component';
 
-import { DailyDetailSummaryPdfComponent } from 'app/document-template/pdf/inventory/daily-details-summary-pdf/daily-summary-pdf.component';
+import { MonthlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/details/monthly-details-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { reportPreviewWindowDimension } from 'environments/environment';
+import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
 
 @Component({
   selector: 'app-steam-monthly',
@@ -192,7 +193,7 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   inventoryTypeCvList: CodeValuesItem[] = [];
 
-  processType: string = "STEAMING";
+  processType: string = "STEAM";
   billingParty: string = "CUSTOMER";
 
   pageIndex = 0;
@@ -376,7 +377,7 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       if (this.searchForm!.get('month')?.value) {
         var month=this.searchForm!.get('month')?.value;
         const monthIndex = this.monthList.findIndex(m => month === m);
-        where.month = monthIndex;
+        where.month = (monthIndex+1);
       }
 
       if (this.searchForm!.get('year')?.value) {
@@ -388,18 +389,19 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     
 
       this.lastSearchCriteria = where;
-      this.performSearch(report_type);
+      this.performSearch(report_type,date);
     }
    
   
 
-    performSearch(reportType?: number) {
+    performSearch(reportType?: number,date?:string) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchAdminReportMonthlyProcess(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
+        this.ProcessMonthlyReport(this.repData,date!,reportType!);
         // this.endCursor = this.stmDS.pageInfo?.endCursor;
         // this.startCursor = this.stmDS.pageInfo?.startCursor;
         // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -567,13 +569,14 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(DailyDetailSummaryPdfComponent, {
+    const dialogRef = this.dialog.open(MonthlyReportDetailsPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
         date: date,
+        repType:this.processType
       
       },
 
@@ -604,24 +607,29 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
        tempDirection = 'ltr';
      }
  
-     const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
+     const dialogRef = this.dialog.open(MonthlyChartPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight:reportPreviewWindowDimension.report_maxHeight,
-       data: {
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
         repData: repData,
         date: date,
-       },
-   
-     });
-     dialogRef.updatePosition({
+        repType:this.processType
+      
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
       top: '-9999px',  // Move far above the screen
       left: '-9999px'  // Move far to the left of the screen
     });
-    
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isGeneratingReport=false;
-     });
+    });
   }
 
 

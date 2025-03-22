@@ -37,6 +37,7 @@ import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstPartItem } fro
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-package-repair',
@@ -175,7 +176,8 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     TEMPLATE_TYPE_GENERAL: "COMMON-FORM.TEMPLATE-TYPE-GENERAL",
     TEMPLATE_TYPE_EXCLUSIVE: "COMMON-FORM.TEMPLATE-TYPE-EXCLUSIVE",
     TOTAL_MATERIAL_COST: "COMMON-FORM.TOTAL-MATERIAL-COST",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    CUSTOMER:'COMMON-FORM.CUSTOMER'
   }
 
   constructor(
@@ -208,6 +210,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.initializeFilterCustomerCompany();
     var state = history.state;
     if (state.type == "estimate-template") {
       let showResult = state.pagination.showResult;
@@ -318,6 +321,25 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
+  initializeFilterCustomerCompany() {
+      this.mtForm!.get('customer_code')!.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        tap(value => {
+          var searchCriteria = '';
+          if (typeof value === 'string') {
+            searchCriteria = value;
+          } else {
+            searchCriteria = value.code;
+          }
+          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+            this.customer_companyList = data
+          });
+        })
+      ).subscribe();
+  
+
+    }
 
 
   deleteItem(row: any) {
@@ -353,14 +375,20 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
 
     if (this.customerCodeControl.value) {
-      if (this.customerCodeControl.value.length > 0) {
-
-
-        const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        var guids = customerCodes.map(cc => cc.guid);
+      {
+        const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
+        //var guids = customerCodes.map(cc => cc.guid);
         where.template_est_customer = where.template_est_customer || {};
-        where.template_est_customer = { some: { customer_company_guid: { in: guids } } };
+        where.template_est_customer = { some: { customer_company_guid: { eq: customerCode.guid } } };
       }
+      // if (this.customerCodeControl.value.length > 0) {
+
+
+      //   const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
+      //   var guids = customerCodes.map(cc => cc.guid);
+      //   where.template_est_customer = where.template_est_customer || {};
+      //   where.template_est_customer = { some: { customer_company_guid: { in: guids } } };
+      // }
     }
 
     if (this.templateNameControl.value) {

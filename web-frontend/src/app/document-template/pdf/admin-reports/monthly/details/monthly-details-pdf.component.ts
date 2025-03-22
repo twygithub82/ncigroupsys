@@ -32,7 +32,8 @@ import { autoTable, Styles } from 'jspdf-autotable';
 
 export interface DialogData {
   repData: AdminReportMonthlyReport,
-  date:string
+  date:string,
+  repType:string
 }
 
 @Component({
@@ -241,8 +242,12 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    STEAM_MONTHLY_DETAILS_REPORT:'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT'
-
+    STEAM_MONTHLY_DETAILS_REPORT:'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT',
+    RESIDUE_MONTHLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
+    REPAIR_MONTHLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
+    CLEAN_MONTHLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
+    DAY:'COMMON-FORM.DAY',
+    MONTH:'COMMON-FORM.MONTH'
   }
 
   type?: string | null;
@@ -292,6 +297,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
   generatingPdfProgress = 0;
   repData?: AdminReportMonthlyReport;
   date?:string;
+  repType?:string;
   index: number = 0;
   // date:string='';
   // invType:string='';
@@ -332,6 +338,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
     this.date= this.data.date;
+    this.repType=this.data.repType;
     this.onDownloadClick();
 
   }
@@ -649,7 +656,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
     const repGeneratedDate = `${this.translatedLangText.MONTH}:${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
 
     var idx = 0;
     for (let n = 0; n < (this.repData?.result_per_day?.length||0); n++) {
@@ -666,9 +673,9 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     }
 
 
-    data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
-    this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
-    this.displayTotalWithRO()]);
+    // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
+    // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
+    // this.displayTotalWithRO()]);
 
     pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -694,20 +701,20 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
       },
       didParseCell: (data: any) => {
         let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        if (data.row.index === lastRowIndex) {
-          data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
-          data.cell.styles.fontStyle = 'bold';
-          if (data.column.index === 0) {
-            data.cell.colSpan = 4;  // Merge 4 columns into one
-            data.cell.styles.halign = 'right'; // Center text horizontally
-            data.cell.styles.valign = 'top'; // Center text vertically
+        // if (data.row.index === lastRowIndex) {
+        //   data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+        //   data.cell.styles.fontStyle = 'bold';
+        //   if (data.column.index === 0) {
+        //     data.cell.colSpan = 4;  // Merge 4 columns into one
+        //     data.cell.styles.halign = 'right'; // Center text horizontally
+        //     data.cell.styles.valign = 'top'; // Center text vertically
 
-          }
-        }
-        if (data.row.index === idx && data.column.index > 0 && data.column.index <= 3) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-        }
+        //   }
+        // }
+        // if (data.row.index === idx && data.column.index > 0 && data.column.index <= 3) {
+        //   data.cell.text = ''; // Remove text from hidden columns
+        //   data.cell.colSpan = 0; // Hide these columns
+        // }
       },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
@@ -747,98 +754,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     this.dialogRef.close();
   }
 
-  async exportToPDF_r2(fileName: string = 'document.pdf') {
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10; // Left margin
-    const rightMargin = 10; // Right margin
-    const topMargin = 20; // Top margin for header
-    const bottomMargin = 20; // Bottom margin for footer
-    const contentWidth = pageWidth - leftMargin - rightMargin; // Usable width
-    const maxContentHeight = pageHeight - topMargin - bottomMargin; // Usable height
-
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Change orientation to portrait ('p')
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-    let totalPages = 1;
-
-    // Store page positions for later text update
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
-
-    const reportTitle = this.GetReportTitle(); // Set your report title here
-
-    // Add header to the first page
-    this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-
-    let currentY = topMargin; // Start Y position after the header
-
-    for (let i = 0; i < cardElements.length; i++) {
-      const card = cardElements[i];
-
-      // Convert card to image (JPEG format)
-      const canvas = await html2canvas(card, { scale: this.scale });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
-
-      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-
-      // Check if the card fits on the current page
-      if (currentY + imgHeight > maxContentHeight) {
-        // Add page number to the current page before creating a new one
-        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 });
-
-        // Add a new page
-        pdf.addPage();
-        pageNumber++;
-        totalPages++;
-
-        // Reset Y position for the new page
-        currentY = topMargin;
-
-        // Add the report title and underline to the new page
-        this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-      }
-
-      // Add the card image to the PDF
-      pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-
-      // Update the Y position for the next card
-      currentY += imgHeight + 10; // Add a small gap between cards
-
-      // Update progress
-      this.generatingPdfProgress += progressValue;
-    }
-
-    // Add page numbers in a second pass
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 }); // Add last page number
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setPage(page);
-      pdf.setFontSize(10);
-      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-    });
-
-    // Save the PDF
-    this.generatingPdfProgress = 100;
-    pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-  }
-
-  // Helper function to add the header (title and underline) to a page
-  addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
-    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-
-    pdf.setFontSize(14); // Title font size
-    pdf.text(title, titleX, 15); // Position it at the top
-
-    // Draw underline for the title
-    pdf.setLineWidth(0.5); // Set line width for underline
-    pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
-  }
+ 
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -943,7 +859,23 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
+    var title:string='';
+    switch(this.repType)
+    {
+      case "CLEANING":
+         title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`
+        break;
+        case "STEAM":
+          title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
+        break;
+        case "REPAIR":
+          title = `${this.translatedLangText.REPAIR_MONTHLY_DETAILS_REPORT}`
+        break;
+        case "RESIDUE":
+          title = `${this.translatedLangText.RESIDUE_MONTHLY_DETAILS_REPORT}`
+        break;
+    }
+    return `${title}`
   }
 
   displayLocation(yard: report_status_yard): string {
@@ -979,76 +911,76 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     return retval;
 
   }
-  displayTotalClean() {
-    var retval = 0;
-    // this.reportStatus.forEach(r => {
+  // displayTotalClean() {
+  //   var retval = 0;
+  //   // this.reportStatus.forEach(r => {
 
-    //   r.yards?.forEach(y => {
-    //     retval += y.noTank_clean || 0;
-    //   })
+  //   //   r.yards?.forEach(y => {
+  //   //     retval += y.noTank_clean || 0;
+  //   //   })
 
-    // });
+  //   // });
 
-    return retval;
-  }
-  displayTotalRepair() {
-    var retval = 0;
-    this.reportStatus.forEach(r => {
+  //   return retval;
+  // }
+  // displayTotalRepair() {
+  //   var retval = 0;
+  //   this.reportStatus.forEach(r => {
 
-      r.yards?.forEach(y => {
-        retval += y.noTank_repair || 0;
-      })
+  //     r.yards?.forEach(y => {
+  //       retval += y.noTank_repair || 0;
+  //     })
 
-    });
+  //   });
 
-    return retval;
-  }
-  displayTotalStorage() {
-    var retval = 0;
-    this.reportStatus.forEach(r => {
+  //   return retval;
+  // }
+  // displayTotalStorage() {
+  //   var retval = 0;
+  //   this.reportStatus.forEach(r => {
 
-      r.yards?.forEach(y => {
-        retval += y.noTank_storage || 0;
-      })
+  //     r.yards?.forEach(y => {
+  //       retval += y.noTank_storage || 0;
+  //     })
 
-    });
+  //   });
 
-    return retval;
-  }
-  displayTotal() {
-    var retval = 0;
-    this.reportStatus.forEach(r => {
+  //   return retval;
+  // }
+  // displayTotal() {
+  //   var retval = 0;
+  //   this.reportStatus.forEach(r => {
 
-      r.yards?.forEach(y => {
-        retval += (y.noTank_repair || 0) + (y.noTank_storage || 0) + (y.noTank_clean || 0) + (y.noTank_steam || 0);
-      })
+  //     r.yards?.forEach(y => {
+  //       retval += (y.noTank_repair || 0) + (y.noTank_storage || 0) + (y.noTank_clean || 0) + (y.noTank_steam || 0);
+  //     })
 
-    });
+  //   });
 
-    return retval;
-  }
-  displayTotalPending() {
-    var retval = 0;
-    this.reportStatus.forEach(r => {
+  //   return retval;
+  // }
+  // displayTotalPending() {
+  //   var retval = 0;
+  //   this.reportStatus.forEach(r => {
 
-      r.yards?.forEach(y => {
-        retval += y.noTank_pending || 0;
-      })
+  //     r.yards?.forEach(y => {
+  //       retval += y.noTank_pending || 0;
+  //     })
 
-    });
+  //   });
 
-    return retval;
-  }
-  displayTotalWithRO() {
-    var retval = 0;
-    this.reportStatus.forEach(r => {
+  //   return retval;
+  // }
+  // displayTotalWithRO() {
+  //   var retval = 0;
+  //   this.reportStatus.forEach(r => {
 
-      r.yards?.forEach(y => {
-        retval += y.noTank_withRO || 0;
-      })
+  //     r.yards?.forEach(y => {
+  //       retval += y.noTank_withRO || 0;
+  //     })
 
-    });
+  //   });
 
-    return retval;
-  }
+  //   return retval;
+  // }
 }

@@ -48,6 +48,7 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-package-repair',
@@ -94,7 +95,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     'subgroup',
     'gender',
     'bDate',
-    'mobile',
+   // 'mobile',
     'lastUpdate'
   ];
 
@@ -166,6 +167,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER:'COMMON-FORM.CUSTOMER',
+    LABOUR:'COMMON-FORM.LABOUR',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -278,6 +281,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   ) {
     super();
     this.initPcForm();
+    this.initializeFilterCustomerCompany();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.packRepairDS = new PackageRepairDS(this.apollo);
@@ -298,6 +302,25 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
+  initializeFilterCustomerCompany() {
+      this.pcForm!.get('customer_code')!.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        tap(value => {
+          var searchCriteria = '';
+          if (typeof value === 'string') {
+            searchCriteria = value;
+          } else {
+            searchCriteria = value.code;
+          }
+          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+            this.customer_companyList = data
+          });
+        })
+      ).subscribe();
+  
+
+    }
   initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
@@ -475,13 +498,14 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-    if (!this.customerCodeControl.value?.length) return;
+    if (!this.customerCodeControl.value) return;
     const where: any = {};
     if (this.customerCodeControl.value) {
-      if (this.customerCodeControl.value.length > 0) {
-        const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { in: guids };
+     // if (this.customerCodeControl.value.length > 0) 
+      {
+        const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
+        //var guids = customerCodes.map(cc => cc.guid);
+        where.customer_company_guid = { eq: customerCode.guid };
       }
     }
 

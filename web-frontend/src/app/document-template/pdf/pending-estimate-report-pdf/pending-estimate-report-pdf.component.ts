@@ -827,6 +827,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
     let currentY = topMargin;
     let scale = this.scale;
+    var CurrentPage = 1;
+    var buffer = 20;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
@@ -840,8 +842,22 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     const data: any[][] = []; // Explicitly define data as a 2D array
     // pdf.setFontSize(8);
     // pdf.setTextColor(0, 0, 0); // Black text
-    // const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
+    //const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
     // pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+   // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+3,lastTableFinalY + 10,8);
+
+
+   var repPage = pdf.getNumberOfPages();
+   // if(repPage==1)lastTableFinalY=45;
+
+   if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+     pdf.addPage();
+     lastTableFinalY = 5 + topMargin;
+   }
+   else {
+     CurrentPage = repPage;
+   }
+
 
     var idx = 0;
     for (let n = 0; n < this.sotList.length; n++) {

@@ -281,7 +281,7 @@ export class ResultPerDay{
 export class AdminReportMonthlyReport{
   average?:number;
   total?:number;
-  result_per_day?:ResultPerDay;
+  result_per_day?:ResultPerDay[];
 
 constructor(item: Partial<AdminReportMonthlyReport> = {}) {
   this.average=item.average;
@@ -360,8 +360,8 @@ export const GET_TANK_SURVEY_SUMMARY = gql`
 `
 
 export const GET_ADMIN_REPORT_MONTHLY_PROCESS = gql`
-  query queryMonthlyProcessReport($monthlyRevenueRequest: MonthlyRevenueRequestInput!) {
-    resultList: queryMonthlyProcessReport(monthlyRevenueRequest: $monthlyRevenueRequest) {
+  query queryMonthlyProcessReport($monthlyProcessRequest: MonthlyProcessRequestInput!) {
+    resultList: queryMonthlyProcessReport(monthlyProcessRequest: $monthlyProcessRequest) {
       average
       total
       result_per_day {
@@ -488,13 +488,13 @@ export class ReportDS extends BaseDataSource<any> {
   }
 
 
-  searchAdminReportMonthlyProcess(monthlyRevenueRequest:any): Observable<AdminReportMonthlyReport> {
+  searchAdminReportMonthlyProcess(monthlyProcessRequest:any): Observable<AdminReportMonthlyReport> {
     this.loadingSubject.next(true);
     var first=this.first;
     return this.apollo
       .query<any>({
         query: GET_ADMIN_REPORT_MONTHLY_PROCESS,
-        variables: { monthlyRevenueRequest },
+        variables: { monthlyProcessRequest },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
