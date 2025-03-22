@@ -11,7 +11,7 @@ import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { BehaviorSubject, delay, firstValueFrom, Observable } from 'rxjs';
 // import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -40,7 +40,6 @@ import {
   ApexYAxis,
   NgApexchartsModule
 } from 'ng-apexcharts';
-import autoTable, { Styles } from 'jspdf-autotable';
 
 export type HorizontalBarOptions = {
   showXAxis?: boolean;
@@ -287,9 +286,6 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     TOP_TEN_CUSTOMER: 'COMMON-FORM.TOP-TEN-CUSTOMER',
-
-
-
   }
 
   public pieChartOptions!: Partial<ChartOptions>;
@@ -346,7 +342,6 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   invType: string = '';
   chartAnimatedCounter = 0;
 
-
   constructor(
     public dialogRef: MatDialogRef<YardChartPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -357,20 +352,10 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer) {
     super();
-
-
     this.translateLangText();
     this.InitialDefaultData();
 
-    // this.steamDS = new SteamDS(this.apollo);
-    // this.steamPartDS = new SteamPartDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
     this.report_summary_status = data.report_summary_status;
 
     this.loadData();
@@ -378,22 +363,14 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-
-
-
   }
+
   ngAfterViewInit() {
-   
+
   }
+
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-    // await this.getCodeValuesData();
-    // this.processHorizontalBarValue(this.report_summary_status);
-    // this.processCustomerStatus(this.report_summary_status);
-    // this.processTankStatus(this.report_summary_status);
-    // this.chartAnimatedCounter=0;
-
-
   }
 
   public loadData() {
@@ -420,10 +397,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
         this.yardCvList = data;
         this.processTankStatus(this.report_summary_status);
       }
-
     });
-
-
   }
 
   async getCodeValuesData(): Promise<void> {
@@ -444,18 +418,13 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
     // Wrap all alias connections in promises
     const promises = [
-
-
       firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
         this.purposeOptionCvList = data || [];
-
       }),
 
       firstValueFrom(this.cvDS.connectAlias('yardCv')).then(data => {
         this.yardCvList = data || [];
-
       }),
-
     ];
 
     // Wait for all promises to resolve
@@ -667,8 +636,6 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
-
-
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
     for (let i = 0; i < array.length; i += chunkSize) {
@@ -812,11 +779,9 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     let tableRowHeight = 8.5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
-    //   const progressValue = 100 / cardElements.length;
 
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     const reportTitle = this.GetReportTitle();
-
 
     let currentY = topMargin;
     let scale = this.scale;
@@ -836,17 +801,13 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     Utility.AddTextAtCenterPage(pdf, repGenDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
 
     let chartContentWidth = pageWidth - leftMargin - rightMargin;
-    pagePositions.push({page:1,x:0,y:0});
-    for(var i=0; i<cardElements.length;i++)
-    //if (cardElements.length > 0) 
-      {
-        
-        if(i>0) 
-        {
-          pdf.addPage();
-          Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
-          pagePositions.push({page:pdf.getNumberOfPages(),x:0,y:0});
-        }
+    pagePositions.push({ page: 1, x: 0, y: 0 });
+    for (var i = 0; i < cardElements.length; i++) {
+      if (i > 0) {
+        pdf.addPage();
+        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+        pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+      }
       const card1 = cardElements[i];
       const canvas1 = await html2canvas(card1, { scale: scale });
       const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
@@ -868,16 +829,13 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
       // Add the image to the PDF
       pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-
     }
 
     const totalPages = pdf.getNumberOfPages();
 
-
     //pagePositions.forEach(({ page, x, y }) => {
-    for(var pg=0;pg<pdf.getNumberOfPages();pg++)
-    {
-      var page=pg+1;
+    for (var pg = 0; pg < pdf.getNumberOfPages(); pg++) {
+      var page = pg + 1;
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0, 0], 0);
@@ -886,18 +844,14 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       var lineBuffer = 13;
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    //});
     }
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     //pdf.save(fileName);
-
-
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
     this.dialogRef.close();
   }
-
 
   addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
@@ -910,6 +864,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     pdf.setLineWidth(0.5); // Set line width for underline
     pdf.line(titleX, 17, titleX + titleWidth, 17); // Draw the line under the title
   }
+
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
@@ -1081,10 +1036,10 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
         }
       });
 
-
       this.columnChartOptions!.chart!.events = {
-
         animationEnd: () => {
+          this.chartAnimatedCounter++;
+          console.log(`columnChartOptions rendered chartAnimatedCounter: `, this.chartAnimatedCounter)
           this.onChartRendered();
         }
       }
@@ -1129,8 +1084,9 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     this.pieChartOptions.labels = labels;
     this.pieChartOptions.series2 = series;
     this.pieChartOptions!.chart!.events = {
-
       animationEnd: () => {
+        this.chartAnimatedCounter++;
+        console.log(`pieChartOptions rendered chartAnimatedCounter: `, this.chartAnimatedCounter)
         this.onChartRendered();
       }
     }
@@ -1174,17 +1130,20 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     });
 
     this.horizontalBarOptions.single = singleValues.filter((s: { name: string }) => s.name != "Offhire");
-
+    this.chartAnimatedCounter++;
+    console.log(`horizontalBarOptions rendered chartAnimatedCounter: `, this.chartAnimatedCounter)
+    this.onChartRendered();
   }
+
   InitialDefaultData() {
     // pie chart
     this.pieChartOptions = {
       chart: {
-        width: 360,
+        width: 750,
         type: 'pie',
         foreColor: '#9aa0ac',
         toolbar: {
-          show: true,
+          show: false,
         },
       },
       labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
@@ -1235,17 +1194,18 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
           },
         },
       },
+      legend: {
+        fontSize: '16px', // Adjust font size
+      },
     };
     // radar chart
-
     this.columnChartOptions = {
-
       chart: {
-        height: 350,
+        height: 650,
         type: 'bar',
         stacked: true,
         toolbar: {
-          show: true,
+          show: false,
         },
         zoom: {
           enabled: true,
@@ -1329,8 +1289,8 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
         formatter: function (seriesName: string, opts?: any) {
           return seriesName; // Return the series name as is
         },
-        fontSize: '8px', // Adjust font size
-        width: 300, // Set a fixed width for the legend container
+        fontSize: '16px', // Adjust font size
+        width: 500, // Set a fixed width for the legend container
         height: 50,
         itemMargin: {
           horizontal: 2, // Reduce horizontal spacing between legend items
@@ -1362,46 +1322,18 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       showLabels: true,
       // data goes here
       single: [
-        {
-          name: 'China',
-          value: 2243772,
-        },
-        {
-          name: 'USA',
-          value: 1826000,
-        },
-        {
-          name: 'India',
-          value: 1173657,
-        },
-        {
-          name: 'Japan',
-          value: 857363,
-        },
-        {
-          name: 'Germany',
-          value: 496750,
-        },
-        {
-          name: 'France',
-          value: 204617,
-        },
       ]
     };
-
   }
 
   onChartRendered() {
-        this.chartAnimatedCounter++;
-    if(this.chartAnimatedCounter==2)
-       {
-         var timeout=3000;
-          setTimeout(() => {
-            this.onDownloadClick();
-          }, timeout);
-
-         //this.onDownloadClick();
-       }
+    if (this.chartAnimatedCounter == 3) {
+      this.onDownloadClick();
+      // var timeout = 3000;
+      // setTimeout(() => {
+      //   this.onDownloadClick();
+      // }, timeout);
+    }
   }
 
 }

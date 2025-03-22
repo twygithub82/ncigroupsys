@@ -201,7 +201,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   invoiceNoControl = new FormControl('', [Validators.required]);
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
-  isGeneratingReport =false;
+  isGeneratingReport = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -355,8 +355,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.search(1);
   }
 
-  search_summary_detail()
-  {
+  search_summary_detail() {
     this.search(2);
   }
   search_detail() {
@@ -364,13 +363,13 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   search(report_type: number) {
-    this.isGeneratingReport=true;
+    this.isGeneratingReport = true;
     let queryType = 1;
     const where: any = {};
 
-    where.or=[];
-    where.or.push({tank_status_cv:{in:TANK_STATUS_IN_YARD}});
-    where.or.push({status_cv:{eq:'WAITING'}});
+    where.or = [];
+    where.or.push({ tank_status_cv: { in: TANK_STATUS_IN_YARD } });
+    where.or.push({ status_cv: { eq: 'WAITING' } });
     // where.tank_status_cv = {in:TANK_STATUS_IN_YARD }//{ neq: "RELEASED" };
     // where.status_cv={eq:'WAITING'};
     if (this.searchForm?.get('customer_code')?.value) {
@@ -383,12 +382,6 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number) {
-    // this.selection.clear();
-
-
-
-    // if(queryType==1)
-    // {
     this.subs.sink = this.sotDS.searchStoringOrderTanksStatusReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
@@ -785,18 +778,17 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   ProcessReportStatus(report_type: number) {
-    if (this.sotList.length === 0) 
-      {
-        this.isGeneratingReport=false;
-        return;
-      }
+    if (this.sotList.length === 0) {
+      this.isGeneratingReport = false;
+      return;
+    }
 
     var repStatus: report_status[] = [];
 
     this.sotList.map(s => {
 
       if (s) {
-      //  if (!s.in_gate?.[0]?.yard_cv) return;
+        //  if (!s.in_gate?.[0]?.yard_cv) return;
         var repCust: report_status = repStatus.find(r => r.code === s.storing_order?.customer_company?.code) || new report_status();
         let newCust = false;
         if (!repCust.code) {
@@ -807,20 +799,18 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
         }
         repCust.number_tank ??= 0;
         repCust.number_tank += 1;
-        var yard: report_status_yard = repCust.yards?.find(y => y.code === (s.in_gate?.[0]?.yard_cv||" ")) || new report_status_yard();
+        var yard: report_status_yard = repCust.yards?.find(y => y.code === (s.in_gate?.[0]?.yard_cv || " ")) || new report_status_yard();
         let newYard = false;
         if (!yard.code) {
-          yard.code = s.in_gate?.[0]?.yard_cv||" ";
+          yard.code = s.in_gate?.[0]?.yard_cv || " ";
           yard.storing_order_tank = [];
           newYard = true;
         }
-        if(s.status_cv=="WAITING")
-        {
+        if (s.status_cv == "WAITING") {
 
           yard.noTank_pending! += 1;
         }
-        else
-        {
+        else {
           switch (s.tank_status_cv) {
             case "STEAM":
               yard.noTank_steam! += 1;
@@ -839,8 +829,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
               yard.noTank_in_survey! += 1;
               break;
             case "RO_GENERATED":
-                yard.noTank_withRO! += 1;
-                break;
+              yard.noTank_withRO! += 1;
+              break;
             // default:
             //   if(s.status_cv=="WAITING")
             //   {
@@ -850,10 +840,9 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
           }
         }
         yard.storing_order_tank?.push(s);
-        if (newYard) 
-          {
-             repCust.yards?.push(yard);
-          }
+        if (newYard) {
+          repCust.yards?.push(yard);
+        }
         if (newCust) repStatus.push(repCust);
       }
     });
@@ -861,15 +850,14 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.searchForm?.get('customer_code')?.value) {
       repStatus = repStatus.filter(s => s.code == this.searchForm?.get('customer_code')?.value.code);
     }
-    repStatus.forEach(r=> r.yards?.sort((a, b) => (a.code || "").localeCompare(b.code || "")));
+    repStatus.forEach(r => r.yards?.sort((a, b) => (a.code || "").localeCompare(b.code || "")));
     if (report_type == 1) {
       this.onExportSummary(repStatus);
     }
-    else if(report_type==2) {
+    else if (report_type == 2) {
       this.onExportSummaryDetail(repStatus);
     }
-    else
-    {
+    else {
       this.onExportDetail(repStatus);
     }
 
@@ -889,7 +877,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     const dialogRef = this.dialog.open(YardDetailInventoryPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_yard_detail: repStatus,
@@ -898,11 +886,11 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
- 
+
   onExportSummaryDetail(repStatus: report_status[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
@@ -917,7 +905,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     const dialogRef = this.dialog.open(YardStatusDetailSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_detail: repStatus,
@@ -926,7 +914,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
@@ -944,7 +932,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     const dialogRef = this.dialog.open(YardChartPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_status: repStatus
@@ -958,7 +946,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       left: '-9999px'  // Move far to the left of the screen
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
