@@ -33,14 +33,11 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-//import {messageReceived}  from '../../../data-sources/message-received';
-
 
 @Component({
   selector: 'app-cleaning-formulas',
