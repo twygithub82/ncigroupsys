@@ -179,7 +179,6 @@ namespace IDMS.Billing.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 List<PeriodicTestDueSummary> result = new List<PeriodicTestDueSummary>();
 
-                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
                 long currentDateTime = DateTime.Now.ToEpochTime();
                 long nextTestThreshold = (long)(Math.Floor(2.5 * 365.25 * 86400));
                 long secInDay = 86400;

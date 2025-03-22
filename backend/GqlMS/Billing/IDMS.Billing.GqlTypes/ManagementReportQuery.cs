@@ -11,6 +11,7 @@ using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
 
 
 namespace IDMS.Billing.GqlTypes
@@ -700,16 +701,20 @@ namespace IDMS.Billing.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public async Task<List<OrderTrackingResult>?> QueryWeeklyPerformance(ApplicationBillingDBContext context, [Service] IConfiguration config,
-                [Service] IHttpContextAccessor httpContextAccessor, WeeklyPerformanceRequest weeklyPerformanceRequest)
+        public async Task<List<DepotPerformanceResult>?> QueryDepotPerformance(ApplicationBillingDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, DepotPerformanceRequest depotPerformanceRequest)
         {
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                int year = weeklyPerformanceRequest.year;
-                int month = weeklyPerformanceRequest.month;
+                int year = depotPerformanceRequest.year;
+                int month = depotPerformanceRequest.month;
                 string completedStatus = "COMPLETED";
-                string qcCompletedStatus = "QC_COMPLETED";
+                string cleanType = "cleaning";
+                string repairType = "repair";
+                string inGateType = "ingate";
+                string outGateType = "outgate";
+                string depotType = "inyard";
 
                 // Get the start date of the month (1st of the month)
                 DateTime startOfMonth = new DateTime(year, month, 1);
@@ -719,63 +724,144 @@ namespace IDMS.Billing.GqlTypes
                 long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
-                //IQueryable<OrderTrackingResult> query;
+                var cleaningQuery = await (from s in context.cleaning
+                                           join sot in context.storing_order_tank on s.sot_guid equals sot.guid
+                                           join so in context.storing_order on sot.so_guid equals so.guid
+                                           join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                                           where s.complete_dt >= startEpoch && s.complete_dt <= endEpoch && s.status_cv.Equals(completedStatus) && s.delete_dt == null
+                                           && (string.IsNullOrEmpty(depotPerformanceRequest.customer_code) || cc.code.Contains(depotPerformanceRequest.customer_code))
+                                           select new TempWeeklyData
+                                           {
+                                               guid = s.sot_guid,
+                                               date = s.complete_dt,
+                                               type = cleanType
+                                           }).Union
+                                    (from s in context.repair
+                                     join sot in context.storing_order_tank on s.sot_guid equals sot.guid
+                                     join so in context.storing_order on sot.so_guid equals so.guid
+                                     join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                                     where s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && !StatusCondition.BeforeApprove.Contains(s.status_cv) && s.delete_dt == null
+                                     && (string.IsNullOrEmpty(depotPerformanceRequest.customer_code) || cc.code.Contains(depotPerformanceRequest.customer_code))
+                                     select new TempWeeklyData
+                                     {
+                                         guid = s.sot_guid,
+                                         date = s.approve_dt,
+                                         type = repairType
+                                     }).ToListAsync();  //AsQueryable();
 
-                var query = (from s in context.cleaning
-                             join sot in context.storing_order_tank on s.sot_guid equals sot.guid
-                             join so in context.storing_order on sot.so_guid equals so.guid
-                             join cc in context.customer_company on so.customer_company_guid equals cc.guid
-                             where s.complete_dt >= startEpoch && s.complete_dt <= endEpoch && s.status_cv.Equals(completedStatus) && s.delete_dt == null
-                             && (string.IsNullOrEmpty(weeklyPerformanceRequest.customer_code) || cc.code.Contains(weeklyPerformanceRequest.customer_code))
-                             select new
-                             {
-                                 s.sot_guid,
-                                 s.complete_dt,
-                             }).AsQueryable();
+                var resClean = cleaningQuery.Where(s => s.type.Equals(cleanType)).OrderBy(s => s.date).ToList();
+                var resultCleaning = GetResultInNoOfWeek(resClean);
 
-                var query1 = (from s in context.repair
-                              join sot in context.storing_order_tank on s.sot_guid equals sot.guid
-                              join so in context.storing_order on sot.so_guid equals so.guid
-                              join cc in context.customer_company on so.customer_company_guid equals cc.guid
-                              where s.approve_dt >= startEpoch && s.approve_dt <= endEpoch && !StatusCondition.BeforeApprove.Contains(s.status_cv) && s.delete_dt == null
-                              && (string.IsNullOrEmpty(weeklyPerformanceRequest.customer_code) || cc.code.Contains(weeklyPerformanceRequest.customer_code))
-                              select new
-                              {
-                                  s.sot_guid,
-                                  s.approve_dt,
-                              }).AsQueryable();
+                var resRepair = cleaningQuery.Where(s => s.type.Equals(repairType)).OrderBy(s => s.date).ToList();
+                var resultRepair = GetResultInNoOfWeek(resRepair);
 
-                //if (!string.IsNullOrEmpty(weeklyPerformanceRequest.customer_code))
-                //{
-                //    query = query.Where(tr => tr.customer_code.Contains(weeklyPerformanceRequest.customer_code));
-                //}
-                //if (!string.IsNullOrEmpty(orderTrackingRequest.eir_no))
-                //{
-                //    query = query.Where(tr => tr.eir_no.Contains(orderTrackingRequest.eir_no));
-                //}
-                //if (!string.IsNullOrEmpty(orderTrackingRequest.tank_no))
-                //{
-                //    query = query.Where(tr => tr.tank_no.Contains(orderTrackingRequest.tank_no));
-                //}
-                //if (!string.IsNullOrEmpty(orderTrackingRequest.last_cargo))
-                //{
-                //    query = query.Where(tr => tr.last_cargo.Contains(orderTrackingRequest.last_cargo));
-                //}
-                //if (orderTrackingRequest.status != null && orderTrackingRequest.status.Any())
-                //{
-                //    query = query.Where(tr => orderTrackingRequest.status.Contains(tr.status));
-                //}
+                //gate in gate out
+                var gateQuery = await (from s in context.in_gate
+                                       join sot in context.storing_order_tank on s.so_tank_guid equals sot.guid
+                                       join so in context.storing_order on sot.so_guid equals so.guid
+                                       join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                                       where s.delete_dt == null && s.eir_dt >= startEpoch && s.eir_dt <= endEpoch
+                                       && StatusCondition.InYard.Contains(sot.tank_status_cv)
+                                       && (string.IsNullOrEmpty(depotPerformanceRequest.customer_code) || cc.code.Contains(depotPerformanceRequest.customer_code))
+                                       select new TempWeeklyData
+                                       {
+                                           guid = s.so_tank_guid,
+                                           date = s.eir_dt,
+                                           type = inGateType
+                                       }).Union
+                              (from s in context.out_gate
+                               join sot in context.storing_order_tank on s.so_tank_guid equals sot.guid
+                               join so in context.storing_order on sot.so_guid equals so.guid
+                               join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                               where s.delete_dt == null && s.eir_dt >= startEpoch && s.eir_dt <= endEpoch
+                               && StatusCondition.NotInYard.Contains(sot.tank_status_cv)
+                               && (string.IsNullOrEmpty(depotPerformanceRequest.customer_code) || cc.code.Contains(depotPerformanceRequest.customer_code))
+                               select new TempWeeklyData
+                               {
+                                   guid = s.so_tank_guid,
+                                   date = s.eir_dt,
+                                   type = outGateType
+                               }).ToListAsync();  //AsQueryable();
 
-                //var resultList = await query.OrderBy(tr => tr.order_date).ToListAsync();
-                //resultList.ForEach(result => result.CompileFinalPurpose());
+                var resInGate = gateQuery.Where(s => s.type.Equals(inGateType)).OrderBy(s => s.date).ToList();
+                var resultInGate = GetResultInNoOfWeek(resInGate);
 
-                return null;
+                var resOutGate = gateQuery.Where(s => s.type.Equals(outGateType)).OrderBy(s => s.date).ToList();
+                var resultOutGate = GetResultInNoOfWeek(resOutGate);
+
+
+                var depotQuery = await (from s in context.in_gate
+                                     join o in context.Set<out_gate>() on s.so_tank_guid equals o.so_tank_guid
+                                     join sot in context.storing_order_tank on s.so_tank_guid equals sot.guid
+                                     join so in context.storing_order on sot.so_guid equals so.guid
+                                     join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                                     where (s.delete_dt == null && s.eir_dt <= endEpoch) && (o.delete_dt == null && o.eir_dt > endEpoch)
+                                     && (string.IsNullOrEmpty(depotPerformanceRequest.customer_code) || cc.code.Contains(depotPerformanceRequest.customer_code))
+                                     select new TempWeeklyData
+                                     {
+                                         guid = s.so_tank_guid,
+                                         date = s.eir_dt,
+                                         type = depotType
+                                     }).ToArrayAsync();
+
+                var resDepot = cleaningQuery.OrderBy(s => s.date).ToList();
+                var resultDepot = GetResultInNoOfWeek(resDepot);
+
+                var allWeeks = resultCleaning
+                        .Concat(resultRepair)
+                        .Concat(resultInGate)   
+                        .Concat(resultOutGate)
+                        .Concat(resultDepot)
+                        .Select(r => r.Week_Of_year)
+                        .Distinct()
+                        .OrderBy(week => week)
+                        .ToList();
+
+                // Join the lists and aggregate the counts by week
+                var result = allWeeks.Select(week => new
+                {
+                    weekOfYear = week,
+                    c_count = resultCleaning.FirstOrDefault(c => c.Week_Of_year == week)?.count ?? 0,
+                    r_count = resultRepair.FirstOrDefault(r => r.Week_Of_year == week)?.count ?? 0,
+                    in_count = resultInGate.FirstOrDefault(g => g.Week_Of_year == week)?.count ?? 0,
+                    out_count = resultOutGate.FirstOrDefault(g => g.Week_Of_year == week)?.count ?? 0,
+                    depot_count = resultDepot.FirstOrDefault(g => g.Week_Of_year == week)?.count ?? 0,
+                }).Select(item => new DepotPerformanceResult
+                {
+                    week_of_year = item.weekOfYear,
+                    cleaning_count = item.c_count,
+                    repair_count = item.r_count,
+                    gate_in_count = item.in_count,
+                    gate_out_count = item.out_count,
+                    depot_count = item.depot_count,
+                    total_gate_count = item.in_count + item.out_count, // Calculate the total count here
+                    average_gate_count = (item.in_count + item.out_count) / 2// Calculate the average count here
+                })
+                .ToList();
+
+                return result;
             }
             catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
+
+        private List<ResultPerWeek?> GetResultInNoOfWeek(List<TempWeeklyData> resultList)
+        {
+            var result = (from s in resultList
+                          let dateTime = DateTimeOffset.FromUnixTimeSeconds((long)s.date).ToLocalTime().DateTime
+                          let weekOfYear = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)
+                          group s by weekOfYear into g
+                          select new ResultPerWeek
+                          {
+                              Week_Of_year = g.Key,
+                              count = g.Count()
+                          }).ToList();
+
+            return result;
+        }
+
         ////[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         ////[UseProjection]
         ////[UseFiltering]
