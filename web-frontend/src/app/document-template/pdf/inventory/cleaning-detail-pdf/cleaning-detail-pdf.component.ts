@@ -607,7 +607,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     pdf.setTextColor(0, 0, 0); // Black text
     const cutoffDate = `${this.translatedLangText.CLEAN_DATE}:${this.date}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, startY - 5, 8);
+    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+5, 8);
 
     var buffer = 10;
     var CurrentPage = 1;
