@@ -264,8 +264,8 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   search() {
     const where: any = {};
 
-    if (this.searchForm!.get('eir_no')?.value) {
-      where.eir_no = { contains: this.searchForm!.value['eir_no'] };
+    if (this.searchForm!.get('eir_no')?.value?.trim()) {
+      where.eir_no = { contains: this.searchForm!.get('eir_no')?.value?.trim() };
     }
 
     if (this.searchForm!.get('eir_status_cv')?.value) {
@@ -276,11 +276,11 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
-    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
+    if (this.searchForm!.get('tank_no')?.value?.trim() || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
       const sotSearch: any = {};
 
-      if (this.searchForm!.get('tank_no')?.value) {
-        sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      if (this.searchForm!.get('tank_no')?.value?.trim()) {
+        sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value?.trim() };
       }
 
       if (this.searchForm!.get('tank_status_cv')?.value) {

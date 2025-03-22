@@ -23,24 +23,22 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { fixObservableSubclass } from '@apollo/client/utilities';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
-import { BillingDS, BillingEstimateRequest } from 'app/data-sources/billing';
+import { BillingDS } from 'app/data-sources/billing';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_customer_tank_activity, report_status, report_status_yard } from 'app/data-sources/reports';
+import { report_customer_tank_activity, report_status } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
 import { TransferLocationPdfComponent } from 'app/document-template/pdf/transfer-location-pdf/transfer-location-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -152,7 +150,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     YARD: 'COMMON-FORM.YARD',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
     TRANSFER_DATE: 'COMMON-FORM.TRANSFER-DATE',
-    STORAGE_DAYS:'COMMON-FORM.STORAGE-DAYS'
+    STORAGE_DAYS: 'COMMON-FORM.STORAGE-DAYS'
   }
 
   invForm?: UntypedFormGroup;
@@ -204,7 +202,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport=false;
+  isGeneratingReport = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -359,13 +357,13 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search(report_type: number) {
-    
+
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
 
-    if(this.searchForm?.invalid) return;
-    this.isGeneratingReport=true;
+    if (this.searchForm?.invalid) return;
+    this.isGeneratingReport = true;
     // where.tank_status_cv = { neq: "RELEASED" };
     // if (this.searchForm?.get('customer_code')?.value) {
     //   // if(!where.storing_order_tank) where.storing_order_tank={};
@@ -432,18 +430,17 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
       return;
     }
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(date);
-
-
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
+
   performSearch(date: string) {
     this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport(this.lastSearchCriteria)
       .subscribe(data => {
@@ -454,15 +451,11 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
         this.ProcessReportTransferYard(date);
       });
-
   }
 
   onPageEvent(event: PageEvent) {
 
   }
-
-
-
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -541,9 +534,9 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
 
 
   ProcessReportTransferYard(date: string) {
-    if (this.sotList.length === 0){
-      this.isGeneratingReport=false;
-     return;
+    if (this.sotList.length === 0) {
+      this.isGeneratingReport = false;
+      return;
     }
 
     var report_customer_tank_acts: report_customer_tank_activity[] = [];
@@ -563,22 +556,14 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
         if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
         repCust.storing_order_tank?.push(s);
         if (newCust) report_customer_tank_acts.push(repCust);
-
-
-
       }
     });
-
-
     this.onExportDetail(report_customer_tank_acts, date);
-
-
   }
 
   onExportDetail(repStatus: report_customer_tank_activity[], date: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
-
 
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -599,7 +584,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
@@ -628,7 +613,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 

@@ -1323,7 +1323,6 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     this.generatingPdfLoadingSubject.next(false);
   }
 
-
   GeneratedDate(): string {
     return Utility.convertDateToStr(new Date());
   }
@@ -1340,8 +1339,5 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     else {
       return '0';
     }
-
-
   }
-
 }
