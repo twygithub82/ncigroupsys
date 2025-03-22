@@ -175,7 +175,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
-  last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
@@ -200,7 +199,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport =false;
+  isGeneratingReport = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -231,7 +230,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeValueChanges();
-    // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
   }
 
@@ -242,10 +240,8 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     })
   }
   initSearchForm() {
-
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
-      last_cargo: this.lastCargoControl,
       eir_no: [''],
       tank_no: [''],
       eir_dt_start: [''],
@@ -281,24 +277,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
               });
             }
           }
-        });
-      })
-    ).subscribe();
-
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-        }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-          this.updateValidators(this.lastCargoControl, this.last_cargoList);
-
         });
       })
     ).subscribe();
@@ -370,18 +348,18 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
   search(report_type: number) {
 
-    this.isGeneratingReport=true;
+    this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
 
 
-    where.tank_status_cv = {in:TANK_STATUS_IN_YARD}; //{ neq: "RELEASED" };
-    
+    where.tank_status_cv = { in: TANK_STATUS_IN_YARD }; //{ neq: "RELEASED" };
+
     if (this.searchForm?.get('customer_code')?.value) {
-      var cond: any =  { customer_company_guid:{eq:this.searchForm!.get('customer_code')?.value?.guid } };
-     
-      where.storing_order=cond;
+      var cond: any = { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value?.guid } };
+
+      where.storing_order = cond;
       cond_counter++;
     }
 
@@ -412,31 +390,21 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
 
     if (this.searchForm?.get('tank_no')?.value) {
-      // if(!where.storing_order_tank) where.storing_order_tank={};
       where.tank_no = { eq: this.searchForm?.get('tank_no')?.value };
       cond_counter++;
     }
 
     this.noCond = (cond_counter === 0);
-    if (this.noCond)
-      {
-        this.isGeneratingReport=false;
-         return;
-      }
+    if (this.noCond) {
+      this.isGeneratingReport = false;
+      return;
+    }
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
-
-
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number) {
-    // this.selection.clear();
-
-
-
-    // if(queryType==1)
-    // {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksLocationStatusSummary(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
@@ -448,7 +416,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
       });
-
   }
 
   onPageEvent(event: PageEvent) {
@@ -675,29 +642,19 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
         //this.calculateTotalCost();
       }
     });
-
   }
 
-
-
-
-
-
-
   ProcessReportStatus(report_type: number) {
-    if (this.sotList.length === 0) 
-      {
-        this.isGeneratingReport=false;
-        return;
-
-      }
+    if (this.sotList.length === 0) {
+      this.isGeneratingReport = false;
+      return;
+    }
 
     var repStatus: report_status[] = [];
 
     this.sotList.map(s => {
-
       if (s) {
-        if (!s.in_gate?.[0]?.yard_cv) return;
+        if (!s.tank_info?.yard_cv) return;
         var repCust: report_status = repStatus.find(r => r.code === s.storing_order?.customer_company?.code) || new report_status();
         let newCust = false;
         if (!repCust.code) {
@@ -708,10 +665,10 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
         }
         repCust.number_tank ??= 0;
         repCust.number_tank += 1;
-        var yard: report_status_yard = repCust.yards?.find(y => y.code === s.in_gate?.[0].yard_cv) || new report_status_yard();
+        var yard: report_status_yard = repCust.yards?.find(y => y.code === s.tank_info?.yard_cv) || new report_status_yard();
         let newYard = false;
         if (!yard.code) {
-          yard.code = s.in_gate?.[0].yard_cv;
+          yard.code = s.tank_info?.yard_cv;
           yard.storing_order_tank = [];
           newYard = true;
         }
@@ -748,7 +705,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     else {
       this.onExportDetail(repStatus);
     }
-
   }
 
   onExportDetail(repStatus: report_status[]) {
@@ -765,8 +721,8 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
     const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_customer_tank_activity: repStatus,
       },
@@ -774,7 +730,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
@@ -793,7 +749,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
     const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_status: repStatus,
@@ -803,7 +759,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 

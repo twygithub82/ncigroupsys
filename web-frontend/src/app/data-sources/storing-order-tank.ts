@@ -3490,6 +3490,106 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANKS_LOCATION_STATUS_SUMMARY = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        certificate_cv
+        clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        eta_dt
+        etr_dt
+        guid
+        job_no
+        owner_guid
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        last_cargo_guid
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        remarks
+        required_temp
+        so_guid
+        status_cv
+        tank_no
+        tank_status_cv
+        unit_type_guid
+        update_by
+        update_dt
+        customer_company {
+          code
+          guid
+          name
+        }
+        storing_order {
+          so_no
+          so_notes
+          haulier
+          create_dt
+          status_cv
+          customer_company_guid
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          eir_dt
+          eir_no
+          eir_status_cv
+          guid
+          haulier
+          lolo_cv
+          preinspection_cv
+          publish_by
+          publish_dt
+          remarks
+          so_tank_guid
+          update_by
+          update_dt
+          vehicle_no
+          yard_cv
+          in_gate_survey {
+            delete_dt
+            guid
+            inspection_dt
+            last_test_cv
+            next_test_cv
+            tare_weight
+            test_dt
+            walkway_cv
+            capacity
+            take_in_reference
+          }
+        }
+        tank_info {
+          yard_cv
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   constructor(private apollo: Apollo) {
@@ -3833,7 +3933,6 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         })
       );
   }
-
 
   searchStoringOrderTanksResidueEstimate(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
@@ -4371,6 +4470,32 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         }),
         catchError(() => of({ soList: [] })),
         finalize(() => this.loadingSubject.next(false)),
+      );
+  }
+
+  searchStoringOrderTanksLocationStatusSummary(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_LOCATION_STATUS_SUMMARY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
       );
   }
 
