@@ -41,6 +41,9 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { SteamMonthlyAdminReportComponent } from './steam-monthly/steam-monthly.component';
+import { ResidueMonthlyAdminReportComponent } from './residue-monthly/residue-monthly.component';
+import { RepairMonthlyAdminReportComponent } from './repair-monthly/repair-monthly.component';
+import { CleanMonthlyAdminReportComponent } from './clean-monthly/clean-monthly.component';
 
 @Component({
   selector: 'app-main-monthly',
@@ -72,7 +75,10 @@ import { SteamMonthlyAdminReportComponent } from './steam-monthly/steam-monthly.
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    SteamMonthlyAdminReportComponent
+    SteamMonthlyAdminReportComponent,
+    ResidueMonthlyAdminReportComponent,
+    RepairMonthlyAdminReportComponent,
+    CleanMonthlyAdminReportComponent
     
   ]
 })
@@ -127,7 +133,10 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     CLEANING: "COMMON-FORM.CLEANING",
     CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
-    STEAM_REPORT:'COMMON-FORM.STEAM-REPORT'
+    STEAM_REPORT:'COMMON-FORM.STEAM-REPORT',
+    RESIDUE_REPORT:'COMMON-FORM.RESIDUE-REPORT',
+    REPAIR_REPORT:'COMMON-FORM.REPAIR-REPORT',
+    CLEAN_REPORT:'COMMON-FORM.CLEAN-REPORT',
 
   }
 

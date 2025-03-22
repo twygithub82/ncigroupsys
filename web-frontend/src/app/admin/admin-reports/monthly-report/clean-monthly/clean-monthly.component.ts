@@ -49,10 +49,10 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
 
 @Component({
-  selector: 'app-steam-monthly',
+  selector: 'app-clean-monthly',
   standalone: true,
-  templateUrl: './steam-monthly.component.html',
-  styleUrl: './steam-monthly.component.scss',
+  templateUrl: './clean-monthly.component.html',
+  styleUrl: './clean-monthly.component.scss',
   imports: [
     MatTooltipModule,
     MatButtonModule,
@@ -79,7 +79,7 @@ import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-report
     MatSlideToggleModule
   ]
 })
-export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class CleanMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'tank_no',
@@ -193,7 +193,7 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   inventoryTypeCvList: CodeValuesItem[] = [];
 
-  processType: string = "STEAM";
+  processType: string = "CLEANING";
   billingParty: string = "CUSTOMER";
 
   pageIndex = 0;

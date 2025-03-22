@@ -1151,9 +1151,24 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   InitialDefaultData() {
     this.lineChart2Options = {
+      plotOptions: {
+        bar: {
+          dataLabels: {
+            position: 'top', // top, center, bottom
+          },
+        },
+      },
+      dataLabels: {
+        enabled: true,
+        offsetY: -20,
+        style: {
+          fontSize: '10px',
+          colors: ['#9aa0ac'],
+        },
+      },
       chart: {
         height: 350,
-        type: 'line',
+        type: 'bar',
         dropShadow: {
           enabled: false,
           color: '#bbb',
@@ -1206,10 +1221,12 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
         },
       },
       title: {
-        align: 'left',
+        text: this.translatedLangText.DAYS,
+        offsetY: 332,
+        align: 'center',
         style: {
-          fontSize: '16px',
-          color: '#666',
+          color: '#9aa0ac',
+          fontSize:"10px"
         },
       },
       grid: {

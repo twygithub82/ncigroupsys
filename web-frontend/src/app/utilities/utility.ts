@@ -820,6 +820,21 @@ export class Utility {
     return nextTest;
   }
 
+  static isSelectedDateGreaterThanToday(selectedMonth: number, selectedYear: number): boolean {
+    // Get today's date
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1; // getMonth() returns 0-11, so add 1
+    const currentYear = today.getFullYear();
+  
+    // Compare the selected year and month with today's year and month
+    if (selectedYear > currentYear) {
+      return true; // Selected year is greater
+    } else if (selectedYear === currentYear && selectedMonth > currentMonth) {
+      return true; // Selected year is the same, but month is greater
+    }
+  
+    return false; // Selected date is not greater than today
+  }
 
 }
 
