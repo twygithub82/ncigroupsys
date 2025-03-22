@@ -306,15 +306,6 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   public loadData() {
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria({});
-    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
-      if (this.soDS.totalCount > 0) {
-        this.soList = data;
-        this.endCursor = this.soDS.pageInfo?.endCursor;
-        this.startCursor = this.soDS.pageInfo?.startCursor;
-        this.hasNextPage = this.soDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.soDS.pageInfo?.hasPreviousPage ?? false;
-      }
-    });
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
@@ -327,6 +318,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
+    this.search();
   }
 
   showNotification(
@@ -375,63 +367,80 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   search() {
     const where: any = {};
-
-    if (this.searchForm!.value['so_no']) {
-      where.so_no = { contains: this.searchForm!.value['so_no'] };
+  
+    const soNo = this.searchForm?.get('so_no')?.value;
+    const soStatus = this.searchForm?.get('so_status')?.value;
+    const customerCode = this.searchForm?.get('customer_code')?.value;
+    const tankNo = this.searchForm?.get('tank_no')?.value;
+    const jobNo = this.searchForm?.get('job_no')?.value;
+    const etaStart = this.searchForm?.get('eta_dt_start')?.value;
+    const etaEnd = this.searchForm?.get('eta_dt_end')?.value;
+    const lastCargo = this.searchForm?.get('last_cargo')?.value;
+    const purpose = this.searchForm?.get('purpose')?.value;
+  
+    if (soNo) {
+      where.so_no = { contains: soNo };
     }
-
-    if (this.searchForm!.value['so_status']) {
-      where.status_cv = { contains: this.searchForm!.value['so_status'] };
+  
+    if (soStatus) {
+      where.status_cv = { contains: soStatus };
     }
-
-    if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+  
+    if (customerCode) {
+      where.customer_company = { code: { contains: customerCode.code } };
     }
-
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['last_cargo'] || this.searchForm!.value['purpose']) {
+  
+    if (tankNo || jobNo || (etaStart && etaEnd) || lastCargo || purpose) {
       const sotSome: any = {};
-      if (this.searchForm!.value['last_cargo']) {
-        where.last_cargo_guid = { contains: this.searchForm!.value['last_cargo'].guid };
+  
+      if (lastCargo) {
+        where.last_cargo_guid = { contains: lastCargo.guid };
       }
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
+  
+      if (tankNo) {
+        sotSome.tank_no = { contains: tankNo };
       }
-
-      if (this.searchForm!.value['job_no']) {
-        sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
+  
+      if (jobNo) {
+        sotSome.job_no = { contains: jobNo };
       }
-
-      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
+  
+      if (etaStart && etaEnd) {
+        sotSome.eta_dt = {
+          gte: Utility.convertDate(etaStart),
+          lte: Utility.convertDate(etaEnd)
+        };
       }
-
-      if (this.searchForm!.value['purpose']) {
-        const purposes = this.searchForm!.value['purpose'];
-        if (purposes.includes('STORAGE')) {
-          sotSome.purpose_storage = { eq: true }
+  
+      if (purpose) {
+        if (purpose.includes('STORAGE')) {
+          sotSome.purpose_storage = { eq: true };
         }
-        if (purposes.includes('CLEANING')) {
-          sotSome.purpose_cleaning = { eq: true }
+        if (purpose.includes('CLEANING')) {
+          sotSome.purpose_cleaning = { eq: true };
         }
-        if (purposes.includes('STEAM')) {
-          sotSome.purpose_steam = { eq: true }
+        if (purpose.includes('STEAM')) {
+          sotSome.purpose_steam = { eq: true };
         }
-        
+  
         const repairPurposes = [];
-        if (purposes.includes('REPAIR')) {
+        if (purpose.includes('REPAIR')) {
           repairPurposes.push('REPAIR');
         }
-        if (purposes.includes('OFFHIRE')) {
+        if (purpose.includes('OFFHIRE')) {
           repairPurposes.push('OFFHIRE');
         }
+  
         if (repairPurposes.length > 0) {
           sotSome.purpose_repair_cv = { in: repairPurposes };
         }
       }
-      where.storing_order_tank = { some: sotSome };
+  
+      if (Object.keys(sotSome).length > 0) {
+        where.storing_order_tank = { some: sotSome };
+      }
     }
-
+  
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();

@@ -211,22 +211,24 @@ export class FormDialogComponent {
 
   initializeValueChange() {
     this.storingOrderTankForm?.get('purpose_steam')!.valueChanges.subscribe(value => {
-      const purposeStorage = this.storingOrderTankForm.get('purpose_storage');
-      const requiredTempControl = this.storingOrderTankForm.get('required_temp');
-      const purposeCleaning = this.storingOrderTankForm.get('purpose_cleaning');
-      const purposeRepair = this.storingOrderTankForm.get('purpose_repair_cv');
-      if (value) {
-        purposeStorage?.setValue(true);
-        purposeStorage?.disable();
-        requiredTempControl!.enable();
-        purposeCleaning!.disable();
-        purposeRepair!.disable();
-      } else {
-        requiredTempControl!.disable();
-        requiredTempControl!.setValue(''); // Clear the value if disabled
-        purposeStorage?.enable();
-        purposeCleaning!.enable();
-        purposeRepair!.enable();
+      if (this.canEdit()) {
+        const purposeStorage = this.storingOrderTankForm.get('purpose_storage');
+        const requiredTempControl = this.storingOrderTankForm.get('required_temp');
+        const purposeCleaning = this.storingOrderTankForm.get('purpose_cleaning');
+        const purposeRepair = this.storingOrderTankForm.get('purpose_repair_cv');
+        if (value) {
+          purposeStorage?.setValue(true);
+          purposeStorage?.disable();
+          requiredTempControl!.enable();
+          purposeCleaning!.disable();
+          purposeRepair!.disable();
+        } else {
+          requiredTempControl!.disable();
+          requiredTempControl!.setValue(''); // Clear the value if disabled
+          purposeStorage?.enable();
+          purposeCleaning!.enable();
+          purposeRepair!.enable();
+        }
       }
     });
 
@@ -308,6 +310,8 @@ export class FormDialogComponent {
         this.handleValueChange(value);
       }
     });
+
+    this.onPurposeChangeCheck(null);
   }
 
   handleValueChange(value: any) {
@@ -324,20 +328,22 @@ export class FormDialogComponent {
         purposeSteamControl!.disable();
         requiredTempControl!.disable();
       } else {
-        purposeSteamControl!.enable();
-        requiredTempControl!.enable();
-        requiredTempControl!.setValidators([
-          Validators.max(value.flash_point - 1),
-          Validators.min(0)
-        ]);
-      }
-
-      const isBooleanConditionMet = purposeSteamControl!.value
-      if (isBooleanConditionMet) {
-        requiredTempControl!.enable();
-      } else {
-        requiredTempControl!.disable();
-        requiredTempControl!.setValue(''); // Clear the value if disabled
+        if (this.allowPurposeSteam()) {
+          purposeSteamControl!.enable();
+          requiredTempControl!.enable();
+          requiredTempControl!.setValidators([
+            Validators.max(value.flash_point - 1),
+            Validators.min(0)
+          ]);
+        }
+  
+        // Handle based on current steam value
+        if (purposeSteamControl!.value) {
+          requiredTempControl!.enable();
+        } else {
+          requiredTempControl!.disable();
+          requiredTempControl!.setValue('');
+        }
       }
 
       if (!this.canEdit()) {
@@ -354,6 +360,26 @@ export class FormDialogComponent {
     this.valueChangesDisabled = false;
   }
 
+  onPurposeChangeCheck(event: any) {
+    if (this.canEdit()) {
+      if (this.storingOrderTankForm.get('purpose_cleaning')?.value || this.storingOrderTankForm.get('purpose_repair_cv')?.value) {
+        this.storingOrderTankForm.get('purpose_storage')?.setValue(true);
+  
+        this.storingOrderTankForm.get('required_temp')?.setValue('');
+        this.storingOrderTankForm.get('required_temp')?.disable();
+        this.storingOrderTankForm.get('purpose_steam')?.disable();
+        this.storingOrderTankForm.get('purpose_storage')?.disable();
+      } else if (!this.storingOrderTankForm.get('purpose_cleaning')?.value && !this.storingOrderTankForm.get('purpose_repair_cv')?.value) {
+        this.storingOrderTankForm.get('purpose_storage')?.enable();
+        this.storingOrderTankForm.get('purpose_steam')?.enable();
+      }
+    }
+  }
+
+  allowPurposeSteam() {
+    return !this.storingOrderTankForm.get('purpose_cleaning')?.value && !this.storingOrderTankForm.get('purpose_repair_cv')?.value;
+  }
+
   findInvalidControls() {
     const controls = this.storingOrderTankForm.controls;
     for (const name in controls) {
@@ -365,20 +391,6 @@ export class FormDialogComponent {
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
-  }
-
-  onPurposeChangeCheck(event: any) {
-    if ((this.storingOrderTankForm.get('purpose_cleaning')?.value || this.storingOrderTankForm.get('purpose_repair_cv')?.value)) {
-      this.storingOrderTankForm.get('purpose_storage')?.setValue(true);
-
-      this.storingOrderTankForm.get('required_temp')?.setValue('');
-      this.storingOrderTankForm.get('required_temp')?.disable();
-      this.storingOrderTankForm.get('purpose_steam')?.disable();
-      this.storingOrderTankForm.get('purpose_storage')?.disable();
-    } else if (!this.storingOrderTankForm.get('purpose_cleaning')?.value && !this.storingOrderTankForm.get('purpose_repair_cv')?.value) {
-      this.storingOrderTankForm.get('purpose_storage')?.enable();
-      this.storingOrderTankForm.get('purpose_steam')?.enable();
-    }
   }
 
   validatePurpose(): boolean {
@@ -405,7 +417,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return !this.sotDS.canRollbackStatus(this.storingOrderTank) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback');
+    return this.sotDS.canRollbackStatus(this.storingOrderTank) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback');
   }
 
   updateValidators(validOptions: any[]) {
