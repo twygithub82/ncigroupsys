@@ -1,11 +1,8 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
-import { ApolloError } from '@apollo/client/core';
-import { CLEANING_CATEGORY_FRAGMENT } from './fragments';
 import { BaseDataSource } from './base-ds';
 import { TariffCleaningItem } from './tariff-cleaning';
 
@@ -86,7 +83,7 @@ export class CleaningCategoryItem {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  public tariff_cleanings?:TariffCleaningItem[];
+  public tariff_cleanings?: TariffCleaningItem[];
 
   constructor(item: Partial<CleaningCategoryItem> = {}) {
     this.guid = item.guid;
@@ -99,7 +96,7 @@ export class CleaningCategoryItem {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    this.tariff_cleanings= item.tariff_cleanings;
+    this.tariff_cleanings = item.tariff_cleanings;
   }
 
 

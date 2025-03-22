@@ -406,7 +406,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
         langText: this.langText,
         selectedItem: row
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -417,8 +416,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
       }
     });
-
   }
+
   editCall(row: CleaningMethodItem) {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -427,34 +426,24 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     } else {
       tempDirection = 'ltr';
     }
-    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
-    //  rows.push(row);
+
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '450px',
+      width: '600px',
       data: {
         action: 'new',
         langText: this.langText,
         selectedItem: row
       }
-
     });
-
-
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-
         this.handleSaveSuccess(result);
         //this.search();
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-
       }
     });
-
   }
-
-
-
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
