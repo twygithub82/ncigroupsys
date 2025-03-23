@@ -11,6 +11,7 @@ namespace IDMS.Inventory.GqlTypes
 {
     public class InventoryQuery
     {
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
