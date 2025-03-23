@@ -24,13 +24,13 @@ namespace IDMS.Billing.GqlTypes
         public async Task<YearlyInventoryResult?> QueryYearlyInventory(ApplicationBillingDBContext context, [Service] IConfiguration config,
           [Service] IHttpContextAccessor httpContextAccessor, YearlyInventoryRequest yearlyInventoryRequest)
         {
-
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
                 string completedStatus = "COMPLETED";
                 string qcCompletedStatus = "QC_COMPLETED";
+                string reportFormat = "yearly";
 
                 int year = yearlyInventoryRequest.year;
                 int start_month = yearlyInventoryRequest.start_month;
@@ -43,6 +43,9 @@ namespace IDMS.Billing.GqlTypes
                 // Get the end date of the month (last day of the month)
                 long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();// Get the start date of the month (1st of the month)
+
+                DateTime startMonthLastDay = new DateTime(year, start_month, DateTime.DaysInMonth(year, start_month));
+                long startMonthLastDayEpoch = ((DateTimeOffset)startMonthLastDay).ToUnixTimeSeconds();
 
                 var query = (from sot in context.storing_order_tank
                              join so in context.storing_order on sot.so_guid equals so.guid
@@ -59,96 +62,157 @@ namespace IDMS.Billing.GqlTypes
 
                 if (yearlyInventoryRequest.inventory_type.EqualsIgnore("repair") || yearlyInventoryRequest.inventory_type.EqualsIgnore("all"))
                 {
-                    var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "repair", startEpoch, endEpoch, startOfMonth, endOfMonth);
+                    var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
 
                     var approveResultPerMonth = await GetResultPerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
+                    var total_count = approveResultPerMonth.Sum(g => g.count);
+                    var average_count = total_count / 12;
+                    //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
+                    //var repairResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
 
-                    var repairResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
+                    var repairInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
+                    {
+                       month = g.month,
+                       count = g.count,
+                       percentage = CalculatePercentage(g.count, total_count)
+                    }).ToList();
 
                     // Handle repairResult as needed
-                    var repairInventoryResult = repairResult.Select(result => new YearlyRepairInventory
-                    {
-                        month = result.month,
-                        approved_hour = result.appv_cost,
-                        completed_hour = result.complete_cost // You can combine the costs or map as needed
-                    }).ToList();
-                    yearlyInventoryResult.repair_inventory = repairInventoryResult;
+                    YearlyInventory yearlyInventory = new YearlyInventory();
+                    yearlyInventory.inventory_per_month = repairInventory;
+                    yearlyInventory.total_count = total_count;
+                    yearlyInventory.average_count = average_count;
+                    yearlyInventoryResult.repair_yearly_inventory= yearlyInventory;
                 }
 
                 if (yearlyInventoryRequest.inventory_type.EqualsIgnore("steaming") || yearlyInventoryRequest.inventory_type.EqualsIgnore("all"))
                 {
-                    var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "steaming", startEpoch, endEpoch, startOfMonth, endOfMonth);
+                    var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
 
                     var approveResultPerMonth = await GetResultPerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
+                    //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
+                    var total_count = approveResultPerMonth.Sum(g => g.count);
+                    var average_count = total_count / 12;
 
-                    var steamingResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
+                    //var steamingResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
 
                     // Handle steamingResult as needed
-                    var steamingInventoryResult = steamingResult.Select(result => new YearlySteamingInventory
+                    var steamingInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
                     {
-                        month = result.month,
-                        approved_cost = result.appv_cost,
-                        completed_cost = result.complete_cost // You can combine the costs or map as needed
+                        month = g.month,
+                        count = g.count,
+                        percentage = CalculatePercentage(g.count, total_count)
                     }).ToList();
-                    yearlyInventoryResult.steaming_inventory = steamingInventoryResult;
+
+                    // Handle repairResult as needed
+                    YearlyInventory yearlyInventory = new YearlyInventory();
+                    yearlyInventory.inventory_per_month = steamingInventory;
+                    yearlyInventory.total_count = total_count;
+                    yearlyInventory.average_count = average_count;
+                    yearlyInventoryResult.steaming_yearly_inventory = yearlyInventory;
                 }
 
                 if (yearlyInventoryRequest.inventory_type.EqualsIgnore("cleaning") || yearlyInventoryRequest.inventory_type.EqualsIgnore("all"))
                 {
-                    var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "cleaning", startEpoch, endEpoch, startOfMonth, endOfMonth);
-
+                    var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
                     var approveResultPerMonth = await GetResultPerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
+                    //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
+                    var total_count = approveResultPerMonth.Sum(g => g.count);
+                    var average_count = total_count / 12;
 
-                    var cleaningResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
+                    //var cleaningResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
 
                     // Handle cleaningResult as needed
-                    var cleaningInventoryResult = cleaningResult.Select(result => new YearlyCleaningInventory
+                    var cleaningInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
                     {
-                        month = result.month,
-                        approved_cost = result.appv_cost,
-                        completed_cost = result.complete_cost // You can combine the costs or map as needed
+                        month = g.month,
+                        count = g.count,
+                        percentage = CalculatePercentage(g.count, total_count)
                     }).ToList();
-                    yearlyInventoryResult.cleaning_inventory = cleaningInventoryResult;
+
+                    YearlyInventory yearlyInventory = new YearlyInventory();
+                    yearlyInventory.inventory_per_month = cleaningInventory;
+                    yearlyInventory.total_count = total_count;
+                    yearlyInventory.average_count = average_count;
+                    yearlyInventoryResult.cleaning_yearly_inventory = yearlyInventory;
+                }
+
+                if (yearlyInventoryRequest.inventory_type.EqualsIgnore("depot") || yearlyInventoryRequest.inventory_type.EqualsIgnore("all"))
+                {
+                    var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "depot", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    var approveResultPerMonth = await GetResultPerMonth(approvedResult, startOfMonth, endOfMonth);
+                    //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
+                    var total_count = approveResultPerMonth.Sum(g => g.count);
+                    var average_count = total_count / 12;
+
+                    //var cleaningResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
+
+                    // Handle cleaningResult as needed
+                    var depotInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
+                    {
+                        month = g.month,
+                        count = g.count,
+                        //percentage = CalculatePercentage(g.count, total_count)
+                    }).ToList();
+
+                    YearlyInventory yearlyInventory = new YearlyInventory();
+                    yearlyInventory.inventory_per_month = depotInventory;
+                    yearlyInventory.total_count = total_count;
+                    yearlyInventory.average_count = average_count;
+                    yearlyInventoryResult.depot_yearly_inventory = yearlyInventory;
                 }
 
                 if (yearlyInventoryRequest.inventory_type.EqualsIgnore("in-out") || yearlyInventoryRequest.inventory_type.EqualsIgnore("all"))
                 {
-                    var gateInOutInventoryResult = new YearlyGateInOutInventory();
+                    //var gateInOutInventoryResult = new YearlyGateInOutInventory();
 
-                    var (l_OffResult, l_OnResult) = await ProcessInventoryResults(context, query, "lolo", startEpoch, endEpoch, startOfMonth, endOfMonth);
+                    //var (l_OffResult, l_OnResult) = await ProcessInventoryResults(context, query, "lolo", startEpoch, endEpoch, reportFormat);
 
-                    var l_OffResultPerMonth = await GetResultPerMonth(l_OffResult, startOfMonth, endOfMonth);
-                    var l_OnResultPerMonth = await GetResultPerMonth(l_OnResult, startOfMonth, endOfMonth);
-                    var loloResult = await MergeYearlyList(l_OffResultPerMonth, l_OnResultPerMonth);
-                    // Handle cleaningResult as needed
-                    var loloInventoryResult = loloResult.Select(result => new YearlyLoloInventory
-                    {
-                        month = result.month,
-                        lift_off_cost = result.appv_cost,
-                        lift_on_cost = result.complete_cost // You can combine the costs or map as needed
-                    }).ToList();
+                    //var l_OffResultPerMonth = await GetResultPerMonth(l_OffResult, startOfMonth, endOfMonth);
+                    //var l_OnResultPerMonth = await GetResultPerMonth(l_OnResult, startOfMonth, endOfMonth);
+                    //var loloResult = await MergeYearlyList(l_OffResultPerMonth, l_OnResultPerMonth);
+                    //// Handle cleaningResult as needed
+                    //var loloInventoryResult = loloResult.Select(result => new YearlyLoloInventory
+                    //{
+                    //    month = result.month,
+                    //    count = result.appv_cost,
+                    //    percentage = result.complete_cost // You can combine the costs or map as needed
+                    //}).ToList();
 
-                    gateInOutInventoryResult.lolo_inventory = loloInventoryResult;
-                    //monthlyInventoryResult.lolo_inventory = loloInventoryResult;
+                    //gateInOutInventoryResult.lolo_inventory = loloInventoryResult;
 
-                    var (gateInResult, gateOutResult) = await ProcessInventoryResults(context, query, "gate", startEpoch, endEpoch, startOfMonth, endOfMonth);
 
+                    var (gateInResult, gateOutResult) = await ProcessInventoryResults(context, query, "gate", startEpoch, endEpoch, reportFormat);
                     var gateInResultPerMonth = await GetResultPerMonth(gateInResult, startOfMonth, endOfMonth);
-                    var gateOutResultPerMonth = await GetResultPerMonth(gateOutResult, startOfMonth, endOfMonth);
-                    var gateInOutResult = await MergeYearlyList(gateInResultPerMonth, gateOutResultPerMonth);
-                    // Handle cleaningResult as needed
-                    var gateInventoryResult = gateInOutResult.Select(result => new YearlyGateInventory
+                    var total_count = gateInResultPerMonth.Sum(g => g.count);
+                    var average_count = total_count / 12;
+                    var gInInventoryResult = gateInResultPerMonth.Select(g => new InventoryPerMonth
                     {
-                        month = result.month,
-                        gate_in_cost = result.appv_cost,
-                        gate_out_cost = result.complete_cost // You can combine the costs or map as needed
+                        month = g.month,
+                        count = g.count,
+                        percentage = CalculatePercentage(g.count, total_count)
                     }).ToList();
-                    gateInOutInventoryResult.gate_inventory = gateInventoryResult;
 
-                    yearlyInventoryResult.gate_in_out_inventory = gateInOutInventoryResult;
+                    YearlyInventory yearlyGateInInventory = new YearlyInventory();
+                    yearlyGateInInventory.inventory_per_month = gInInventoryResult;
+                    yearlyGateInInventory.total_count = total_count;
+                    yearlyGateInInventory.average_count = average_count;
+                    yearlyInventoryResult.gate_in_inventory = yearlyGateInInventory;
+
+                    var gateOutResultPerMonth = await GetResultPerMonth(gateOutResult, startOfMonth, endOfMonth);
+                    total_count = gateOutResultPerMonth.Sum(g => g.count);
+                    average_count = total_count / 12;
+                    var gOutInventoryResult = gateInResultPerMonth.Select(g => new InventoryPerMonth
+                    {
+                        month = g.month,
+                        count = g.count,
+                        percentage = CalculatePercentage(g.count, total_count)
+                    }).ToList();
+                    YearlyInventory yearlyGateOutInventory = new YearlyInventory();
+                    yearlyGateOutInventory.inventory_per_month = gOutInventoryResult;
+                    yearlyGateOutInventory.total_count = total_count;
+                    yearlyGateOutInventory.average_count = average_count;
+                    yearlyInventoryResult.gate_in_inventory = yearlyGateOutInventory;
                 }
 
                 return yearlyInventoryResult;
@@ -166,11 +230,12 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                int year = monthlyInventoryRequest.year;
-                int month = monthlyInventoryRequest.month;
                 string completedStatus = "COMPLETED";
                 string qcCompletedStatus = "QC_COMPLETED";
+                string reportFormat = "monthly";
 
+                int year = monthlyInventoryRequest.year;
+                int month = monthlyInventoryRequest.month;
                 // Get the start date of the month (1st of the month)
                 DateTime startOfMonth = new DateTime(year, month, 1);
                 // Get the end date of the month (last day of the month)
@@ -195,7 +260,7 @@ namespace IDMS.Billing.GqlTypes
 
                 if (monthlyInventoryRequest.inventory_type.EqualsIgnore("repair") || monthlyInventoryRequest.inventory_type.EqualsIgnore("all"))
                 {
-                    (var approvedResult, var completedResult) = await ProcessInventoryResults(context, query, "repair", startEpoch, endEpoch, startOfMonth, endOfMonth);
+                    (var approvedResult, var completedResult) = await ProcessInventoryResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
 
                     var approveResultPerDay = await GetResultPerDay(approvedResult, startOfMonth, endOfMonth);
                     var completeResultPerDay = await GetResultPerDay(completedResult, startOfMonth, endOfMonth);
@@ -215,7 +280,7 @@ namespace IDMS.Billing.GqlTypes
 
                 if (monthlyInventoryRequest.inventory_type.EqualsIgnore("steaming") || monthlyInventoryRequest.inventory_type.EqualsIgnore("all"))
                 {
-                    (var approvedResult, var completedResult) = await ProcessInventoryResults(context, query, "steaming", startEpoch, endEpoch, startOfMonth, endOfMonth);
+                    (var approvedResult, var completedResult) = await ProcessInventoryResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
 
                     var approveResultPerDay = await GetResultPerDay(approvedResult, startOfMonth, endOfMonth);
                     var completeResultPerDay = await GetResultPerDay(completedResult, startOfMonth, endOfMonth);
@@ -234,7 +299,7 @@ namespace IDMS.Billing.GqlTypes
 
                 if (monthlyInventoryRequest.inventory_type.EqualsIgnore("cleaning") || monthlyInventoryRequest.inventory_type.EqualsIgnore("all"))
                 {
-                    (var approvedResult, var completedResult) = await ProcessInventoryResults(context, query, "cleaning", startEpoch, endEpoch, startOfMonth, endOfMonth);
+                    (var approvedResult, var completedResult) = await ProcessInventoryResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
 
                     var approveResultPerDay = await GetResultPerDay(approvedResult, startOfMonth, endOfMonth);
                     var completeResultPerDay = await GetResultPerDay(completedResult, startOfMonth, endOfMonth);
@@ -255,7 +320,7 @@ namespace IDMS.Billing.GqlTypes
                 {
                     var gateInOutInventoryResult = new MonthlyGateInOutInventory();
 
-                    (var l_OffResult, var l_OnResult) = await ProcessInventoryResults(context, query, "lolo", startEpoch, endEpoch, startOfMonth, endOfMonth);
+                    (var l_OffResult, var l_OnResult) = await ProcessInventoryResults(context, query, "lolo", startEpoch, endEpoch, reportFormat);
                     var l_OffResultPerDay = await GetResultPerDay(l_OffResult, startOfMonth, endOfMonth);
                     var l_OnResultPerDay = await GetResultPerDay(l_OnResult, startOfMonth, endOfMonth);
 
@@ -272,7 +337,7 @@ namespace IDMS.Billing.GqlTypes
                     gateInOutInventoryResult.lolo_inventory = loloInventoryResult;
                     //monthlyInventoryResult.lolo_inventory = loloInventoryResult;
 
-                    (var gateInResult, var gateOutResult) = await ProcessInventoryResults(context, query, "gate", startEpoch, endEpoch, startOfMonth, endOfMonth);
+                    (var gateInResult, var gateOutResult) = await ProcessInventoryResults(context, query, "gate", startEpoch, endEpoch, reportFormat);
                     var gateInResultPerDay = await GetResultPerDay(gateInResult, startOfMonth, endOfMonth);
                     var gateOutResultPerDay = await GetResultPerDay(gateOutResult, startOfMonth, endOfMonth);
 
@@ -300,7 +365,7 @@ namespace IDMS.Billing.GqlTypes
         }
 
         private async Task<(List<TempInventoryResult>?, List<TempInventoryResult>?)> ProcessInventoryResults(ApplicationBillingDBContext context, IQueryable<TempInventoryResult> query, string inventoryType,
-                long startEpoch, long endEpoch, DateTime startOfMonth, DateTime endOfMonth)
+                long startEpoch, long endEpoch, string reportFormat, long? startMonthLastDayEpoch = null)
         {
 
             if (inventoryType.EqualsIgnore("lolo"))
@@ -328,11 +393,17 @@ namespace IDMS.Billing.GqlTypes
 
                 return (gateInResult, gateOutResult);
 
-                //var gateInResultPerDay = await GetResultPerDay(gateInResult, startOfMonth, endOfMonth);
-                //var gateOutResultPerDay = await GetResultPerDay(gateOutResult, startOfMonth, endOfMonth);
+            }
+            else if (inventoryType.EqualsIgnore("depot")) 
+            {
+                //Only for yearly report type
+                var newQuery = GetInventoryQuery(context, query, "depot", startEpoch, endEpoch, startMonthLastDayEpoch);
+                var depotResult = await newQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                //var result = await MergeMonthlyList(gateInResultPerDay, gateOutResultPerDay);
-                //return result;
+                //var newQuery1 = GetInventoryQuery(context, query, "depot", startEpoch, endEpoch);
+                //var gateOutResult = await newQuery1.OrderBy(c => c.appv_date).ToListAsync();
+
+                return (depotResult, null);
             }
             else
             {
@@ -341,19 +412,17 @@ namespace IDMS.Billing.GqlTypes
                 var queryResult = await newQuery.OrderBy(c => c.appv_date).ToListAsync();
 
                 var approvedResult = queryResult.Where(s => !StatusCondition.BeforeApprove.Contains(s.status)).ToList();
-                var completeResult = queryResult.Where(s => s.status.Equals(completedStatus) && s.complete_date != null).ToList();
 
+                List<TempInventoryResult?> completeResult = new List<TempInventoryResult?>();
+                if (reportFormat.EqualsIgnore("monthly"))
+                {
+                    completeResult = queryResult.Where(s => s.status.Equals(completedStatus) && s.complete_date != null).ToList();
+                }
                 return (approvedResult, completeResult);
-                //var approveResultPerDay = await GetResultPerDay(approvedResult, startOfMonth, endOfMonth);
-                //var completeResultPerDay = await GetResultPerDay(completeResult, startOfMonth, endOfMonth);
-
-                //var result = await MergeMonthlyList(approveResultPerDay, completeResultPerDay);
-                //return result;
-
             }
         }
 
-        private IQueryable<TempInventoryResult> GetInventoryQuery(ApplicationBillingDBContext context, IQueryable<TempInventoryResult> query, string inventoryType, long startEpoch, long endEpoch)
+        private IQueryable<TempInventoryResult> GetInventoryQuery(ApplicationBillingDBContext context, IQueryable<TempInventoryResult> query, string inventoryType, long startEpoch, long endEpoch, long? startMonthLastDay = null)
         {
             string yetSurvey = "YET_TO_SURVEY";
             string published = "PUBLISHED";
@@ -423,7 +492,7 @@ namespace IDMS.Billing.GqlTypes
                            join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
                            join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
                            where ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-                           //&& s.delete_dt == null
+                 
                            select new TempInventoryResult
                            {
                                sot_guid = result.sot_guid,
@@ -458,6 +527,19 @@ namespace IDMS.Billing.GqlTypes
                                code = result.code,
                                cc_name = result.cc_name,
                                cost = s.gate_in_cost ?? 0.0,
+                               appv_date = (long)ig.eir_dt,
+                           };
+                case "depot":
+                    return from result in query
+                           join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
+                           join og in context.out_gate on result.sot_guid equals og.so_tank_guid
+                           where (ig.delete_dt == null && ig.eir_dt <= endEpoch) && (og.delete_dt == null && og.eir_dt > startMonthLastDay)
+                           select new TempInventoryResult
+                           {
+                               sot_guid = ig.so_tank_guid,
+                               code = result.code,
+                               cc_name = result.cc_name,
+                               cost = 0.0,
                                appv_date = (long)ig.eir_dt,
                            };
                 default:
@@ -505,7 +587,7 @@ namespace IDMS.Billing.GqlTypes
 
             return completeGroupedNodes;
         }
-        private async Task<List<ResultPerMonth>> GetResultPerMonth(List<TempInventoryResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
+        private async Task<List<InventoryPerMonth>> GetResultPerMonth(List<TempInventoryResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
         {
             foreach (var item in resultList)
             {
@@ -520,8 +602,8 @@ namespace IDMS.Billing.GqlTypes
                 .Select(g => new
                 {
                     FormattedDate = g.Key,
-                    //Count = g.Count(),
-                    Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                    Count = g.Count(),
+                    //Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
                 })
                 //.OrderBy(g => g.FormattedDate) // Sort by date
                 .ToList();
@@ -534,12 +616,12 @@ namespace IDMS.Billing.GqlTypes
 
             // Fill missing dates with count = 0 if not present
             var completeGroupedNodes = allMonthInYear
-                .Select(date => new ResultPerMonth
+                .Select(date => new InventoryPerMonth
                 {
                     month = date,
                     //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
-                    //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
-                    cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                    count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
+                    //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
                 })
                 //.OrderBy(g => g.date) // Sort by date
                 .ToList();
@@ -562,6 +644,13 @@ namespace IDMS.Billing.GqlTypes
                                 };
 
             return mergedResults.ToList();
+        }
+
+        private double CalculatePercentage(int count, int totalCount)
+        {
+
+            var result = Math.Ceiling(((float)count / (float)totalCount) * 100);
+            return result;
         }
         private async Task<IEnumerable<MergedYearlyResult>> MergeYearlyList(List<ResultPerMonth> list1, List<ResultPerMonth> list2)
         {
@@ -694,7 +783,6 @@ namespace IDMS.Billing.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
 
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]

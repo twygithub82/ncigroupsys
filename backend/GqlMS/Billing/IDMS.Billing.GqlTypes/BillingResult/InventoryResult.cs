@@ -90,36 +90,49 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     [NotMapped]
     public class YearlyInventoryResult
     {
-        public List<YearlyCleaningInventory>? cleaning_inventory { get; set; }
-        public List<YearlySteamingInventory>? steaming_inventory { get; set; }
-        public List<YearlyRepairInventory>? repair_inventory { get; set; }
-        public YearlyGateInOutInventory? gate_in_out_inventory { get; set; }
+        public YearlyInventory? cleaning_yearly_inventory { get; set; }
+        public YearlyInventory? steaming_yearly_inventory { get; set; }
+        public YearlyInventory? repair_yearly_inventory { get; set; }
+        public YearlyInventory? depot_yearly_inventory { get; set; }
+        public YearlyInventory? gate_in_inventory { get; set; }
+        public YearlyInventory? gate_out_inventory { get; set; }
     }
 
-    [NotMapped]
-    public class YearlyCleaningInventory : InventoryPerMonth
-    {
-    }
+    //[NotMapped]
+    //public class YearlyCleaningInventory 
+    //{
+    //}
 
-    [NotMapped]
-    public class YearlySteamingInventory : InventoryPerMonth
-    {
-    }
+    //[NotMapped]
+    //public class YearlySteamingInventory
+    //{
+    //    public string month { get; set; }
+    //    public int count { get; set; }
+    //}
 
-    [NotMapped]
-    public class YearlyRepairInventory
-    {
-        public string month { get; set; }
-        public double approved_hour { get; set; }
-        public double completed_hour { get; set; }
-    }
+    //[NotMapped]
+    //public class YearlyRepairInventory
+    //{
+    //    public string month { get; set; }
+    //    public int count { get; set; }
+    //    //public double completed_hour { get; set; }
+    //}
 
     [NotMapped]
     public class YearlyLoloInventory
     {
         public string month { get; set; }
-        public double lift_off_cost { get; set; }
-        public double lift_on_cost { get; set; }
+        public double count { get; set; }
+        public double? percentage { get; set; }
+    }
+
+
+    [NotMapped]
+    public class YearlyDepotInventory
+    {
+        public string month { get; set; }
+        public double count { get; set; }
+        public double percentage { get; set; }
     }
 
 
@@ -130,12 +143,24 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public double gate_in_cost { get; set; }
         public double gate_out_cost { get; set; }
     }
+
+    public class YearlyInventory
+    {
+        [NotMapped]
+        public List<InventoryPerMonth> inventory_per_month { get; set; }
+        [NotMapped]
+        public int total_count { get; set; }
+        [NotMapped]
+        public int average_count { get; set; }
+    }
+
+
     [NotMapped]
     public class InventoryPerMonth
     {
         public string month { get; set; }
-        public double approved_cost { get; set; }
-        public double completed_cost { get; set; }
+        public int count { get; set; }
+        public double percentage { get; set; }
     }
 
     [NotMapped]
@@ -146,8 +171,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public double complete_cost { get; set; }
     }
 
-
-[NotMapped]
+    [NotMapped]
     public class TempInventoryResult
     {
         public string sot_guid { get; set; } //for opening_balance
