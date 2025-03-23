@@ -1076,7 +1076,17 @@
     "RESIDUE-MONTHLY-OVERVIEW-REPORT":"Residue Disposal Monthly Overview Report",
     "RESIDUE-MONTHLY-DETAILS-REPORT":"Residue Disposal Monthly Details Report",
     "TOTAL-TANK":"Total Tank",
-    "AVERAGE":"Average"
+    "AVERAGE":"Average",
+    "MONTH-START":"Month Start",
+    "MONTH-END":"Month End",
+    "STEAM-YEARLY-OVERVIEW-REPORT":"Steam Yearly Overview Report",
+    "STEAM-YEARLY-DETAILS-REPORT":"Steam Yearly Details Report",
+    "REPAIR-YEARLY-OVERVIEW-REPORT":"Repair Yearly Overview Report",
+    "REPAIR-YEARLY-DETAILS-REPORT":"Repair Yearly Details Report",
+    "CLEAN-YEARLY-OVERVIEW-REPORT":"Cleaning Yearly Overview Report",
+    "CLEAN-YEARLY-DETAILS-REPORT":"Cleaning Yearly Details Report",
+    "RESIDUE-YEARLY-OVERVIEW-REPORT":"Residue Disposal Yearly Overview Report",
+    "RESIDUE-YEARLY-DETAILS-REPORT":"Residue Disposal Yearly Details Report"
 
   },
   "CLEAN-PROCEDURES": {

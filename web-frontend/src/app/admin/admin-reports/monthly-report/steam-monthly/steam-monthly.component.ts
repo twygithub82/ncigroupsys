@@ -193,7 +193,7 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   inventoryTypeCvList: CodeValuesItem[] = [];
 
-  processType: string = "STEAM";
+  processType: string = "STEAMING";
   billingParty: string = "CUSTOMER";
 
   pageIndex = 0;
@@ -364,11 +364,12 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     //let processType=this.processType;
 
    
-
+      var customerName="";
       where.report_type=this.processType;
       if (this.searchForm?.get('customer_code')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
         where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
+        customerName= `${this.searchForm!.get('customer_code')?.value.name}`;
         cond_counter++;
       }
       
@@ -389,20 +390,20 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     
 
       this.lastSearchCriteria = where;
-      this.performSearch(report_type,date);
+      this.performSearch(report_type,date,customerName);
     }
    
    
   
 
-    performSearch(reportType?: number,date?:string) {
+    performSearch(reportType?: number,date?:string,customerName?:string) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchAdminReportMonthlyProcess(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessMonthlyReport(this.repData,date!,reportType!);
+        this.ProcessMonthlyReport(this.repData,date!,reportType!,customerName!);
         // this.endCursor = this.stmDS.pageInfo?.endCursor;
         // this.startCursor = this.stmDS.pageInfo?.startCursor;
         // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -413,44 +414,10 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     // this.pageIndex = pageIndex;
   }
 
-  onPageEvent(event: PageEvent) {
-   
-  }
+ 
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-  }
-
-  displayLastCargoFn(tc: TariffCleaningItem): string {
-    return tc && tc.cargo ? `${tc.cargo}` : '';
-  }
-
-  displayReleaseDate(sot: StoringOrderTankItem) {
-    let retval: string = "-";
-    if (sot.out_gate?.length) {
-      if (sot.out_gate[0]?.out_gate_survey) {
-        const date = new Date(sot.out_gate[0]?.out_gate_survey?.create_dt! * 1000);
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = date.toLocaleString('en-US', { month: 'short' });
-        const year = date.getFullYear();
-
-        // Replace the '/' with '-' to get the required format
-
-
-        return `${day}/${month}/${year}`;
-      }
-
-    }
-    return retval;
-  }
-
-  displayTankPurpose(sot: StoringOrderTankItem) {
-    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
-  }
-
-  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
@@ -460,6 +427,9 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   displayDate(input: number | undefined): string | undefined {
     if (input === null) return "-";
     return Utility.convertEpochToDateStr(input);
+  }
+  onPageEvent(event: PageEvent) {
+   
   }
 
   translateLangText() {
@@ -533,17 +503,17 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
-  ProcessMonthlyReport(repData: AdminReportMonthlyReport, date: string,report_type:number) {
+  ProcessMonthlyReport(repData: AdminReportMonthlyReport, date: string,report_type:number,customerName:string) {
     
    
 
     if(repData)
     {
       if (report_type == 1) {
-        this.onExportChart_r1(repData, date);
+        this.onExportChart_r1(repData, date,customerName);
       }
       else if (report_type == 2) {
-        this.onExportSummary(repData, date);
+        this.onExportSummary(repData, date,customerName);
       }
       
    }
@@ -558,7 +528,7 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   
 
-  onExportSummary(repData: AdminReportMonthlyReport, date: string) {
+  onExportSummary(repData: AdminReportMonthlyReport, date: string,customerName:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -577,7 +547,8 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       data: {
         repData: repData,
         date: date,
-        repType:this.processType
+        repType:this.processType,
+        customer:customerName,
       
       },
 
@@ -595,7 +566,7 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
-  onExportChart_r1(repData: AdminReportMonthlyReport, date: string)
+  onExportChart_r1(repData: AdminReportMonthlyReport, date: string,customerName:string)
   {
      //this.preventDefault(event);
      let cut_off_dt = new Date();
@@ -615,7 +586,8 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       data: {
         repData: repData,
         date: date,
-        repType:this.processType
+        repType:this.processType,
+        customer:customerName,
       
       },
 

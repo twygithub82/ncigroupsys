@@ -1148,7 +1148,19 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: true
+        visible: false
+      },
+      {
+        path: "admin/admin-reports/main-yearly",
+        title: "MENUITEMS.ADMIN-REPORTS.LIST.YEARLY-REPORTS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: false
       }
     ].filter(item => item.visible !== false),
   },
