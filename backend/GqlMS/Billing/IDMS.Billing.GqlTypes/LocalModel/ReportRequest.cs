@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Billing.GqlTypes.LocalModel
 {
-    public class MontlyRevenueRequest
+    public class MonthlyProcessRequest
     {
         public string report_type { get; set; }
         public int year { get; set; }
@@ -14,7 +14,7 @@ namespace IDMS.Billing.GqlTypes.LocalModel
         public string? customer_code { get; set; }
     }
 
-    public class YearlyRevenueRequest
+    public class YearlyProcessRequest
     {
         public string report_type { get; set; }
         public int year { get; set; }

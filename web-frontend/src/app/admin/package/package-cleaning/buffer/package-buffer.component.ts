@@ -238,7 +238,6 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
-    this.search();
   }
 
   initPcForm() {
@@ -330,13 +329,10 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      //if (result) {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
-      //}
     });
   }
 
@@ -367,10 +363,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
-    if (!this.customerCodeControl.value?.length) return;
     const where: any = {};
 
     if (this.customerCodeControl.value) {

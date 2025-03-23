@@ -228,7 +228,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     this.initializeFilterCustomerCompany();
     this.loadData();
     this.translateLangText();
-    this.search();
   }
 
   translateLangText() {
@@ -339,11 +338,9 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
         if (this.packSteamDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
-        //}
       }
 
     });
@@ -412,10 +409,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
-    if (!this.pcForm!.get('customer_code')?.value) return;
     const where: any = {
       and: []
     };

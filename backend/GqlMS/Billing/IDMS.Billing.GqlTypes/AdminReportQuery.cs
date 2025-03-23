@@ -10,11 +10,7 @@ using IDMS.Models.Tariff;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Service;
 using IDMS.Models.Parameter;
-using Newtonsoft.Json.Linq;
-using IDMS.Models.Master;
 using IDMS.Models.Shared;
-using static IDMS.Billing.GqlTypes.BillingResult.SurveyorPerformanceDetail;
-
 
 namespace IDMS.Billing.GqlTypes
 {
