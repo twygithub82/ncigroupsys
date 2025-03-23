@@ -40,16 +40,16 @@ import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { SteamMonthlyAdminReportComponent } from './steam-monthly/steam-monthly.component';
-import { ResidueMonthlyAdminReportComponent } from './residue-monthly/residue-monthly.component';
-import { RepairMonthlyAdminReportComponent } from './repair-monthly/repair-monthly.component';
-import { CleanMonthlyAdminReportComponent } from './clean-monthly/clean-monthly.component';
+import { SteamYearlyAdminReportComponent } from './steam-yearly/steam-yearly.component';
+import { ResidueYearlyAdminReportComponent } from './residue-yearly/residue-yearly.component';
+import { RepairYearlyAdminReportComponent } from './repair-yearly/repair-yearly.component';
+import { CleanYearlyAdminReportComponent } from './clean-yearly/clean-yearly.component';
 
 @Component({
-  selector: 'app-main-monthly',
+  selector: 'app-main-yearly',
   standalone: true,
-  templateUrl: './main-monthly.component.html',
-  styleUrl: './main-monthly.component.scss',
+  templateUrl: './main-yearly.component.html',
+  styleUrl: './main-yearly.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -75,14 +75,14 @@ import { CleanMonthlyAdminReportComponent } from './clean-monthly/clean-monthly.
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    SteamMonthlyAdminReportComponent,
-    ResidueMonthlyAdminReportComponent,
-    RepairMonthlyAdminReportComponent,
-    CleanMonthlyAdminReportComponent
+    SteamYearlyAdminReportComponent,
+    ResidueYearlyAdminReportComponent,
+    RepairYearlyAdminReportComponent,
+    CleanYearlyAdminReportComponent
     
   ]
 })
-export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
   // displayedColumns = [
   //   'tank_no',
@@ -112,10 +112,10 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.ADMIN-REPORTS.LIST.MONTHLY-REPORTS'
+  pageTitle = 'MENUITEMS.ADMIN-REPORTS.LIST.YEARLY-REPORTS'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.ADMIN-REPORTS.TEXT', route: '/admin/admin-reports/main-monthly' }
+    { text: 'MENUITEMS.ADMIN-REPORTS.TEXT', route: '/admin/admin-reports/main-yearly' }
   ]
 
   translatedLangText: any = {};

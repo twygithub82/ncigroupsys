@@ -23,7 +23,7 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { AdminReportMonthlyReport, report_status } from 'app/data-sources/reports';
+import { AdminReportYearlyReport, report_status } from 'app/data-sources/reports';
 import { Styles ,autoTable } from 'jspdf-autotable';
 import {
   ApexAxisChartSeries, ApexChart,
@@ -84,7 +84,7 @@ export type ChartOptions = {
 };
 
 export interface DialogData {
-  repData: AdminReportMonthlyReport,
+  repData: AdminReportYearlyReport,
    date:string,
    repType:string,
    customer:string
@@ -92,9 +92,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-monthly-chart-pdf',
-  templateUrl: './monthly-chart-pdf.component.html',
-  styleUrls: ['./monthly-chart-pdf.component.scss'],
+  selector: 'app-yearly-chart-pdf',
+  templateUrl: './yearly-chart-pdf.component.html',
+  styleUrls: ['./yearly-chart-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -108,7 +108,7 @@ export interface DialogData {
     BarChartModule,
   ],
 })
-export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -296,10 +296,10 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
     TOP_TEN_CUSTOMER: 'COMMON-FORM.TOP-TEN-CUSTOMER',
     TOTAL_TANK:'COMMON-FORM.TOTAL-TANK',
     AVERAGE:'COMMON-FORM.AVERAGE',
-    STEAM_MONTHLY_OVERVIEW_REPORT:'COMMON-FORM.STEAM-MONTHLY-OVERVIEW-REPORT',
-    RESIDUE_MONTHLY_OVERVIEW_REPORT:'COMMON-FORM.RESIDUE-MONTHLY-OVERVIEW-REPORT',
-    REPAIR_MONTHLY_OVERVIEW_REPORT:'COMMON-FORM.REPAIR-MONTHLY-OVERVIEW-REPORT',
-    CLEAN_MONTHLY_OVERVIEW_REPORT:'COMMON-FORM.CLEAN-MONTHLY-OVERVIEW-REPORT',
+    STEAM_YEARLY_OVERVIEW_REPORT:'COMMON-FORM.STEAM-YEARLY-OVERVIEW-REPORT',
+    RESIDUE_YEARLY_OVERVIEW_REPORT:'COMMON-FORM.RESIDUE-YEARLY-OVERVIEW-REPORT',
+    REPAIR_YEARLY_OVERVIEW_REPORT:'COMMON-FORM.REPAIR-YEARLY-OVERVIEW-REPORT',
+    CLEAN_YEARLY_OVERVIEW_REPORT:'COMMON-FORM.CLEAN-YEARLY-OVERVIEW-REPORT',
   }
 
   // public pieChartOptions!: Partial<ChartOptions>;
@@ -352,14 +352,14 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: AdminReportMonthlyReport;
+  repData?: AdminReportYearlyReport;
   date?:string;
   repType?:string;
   customer?:string;
   chartAnimatedCounter = 0;
 
   constructor(
-    public dialogRef: MatDialogRef<MonthlyChartPdfComponent>,
+    public dialogRef: MatDialogRef<YearlyChartPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -827,6 +827,7 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
         const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
         Utility.addText(pdf, customer,startY - 2 , leftMargin, 9);
       }
+
     let chartContentWidth = pageWidth - leftMargin - rightMargin;
     pagePositions.push({ page: 1, x: 0, y: 0 });
     for (var i = 0; i < cardElements.length; i++) {
@@ -861,7 +862,7 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
     
     let minHeightBodyCell = 9;
-    let fontSz = 6.5;
+    let fontSz = 6;
     const headers = [[
           this.translatedLangText.DESCRIPTION,
           this.translatedLangText.NO_OF_TANKS
@@ -879,7 +880,7 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
         };
 
     const comStyles: any = {
-      0: { halign: 'center', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', cellWidth: 'auto', minCellHeight: minHeightBodyCell },
     };
 
@@ -1061,27 +1062,27 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
     switch(this.repType)
     {
       case "CLEANING":
-         title = `${this.translatedLangText.CLEAN_MONTHLY_OVERVIEW_REPORT}`
+         title = `${this.translatedLangText.CLEAN_YEARLY_OVERVIEW_REPORT}`
         break;
         case "STEAMING":
-          title = `${this.translatedLangText.STEAM_MONTHLY_OVERVIEW_REPORT}`
+          title = `${this.translatedLangText.STEAM_YEARLY_OVERVIEW_REPORT}`
         break;
         case "REPAIR":
-          title = `${this.translatedLangText.REPAIR_MONTHLY_OVERVIEW_REPORT}`
+          title = `${this.translatedLangText.REPAIR_YEARLY_OVERVIEW_REPORT}`
         break;
         case "RESIDUE":
-          title = `${this.translatedLangText.RESIDUE_MONTHLY_OVERVIEW_REPORT}`
+          title = `${this.translatedLangText.RESIDUE_YEARLY_OVERVIEW_REPORT}`
         break;
     }
     return `${title}`
   }
  
-  processTankStatus(repStatus: AdminReportMonthlyReport) {
+  processTankStatus(repStatus: AdminReportYearlyReport) {
 
     
     var maxYAxisValue=12;
-    var days = repStatus.result_per_day?.map((i,index)=>(index+1));
-    const counts: number[] = repStatus.result_per_day
+    var days = repStatus.result_per_month?.map((i,index)=>i.month);
+    const counts: number[] = repStatus.result_per_month
   ?.map(i => i.count) // Extract the count property
   .filter(count => count !== undefined && count !== null) as number[]; // Filter out undefined/null values
 
@@ -1103,7 +1104,7 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
     }
     this.lineChart2Options.series=[
       {
-        name: 'days',
+        name: 'months',
         data: counts,
       },
     ]
@@ -1129,52 +1130,82 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   InitialDefaultData() {
     this.lineChart2Options = {
-      series: [
-        {
-          name: 'Bill Amount',
-          data: [113, 120, 130, 120, 125, 119, 126],
-        },
-      ],
-      chart: {
-        height: 380,
-        type: 'line',
-        dropShadow: {
-          enabled: false,
-          color: '#000',
-          top: 18,
-          left: 7,
-          blur: 10,
-          opacity: 0.2,
-        },
-        foreColor: '#9aa0ac',
-        toolbar: {
-          show: false,
-         
+      plotOptions: {
+        bar: {
+          dataLabels: {
+            position: 'top', // top, center, bottom
+          },
         },
       },
-      colors: ['#6777EF'],
       dataLabels: {
         enabled: true,
-        style:{
-          fontWeight:'2px'
-        }
-      },
-      stroke: {
-        curve: 'smooth',
-        width:2
-      },
-      markers: {
-        size: 1,
-      },
-      xaxis: {
-        categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        title: {
-          text: 'Weekday',
+        offsetY: -20,
+        style: {
+          fontSize: '10px',
+          colors: ['#9aa0ac'],
         },
       },
-      yaxis: {
-        title: {
-          text: 'Bill Amount($)',
+      chart: {
+        height: 350,
+        type: 'bar',
+        dropShadow: {
+          enabled: false,
+          color: '#bbb',
+          top: 3,
+          left: 2,
+          blur: 3,
+          opacity: 1,
+        },
+        toolbar: {
+          show: false,
+        },
+        foreColor: '#9aa0ac',
+      },
+      stroke: {
+        width: 7,
+        curve: 'smooth',
+      },
+      series: [
+        {
+          name: 'days',
+          data: [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13, 9, 17, 2, 7, 5],
+        },
+      ],
+      xaxis: {
+        type: 'category',
+        categories: [
+          '1/11/2000',
+          '2/11/2000',
+          '3/11/2000',
+          '4/11/2000',
+          '5/11/2000',
+          '6/11/2000',
+          '7/11/2000',
+          '8/11/2000',
+          '9/11/2000',
+          '10/11/2000',
+          '11/11/2000',
+          '12/11/2000',
+          '1/11/2001',
+          '2/11/2001',
+          '3/11/2001',
+          '4/11/2001',
+          '5/11/2001',
+          '6/11/2001',
+        ],
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      },
+      title: {
+        text: this.translatedLangText.MONTH,
+        offsetY: 332,
+        align: 'center',
+        style: {
+          color: '#9aa0ac',
+          fontSize:"10px"
         },
       },
       grid: {
@@ -1182,16 +1213,31 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
         borderColor: '#9aa0ac',
         strokeDashArray: 1,
       },
-      tooltip: {
-        theme: 'dark',
-        marker: {
-          show: true,
-        },
-        x: {
-          show: true,
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'dark',
+          gradientToColors: ['#FDD835'],
+          shadeIntensity: 1,
+          type: 'horizontal',
+          opacityFrom: 1,
+          opacityTo: 1,
         },
       },
-    
+      markers: {
+        size: 4,
+        colors: ['#FFA41B'],
+        strokeWidth: 2,
+
+        hover: {
+          size: 7,
+        },
+      },
+      yaxis: {
+        title: {
+          text: '$ (thousands)',
+        },
+      },
     };
   }
 

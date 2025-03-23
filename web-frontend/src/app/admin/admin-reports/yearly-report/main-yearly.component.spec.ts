@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SteamMonthlyComponent } from './steam-monthly.component';
+import { MainInventoryComponent } from './main-inventory.component';
 
-describe('SteamMonthlyComponent', () => {
-  let component: SteamMonthlyComponent;
-  let fixture: ComponentFixture<SteamMonthlyComponent>;
+describe('MainInventoryComponent', () => {
+  let component: MainInventoryComponent;
+  let fixture: ComponentFixture<MainInventoryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SteamMonthlyComponent]
+      imports: [MainInventoryComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(SteamMonthlyComponent);
+    fixture = TestBed.createComponent(MainInventoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

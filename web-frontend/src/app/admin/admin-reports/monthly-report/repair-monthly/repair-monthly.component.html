@@ -207,7 +207,7 @@
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
                 <span
-                  class="mobile-label">{{translatedLangText.STATUS}}:</span>{{(row.storing_order_tank?.tank_status_cv)}}
+                  class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.storing_order_tank?.tank_status_cv)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_cargo">

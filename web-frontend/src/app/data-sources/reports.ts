@@ -290,6 +290,32 @@ constructor(item: Partial<AdminReportMonthlyReport> = {}) {
   } 
 }
 
+export class ResultPerMonth{
+  cost?:number;
+  count?:number;
+  month?:string;
+  
+  constructor(item: Partial<ResultPerMonth> = {}) {
+    this.cost=item.cost;
+    this.count=item.count;
+    this.month=item.month;
+    
+    } 
+
+}
+
+export class AdminReportYearlyReport{
+  average?:number;
+  total?:number;
+  result_per_month?:ResultPerMonth[];
+
+constructor(item: Partial<AdminReportYearlyReport> = {}) {
+  this.average=item.average;
+  this.total=item.total;
+  this.result_per_month=item.result_per_month;
+  } 
+}
+
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
@@ -369,6 +395,20 @@ export const GET_ADMIN_REPORT_MONTHLY_PROCESS = gql`
         count
         date
         day
+      }
+    }
+  }
+`
+
+export const GET_ADMIN_REPORT_YEARLY_PROCESS = gql`
+  query queryYearlyProcessReport($yearlyProcessRequest: YearlyProcessRequestInput!) {
+    resultList: queryYearlyProcessReport(yearlyProcessRequest: $yearlyProcessRequest) {
+      average
+      total
+      result_per_month {
+        cost
+        count
+        month
       }
     }
   }
@@ -495,6 +535,32 @@ export class ReportDS extends BaseDataSource<any> {
       .query<any>({
         query: GET_ADMIN_REPORT_MONTHLY_PROCESS,
         variables: { monthlyProcessRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList;
+        })
+      );
+  }
+
+  searchAdminReportYearlyProcess(yearlyProcessRequest:any): Observable<AdminReportYearlyReport> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_YEARLY_PROCESS,
+        variables: { yearlyProcessRequest },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
