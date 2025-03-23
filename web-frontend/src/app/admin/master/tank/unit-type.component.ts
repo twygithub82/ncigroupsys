@@ -49,6 +49,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { TankDS,TankItem } from 'app/data-sources/tank';
 
 @Component({
   selector: 'app-package-repair',
@@ -89,13 +90,13 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     //'select',
-    'custCompanyName',
-    'email',
-    'fName',
-    'subgroup',
-    'gender',
-    'bDate',
-   // 'mobile',
+    'unittype',
+    'gatein',
+    'gateout',
+    'lifton',
+    'liftoff',
+    'preinspect',
+    'isoformat',
     'lastUpdate'
   ];
 
@@ -108,16 +109,16 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   minMaterialCost: number = -20;
   maxMaterialCost: number = 20;
 
-  customerCodeControl = new UntypedFormControl();
-  categoryControl = new UntypedFormControl();
-  profileNameControl = new UntypedFormControl();
+  //customerCodeControl = new UntypedFormControl();
+  // categoryControl = new UntypedFormControl();
+  // profileNameControl = new UntypedFormControl();
 
-  lengthControl = new UntypedFormControl();
-  dimensionControl = new UntypedFormControl();
+  // lengthControl = new UntypedFormControl();
+  // dimensionControl = new UntypedFormControl();
 
-  groupNameControl = new UntypedFormControl();
-  subGroupNameControl = new UntypedFormControl();
-  handledItemControl = new UntypedFormControl();
+  // groupNameControl = new UntypedFormControl();
+  // subGroupNameControl = new UntypedFormControl();
+  // handledItemControl = new UntypedFormControl();
 
   lengthItems: TariffRepairLengthItem[] = [];
   dimensionItems: string[] = [];
@@ -133,6 +134,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   trfRepairDS: TariffRepairDS;
   packRepairDS: PackageRepairDS;
   ccDS: CustomerCompanyDS;
+  tnkDS:TankDS;
   //tariffDepotDS:TariffDepotDS;
   // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
@@ -140,6 +142,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   //packDepotItems:PackageDepotItem[]=[];
   packRepairItems: PackageRepairItem[] = [];
 
+  unitTypeItems:TankItem[]=[];
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   cleaning_categoryList?: CleaningCategoryItem[];
@@ -147,7 +150,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company: { code: "ASC" } };
+  lastOrderBy: any = { unit_type:  "ASC"  };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -159,6 +162,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
   id?: number;
   pcForm?: UntypedFormGroup;
+  tankList?:TankItem[]=[];
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -264,7 +268,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     LIFT_OFF:'COMMON-FORM.LIFT-OFF',
     GATE_IN:'COMMON-FORM.GATE-IN',
     GATE_OUT:'COMMON-FORM.GATE-OUT',
-    ISO_FORMAT:'COMMON-FORM.ISO-FORMAT'
+    ISO_FORMAT:'COMMON-FORM.ISO-FORMAT',
     
   }
 
@@ -281,7 +285,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   ) {
     super();
     this.initPcForm();
-    this.initializeFilterCustomerCompany();
+   
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.packRepairDS = new PackageRepairDS(this.apollo);
@@ -289,6 +293,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     this.custCompDS = new CustomerCompanyDS(this.apollo);
     // this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
+    this.tnkDS = new TankDS(this.apollo);
+    this.initializeFilterTank();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -297,13 +303,13 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.loadData();
+   // this.loadData();
     this.translateLangText();
     this.search();
   }
 
-  initializeFilterCustomerCompany() {
-      this.pcForm!.get('customer_code')!.valueChanges.pipe(
+  initializeFilterTank() {
+      this.pcForm!.get('unit_type')!.valueChanges.pipe(
         startWith(''),
         debounceTime(300),
         tap(value => {
@@ -311,10 +317,10 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
           if (typeof value === 'string') {
             searchCriteria = value;
           } else {
-            searchCriteria = value.code;
+            searchCriteria = value.unit_type;
           }
-          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-            this.customer_companyList = data
+          this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, { unit_type: 'ASC' }).subscribe(data => {
+            this.tankList = data
           });
         })
       ).subscribe();
@@ -323,21 +329,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
   initPcForm() {
     this.pcForm = this.fb.group({
-      guid: [{ value: '' }],
-      customer_code: this.customerCodeControl,
-      group_name_cv: this.groupNameControl,
-      sub_group_name_cv: this.subGroupNameControl,
-      part_name: [''],
-      len: this.lengthControl,
-      dimension: this.dimensionControl,
-      min_len: [''],
-      max_len: [''],
-      min_labour: [''],
-      max_labour: [''],
-      min_cost: [''],
-      max_cost: [''],
-      handled_item_cv: this.handledItemControl
-
+       unit_type: [''],
     });
   }
 
@@ -484,9 +476,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     return numSelected === numRows;
   }
 
-  isSelected(option: any): boolean {
-    return this.customerCodeControl.value.includes(option);
-  }
+ 
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
@@ -498,160 +488,25 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-    if (!this.customerCodeControl.value) return;
+   
     const where: any = {};
-    if (this.customerCodeControl.value) {
-     // if (this.customerCodeControl.value.length > 0) 
-      {
-        const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
+    if (this.pcForm?.get("unit_type")?.value) {
+      
+        const tnk: TankItem = this.pcForm?.get("unit_type")?.value;
         //var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { eq: customerCode.guid };
-      }
-    }
-
-    if (this.groupNameControl.value) {
-      if (this.groupNameControl.value.length > 0) {
-        const cdValues: CodeValuesItem[] = this.groupNameControl.value;
-        var codes = cdValues.map(cc => cc);
-        where.tariff_repair = where.tariff_repair || {};
-        where.tariff_repair.group_name_cv = { in: codes };
-      }
-    }
-
-    if (this.subGroupNameControl.value) {
-      if (this.subGroupNameControl.value.length > 0) {
-        const cdValues: CodeValuesItem[] = this.subGroupNameControl.value;
-        var codes = cdValues.map(cc => cc);
-        where.tariff_repair = where.tariff_repair || {};
-        where.tariff_repair.subgroup_name_cv = { in: codes };
-      }
-    }
-
-    if (this.pcForm!.value["part_name"]) {
-      const description: Text = this.pcForm!.value["part_name"];
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.part_name = { contains: description }
-    }
-
-    // Handling material_cost
-    if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.material_cost = { gte: minCost, lte: maxCost };
-    } else if (this.pcForm!.value["min_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.material_cost = { gte: minCost };
-    } else if (this.pcForm!.value["max_cost"]) {
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.material_cost = { lte: maxCost };
-    }
-
-    const unifiedConditions: any[] = [];
-
-    // Handling Dimension
-    if (this.pcForm!.value["dimension"]) {
-      let dimensionConditions: any = {};
-      let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
-
-      // Initialize tariff_repair if it doesn't exist
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.and = where.tariff_repair.and || [];
-
-      dimensionConditions.or = [];
-      selectedTarifRepairDimensionItems.forEach((item) => {
-        const condition: any = {};
-
-        // Only add condition if item is defined (non-undefined)
-        if (item !== undefined && item !== null && item !== '') {
-          condition.dimension = { eq: item };
-        }
-
-        if (Object.keys(condition).length > 0) {
-          dimensionConditions.or.push(condition);
-        }
-      });
-
-      // Push condition to 'and' if it has valid properties
-      if (dimensionConditions.or.length > 0) {
-        where.tariff_repair.and.push(dimensionConditions);
-      }
-    }
-
-    // Handling Length
-    if (this.pcForm!.value["len"]) {
-      let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
-
-      // Initialize tariff_repair if it doesn't exist
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.and = where.tariff_repair.and || [];
-
-      const lengthConditions: any = {};
-      lengthConditions.or = [];
-      selectedTarifRepairLengthItems.forEach((item) => {
-        const condition: any = {};
-
-        // Add condition for length if defined
-        if (item.length !== undefined) {
-          condition.length = { eq: item.length };
-        }
-
-        // Add condition for length_unit_cv if it exists
-        if (item.length_unit_cv) {
-          condition.length_unit_cv = { eq: item.length_unit_cv };
-        }
-
-        // Push condition to 'or' if it has valid properties
-        if (Object.keys(condition).length > 0) {
-          lengthConditions.or.push(condition);
-        }
-      });
-
-      // Push length conditions to 'and' if it has valid properties
-      if (lengthConditions.or.length > 0) {
-        where.tariff_repair.and.push(lengthConditions);
-      }
-    }
-    // Handling length
-    if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
-      const minLen: number = Number(this.pcForm!.value["min_len"]);
-      const maxLen: number = Number(this.pcForm!.value["max_len"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.length = { gte: minLen, lte: maxLen };
-    } else if (this.pcForm!.value["min_len"]) {
-      const minLen: number = Number(this.pcForm!.value["min_len"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.length = { gte: minLen };
-    } else if (this.pcForm!.value["max_len"]) {
-      const maxLen: number = Number(this.pcForm!.value["max_len"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.length = { lte: maxLen };
-    }
-
-    // Handling labour_hour
-    if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.labour_hour = { gte: minLabour, lte: maxLabour };
-    } else if (this.pcForm!.value["min_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.labour_hour = { gte: minLabour };
-    } else if (this.pcForm!.value["max_labour"]) {
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.labour_hour = { lte: maxLabour };
+        where.guid = { eq: tnk.guid };
+      
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.packRepairDS.SearchPackageRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packRepairItems = data;
+    this.subs.sink = this.tnkDS.search(where, this.lastOrderBy,this.pageSize).subscribe(data => {
+      this.unitTypeItems = data;
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
-      this.endCursor = this.packRepairDS.pageInfo?.endCursor;
-      this.startCursor = this.packRepairDS.pageInfo?.startCursor;
-      this.hasNextPage = this.packRepairDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.packRepairDS.pageInfo?.hasPreviousPage ?? false;
+      this.endCursor = this.tnkDS.pageInfo?.endCursor;
+      this.startCursor = this.tnkDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tnkDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tnkDS.pageInfo?.hasPreviousPage ?? false;
       this.pageIndex = 0;
       this.paginator.pageIndex = 0;
       this.selection.clear();
@@ -659,17 +514,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
         this.previous_endCursor = undefined;
     });
   }
-  selectStorageCalculateCV_Description(valCode?: string): string {
-    let valCodeObject: CodeValuesItem = new CodeValuesItem();
-    if (this.storageCalCvList.length > 0) {
-      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
-
-      // If no match is found, description will be undefined, so you can handle it accordingly
-
-    }
-    return valCodeObject.description || '-';
-
-  }
+ 
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -726,12 +571,12 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.packRepairDS.SearchPackageRepair(where, order, first, after, last, before).subscribe(data => {
-      this.packRepairItems = data;
-      this.endCursor = this.packRepairDS.pageInfo?.endCursor;
-      this.startCursor = this.packRepairDS.pageInfo?.startCursor;
-      this.hasNextPage = this.packRepairDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.packRepairDS.pageInfo?.hasPreviousPage ?? false;
+    this.subs.sink = this.tnkDS.search(where, order, first, after, last, before).subscribe(data => {
+      this.unitTypeItems = data;
+      this.endCursor = this.tnkDS.pageInfo?.endCursor;
+      this.startCursor = this.tnkDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tnkDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tnkDS.pageInfo?.hasPreviousPage ?? false;
       this.pageIndex = pageIndex;
       this.paginator.pageIndex = this.pageIndex;
       this.selection.clear();
@@ -941,14 +786,19 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   resetForm() {
     this.initPcForm();
 
-    this.customerCodeControl.reset();
-    this.groupNameControl.reset();
-    this.subGroupNameControl.reset();
-    this.lengthControl.reset();
-    this.dimensionControl.reset();
-    this.handledItemControl.reset();
+    // this.customerCodeControl.reset();
+    // this.groupNameControl.reset();
+    // this.subGroupNameControl.reset();
+    // this.lengthControl.reset();
+    // this.dimensionControl.reset();
+    // this.handledItemControl.reset();
   }
 
+  displayTankFn(itm: TankItem): string {
+    return `${itm.unit_type || ''}`;
+  }
+
+  
 }
 // export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
 //   // Check if the list already contains the default value

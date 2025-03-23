@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
+import { ApolloError } from '@apollo/client/core';
 
 export class TankItem {
   public guid?: string;
@@ -47,18 +48,32 @@ export interface TankResult {
 }
 
 export const GET_TANK_Where = gql`
-  query queryTank($where: tankFilterInput, $order:[tankSortInput!]) {
-    queryTank(where: $where, order:$order) {
-      guid
-      unit_type
-      tariff_depot_guid
+  query queryTank($where: tankFilterInput, $order:[tankSortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
+    queryTank(where: $where, order:$order,first: $first, after: $after, last: $last, before: $before) {
+    nodes {
+      create_by
+      create_dt
+      delete_dt
       description
-      preinspect
-      lift_on
-      lift_off
       gate_in
       gate_out
+      guid
       iso_format
+      lift_off
+      lift_on
+      preinspect
+      tariff_depot_guid
+      unit_type
+      update_by
+      update_dt
+      }
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+    totalCount
     }
   }
 `;
@@ -66,6 +81,7 @@ export const GET_TANK_Where = gql`
 export const GET_TANK = gql`
   query queryTank {
     queryTank {
+    nodes {
       guid
       unit_type
       description
@@ -75,7 +91,26 @@ export const GET_TANK = gql`
       gate_in
       gate_out
       iso_format
+      }
     }
+  }
+`;
+
+export const ADD_TANK = gql`
+  mutation addTank ($newTank:tankInput!){
+    addTank (newTank:$newTank) 
+  }
+`;
+
+export const UPDATE_TANK = gql`
+  mutation updateTank ($updateTank:tankInput!){
+    updateTank (updateTank:$updateTank) 
+  }
+`;
+
+export const DELETE_TANK = gql`
+  mutation deleteTank ($tankGuid:String!){
+    deleteTank (tankGuid:$tankGuid) 
   }
 `;
 
@@ -98,18 +133,19 @@ export class TankDS extends BaseDataSource<TankItem> {
         map((result) => {
           const tankList = result.queryTank || { nodes: [], totalCount: 0 };
           this.dataSubject.next(tankList);
-          this.totalCount = tankList.length;
+          this.totalCount = tankList.totalCount;
+          this.pageInfo=tankList.pageInfo;
           return tankList;
         })
       );
   }
 
-  search(where?: any, order?: any): Observable<TankItem[]> {
+  search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TankItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: GET_TANK_Where,
-        variables: { where, order },
+        variables: { where, order,first,after,last,before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -119,9 +155,52 @@ export class TankDS extends BaseDataSource<TankItem> {
         map((result) => {
           const tankList = result.queryTank || { nodes: [], totalCount: 0 };
           this.dataSubject.next(tankList);
-          this.totalCount = tankList.length;
-          return tankList;
+          this.totalCount = tankList.totalCount;
+          this.pageInfo= tankList.pageInfo;
+          return tankList.nodes;
         })
       );
   }
+
+  addNewTank(newTank: any): Observable<any> {
+      return this.apollo.mutate({
+        mutation: ADD_TANK,
+        variables: {
+          newTank
+        }
+      }).pipe(
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+      );
+    }
+  
+      updateTank(updateTank: any): Observable<any> {
+        return this.apollo.mutate({
+          mutation: UPDATE_TANK,
+          variables: {
+            updateTank
+          }
+        }).pipe(
+          catchError((error: ApolloError) => {
+            console.error('GraphQL Error:', error);
+            return of(0); // Return an empty array on error
+          }),
+        );
+      }
+  
+      deleteTank(tankGuid: any): Observable<any> {
+        return this.apollo.mutate({
+          mutation: DELETE_TANK,
+          variables: {
+            tankGuid
+          }
+        }).pipe(
+          catchError((error: ApolloError) => {
+            console.error('GraphQL Error:', error);
+            return of(0); // Return an empty array on error
+          }),
+        );
+      }
 }
