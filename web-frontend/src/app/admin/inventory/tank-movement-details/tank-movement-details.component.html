@@ -1369,7 +1369,7 @@
                                 <td class="table-col-4">{{translatedLangText.PRE_INSPECTION}}</td>
                                 <td class="table-col-4">{{sot?.preinspect_job_no || "-"}}</td>
                                 <td class="table-col-1 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.preinspection_cost) {
+                                  @if (sot?.billing_sot?.preinsp_billing_guid) {
                                   <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                   }
                                   @else {

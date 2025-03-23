@@ -1,90 +1,82 @@
+import { ApolloError } from "@apollo/client/errors";
 import { Apollo, gql } from "apollo-angular";
-import { ContactPersonItem } from "./contact-person";
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { BaseDataSource } from "./base-ds";
 import { CurrencyItem } from "./currency";
 import { CustomerCompanyItem } from "./customer-company";
-import { BaseDataSource } from "./base-ds";
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import { StringValueNode } from "graphql";
-import { RepairItem } from "./repair";
 import { InGateCleaningItem } from "./in-gate-cleaning";
+import { RepairItem } from "./repair";
 import { ResidueItem } from "./residue";
 import { SteamItem } from "./steam";
-import { ApolloError } from "@apollo/client/errors";
-import { StoringOrderItem } from "./storing-order";
 import { StoringOrderTankItem } from "./storing-order-tank";
-import { TariffDepotGO, TariffDepotItem } from "./tariff-depot";
+import { TariffDepotItem } from "./tariff-depot";
 
-
-export class report_billing_customer{
-  guid?:string;
-  customer?:string;
-  invoice_period?:string;
-  items?:report_billing_item[];
+export class report_billing_customer {
+  guid?: string;
+  customer?: string;
+  invoice_period?: string;
+  items?: report_billing_item[];
 
   constructor(item: Partial<report_billing_customer> = {}) {
-    this.guid = item.guid;
-    if (!this.guid) this.guid = '';
-    
-    this.customer=item.customer;
-    this.invoice_period=item.invoice_period;
-    this.items=item.items;
-
-
+    this.guid = item.guid || '';
+    this.customer = item.customer;
+    this.invoice_period = item.invoice_period;
+    this.items = item.items;
   }
 }
 
 export class report_billing_item {
-   sot_guid?:string
-   job_no?: string;
-   tank_no?:string;
-   eir_no?: string;
-   last_cargo?:string;
-   in_date?:string;
-   out_date?:string;
-   clean_cost?:string;
-   repair_cost?:string;
-   preins_cost?:string;
-   lolo_cost?:string;
-   days?:string;
-   storage_cost?:string;
-   steam_cost?:string;
-   periodic_test?:string;
-   residue_cost?:string;
-   gateio_cost?:string;
-   other_cost?:string;
-   total?:string;
+  sot_guid?: string
+  job_no?: string;
+  tank_no?: string;
+  eir_no?: string;
+  last_cargo?: string;
+  in_date?: string;
+  out_date?: string;
+  clean_cost?: string;
+  repair_cost?: string;
+  preins_cost?: string;
+  lolo_cost?: string;
+  days?: string;
+  storage_cost?: string;
+  steam_cost?: string;
+  periodic_test?: string;
+  residue_cost?: string;
+  gateio_cost?: string;
+  other_cost?: string;
+  total?: string;
 
-   clean_est_no:number=0;
-   repair_est_no:number=0;
-   storage_est_no:number=0;
-   steam_est_no:number=0;
-   residue_est_no:number=0;
-   gateio_est_no:number=0;
-   lolo_est_no:number=0;
-   preins_est_no:number=0;
+  clean_est_no: number = 0;
+  repair_est_no: number = 0;
+  storage_est_no: number = 0;
+  steam_est_no: number = 0;
+  residue_est_no: number = 0;
+  gateio_est_no: number = 0;
+  lolo_est_no: number = 0;
+  preins_est_no: number = 0;
 
-   constructor(item: Partial<report_billing_item> = {}) {
+  constructor(item: Partial<report_billing_item> = {}) {
     this.job_no = item.job_no;
-    this.sot_guid=item.sot_guid;
-    
-    this.clean_est_no=(item.clean_est_no||0);
-    this.repair_est_no=(item.repair_est_no||0);
-    this.storage_est_no=(item.storage_est_no||0);
-    this.steam_est_no= (item.steam_est_no||0);
-    this.residue_est_no=(item.residue_est_no||0);
-    this.gateio_est_no=(item.gateio_est_no||0);
-    this.lolo_est_no=(item.lolo_est_no||0);
-    this.preins_est_no=(item.preins_est_no||0);
+    this.sot_guid = item.sot_guid;
 
-    this.tank_no=item.tank_no;
-    this.eir_no=item.eir_no;
-    this.last_cargo= item.last_cargo;
-    this.in_date=item.in_date;
-    this.out_date=item.out_date;
-    this.clean_cost=item.clean_cost;
+    this.clean_est_no = (item.clean_est_no || 0);
+    this.repair_est_no = (item.repair_est_no || 0);
+    this.storage_est_no = (item.storage_est_no || 0);
+    this.steam_est_no = (item.steam_est_no || 0);
+    this.residue_est_no = (item.residue_est_no || 0);
+    this.gateio_est_no = (item.gateio_est_no || 0);
+    this.lolo_est_no = (item.lolo_est_no || 0);
+    this.preins_est_no = (item.preins_est_no || 0);
 
-    this.repair_cost=item.repair_cost;
+    this.tank_no = item.tank_no;
+    this.eir_no = item.eir_no;
+    this.last_cargo = item.last_cargo;
+    this.in_date = item.in_date;
+    this.out_date = item.out_date;
+    this.clean_cost = item.clean_cost;
+
+    this.repair_cost = item.repair_cost;
     this.preins_cost = item.preins_cost;
     this.lolo_cost = item.lolo_cost;
     this.days = item.days;
@@ -93,93 +85,92 @@ export class report_billing_item {
     this.periodic_test = item.periodic_test;
     this.residue_cost = item.residue_cost;
     this.other_cost = item.other_cost;
-    this.gateio_cost=item.gateio_cost;
+    this.gateio_cost = item.gateio_cost;
     this.total = item.total;
   }
 }
 
 export class BillingGo {
-    public guid?: string;
-    public bill_to_guid?:string;
-    public currency_guid?:string;
-    public invoice_dt?:number;
-    public invoice_no?:string;
-    public invoice_due?:number;
-    public remarks?:string;
-    public status_cv?:string;
-  
-    public create_dt?: number;
-    public create_by?: string;
-    public update_dt?: number;
-    public update_by?: string;
-    public delete_dt?: number;
-    
-    constructor(item: Partial<BillingGo> = {}) {
-      this.guid = item.guid;
-      if (!this.guid) this.guid = '';
-      
-      this.bill_to_guid=item.bill_to_guid;
-      this.currency_guid=item.currency_guid;
-      this.invoice_dt= item.invoice_dt;
-      this.invoice_no=item.invoice_no;
-      this.invoice_due=item.invoice_due;
-      this.status_cv=item.status_cv;
+  public guid?: string;
+  public bill_to_guid?: string;
+  public currency_guid?: string;
+  public invoice_dt?: number;
+  public invoice_no?: string;
+  public invoice_due?: number;
+  public remarks?: string;
+  public status_cv?: string;
 
-      this.remarks=item.remarks;
-      this.create_dt = item.create_dt;
-      this.create_by = item.create_by;
-      this.update_dt = item.update_dt;
-      this.update_by = item.update_by;
-      this.delete_dt = item.delete_dt;
-    }
+  public create_dt?: number;
+  public create_by?: string;
+  public update_dt?: number;
+  public update_by?: string;
+  public delete_dt?: number;
+
+  constructor(item: Partial<BillingGo> = {}) {
+    this.guid = item.guid;
+    if (!this.guid) this.guid = '';
+
+    this.bill_to_guid = item.bill_to_guid;
+    this.currency_guid = item.currency_guid;
+    this.invoice_dt = item.invoice_dt;
+    this.invoice_no = item.invoice_no;
+    this.invoice_due = item.invoice_due;
+    this.status_cv = item.status_cv;
+
+    this.remarks = item.remarks;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
   }
-
-export class BillingItem extends BillingGo{
-    
-    public customer_company? : CustomerCompanyItem;
-    public currency?: CurrencyItem;
-    public repair_customer?:RepairItem[];
-    public repair_owner?:RepairItem[];
-    public residue?:ResidueItem[];
-    public steaming?:SteamItem[];
-    public cleaning?:InGateCleaningItem[];
-    public gateio_billing_sot?:BillingSOTItem[];
-    public preinsp_billing_sot?:BillingSOTItem[];
-    public storage_billing_sot?:BillingSOTItem[];
-    public lolo_billing_sot?:BillingSOTItem[];
-
-    constructor(item: Partial<BillingItem> = {}) {
-        super(item);
-        this.customer_company=item.customer_company;
-        this.currency=item.customer_company;
-        this.residue=item.residue;
-        this.steaming=item.steaming;
-        this.cleaning=item.cleaning;
-        this.repair_customer=item.repair_customer;
-        this.repair_owner=item.repair_owner;
-     }
 }
 
-export class BillingSOTGo{
-  public free_storage?:number;
-  public gate_in_cost?:number;
-  public gate_out_cost?:number;
-  public gateio_billing_guid?:string;
-  public guid?:string;
-  public lift_off?:boolean;
-  public lift_off_cost?:number;
-  public lift_on?:boolean;
-  public lift_on_cost?:number;
-  public lolo_billing_guid?:string;
-  public preinsp_billing_guid?:string;
-  public preinspection?:boolean;
-  public preinspection_cost?:number;
-  public remarks?:string;
-  public sot_guid?:string;
-  public storage_billing_guid?:string;
-  public storage_cal_cv?:string;
-  public storage_cost?:number;
- // public tariff_depot_guid?:string;
+export class BillingItem extends BillingGo {
+  public customer_company?: CustomerCompanyItem;
+  public currency?: CurrencyItem;
+  public repair_customer?: RepairItem[];
+  public repair_owner?: RepairItem[];
+  public residue?: ResidueItem[];
+  public steaming?: SteamItem[];
+  public cleaning?: InGateCleaningItem[];
+  public gateio_billing_sot?: BillingSOTItem[];
+  public preinsp_billing_sot?: BillingSOTItem[];
+  public storage_billing_sot?: BillingSOTItem[];
+  public lolo_billing_sot?: BillingSOTItem[];
+
+  constructor(item: Partial<BillingItem> = {}) {
+    super(item);
+    this.customer_company = item.customer_company;
+    this.currency = item.customer_company;
+    this.residue = item.residue;
+    this.steaming = item.steaming;
+    this.cleaning = item.cleaning;
+    this.repair_customer = item.repair_customer;
+    this.repair_owner = item.repair_owner;
+  }
+}
+
+export class BillingSOTGo {
+  public free_storage?: number;
+  public gate_in_cost?: number;
+  public gate_out_cost?: number;
+  public gateio_billing_guid?: string;
+  public guid?: string;
+  public lift_off?: boolean;
+  public lift_off_cost?: number;
+  public lift_on?: boolean;
+  public lift_on_cost?: number;
+  public lolo_billing_guid?: string;
+  public preinsp_billing_guid?: string;
+  public preinspection?: boolean;
+  public preinspection_cost?: number;
+  public remarks?: string;
+  public sot_guid?: string;
+  public storage_billing_guid?: string;
+  public storage_cal_cv?: string;
+  public storage_cost?: number;
+  // public tariff_depot_guid?:string;
 
   public create_dt?: number;
   public create_by?: string;
@@ -190,26 +181,26 @@ export class BillingSOTGo{
   constructor(item: Partial<BillingSOTGo> = {}) {
     this.guid = item.guid;
     if (!this.guid) this.guid = '';
-    
-    this.free_storage=item.free_storage;
-    this.gate_in_cost=item.gate_in_cost;
-    this.gate_out_cost= item.gate_out_cost;
-    this.gateio_billing_guid=item.gateio_billing_guid;
-    this.lift_off=item.lift_off;
-    this.lift_off_cost=item.lift_off_cost;
 
-    this.lift_on=item.lift_on;
-    this.lift_on_cost=item.lift_on_cost;
-    this.lolo_billing_guid= item.lolo_billing_guid;
-    this.preinsp_billing_guid=item.preinsp_billing_guid;
-    this.preinspection=item.preinspection;
-    this.preinspection_cost=item.preinspection_cost;
-    this.sot_guid=item.sot_guid;
-    this.storage_billing_guid=item.storage_billing_guid;
-    this.storage_cal_cv=item.storage_cal_cv;
-    this.storage_cost=item.storage_cost;
+    this.free_storage = item.free_storage;
+    this.gate_in_cost = item.gate_in_cost;
+    this.gate_out_cost = item.gate_out_cost;
+    this.gateio_billing_guid = item.gateio_billing_guid;
+    this.lift_off = item.lift_off;
+    this.lift_off_cost = item.lift_off_cost;
+
+    this.lift_on = item.lift_on;
+    this.lift_on_cost = item.lift_on_cost;
+    this.lolo_billing_guid = item.lolo_billing_guid;
+    this.preinsp_billing_guid = item.preinsp_billing_guid;
+    this.preinspection = item.preinspection;
+    this.preinspection_cost = item.preinspection_cost;
+    this.sot_guid = item.sot_guid;
+    this.storage_billing_guid = item.storage_billing_guid;
+    this.storage_cal_cv = item.storage_cal_cv;
+    this.storage_cost = item.storage_cost;
     //this.tariff_depot_guid=item.tariff_depot_guid;
-    this.remarks=item.remarks;
+    this.remarks = item.remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -218,38 +209,38 @@ export class BillingSOTGo{
   }
 }
 
-export class BillingSOTItem extends BillingSOTGo{
-    
-  public gateio_billing?:BillingItem ;
+export class BillingSOTItem extends BillingSOTGo {
+
+  public gateio_billing?: BillingItem;
   public lolo_billing?: BillingItem;
-  public preinsp_billing?:BillingItem;
-  public storage_billing?:BillingItem[];
-  public storing_order_tank?:StoringOrderTankItem;
-  public tariff_depot?:TariffDepotItem;
-  
-  
+  public preinsp_billing?: BillingItem;
+  public storage_billing?: BillingItem[];
+  public storing_order_tank?: StoringOrderTankItem;
+  public tariff_depot?: TariffDepotItem;
+
+
 
   constructor(item: Partial<BillingSOTItem> = {}) {
-      super(item);
-      this.gateio_billing=item.gateio_billing;
-      this.lolo_billing=item.lolo_billing;
-      this.preinsp_billing=item.preinsp_billing;
-      this.storage_billing=item.storage_billing;
-      this.storing_order_tank=item.storing_order_tank;
-      this.tariff_depot=item.tariff_depot;
-      
-   }
+    super(item);
+    this.gateio_billing = item.gateio_billing;
+    this.lolo_billing = item.lolo_billing;
+    this.preinsp_billing = item.preinsp_billing;
+    this.storage_billing = item.storage_billing;
+    this.storing_order_tank = item.storing_order_tank;
+    this.tariff_depot = item.tariff_depot;
+
+  }
 }
 
 export class BillingInputRequest {
   public bill_to_guid?: string;
   public currency_guid?: string;
-  public guid?:string;
+  public guid?: string;
   public invoice_dt?: number;
   public invoice_due?: number;
-  public invoice_no?:string;
-  public remarks?:string;
-  public status_cv?:string;
+  public invoice_no?: string;
+  public remarks?: string;
+  public status_cv?: string;
 
   //public aspnetsuser?: UserItem;
 
@@ -257,21 +248,21 @@ export class BillingInputRequest {
 
     this.guid = item.guid;
     this.currency_guid = item.currency_guid;
-    this.bill_to_guid= item.bill_to_guid;
+    this.bill_to_guid = item.bill_to_guid;
     // this.aspnetsuser = item.aspnetsuser;
     this.invoice_dt = item.invoice_dt;
-    this.invoice_due=item.invoice_due;
-    this.invoice_no=item.invoice_no;
-    this.remarks=item.remarks;
-    this.status_cv=item.status_cv;
+    this.invoice_due = item.invoice_due;
+    this.invoice_no = item.invoice_no;
+    this.remarks = item.remarks;
+    this.status_cv = item.status_cv;
   }
 }
 
-export class BillingEstimateRequest{
-  public action?:string;
-  public billing_party?:string;
-  public process_guid?:string;
-  public process_type?:string;
+export class BillingEstimateRequest {
+  public action?: string;
+  public billing_party?: string;
+  public process_guid?: string;
+  public process_type?: string;
 }
 
 
@@ -587,7 +578,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
   }
 `;
 
-const SEARCH_BILLING_SOT_QUERY=gql`
+const SEARCH_BILLING_SOT_QUERY = gql`
  query queryBillingSOT($where: billing_sotFilterInput, $order: [billing_sotSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
      queryBillingSOT(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
@@ -1173,31 +1164,31 @@ export class BillingDS extends BaseDataSource<BillingItem> {
         })
       );
   }
- 
+
   searchCleaningBilling(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<BillingItem[]> {
-      this.loadingSubject.next(true);
-      return this.apollo
-        .query<any>({
-          query: SEARCH_CLEANING_BILLING_QUERY,
-          variables: { where, order, first, after, last, before },
-          fetchPolicy: 'no-cache' // Ensure fresh data
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: SEARCH_CLEANING_BILLING_QUERY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.queryBilling || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          this.pageInfo = retResult.pageInfo;
+          return retResult.nodes;
         })
-        .pipe(
-          map((result) => result.data),
-          catchError((error: ApolloError) => {
-            console.error('GraphQL Error:', error);
-            return of([] as InGateCleaningItem[]); // Return an empty array on error
-          }),
-          finalize(() => this.loadingSubject.next(false)),
-          map((result) => {
-            const retResult = result.queryBilling || { nodes: [], totalCount: 0 };
-            this.dataSubject.next(retResult.nodes);
-            this.totalCount = retResult.totalCount;
-            this.pageInfo = retResult.pageInfo;
-            return retResult.nodes;
-          })
-        );
-    }
+      );
+  }
 
   searchAllBilling(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<BillingItem[]> {
     this.loadingSubject.next(true);
@@ -1225,7 +1216,7 @@ export class BillingDS extends BaseDataSource<BillingItem> {
   }
 
 
-  addBilling(newBilling: any,billingEstimateRequests:any): Observable<any> {
+  addBilling(newBilling: any, billingEstimateRequests: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_BILLING,
       variables: {
@@ -1235,7 +1226,7 @@ export class BillingDS extends BaseDataSource<BillingItem> {
     });
   }
 
-  _updateBilling(updateBilling: any,billingEstimateRequests:any): Observable<any> {
+  _updateBilling(updateBilling: any, billingEstimateRequests: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_BILLING,
       variables: {
