@@ -1148,7 +1148,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: false
+        visible: true
       },
       {
         path: "admin/admin-reports/main-yearly",
@@ -1160,7 +1160,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: false
+        visible: true
       }
     ].filter(item => item.visible !== false),
   },

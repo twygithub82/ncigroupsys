@@ -1000,7 +1000,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
       //categories;
 
       this.barChartOptions.yaxis = {
-        max: maxYAxisValue,
+       // max: maxYAxisValue,
         min: 0,
         title: {
           text: `${this.translatedLangText.NO_OF_TANKS}`,

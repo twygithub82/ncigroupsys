@@ -1084,7 +1084,8 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
     const counts: number[] = repStatus.result_per_day
   ?.map(i => i.count) // Extract the count property
   .filter(count => count !== undefined && count !== null) as number[]; // Filter out undefined/null values
-
+  maxYAxisValue = counts.length > 0 ? Math.max(...counts) : maxYAxisValue;
+  maxYAxisValue = maxYAxisValue*1.2;
     this.lineChart2Options.yaxis = {
       max: maxYAxisValue,
       min: 0,

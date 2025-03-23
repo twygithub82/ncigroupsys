@@ -1081,11 +1081,12 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
 
     
     var maxYAxisValue=12;
-    var days = repStatus.result_per_month?.map((i,index)=>i.month);
+    var months = repStatus.result_per_month?.map((i,index)=>i.month);
     const counts: number[] = repStatus.result_per_month
   ?.map(i => i.count) // Extract the count property
   .filter(count => count !== undefined && count !== null) as number[]; // Filter out undefined/null values
-
+  maxYAxisValue = counts.length > 0 ? Math.max(...counts) : maxYAxisValue;
+  maxYAxisValue = maxYAxisValue*1.2;
     this.lineChart2Options.yaxis = {
       max: maxYAxisValue,
       min: 0,
@@ -1097,27 +1098,56 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         minWidth: 50,   // Set a minimum width for the labels
         maxWidth: 100,  // Set a maximum width for the labels
         offsetX: 10,    // Add horizontal offset to the labels
-        formatter: (value: number) => {
-          return value.toFixed(2); // Format the label to reduce its length
-        }
       }
     }
+
+    for(var i=counts.length;i<=3;i++)
+    {
+      counts.push(0);
+    }
+    
     this.lineChart2Options.series=[
       {
-        name: 'months',
+        name: 'Inflation',
         data: counts,
       },
     ]
-    this.lineChart2Options.xaxis= {
-      type: 'category',
-      categories:days,
+    
+
+  
+    this.lineChart2Options.xaxis={
+      categories: months,
+      position: 'top',
       labels: {
+        offsetY: -18,
         style: {
           colors: '#9aa0ac',
         },
       },
-    },
-
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
+      crosshairs: {
+        fill: {
+          type: 'gradient',
+          gradient: {
+            colorFrom: '#D8E3F0',
+            colorTo: '#BED1E6',
+            stops: [0, 100],
+            opacityFrom: 0.4,
+            opacityTo: 0.5,
+          },
+        },
+      },
+      tooltip: {
+        enabled: true,
+        offsetY: -35,
+      },
+    }
+      
     this.lineChart2Options.chart!.events = {
         animationEnd: () => {
           this.onChartRendered();
@@ -1130,8 +1160,24 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
 
   InitialDefaultData() {
     this.lineChart2Options = {
+      series: [
+        {
+          name: 'Inflation',
+          data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2],
+        },
+      ],
+      chart: {
+        height: 350,
+        type: 'bar',
+        foreColor: '#9aa0ac',
+        toolbar: {
+          show: false,
+         
+        },
+      },
       plotOptions: {
         bar: {
+          columnWidth:'10%',
           dataLabels: {
             position: 'top', // top, center, bottom
           },
@@ -1139,73 +1185,18 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
       },
       dataLabels: {
         enabled: true,
+        formatter: function (val: number) {
+          if(val===0)
+          {
+            return '';
+          }
+          return val;
+
+        },
         offsetY: -20,
         style: {
-          fontSize: '10px',
+          fontSize: '12px',
           colors: ['#9aa0ac'],
-        },
-      },
-      chart: {
-        height: 350,
-        type: 'bar',
-        dropShadow: {
-          enabled: false,
-          color: '#bbb',
-          top: 3,
-          left: 2,
-          blur: 3,
-          opacity: 1,
-        },
-        toolbar: {
-          show: false,
-        },
-        foreColor: '#9aa0ac',
-      },
-      stroke: {
-        width: 7,
-        curve: 'smooth',
-      },
-      series: [
-        {
-          name: 'days',
-          data: [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13, 9, 17, 2, 7, 5],
-        },
-      ],
-      xaxis: {
-        type: 'category',
-        categories: [
-          '1/11/2000',
-          '2/11/2000',
-          '3/11/2000',
-          '4/11/2000',
-          '5/11/2000',
-          '6/11/2000',
-          '7/11/2000',
-          '8/11/2000',
-          '9/11/2000',
-          '10/11/2000',
-          '11/11/2000',
-          '12/11/2000',
-          '1/11/2001',
-          '2/11/2001',
-          '3/11/2001',
-          '4/11/2001',
-          '5/11/2001',
-          '6/11/2001',
-        ],
-        labels: {
-          style: {
-            colors: '#9aa0ac',
-          },
-        },
-      },
-      title: {
-        text: this.translatedLangText.MONTH,
-        offsetY: 332,
-        align: 'center',
-        style: {
-          color: '#9aa0ac',
-          fontSize:"10px"
         },
       },
       grid: {
@@ -1213,29 +1204,92 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         borderColor: '#9aa0ac',
         strokeDashArray: 1,
       },
+      xaxis: {
+        categories: [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ],
+        position: 'top',
+        labels: {
+          offsetY: -10,
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+        axisBorder: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+        crosshairs: {
+          fill: {
+            type: 'gradient',
+            gradient: {
+              colorFrom: '#D8E3F0',
+              colorTo: '#BED1E6',
+              stops: [0, 100],
+              opacityFrom: 0.4,
+              opacityTo: 0.5,
+            },
+          },
+        },
+        tooltip: {
+          enabled: false,
+          offsetY: -35,
+        },
+      },
       fill: {
         type: 'gradient',
         gradient: {
-          shade: 'dark',
-          gradientToColors: ['#FDD835'],
-          shadeIntensity: 1,
+          shade: 'light',
           type: 'horizontal',
+          shadeIntensity: 0.25,
+          gradientToColors: undefined,
+          inverseColors: true,
           opacityFrom: 1,
           opacityTo: 1,
         },
       },
-      markers: {
-        size: 4,
-        colors: ['#FFA41B'],
-        strokeWidth: 2,
-
-        hover: {
-          size: 7,
+      yaxis: {
+        axisBorder: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+        labels: {
+          show: false,
+          formatter: function (val: number) {
+            return val + '%';
+          },
         },
       },
-      yaxis: {
-        title: {
-          text: '$ (thousands)',
+      title: {
+        text: this.translatedLangText.MONTH,
+        offsetY: 325,
+        align: 'center',
+        style: {
+          color: '#9aa0ac',
+        },
+      },
+      tooltip: {
+        theme: 'dark',
+        marker: {
+          show: true,
+        },
+        x: {
+          show: true,
         },
       },
     };

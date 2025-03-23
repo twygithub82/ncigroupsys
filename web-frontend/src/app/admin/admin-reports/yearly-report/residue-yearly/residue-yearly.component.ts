@@ -47,6 +47,8 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
+import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/overview/yearly-chart-pdf.component';
+import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
 
 @Component({
   selector: 'app-residue-yearly',
@@ -156,7 +158,8 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     LOCATION:'COMMON-FORM.LOCATION',
     YEAR:'COMMON-FORM.YEAR',
     MONTH:'COMMON-FORM.MONTH',
-    
+    MONTH_START:'COMMON-FORM.MONTH-START',
+    MONTH_END:'COMMON-FORM.MONTH-END',
 
 
     
@@ -255,7 +258,8 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
       year: [`${thisYear}`],
-      month: [`${thisMonth}`],
+      month_start: [`${thisMonth}`],
+      month_end: [`${thisMonth}`],
     });
   }
 
@@ -365,19 +369,27 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
    
 
+      var customerName:string="";
       where.report_type=this.processType;
       if (this.searchForm?.get('customer_code')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
         where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
+        customerName= `${this.searchForm!.get('customer_code')?.value.name}`;
         cond_counter++;
       }
       
-      var date: string = `${this.searchForm?.get('month')?.value} ${this.searchForm?.get('year')?.value}`;
+      var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
     // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if (this.searchForm?.get('month')?.value) {
-        var month=this.searchForm?.get('month')?.value;
+      if (this.searchForm?.get('month_start')?.value) {
+        var month=this.searchForm?.get('month_start')?.value;
         const monthIndex = this.monthList.findIndex(m => month === m);
-        where.month = (monthIndex+1);
+        where.start_month = (monthIndex+1);
+      }
+
+      if (this.searchForm?.get('month_end')?.value) {
+        var month=this.searchForm?.get('month_end')?.value;
+        const monthIndex = this.monthList.findIndex(m => month === m);
+        where.end_month = (monthIndex+1);
       }
 
       if (this.searchForm?.get('year')?.value) {
@@ -389,27 +401,22 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     
 
       this.lastSearchCriteria = where;
-      this.performSearch(report_type,date);
+      this.performSearch(report_type,date,customerName);
     }
+   
    
   
 
-    performSearch(reportType?: number,date?:string) {
+    performSearch(reportType?: number,date?:string,customerName?:string) {
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.reportDS.searchAdminReportMonthlyProcess(this.lastSearchCriteria)
+    this.subs.sink = this.reportDS.searchAdminReportYearlyProcess(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessMonthlyReport(this.repData,date!,reportType!);
-        // this.endCursor = this.stmDS.pageInfo?.endCursor;
-        // this.startCursor = this.stmDS.pageInfo?.startCursor;
-        // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-        // this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-       // this.ProcessReportCustomerInventory(invType!, date!, report_type!, queryType!,tnxType!);
+        this.ProcessYearlyReport(this.repData,date!,reportType!,customerName!);
      });
-    // this.pageSize = pageSize;
-    // this.pageIndex = pageIndex;
+    
   }
 
   onPageEvent(event: PageEvent) {
@@ -420,30 +427,7 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  displayLastCargoFn(tc: TariffCleaningItem): string {
-    return tc && tc.cargo ? `${tc.cargo}` : '';
-  }
-
-  displayReleaseDate(sot: StoringOrderTankItem) {
-    let retval: string = "-";
-    if (sot.out_gate?.length) {
-      if (sot.out_gate[0]?.out_gate_survey) {
-        const date = new Date(sot.out_gate[0]?.out_gate_survey?.create_dt! * 1000);
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = date.toLocaleString('en-US', { month: 'short' });
-        const year = date.getFullYear();
-
-        // Replace the '/' with '-' to get the required format
-
-
-        return `${day}/${month}/${year}`;
-      }
-
-    }
-    return retval;
-  }
-
+  
   displayTankPurpose(sot: StoringOrderTankItem) {
     return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
   }
@@ -501,7 +485,8 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
     this.searchForm?.patchValue({
       year: thisYear,
-      month: thisMonth,
+      month_start: thisMonth,
+      month_end: thisMonth,
     });
     this.customerCodeControl.reset('');
    
@@ -532,17 +517,17 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   }
 
-  ProcessMonthlyReport(repData: AdminReportMonthlyReport, date: string,report_type:number) {
+  ProcessYearlyReport(repData: AdminReportMonthlyReport, date: string,report_type:number,customerName:string) {
     
    
 
     if(repData)
     {
       if (report_type == 1) {
-        this.onExportChart_r1(repData, date);
+        this.onExportChart_r1(repData, date,customerName);
       }
       else if (report_type == 2) {
-        this.onExportSummary(repData, date);
+        this.onExportSummary(repData, date,customerName);
       }
       
    }
@@ -557,7 +542,7 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   
 
-  onExportSummary(repData: AdminReportMonthlyReport, date: string) {
+  onExportSummary(repData: AdminReportMonthlyReport, date: string,customerName:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -569,14 +554,15 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(MonthlyReportDetailsPdfComponent, {
+    const dialogRef = this.dialog.open(YearlyReportDetailsPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
         date: date,
-        repType:this.processType
+        repType:this.processType,
+        customer:customerName
       
       },
 
@@ -594,7 +580,7 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-  onExportChart_r1(repData: AdminReportMonthlyReport, date: string)
+  onExportChart_r1(repData: AdminReportMonthlyReport, date: string,customerName:string)
   {
      //this.preventDefault(event);
      let cut_off_dt = new Date();
@@ -607,14 +593,15 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
        tempDirection = 'ltr';
      }
  
-     const dialogRef = this.dialog.open(MonthlyChartPdfComponent, {
+     const dialogRef = this.dialog.open(YearlyChartPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
         date: date,
-        repType:this.processType
+        repType:this.processType,
+        customer:customerName
       
       },
 
@@ -637,15 +624,29 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
      var bAllow:boolean =true;
 
      
-     if (this.searchForm?.get('month')?.value) {
-      var month=this.searchForm?.get('month')?.value;
-      const monthIndex = this.monthList.findIndex(m => month === m);
-      month = (monthIndex+1);
+     if (this.searchForm?.get('month_start')?.value) {
+      var month_start=this.searchForm?.get('month_start')?.value;
+      const monthStartIndex = this.monthList.findIndex(m => month_start === m);
+      month_start = (monthStartIndex+1);
     
+      if (this.searchForm?.get('month_end')?.value) {
 
-      if (this.searchForm?.get('year')?.value) {
-       var year = Number(this.searchForm?.get('year')?.value); 
-       bAllow=!Utility.isSelectedDateGreaterThanToday(month,year);
+            var month_end=this.searchForm?.get('month_end')?.value;
+            const monthEndIndex = this.monthList.findIndex(m => month_end === m);
+            month_end = (monthEndIndex+1);
+
+          if (this.searchForm?.get('year')?.value) {
+          var year = Number(this.searchForm?.get('year')?.value); 
+          bAllow=!Utility.isSelectedDateGreaterThanToday(month_start,year);
+           if(bAllow)
+           {
+            bAllow=!Utility.isSelectedDateGreaterThanToday(month_end,year);
+             if(bAllow)
+             {
+               bAllow = month_start<=month_end;
+             }
+           }
+          }
       }
     }
    
