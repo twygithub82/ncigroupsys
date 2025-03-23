@@ -23,8 +23,6 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { CodeValuesDS } from 'app/data-sources/code-values';
-import { RepairEstPartItem } from 'app/data-sources/repair-part';
-import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -264,8 +262,4 @@ export class SearchFormDialogComponent {
   //     }
   //   });
   // }
-
-  getUnitTypeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
-  }
 }

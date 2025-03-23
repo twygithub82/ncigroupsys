@@ -835,7 +835,6 @@ export class Utility {
   
     return false; // Selected date is not greater than today
   }
-
 }
 
 export const TANK_STATUS_PRE_IN_YARD = [

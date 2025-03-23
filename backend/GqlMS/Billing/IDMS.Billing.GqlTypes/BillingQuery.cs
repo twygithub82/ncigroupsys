@@ -647,7 +647,7 @@ namespace IDMS.Billing.GqlTypes
 
                 foreach (var type in reportTypes)
                 {
-                    var resultList = await RetriveSalesReportResult(context, type, startEpoch, endEpoch, customerMonthlySalesRequest.customer_code);
+                    var resultList = await RetriveSalesResult(context, type, startEpoch, endEpoch, customerMonthlySalesRequest.customer_code);
 
                     List<CustomerSales> salesByCustomer = new List<CustomerSales>();
                     if (type.EqualsIgnore("cleaning"))
@@ -816,7 +816,7 @@ namespace IDMS.Billing.GqlTypes
 
                 foreach (var type in monthlySalesRequest.report_type)
                 {
-                    var resultList = await RetriveSalesReportResult(context, type, startEpoch, endEpoch, monthlySalesRequest.customer_code);
+                    var resultList = await RetriveSalesResult(context, type, startEpoch, endEpoch, monthlySalesRequest.customer_code);
 
                     // Convert epoch timestamp to local date (yyyy-MM-dd)
                     foreach (var item in resultList)
@@ -932,7 +932,7 @@ namespace IDMS.Billing.GqlTypes
 
                 foreach (var type in yearlySalesRequest.report_type)
                 {
-                    var resultList = await RetriveSalesReportResult(context, type, startEpoch, endEpoch, yearlySalesRequest.customer_code);
+                    var resultList = await RetriveSalesResult(context, type, startEpoch, endEpoch, yearlySalesRequest.customer_code);
 
                     // Convert epoch timestamp to local date (yyyy-MM-dd)
                     foreach (var item in resultList)
@@ -1041,7 +1041,7 @@ namespace IDMS.Billing.GqlTypes
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
 
-                var resultList = await RetriveRevenueReportResult(context, monthlyProcessRequest.report_type, startEpoch, endEpoch, monthlyProcessRequest.customer_code);
+                var resultList = await RetriveProcessInventoryResult(context, monthlyProcessRequest.report_type, startEpoch, endEpoch, monthlyProcessRequest.customer_code);
 
                 // Convert epoch timestamp to local date (yyyy-MM-dd)
                 foreach (var item in resultList)
@@ -1133,7 +1133,7 @@ namespace IDMS.Billing.GqlTypes
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
 
-                var resultList = await RetriveRevenueReportResult(context, yearlyProcessRequest.report_type, startEpoch, endEpoch, yearlyProcessRequest.customer_code);
+                var resultList = await RetriveProcessInventoryResult(context, yearlyProcessRequest.report_type, startEpoch, endEpoch, yearlyProcessRequest.customer_code);
 
                 // Convert epoch timestamp to local date (yyyy-MM-dd)
                 foreach (var item in resultList)
@@ -1195,7 +1195,7 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        private async Task<List<TempReport>?> RetriveRevenueReportResult(ApplicationBillingDBContext context, string reportType, long startEpoch, long endEpoch, string customerCode)
+        private async Task<List<TempReport>?> RetriveProcessInventoryResult(ApplicationBillingDBContext context, string reportType, long startEpoch, long endEpoch, string customerCode)
         {
 
             try
@@ -1291,7 +1291,7 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        private async Task<List<TempReport>?> RetriveSalesReportResult(ApplicationBillingDBContext context, string processType, long startEpoch, long endEpoch, string customerCode)
+        private async Task<List<TempReport>?> RetriveSalesResult(ApplicationBillingDBContext context, string processType, long startEpoch, long endEpoch, string customerCode)
         {
 
             try

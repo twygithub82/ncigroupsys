@@ -1,17 +1,10 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-import { CleaningCategoryItem } from './cleaning-category';
-import { CleaningMethodItem } from './cleaning-method';
-import { TankItem } from './tank';
-import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
-import { PageInfo } from '@core/models/pageInfo';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { lab } from 'd3';
+import { CodeValuesDS } from './code-values';
 export class TariffRepairItem {
   public guid?: string;
   public alias?: string;
@@ -68,46 +61,22 @@ export class TariffRepairLengthItem {
   public length?: number;
   public length_unit_cv?: string;
   constructor(item: Partial<TariffRepairItem> = {}) {
-    Object.assign(this, {...item });
+    Object.assign(this, { ...item });
   }
 
-   public ToString(): any {
-    let ret ='';
-    if(this.length_unit_cv)
-    {
+  public ToString(): any {
+    let ret = '';
+    if (this.length_unit_cv) {
       ret = `${this.length}${this.length_unit_cv}`;
     }
     return ret;
   }
- 
-  
 }
 
 export interface TariffLabourResult {
   items: TariffRepairItem[];
   totalCount: number;
 }
-
-// export const GET_DISTINCT_PART_NAME=gql`
-// query {
-//   queryDistinctPartNameResult:queryDistinctPartName
-// }
-// `;
-
-// export const GET_DISTINCT_DIMENSION=gql`
-// query {
-//   queryDistinctDimensionResult:queryDistinctDimension
-// }
-// `;
-
-// export const GET_DISTINCT_LENGTH=gql`
-//  query {
-//   queryDistinctLengthResult:queryDistinctLength {
-//     length
-//     length_unit_cv
-//   }
-// }
-// `;
 
 export const GET_TARIFF_REPAIR_QUERY = gql`
   query queryTariffRepair($where: tariff_repairFilterInput, $order:[tariff_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
@@ -148,8 +117,8 @@ export const GET_TARIFF_REPAIR_QUERY = gql`
 `;
 
 export const GET_DISTINCT_PART_NAME = gql`
-  query queryDistinctPartName($groupName: String, $subgroupName: String) {
-    resultList : queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName)
+  query queryDistinctPartName($groupName: String, $subgroupName: String, $part_name: String) {
+    resultList : queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName, part_name: $part_name)
   }
 `;
 
@@ -234,12 +203,12 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
   }
 
-  searchDistinctPartName(groupName?: string, subgroupName?: string | null): Observable<string[]> {
+  searchDistinctPartName(groupName?: string, subgroupName?: string | null, part_name?: string): Observable<string[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: GET_DISTINCT_PART_NAME,
-        variables: { groupName, subgroupName },
+        variables: { groupName, subgroupName, part_name },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -388,8 +357,8 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     );
   }
 
-  updateTariffRepairs_MaterialCost(group_name_cv: any, subgroup_name_cv: any, part_name: any,dimension:any,length:any,
-    guid:any, material_cost_percentage: any,labour_hour_percentage:any): Observable<any> {
+  updateTariffRepairs_MaterialCost(group_name_cv: any, subgroup_name_cv: any, part_name: any, dimension: any, length: any,
+    guid: any, material_cost_percentage: any, labour_hour_percentage: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_TARIFF_REPAIRS_MATERIAL_COST,
       variables: {
@@ -410,5 +379,10 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     );
   }
 
-
+  displayRepairAlias(row: TariffRepairItem) {
+    if (row.length) {
+      return `${row.alias} ${row.length}`;
+    }
+    return `${row.alias}`;
+  }
 }

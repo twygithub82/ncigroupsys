@@ -263,7 +263,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         }
 
         public async Task<List<string?>> QueryDistinctPartName(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string? groupName, string? subgroupName)
+            [Service] IHttpContextAccessor httpContextAccessor, string? groupName, string? subgroupName, string? part_name)
         {
             try
             {
@@ -275,6 +275,11 @@ namespace IDMS.Models.Tariff.GqlTypes
                 if (!string.IsNullOrEmpty(groupName))
                 {
                     query = query.Where(tr => tr.group_name_cv.ToLower() == groupName.ToLower());
+                }
+
+                if (!string.IsNullOrEmpty(part_name))
+                {
+                    query = query.Where(tr => tr.part_name.ToLower().Contains(part_name.ToLower()));
                 }
 
                 if (subgroupName == null)

@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -27,27 +27,22 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageDepotItem } from 'app/data-sources/package-depot';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
-import { TariffRepairDS, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
+import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { debounceTime, startWith, tap } from 'rxjs';
 
 @Component({
   selector: 'app-package-repair',
@@ -80,24 +75,19 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     MatAutocompleteModule,
     MatDividerModule,
   ]
-
 })
-
 
 export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    // // 'img',
-    // 'custCode',
+    'custCode',
     'custCompanyName',
-    'fName',
-    // 'dimension',
-    // 'lName',
-    'email',
+    'group',
     'subgroup',
-    'gender',
-    'bDate',
+    'alias_name',
+    'labour_hour',
+    'material_cost',
     'mobile',
   ];
 
@@ -119,11 +109,13 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
+  partNameControl = new UntypedFormControl();
   handledItemControl = new UntypedFormControl();
 
   lengthItems: TariffRepairLengthItem[] = [];
   dimensionItems: string[] = [];
 
+  partNameList: string[] = [];
   groupNameCvList: CodeValuesItem[] = [];
   subGroupNameCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
@@ -131,15 +123,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   storageCalCvList: CodeValuesItem[] = [];
   CodeValuesDS: CodeValuesDS;
-  // packDepotDS : PackageDepotDS;
   trfRepairDS: TariffRepairDS;
   packRepairDS: PackageRepairDS;
   ccDS: CustomerCompanyDS;
-  //tariffDepotDS:TariffDepotDS;
-  // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
 
-  //packDepotItems:PackageDepotItem[]=[];
   packRepairItems: PackageRepairItem[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
@@ -258,7 +246,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
     DIMENSION: "COMMON-FORM.DIMENSION",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME'
   }
 
   constructor(
@@ -274,12 +263,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   ) {
     super();
     this.initPcForm();
+    this.partNameControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.partNameList)]);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.packRepairDS = new PackageRepairDS(this.apollo);
-    //this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
-    // this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -289,9 +277,9 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.initializeValueChange();
     this.loadData();
     this.translateLangText();
-    this.search();
   }
 
   initPcForm() {
@@ -300,7 +288,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       customer_code: this.customerCodeControl,
       group_name_cv: this.groupNameControl,
       sub_group_name_cv: this.subGroupNameControl,
-      part_name: [''],
+      part_name: this.partNameControl,
       len: this.lengthControl,
       dimension: this.dimensionControl,
       min_len: [''],
@@ -310,12 +298,15 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       min_cost: [''],
       max_cost: [''],
       handled_item_cv: this.handledItemControl
-
     });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+
+  displayPartNameFn(pn: string): string {
+    return pn;
   }
 
   refresh() {
@@ -352,16 +343,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
       width: '800px',
-
       data: {
         action: 'update',
         langText: this.langText,
         selectedItems: this.selection.selected
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -391,10 +377,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
         langText: this.langText,
         selectedItems: this.selection.selected
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -420,24 +402,16 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageRepairItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-
-      width: '800px',
-
+      width: '900px',
       data: {
         action: 'update',
         langText: this.langText,
         selectedItems: rows
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
     });
-
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
         if (this.packRepairItems.length > 1)
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
@@ -471,7 +445,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-    if (!this.customerCodeControl.value?.length) return;
     const where: any = {};
     if (this.customerCodeControl.value) {
       if (this.customerCodeControl.value.length > 0) {
@@ -860,6 +833,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
   }
 
+  getTariffRepairAlias(row: TariffRepairItem) {
+    const alias = `${this.trfRepairDS.displayRepairAlias(row)} ${this.getUnitTypeDescription(row.length_unit_cv)}`;
+    return alias;
+  }
+
   getUnitTypeDescription(codeVal: string | undefined): string | undefined {
     return this.CodeValuesDS.getCodeDescription(codeVal, this.unitTypeCvList);
   }
@@ -921,6 +899,25 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.handledItemControl.reset();
   }
 
+  updateValidators(validOptions: any[]) {
+    this.partNameControl.setValidators([
+      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
+  }
+
+  initializeValueChange() {
+    this.pcForm!.get('part_name')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.trfRepairDS.searchDistinctPartName(undefined, undefined, value).subscribe(data => {
+          this.partNameList = data
+          this.updateValidators(this.partNameList);
+        });
+      })
+    ).subscribe();
+  }
 }
 // export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
 //   // Check if the list already contains the default value
