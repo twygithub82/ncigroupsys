@@ -124,6 +124,8 @@ namespace IDMS.Repair.GqlTypes
                     appvRepair.est_cost = repair.est_cost;
                     appvRepair.total_labour_cost = repair.total_labour_cost;
                     appvRepair.total_material_cost = repair.total_material_cost;
+                    appvRepair.material_cost_discount = repair.material_cost_discount;
+                    appvRepair.labour_cost_discount = repair.labour_cost_discount;
 
                     if (CurrentServiceStatus.PENDING.EqualsIgnore(repair.status_cv))
                     {
