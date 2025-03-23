@@ -233,7 +233,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     DIMENSION: "COMMON-FORM.DIMENSION",
     MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
-
   }
 
   constructor(
@@ -832,6 +831,11 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       this.unitTypeCvList = data;
     });
     this.search();
+  }
+
+  getTariffRepairAlias(row : TariffRepairItem) {
+    const alias = `${this.trfRepairDS.displayRepairAlias(row)} ${this.getUnitTypeDescription(row.length_unit_cv)}`;
+    return alias;
   }
 
   getUnitTypeDescription(codeVal: string | undefined): string | undefined {

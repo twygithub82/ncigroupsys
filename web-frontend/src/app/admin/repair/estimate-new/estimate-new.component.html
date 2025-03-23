@@ -518,7 +518,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_owner_hour')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_hour_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -550,39 +550,39 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_owner_labour_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_labour_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_owner_mat_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_mat_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_owner_cost')?.value}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>-
-                                      {{repairForm?.get('discount_labour_owner_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
                                     <span>$</span><span>-
-                                      {{repairForm?.get('discount_mat_owner_cost')?.value}}</span>
+                                      {{repairForm?.get('discount_labour_owner_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('net_owner_cost')?.value}}</span>
+                                    <span>$</span><span>-
+                                      {{repairForm?.get('discount_mat_owner_cost_est')?.value}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{repairForm?.get('net_owner_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <!-- <div
@@ -611,7 +611,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_lessee_hour')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_hour_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -643,39 +643,39 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_lessee_labour_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_labour_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_lessee_mat_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_mat_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_lessee_cost')?.value}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>-
-                                      {{repairForm?.get('discount_labour_lessee_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
                                     <span>$</span><span>-
-                                      {{repairForm?.get('discount_mat_lessee_cost')?.value}}</span>
+                                      {{repairForm?.get('discount_labour_lessee_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('net_lessee_cost')?.value}}</span>
+                                    <span>$</span><span>-
+                                      {{repairForm?.get('discount_mat_lessee_cost_est')?.value}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{repairForm?.get('net_lessee_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <!-- <div
@@ -705,7 +705,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_hour')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_hour_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -737,37 +737,37 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_labour_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_labour_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_mat_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_mat_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>- {{repairForm?.get('discount_labour_cost')?.value}}</span>
+                                    <span>$</span><span>- {{repairForm?.get('discount_labour_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>- {{repairForm?.get('discount_mat_cost')?.value}}</span>
+                                    <span>$</span><span>- {{repairForm?.get('discount_mat_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('net_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('net_cost_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <!-- <div

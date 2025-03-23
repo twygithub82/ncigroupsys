@@ -170,7 +170,7 @@
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_75-xl'"
                     (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.PART_NAME
-                      }}:</span>{{row.alias}} {{row.length}} {{getUnitTypeDescription(row.length_unit_cv)}}</mat-cell>
+                      }}:</span>{{getTariffRepairAlias(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="dimension">
                   <mat-header-cell *matHeaderCellDef mat-sort-header

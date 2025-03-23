@@ -36,7 +36,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageDepotItem } from 'app/data-sources/package-depot';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
-import { TariffRepairDS, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
+import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
@@ -831,6 +831,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   displaySubGroupNameCodeValue_Description(codeValue: String) {
     return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
+  }
+
+  getTariffRepairAlias(row: TariffRepairItem) {
+    const alias = `${this.trfRepairDS.displayRepairAlias(row)} ${this.getUnitTypeDescription(row.length_unit_cv)}`;
+    return alias;
   }
 
   getUnitTypeDescription(codeVal: string | undefined): string | undefined {

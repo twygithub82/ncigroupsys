@@ -386,10 +386,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData?.partLocationCvList);
   }
 
-  getUnitTypeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
-  }
-
   // getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {
   //   const group_name_cv = this.repairPartForm.get('group_name_cv')?.value
   //   const subgroup_name_cv = this.repairPartForm.get('subgroup_name_cv')?.value

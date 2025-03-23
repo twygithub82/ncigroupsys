@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
+import { CodeValuesDS } from './code-values';
 export class TariffRepairItem {
   public guid?: string;
   public alias?: string;
@@ -378,5 +379,10 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     );
   }
 
-
+  displayRepairAlias(row: TariffRepairItem) {
+    if (row.length) {
+      return `${row.alias} ${row.length}`;
+    }
+    return `${row.alias}`;
+  }
 }

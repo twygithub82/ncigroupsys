@@ -264,8 +264,4 @@ export class SearchFormDialogComponent {
   //     }
   //   });
   // }
-
-  getUnitTypeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
-  }
 }
