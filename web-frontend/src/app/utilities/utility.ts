@@ -851,7 +851,6 @@ export const TANK_STATUS_IN_YARD = [
   'REPAIR',
   'STORAGE',
   'RO_GENERATED',
-  'IN_SURVEY',
 ]
 
 export const TANK_STATUS_POST_IN_YARD = [

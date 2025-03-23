@@ -241,7 +241,6 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     this.initializeFilterCustomerCompany();
     this.loadData();
     this.translateLangText();
-    this.search();
   }
 
   translateLangText() {
@@ -296,7 +295,6 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
         this.handleSaveSuccess(result);
         //this.search();
         // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-
       }
     });
   }
@@ -388,7 +386,6 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
         this.handleSaveSuccess(result);
         this.search();
         // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-
       }
     });
 
@@ -445,20 +442,14 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
-    if (!this.pcForm!.get('customer_code')?.value) return;
     const where: any = {
       and: []
     };
 
     if (this.pcForm!.get('customer_code')?.value) {
       const soSome: any = {};
-
-
       where.and.push({ package_steaming: { customer_company: { code: { contains: this.pcForm!.value['customer_code'].code } } } });
-
     }
 
     if (this.pcForm!.value["min_labour"]) {
@@ -628,8 +619,6 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   public loadData() {
-
-    this.search();
 
   }
   showNotification(

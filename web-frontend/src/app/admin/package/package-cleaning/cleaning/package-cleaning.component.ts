@@ -256,7 +256,6 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
-    this.search();
   }
 
   translateLangText() {
@@ -415,10 +414,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
-    if (!this.customerCodeControl.value?.length) return;
     const where: any = {};
 
     if (this.customerCodeControl.value) {

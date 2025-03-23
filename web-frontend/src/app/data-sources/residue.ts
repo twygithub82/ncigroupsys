@@ -25,8 +25,8 @@ export class ResidueGO {
   public remarks?: string;
   public sot_guid?: string;
   public status_cv?: string;
-  public est_cost?:number;
-  public total_cost?:number;
+  public est_cost?: number;
+  public total_cost?: number;
 
   public create_dt?: number;
   public create_by?: string;
@@ -53,15 +53,15 @@ export class ResidueGO {
     this.allocate_by = item.allocate_by;
     this.allocate_dt = item.allocate_dt;
     this.approve_by = item.approve_by;
-    this.approve_dt = item.approve_dt ;
+    this.approve_dt = item.approve_dt;
     this.complete_by = item.complete_by;
     this.complete_dt = item.complete_dt;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
-    this.est_cost=item.est_cost;
-    this.total_cost=item.total_cost;
+    this.est_cost = item.est_cost;
+    this.total_cost = item.total_cost;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -399,7 +399,7 @@ export const GET_RESIDUE_EST = gql`
 `;
 
 export const GET_RESIDUE_EST_JOB_ORDER = gql`
-  query queryResidue($where: residueFilterInput,$residue_part_where:residue_partFilterInput) {
+  query queryResidue($where: residueFilterInput, $residue_part_where: residue_partFilterInput) {
     resultList: queryResidue(where: $where) {
       nodes {
        allocate_by
@@ -481,7 +481,7 @@ export const GET_RESIDUE_EST_JOB_ORDER = gql`
           }
         }
       }
-      residue_part(where:$residue_part_where) {
+      residue_part(where: $residue_part_where) {
           action
           approve_part
           cost

@@ -85,15 +85,15 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    //'customer_code',
-    'fName',
-    'lName',
-    'mobile',
-    'gender',
-    'email',
-    //'actions',
-    // 'free_days',
-    // 'last_update_dt',
+    'customer_code',
+    'customer',
+    'profile',
+    'preinspection_cost',
+    'lolo_cost',
+    'gate_surcharge',
+    'storage_cost',
+    'free_days',
+    'last_update',
   ];
 
   customerCodeControl = new UntypedFormControl();
@@ -248,7 +248,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
-    this.search();
   }
 
   initPcForm() {
@@ -266,6 +265,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   refresh() {
     this.loadData();
   }
+
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -295,9 +295,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width:'80wv',
-      maxWidth: '700px',
-      //height: '90vh',
+      width: '700px',
       data: {
         action: 'update',
         langText: this.langText,
@@ -307,11 +305,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-        //if(result.selectedValue>0)
-        // {
         this.handleSaveSuccess(result);
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        //}
       }
     });
   }
@@ -327,9 +322,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width:'80wv',
-      maxWidth: '700px',
-      //height: '90vh',
+      width: '700px',
       data: {
         action: 'update',
         langText: this.langText,
@@ -338,18 +331,12 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      //if (result) {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
-      //}
     });
-
   }
-
-
 
   deleteItem(row: any) {
 
@@ -378,7 +365,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-    if (!this.customerCodeControl.value?.length) return;
     const where: any = {};
 
     if (this.customerCodeControl.value) {
