@@ -21,7 +21,7 @@
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
               <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
                     <mat-select formControlName="customer_code" multiple>
@@ -38,13 +38,13 @@
                     }
                   </mat-form-field>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.RESIDUE_TYPE}}</mat-label>
                     <input matInput formControlName="residue_disposal" type="text">
                   </mat-form-field>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()">
                     <mat-icon>search</mat-icon>
                   </button>

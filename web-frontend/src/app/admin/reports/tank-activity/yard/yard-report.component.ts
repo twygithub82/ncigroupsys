@@ -376,10 +376,10 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
     var invType: string = this.inventoryTypeCvList.find(i => i.code_val == (this.searchForm!.get('inv_type')?.value))?.description || '';
 
-    where.tank_status_cv = { in: TANK_STATUS_IN_YARD };
+   // where.tank_status_cv = { in: TANK_STATUS_IN_YARD };
     if (this.searchForm!.get('inv_type')?.value == "MASTER_OUT") {
       queryType = 2;
-      where.tank_status_cv = { eq: 'RELEASED' };
+    //  where.tank_status_cv = { eq: 'RELEASED' };
     }
 
     if (this.searchForm!.get('tank_no')?.value) {

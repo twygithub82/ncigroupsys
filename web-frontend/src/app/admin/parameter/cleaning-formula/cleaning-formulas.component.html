@@ -31,19 +31,19 @@
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                 <div class="row">
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.FORMULA_NAME }}</mat-label>
                       <input matInput formControlName="name">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.FORMULA_DESCRIPTION }}</mat-label>
                       <input matInput formControlName="description">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-2 col-lg-3 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.MIN_DURATION}}</mat-label>
                       <input matInput formControlName="duration_min" type="number">

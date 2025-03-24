@@ -684,7 +684,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
           data.push([
             (b + 1).toString(), itm.tank_no || "", this.DisplayEIRNo(itm) || "", this.DisplayEIRDate(itm) || "",
             this.DisplayOwner(itm) || "", this.DisplayLastTest(itm) || "", this.DisplayLastTestDate(itm) || "",
-            this.DisplayLastTestDate(itm) || "", this.DisplayNextTest(itm) || "", this.DisplayNextTestDate(itm) || "",
+            this.DisplayClass(itm) || "", this.DisplayNextTest(itm) || "", this.DisplayNextTestDate(itm) || "",
             this.DisplayDueDays(itm) || "0", this.DisplayDueType(itm) || ""
           ]);
         }
@@ -1237,7 +1237,14 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   DisplayLastTestDate(itm: periodic_test_due_item): string {
-    return `${Utility.convertEpochToDateStr(itm?.test_dt!)}`;
+    if(itm?.test_dt)
+    {
+       return `${Utility.convertEpochToDateStr(itm?.test_dt)}`;
+    }
+    else
+    {
+      return '';
+    }
   }
 
   DisplayLastTest(itm: periodic_test_due_item): string {

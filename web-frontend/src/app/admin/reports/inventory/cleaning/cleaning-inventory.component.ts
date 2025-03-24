@@ -409,7 +409,7 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     if(report_type=="DETAIL")
     {
       where.cleaning={any:true};
-      where.tank_status_cv={in:TANK_STATUS_IN_YARD}; //{neq:'RELEASED'};
+     // where.tank_status_cv={in:TANK_STATUS_IN_YARD}; //{neq:'RELEASED'};
       if (this.searchForm!.get('tank_no')?.value) {
         where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
         cond_counter++;
