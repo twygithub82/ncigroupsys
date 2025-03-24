@@ -1,6 +1,6 @@
 <form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()" #formDirective="ngForm">
   <div class="row">
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
       <mat-form-field class="example-full-width" appearance="fill">
         <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
         <mat-label>
@@ -9,7 +9,7 @@
         <input matInput formControlName="filterJobOrder">
       </mat-form-field>
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
         <input matInput formControlName="customer" [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
@@ -22,7 +22,7 @@
         </mat-autocomplete>
       </mat-form-field>
     </div>
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>{{translatedLangText.STATUS}}</mat-label>
         <mat-select multiple formControlName="jobStatusCv">
@@ -34,7 +34,7 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex align-items-center ms-auto justify-content-end">
       <!-- <mat-button-toggle-group formControlName="jobStatusCv" class="m-r-10" [hideMultipleSelectionIndicator]="true"
         color="primary" multiple>
         @for (codeValue of jobStatusCvList; track codeValue) {
@@ -116,28 +116,28 @@
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
         @if(canToggleJob(row))
         {
-          @if (canStartJob(row)) {
-          <button mat-menu-item (click)="toggleJobState($event, isStarted(row), row)">
-            <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
-          </button>
-          }
-          @if (canCompleteJob(row, isStarted(row))) {
-          <button mat-menu-item (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
-            <mat-icon>check_box</mat-icon>
-          </button>
-          }
+        @if (canStartJob(row)) {
+        <button mat-menu-item (click)="toggleJobState($event, isStarted(row), row)">
+          <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
+        </button>
+        }
+        @if (canCompleteJob(row, isStarted(row))) {
+        <button mat-menu-item (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
+          <mat-icon>check_box</mat-icon>
+        </button>
+        }
         }
         @else
         {
-          <button mat-menu-item (click)="stopEventTrigger($event)" (click)="startJobTask($event,row)">
-            <i class="material-icons card1-icon fas fa-fire"></i>
-          </button>
+        <button mat-menu-item (click)="stopEventTrigger($event)" (click)="startJobTask($event,row)">
+          <i class="material-icons card1-icon fas fa-fire"></i>
+        </button>
         }
       </mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
-      (click)="startJobTask($event,row)" [style.cursor]="'pointer'"  matRipple>
+    <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;" (click)="startJobTask($event,row)"
+      [style.cursor]="'pointer'" matRipple>
       <!-- [routerLink]="['/admin/steam/job-order/task', row.guid, row.steaming_part?.[0]?.steaming_guid]" 
       [style.cursor]="'pointer'" matRipple>-->
     </mat-row>

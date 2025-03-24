@@ -10,9 +10,10 @@
           <div class="body overflow-auto">
             <mat-tab-group dynamicHeight>
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
-                <form class="ms-0" [formGroup]="filterResidueForm!" (ngSubmit)="onFilterResidue()" #formDirective="ngForm">
+                <form class="ms-0" [formGroup]="filterResidueForm!" (ngSubmit)="onFilterResidue()"
+                  #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
                         <mat-label>
@@ -21,7 +22,7 @@
                         <input matInput formControlName="filterResidue">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                         <input matInput formControlName="customer" [matAutocomplete]="customerCode">
@@ -34,7 +35,7 @@
                         </mat-autocomplete>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.STATUS}}</mat-label>
                         <mat-select multiple formControlName="status_cv">
@@ -48,7 +49,7 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3 d-flex align-items-center ms-auto justify-content-end">
                       <button mat-mini-fab color="primary" (click)="onFilterResidue()">
                         <mat-icon>search</mat-icon>
                       </button>
@@ -67,7 +68,8 @@
                         {{translatedLangText.TANK_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
+                        <span
+                          class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="customer">
@@ -96,19 +98,19 @@
                         <span>{{displayDate(row.approve_dt)}}</span>
                       </mat-cell>
                     </ng-container>
-    
+
                     <ng-container matColumnDef="status_cv">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}}
+                        <span
+                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
-                     (click)="this.AllocationResidueDisposalEstimate($event,row)"
-                      [style.cursor]="'pointer'" matRipple>
+                      (click)="this.AllocationResidueDisposalEstimate($event,row)" [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                   </table>
                 </div>

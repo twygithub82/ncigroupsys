@@ -9,6 +9,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [],
   },
   {
@@ -20,6 +21,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: true,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [],
   },
   // {
@@ -65,6 +67,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/tariff/tariff-cleaning",
@@ -75,6 +78,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -86,6 +90,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -109,6 +114,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -144,6 +150,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
     ].filter(item => item.visible !== false),
@@ -157,6 +164,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/master/customer",
@@ -167,6 +175,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: []
       },
       {
@@ -178,6 +187,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -239,6 +249,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/parameter/cleaning-category",
@@ -249,6 +260,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -260,6 +272,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -271,8 +284,8 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
-        submenu: [],
-        visible: true
+        visible: true,
+        submenu: []
       },
       {
         path: "admin/cleaning-procedures",
@@ -309,6 +322,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/package/package-depot",
@@ -319,6 +333,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -330,6 +345,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -341,6 +357,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -352,6 +369,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -413,6 +431,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/inventory/storing-order",
@@ -423,6 +442,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -434,6 +454,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       // {
@@ -467,6 +488,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -478,6 +500,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       // {
@@ -500,6 +523,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       // {
@@ -522,6 +546,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -533,6 +558,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       // {
@@ -555,6 +581,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
     ]
@@ -568,6 +595,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/steam/estimate-approval",
@@ -578,6 +606,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: []
       },
       {
@@ -613,6 +642,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       }
     ].filter(item => item.visible !== false),
@@ -626,6 +656,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/cleaning/approval",
@@ -636,6 +667,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -647,6 +679,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       }
     ]
@@ -660,6 +693,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/residue-disposal/estimate-approval",
@@ -670,6 +704,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -705,6 +740,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       }
     ].filter(item => item.visible !== false),
@@ -718,6 +754,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/repair/estimate",
@@ -728,6 +765,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -739,6 +777,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -750,6 +789,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       }
     ]
@@ -809,6 +849,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/survey/periodic-test",
@@ -819,6 +860,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -830,6 +872,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       }
     ]
@@ -843,6 +886,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/billing/depot",
@@ -853,6 +897,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [
           // {
           //   path: "admin/billing/depot/lolo",
@@ -946,6 +991,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
 
       },
@@ -958,6 +1004,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -981,6 +1028,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -992,6 +1040,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
+        visible: true,
         submenu: [],
       },
       {
@@ -1041,6 +1090,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/reports/tank-activity",
@@ -1137,6 +1187,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
+    visible: true,
     submenu: [
       {
         path: "admin/admin-reports/main-monthly",
@@ -1164,4 +1215,4 @@ export const ROUTES: RouteInfo[] = [
       }
     ].filter(item => item.visible !== false),
   },
-];
+].filter(item => item.visible !== false);
