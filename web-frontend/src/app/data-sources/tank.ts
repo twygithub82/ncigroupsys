@@ -48,6 +48,23 @@ export interface TankResult {
 }
 
 export const GET_TANK_Where = gql`
+    query queryTank($where: tankFilterInput, $order:[tankSortInput!]) {
+    queryTank(where: $where, order:$order) {
+      guid
+      unit_type
+      tariff_depot_guid
+      description
+      preinspect
+      lift_on
+      lift_off
+      gate_in
+      gate_out
+      iso_format
+    }
+  }
+`;
+
+export const GET_TANK_Where_r1 = gql`
   query queryTank($where: tankFilterInput, $order:[tankSortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
     queryTank(where: $where, order:$order,first: $first, after: $after, last: $last, before: $before) {
     nodes {
@@ -140,12 +157,34 @@ export class TankDS extends BaseDataSource<TankItem> {
       );
   }
 
-  search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TankItem[]> {
+  search_r1(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TankItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_TANK_Where_r1,
+        variables: { where, order,first,after,last,before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const tankList = result.queryTank || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(tankList);
+          this.totalCount = tankList.totalCount;
+          this.pageInfo= tankList.pageInfo;
+          return tankList.nodes;
+        })
+      );
+  }
+
+  search(where?: any, order?: any): Observable<TankItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: GET_TANK_Where,
-        variables: { where, order,first,after,last,before },
+        variables: { where, order},
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

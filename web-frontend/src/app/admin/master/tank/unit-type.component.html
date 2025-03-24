@@ -16,15 +16,10 @@
                 </mat-panel-title>
                 <mat-panel-description>
 
-                  <div class="m-l-" [matTooltip]="translatedLangText.EDIT">
-                    <button mat-mini-fab color="primary" (click)="editCallSelection()"
+                  <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                    <button mat-mini-fab color="primary" (click)="addNew()"
                       (click)="$event.stopPropagation()">
                       <mat-icon class="col-white">add</mat-icon>
-                    </button>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.EDIT +' '+ translatedLangText.MATERIAL_COST">
-                    <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
-                      <mat-icon class="col-white">edit</mat-icon>
                     </button>
                   </div>
                   <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
@@ -93,7 +88,7 @@
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.GATE_IN}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.GATE_IN}}:</span>
-                    @if (row.in_gate){
+                    @if (row.gate_in){
                       <mat-icon class="col-green font-bold" >check</mat-icon>
                       }
                       @else {
@@ -174,15 +169,18 @@
                 </ng-container>
                 <!-- actions -->
                 <ng-container matColumnDef="actions">
-                  <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" class="tbl-action-btn">
-                      <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
-                    </button>
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
-                      class="tbl-action-btn">
-                      <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
-                    </button>
+                  <mat-header-cell
+                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                    *matHeaderCellDef></mat-header-cell>
+                  <mat-cell *matCellDef="let row; let i=index;"
+                    [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    @if(!row.tariff_depot_guid)
+                    {
+                      <button mat-icon-button  (click)="$event.stopPropagation()" (click)="cancelItem(row)"
+                        [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                        <mat-icon>delete_forever</mat-icon>
+                      </button>
+                    }
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

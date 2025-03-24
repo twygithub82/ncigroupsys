@@ -30,20 +30,23 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { TankDS,TankItem } from 'app/data-sources/tank';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { firstValueFrom } from 'rxjs';
 
 export interface DialogData {
   action?: string;
   selectedValue?: number;
   // item: StoringOrderTankItem;
   langText?: any;
-  selectedItems: PackageRepairItem[];
+  selectedItem: TankItem;
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
 }
 
 @Component({
-  selector: 'app-pakcage-repair-form-dialog',
+  selector: 'app-unit-type-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],
@@ -69,7 +72,7 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    PreventNonNumericDirective
+    MatSlideToggleModule
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -93,7 +96,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   //packageDepotDS?:PackageDepotDS;
   packRepairDS?: PackageRepairDS;
   packRepairItem?: PackageRepairItem[] = [];
-
+  tankDS?:TankDS;
   CodeValuesDS?: CodeValuesDS;
 
   storageCalCvList: CodeValuesItem[] = [];
@@ -196,10 +199,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     DIMENSION: "COMMON-FORM.DIMENSION",
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    PREINSPECT:'COMMON-FORM.PREINSPECTION',
+    LIFT_ON:'COMMON-FORM.LIFT-ON',
+    LIFT_OFF:'COMMON-FORM.LIFT-OFF',
+    GATE_IN:'COMMON-FORM.GATE-IN',
+    GATE_OUT:'COMMON-FORM.GATE-OUT',
+    ISO_FORMAT:'COMMON-FORM.ISO-FORMAT',
+    SAVE:'COMMON-FORM.SAVE'
+    
   };
 
 
-  selectedItems: PackageRepairItem[];
+  selectedItem: TankItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -213,8 +224,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
-    this.selectedItems = data.selectedItems;
-    this.pcForm = this.createPackageRepair();
+    this.selectedItem = data.selectedItem;
+    this.pcForm = this.createTankItem();
+    this.tankDS= new TankDS(this.apollo);
     this.packRepairDS = new PackageRepairDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
@@ -223,12 +235,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.loadData();
   }
 
-  createPackageRepair(): UntypedFormGroup {
+  createTankItem(): UntypedFormGroup {
     return this.fb.group({
-      selectedItems: this.selectedItems,
-      material_cost: [],
-      labour_hour: [],
-      remarks: [''],
+      selectedItem: this.selectedItem,
+        unit_type: [''],
+        lift_on: [false],
+        lift_off: [false],
+        gate_in: [false],
+        gate_out: [false],
+        preinspect: [false],
+        iso_format: [false],
 
     });
   }
@@ -263,13 +279,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   loadData() {
 
-    if (this.selectedItems.length == 1) {
-      var pckRepairItem = this.selectedItems[0];
+    if (this.selectedItem) {
+      var tnkItm = this.selectedItem;
 
       this.pcForm.patchValue({
-        material_cost: pckRepairItem.material_cost?.toFixed(2),
-        labour_hour: pckRepairItem.labour_hour,
-        remarks: pckRepairItem.remarks
+        unit_type: tnkItm.unit_type,
+        lift_on: tnkItm.lift_on,
+        lift_off: tnkItm.lift_off,
+        gate_in: tnkItm.gate_in,
+        gate_out: tnkItm.gate_out,
+        preinspect: tnkItm.preinspect,
+        iso_format: tnkItm.iso_format,
         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
       });
 
@@ -281,15 +301,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
-  queryDepotCost() {
-    // const where:any={ customer_company: { guid: { eq: this.selectedItem.guid } } };
-
-    // this.packageDepotDS?.SearchPackageDepot(where,{},50).subscribe((data:PackageDepotItem[])=>{
-    //   this.packageDepotItems=data;
-
-    // });
-  }
-
+  
   selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
     if (this.storageCalCvList.length > 0) {
@@ -327,79 +339,85 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  save() {
+  async save() {
 
     if (!this.pcForm?.valid) return;
+    const dup:boolean = await this.checkDuplication();
+    if(dup)
+    {
+      this.pcForm?.get("unit_type")?.setErrors({ duplicated: true });
+      return;
+    }
 
-    if (this.selectedItems.length > 1) {
-      let pd_guids: string[] = this.selectedItems
-        .map(cc => cc.guid)
-        .filter((guid): guid is string => guid !== undefined);
-
-      var material_cost = -1;
-      if (this.pcForm!.value["material_cost"]) material_cost = Number(this.pcForm!.value["material_cost"]);
-
-      var labour_hour = -1;
-      if (this.pcForm!.value["labour_hour"]) labour_hour = Number(this.pcForm!.value["labour_hour"]);
-
-      var remarks = this.pcForm!.value["remarks"] || "";
-      if (pd_guids.length == 1) {
-        if (!remarks) {
-          remarks = "--";
-        }
-      }
-      this.packRepairDS?.updatePackageRepairs(pd_guids, material_cost, labour_hour, remarks).subscribe(result => {
-        if (result.data.updatePackageRepairs > 0) {
+   if(this.selectedItem) {
+      var tnkItm = new TankItem(this.selectedItem);
+      tnkItm.unit_type = `${this.pcForm.get("unit_type")?.value}`;
+      tnkItm.gate_in=this.pcForm.get("gate_in")?.value;
+      tnkItm.gate_out=this.pcForm.get("gate_out")?.value;
+      tnkItm.lift_on=this.pcForm.get("lift_on")?.value;
+      tnkItm.lift_off=this.pcForm.get("lift_off")?.value;
+      tnkItm.preinspect=this.pcForm.get("preinspect")?.value;
+      tnkItm.iso_format=this.pcForm.get("iso_format")?.value;
+      this.tankDS?.updateTank(tnkItm).subscribe(result => {
+        if (result.data.updateTank > 0) {
 
           console.log('valid');
-          this.dialogRef.close(result.data.updatePackageRepairs);
+          this.dialogRef.close(result.data.updateTank);
 
         }
       });
     }
-    else {
-      var packRepairItm = new PackageRepairItem(this.selectedItems[0]);
-      packRepairItm.tariff_repair = undefined; packRepairItm.customer_company = undefined;
-      packRepairItm.material_cost = Number(this.pcForm!.value["material_cost"]);
-      packRepairItm.labour_hour = Number(this.pcForm!.value["labour_hour"]);
-      packRepairItm.remarks = this.pcForm!.value["remarks"];
-      this.packRepairDS?.updatePackageRepair(packRepairItm).subscribe(result => {
-        if (result.data.updatePackageRepair > 0) {
+    else
+    {
+      var tnkItm = new TankItem();
+      tnkItm.unit_type = `${this.pcForm.get("unit_type")?.value}`;
+      tnkItm.gate_in=this.pcForm.get("gate_in")?.value;
+      tnkItm.gate_out=this.pcForm.get("gate_out")?.value;
+      tnkItm.lift_on=this.pcForm.get("lift_on")?.value;
+      tnkItm.lift_off=this.pcForm.get("lift_off")?.value;
+      tnkItm.preinspect=this.pcForm.get("preinspect")?.value;
+      tnkItm.iso_format=this.pcForm.get("iso_format")?.value;
+      this.tankDS?.addNewTank(tnkItm).subscribe(result => {
+        if (result.data.addTank > 0) {
 
           console.log('valid');
-          this.dialogRef.close(result.data.updatePackageRepair);
+          this.dialogRef.close(result.data.addTank);
 
         }
       });
     }
 
-    // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
-    // // tc.guid='';
-    // pdItem.lolo_cost =Number(this.pcForm.value['lolo_cost_cust']);
-    // pdItem.preinspection_cost =Number( this.pcForm.value['preinspection_cost_cust']);
-    // pdItem.free_storage =Number( this.pcForm.value['free_storage_days']);
-    // pdItem.storage_cost =Number( this.pcForm.value['storage_cost_cust']);
-    // pdItem.remarks = this.pcForm.value['remarks'];
-    // var storageCalValue;
-    // if(this.storageCalControl.value)
-    // {
-    //     const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-    //     storageCalValue = storage_calCv.code_val;
-    // }
-    // pdItem.storage_cal_cv = storageCalValue;
-    // this.packageDepotDS?.updatePackageDepot(pdItem).subscribe(result=>{
-    //   if(result.data.updatePackageDepot>0)
-    //   {
 
-    //             console.log('valid');
-    //             this.dialogRef.close(result.data.updatePackageDepot);
-
-    //   }
-    // });
-
+   
 
   }
 
+  async checkDuplication():Promise<boolean>{
+    var retval:boolean = false;
+    var tnkItm = new TankItem();
+    
+    if(this.selectedItem)
+    {
+      tnkItm=new TankItem(this.selectedItem);
+    }
+    tnkItm.unit_type =`${this.pcForm?.get("unit_type")?.value}`;
+    const where:any={};
+    where.unit_type={eq:`${ tnkItm.unit_type}`}
+    const data = await firstValueFrom(this.tankDS!.search_r1(where));
+    if(data.length>0)
+    {
+      if(tnkItm.guid)
+      {
+        var existItm = data[0];
+        retval= tnkItm.guid!=existItm.guid;
+      }
+      else
+      {
+        retval=true;
+      }
+    }
+    return retval;
+  }
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
@@ -412,6 +430,28 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  GetAction():string{
+
+    var action:string=this.translatedLangText.NEW;
+    if(this.action==='update')
+    {
+      action= this.translatedLangText.UPDATE;
+    }
+
+    return action;
+  }
+
+  GetActionButton():string{
+
+    var action:string=this.translatedLangText.SAVE;
+    if(this.action==='update')
+    {
+      action= this.translatedLangText.UPDATE;
+    }
+
+    return action;
   }
 
 }

@@ -46,10 +46,10 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { TariffRepairDS, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { TankDS,TankItem } from 'app/data-sources/tank';
+import { MessageDialogComponent } from '@shared/components/message-dialog/message-dialog.component';
 
 @Component({
   selector: 'app-package-repair',
@@ -97,7 +97,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     'liftoff',
     'preinspect',
     'isoformat',
-    'lastUpdate'
+    'lastUpdate',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.MASTER.LIST.UNIT-TYPE'
@@ -269,6 +270,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     GATE_IN:'COMMON-FORM.GATE-IN',
     GATE_OUT:'COMMON-FORM.GATE-OUT',
     ISO_FORMAT:'COMMON-FORM.ISO-FORMAT',
+    SAVE:'COMMON-FORM.SAVE',
+    
     
   }
 
@@ -319,7 +322,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
           } else {
             searchCriteria = value.unit_type;
           }
-          this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, { unit_type: 'ASC' }).subscribe(data => {
+          this.subs.sink = this.tnkDS.search_r1({ or: [{ unit_type: { contains: searchCriteria } }] }, { unit_type: 'ASC' }).subscribe(data => {
             this.tankList = data
           });
         })
@@ -338,7 +341,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   }
 
   refresh() {
-    this.loadData();
+    //this.loadData();
+    this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
   }
   addNew() {
     let tempDirection: Direction;
@@ -347,6 +351,32 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
+    //if(this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '800px',
+
+      data: {
+        action: 'new',
+        langText: this.langText,
+        selectedItems: null
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      }
+
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+        //if(result.selectedValue>0)
+        // {
+        this.handleSaveSuccess(result);
+        this.refresh();
+      //   if (this.packRepairItems.length > 1)
+      //     this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+      //   //}
+       }
+    });
 
   }
   translateLangText() {
@@ -361,74 +391,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-  adjustCost() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    //if(this.selection.isEmpty()) return;
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: '800px',
 
-      data: {
-        action: 'update',
-        langText: this.langText,
-        selectedItems: this.selection.selected
-      },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result > 0) {
-        //if(result.selectedValue>0)
-        // {
-        this.handleSaveSuccess(result);
-        if (this.packRepairItems.length > 1)
-          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        //}
-      }
-    });
-  }
-
-  editCallSelection() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    if (this.selection.isEmpty()) return;
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '800px',
-      data: {
-        action: 'update',
-        langText: this.langText,
-        selectedItems: this.selection.selected
-      },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result > 0) {
-        //if(result.selectedValue>0)
-        // {
-        this.handleSaveSuccess(result);
-        if (this.packRepairItems.length > 1)
-          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        //}
-      }
-    });
-  }
-
-  editCall(row: PackageRepairItem) {
+  editCall(row: TankItem) {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -436,8 +400,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    var rows: PackageRepairItem[] = [];
-    rows.push(row);
+   
     const dialogRef = this.dialog.open(FormDialogComponent, {
 
       width: '800px',
@@ -445,7 +408,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
       data: {
         action: 'update',
         langText: this.langText,
-        selectedItems: rows
+        selectedItem: row
       },
       position: {
         top: '50px'  // Adjust this value to move the dialog down from the top of the screen
@@ -456,16 +419,12 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
-        if (this.packRepairItems.length > 1)
-          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        this.refresh();
       }
     });
   }
 
-  deleteItem(row: any) {
-
-  }
+  
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
@@ -499,7 +458,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.tnkDS.search(where, this.lastOrderBy,this.pageSize).subscribe(data => {
+    this.subs.sink = this.tnkDS.search_r1(where, this.lastOrderBy,this.pageSize).subscribe(data => {
       this.unitTypeItems = data;
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
@@ -557,10 +516,6 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
 
@@ -570,8 +525,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
-    this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.tnkDS.search(where, order, first, after, last, before).subscribe(data => {
+      if(this.pageIndex!=pageIndex) this.previous_endCursor = this.endCursor;
+    this.subs.sink = this.tnkDS.search_r1(where, order, first, after, last, before).subscribe(data => {
       this.unitTypeItems = data;
       this.endCursor = this.tnkDS.pageInfo?.endCursor;
       this.startCursor = this.tnkDS.pageInfo?.startCursor;
@@ -798,6 +753,42 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     return `${itm.unit_type || ''}`;
   }
 
+  cancelItem(row: TankItem)
+  {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.deleteSelectedUnitType(row);
+      }
+    });
+  }
+
+  deleteSelectedUnitType(row: TankItem)
+  {
+      if(row)
+      {
+        var tankguid =  row.guid;
+        this.tnkDS.deleteTank(tankguid).subscribe((result)=>{
+          if(result.data.deleteTank)
+          {
+            this.handleSaveSuccess(result.data.deleteTank);
+            this.refresh();
+          }
+        })
+      }
+  }
   
 }
 // export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {

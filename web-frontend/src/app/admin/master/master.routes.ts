@@ -31,8 +31,8 @@ export const MASTER_ROUTE: Routes = [
     path: "customer/billing-branch/new/:id",
     component: BillingBranchNewComponent,
   },
-  // {
-  //   path: "unit-type",
-  //   component: UnitTypeComponent,
-  // },
+  {
+    path: "unit-type",
+    component: UnitTypeComponent,
+  },
 ];
