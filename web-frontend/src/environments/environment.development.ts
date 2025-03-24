@@ -2,7 +2,7 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment1 = {
+export const environment = {
   production: false,
   title: 'SIT Home',
   companyName: 'DMS Global Pte Ltd',
@@ -11,15 +11,7 @@ export const environment1 = {
   graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
   graphqlWsUrl: 'wss://tlx-idms-global-notification.azurewebsites.net/graphql',
 };
-export const environment = {
-  production: false,
-  title: 'UAT Home',
-  companyName: 'DMS Global Pte Ltd',
-  apiUrl: 'https://tlx-idms-userlogin-uat.azurewebsites.net',
-  fileManagerURL: 'https://tlx-filemanagement-app-uat.azurewebsites.net',
-  graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
-  graphqlWsUrl: 'wss://tlx-idms-global-notification-uat.azurewebsites.net/graphql',
-};
+
 
 /*
  * For easier debugging in development mode, you can import the following file
