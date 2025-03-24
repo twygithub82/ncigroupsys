@@ -183,7 +183,7 @@ export class TankDS extends BaseDataSource<TankItem> {
         this.loadingSubject.next(true);
         return this.apollo
             .query<any>({
-                query: GET_TANK_Where,
+                query: GET_TANK_Where_r1,
                 variables: { where, order, first, after, last, before },
                 fetchPolicy: 'no-cache' // Ensure fresh data
             })

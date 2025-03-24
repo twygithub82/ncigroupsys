@@ -273,7 +273,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     const where: any = {};
     where.tariff_depot_guid = { or: [{ eq: null }, { eq: '' }] };
-    this.subs.sink = this.tnkDS.search(where, {}).subscribe(data => {
+    const order:any={unit_type:'ASC'};
+    this.subs.sink = this.tnkDS.search(where, order).subscribe(data => {
       this.tnkItems = data;
     }
 
