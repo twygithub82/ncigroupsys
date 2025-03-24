@@ -47,6 +47,7 @@ import { Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { debounceTime, startWith, tap } from 'rxjs';
 
 @Component({
   selector: 'app-approval-view',
@@ -288,8 +289,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       guid: [''],
       remarks: [{ value: '', disabled: true }],
       surveyor_id: [''],
-      labour_cost_discount: [{ value: 0, disabled: true }],
-      material_cost_discount: [{ value: 0, disabled: true }],
+      labour_cost_discount: [{ value: 0 }],
+      material_cost_discount: [{ value: 0 }],
       last_test: [''],
       next_test: [''],
       // cost
@@ -339,6 +340,23 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   initializeValueChanges() {
+    this.repairForm?.get('labour_cost_discount')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.calculateCost();
+        this.calculateCostEst();
+      })
+    ).subscribe();
+
+    this.repairForm?.get('material_cost_discount')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.calculateCost();
+        this.calculateCostEst();
+      })
+    ).subscribe();
   }
 
   public loadData() {
@@ -670,6 +688,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       re.bill_to_guid = bill_to?.value?.guid;
       re.status_cv = this.repairItem?.status_cv;
       re.owner_enable = this.isOwner;
+      re.labour_cost_discount = Utility.convertNumber(this.repairForm?.get('labour_cost_discount')?.value, 2);
+      re.material_cost_discount = Utility.convertNumber(this.repairForm?.get('material_cost_discount')?.value, 2);
       re.total_cost = Utility.convertNumber(this.repairForm?.get('net_cost')?.value, 2);
       re.est_cost = Utility.convertNumber(this.repairForm?.get('net_cost_est')?.value, 2);
       re.total_labour_cost = Utility.convertNumber(this.repairForm?.get('total_labour_cost')?.value, 2);
@@ -945,7 +965,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     let discount_labour_cost = 0;
     let discount_mat_cost = 0;
     let net_cost = 0;
-    
+
     const totalOwner = this.repairDS.getTotal(ownerList);
     const total_owner_hour = totalOwner.hour;
     const total_owner_labour_cost = this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());

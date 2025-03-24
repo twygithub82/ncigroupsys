@@ -67,30 +67,30 @@ export const GET_TANK_Where = gql`
 export const GET_TANK_Where_r1 = gql`
   query queryTank($where: tankFilterInput, $order:[tankSortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
     queryTank(where: $where, order:$order,first: $first, after: $after, last: $last, before: $before) {
-    nodes {
-      create_by
-      create_dt
-      delete_dt
-      description
-      gate_in
-      gate_out
-      guid
-      iso_format
-      lift_off
-      lift_on
-      preinspect
-      tariff_depot_guid
-      unit_type
-      update_by
-      update_dt
+      nodes {
+        create_by
+        create_dt
+        delete_dt
+        description
+        gate_in
+        gate_out
+        guid
+        iso_format
+        lift_off
+        lift_on
+        preinspect
+        tariff_depot_guid
+        unit_type
+        update_by
+        update_dt
       }
-    pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
-    }
-    totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
     }
   }
 `;
@@ -98,16 +98,16 @@ export const GET_TANK_Where_r1 = gql`
 export const GET_TANK = gql`
   query queryTank {
     queryTank {
-    nodes {
-      guid
-      unit_type
-      description
-      preinspect
-      lift_on
-      lift_off
-      gate_in
-      gate_out
-      iso_format
+      nodes {
+        guid
+        unit_type
+        description
+        preinspect
+        lift_on
+        lift_off
+        gate_in
+        gate_out
+        iso_format
       }
     }
   }
@@ -151,7 +151,7 @@ export class TankDS extends BaseDataSource<TankItem> {
           const tankList = result.queryTank || { nodes: [], totalCount: 0 };
           this.dataSubject.next(tankList);
           this.totalCount = tankList.totalCount;
-          this.pageInfo=tankList.pageInfo;
+          this.pageInfo = tankList.pageInfo;
           return tankList;
         })
       );
@@ -179,67 +179,67 @@ export class TankDS extends BaseDataSource<TankItem> {
       );
   }
 
-  search(where?: any, order?: any): Observable<TankItem[]> {
-    this.loadingSubject.next(true);
-    return this.apollo
-      .query<any>({
-        query: GET_TANK_Where,
-        variables: { where, order},
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const tankList = result.queryTank || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(tankList);
-          this.totalCount = tankList.totalCount;
-          this.pageInfo= tankList.pageInfo;
-          return tankList.nodes;
-        })
-      );
-  }
+    search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TankItem[]> {
+        this.loadingSubject.next(true);
+        return this.apollo
+            .query<any>({
+                query: GET_TANK_Where,
+                variables: { where, order, first, after, last, before },
+                fetchPolicy: 'no-cache' // Ensure fresh data
+            })
+            .pipe(
+                map((result) => result.data),
+                catchError(() => of({ items: [], totalCount: 0 })),
+                finalize(() => this.loadingSubject.next(false)),
+                map((result) => {
+                    const tankList = result.queryTank || { nodes: [], totalCount: 0 };
+                    this.dataSubject.next(tankList);
+                    this.totalCount = tankList.totalCount;
+                    this.pageInfo = tankList.pageInfo;
+                    return tankList.nodes;
+                })
+            );
+    }
 
   addNewTank(newTank: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: ADD_TANK,
-        variables: {
-          newTank
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
-  
-      updateTank(updateTank: any): Observable<any> {
-        return this.apollo.mutate({
-          mutation: UPDATE_TANK,
-          variables: {
-            updateTank
-          }
-        }).pipe(
-          catchError((error: ApolloError) => {
-            console.error('GraphQL Error:', error);
-            return of(0); // Return an empty array on error
-          }),
-        );
+    return this.apollo.mutate({
+      mutation: ADD_TANK,
+      variables: {
+        newTank
       }
-  
-      deleteTank(tankGuid: any): Observable<any> {
-        return this.apollo.mutate({
-          mutation: DELETE_TANK,
-          variables: {
-            tankGuid
-          }
-        }).pipe(
-          catchError((error: ApolloError) => {
-            console.error('GraphQL Error:', error);
-            return of(0); // Return an empty array on error
-          }),
-        );
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  updateTank(updateTank: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_TANK,
+      variables: {
+        updateTank
       }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  deleteTank(tankGuid: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_TANK,
+      variables: {
+        tankGuid
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 }
