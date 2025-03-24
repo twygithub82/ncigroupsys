@@ -1161,6 +1161,18 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true
+      },
+      {
+        path: "admin/admin-reports/main-sales-report",
+        title: "MENUITEMS.ADMIN-REPORTS.LIST.SALES-REPORTS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: false
       }
     ].filter(item => item.visible !== false),
   },

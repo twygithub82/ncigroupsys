@@ -850,10 +850,10 @@ export const TANK_STATUS_IN_YARD = [
   'REPAIR',
   'STORAGE',
   'RO_GENERATED',
+  'OUT_GATE',
+  'OUT_SURVEY',
 ]
 
 export const TANK_STATUS_POST_IN_YARD = [
-  'OUT_GATE',
-  'OUT_SURVEY',
   'RELEASED',
 ]

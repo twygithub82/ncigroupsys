@@ -285,7 +285,9 @@
       "LIST": {
         "STEAM-MONTHLY": "Steam Monthly",
         "MONTHLY-REPORTS":"Monthly Reports",
-        "YEARLY-REPORTS":"Yearly Reports"
+        "YEARLY-REPORTS":"Yearly Reports",
+        "SALES-REPORTS":"Sales Reports"
+
       }
     }
   },
