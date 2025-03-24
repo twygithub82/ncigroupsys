@@ -1178,54 +1178,53 @@ export const ROUTES: RouteInfo[] = [
       }
     ].filter(item => item.visible !== false),
   },
-  
-  // {
-  //   path: "admin/admin-reports",
-  //   title: "MENUITEMS.ADMIN-REPORTS.TEXT",
-  //   iconType: "material",
-  //   icon: "assessment",
-  //   class: "menu-toggle",
-  //   groupTitle: false,
-  //   badge: "",
-  //   badgeClass: "",
-  //   visible: true,
-  //   submenu: [
-  //     {
-  //       path: "admin/admin-reports/main-monthly",
-  //       title: "MENUITEMS.ADMIN-REPORTS.LIST.MONTHLY-REPORTS",
-  //       iconType: "",
-  //       icon: "",
-  //       class: "ml-menu",
-  //       groupTitle: false,
-  //       badge: "",
-  //       badgeClass: "",
-  //       submenu: [],
-  //       visible: true
-  //     },
-  //     {
-  //       path: "admin/admin-reports/main-yearly",
-  //       title: "MENUITEMS.ADMIN-REPORTS.LIST.YEARLY-REPORTS",
-  //       iconType: "",
-  //       icon: "",
-  //       class: "ml-menu",
-  //       groupTitle: false,
-  //       badge: "",
-  //       badgeClass: "",
-  //       submenu: [],
-  //       visible: true
-  //     },
-  //     {
-  //       path: "admin/admin-reports/main-sales-report",
-  //       title: "MENUITEMS.ADMIN-REPORTS.LIST.SALES-REPORTS",
-  //       iconType: "",
-  //       icon: "",
-  //       class: "ml-menu",
-  //       groupTitle: false,
-  //       badge: "",
-  //       badgeClass: "",
-  //       submenu: [],
-  //       visible: true
-  //     }
-  //   ].filter(item => item.visible !== false),
-  // },
+  {
+    path: "admin/admin-reports",
+    title: "MENUITEMS.ADMIN-REPORTS.TEXT",
+    iconType: "material",
+    icon: "assessment",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    visible: true,
+    submenu: [
+      {
+        path: "admin/admin-reports/main-monthly",
+        title: "MENUITEMS.ADMIN-REPORTS.LIST.MONTHLY-REPORTS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: true
+      },
+      {
+        path: "admin/admin-reports/main-yearly",
+        title: "MENUITEMS.ADMIN-REPORTS.LIST.YEARLY-REPORTS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: true
+      },
+      {
+        path: "admin/admin-reports/main-sales-report",
+        title: "MENUITEMS.ADMIN-REPORTS.LIST.SALES-REPORTS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: true
+      }
+    ].filter(item => item.visible !== false),
+  },
 ].filter(item => item.visible !== false);
