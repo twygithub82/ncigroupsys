@@ -152,7 +152,7 @@ export class TankDS extends BaseDataSource<TankItem> {
           this.dataSubject.next(tankList);
           this.totalCount = tankList.totalCount;
           this.pageInfo = tankList.pageInfo;
-          return tankList;
+          return tankList.nodes;
         })
       );
   }
