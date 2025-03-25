@@ -658,8 +658,6 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-
-
   calculateNetCost(repair: RepairItem): any {
     const total = this.repairDS.getTotal(repair?.repair_part)
     const labourDiscount = repair.labour_cost_discount;
@@ -672,7 +670,11 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
     const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
     const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
-    return net_cost.toFixed(2);
+    return this.parse2Decimal(net_cost);
+  }
+
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
