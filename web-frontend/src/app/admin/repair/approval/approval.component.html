@@ -8,7 +8,7 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <mat-accordion>
-            <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="true">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                 </mat-panel-title>
@@ -55,25 +55,6 @@
                         </mat-option>
                         }
                       </mat-autocomplete>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                      <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
-                        formControlName="last_cargo">
-                      <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
-                        @for (tc of last_cargoList; track tc) {
-                        <mat-option [value]="tc">
-                          {{tc.cargo}}
-                        </mat-option>
-                        }
-                      </mat-autocomplete>
-                      @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
-                      <mat-error>
-                        {{translatedLangText.INVALID_SELECTION}}
-                      </mat-error>
-                      }
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">

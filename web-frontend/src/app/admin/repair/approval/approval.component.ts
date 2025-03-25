@@ -225,7 +225,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [['PENDING', 'APPROVED']]
+      est_status_cv: [['PENDING']]
     });
   }
 
