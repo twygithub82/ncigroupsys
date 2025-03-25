@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SteamMonthlyAdminReportComponent } from './steam-monthly.component';
+import { SalesMonthlyAdminReportComponent } from './sales-monthly.component';
 
-describe('DailyInventoryReportComponent', () => {
-  let component: SteamMonthlyAdminReportComponent;
-  let fixture: ComponentFixture<SteamMonthlyAdminReportComponent>;
+describe('SalesMonthlyAdminReportComponent', () => {
+  let component: SalesMonthlyAdminReportComponent;
+  let fixture: ComponentFixture<SalesMonthlyAdminReportComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SteamMonthlyAdminReportComponent]
+      imports: [SalesMonthlyAdminReportComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(SteamMonthlyAdminReportComponent);
+    fixture = TestBed.createComponent(SalesMonthlyAdminReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

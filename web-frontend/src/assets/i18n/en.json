@@ -1088,7 +1088,10 @@
     "CLEAN-YEARLY-OVERVIEW-REPORT":"Cleaning Yearly Overview Report",
     "CLEAN-YEARLY-DETAILS-REPORT":"Cleaning Yearly Details Report",
     "RESIDUE-YEARLY-OVERVIEW-REPORT":"Residue Disposal Yearly Overview Report",
-    "RESIDUE-YEARLY-DETAILS-REPORT":"Residue Disposal Yearly Details Report"
+    "RESIDUE-YEARLY-DETAILS-REPORT":"Residue Disposal Yearly Details Report",
+    "MONTHLY-SALES-REPORT":"Monthly Sales Report",
+    "YEARLY-SALES-REPORT":"Yearly Sales Report",
+    "TANK":"Tank"
 
   },
   "CLEAN-PROCEDURES": {

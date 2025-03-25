@@ -23,7 +23,7 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard, report_status, AdminReportYearlyReport } from 'app/data-sources/reports';
+import { report_status_yard, report_status, AdminReportMonthlySalesReport } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
@@ -31,16 +31,15 @@ import { autoTable, Styles } from 'jspdf-autotable';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: AdminReportYearlyReport,
+  repData: AdminReportMonthlySalesReport,
   date:string,
   repType:string,
   customer:string
 }
-
 @Component({
-  selector: 'app-yearly-report-details-pdf',
-  templateUrl: './yearly-details-pdf.component.html',
-  styleUrls: ['./yearly-details-pdf.component.scss'],
+  selector: 'app-monthly-report-details-pdf',
+  templateUrl: './monthly-details-pdf.component.html',
+  styleUrls: ['./monthly-details-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -52,7 +51,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -243,12 +242,16 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    STEAM_YEARLY_DETAILS_REPORT:'COMMON-FORM.STEAM-YEARLY-DETAILS-REPORT',
-    RESIDUE_YEARLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-YEARLY-DETAILS-REPORT',
-    REPAIR_YEARLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-YEARLY-DETAILS-REPORT',
-    CLEAN_YEARLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-YEARLY-DETAILS-REPORT',
+    STEAM_MONTHLY_DETAILS_REPORT:'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT',
+    RESIDUE_MONTHLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
+    REPAIR_MONTHLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
+    CLEAN_MONTHLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
+    PREINSPECTION:'COMMON-FORM.PREINSPECTION',
+    LOLO:'COMMON-FORM.LOLO',
+    TANK:'COMMON-FORM.TANK',
+    COST:'COMMON-FORM.COST',
     AVERAGE:'COMMON-FORM.AVERAGE'
   }
 
@@ -297,18 +300,18 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: AdminReportYearlyReport;
+  repData?: AdminReportMonthlySalesReport;
   date?:string;
   repType?:string;
-  index: number = 0;
   customer?:string;
+  index: number = 0;
   // date:string='';
   // invType:string='';
 
 
 
   constructor(
-    public dialogRef: MatDialogRef<YearlyReportDetailsPdfComponent>,
+    public dialogRef: MatDialogRef<MonthlySalesReportDetailsPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -410,6 +413,29 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     const promises = [
       firstValueFrom(this.cvDS.connectAlias('yardCv')).then(async data => {
         this.yardCvList = data || [];
+        // const subqueries: any[] = [];
+        // data.map(d => {
+        //   if (d.child_code) {
+        //     let q = { alias: d.child_code, codeValType: d.child_code };
+        //     const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+        //     if (!hasMatch) {
+        //       subqueries.push(q);
+        //     }
+        //   }
+        // });
+
+        // // Process subqueries if any
+        // if (subqueries.length > 0) {
+        //   await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
+
+        //   for (const s of subqueries) {
+        //     const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
+        //     if (subData) {
+        //       this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
+        //     }
+        //   }
+        // }
+
       }),
       firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
         this.yesnoCvList = data || [];
@@ -592,21 +618,48 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 9;
     let minHeightHeaderCol = 3;
-    let fontSz = 6.5;
+    let fontSz = 6;
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
-    const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.MONTH,
-      this.translatedLangText.NO_OF_TANKS
+    const headers =   [[
+      { content: this.translatedLangText.DATE, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.DAY, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
+      { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
+      { content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }
+    ],
+    [
+      // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
+      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for LAST_PERIODIC_TEST
+      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell }
+      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      
     };
 
     // Define headStyles with valid fontStyle
@@ -638,23 +691,45 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
 
     if(this.customer)
-      {
-        const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-        Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
-      }
-
+    {
+      const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
+      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
+    }
     var idx = 0;
-    for (let n = 0; n < (this.repData?.result_per_month?.length||0); n++) {
+    for (let n = 0; n < (this.repData?.cleaning_monthly_sales?.result_per_day?.length||0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      let itm = this.repData?.result_per_month?.[n];
+      let itm = this.repData?.cleaning_monthly_sales?.result_per_day?.[n];
+
+    
         data.push([
-          (++idx).toString(), itm?.month || "", itm?.count || "0"
+          itm?.date || "", itm?.day || "", 
+          this.repData?.preinspaction_monthly_sales?.result_per_day?.[n]?.count || "",Utility.formatNumberDisplay(this.repData?.preinspaction_monthly_sales?.result_per_day?.[n]?.cost||0) ,
+          this.repData?.lolo_monthly_sales?.result_per_day?.[n]?.count || "",Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.result_per_day?.[n]?.cost || 0),
+          this.repData?.steaming_monthly_sales?.result_per_day?.[n]?.count || "",Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.result_per_day?.[n]?.cost || 0),
+          this.repData?.residue_monthly_sales?.result_per_day?.[n]?.count || "",Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.result_per_day?.[n]?.cost || 0),
+          this.repData?.cleaning_monthly_sales?.result_per_day?.[n]?.count || "",Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.result_per_day?.[n]?.cost || 0),
+          this.repData?.repair_monthly_sales?.result_per_day?.[n]?.count || "",Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.result_per_day?.[n]?.cost ||0)
         ]);
     }
-    data.push([this.translatedLangText.TOTAL,"",this.repData?.total]);
-    data.push([this.translatedLangText.AVERAGE,"",this.repData?.average]);
 
+    data.push([this.translatedLangText.TOTAL,"",
+      this.repData?.preinspaction_monthly_sales?.total_count, Utility.formatNumberDisplay(this.repData?.preinspaction_monthly_sales?.total_cost),
+      this.repData?.lolo_monthly_sales?.total_count,     Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.total_cost),
+      this.repData?.steaming_monthly_sales?.total_count, Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.total_cost),
+      this.repData?.residue_monthly_sales?.total_count,  Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.total_cost),
+      this.repData?.cleaning_monthly_sales?.total_count, Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.total_cost),
+      this.repData?.repair_monthly_sales?.total_count,   Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.total_cost),
+    ])
+
+    data.push([this.translatedLangText.AVERAGE,"",
+      this.repData?.preinspaction_monthly_sales?.average_count,Utility.formatNumberDisplay(this.repData?.preinspaction_monthly_sales?.average_cost),
+      this.repData?.lolo_monthly_sales?.average_count,         Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.average_cost),
+      this.repData?.steaming_monthly_sales?.average_count,     Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.average_cost),
+      this.repData?.residue_monthly_sales?.average_count,      Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.average_cost),
+      this.repData?.cleaning_monthly_sales?.average_count,     Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.average_cost),
+      this.repData?.repair_monthly_sales?.average_count,       Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.average_cost),
+    ])
 
     pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -681,8 +756,10 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
       didParseCell: (data: any) => {
         let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
         let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
+        if(data.row.raw[1]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
         if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
           data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor=[231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
           if (data.column.index === 0) {
             data.cell.colSpan = 2;  // Merge 4 columns into one
@@ -841,16 +918,16 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     switch(this.repType)
     {
       case "CLEANING":
-         title = `${this.translatedLangText.CLEAN_YEARLY_DETAILS_REPORT}`
+         title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`
         break;
         case "STEAMING":
-          title = `${this.translatedLangText.STEAM_YEARLY_DETAILS_REPORT}`
+          title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
         break;
         case "REPAIR":
-          title = `${this.translatedLangText.REPAIR_YEARLY_DETAILS_REPORT}`
+          title = `${this.translatedLangText.REPAIR_MONTHLY_DETAILS_REPORT}`
         break;
         case "RESIDUE":
-          title = `${this.translatedLangText.RESIDUE_YEARLY_DETAILS_REPORT}`
+          title = `${this.translatedLangText.RESIDUE_MONTHLY_DETAILS_REPORT}`
         break;
     }
     return `${title}`
@@ -889,4 +966,5 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     return retval;
 
   }
+ 
 }

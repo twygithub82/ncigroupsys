@@ -9,10 +9,13 @@
         <div class="card">
           <div class="body overflow-auto">
             <mat-tab-group dynamicHeight (selectedTabChange)="onTabSelected($event)">
-               <!-- <mat-tab [label]="translatedLangText.STEAM_REPORT">
-                <app-steam-yearly></app-steam-yearly>
+                <mat-tab [label]="translatedLangText.MONTHLY_SALES_REPORT">
+                <app-sales-monthly></app-sales-monthly>
               </mat-tab>
-              <mat-tab [label]="translatedLangText.RESIDUE_REPORT">
+              <mat-tab [label]="translatedLangText.YEARLY_SALES_REPORT">
+                <app-sales-yearly></app-sales-yearly>
+              </mat-tab>
+              <!--<mat-tab [label]="translatedLangText.RESIDUE_REPORT">
                 <app-residue-yearly></app-residue-yearly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.REPAIR_REPORT">

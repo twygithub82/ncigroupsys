@@ -46,14 +46,15 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { reportPreviewWindowDimension } from 'environments/environment';
-import { MonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/sales/monthly/monthly-details-pdf.component';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
+import { MonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/sales/monthly/monthly-details-pdf.component';
+import { YearlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/sales/yearly/yearly-details-pdf.component';
 
 @Component({
-  selector: 'app-sales-monthly',
+  selector: 'app-sales-yearly',
   standalone: true,
-  templateUrl: './sales-monthly.component.html',
-  styleUrl: './sales-monthly.component.scss',
+  templateUrl: './sales-yearly.component.html',
+  styleUrl: './sales-yearly.component.scss',
   imports: [
     MatTooltipModule,
     MatButtonModule,
@@ -80,7 +81,7 @@ import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-report
     MatSlideToggleModule
   ]
 })
-export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'tank_no',
@@ -253,8 +254,9 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
       year: [`${thisYear}`],
-      month: [`${thisMonth}`],
-      cost_type:['all']
+      month_start: [`${thisMonth}`],
+      month_end: [`${thisMonth}`],
+      cost_type:['ALL']
     });
   }
 
@@ -274,15 +276,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          // if (!this.customerCodeControl.invalid) {
-          //   if (this.customerCodeControl.value?.guid) {
-          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
-          //     this.ccDS.search({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
-          //       this.branch_companyList = data;
-          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
-          //     });
-          //   }
-          // }
+         
         });
       })
     ).subscribe();
@@ -298,7 +292,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
-      this.costTypeCvList = addDefaultSelectOption(data, 'All','ALL');
+      this.costTypeCvList = addDefaultSelectOption(data, 'All',"ALL");
       var allType = this.costTypeCvList.find(c=>c.code_val=='ALL');
       this.searchForm?.patchValue({
         cost_type:allType
@@ -366,15 +360,14 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     const where: any = {};
     //let processType=this.processType;
 
+    where.report_type=["LOLO","PREINSPECTION","CLEANING","STEAMING","REPAIR","RESIDUE"];
+    if(this.searchForm?.get('cost_type')?.value.code_val!=='ALL')
+    {
+      where.report_type=[this.searchForm?.get('cost_type')?.value.code_val];
+    }
    
-      
-      where.report_type=["LOLO","PREINSPECTION","CLEANING","STEAMING","REPAIR","RESIDUE"];
-      if(this.searchForm?.get('cost_type')?.value.code_val!=='ALL')
-      {
-        where.report_type=[this.searchForm?.get('cost_type')?.value.code_val];
-      }
-
       var customerName="";
+      
       if (this.searchForm?.get('customer_code')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
         where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
@@ -382,17 +375,24 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
         cond_counter++;
       }
       
-      var date: string = `${this.searchForm?.get('month')?.value} ${this.searchForm?.get('year')?.value}`;
-    // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if (this.searchForm?.get('month')?.value) {
-        var month=this.searchForm?.get('month')?.value;
-        const monthIndex = this.monthList.findIndex(m => month === m);
-        where.month = (monthIndex+1);
-      }
-
-      if (this.searchForm?.get('year')?.value) {
-        where.year = Number(this.searchForm?.get('year')?.value); 
-      }
+      var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
+      // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+        if (this.searchForm?.get('month_start')?.value) {
+          var month=this.searchForm?.get('month_start')?.value;
+          const monthIndex = this.monthList.findIndex(m => month === m);
+          where.start_month = (monthIndex+1);
+        }
+  
+        if (this.searchForm?.get('month_end')?.value) {
+          var month=this.searchForm?.get('month_end')?.value;
+          const monthIndex = this.monthList.findIndex(m => month === m);
+          where.end_month = (monthIndex+1);
+        }
+  
+        if (this.searchForm?.get('year')?.value) {
+          where.year = Number(this.searchForm?.get('year')?.value); 
+        }
+       
      
         cond_counter++;
         //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
@@ -409,10 +409,10 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.reportDS.searchAdminReportMonthlySales(this.lastSearchCriteria)
+    this.subs.sink = this.reportDS.searchAdminReportYearlySales(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessMonthlyReport(this.repData,date!,reportType!,customerName!);
+        this.ProcessYearlySalesReport(this.repData,date!,reportType!,customerName!);
         // this.endCursor = this.stmDS.pageInfo?.endCursor;
         // this.startCursor = this.stmDS.pageInfo?.startCursor;
         // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -484,7 +484,8 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
     this.searchForm?.patchValue({
       year: thisYear,
-      month: thisMonth,
+      month_start: thisMonth,
+      month_end: thisMonth,
     });
     this.customerCodeControl.reset('');
    
@@ -515,7 +516,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
-  ProcessMonthlyReport(repData: AdminReportMonthlyReport, date: string,report_type:number,customerName:string) {
+  ProcessYearlySalesReport(repData: AdminReportMonthlyReport, date: string,report_type:number,customerName:string) {
     
    
 
@@ -527,8 +528,9 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       else if (report_type == 2) {
         this.onExportSummary(repData, date,customerName);
       }
-      else if (report_type == 3) {
-        this.onExportDetail(repData, date,customerName);
+      else if (report_type==3)
+      {
+        this.onExportDetail(repData,date,customerName);
       }
       
    }
@@ -541,43 +543,44 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
-   onExportDetail(repData: AdminReportMonthlyReport, date: string,customerName:string) {
-      //this.preventDefault(event);
-      let cut_off_dt = new Date();
-  
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-  
-      const dialogRef = this.dialog.open(MonthlySalesReportDetailsPdfComponent, {
-        width: reportPreviewWindowDimension.portrait_width_rate,
-        maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-       maxHeight: reportPreviewWindowDimension.report_maxHeight,
-        data: {
-          repData: repData,
-          date: date,
-          repType:this.processType,
-          customer:customerName,
-        
-        },
-  
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-  
-      dialogRef.updatePosition({
-        top: '-9999px',  // Move far above the screen
-        left: '-9999px'  // Move far to the left of the screen
-      });
-  
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport=false;
-      });
+  onExportDetail(repData: AdminReportMonthlyReport, date: string,customerName:string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+
+    const dialogRef = this.dialog.open(YearlySalesReportDetailsPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType:this.processType,
+        customer:customerName,
+      
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport=false;
+    });
+  }
+
 
   onExportSummary(repData: AdminReportMonthlyReport, date: string,customerName:string) {
     //this.preventDefault(event);
@@ -661,15 +664,29 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
      var bAllow:boolean =true;
 
      
-     if (this.searchForm?.get('month')?.value) {
-      var month=this.searchForm?.get('month')?.value;
-      const monthIndex = this.monthList.findIndex(m => month === m);
-      month = (monthIndex+1);
+     if (this.searchForm?.get('month_start')?.value) {
+      var month_start=this.searchForm?.get('month_start')?.value;
+      const monthStartIndex = this.monthList.findIndex(m => month_start === m);
+      month_start = (monthStartIndex+1);
     
+      if (this.searchForm?.get('month_end')?.value) {
 
-      if (this.searchForm?.get('year')?.value) {
-       var year = Number(this.searchForm?.get('year')?.value); 
-       bAllow=!Utility.isSelectedDateGreaterThanToday(month,year);
+            var month_end=this.searchForm?.get('month_end')?.value;
+            const monthEndIndex = this.monthList.findIndex(m => month_end === m);
+            month_end = (monthEndIndex+1);
+
+          if (this.searchForm?.get('year')?.value) {
+          var year = Number(this.searchForm?.get('year')?.value); 
+          bAllow=!Utility.isSelectedDateGreaterThanToday(month_start,year);
+           if(bAllow)
+           {
+            bAllow=!Utility.isSelectedDateGreaterThanToday(month_end,year);
+             if(bAllow)
+             {
+               bAllow = month_start<=month_end;
+             }
+           }
+          }
       }
     }
    

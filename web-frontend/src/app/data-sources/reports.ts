@@ -316,6 +316,83 @@ constructor(item: Partial<AdminReportYearlyReport> = {}) {
   } 
 }
 
+
+export class MonthlySales
+{
+  average_cost?:number;
+  average_count?:number;
+  result_per_day?:ResultPerDay[];
+  total_cost?:number;
+  total_count?:number;
+  constructor(item: Partial<MonthlySales> = {}) {
+    this.average_count=item.average_count;
+    this.average_cost=item.average_cost;
+    this.total_cost=item.total_cost;
+    this.total_count=item.total_count;
+    this.result_per_day=item.result_per_day;
+    } 
+
+}
+
+export class AdminReportMonthlySalesReport{
+  customer?:string;
+  cleaning_monthly_sales?:MonthlySales;
+  lolo_monthly_sales?:MonthlySales;
+  preinspaction_monthly_sales?:MonthlySales;
+  repair_monthly_sales?:MonthlySales;
+  residue_monthly_sales?:MonthlySales;
+  steaming_monthly_sales?:MonthlySales;
+  constructor(item: Partial<AdminReportMonthlySalesReport> = {}) {
+    this.customer=item.customer;
+    this.cleaning_monthly_sales=item.cleaning_monthly_sales;
+    this.lolo_monthly_sales=item.lolo_monthly_sales;
+    this.preinspaction_monthly_sales=item.preinspaction_monthly_sales;
+    this.repair_monthly_sales=item.repair_monthly_sales;
+    this.residue_monthly_sales=item.residue_monthly_sales;
+    this.steaming_monthly_sales=item.steaming_monthly_sales;
+    } 
+
+
+}
+
+export class YearlySales
+{
+  average_cost?:number;
+  average_count?:number;
+  result_per_month?:ResultPerMonth[];
+  total_cost?:number;
+  total_count?:number;
+  constructor(item: Partial<YearlySales> = {}) {
+    this.average_count=item.average_count;
+    this.average_cost=item.average_cost;
+    this.total_cost=item.total_cost;
+    this.total_count=item.total_count;
+    this.result_per_month=item.result_per_month;
+    } 
+
+}
+
+export class AdminReportYearlySalesReport{
+  customer?:string;
+  cleaning_yearly_sales?:YearlySales;
+  lolo_yearly_sales?:YearlySales;
+  preinspaction_yearly_sales?:YearlySales;
+  repair_yearly_sales?:YearlySales;
+  residue_yearly_sales?:YearlySales;
+  steaming_yearly_sales?:YearlySales;
+  constructor(item: Partial<AdminReportYearlySalesReport> = {}) {
+    this.customer=item.customer;
+    this.cleaning_yearly_sales=item.cleaning_yearly_sales;
+    this.lolo_yearly_sales=item.lolo_yearly_sales;
+    this.preinspaction_yearly_sales=item.preinspaction_yearly_sales;
+    this.repair_yearly_sales=item.repair_yearly_sales;
+    this.residue_yearly_sales=item.residue_yearly_sales;
+    this.steaming_yearly_sales=item.steaming_yearly_sales;
+    } 
+
+
+}
+
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
@@ -414,6 +491,157 @@ export const GET_ADMIN_REPORT_YEARLY_PROCESS = gql`
   }
 `
 
+export const GET_ADMIN_REPORT_YEARLY_SALES_REPORT = gql`
+  query queryYearlySalesReport($yearlySalesRequest: YearlySalesRequestInput!) {
+    resultList: queryYearlySalesReport(yearlySalesRequest: $yearlySalesRequest) {
+    cleaning_yearly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_month {
+          cost
+          count
+          month
+        }
+      }
+    lolo_yearly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_month {
+          cost
+          count
+          month
+        }
+      }
+    preinspection_yearly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_month {
+          cost
+          count
+          month
+        }
+      }
+    repair_yearly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_month {
+          cost
+          count
+          month
+        }
+      }
+    residue_yearly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_month {
+          cost
+          count
+          month
+        }
+      }
+    steaming_yearly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_month {
+          cost
+          count
+          month
+        }
+      }
+    }
+  }
+`
+
+export const GET_ADMIN_REPORT_MONTHLY_SALES_REPORT = gql`
+  query queryMonthlySalesReport($monthlySalesRequest: MonthlySalesRequestInput!) {
+    resultList: queryMonthlySalesReport(monthlySalesRequest: $monthlySalesRequest) {
+    cleaning_monthly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+    lolo_monthly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+    preinspection_monthly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+    repair_monthly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+    residue_monthly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+    steaming_monthly_sales {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+    }
+  }
+`
 
 export class ReportDS extends BaseDataSource<any> {
 
@@ -561,6 +789,58 @@ export class ReportDS extends BaseDataSource<any> {
       .query<any>({
         query: GET_ADMIN_REPORT_YEARLY_PROCESS,
         variables: { yearlyProcessRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList;
+        })
+      );
+  }
+
+  searchAdminReportMonthlySales(monthlySalesRequest:any): Observable<AdminReportYearlyReport> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_MONTHLY_SALES_REPORT,
+        variables: { monthlySalesRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList;
+        })
+      );
+  }
+
+  searchAdminReportYearlySales(yearlySalesRequest:any): Observable<AdminReportYearlyReport> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_YEARLY_SALES_REPORT,
+        variables: { yearlySalesRequest },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

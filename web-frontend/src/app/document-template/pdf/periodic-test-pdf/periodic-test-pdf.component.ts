@@ -617,7 +617,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
       1: { halign: 'left', valign: 'middle', cellWidth: 18 },
       2: { halign: 'left', valign: 'middle', cellWidth: 18 },
       3: { halign: 'center', valign: 'middle', cellWidth: 15 },
-      4: { halign: 'center', valign: 'middle', cellWidth: 15 },
+      4: { halign: 'center', valign: 'middle', cellWidth: 12 },
       5: { halign: 'center', valign: 'middle', cellWidth: 17 },
       6: { halign: 'center', valign: 'middle', cellWidth: 15 },
       7: { halign: 'center', valign: 'middle', cellWidth: 15 },

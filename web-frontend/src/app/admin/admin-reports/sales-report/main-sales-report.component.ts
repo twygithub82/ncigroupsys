@@ -40,7 +40,8 @@ import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
-
+import {SalesMonthlyAdminReportComponent} from 'app/admin/admin-reports/sales-report/sales-monthly-report/sales-monthly.component';
+import{SalesYearlyAdminReportComponent}from 'app/admin/admin-reports/sales-report/sales-yearly-report/sales-yearly.component';
 
 @Component({
   selector: 'app-main-sales-report',
@@ -72,7 +73,8 @@ import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-   
+    SalesMonthlyAdminReportComponent,
+    SalesYearlyAdminReportComponent
     
   ]
 })
@@ -131,7 +133,8 @@ export class MainSalesReportComponent extends UnsubscribeOnDestroyAdapter implem
     RESIDUE_REPORT:'COMMON-FORM.RESIDUE-REPORT',
     REPAIR_REPORT:'COMMON-FORM.REPAIR-REPORT',
     CLEAN_REPORT:'COMMON-FORM.CLEAN-REPORT',
-
+    MONTHLY_SALES_REPORT:'COMMON-FORM.MONTHLY-SALES-REPORT',
+    YEARLY_SALES_REPORT:'COMMON-FORM.YEARLY-SALES-REPORT'
   }
 
   filterCleanForm?: UntypedFormGroup;

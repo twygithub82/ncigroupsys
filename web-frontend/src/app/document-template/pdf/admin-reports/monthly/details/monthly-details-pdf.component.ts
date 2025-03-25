@@ -247,7 +247,8 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     REPAIR_MONTHLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
     CLEAN_MONTHLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
     DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH'
+    MONTH:'COMMON-FORM.MONTH',
+     AVERAGE:'COMMON-FORM.AVERAGE'
   }
 
   type?: string | null;
@@ -669,15 +670,13 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.repData?.result_per_day?.[n];
-
-    
         data.push([
           (++idx).toString(), itm?.date || "", itm?.day || "", itm?.count || "0"
         ]);
-      
-
     }
 
+    data.push([this.translatedLangText.TOTAL,"","",this.repData?.total||0]);
+    data.push([this.translatedLangText.AVERAGE,"","",this.repData?.average||0]);
 
     // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
     // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
@@ -706,22 +705,23 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
         //valign: 'middle', // Vertically align content
       },
       didParseCell: (data: any) => {
-        let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-         if (data.row.raw[2] === "Sunday") {
-           data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
-           data.cell.styles.fontStyle = 'bold';
-         }
-        //   if (data.column.index === 0) {
-        //     data.cell.colSpan = 4;  // Merge 4 columns into one
-        //     data.cell.styles.halign = 'right'; // Center text horizontally
-        //     data.cell.styles.valign = 'top'; // Center text vertically
-
-        //   }
-        // }
-        // if (data.row.index === idx && data.column.index > 0 && data.column.index <= 3) {
-        //   data.cell.text = ''; // Remove text from hidden columns
-        //   data.cell.colSpan = 0; // Hide these columns
-        // }
+        let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
+        let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
+        if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
+        
+        if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor=[231, 231, 231];
+          data.cell.styles.valign = 'middle'; // Center text vertically
+          if (data.column.index === 0) {
+            data.cell.colSpan = 2;  // Merge 4 columns into one
+            data.cell.styles.halign = 'right'; // Center text horizontally
+          }
+        }
+        if ((data.row.index==totalRowIndex || data.row.index==averageRowIndex) && data.column.index > 0 && data.column.index < 2) {
+          data.cell.text = ''; // Remove text from hidden columns
+          data.cell.colSpan = 0; // Hide these columns
+        }
       },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();

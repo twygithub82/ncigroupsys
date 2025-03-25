@@ -27,6 +27,20 @@
               </div>
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.COST_TYPE}}</mat-label>
+                  <input matInput formControlName="cost_type" 
+                    [matAutocomplete]="costType">
+                  <mat-autocomplete #costType="matAutocomplete" [displayWith]="displayCostTypeFn" >
+                    @for (cs of costTypeCvList; track cs) {
+                    <mat-option [value]="cs">
+                      {{cs.description}}
+                    </mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.MONTH}}</mat-label>
                   <mat-select formControlName="month">
                     @for (month of monthList; track month) {
@@ -37,7 +51,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.YEAR}}</mat-label>
                   <mat-select formControlName="year">
@@ -60,7 +74,7 @@
                   <mat-icon>assessment</mat-icon>
                 </button>
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport"
-                  matTooltip={{translatedLangText.DETAIL_REPORT}} hidden>
+                  matTooltip={{translatedLangText.DETAIL_REPORT}}   [disabled]="!AllowToSearch()">
                   <mat-icon>assignment</mat-icon>
                 </button>
                 <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
