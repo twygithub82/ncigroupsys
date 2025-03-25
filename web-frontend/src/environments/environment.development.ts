@@ -12,6 +12,15 @@ export const environment = {
   graphqlWsUrl: 'wss://tlx-idms-global-notification.azurewebsites.net/graphql',
 };
 
+// export const environment = {
+//   production: false,
+//   title: 'UAT Home',
+//   companyName: 'DMS Global Pte Ltd',
+//   apiUrl: 'https://tlx-idms-userlogin-uat.azurewebsites.net',
+//   fileManagerURL: 'https://tlx-filemanagement-app-uat.azurewebsites.net',
+//   graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
+//   graphqlWsUrl: 'wss://tlx-idms-global-notification-uat.azurewebsites.net/graphql',
+// };
 
 /*
  * For easier debugging in development mode, you can import the following file

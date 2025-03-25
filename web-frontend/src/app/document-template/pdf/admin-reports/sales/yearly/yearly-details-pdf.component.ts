@@ -602,6 +602,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
     const reportTitle = this.GetReportTitle();
     const headers =   [[
+      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
@@ -680,32 +681,32 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
     
         data.push([
-          itm?.month || "",  
-          this.repData?.preinspaction_yearly_sales?.result_per_month?.[n]?.count || "", Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          this.repData?.lolo_yearly_sales?.result_per_month?.[n]?.count || "",          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          this.repData?.steaming_yearly_sales?.result_per_month?.[n]?.count || "",      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          this.repData?.residue_yearly_sales?.result_per_month?.[n]?.count || "",       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          this.repData?.cleaning_yearly_sales?.result_per_month?.[n]?.count || "",      Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          this.repData?.repair_yearly_sales?.result_per_month?.[n]?.count || "",        Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.result_per_month?.[n]?.cost ||0)
+          (n+1).toString(),itm?.month || "",  
+          Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.result_per_month?.[n]?.count ), Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.result_per_month?.[n]?.cost || 0),
+          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.result_per_month?.[n]?.count ),          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.result_per_month?.[n]?.cost || 0),
+          Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.result_per_month?.[n]?.count ),      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.result_per_month?.[n]?.cost || 0),
+          Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.result_per_month?.[n]?.count),       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.result_per_month?.[n]?.cost || 0),
+          Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.result_per_month?.[n]?.count),      Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.result_per_month?.[n]?.cost || 0),
+          Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.result_per_month?.[n]?.count ),        Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.result_per_month?.[n]?.cost ||0)
         ]);
     }
 
     data.push([this.translatedLangText.TOTAL,"",
-      this.repData?.preinspaction_yearly_sales?.total_count, Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.total_cost),
-      this.repData?.lolo_yearly_sales?.total_count,          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost),
-      this.repData?.steaming_yearly_sales?.total_count,      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost),
-      this.repData?.residue_yearly_sales?.total_count,       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost),
-      this.repData?.cleaning_yearly_sales?.total_count,      Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_cost),
-      this.repData?.repair_yearly_sales?.total_count,        Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.total_count), Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_count),          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_count),      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_count),       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_count),      Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_count),        Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_cost),
     ])
 
     data.push([this.translatedLangText.AVERAGE,"",
-      this.repData?.preinspaction_yearly_sales?.average_count, Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.average_cost),
-      this.repData?.lolo_yearly_sales?.average_count,          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost),
-      this.repData?.steaming_yearly_sales?.average_count,      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost),
-      this.repData?.residue_yearly_sales?.average_count,       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost),
-      this.repData?.cleaning_yearly_sales?.average_count,      Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_cost),
-      this.repData?.repair_yearly_sales?.average_count,        Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.average_count), Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_count),          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_count),      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_count),       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_count),      Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_count),        Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_cost),
     ])
 
     pdf.setDrawColor(0, 0, 0); // red line color
@@ -735,11 +736,16 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
         if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
           data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.valign = 'middle'; // Center text vertically
           data.cell.styles.fillColor=[231, 231, 231];
+          data.cell.styles.valign = 'middle'; // Center text vertically
           if (data.column.index === 0) {
+            data.cell.colSpan = 2;  // Merge 4 columns into one
             data.cell.styles.halign = 'right'; // Center text horizontally
           }
+        }
+        if ((data.row.index==totalRowIndex || data.row.index==averageRowIndex) && data.column.index > 0 && data.column.index < 2) {
+          data.cell.text = ''; // Remove text from hidden columns
+          data.cell.colSpan = 0; // Hide these columns
         }
       },
       didDrawPage: (d: any) => {

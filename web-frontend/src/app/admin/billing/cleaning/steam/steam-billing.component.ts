@@ -40,7 +40,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -327,7 +327,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       this.yardCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('depotCv').subscribe(data => {
-      this.depotCvList = data;
+      this.depotCvList = addDefaultSelectOption(data, 'All');
     });
     this.search();
   }
@@ -388,18 +388,17 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
     
     if (this.searchForm!.get('depot_status_cv')?.value!="ALL") {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      if(!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv={};
-     var cond :any ={eq: "RELEASED"};
-     if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
-     {
-      cond = {neq: "RELEASED"};
-     }
-     
-
-      where.storing_order_tank.tank_status_cv=cond;
-    }
-
+         if(!where.storing_order_tank) where.storing_order_tank={};
+         if(!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv={};
+        var cond :any ={in: TANK_STATUS_POST_IN_YARD};
+        if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
+        {
+         cond = {in: TANK_STATUS_IN_YARD};
+        }
+        
+   
+         where.storing_order_tank.tank_status_cv=cond;
+       }
     
     if (this.searchForm!.get('tank_no')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
@@ -642,7 +641,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       inv_no:'',
       yard_cv: [''],
       invoiced:null,
-      depot_status_cv:'IN_YARD'
+      depot_status_cv:''
     });
 
     this.branchCodeControl.reset('');

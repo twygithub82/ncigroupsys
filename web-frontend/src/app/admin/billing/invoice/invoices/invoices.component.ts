@@ -392,7 +392,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       // where.storing_order_tank = { tank_no: {contains: this.searchForm!.get('tank_no')?.value }};
     }
 
-    if (this.searchForm!.get('depot_status_cv')?.value != "ALL") {
+    if (this.searchForm!.get('depot_status_cv')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
 
       var cond: any = { tank_status_cv: { eq: "RELEASED" } };

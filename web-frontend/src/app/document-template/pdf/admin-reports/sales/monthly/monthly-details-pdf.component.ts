@@ -714,21 +714,21 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     }
 
     data.push([this.translatedLangText.TOTAL,"",
-      this.repData?.preinspaction_monthly_sales?.total_count, Utility.formatNumberDisplay(this.repData?.preinspaction_monthly_sales?.total_cost),
-      this.repData?.lolo_monthly_sales?.total_count,     Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.total_cost),
-      this.repData?.steaming_monthly_sales?.total_count, Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.total_cost),
-      this.repData?.residue_monthly_sales?.total_count,  Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.total_cost),
-      this.repData?.cleaning_monthly_sales?.total_count, Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.total_cost),
-      this.repData?.repair_monthly_sales?.total_count,   Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.preinspaction_monthly_sales?.total_count), Utility.formatNumberDisplay(this.repData?.preinspaction_monthly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.total_count),     Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.total_count), Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.total_count),  Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.total_count), Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.total_count),   Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.total_cost),
     ])
 
     data.push([this.translatedLangText.AVERAGE,"",
-      this.repData?.preinspaction_monthly_sales?.average_count,Utility.formatNumberDisplay(this.repData?.preinspaction_monthly_sales?.average_cost),
-      this.repData?.lolo_monthly_sales?.average_count,         Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.average_cost),
-      this.repData?.steaming_monthly_sales?.average_count,     Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.average_cost),
-      this.repData?.residue_monthly_sales?.average_count,      Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.average_cost),
-      this.repData?.cleaning_monthly_sales?.average_count,     Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.average_cost),
-      this.repData?.repair_monthly_sales?.average_count,       Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.preinspaction_monthly_sales?.average_count),Utility.formatNumberDisplay(this.repData?.preinspaction_monthly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.average_count),         Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.average_count),     Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.average_count),      Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.average_count),     Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.average_count),       Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.average_cost),
     ])
 
     pdf.setDrawColor(0, 0, 0); // red line color
