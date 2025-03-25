@@ -182,19 +182,23 @@ export const GET_ESTIMATE_TEMPLATE_ONLY_QUERY = gql`
   query queryTemplateEstimation($where: template_estFilterInput, $order:[template_estSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     MasterTemplateResult : queryTemplateEstimation(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-      create_by
-      create_dt
-      delete_dt
-      guid
-      remarks
-      labour_cost_discount
-      material_cost_discount
-      template_name
-      type_cv
-      update_by
-      update_dt
-    }
-    pageInfo {
+        create_by
+        create_dt
+        delete_dt
+        guid
+        remarks
+        labour_cost_discount
+        material_cost_discount
+        template_name
+        type_cv
+        update_by
+        update_dt
+        customer_company {
+          code
+          name
+        }
+      }
+      pageInfo {
         endCursor
         hasNextPage
         hasPreviousPage
@@ -203,7 +207,6 @@ export const GET_ESTIMATE_TEMPLATE_ONLY_QUERY = gql`
       totalCount
     }
   }
-
 `;
 
 export const GET_ESTIMATE_TEMPLATE_QUERY = gql`

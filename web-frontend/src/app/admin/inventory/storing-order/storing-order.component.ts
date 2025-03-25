@@ -78,6 +78,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     'customer_code',
     'no_of_tanks',
     'status',
+    'so_notes',
     'waiting_status',
     'accept_status',
     'cancel_status',
@@ -121,7 +122,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     TANKS: 'COMMON-FORM.TANKS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    SO_NOTES: 'COMMON-FORM.SO-NOTES'
   }
 
   searchForm?: UntypedFormGroup;
