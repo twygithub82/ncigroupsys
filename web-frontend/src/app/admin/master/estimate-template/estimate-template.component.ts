@@ -177,7 +177,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     TEMPLATE_TYPE_EXCLUSIVE: "COMMON-FORM.TEMPLATE-TYPE-EXCLUSIVE",
     TOTAL_MATERIAL_COST: "COMMON-FORM.TOTAL-MATERIAL-COST",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    CUSTOMER:'COMMON-FORM.CUSTOMER'
+    CUSTOMER: 'COMMON-FORM.CUSTOMER'
   }
 
   constructor(
@@ -186,19 +186,15 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
-
   ) {
     super();
     this.initMtForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.masterEstTempDS = new MasterEstimateTemplateDS(this.apollo);
-    //this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
-    // this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -226,12 +222,10 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
         this.paginator.pageIndex = this.pageIndex;
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
-
     }
     else {
       this.search();
     }
-
   }
 
   initMtForm() {
@@ -239,8 +233,6 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
       customer_code: this.customerCodeControl,
       template_name: this.templateNameControl,
       part_name: ['']
-
-
     });
   }
 
@@ -251,6 +243,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
   refresh() {
     this.loadData();
   }
+
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -258,14 +251,13 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-
   }
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
   }
-
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
@@ -295,8 +287,6 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
   }
 
   editCall(row: TemplateEstPartItem) {
-
-
     // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/master/estimate-template/new/' + row.guid], {
       state: {
@@ -311,43 +301,37 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
-
           showResult: this.masterEstTempDS.totalCount > 0
-
         }
       }
     });
-
-
   }
 
   initializeFilterCustomerCompany() {
-      this.mtForm!.get('customer_code')!.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        tap(value => {
-          var searchCriteria = '';
-          if (typeof value === 'string') {
-            searchCriteria = value;
-          } else {
-            searchCriteria = value.code;
-          }
-          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-            this.customer_companyList = data
-          });
-        })
-      ).subscribe();
-  
-
-    }
-
+    this.mtForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+  }
 
   deleteItem(row: any) {
-
   }
+
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -368,12 +352,8 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
     const where: any = {};
-
-
     if (this.customerCodeControl.value) {
       {
         const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
@@ -400,25 +380,17 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.mtForm?.get('part_name')?.value) {
       const partNameValue = this.mtForm.get('part_name')?.value;
-
-
       where.template_est_part = {
         ...where.template_est_part,
         some: {
           description: { contains: partNameValue }
         }
       };
-
     }
-
-
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.masterEstTempDS.SearchEstimateTemplate(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.masterTemplateItem = data;
-
-      // let a = this.masterTemplateItem[0].getTotalMaterialCost();
-      // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
       this.endCursor = this.masterEstTempDS.pageInfo?.endCursor;
       this.startCursor = this.masterEstTempDS.pageInfo?.startCursor;
@@ -431,19 +403,6 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
         this.previous_endCursor = undefined;
     });
   }
-  // selectStorageCalculateCV_Description(valCode?:string):string
-  // {
-  //   let valCodeObject: CodeValuesItem = new CodeValuesItem();
-  //   if(this.storageCalCvList.length>0)
-  //   {
-  //     valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode)|| new CodeValuesItem();
-
-  //     // If no match is found, description will be undefined, so you can handle it accordingly
-
-  //   }
-  //   return valCodeObject.description || '-';
-
-  // }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -482,20 +441,12 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
         // Navigate backward
         last = pageSize;
         before = this.startCursor;
-      }
-      else if (pageIndex == this.pageIndex) {
-
+      } else if (pageIndex == this.pageIndex) {
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
-
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
@@ -536,18 +487,15 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
   removeSelectedRows() {
 
   }
-  public loadData() {
 
+  public loadData() {
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 50).subscribe(data => {
       // this.customer_companyList1 = data
     });
-
     this.masterEstTempDS.SearchEstimateTemplateOnly({}, { template_name: 'ASC' }).subscribe(data => {
       this.masterTempItemOnly = data;
+      console.log(this.masterTempItemOnly)
     })
-
-
-
   }
   showNotification(
     colorName: string,
@@ -600,13 +548,6 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     }
     return null;
   }
-  // displayGroupNameCodeValue_Description(codeValue: String) {
-  //   return this.GetCodeValue_Description(codeValue, this.groupNameCvList);
-  // }
-
-  // displaySubGroupNameCodeValue_Description(codeValue: String) {
-  //   return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
-  // }
 
   GetCodeValue_Description(codeValue: String, codeValueItems: CodeValuesItem[]) {
     let retval: string = '';
@@ -627,17 +568,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     if (updatedt === null) {
       updatedt = r.create_dt;
     }
-    // const date = new Date(updatedt! * 1000);
-
-    // const day = String(date.getDate()).padStart(2, '0');
-    // const month = date.toLocaleString('en-US', { month: 'short' });
-    // const year = date.getFullYear();
-
-    // Replace the '/' with '-' to get the required format
-
-
     return this.displayDate(updatedt);
-
   }
 
   displayTemplateType(r: MasterTemplateItem) {
@@ -676,7 +607,4 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     this.customerCodeControl.reset();
     this.templateNameControl.reset();
   }
-
-
 }
-

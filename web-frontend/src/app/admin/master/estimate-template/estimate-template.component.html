@@ -84,25 +84,32 @@
             <div class="responsive_table">
               <table mat-table [dataSource]="masterTemplateItem" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                <ng-container matColumnDef="template">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.TEMPLATE
+                <ng-container matColumnDef="customer">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.TEMPLATE
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER
+                      }}:</span>{{row.template_name}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="template">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TEMPLATE
+                    }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                    <span class="mobile-label">{{translatedLangText.TEMPLATE
                       }}:</span>{{row.template_name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="type">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.TYPE
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TYPE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.TEMPLATETYPE
+                    <span class="mobile-label">{{translatedLangText.TEMPLATETYPE
                       }}:</span>{{this.displayTemplateType(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_update_dt">
                   <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                    mat-sort-header>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
+                    <span class="mobile-label">{{translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
