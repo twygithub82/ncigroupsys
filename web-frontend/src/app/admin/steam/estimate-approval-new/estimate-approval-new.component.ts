@@ -1583,6 +1583,33 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     return ret.toFixed(2);
   }
 
+  getTotalApprovedLabourCost():number{
+    return this.deList.reduce((acc, row) => {
+      if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
+        if (this.IsApproved()) {
+          return acc + ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0));
+        }
+        else {
+          return acc + (((row.labour || 0) * (this.packageLabourItem?.cost || 0)));
+        }
+      }
+      return acc; // If row is approved, keep the current accumulator value
+    }, 0);
+  }
+
+  getTotalMaterialCost():number{
+    return this.deList.reduce((acc, row) => {
+      if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
+        if (this.IsApproved()) {
+          return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
+        } else {
+          return acc + ((row.quantity || 0) * (row.cost || 0) );
+        }
+
+      }
+      return acc; // If row is approved, keep the current accumulator value
+    }, 0);
+  }
 
   getTotalCost(): number {
     return this.deList.reduce((acc, row) => {
@@ -1686,6 +1713,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           job_order: undefined
         })
       });
+      re.total_labour_cost = this.getTotalApprovedLabourCost();
+      re.total_material_cost = this.getTotalMaterialCost();
       re.total_cost= this.getTotalCost();
       console.log(re)
       this.steamDS.approveSteaming(re).subscribe(result => {

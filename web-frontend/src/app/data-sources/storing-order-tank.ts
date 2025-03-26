@@ -3459,6 +3459,8 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
         billing_sot {
           delete_dt
           free_storage
+          gate_in
+          gate_out
           gate_in_cost
           gate_out_cost
           gateio_billing_guid

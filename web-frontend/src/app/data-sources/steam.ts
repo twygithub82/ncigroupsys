@@ -45,6 +45,8 @@ export class SteamGO {
   public delete_dt?: number;
 
    public est_cost?:number;
+   public total_material_cost?:number;
+   public total_labour_cost?:number;
    
   // public aspnetusers_guid?: string;
   // public estimate_no?: string;
@@ -194,6 +196,8 @@ export const GET_STEAM_BILLING_EST = gql`
         }
         est_cost
         total_cost
+        total_material_cost
+        total_labour_cost
         complete_by
         complete_dt
         create_by
@@ -381,6 +385,8 @@ export const GET_STEAM_EST = gql`
         status_cv
         est_cost
         total_cost
+        total_material_cost
+        total_labour_cost
         update_by
         update_dt
         storing_order_tank {
@@ -671,6 +677,8 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         estimate_no
         est_cost
         total_cost
+        total_material_cost
+        total_labour_cost
         guid
         job_no
         na_dt

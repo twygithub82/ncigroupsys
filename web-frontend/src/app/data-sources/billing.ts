@@ -153,7 +153,9 @@ export class BillingItem extends BillingGo {
 
 export class BillingSOTGo {
   public free_storage?: number;
+  public gate_in?:boolean;
   public gate_in_cost?: number;
+  public gate_out?:boolean;
   public gate_out_cost?: number;
   public gateio_billing_guid?: string;
   public guid?: string;
@@ -183,6 +185,8 @@ export class BillingSOTGo {
     if (!this.guid) this.guid = '';
 
     this.free_storage = item.free_storage;
+    this.gate_in=item.gate_in;
+    this.gate_out=item.gate_out;
     this.gate_in_cost = item.gate_in_cost;
     this.gate_out_cost = item.gate_out_cost;
     this.gateio_billing_guid = item.gateio_billing_guid;
@@ -308,7 +312,9 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
           }
          gateio_billing_sot {
             delete_dt
+            gate_in
             gate_in_cost
+            gate_out
             gate_out_cost
             gateio_billing_guid
             guid
@@ -593,7 +599,9 @@ const SEARCH_BILLING_SOT_QUERY = gql`
         create_dt
         delete_dt
         free_storage
+        gate_in
         gate_in_cost
+        gate_out
         gate_out_cost
         gateio_billing_guid
         guid

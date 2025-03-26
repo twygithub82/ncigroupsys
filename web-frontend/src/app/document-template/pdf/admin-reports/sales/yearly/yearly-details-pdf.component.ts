@@ -30,6 +30,48 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
 // import { fileSave } from 'browser-fs-access';
 
+import {
+  ChartComponent,
+  ApexAxisChartSeries,
+  ApexChart,
+  ApexXAxis,
+  ApexDataLabels,
+  ApexPlotOptions,
+  ApexYAxis,
+  ApexLegend,
+  ApexStroke,
+  ApexFill,
+  ApexTooltip,
+  ApexTitleSubtitle,
+  ApexGrid,
+  ApexMarkers,
+  ApexNonAxisChartSeries,
+  ApexResponsive,
+  NgApexchartsModule,
+} from 'ng-apexcharts';
+
+
+
+export type ChartOptions = {
+  series?: ApexAxisChartSeries;
+  series2?: ApexNonAxisChartSeries;
+  chart?: ApexChart;
+  dataLabels?: ApexDataLabels;
+  plotOptions?: ApexPlotOptions;
+  yaxis?: ApexYAxis;
+  xaxis?: ApexXAxis;
+  fill?: ApexFill;
+  tooltip?: ApexTooltip;
+  stroke?: ApexStroke;
+  legend?: ApexLegend;
+  title?: ApexTitleSubtitle;
+  colors?: string[];
+  grid?: ApexGrid;
+  markers?: ApexMarkers;
+  labels: string[];
+  responsive: ApexResponsive[];
+};
+
 export interface DialogData {
   repData: AdminReportYearlySalesReport,
   date:string,
@@ -49,7 +91,8 @@ export interface DialogData {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    NgApexchartsModule
   ],
 })
 export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -308,7 +351,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
   customer?:string;
   // date:string='';
   // invType:string='';
-
+ public barChartOptions!: Partial<ChartOptions>;
 
 
   constructor(
@@ -333,7 +376,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     // this.existingPdf = data.existingPdf;
 
 
-
+    this.InitialDefaultData();
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -347,13 +390,14 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     this.date= this.data.date;
     this.repType=this.data.repType;
     this.customer=this.data.customer;
-    this.onDownloadClick();
+    this.SetChartValues();
+   // this.onDownloadClick();
 
   }
 
   ngAfterViewInit() {
 
-
+    
   }
 
  
@@ -682,7 +726,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     
         data.push([
           (n+1).toString(),itm?.month || "",  
-          Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.result_per_month?.[n]?.count ), Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.result_per_month?.[n]?.cost || 0),
+          Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.result_per_month?.[n]?.count ), Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.result_per_month?.[n]?.cost || 0),
           Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.result_per_month?.[n]?.count ),          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.result_per_month?.[n]?.cost || 0),
           Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.result_per_month?.[n]?.count ),      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.result_per_month?.[n]?.cost || 0),
           Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.result_per_month?.[n]?.count),       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.result_per_month?.[n]?.cost || 0),
@@ -692,7 +736,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     }
 
     data.push([this.translatedLangText.TOTAL,"",
-      Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.total_count), Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.total_cost),
+      Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_count), Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_cost),
       Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_count),          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost),
       Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_count),      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost),
       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_count),       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost),
@@ -701,7 +745,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     ])
 
     data.push([this.translatedLangText.AVERAGE,"",
-      Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.average_count), Utility.formatNumberDisplay(this.repData?.preinspaction_yearly_sales?.average_cost),
+      Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.average_count), Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.average_cost),
       Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_count),          Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost),
       Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_count),      Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost),
       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_count),       Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost),
@@ -763,6 +807,41 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
       },
     });
+
+
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+
+    let chartContentWidth = pageWidth - leftMargin - rightMargin;
+    startY=lastTableFinalY+10;
+    for (var i = 0; i < cardElements.length; i++) {
+      if (i > 0) {
+        pdf.addPage();
+        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+        pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+      }
+      const card1 = cardElements[i];
+      const canvas1 = await html2canvas(card1, { scale: scale });
+      const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+
+      // Calculate aspect ratio
+      const aspectRatio = canvas1.width / canvas1.height;
+
+      // Calculate scaled height based on available width
+      let imgHeight1 = chartContentWidth / aspectRatio;
+
+      // Check if the scaled height exceeds the available page height
+      const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+      if (imgHeight1 > maxPageHeight) {
+        // Adjust height to fit within the page
+        imgHeight1 = maxPageHeight;
+        // Recalculate width to maintain aspect ratio
+        chartContentWidth = imgHeight1 * aspectRatio;
+      }
+
+      // Add the image to the PDF
+      pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+    }
+
 
     const totalPages = pdf.getNumberOfPages();
 
@@ -943,4 +1022,161 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     return retval;
 
   }
+
+  SetChartValues(){
+
+    var categories: any = [];
+
+      var series: any = [];
+      var cleaning_cost:number[]=this.repData?.cleaning_yearly_sales?.result_per_month? this.repData?.cleaning_yearly_sales?.result_per_month?.map(s=>s.cost??0):[];
+      var preinspect_cost:number[]=this.repData?.preinspection_yearly_sales?.result_per_month? this.repData?.preinspection_yearly_sales?.result_per_month?.map(s=>s.cost??0):[];
+      var lolo_cost:number[]=this.repData?.lolo_yearly_sales?.result_per_month? this.repData?.lolo_yearly_sales?.result_per_month?.map(s=>s.cost??0):[];
+      var steaming_cost:number[]=this.repData?.steaming_yearly_sales?.result_per_month? this.repData?.steaming_yearly_sales?.result_per_month?.map(s=>s.cost??0):[];
+      var residue_cost:number[]=this.repData?.residue_yearly_sales?.result_per_month? this.repData?.residue_yearly_sales?.result_per_month?.map(s=>s.cost??0):[];
+      var repair_cost:number[]=this.repData?.repair_yearly_sales?.result_per_month? this.repData?.repair_yearly_sales?.result_per_month?.map(s=>s.cost??0):[];
+
+      series.push({name:this.translatedLangText.PREINSPECTION,data:preinspect_cost});
+      series.push({name:this.translatedLangText.LOLO,data:lolo_cost});
+      series.push({name:this.translatedLangText.STEAM,data:steaming_cost});
+      series.push({name:this.translatedLangText.RESIDUE,data:residue_cost});
+      series.push({name:this.translatedLangText.CLEANING,data:cleaning_cost});
+      series.push({name:this.translatedLangText.REPAIR,data:repair_cost});
+
+      for (var n=0 ; n<(this.repData?.cleaning_yearly_sales?.result_per_month?.length||0);n++)
+      {
+        categories.push(this.repData?.cleaning_yearly_sales?.result_per_month?.[n].month);
+      }
+      
+      this.barChartOptions.series=series;
+
+    this.barChartOptions.xaxis = {
+        type: 'category',
+        categories: categories,
+        labels: {
+          
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      };  
+    this.barChartOptions.yaxis = {
+      // max: maxYAxisValue,
+       min: 0,
+       title: {
+         text: `${this.translatedLangText.COST}`,
+       },
+       labels: {
+         align: 'right', // Align labels to the right
+         minWidth: 50,   // Set a minimum width for the labels
+         maxWidth: 100,  // Set a maximum width for the labels
+         offsetX: 10,    // Add horizontal offset to the labels
+         formatter: (value: number) => {
+           return value.toFixed(2); // Format the label to reduce its length
+         }
+       }
+     }
+
+    this.barChartOptions.chart!.events = {
+      animationEnd: () => {
+        this.onDownloadClick();
+      }
+    }
+
+  }
+
+  InitialDefaultData() {
+    this.barChartOptions = {
+      legend:{
+        fontSize:'14px',
+        position: "bottom",
+        horizontalAlign: "center",
+        itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
+        labels: {
+          colors: "#333", // Set label text color
+          useSeriesColors: false, // Use the color of the series for labels
+      //    padding: 10, // Adjust space between marker and label
+        },
+      
+      },
+      series: [
+        {
+          name: 'Net Profit',
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+        },
+        {
+          name: 'Revenue',
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+        },
+        {
+          name: 'Free Cash Flow',
+          data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+        },
+      ],
+      chart: {
+        type: 'bar',
+        height: 350,
+        foreColor: '#9aa0ac',
+        toolbar: {
+          show: false,
+         
+        },
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '30%',
+          borderRadius: 5,
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        show: true,
+        width: 2,
+        colors: ['transparent'],
+      },
+      xaxis: {
+        categories: [
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+        ],
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      },
+      yaxis: {
+        title: {
+          text: '$ (thousands)',
+        },
+      },
+      grid: {
+        show: true,
+        borderColor: '#9aa0ac',
+        strokeDashArray: 1,
+      },
+      fill: {
+        opacity: 1,
+      },
+      tooltip: {
+        theme: 'dark',
+        marker: {
+          show: true,
+        },
+        x: {
+          show: true,
+        },
+      },
+    };
+  }
+
 }

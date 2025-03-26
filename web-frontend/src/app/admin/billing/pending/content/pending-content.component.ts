@@ -587,7 +587,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       }
 
       // Calculate gate I/O cost and update rep_bill_item
-      const gateIOCost = (item.gate_in_cost || 0) + (item.gate_out_cost || 0);
+      const gateIOCost = (item.gate_in?(item.gate_in_cost || 0):0) + (item.gate_out?(item.gate_out_cost || 0):0);
 
       if (gateIOCost > 0) {
         rep_bill_item.gateio_est_no += 1; // Increment gate I/O estimation number

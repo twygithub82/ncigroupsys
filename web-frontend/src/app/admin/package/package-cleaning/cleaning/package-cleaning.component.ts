@@ -44,6 +44,7 @@ import { CustomerCompanyCleaningCategoryDS, CustomerCompanyCleaningCategoryItem 
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-package-cleaning',
@@ -119,6 +120,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList1?: CustomerCompanyItem[];
+  customer_companyList?:CustomerCompanyItem[];
   cleaning_categoryList?: CleaningCategoryItem[];
   handledItemCvList?: CodeValuesItem[];
   hazardLevelCvList?: CodeValuesItem[];
@@ -246,6 +248,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.clnCatDS = new CleaningCategoryDS(this.apollo);
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.initializeFilterCustomerCompany();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -277,6 +280,26 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       class_no: this.classNoControl,
       un_no: [''],
     });
+  }
+
+  initializeFilterCustomerCompany() {
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+
+
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -417,13 +440,13 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
+ 
     if (this.customerCodeControl.value) {
-      if (this.customerCodeControl.value.length > 0) {
-
-
-        const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { in: guids };
+      //if (this.customerCodeControl.value.length > 0) 
+      {
+       // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
+        //var guids = customerCodes.map(cc => cc.guid);
+        where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
       }
     }
 

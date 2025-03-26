@@ -44,6 +44,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { FormDialogComponent_View } from './form-dialog-view/form-dialog.component';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
+
 @Component({
   selector: 'app-tariff-depot',
   standalone: true,
@@ -236,6 +238,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
 
     this.tnkDS = new TankDS(this.apollo);
     this.tfDepotDS = new TariffDepotDS(this.apollo);
+    this.initializeFilterValues();
     // this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
@@ -271,6 +274,10 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
+  displayUnitTypeFn(tnk:TankItem):string
+  {
+    return tnk.unit_type||'';
+  }
   refresh() {
     this.loadData();
   }
@@ -305,6 +312,26 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     //   }
     // });
   }
+
+   initializeFilterValues() {
+        this.tdForm!.get('unit_type')!.valueChanges.pipe(
+          startWith(''),
+          debounceTime(300),
+          tap(value => {
+            var searchCriteria = '';
+            if (typeof value === 'string') {
+              searchCriteria = value;
+            } else {
+              searchCriteria = value.code;
+            }
+            this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, { unit_type: 'ASC' }).subscribe(data => {
+              this.tankItemList = data
+            });
+          })
+        ).subscribe();
+    
+    
+      }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission

@@ -45,7 +45,7 @@ import { TariffResidueDS } from 'app/data-sources/tariff-residue';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-package-residue',
@@ -239,6 +239,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     this.custCompDS = new CustomerCompanyDS(this.apollo);
 
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
+    this.initializeFilterCustomerCompany();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -259,6 +260,26 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
+  
+  initializeFilterCustomerCompany() {
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+
+
+  }
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -386,11 +407,13 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
+   
     if (this.customerCodeControl.value) {
-      if (this.customerCodeControl.value.length > 0) {
-        const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { in: guids };
+      //if (this.customerCodeControl.value.length > 0) 
+      {
+       // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
+        //var guids = customerCodes.map(cc => cc.guid);
+        where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
       }
     }
 
