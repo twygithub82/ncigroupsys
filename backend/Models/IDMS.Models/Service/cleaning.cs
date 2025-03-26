@@ -40,6 +40,7 @@ namespace IDMS.Models.Service
 
         //[ForeignKey("owner_billing")]
         public string? owner_billing_guid { get; set; }
+        public string? overwrite_remarks { get; set; }
 
         [NotMapped]
         public string action { get; set; } 

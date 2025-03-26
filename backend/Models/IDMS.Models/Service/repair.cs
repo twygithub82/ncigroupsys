@@ -41,6 +41,7 @@ namespace IDMS.Models.Service
         public long? approve_dt {  get; set; }
         public string? allocate_by { get; set; }
         public long? allocate_dt { get; set; }
+        public string? overwrite_remarks { get; set; }
 
         [ForeignKey("customer_company")]
         public string? bill_to_guid { get; set; }
