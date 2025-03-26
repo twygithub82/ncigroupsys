@@ -10,6 +10,10 @@ ALTER TABLE `idms`.`billing_sot`
 ADD COLUMN `gate_in` TINYINT NULL DEFAULT NULL AFTER `lift_off`,
 ADD COLUMN `gate_out` TINYINT NULL DEFAULT NULL AFTER `gate_in`;
 
+ALTER TABLE `idms`.`steaming` 
+ADD COLUMN `total_material_cost` DOUBLE NULL DEFAULT NULL AFTER `owner_billing_guid`,
+ADD COLUMN `total_labour_cost` DOUBLE NULL DEFAULT NULL AFTER `total_material_cost`;
+
 --
 ALTER TABLE `idms`.`storing_order_tank` 
 ADD COLUMN `job_no_remarks` VARCHAR(250) NULL DEFAULT NULL COMMENT 'For overwrite job no' AFTER `delete_dt`,
