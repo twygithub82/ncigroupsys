@@ -48,7 +48,7 @@ export interface TankResult {
 }
 
 export const GET_TANK_Where = gql`
-    query queryTank($where: tankFilterInput, $order:[tankSortInput!]) {
+  query queryTank($where: tankFilterInput, $order:[tankSortInput!]) {
     queryTank(where: $where, order:$order) {
       guid
       unit_type
@@ -97,7 +97,7 @@ export const GET_TANK_Where_r1 = gql`
 
 export const GET_TANK = gql`
   query queryTank {
-    queryTank {
+    queryTank(where: {delete_dt:  { eq: null }}) {
       nodes {
         guid
         unit_type
@@ -109,6 +109,7 @@ export const GET_TANK = gql`
         gate_out
         iso_format
       }
+      totalCount
     }
   }
 `;
@@ -162,7 +163,7 @@ export class TankDS extends BaseDataSource<TankItem> {
     return this.apollo
       .query<any>({
         query: GET_TANK_Where_r1,
-        variables: { where, order,first,after,last,before },
+        variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -173,33 +174,36 @@ export class TankDS extends BaseDataSource<TankItem> {
           const tankList = result.queryTank || { nodes: [], totalCount: 0 };
           this.dataSubject.next(tankList);
           this.totalCount = tankList.totalCount;
-          this.pageInfo= tankList.pageInfo;
+          this.pageInfo = tankList.pageInfo;
           return tankList.nodes;
         })
       );
   }
 
-    search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TankItem[]> {
-        this.loadingSubject.next(true);
-        return this.apollo
-            .query<any>({
-                query: GET_TANK_Where_r1,
-                variables: { where, order, first, after, last, before },
-                fetchPolicy: 'no-cache' // Ensure fresh data
-            })
-            .pipe(
-                map((result) => result.data),
-                catchError(() => of({ items: [], totalCount: 0 })),
-                finalize(() => this.loadingSubject.next(false)),
-                map((result) => {
-                    const tankList = result.queryTank || { nodes: [], totalCount: 0 };
-                    this.dataSubject.next(tankList);
-                    this.totalCount = tankList.totalCount;
-                    this.pageInfo = tankList.pageInfo;
-                    return tankList.nodes;
-                })
-            );
-    }
+  search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TankItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_TANK_Where_r1,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const tankList = result.queryTank || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(tankList);
+          this.totalCount = tankList.totalCount;
+          this.pageInfo = tankList.pageInfo;
+          return tankList.nodes;
+        })
+      );
+  }
 
   addNewTank(newTank: any): Observable<any> {
     return this.apollo.mutate({

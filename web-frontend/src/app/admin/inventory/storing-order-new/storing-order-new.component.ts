@@ -263,11 +263,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.subs.sink = this.tDS.search({
-      tariff_depot_guid: {
-        neq: null
-      }
-    }).subscribe(data => {
+    this.subs.sink = this.tDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
       this.unit_typeList = data
     });
 

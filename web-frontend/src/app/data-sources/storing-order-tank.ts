@@ -1,30 +1,26 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+import { ApolloError } from '@apollo/client/errors';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map, tap } from 'rxjs/operators';
 import gql from 'graphql-tag';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { StoringOrderItem } from './storing-order';
-import { TARIFF_CLEANING_FRAGMENT, TariffCleaningItem } from './tariff-cleaning';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { InGateItem } from './in-gate';
+import { BillingSOTItem } from './billing';
 import { BookingItem } from './booking';
-import { SchedulingItem } from './scheduling';
-import { SchedulingSotItem } from './scheduling-sot';
-import { ReleaseOrderSotItem } from './release-order-sot';
-import { OutGateItem } from './out-gate';
 import { CustomerCompanyItem } from './customer-company';
+import { InGateItem } from './in-gate';
+import { InGateCleaningItem } from './in-gate-cleaning';
+import { OutGateItem } from './out-gate';
+import { ReleaseOrderSotItem } from './release-order-sot';
 import { RepairItem } from './repair';
 import { ResidueItem } from './residue';
-import { TankItem } from './tank';
-import { InGateCleaningItem } from './in-gate-cleaning';
+import { SchedulingSotItem } from './scheduling-sot';
 import { SteamItem } from './steam';
+import { StoringOrderItem } from './storing-order';
 import { SurveyDetailItem } from './survey-detail';
-import { ApolloError } from '@apollo/client/errors';
-import { TransferItem } from './transfer';
-import { BillingSOTItem } from './billing';
+import { TankItem } from './tank';
 import { TankInfoItem } from './tank-info';
+import { TariffCleaningItem } from './tariff-cleaning';
+import { TransferItem } from './transfer';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -58,6 +54,8 @@ export class StoringOrderTank {
   public steaming_remarks?: string;
   public storage_remarks?: string;
   public last_release_dt?: number;
+  public job_no_remarks?: string;
+  public last_cargo_remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -96,6 +94,8 @@ export class StoringOrderTank {
     this.steaming_remarks = item.steaming_remarks || '';
     this.storage_remarks = item.storage_remarks || '';
     this.last_release_dt = item.last_release_dt;
+    this.job_no_remarks = item.job_no_remarks;
+    this.last_cargo_remarks = item.last_cargo_remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -148,7 +148,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.survey_detail = item.survey_detail;
     this.transfer = item.transfer;
     this.actions = item.actions || [];
-    this.billing_sot = item.billing_sot ;
+    this.billing_sot = item.billing_sot;
     this.tank_info = item.tank_info;
   }
 }
@@ -3292,40 +3292,6 @@ const GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER = gql`
   }
 `;
 
-export const CANCEL_STORING_ORDER_TANK = gql`
-  mutation CancelStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
-    cancelStoringOrderTank(sot: $sot)
-  }
-`;
-
-export const ROLLBACK_STORING_ORDER_TANK = gql`
-  mutation RollbackStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
-    rollbackStoringOrderTank(sot: $sot)
-  }
-`;
-
-export const UPDATE_STORING_ORDER_TANK = gql`
-  mutation updateStoringOrderTank($soTank: StoringOrderTankRequestInput!) {
-    updateStoringOrderTank(soTank: $soTank)
-  }
-`;
-
-export const UPDATE_TANK_PURPOSE = gql`
-  mutation updateTankPurpose($tankPurpose: TankPurposeRequestInput!) {
-    updateTankPurpose(tankPurpose: $tankPurpose)
-  }
-`;
-
-const ON_SOT_PURPOSE_CHANGE_SUBSCRIPTION = gql`
-  subscription onPurposeChanged($sot_guid: String!) {
-    onPurposeChanged(sot_guid: $sot_guid) {
-      purpose
-      sot_guid
-      tank_status
-    }
-  }
-`;
-
 const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -3590,6 +3556,46 @@ const GET_STORING_ORDER_TANKS_LOCATION_STATUS_SUMMARY = gql`
   }
 `;
 
+export const CANCEL_STORING_ORDER_TANK = gql`
+  mutation CancelStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
+    cancelStoringOrderTank(sot: $sot)
+  }
+`;
+
+export const ROLLBACK_STORING_ORDER_TANK = gql`
+  mutation RollbackStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
+    rollbackStoringOrderTank(sot: $sot)
+  }
+`;
+
+export const UPDATE_STORING_ORDER_TANK = gql`
+  mutation updateStoringOrderTank($soTank: StoringOrderTankRequestInput!) {
+    updateStoringOrderTank(soTank: $soTank)
+  }
+`;
+
+export const UPDATE_TANK_PURPOSE = gql`
+  mutation updateTankPurpose($tankPurpose: TankPurposeRequestInput!) {
+    updateTankPurpose(tankPurpose: $tankPurpose)
+  }
+`;
+
+const ON_SOT_PURPOSE_CHANGE_SUBSCRIPTION = gql`
+  subscription onPurposeChanged($sot_guid: String!) {
+    onPurposeChanged(sot_guid: $sot_guid) {
+      purpose
+      sot_guid
+      tank_status
+    }
+  }
+`;
+
+export const UPDATE_JOB_NO = gql`
+  mutation updateJobNo($sot: storing_order_tankInput!) {
+    updateJobNo(sot: $sot)
+  }
+`;
+
 export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   constructor(private apollo: Apollo) {
@@ -3628,7 +3634,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING,
-        variables: {where, order, first, after, last, before },
+        variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -4531,6 +4537,15 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       mutation: UPDATE_TANK_PURPOSE,
       variables: {
         tankPurpose
+      }
+    });
+  }
+
+  updateJobNo(sot: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_JOB_NO,
+      variables: {
+        sot
       }
     });
   }
