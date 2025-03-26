@@ -312,24 +312,24 @@
                   </ng-container>
                   <ng-container matColumnDef="desc">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-6_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.DESCRIPTION}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-6_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef [ngClass]="''"
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-6_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                     </mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="qty">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.QUANTITY}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.QUANTITY}}:</span><tlx-form-field
                         customClass="mat-table-form-txt-40px">
                         <mat-form-field>
@@ -351,7 +351,7 @@
                           class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}} -->
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="hour">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
@@ -385,14 +385,13 @@
                       {{this.getTotalLabourHours()}}
                     </mat-footer-cell>
                   </ng-container>
-
                   <ng-container matColumnDef="unit_price">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.UNIT_PRICE}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span><tlx-form-field
                         customClass="mat-table-form-txt-40px">
                         <mat-form-field>
@@ -413,17 +412,17 @@
                       <!-- <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}} -->
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">{{translatedLangText.LABOUR}}
+                      class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">{{translatedLangText.LABOUR}}
                       (${{parse2Decimal(this.packageLabourItem?.cost)}}):</mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="approve_part">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       mat-sort-header>
                       <mat-icon>more_vert</mat-icon>
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
                       @if (row.approve_part === null || row.approve_part === undefined ||
                       IsApprovePart(row)){
@@ -434,23 +433,23 @@
                       }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
                   </ng-container>
                   <!-- <ng-container matcolumnDef="unit_price">
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.LABOUR}}:</mat-footer-cell>
                     </ng-container> -->
                   <ng-container matColumnDef="cost">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.COST}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span
                         class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateSteamItemCost(row))}}<br />
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                       <span class="mobile-label"></span>
                       {{this.getTotalLabourCost()}}
                     </mat-footer-cell>
@@ -485,12 +484,12 @@
                 </table>
                 <div class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">
                   <div class="row">
-                    <div class="col-xl-8-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1"></div>
+                    <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1"></div>
                     <div class="col-xl-1 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2 font-bold">
                       {{translatedLangText.TOTAL_COST}}:
                     </div>
-                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 m-b-1 font-bold"></div>
-                    <div class="col-xl-1-5 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-10">
+                    <div class="col-xl-0-75 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 font-bold"></div>
+                    <div class="col-xl-2 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-10">
                       {{this.parse2Decimal(this.getTotalCost())}}
                     </div>
                   </div>

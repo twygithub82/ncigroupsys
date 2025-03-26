@@ -67,6 +67,7 @@ import { map } from 'rxjs/operators';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
+import { OverwriteJobNoFormDialogComponent } from './overwrite-job-no-form-dialog/overwrite-job-no-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -388,6 +389,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     DAYS: 'COMMON-FORM.DAYS',
     TO_YARD: 'COMMON-FORM.TO-YARD',
     FROM_YARD: 'COMMON-FORM.FROM-YARD',
+    OVERWRITE_JOB_NO: 'COMMON-FORM.OVERWRITE-JOB-NO',
+    OVERWRITE_DEPOT_COST: 'COMMON-FORM.OVERWRITE-DEPOT-COST',
   }
 
   sot_guid: string | null | undefined;
@@ -1036,7 +1039,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   
   updatePurposeDialog(event: Event, type: string, action: string) {
     this.preventDefault(event);
-    // TODO :: Add purpose logic
+    
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1256,6 +1259,29 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         } else {
           console.log('Unknown format');
         }
+      }
+    });
+  }
+  
+  overwriteJobNoDialog(event: Event) {
+    this.preventDefault(event);
+    
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(OverwriteJobNoFormDialogComponent, {
+      width: '600px',
+      data: {
+        sot: this.sot,
+        translatedLangText: this.translatedLangText,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
       }
     });
   }
@@ -1664,5 +1690,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       return false;
     }
     return false;
+  }
+
+  canOverwriteJobNo() {
+    return true;
   }
 }

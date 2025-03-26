@@ -30,6 +30,7 @@ namespace IDMS.Models.Service
         public string? estimate_no { get; set; }
         public double? total_cost { get; set; }
         public double? est_cost { get; set; }
+        public string? overwrite_remarks { get; set; }
 
         [ForeignKey("customer_billing")]
         public string? customer_billing_guid { get; set; }

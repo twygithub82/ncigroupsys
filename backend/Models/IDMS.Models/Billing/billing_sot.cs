@@ -30,6 +30,8 @@ namespace IDMS.Models.Billing
         public bool? preinspection { get; set; }
         public bool? lift_on { get; set; }
         public bool? lift_off { get; set; }
+        public bool? gate_in { get; set; }
+        public bool? gate_out { get; set; }
         public string? storage_cal_cv { get; set; }
         public double? preinspection_cost { get; set; }
         public double? lift_on_cost { get; set; }
@@ -39,6 +41,8 @@ namespace IDMS.Models.Billing
         public double? gate_out_cost { get; set; }
         public int? free_storage { get; set; }
         public string? remarks { get; set; }
+        public string? depot_cost_remarks { get; set; }
+
         [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; }
         [UseFiltering]

@@ -1,0 +1,74 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h3>{{dialogTitle}}</h3>
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    <form class="register-form" [formGroup]="overwriteForm" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.PRE_INSPECTION}}</mat-label>
+                <input matInput formControlName="preinspect_job_no">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.LIFT_OFF}}</mat-label>
+                <input matInput formControlName="liftoff_job_no">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.LIFT_ON}}</mat-label>
+                <input matInput formControlName="lifton_job_no">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.TAKE_IN_REFERENCE}}</mat-label>
+                <input matInput formControlName="takein_job_no">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.RELEASE_REFERENCE}}</mat-label>
+                <input matInput formControlName="release_job_no">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+                <textarea matInput formControlName="job_no_remarks"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" (click)="submit()">{{data.translatedLangText.SAVE_AND_SUBMIT}}</button>
+        }
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

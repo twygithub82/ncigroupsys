@@ -87,7 +87,6 @@ namespace IDMS.Inventory.GqlTypes
 
             return 1;
         }
-
         public async Task<int> AddSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail, PeriodicTestRequest? periodicTest)
         {
@@ -316,7 +315,6 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
-
         public async Task<int> AddTank(ApplicationInventoryDBContext context, [Service] IConfiguration config,
              [Service] IHttpContextAccessor httpContextAccessor, tank newTank)
         {
@@ -386,6 +384,35 @@ namespace IDMS.Inventory.GqlTypes
                 tank.update_by = user;
                 tank.update_dt = currentDateTime;
                 tank.delete_dt = currentDateTime;
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateJobNo(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, storing_order_tank sot)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var tank = new storing_order_tank() { guid = sot.guid };
+                context.Attach(tank);
+
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.preinspect_job_no = sot.preinspect_job_no;
+                tank.liftoff_job_no = sot.liftoff_job_no;
+                tank.lifton_job_no = sot.lifton_job_no;
+                tank.takein_job_no = sot.takein_job_no;
+                tank.release_job_no = sot.release_job_no;
+                tank.job_no_remarks = sot.job_no_remarks;
 
                 var res = await context.SaveChangesAsync();
                 return res;

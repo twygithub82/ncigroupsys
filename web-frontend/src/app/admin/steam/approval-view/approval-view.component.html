@@ -3,7 +3,7 @@
     <div class="block-header">
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitleDetails" [items]="breadcrumsMiddleList"
-      [active_item]="translatedLangText.VIEW"></app-breadcrumb>
+        [active_item]="translatedLangText.VIEW"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -121,82 +121,80 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="steamEstForm!"  #formDirective="ngForm">
-    <div class="row">
-      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
-            <h2>
-              {{translatedLangText.BILLING_PROFILE}}
-            </h2>
-          </div>
-          <div class="body">
-            @if (sotDS.loading$ | async) {
-            <div class="tbl-spinner">
-              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-              </mat-progress-spinner>
+    <form class="ms-0" [formGroup]="steamEstForm!" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.BILLING_PROFILE}}
+              </h2>
             </div>
-            }
-            @if (!(sotDS.loading$ | async)) {
-            <mat-card-content>
-              <div class="row">
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
-                        <input matInput formControlName="customer_code" readonly>
-                      </mat-form-field>
-                    </div>
-                    <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+            <div class="body">
+              @if (sotDS.loading$ | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              @if (!(sotDS.loading$ | async)) {
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
+                          <input matInput formControlName="customer_code" readonly>
+                        </mat-form-field>
+                      </div>
+                      <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">{{ccDS.displayName(sotItem?.storing_order?.customer_company)}}</div>
                     </div> -->
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
-                        <input matInput formControlName="job_no" readonly>
-                      </mat-form-field>
                     </div>
-                  </div>
-                </div>
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                  
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="row">
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
-                          <mat-select formControlName="billing_branch" readonly>
-                            @for (item of billingBranchList; track item) {
-                            <mat-option [value]="item">
-                              {{ this.ccDS.displayName(item)}}
-                            </mat-option>
-                            }
-                          </mat-select>
+                          <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
+                          <input matInput formControlName="job_no" readonly>
                         </mat-form-field>
                       </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                        <input matInput formControlName="remarks" readonly>
-                      </mat-form-field>
+                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+                            <mat-select formControlName="billing_branch" readonly>
+                              @for (item of billingBranchList; track item) {
+                              <mat-option [value]="item">
+                                {{ this.ccDS.displayName(item)}}
+                              </mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                          <input matInput formControlName="remarks" readonly>
+                        </mat-form-field>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </mat-card-content>
-            }
+              </mat-card-content>
+              }
+            </div>
           </div>
         </div>
       </div>
-    </div>
-   
+
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -283,9 +281,12 @@
                   <table mat-table [dataSource]="deList" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="seq">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
-                      <mat-cell *matCellDef="let row; let i = index"  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+                      <mat-cell *matCellDef="let row; let i = index"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="desc">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -294,7 +295,7 @@
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
                       </mat-cell>
-                      <mat-footer-cell  *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}" >
+                      <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}">
                       </mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="qty">
@@ -305,16 +306,16 @@
                         <ng-container *ngIf="row.edited; else displayValue">
                           <tlx-form-field customClass="mat-table-form-txt-40px">
                             <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput [formControl]="editRow.qty" (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"
-                                (wheel)="preventDefault($event)" (focus)="selectAllText($event)" type="number" min="0" required="true">
+                              <input class="text-end" tlxFormInput matInput [formControl]="editRow.qty"
+                                (click)="$event.stopPropagation()"
+                                (keydown.enter)="editEstDetails($event,row,row.index)"
+                                (mouseenter)="selectAllText($event)" (wheel)="preventDefault($event)"
+                                (focus)="selectAllText($event)" type="number" min="0" required="true">
                             </mat-form-field>
-                          <!-- <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
                           </tlx-form-field>
-                          <!-- <input matInput  [formControl]="editRow.qty" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
                         </ng-container>
                         <ng-template #displayValue>
-                        <span
-                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.approve_qty}}
+                          <span class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.approve_qty}}
                         </ng-template>
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
@@ -327,10 +328,13 @@
                         <ng-container *ngIf="row.edited; else displayValue">
                           <tlx-form-field customClass="mat-table-form-txt-40px">
                             <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput [formControl]="editRow.labour" (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"
-                                (wheel)="preventDefault($event)" (focus)="selectAllText($event)" type="number" min="0" required="true">
+                              <input class="text-end" tlxFormInput matInput [formControl]="editRow.labour"
+                                (click)="$event.stopPropagation()"
+                                (keydown.enter)="editEstDetails($event,row,row.index)"
+                                (mouseenter)="selectAllText($event)" (wheel)="preventDefault($event)"
+                                (focus)="selectAllText($event)" type="number" min="0" required="true">
                             </mat-form-field>
-                          <!-- <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
+                            <!-- <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
                           </tlx-form-field>
                           <!-- <input matInput  [formControl]="editRow.labour" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
                         </ng-container>
@@ -341,7 +345,8 @@
                         <!-- <span
                           class="mobile-label">{{translatedLangText.HOUR}}:</span>{{row.labour}} -->
                       </mat-cell>
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" >{{this.getTotalLabourHours()}}</mat-footer-cell>
+                      <mat-footer-cell *matFooterCellDef
+                        class="bg-{{getFooterBackgroundColor()}}">{{this.getTotalLabourHours()}}</mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="unit_price">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -352,10 +357,13 @@
                         <ng-container *ngIf="row.edited; else displayValue">
                           <tlx-form-field customClass="mat-table-form-txt-40px">
                             <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput  [formControl]="editRow.cost" (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"
-                                (wheel)="preventDefault($event)" (focus)="selectAllText($event)" type="number" min="0" required="true">
+                              <input class="text-end" tlxFormInput matInput [formControl]="editRow.cost"
+                                (click)="$event.stopPropagation()"
+                                (keydown.enter)="editEstDetails($event,row,row.index)"
+                                (mouseenter)="selectAllText($event)" (wheel)="preventDefault($event)"
+                                (focus)="selectAllText($event)" type="number" min="0" required="true">
                             </mat-form-field>
-                          <!-- <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
+                            <!-- <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
                           </tlx-form-field>
                         </ng-container>
                         <ng-template #displayValue>
@@ -364,17 +372,21 @@
                         </ng-template>
                       </mat-cell>
                       <!-- <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell> -->
-                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" style="padding-left: 40px;" >{{translatedLangText.LABOUR}} (${{this.packageLabourItem?.cost?.toFixed(2)}}) :</mat-footer-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold"
+                        style="padding-left: 40px;">{{translatedLangText.LABOUR}}
+                        (${{this.packageLabourItem?.cost?.toFixed(2)}}) :</mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="cost">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef >
+                      <mat-header-cell mat-header-cell *matHeaderCellDef>
                         {{translatedLangText.COST}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.approve_qty*row.approve_cost)}}
+                        <span
+                          class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.approve_qty*row.approve_cost)}}
                       </mat-cell>
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" >
-                        <span class="mobile-label" > </span>{{this.parse2Decimal( getTotalLabourCost()) }}
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label"> </span>{{this.parse2Decimal( getTotalLabourCost()) }}
                       </mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="approve_part">
@@ -386,8 +398,8 @@
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-                      
-    
+
+
                         @if (row.approve_part === null || row.approve_part === undefined ||
                         IsApprovePart(row)){
                         <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
@@ -395,7 +407,7 @@
                         @else {
                         <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
                         }
-                        
+
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>
@@ -411,35 +423,37 @@
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"  (click)="editEstDetails($event, row, row.index)"
-                    [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt&&row.edited}"
-                    [style.cursor]="'pointer'"  
-                      matRipple>
+                    <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
+                      (click)="editEstDetails($event, row, row.index)"
+                      [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt&&row.edited}"
+                      [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
                   </table>
-                  <div class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">
+                  <div
+                    class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">
                     <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-4 col-xs-4 m-b-1" ></div>
-                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 m-b-2 font-bold" style="padding-left: 60px;">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-4 col-xs-4 m-b-1"></div>
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 m-b-2 font-bold"
+                        style="padding-left: 60px;">
                         {{translatedLangText.TOTAL_COST}}:
-                       </div>
-                       
-                       <div class="col-xl-2 col-lg-2 col-md-1 col-sm-2 col-xs-2 m-b-1 font-bold"></div>
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-10" style="padding-left: 60px;" >
-                      {{this.parse2Decimal(this.getTotalCost())}}
-                  </div>
-                     </div>
+                      </div>
+
+                      <div class="col-xl-2 col-lg-2 col-md-1 col-sm-2 col-xs-2 m-b-1 font-bold"></div>
+                      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-10" style="padding-left: 60px;">
+                        {{this.parse2Decimal(this.getTotalCost())}}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                
+
                 @if (!(igDS.loading$ | async) && !deList.length) {
                 <mat-divider></mat-divider>
                 <div class="no-results m-l-20 pt-3" [style.display]="deList.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>
                 }
-                
+
                 @if (igDS.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
@@ -454,12 +468,12 @@
                 {{translatedLangText.ADD_ATLEAST_ONE}}
               </mat-error>
               }
-            </div> 
+            </div>
 
             <div class="row">
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
                 <button mat-flat-button type="button" aria-label="Back to previous page"
-                   (click)="GoBackPrevious($event)">
+                  (click)="GoBackPrevious($event)">
                   <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                 </button>
               </div>
@@ -516,7 +530,7 @@
                     {{translatedLangText.NO_ACTION}}
                   </button>
                   }
-                   <!-- @if (residueDS.canSave(residueItem!)) {
+                  <!-- @if (residueDS.canSave(residueItem!)) {
                   <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-l-5" (click)="onSave($event)">
                     <mat-icon>
                       @if (!(residueDS.loading$ | async)) {
@@ -534,7 +548,7 @@
           </div>
         </div>
       </div>
-     
+
     </form>
   </div>
 </section>
