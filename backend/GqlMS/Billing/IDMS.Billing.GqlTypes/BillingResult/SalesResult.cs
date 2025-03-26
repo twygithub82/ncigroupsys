@@ -70,6 +70,20 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public int average { get; set; }
     }
 
+    [NotMapped]
+    public class YearlyRevenueResult
+    {
+        public YearlySales? preinspection_yearly_revenue { get; set; }
+        public YearlySales? lolo_yearly_revenue { get; set; }
+        public YearlySales? storage_yearly_revenue { get; set; }
+        public YearlySales? gate_yearly_revenue { get; set; }
+        public YearlySales? steam_yearly_revenue { get; set; }
+        public YearlySales? residue_yearly_revenue { get; set; }
+        public YearlySales? cleaning_yearly_revenue { get; set; }
+        public YearlySales? repair_yearly_revenue { get; set; }
+    }
+
+
     public class YearlyRevenue
     {
         [NotMapped]
@@ -116,6 +130,19 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public string month { get; set; }
         [NotMapped]
         public double cost { get; set; }
+    }
+
+    [NotMapped]
+    public class TempRevenueResult
+    {
+        public string sot_guid { get; set; } //for opening_balance
+        public double cost { get; set; } //cost
+        public string code { get; set; }
+        public string cc_name { get; set; }
+        public long? appv_date { get; set; }
+        public long? complete_date { get; set; }
+        public string status { get; set; }
+        public string? date { get; set; }
     }
 
     public class CustomerSales

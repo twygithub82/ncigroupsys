@@ -47,6 +47,7 @@ namespace IDMS.Billing.Applicaton
                             .AddQueryType<BillingQuery>()
                             .AddTypeExtension<AdminReportQuery>()
                             .AddTypeExtension<ManagementReportQuery>()
+                            .AddTypeExtension<ReportQuery>()
                             .AddMutationType<BillingMutation>();
 
             builder.Services.AddAuthentication(options =>

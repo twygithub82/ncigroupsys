@@ -11,190 +11,562 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Service;
 using IDMS.Models.Parameter;
 using IDMS.Models.Shared;
+using CommonUtil.Core.Service;
 
 
 namespace IDMS.Billing.GqlTypes
 {
-    //[ExtendObjectType(typeof(BillingQuery))]
-    //public class ManagementReportQuery
-    //{
-    //    #region Performance Report
+    [ExtendObjectType(typeof(BillingQuery))]
+    public class ReportQuery
+    {
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<CleaningInventorySummary>> QueryCleaningInventorySummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, CleaningInventoryRequest cleaningInventoryRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                List<CleaningInventorySummary> result = new List<CleaningInventorySummary>();
 
-    //    [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-    //    [UseProjection]
-    //    [UseFiltering]
-    //    [UseSorting]
-    //    public async Task<List<CleanerPerformance>?> QueryCleanerPerformanceTest(ApplicationBillingDBContext context, [Service] IConfiguration config,
-    //      [Service] IHttpContextAccessor httpContextAccessor, CleanerPerformanceRequest cleanerPerformanceRequest)
-    //    {
+                long sDate = cleaningInventoryRequest.start_date; //StartDateExtract(cleaningInventoryRequest.start_date);
+                long eDate = cleaningInventoryRequest.end_date;
 
-    //        try
-    //        {
-    //            GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var query = context.storing_order_tank
+                                .Where(sot => context.cleaning
+                                .Where(c => (c.delete_dt == null || c.delete_dt == 0) && c.complete_dt >= sDate && c.complete_dt <= eDate)
+                                .Select(c => c.sot_guid)
+                                .Contains(sot.guid)).AsQueryable();
 
-    //            string completedStatus = "COMPLETED";
+                if (!string.IsNullOrEmpty(cleaningInventoryRequest.customer_code))
+                {
+                    //query = query.Where(sot => sot.storing_order.customer_company.code == cleaningInventoryRequest.customer_code);
+                    query = query.Where(sot => String.Equals(sot.storing_order.customer_company.code, cleaningInventoryRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
 
-    //            long sDate = cleanerPerformanceRequest.start_date;
-    //            long eDate = cleanerPerformanceRequest.end_date;
+                if (!string.IsNullOrEmpty(cleaningInventoryRequest.last_cargo))
+                {
+                    query = query.Where(sot => sot.tariff_cleaning.cargo.Contains(cleaningInventoryRequest.last_cargo));
+                }
 
-    //            var query = (from r in context.cleaning
-    //                         join sot in context.storing_order_tank on r.sot_guid equals sot.guid
-    //                         join so in context.storing_order on sot.so_guid equals so.guid
-    //                         join cc in context.customer_company on so.customer_company_guid equals cc.guid
-    //                         join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
-    //                         join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
-    //                         join cm in context.Set<cleaning_method>() on tc.cleaning_method_guid equals cm.guid
-    //                         join jo in context.job_order on r.job_order_guid equals jo.guid
-    //                         join t in context.team on jo.team_guid equals t.guid
-    //                         where r.status_cv == completedStatus && r.delete_dt == null &&
-    //                         r.complete_dt >= sDate && r.complete_dt <= eDate
-    //                         select new CleanerPerformance
-    //                         {
-    //                             eir_no = ig.eir_no,
-    //                             tank_no = sot.tank_no,
-    //                             customer_code = cc.code,
-    //                             eir_dt = ig.eir_dt,
-    //                             last_cargo = tc.cargo,
-    //                             complete_dt = r.complete_dt,
-    //                             cost = r.cleaning_cost,
-    //                             cleaner_name = r.complete_by,
-    //                             method = cm.name,
-    //                             bay = t.description
-    //                         }).AsQueryable();
+                if (!string.IsNullOrEmpty(cleaningInventoryRequest.un_no))
+                {
+                    query = query.Where(sot => sot.tariff_cleaning.un_no.Contains(cleaningInventoryRequest.un_no));
+                }
 
-    //            if (!string.IsNullOrEmpty(cleanerPerformanceRequest.customer_code))
-    //            {
-    //                query = query.Where(tr => tr.customer_code.Contains(cleanerPerformanceRequest.customer_code));
-    //            }
-    //            if (!string.IsNullOrEmpty(cleanerPerformanceRequest.eir_no))
-    //            {
-    //                query = query.Where(tr => tr.eir_no.Contains(cleanerPerformanceRequest.eir_no));
-    //            }
-    //            if (!string.IsNullOrEmpty(cleanerPerformanceRequest.tank_no))
-    //            {
-    //                query = query.Where(tr => tr.tank_no.Contains(cleanerPerformanceRequest.tank_no));
-    //            }
-    //            if (!string.IsNullOrEmpty(cleanerPerformanceRequest.last_cargo))
-    //            {
-    //                query = query.Where(tr => tr.last_cargo.Contains(cleanerPerformanceRequest.last_cargo));
-    //            }
-    //            if (!string.IsNullOrEmpty(cleanerPerformanceRequest.method_name))
-    //            {
-    //                query = query.Where(tr => tr.method.Contains(cleanerPerformanceRequest.method_name));
-    //            }
-    //            if (!string.IsNullOrEmpty(cleanerPerformanceRequest.cleaning_bay))
-    //            {
-    //                query = query.Where(tr => tr.bay.Contains(cleanerPerformanceRequest.cleaning_bay));
-    //            }
-    //            if (!string.IsNullOrEmpty(cleanerPerformanceRequest.cleaner_name))
-    //            {
-    //                query = query.Where(tr => tr.cleaner_name.Contains(cleanerPerformanceRequest.cleaner_name));
-    //            }
+                if (!string.IsNullOrEmpty(cleaningInventoryRequest.eir_no))
+                {
+                    query = query.Include(d => d.in_gate.Where(i => (i.delete_dt == null || i.delete_dt == 0)
+                                            && i.eir_no.Equals(cleaningInventoryRequest.eir_no)));
+                }
 
-    //            var resultList = await query.OrderBy(tr => tr.tank_no).ToListAsync();
-    //            return resultList;
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-    //        }
-    //    }
+                if (!string.IsNullOrEmpty(cleaningInventoryRequest.tank_no))
+                {
+                    query = query.Where(sot => sot.tank_no.Contains(cleaningInventoryRequest.tank_no));
+                }
 
-    //    #endregion
+                if (cleaningInventoryRequest.class_no != null && cleaningInventoryRequest.class_no.Any())
+                {
+                    query = query.Where(sot => cleaningInventoryRequest.class_no.Contains(sot.tariff_cleaning.class_cv));
+                }
 
-    //    private async Task<List<SteamingTempResult>> GetSteamingTempResults(ApplicationBillingDBContext context, List<string> jobOrderGuids)
-    //    {
-    //        var results = await context.Set<steaming_temp>()
-    //            .Where(s => jobOrderGuids.Contains(s.job_order_guid))
-    //            .GroupBy(s => s.job_order_guid)
-    //            .Select(g => new SteamingTempResult
-    //            {
-    //                JobOrderGuid = g.Key,
-    //                FirstMeterTemp = g.Where(s => s.report_dt == g.Min(x => x.report_dt)).Select(s => (double?)s.meter_temp).FirstOrDefault(),
-    //                FirstTopTemp = g.Where(s => s.report_dt == g.Min(x => x.report_dt)).Select(s => (double?)s.top_temp).FirstOrDefault(),
-    //                FirstBottomTemp = g.Where(s => s.report_dt == g.Min(x => x.report_dt)).Select(s => (double?)s.bottom_temp).FirstOrDefault(),
-    //                LastMeterTemp = g.Where(s => s.report_dt == g.Max(x => x.report_dt)).Select(s => (double?)s.meter_temp).FirstOrDefault(),
-    //                LastTopTemp = g.Where(s => s.report_dt == g.Max(x => x.report_dt)).Select(s => (double?)s.top_temp).FirstOrDefault(),
-    //                LastBottomTemp = g.Where(s => s.report_dt == g.Max(x => x.report_dt)).Select(s => (double?)s.bottom_temp).FirstOrDefault()
-    //            })
-    //            .ToListAsync();
+                // Apply filters conditionally
+                if (cleaningInventoryRequest.report_type.EqualsIgnore(ReportType.CUSTOMER_WISE))
+                {
+                    var res = query.GroupBy(sot => new { sot.storing_order.customer_company.code, sot.storing_order.customer_company.name })
+                                      .Select(g => new
+                                      {
+                                          NoOfTanks = g.Select(s => s.guid).Distinct().Count(), // Count distinct `guid`
+                                          Code = g.Key.code,
+                                          Name = g.Key.name
+                                      }).ToList();
 
-    //        return results;
-    //    }
 
-    //    private async Task<List<SteamingTempResult>> GetSteamingTempResults1(ApplicationBillingDBContext context, List<string> jobOrderGuids)
-    //    {
-    //        // Subquery to get the first report date for each job_order_guid
-    //        var firstReportDt = context.Set<steaming_temp>()
-    //            .Where(s => jobOrderGuids.Contains(s.job_order_guid))
-    //            .GroupBy(s => s.job_order_guid)
-    //            .Select(g => new
-    //            {
-    //                JobOrderGuid = g.Key,
-    //                MinReportDt = g.Min(s => s.report_dt)
-    //            });
+                    return res.Select(x => new CleaningInventorySummary
+                    {
+                        code = x.Code,
+                        name = x.Name,
+                        count = x.NoOfTanks
+                    }).ToList();
+                }
+                else if (cleaningInventoryRequest.report_type.EqualsIgnore(ReportType.CARGO_WISE))
+                {
+                    var res = query.GroupBy(sot => new { sot.tariff_cleaning.cargo })
+                                      .Select(g => new
+                                      {
+                                          NoOfTanks = g.Select(s => s.guid).Distinct().Count(), // Count distinct `guid`
+                                          Cargo = g.Key.cargo
+                                      }).ToList();
 
-    //        // Subquery to get the last report date for each job_order_guid
-    //        var lastReportDt = context.Set<steaming_temp>()
-    //            .Where(s => jobOrderGuids.Contains(s.job_order_guid))
-    //            .GroupBy(s => s.job_order_guid)
-    //            .Select(g => new
-    //            {
-    //                JobOrderGuid = g.Key,
-    //                MaxReportDt = g.Max(s => s.report_dt)
-    //            });
 
-    //        // Main query to join the steaming temperature data with the first and last report dates
-    //        var query = context.Set<steaming_temp>()
-    //            .Join(firstReportDt, s => s.job_order_guid, fr => fr.JobOrderGuid, (s, fr) => new { s, fr })
-    //            .Join(lastReportDt, combined => combined.s.job_order_guid, lr => lr.JobOrderGuid, (combined, lr) => new { combined.s, combined.fr, lr })
-    //            .Where(x => jobOrderGuids.Contains(x.s.job_order_guid))
-    //            .GroupBy(x => x.s.job_order_guid)
-    //            .Select(g => new SteamingTempResult
-    //            {
-    //                JobOrderGuid = g.Key,
-    //                FirstMeterTemp = g.Where(s => s.s.report_dt == s.fr.MinReportDt).Min(s => (double?)s.s.meter_temp),
-    //                FirstTopTemp = g.Where(s => s.s.report_dt == s.fr.MinReportDt).Min(s => (double?)s.s.top_temp),
-    //                FirstBottomTemp = g.Where(s => s.s.report_dt == s.fr.MinReportDt).Min(s => (double?)s.s.bottom_temp),
-    //                FirstRecordTime = g.Where(s => s.s.report_dt == s.fr.MinReportDt).Min(s => (long?)s.s.report_dt),
-    //                LastMeterTemp = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (double?)s.s.meter_temp),
-    //                LastTopTemp = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (double?)s.s.top_temp),
-    //                LastBottomTemp = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (double?)s.s.bottom_temp),
-    //                LastRecordTime = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (long?)s.s.report_dt)
-    //            })
-    //            .ToList();
+                    return res.Select(x => new CleaningInventorySummary
+                    {
+                        code = x.Cargo,
+                        count = x.NoOfTanks
+                    }).ToList();
+                }
+                else if (cleaningInventoryRequest.report_type.EqualsIgnore(ReportType.UN_WISE))
+                {
+                    var res = query.GroupBy(sot => new { sot.tariff_cleaning.un_no })
+                                    .Select(g => new
+                                    {
+                                        NoOfTanks = g.Select(s => s.guid).Distinct().Count(), // Count distinct `guid`
+                                        UN = g.Key.un_no
+                                    }).ToList();
 
-    //        return query;
-    //    }
 
-    //    private string ConvertIntoDuration(long datetime)
-    //    {
-    //        TimeSpan timeSpan = TimeSpan.FromSeconds(datetime);
+                    return res.Select(x => new CleaningInventorySummary
+                    {
+                        code = x.UN,
+                        count = x.NoOfTanks
+                    }).ToList();
+                }
 
-    //        // Calculate days, hours, and minutes
-    //        int days = (int)timeSpan.TotalDays;
-    //        int hours = timeSpan.Hours;
-    //        int minutes = timeSpan.Minutes;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
 
-    //        // Build the result based on non-zero values
-    //        string result = "";
 
-    //        if (days > 0)
-    //        {
-    //            result += $"{days}d:";
-    //        }
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<PeriodicTestDueSummary>> QueryPeriodicTestDueSummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, PeriodicTestDueRequest periodicTestDueRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                List<PeriodicTestDueSummary> result = new List<PeriodicTestDueSummary>();
 
-    //        if (hours > 0 || days > 0) // Only show hours if there are days or if hours are non-zero
-    //        {
-    //            result += $"{hours:D2}h:";
-    //        }
+                long currentDateTime = DateTime.Now.ToEpochTime();
+                long nextTestThreshold = (long)(Math.Floor(2.5 * 365.25 * 86400));
+                long secInDay = 86400;
 
-    //        if (minutes > 0 || hours > 0 || days > 0) // Only show minutes if there are hours or days or minutes are non-zero
-    //        {
-    //            result += $"{minutes:D2}m";
-    //        }
 
-    //        return result;
-    //    }
-    //}
+                IQueryable<PeriodicTestDueSummary> query = from tf in context.tank_info
+                                                           join sot in context.storing_order_tank on tf.tank_no equals sot.tank_no into sotGroup
+                                                           from sot in sotGroup.DefaultIfEmpty()
+                                                           join occ in context.customer_company on tf.owner_guid equals occ.guid into occGroup
+                                                           from occ in occGroup.DefaultIfEmpty()
+                                                           join so in context.storing_order on sot.so_guid equals so.guid into soGroup
+                                                           from so in soGroup.DefaultIfEmpty()
+                                                           join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
+                                                           from cc in ccGroup.DefaultIfEmpty()
+                                                           join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
+                                                           from i in iGroup.DefaultIfEmpty()
+                                                           where tf.yard_cv != null
+                                                                 && !StatusCondition.BeforeTankIn.Contains(sot.tank_status_cv) && i.delete_dt == null
+                                                           select (new PeriodicTestDueSummary
+                                                           {
+                                                               tank_no = tf.tank_no,
+                                                               eir_dt = i.eir_dt,
+                                                               eir_no = i.eir_no,
+                                                               customer_code = cc.code,
+                                                               customer_name = cc.name,
+                                                               owner_code = occ.code,
+                                                               last_test_type = tf.last_test_cv == "2.5" ? "2.5 Year (Air)" :
+                                                                            tf.last_test_cv == "5" ? "5 Year (Hydro)" : null,
+                                                               class_cv = tf.test_class_cv,
+                                                               test_dt = tf.test_dt,
+                                                               next_test_type = tf.next_test_cv == "2.5" ? "2.5 Year (Air)" :
+                                                                            tf.next_test_cv == "5" ? "5 Year (Hydro)" : null,
+                                                               next_test_dt = tf.test_dt + nextTestThreshold,
+                                                               due_type = (tf.test_dt + nextTestThreshold) < currentDateTime ? "Due" : "Normal",
+                                                               due_days = (tf.test_dt + nextTestThreshold) < currentDateTime ?
+                                                                           Math.Round((double)((currentDateTime - (tf.test_dt + nextTestThreshold)) / secInDay)).ToString() :
+                                                                           ""
+                                                           });
+
+                if (!string.IsNullOrEmpty(periodicTestDueRequest.customer_code))
+                {
+                    query = query.Where(tf => String.Equals(tf.customer_code, periodicTestDueRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(periodicTestDueRequest.tank_no))
+                {
+                    query = query.Where(tf => tf.tank_no.Contains(periodicTestDueRequest.tank_no));
+                }
+
+                if (!string.IsNullOrEmpty(periodicTestDueRequest.eir_no))
+                {
+                    query = query.Where(tf => tf.eir_no.Contains(periodicTestDueRequest.eir_no));
+                }
+
+                if (!string.IsNullOrEmpty(periodicTestDueRequest.next_test_due))
+                {
+                    if (periodicTestDueRequest.next_test_due == "2.5")
+                        query = query.Where(tf => tf.next_test_type.Contains("2.5") && tf.next_test_type.Contains("Air"));
+                    else if (periodicTestDueRequest.next_test_due == "5")
+                        query = query.Where(tf => tf.next_test_type.Contains("5") && !tf.next_test_type.Contains("Air"));
+                }
+
+                if (!string.IsNullOrEmpty(periodicTestDueRequest.due_type))
+                {
+                    result = result.Where(i => i.due_type.EqualsIgnore(periodicTestDueRequest.due_type)).ToList();
+                }
+
+                result = await query.OrderBy(i => i.customer_code).ToListAsync();
+                var groupedByCustomerCode = result
+                    .GroupBy(test => test.customer_code)
+                    .ToList();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<DailyTankSurveySummary>> QueryDailyTankSurveySummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, DailyTankSurveyRequest dailyTankSurveyRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                List<DailyTankSurveySummary> result = new List<DailyTankSurveySummary>();
+
+                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+                string surveryorCodeValType = "TEST_CLASS";
+                string tankStatusCV = "ACCEPTED";
+
+                long sDate = dailyTankSurveyRequest.start_date;
+                long eDate = dailyTankSurveyRequest.end_date;
+
+                IQueryable<DailyTankSurveySummary> query = from sot in context.storing_order_tank
+                                                           join so in context.storing_order on sot.so_guid equals so.guid
+                                                           join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                                                           join sd in context.survey_detail on sot.guid equals sd.sot_guid
+                                                           join cv in context.code_values on sd.test_class_cv equals cv.code_val
+                                                           join cl in context.cleaning on sot.guid equals cl.sot_guid into clGroup
+                                                           from cl in clGroup.DefaultIfEmpty()
+                                                           join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
+                                                           from i in iGroup.DefaultIfEmpty()
+                                                           where sot.status_cv == tankStatusCV
+                                                               && !StatusCondition.BeforeTankIn.Contains(sot.tank_status_cv)
+                                                               && sd.survey_dt >= sDate
+                                                               && sd.survey_dt <= eDate
+                                                               && (i.delete_dt == null)
+                                                               && cv.code_val_type == surveryorCodeValType
+
+                                                           group new { sot, cc, sd, cl, i, cv } by new
+                                                           {
+                                                               cc.code,
+                                                               sot.tank_no,
+                                                               sot.status_cv,
+                                                               i.eir_no,
+                                                               sd.survey_type_cv,
+                                                               sd.survey_dt,
+                                                               cv.description,
+                                                               clean_dt = sot.purpose_cleaning == true && cl.complete_dt.HasValue ? cl.complete_dt : null
+                                                           } into g
+
+                                                           select new DailyTankSurveySummary
+                                                           {
+                                                               customer_code = g.Key.code,
+                                                               tank_no = g.Key.tank_no,
+                                                               status = g.Key.status_cv,
+                                                               eir_no = g.Key.eir_no,
+                                                               survey_type = g.Key.survey_type_cv,
+                                                               survey_dt = g.Key.survey_dt,
+                                                               surveryor = g.Key.description,
+                                                               clean_dt = g.Key.clean_dt,
+                                                               visit = g.Count().ToString()
+                                                           };
+
+                if (!string.IsNullOrEmpty(dailyTankSurveyRequest.customer_code))
+                {
+                    query = query.Where(tf => String.Equals(tf.customer_code, dailyTankSurveyRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTankSurveyRequest.tank_no))
+                {
+                    query = query.Where(tf => tf.tank_no.Contains(dailyTankSurveyRequest.tank_no));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTankSurveyRequest.eir_no))
+                {
+                    query = query.Where(tf => tf.eir_no.Contains(dailyTankSurveyRequest.eir_no));
+                }
+
+                if (dailyTankSurveyRequest.survey_type != null && dailyTankSurveyRequest.survey_type.Any())
+                {
+                    query = query.Where(tf => dailyTankSurveyRequest.survey_type.Contains(tf.survey_type));
+                }
+
+                if (!string.IsNullOrEmpty(dailyTankSurveyRequest.surveyor_name))
+                {
+                    query = query.Where(tf => tf.surveryor.Contains(dailyTankSurveyRequest.surveyor_name));
+                }
+
+                return await query.OrderBy(i => i.customer_code).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<List<DailyInventorySummary>> QueryDailyInventorySummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, DailyInventoryRequest dailyInventoryRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                long sDate = dailyInventoryRequest.start_date; //StartDateExtract(dailyInventoryRequest.start_date);
+                long eDate = dailyInventoryRequest.end_date; //EndDateExtract(dailyInventoryRequest.end_date);
+
+                List<OpeningBalance?> openingBalances = new List<OpeningBalance?>();
+                var OB = await QueryOpeningBalance(context, sDate);
+                openingBalances = await QueryYardCount(context, dailyInventoryRequest.inventory_type, sDate, eDate, OB);
+
+                List<DailyInventorySummary> inList = new List<DailyInventorySummary>();
+                List<DailyInventorySummary> outList = new List<DailyInventorySummary>();
+
+                var query = context.storing_order_tank.AsQueryable();
+                if (!string.IsNullOrEmpty(dailyInventoryRequest.customer_code))
+                {
+                    if (query != null)
+                    {
+                        query = query.Where(s => s.storing_order.customer_company.code == dailyInventoryRequest.customer_code);
+                    }
+                }
+
+                var query1 = query;
+
+                if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.IN) || dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.ALL))
+                {
+                    //Master in here need to check eir_status = published ?? and publish_dt != null ???
+                    query = query.Where(sot => context.in_gate
+                                    .Where(i => (i.delete_dt == null || i.delete_dt == 0) && i.eir_dt >= sDate && i.eir_dt <= eDate)
+                                    .Select(i => i.so_tank_guid)
+                                    .Contains(sot.guid)).AsQueryable();
+
+                    var res = await query.GroupBy(sot => new { sot.storing_order.customer_company.code, sot.storing_order.customer_company.name })
+                                      .Select(g => new
+                                      {
+                                          NoOfTanks = g.Select(s => s.guid).Distinct().Count(), // Count distinct `guid`
+                                          Code = g.Key.code,
+                                          Name = g.Key.name
+                                      }).ToListAsync();
+
+                    if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.IN))
+                    {
+                        return res.Select(x => new DailyInventorySummary
+                        {
+                            code = x.Code,
+                            name = x.Name,
+                            in_gate_count = x.NoOfTanks,
+                            opening_balance = openingBalances
+
+                        }).ToList();
+                    }
+                    else
+                    {
+                        inList = res.Select(x => new DailyInventorySummary
+                        {
+                            code = x.Code,
+                            name = x.Name,
+                            in_gate_count = x.NoOfTanks
+                        }).ToList();
+                    }
+                }
+
+                if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.OUT) || dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.ALL))
+                {
+                    query1 = query1.Where(sot => context.out_gate
+                                    .Where(i => (i.delete_dt == null || i.delete_dt == 0) && i.eir_dt >= sDate && i.eir_dt <= eDate)
+                                    .Select(i => i.so_tank_guid)
+                                    .Contains(sot.guid)).AsQueryable();
+
+                    var res = await query1.GroupBy(sot => new { sot.storing_order.customer_company.code, sot.storing_order.customer_company.name })
+                                      .Select(g => new
+                                      {
+                                          NoOfTanks = g.Select(s => s.guid).Distinct().Count(), // Count distinct `guid`
+                                          Code = g.Key.code,
+                                          Name = g.Key.name
+                                      }).ToListAsync();
+
+                    if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.OUT))
+                    {
+                        return res.Select(x => new DailyInventorySummary
+                        {
+                            code = x.Code,
+                            name = x.Name,
+                            out_gate_count = x.NoOfTanks,
+                            opening_balance = openingBalances
+                        }).ToList();
+                    }
+                    else
+                    {
+                        outList = res.Select(x => new DailyInventorySummary
+                        {
+                            code = x.Code,
+                            name = x.Name,
+                            out_gate_count = x.NoOfTanks
+                        }).ToList();
+                    }
+                }
+                return MergeList(inList, outList, openingBalances);
+
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        private List<DailyInventorySummary> MergeList(List<DailyInventorySummary> list1, List<DailyInventorySummary> list2, List<OpeningBalance?> openingBalances)
+        {
+            List<DailyInventorySummary> mergedList = new List<DailyInventorySummary>();
+            try
+            {
+                mergedList = (from l1 in list1
+                              join l2 in list2 on l1.code equals l2.code into joined
+                              from l2 in joined.DefaultIfEmpty()
+                              select new DailyInventorySummary
+                              {
+                                  code = l1.code,
+                                  name = l1.name,
+                                  in_gate_count = l1.in_gate_count,
+                                  out_gate_count = l2?.out_gate_count ?? 0,
+                                  opening_balance = openingBalances
+                              })
+                           .Union(
+                               from l2 in list2
+                               where !list1.Any(l1 => l1.code == l2.code)
+                               select new DailyInventorySummary
+                               {
+                                   code = l2.code,
+                                   name = l2.name,
+                                   in_gate_count = 0,
+                                   out_gate_count = l2.out_gate_count,
+                                   opening_balance = openingBalances
+                               }
+                           )
+                           .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return mergedList;
+        }
+
+        private async Task<List<OpeningBalance>> QueryOpeningBalance(ApplicationBillingDBContext context, long inventoryDate)
+        {
+            try
+            {
+                long sDate = inventoryDate; //StartDateExtract(inventoryDate);
+                var res = (from ig in context.in_gate
+                           join og in context.out_gate
+                               on ig.so_tank_guid equals og.so_tank_guid into ogGroup
+                           from og in ogGroup.DefaultIfEmpty()
+                           where (ig.delete_dt == null || ig.delete_dt == 0) && ig.eir_dt < sDate
+                                 && (og.delete_dt == null || og.delete_dt == 0) && (og.eir_dt == null || og.eir_dt > sDate)
+                           group ig by ig.yard_cv into grouped
+                           select new
+                           {
+                               OpeningBalance = grouped.Count(ig => ig.so_tank_guid != null),
+                               Yard = grouped.Key
+                           }).AsQueryable();
+
+                return await res.Select(x => new OpeningBalance
+                {
+                    yard = x.Yard,
+                    open_balance = x.OpeningBalance
+                }).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private async Task<List<OpeningBalance>> QueryYardCount(ApplicationBillingDBContext context, string type, long sDate, long eDate, List<OpeningBalance> openingBalances)
+        {
+            try
+            {
+                List<OpeningBalance> inList = new List<OpeningBalance>();
+                List<OpeningBalance> outList = new List<OpeningBalance>();
+
+                if (type.EqualsIgnore(ReportType.IN) || type.EqualsIgnore(ReportType.ALL))
+                {
+                    var result = await (from sot in context.storing_order_tank
+                                        join i in context.in_gate
+                                        on sot.guid equals i.so_tank_guid into leftJoin
+                                        from i in leftJoin.DefaultIfEmpty()
+                                        where context.in_gate
+                                               .Where(ig => ig.delete_dt == null
+                                                            && ig.eir_dt >= sDate
+                                                            && ig.eir_dt <= eDate)
+                                               .Select(ig => ig.so_tank_guid)
+                                               .Distinct()
+                                               .Contains(sot.guid)
+                                        group sot by i.yard_cv into grouped
+                                        select new OpeningBalance
+                                        {
+                                            in_count = grouped.Count(),
+                                            yard = grouped.Key
+                                        }).ToListAsync();
+                    inList = result;
+                }
+
+                if (type.EqualsIgnore(ReportType.OUT) || type.EqualsIgnore(ReportType.ALL))
+                {
+                    var result = await (from sot in context.storing_order_tank
+                                        join i in context.out_gate
+                                        on sot.guid equals i.so_tank_guid into leftJoin
+                                        from i in leftJoin.DefaultIfEmpty()
+                                        where context.out_gate
+                                               .Where(ig => ig.delete_dt == null
+                                                            && ig.eir_dt >= sDate
+                                                            && ig.eir_dt <= eDate)
+                                               .Select(ig => ig.so_tank_guid)
+                                               .Distinct()
+                                               .Contains(sot.guid)
+                                        group sot by i.yard_cv into grouped
+                                        select new OpeningBalance
+                                        {
+                                            out_count = grouped.Count(),
+                                            yard = grouped.Key
+                                        }).ToListAsync();
+
+                    outList = result;
+                }
+
+                foreach (var item in openingBalances)
+                {
+                    if (inList.Count() != 0)
+                        item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
+
+                    if (outList.Count != 0)
+                        item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
+                }
+
+                return openingBalances.OrderBy(i => i.yard).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
 }

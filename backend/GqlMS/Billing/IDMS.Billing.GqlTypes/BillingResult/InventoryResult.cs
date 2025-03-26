@@ -61,13 +61,6 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     }
 
     [NotMapped]
-    public class YearlyGateInOutInventory
-    {
-        public List<YearlyLoloInventory>? lolo_inventory { get; set; }
-        public List<YearlyGateInventory>? gate_inventory { get; set; }
-    }
-
-    [NotMapped]
     public class InventoryPerDay
     {
         public string date { get; set; }
@@ -98,52 +91,6 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public YearlyInventory? gate_out_inventory { get; set; }
     }
 
-    //[NotMapped]
-    //public class YearlyCleaningInventory 
-    //{
-    //}
-
-    //[NotMapped]
-    //public class YearlySteamingInventory
-    //{
-    //    public string month { get; set; }
-    //    public int count { get; set; }
-    //}
-
-    //[NotMapped]
-    //public class YearlyRepairInventory
-    //{
-    //    public string month { get; set; }
-    //    public int count { get; set; }
-    //    //public double completed_hour { get; set; }
-    //}
-
-    [NotMapped]
-    public class YearlyLoloInventory
-    {
-        public string month { get; set; }
-        public double count { get; set; }
-        public double? percentage { get; set; }
-    }
-
-
-    [NotMapped]
-    public class YearlyDepotInventory
-    {
-        public string month { get; set; }
-        public double count { get; set; }
-        public double percentage { get; set; }
-    }
-
-
-    [NotMapped]
-    public class YearlyGateInventory
-    {
-        public string month { get; set; }
-        public double gate_in_cost { get; set; }
-        public double gate_out_cost { get; set; }
-    }
-
     public class YearlyInventory
     {
         [NotMapped]
@@ -163,13 +110,13 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public double percentage { get; set; }
     }
 
-    [NotMapped]
-    public class MergedYearlyResult
-    {
-        public string month { get; set; }
-        public double appv_cost { get; set; } //for opening_balance
-        public double complete_cost { get; set; }
-    }
+    //[NotMapped]
+    //public class MergedYearlyResult
+    //{
+    //    public string month { get; set; }
+    //    public double appv_cost { get; set; } //for opening_balance
+    //    public double complete_cost { get; set; }
+    //}
 
     [NotMapped]
     public class TempInventoryResult
