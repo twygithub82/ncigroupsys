@@ -907,7 +907,9 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   checkInvoicedAndTotalCost() {
     this.billSotList = this.billSotList?.map(res => {
 
-      return { ...res, invoiced: (res.gateio_billing_guid ? true : false), total_cost: (res.gate_in_cost || 0) + (res.gate_out_cost || 0) };
+      
+      return { ...res, invoiced: (res.gateio_billing_guid ? true : false), total_cost: (res.gate_in?(res.gate_in_cost || 0):0) + (res.gate_out?(res.gate_out_cost || 0):0) };
+      //return { ...res, invoiced: (res.gateio_billing_guid ? true : false), total_cost: (res.gate_in_cost || 0) + (res.gate_out_cost || 0) };
     });
   }
 

@@ -45,6 +45,8 @@ export class SteamGO {
   public delete_dt?: number;
 
    public est_cost?:number;
+   public total_material_cost?:number;
+   public total_labour_cost?:number;
    
   // public aspnetusers_guid?: string;
   // public estimate_no?: string;
@@ -72,7 +74,7 @@ export class SteamGO {
     this.begin_by = item.begin_by;
     this.begin_dt = item.begin_dt;
     this.na_dt = item.na_dt;
-    this.est_cost=item.est_cost;
+    this.est_cost = item.est_cost;
     this.total_cost = item.total_cost;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
@@ -194,6 +196,8 @@ export const GET_STEAM_BILLING_EST = gql`
         }
         est_cost
         total_cost
+        total_material_cost
+        total_labour_cost
         complete_by
         complete_dt
         create_by
@@ -381,6 +385,8 @@ export const GET_STEAM_EST = gql`
         status_cv
         est_cost
         total_cost
+        total_material_cost
+        total_labour_cost
         update_by
         update_dt
         storing_order_tank {
@@ -671,6 +677,8 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         estimate_no
         est_cost
         total_cost
+        total_material_cost
+        total_labour_cost
         guid
         job_no
         na_dt
@@ -855,8 +863,8 @@ export const RECORD_STEAM_TEMP = gql`
 `;
 
 export const GET_STEAM_TEMP = gql`
-  query querySteamingTemp($where: steaming_tempFilterInput ,$order: [steaming_tempSortInput!]) {
-    resultList: querySteamingTemp(where: $where,order:$order) {
+  query querySteamingTemp($where: steaming_tempFilterInput , $order: [steaming_tempSortInput!]) {
+    resultList: querySteamingTemp(where: $where, order: $order, first: 100) {
      nodes {
       report_dt
       bottom_temp

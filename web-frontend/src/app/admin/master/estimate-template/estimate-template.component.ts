@@ -494,7 +494,6 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     });
     this.masterEstTempDS.SearchEstimateTemplateOnly({}, { template_name: 'ASC' }).subscribe(data => {
       this.masterTempItemOnly = data;
-      console.log(this.masterTempItemOnly)
     })
   }
   showNotification(

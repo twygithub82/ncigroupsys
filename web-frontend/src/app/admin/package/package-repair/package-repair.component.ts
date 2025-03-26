@@ -269,6 +269,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.packRepairDS = new PackageRepairDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
+    this.initializeFilterCustomerCompany();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -300,6 +301,27 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       handled_item_cv: this.handledItemControl
     });
   }
+
+  initializeFilterCustomerCompany() {
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+
+
+  }
+
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -447,10 +469,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
     if (this.customerCodeControl.value) {
-      if (this.customerCodeControl.value.length > 0) {
-        const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { in: guids };
+      //if (this.customerCodeControl.value.length > 0) 
+      {
+       // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
+        //var guids = customerCodes.map(cc => cc.guid);
+        where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
       }
     }
 

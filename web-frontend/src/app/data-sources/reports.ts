@@ -376,7 +376,7 @@ export class AdminReportYearlySalesReport{
   customer?:string;
   cleaning_yearly_sales?:YearlySales;
   lolo_yearly_sales?:YearlySales;
-  preinspaction_yearly_sales?:YearlySales;
+  preinspection_yearly_sales?:YearlySales;
   repair_yearly_sales?:YearlySales;
   residue_yearly_sales?:YearlySales;
   steaming_yearly_sales?:YearlySales;
@@ -384,7 +384,7 @@ export class AdminReportYearlySalesReport{
     this.customer=item.customer;
     this.cleaning_yearly_sales=item.cleaning_yearly_sales;
     this.lolo_yearly_sales=item.lolo_yearly_sales;
-    this.preinspaction_yearly_sales=item.preinspaction_yearly_sales;
+    this.preinspection_yearly_sales=item.preinspection_yearly_sales;
     this.repair_yearly_sales=item.repair_yearly_sales;
     this.residue_yearly_sales=item.residue_yearly_sales;
     this.steaming_yearly_sales=item.steaming_yearly_sales;
