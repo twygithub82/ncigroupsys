@@ -466,7 +466,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
             this.toggleJobState(false);
           }
           if (this.steam_guid) {
-
             this.steamDS.getSteamIDForJobOrder(this.steam_guid, this.job_order_guid!).subscribe(steam => {
               if (steam?.length) {
                 console.log(steam)
@@ -1097,8 +1096,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-
-
         var steamTmp: any = new SteamTemp(this.deList[row.index]);
         //var guid = steamTmp.guid;
         this.callRecordSteamingTemp(steamTmp, 'CANCEL');
@@ -1178,9 +1175,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   callRecordSteamingTemp(steamTemp: SteamTemp, action?: string, event?: Event) {
     var ReqTemp: number = this.reqTemp!;
-
     this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
-
       if (result.data.recordSteamingTemp) {
         let checkAction = [
           'NEW',
@@ -1192,8 +1187,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
         }
         else {
           if (ReqTemp <= steamTemp.meter_temp!) {
-            let overTemp: boolean = ReqTemp < steamTemp.meter_temp!
-            let tempStatus: number = (ReqTemp < steamTemp.meter_temp!) ? 1 : 0;
+            let tempStatus: number = this.CheckAndGetTempStatus();
             this.completeSteamJob(event!, false, tempStatus);
           }
           else {
@@ -1242,11 +1236,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     this.steamForm?.get('thermometer')?.setErrors(null);
     this.steamForm?.get('top')?.setErrors(null);
     this.steamForm?.get('bottom')?.setErrors(null);
-
-
   }
-
-
 
   completeSteamJob(event: Event, checkTemp: boolean, tempStatus: number) {
     this.preventDefault(event);
