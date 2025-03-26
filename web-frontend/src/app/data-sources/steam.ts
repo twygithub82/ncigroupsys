@@ -74,7 +74,7 @@ export class SteamGO {
     this.begin_by = item.begin_by;
     this.begin_dt = item.begin_dt;
     this.na_dt = item.na_dt;
-    this.est_cost=item.est_cost;
+    this.est_cost = item.est_cost;
     this.total_cost = item.total_cost;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
@@ -863,8 +863,8 @@ export const RECORD_STEAM_TEMP = gql`
 `;
 
 export const GET_STEAM_TEMP = gql`
-  query querySteamingTemp($where: steaming_tempFilterInput ,$order: [steaming_tempSortInput!]) {
-    resultList: querySteamingTemp(where: $where,order:$order) {
+  query querySteamingTemp($where: steaming_tempFilterInput , $order: [steaming_tempSortInput!]) {
+    resultList: querySteamingTemp(where: $where, order: $order, first: 100) {
      nodes {
       report_dt
       bottom_temp
