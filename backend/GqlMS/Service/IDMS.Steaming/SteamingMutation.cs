@@ -31,7 +31,7 @@ namespace IDMS.Steaming.GqlTypes
                 newSteaming.status_cv = CurrentServiceStatus.PENDING;
                 newSteaming.estimate_by = user;
                 newSteaming.estimate_dt = currentDateTime;
-
+              
                 foreach (var item in steaming.steaming_part)
                 {
                     item.guid = Util.GenerateGUID();
@@ -79,6 +79,8 @@ namespace IDMS.Steaming.GqlTypes
                 approveSteam.update_dt = currentDateTime;
                 approveSteam.est_cost = steaming.est_cost;
                 approveSteam.total_cost = steaming.total_cost;
+                approveSteam.total_material_cost = steaming.total_material_cost;
+                approveSteam.total_labour_cost = steaming.total_labour_cost;
 
                 if (CurrentServiceStatus.PENDING.EqualsIgnore(steaming.status_cv))
                 {
@@ -170,7 +172,8 @@ namespace IDMS.Steaming.GqlTypes
                 updateSteaming.total_cost = steaming.total_cost;
                 updateSteaming.remarks = steaming.remarks;
                 updateSteaming.bill_to_guid = steaming.bill_to_guid;
-
+                updateSteaming.total_labour_cost = steaming.total_labour_cost;
+                updateSteaming.total_material_cost = steaming.total_material_cost;  
 
                 //Handling For steaming_part
                 foreach (var item in steaming.steaming_part)
