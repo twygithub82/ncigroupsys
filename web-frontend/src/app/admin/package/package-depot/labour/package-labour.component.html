@@ -37,11 +37,6 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
-                    @if (plForm?.get('customer_code')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.CUSTOMER_CODE }} {{translatedLangText.CARGO_REQUIRED }}
-                    </mat-error>
-                    }
                   </mat-form-field>
                 </div>
                 <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">

@@ -286,7 +286,8 @@
         "STEAM-MONTHLY": "Steam Monthly",
         "MONTHLY-REPORTS": "Monthly Reports",
         "YEARLY-REPORTS": "Yearly Reports",
-        "SALES-REPORTS": "Sales Reports"
+        "SALES-REPORTS": "Sales Reports",
+        "DAILY-TEAM-REPORT":"Daily Team Report"
       }
     }
   },
@@ -1092,7 +1093,10 @@
     "YEARLY-SALES-REPORT": "Yearly Sales Report",
     "TANK": "Tank",
     "OVERWRITE-JOB-NO": "Overwrite Job No.",
-    "OVERWRITE-DEPOT-COST": "Overwrite Depot Cost"
+    "OVERWRITE-DEPOT-COST": "Overwrite Depot Cost",
+    "DAILY-TEAM-REPORT":"Daily Team Report",
+    "REVENUE":"Revenue"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

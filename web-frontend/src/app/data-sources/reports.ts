@@ -393,6 +393,49 @@ export class AdminReportYearlySalesReport{
 
 }
 
+
+export class DailyTeamApproval{
+  code?:string;
+  estimate_no?:string;
+  repair_cost?:number;
+  repair_type?:string;
+  tank_no?:string;
+  status?:string
+  
+  constructor(item: Partial<DailyTeamApproval> = {}) {
+    this.code=item.code;
+    this.estimate_no=item.estimate_no;
+    this.status=item.status;
+    this.repair_cost=item.repair_cost;
+    this.repair_type=item.repair_type;
+    this.tank_no=item.tank_no;
+    } 
+
+}
+
+export class DailyTeamRevenue{
+  code?:string;
+  eir_no?:string;
+  estimate_date?:number;
+  estimate_no?:string;
+  qc_by?:string;
+  repair_cost?:number;
+  repair_type?:string;
+  tank_no?:string;
+  
+  constructor(item: Partial<DailyTeamRevenue> = {}) {
+    this.code=item.code;
+    this.eir_no=item.eir_no;
+    this.estimate_date=item.estimate_date;
+    this.estimate_no=item.estimate_no;
+    this.qc_by=item.qc_by;
+    this.repair_cost=item.repair_cost;
+    this.repair_type=item.repair_type;
+    this.tank_no=item.tank_no;
+    } 
+
+}
+
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
@@ -643,6 +686,38 @@ export const GET_ADMIN_REPORT_MONTHLY_SALES_REPORT = gql`
   }
 `
 
+export const GET_ADMIN_REPORT_DAILY_TEAM_REVENUE_REPORT = gql`
+  query queryDailyTeamRevenue($dailyTeamRevenueRequest: DailyTeamRevenuRequestInput!,$first:Int) {
+    resultList: queryDailyTeamRevenue(dailyTeamRevenueRequest: $dailyTeamRevenueRequest,first:$first) {
+      nodes {
+        code
+        eir_no
+        estimate_date
+        estimate_no
+        qc_by
+        repair_cost
+        repair_type
+        tank_no
+      }
+    }
+  }
+`
+
+export const GET_ADMIN_REPORT_DAILY_TEAM_APPROVAL_REPORT = gql`
+  query queryDailyTeamApproval($dailyTeamApprovalRequest: DailyTeamApprovalRequestInput!,$first:Int) {
+    resultList: queryDailyTeamApproval(dailyTeamApprovalRequest: $dailyTeamApprovalRequest,first:$first) {
+      nodes {
+        code
+        estimate_no
+        repair_cost
+        repair_type
+        status
+        tank_no
+      }
+    }
+  }
+`
+
 export class ReportDS extends BaseDataSource<any> {
 
   private first: number=20000;
@@ -856,6 +931,59 @@ export class ReportDS extends BaseDataSource<any> {
           this.totalCount = resultList.totalCount;
           this.pageInfo = resultList.pageInfo;
           return resultList;
+        })
+      );
+  }
+
+  searchAdminReportDailyTeamApproval(dailyTeamApprovalRequest:any): Observable<DailyTeamApproval[]> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_DAILY_TEAM_APPROVAL_REPORT,
+        variables: { dailyTeamApprovalRequest,first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+
+  searchAdminReportDailyTeamRevenue(dailyTeamRevenueRequest:any): Observable<DailyTeamRevenue[]> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_DAILY_TEAM_REVENUE_REPORT,
+        variables: { dailyTeamRevenueRequest,first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
         })
       );
   }

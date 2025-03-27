@@ -924,17 +924,8 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
 
   processBarCharValue(repInv: daily_inventory_summary[]) {
     if (this.barChartOptions.xaxis) {
-      // const topTenReports = repStatus
-      // .sort((a, b) => (b.number_tank ?? 0) - (a.number_tank ?? 0)) // Sort in descending order
-      // .slice(0, 10); // Get the top 10
-
       var categories: any = [
       ];
-      // repInv.map(p=>
-
-      //   categories.push(p.code)
-      // );
-
       var series: any = [];
       var in_gate_tank_no: number[] = [];
       var out_gate_tank_no: number[] = [];
