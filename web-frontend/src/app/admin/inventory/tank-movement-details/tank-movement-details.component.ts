@@ -51,9 +51,9 @@ import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
-import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
-import { TankDS, TankItem } from 'app/data-sources/tank';
+import { TankDS } from 'app/data-sources/tank';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { TransferDS, TransferItem } from 'app/data-sources/transfer';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
@@ -65,9 +65,9 @@ import { Moment } from 'moment';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
+import { OverwriteJobNoFormDialogComponent } from './overwrite-job-no-form-dialog/overwrite-job-no-form-dialog.component';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
-import { OverwriteJobNoFormDialogComponent } from './overwrite-job-no-form-dialog/overwrite-job-no-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -391,6 +391,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     FROM_YARD: 'COMMON-FORM.FROM-YARD',
     OVERWRITE_JOB_NO: 'COMMON-FORM.OVERWRITE-JOB-NO',
     OVERWRITE_DEPOT_COST: 'COMMON-FORM.OVERWRITE-DEPOT-COST',
+    OVERWRITE_LAST_CARGO: 'COMMON-FORM.OVERWRITE-LAST-CARGO',
   }
 
   sot_guid: string | null | undefined;
@@ -755,7 +756,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           console.log(`sot: `, data)
           this.sot = data[0];
           this.canAddPurpose('steaming');
-          
+
           this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
           this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
             console.log(`packageDepot: `, data)
@@ -1036,10 +1037,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   parse2Decimal(input: number | string | undefined) {
     return Utility.formatNumberDisplay(input);
   }
-  
+
   updatePurposeDialog(event: Event, type: string, action: string) {
     this.preventDefault(event);
-    
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1262,10 +1263,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       }
     });
   }
-  
+
   overwriteJobNoDialog(event: Event) {
     this.preventDefault(event);
-    
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1282,6 +1283,27 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && this.sot) {
+        const newSot = new StoringOrderTank(this.sot);
+        newSot.preinspect_job_no = result.preinspect_job_no;
+        newSot.liftoff_job_no = result.liftoff_job_no;
+        newSot.lifton_job_no = result.lifton_job_no;
+        newSot.takein_job_no = result.takein_job_no;
+        newSot.release_job_no = result.release_job_no;
+        newSot.job_no_remarks = result.job_no_remarks;
+
+        // Update current sot for display purpose
+        this.sot.preinspect_job_no = result.preinspect_job_no;
+        this.sot.liftoff_job_no = result.liftoff_job_no;
+        this.sot.lifton_job_no = result.lifton_job_no;
+        this.sot.takein_job_no = result.takein_job_no;
+        this.sot.release_job_no = result.release_job_no;
+        this.sot.job_no_remarks = result.job_no_remarks;
+
+        console.log(newSot)
+        this.sotDS.updateJobNo(newSot).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateJobNo);
+        });
       }
     });
   }
@@ -1694,5 +1716,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canOverwriteJobNo() {
     return true;
+  }
+
+  canOverwriteLastCargo() {
+    return false;
   }
 }

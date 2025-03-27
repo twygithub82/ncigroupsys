@@ -35,6 +35,23 @@
             @if (!(igDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 d-flex justify-content-end ms-auto">
+                  @if (canOverwriteLastCargo()) {
+                  <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
+                    [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
+                    <mat-icon>menu</mat-icon>
+                  </button>
+
+                  <mat-menu #menu="matMenu">
+                    @if (canOverwriteLastCargo()) {
+                    <button mat-menu-item
+                      (click)="overwriteJobNoDialog($event)">{{translatedLangText.OVERWRITE_LAST_CARGO}}</button>
+                    }
+                  </mat-menu>
+                  }
+                </div>
+              </div>
+              <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                   <div class="row">
                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
@@ -416,13 +433,15 @@
                                   <mat-icon class="m-r-5">storage</mat-icon>{{ translatedLangText.STORAGE }}
                                 </span>
                               </ng-template>
-                              @if ((pdDS.loading$ | async) || (sotDS.loading$ | async)) {
+                              @if ((pdDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
+                              async)) {
                               <div class="tbl-spinner">
                                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                                 </mat-progress-spinner>
                               </div>
                               }
-                              @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async)) {
+                              @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$ |
+                              async)) {
                               @if (sot?.purpose_storage) {
                               <div class="position-relative">
                                 <!-- @if (!isNoPurpose(sot!, 'cleaning') && !isNoPurpose(sot!, 'repair') && !isNoPurpose(sot!, 'storage'))
@@ -534,13 +553,15 @@
                                   <mat-icon class="m-r-5">whatshot</mat-icon>{{ translatedLangText.STEAM }}
                                 </span>
                               </ng-template>
-                              @if ((pdDS.loading$ | async) || (sotDS.loading$ | async)) {
+                              @if ((pdDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
+                              async)) {
                               <div class="tbl-spinner">
                                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                                 </mat-progress-spinner>
                               </div>
                               }
-                              @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async)) {
+                              @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$ |
+                              async)) {
                               @if (sot?.purpose_steam) {
                               <div class="position-relative">
                                 @if (!isNoPurpose(sot!, 'steaming') && canRemovePurpose('steaming')) {
@@ -746,13 +767,15 @@
                                   <mat-icon class="m-r-5">delete</mat-icon>{{ translatedLangText.RESIDUE }}
                                 </span>
                               </ng-template>
-                              @if ((residueDS.loading$ | async) || (sotDS.loading$ | async)) {
+                              @if ((residueDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
+                              async)) {
                               <div class="tbl-spinner">
                                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                                 </mat-progress-spinner>
                               </div>
                               }
-                              @if (!(residueDS.loading$ | async) && !(sotDS.loading$ | async)) {
+                              @if (!(residueDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$
+                              | async)) {
                               @if (sot?.purpose_cleaning) {
                               <div class="row m-t-10 contact-details-field">
                                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -981,13 +1004,15 @@
                                   <mat-icon class="m-r-5">opacity</mat-icon>{{ translatedLangText.CLEANING }}
                                 </span>
                               </ng-template>
-                              @if ((cleaningDS.loading$ | async) || (sotDS.loading$ | async)) {
+                              @if ((cleaningDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
+                              async)) {
                               <div class="tbl-spinner">
                                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                                 </mat-progress-spinner>
                               </div>
                               }
-                              @if (!(cleaningDS.loading$ | async) && !(sotDS.loading$ | async)) {
+                              @if (!(cleaningDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$
+                              | async)) {
                               @if (sot?.purpose_cleaning) {
                               <div class="position-relative">
                                 @if (!isNoPurpose(sot!, 'cleaning') && canRemovePurpose('cleaning')) {
@@ -1151,7 +1176,8 @@
                                   <mat-icon class="m-r-5">build</mat-icon>{{ translatedLangText.REPAIR }}
                                 </span>
                               </ng-template>
-                              @if (!(repairDS.loading$ | async) && !(sotDS.loading$ | async)) {
+                              @if (!(repairDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$ |
+                              async)) {
                               @if (sot?.purpose_repair_cv) {
                               <div class="position-relative">
                                 @if (!isNoPurpose(sot!, 'repair') && canRemovePurpose('repair')) {
@@ -1351,23 +1377,24 @@
                     }
                     @if (!(pdDS.loading$ | async)) {
                     <mat-card-content>
-                      <!-- <div class="row">
+                      <div class="row">
                         <div
                           class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 d-flex justify-content-end ms-auto">
                           @if (canOverwriteJobNo()) {
                           <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
                             [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
-                            <mat-icon>
-                              menu
-                            </mat-icon>
+                            <mat-icon>menu</mat-icon>
                           </button>
 
                           <mat-menu #menu="matMenu">
-                            <button mat-menu-item (click)="overwriteJobNoDialog($event)">{{translatedLangText.OVERWRITE_JOB_NO}}</button>
+                            @if (canOverwriteJobNo()) {
+                            <button mat-menu-item
+                              (click)="overwriteJobNoDialog($event)">{{translatedLangText.OVERWRITE_JOB_NO}}</button>
+                            }
                           </mat-menu>
                           }
                         </div>
-                      </div> -->
+                      </div>
                       <div class="row">
                         <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                           <table class="table table-striped table-hover m-b-0">

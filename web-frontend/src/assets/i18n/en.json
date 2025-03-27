@@ -1094,9 +1094,12 @@
     "TANK": "Tank",
     "OVERWRITE-JOB-NO": "Overwrite Job No.",
     "OVERWRITE-DEPOT-COST": "Overwrite Depot Cost",
-    "DAILY-TEAM-REPORT":"Daily Team Report",
-    "REVENUE":"Revenue"
-    
+    "OVERWRITE-LAST-CARGO": "Overwrite Last Cargo",
+    "DAILY-TEAM-REPORT": "Daily Team Report",
+    "REVENUE": "Revenue"
+
+
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
