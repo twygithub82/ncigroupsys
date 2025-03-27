@@ -2158,6 +2158,8 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
         release_note
         last_cargo_guid
         required_temp
+        job_no_remarks
+        last_cargo_remarks
         tariff_cleaning {
           guid
           open_on_gate_cv
@@ -4508,48 +4510,73 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
   cancelStoringOrderTank(sot: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: CANCEL_STORING_ORDER_TANK,
       variables: {
         sot
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   rollbackStoringOrderTank(sot: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ROLLBACK_STORING_ORDER_TANK,
       variables: {
         sot
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateStoringOrderTank(soTank: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_STORING_ORDER_TANK,
       variables: {
         soTank
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateTankPurpose(tankPurpose: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_TANK_PURPOSE,
       variables: {
         tankPurpose
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateJobNo(sot: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_JOB_NO,
       variables: {
         sot
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   subscribeToSotPurposeChange(sot_guid: string): Observable<any> {

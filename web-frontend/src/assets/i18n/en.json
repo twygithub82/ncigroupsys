@@ -1092,7 +1092,8 @@
     "YEARLY-SALES-REPORT": "Yearly Sales Report",
     "TANK": "Tank",
     "OVERWRITE-JOB-NO": "Overwrite Job No.",
-    "OVERWRITE-DEPOT-COST": "Overwrite Depot Cost"
+    "OVERWRITE-DEPOT-COST": "Overwrite Depot Cost",
+    "OVERWRITE-LAST-CARGO": "Overwrite Last Cargo"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
