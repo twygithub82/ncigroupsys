@@ -463,7 +463,6 @@ namespace IDMS.Billing.GqlTypes
 
         #endregion
 
-
         #region Sales/Revenue Report
         public async Task<CustomerMonthlySales> QueryCustomerMonthlySalesReport(ApplicationBillingDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, CustomerMonthlySalesRequest customerMonthlySalesRequest)
@@ -1324,6 +1323,9 @@ namespace IDMS.Billing.GqlTypes
 
         #endregion
 
+        #region DailyReport
+
+        #endregion
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
@@ -1368,7 +1370,7 @@ namespace IDMS.Billing.GqlTypes
                                  eir_no = ig.eir_no,
                                  repair_cost = r.total_cost,
                                  team = t.description,
-                                 repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+                                 repair_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
 
                              }).AsQueryable();
 
@@ -1469,7 +1471,7 @@ namespace IDMS.Billing.GqlTypes
                                  repair_cost = r.total_cost,
                                  team = t.description,
                                  status = r.status_cv,
-                                 repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+                                 repair_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv,
 
                              }).AsQueryable();
 
