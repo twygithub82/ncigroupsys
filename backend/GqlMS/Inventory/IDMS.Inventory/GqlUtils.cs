@@ -371,7 +371,7 @@ namespace IDMS.Inventory.GqlTypes
                     ingateCleaning.create_by = "system";
                     ingateCleaning.create_dt = currentDateTime;
                     ingateCleaning.sot_guid = sot.guid;
-                    ingateCleaning.approve_dt = ingate_date;
+                    ingateCleaning.approve_dt = currentDateTime; //Change to this after daniel request //ingate_date;
                     ingateCleaning.approve_by = "system";
                     ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
                     ingateCleaning.job_no = newJob_no; //sot?.job_no;
@@ -481,7 +481,7 @@ namespace IDMS.Inventory.GqlTypes
                     newSteam.bill_to_guid = customerGuid;
                     newSteam.est_cost = totalCost;
                     newSteam.total_cost = totalCost;
-                    newSteam.approve_dt = ingate_date;
+                    newSteam.approve_dt = currentDateTime;//Change to this after daniel request //ingate_date;
                     newSteam.approve_by = "system";
                     newSteam.estimate_by = "system";
                     newSteam.estimate_dt = ingate_date;
