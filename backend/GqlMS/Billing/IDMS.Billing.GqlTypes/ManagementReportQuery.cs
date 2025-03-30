@@ -5,6 +5,7 @@ using IDMS.Billing.Application;
 using IDMS.Billing.GqlTypes.BillingResult;
 using IDMS.Billing.GqlTypes.LocalModel;
 using IDMS.Models;
+using IDMS.Models.Billing;
 using IDMS.Models.DB;
 using IDMS.Models.Inventory;
 using IDMS.Models.Tariff;
@@ -13,16 +14,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 
-
 namespace IDMS.Billing.GqlTypes
 {
     [ExtendObjectType(typeof(BillingQuery))]
     public class ManagementReportQuery
     {
-        //#region Performance Report
-
+        #region InventoryReport
         public async Task<YearlyInventoryResult?> QueryYearlyInventory(ApplicationBillingDBContext context, [Service] IConfiguration config,
-          [Service] IHttpContextAccessor httpContextAccessor, YearlyInventoryRequest yearlyInventoryRequest)
+            [Service] IHttpContextAccessor httpContextAccessor, YearlyInventoryRequest yearlyInventoryRequest)
         {
             try
             {
@@ -72,9 +71,9 @@ namespace IDMS.Billing.GqlTypes
 
                     var repairInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
                     {
-                       month = g.month,
-                       count = g.count,
-                       percentage = CalculatePercentage(g.count, total_count)
+                        month = g.month,
+                        count = g.count,
+                        percentage = CalculatePercentage(g.count, total_count)
                     }).ToList();
 
                     // Handle repairResult as needed
@@ -82,7 +81,7 @@ namespace IDMS.Billing.GqlTypes
                     yearlyInventory.inventory_per_month = repairInventory;
                     yearlyInventory.total_count = total_count;
                     yearlyInventory.average_count = average_count;
-                    yearlyInventoryResult.repair_yearly_inventory= yearlyInventory;
+                    yearlyInventoryResult.repair_yearly_inventory = yearlyInventory;
                 }
 
                 if (yearlyInventoryRequest.inventory_type.EqualsIgnore("steaming") || yearlyInventoryRequest.inventory_type.EqualsIgnore("all"))
@@ -224,7 +223,7 @@ namespace IDMS.Billing.GqlTypes
         }
 
         public async Task<MonthlyInventoryResult>? QueryMonthlyInventory(ApplicationBillingDBContext context, [Service] IConfiguration config,
-          [Service] IHttpContextAccessor httpContextAccessor, MonthlyInventoryRequest monthlyInventoryRequest)
+            [Service] IHttpContextAccessor httpContextAccessor, MonthlyInventoryRequest monthlyInventoryRequest)
         {
             try
             {
@@ -394,7 +393,7 @@ namespace IDMS.Billing.GqlTypes
                 return (gateInResult, gateOutResult);
 
             }
-            else if (revenueType.EqualsIgnore("depot")) 
+            else if (revenueType.EqualsIgnore("depot"))
             {
                 //Only for yearly report type
                 var newQuery = GetInventoryQuery(context, query, "depot", startEpoch, endEpoch, startMonthLastDayEpoch);
@@ -421,7 +420,6 @@ namespace IDMS.Billing.GqlTypes
                 return (approvedResult, completeResult);
             }
         }
-
         private IQueryable<TempInventoryResult> GetInventoryQuery(ApplicationBillingDBContext context, IQueryable<TempInventoryResult> query, string inventoryType, long startEpoch, long endEpoch, long? startMonthLastDay = null)
         {
             string yetSurvey = "YET_TO_SURVEY";
@@ -492,7 +490,7 @@ namespace IDMS.Billing.GqlTypes
                            join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
                            join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
                            where ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-                 
+
                            select new TempInventoryResult
                            {
                                sot_guid = result.sot_guid,
@@ -645,6 +643,9 @@ namespace IDMS.Billing.GqlTypes
 
             return mergedResults.ToList();
         }
+
+        #endregion
+
 
         private double CalculatePercentage(int count, int totalCount)
         {
@@ -934,6 +935,141 @@ namespace IDMS.Billing.GqlTypes
             return result;
         }
 
+        public async Task<MonthlyRevenueResult?> QueryMonthlyRevenue(ApplicationBillingDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, MonthlyRevenueRequest monthlyRevenueRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                string completedStatus = "COMPLETED";
+                string qcCompletedStatus = "QC_COMPLETED";
+                string reportFormat = "monthly";
+
+                int year = monthlyRevenueRequest.year;
+                int month = monthlyRevenueRequest.month;
+                // Get the start date of the month (1st of the month)
+                DateTime startOfMonth = new DateTime(year, month, 1);
+                // Get the end date of the month (last day of the month)
+                DateTime endOfMonth = startOfMonth.AddMonths(1).AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
+                // Convert the start and end dates to Unix Epoch (seconds since 1970-01-01)
+                long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
+                long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
+
+                //DateTime startMonthLastDay = new DateTime(year, start_month, DateTime.DaysInMonth(year, start_month));
+                //long startMonthLastDayEpoch = ((DateTimeOffset)startMonthLastDay).ToUnixTimeSeconds();
+
+                var query = (from sot in context.storing_order_tank
+                             join so in context.storing_order on sot.so_guid equals so.guid
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                             where string.IsNullOrEmpty(monthlyRevenueRequest.customer_code) || cc.code == monthlyRevenueRequest.customer_code
+                             select new TempRevenueResult
+                             {
+                                 sot_guid = sot.guid,
+                                 code = cc.code,
+                             })
+                            .AsQueryable();
+
+                var monthlyRevenueResult = new MonthlyRevenueResult();
+
+                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("repair") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
+                    var revenueQuery = GetRevenueQuery(context, query, "repair", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                    monthlyRevenueResult.repair_monthly_revenue = monthlyRevenue;
+                }
+
+                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("steaming") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
+
+                    var revenueQuery = GetRevenueQuery(context, query, "steaming", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                    monthlyRevenueResult.steam_monthly_revenue = monthlyRevenue;
+                }
+
+                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("cleaning") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                    var revenueQuery = GetRevenueQuery(context, query, "cleaning", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                    monthlyRevenueResult.cleaning_monthly_revenue = monthlyRevenue;
+                }
+
+                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("residue") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                    var revenueQuery = GetRevenueQuery(context, query, "residue", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                    monthlyRevenueResult.residue_monthly_revenue = monthlyRevenue;
+                }
+
+                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("lolo") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    var revenueQuery = GetRevenueQuery(context, query, "lolo", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                    monthlyRevenueResult.lolo_monthly_revenue = monthlyRevenue;
+                }
+
+
+                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("gate") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                    monthlyRevenueResult.gate_monthly_revenue = monthlyRevenue;
+                }
+
+                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("preinspection") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    var revenueQuery = GetRevenueQuery(context, query, "preinspection", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                    monthlyRevenueResult.preinspection_monthly_revenue = monthlyRevenue;
+                }
+
+                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("storage") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    var revenueQuery = GetRevenueQuery(context, query, "storage", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                    monthlyRevenueResult.storage_monthly_revenue = monthlyRevenue;
+                }
+
+                return monthlyRevenueResult;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
         public async Task<YearlyRevenueResult?> QueryYearlyRevenue(ApplicationBillingDBContext context, [Service] IConfiguration config,
                 [Service] IHttpContextAccessor httpContextAccessor, YearlyRevenueRequest yearlyRevenueRequest)
         {
@@ -973,199 +1109,95 @@ namespace IDMS.Billing.GqlTypes
 
                 var yearlyRevenueResult = new YearlyRevenueResult();
 
-                if (yearlyRevenueRequest.inventory_type.EqualsIgnore("repair") || yearlyRevenueRequest.inventory_type.EqualsIgnore("all"))
+                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("repair") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
                 {
-                    var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
+                    var revenueQuery = GetRevenueQuery(context, query, "repair", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
                     var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var total_count = approveResultPerMonth.Sum(g => g.count);
-                    var average_count = total_count / 12;
-                    var total_cost = approveResultPerMonth.Sum(g => g.cost);
-                    var average_cost = total_cost / 12;
-
-
-                    //var repairInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
-                    //{
-                    //    month = g.month,
-                    //    count = g.count,
-                    //    percentage = CalculatePercentage(g.count, total_count)
-                    //}).ToList();
-
-                    // Handle repairResult as needed
-                    var yearlyInventory = new YearlySales();
-                    yearlyInventory.result_per_month = approveResultPerMonth;
-                    yearlyInventory.total_count = total_count;
-                    yearlyInventory.average_count = average_count;
-                    yearlyInventory.total_cost = total_cost;
-                    yearlyInventory.average_cost = average_cost;
-
-                    yearlyRevenueResult.repair_yearly_revenue = yearlyInventory;
+                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                    yearlyRevenueResult.repair_yearly_revenue = yearlyRevenue;
                 }
 
-                if (yearlyRevenueRequest.inventory_type.EqualsIgnore("steaming") || yearlyRevenueRequest.inventory_type.EqualsIgnore("all"))
+                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("steaming") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
                 {
-                    var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
+
+                    var revenueQuery = GetRevenueQuery(context, query, "steaming", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
                     var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
-                    var total_count = approveResultPerMonth.Sum(g => g.count);
-                    var average_count = total_count / 12;
-                    var total_cost = approveResultPerMonth.Sum(g => g.cost);
-                    var average_cost = total_cost / 12;
-
-
-                    //// Handle steamingResult as needed
-                    //var steamingInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
-                    //{
-                    //    month = g.month,
-                    //    count = g.count,
-                    //    percentage = CalculatePercentage(g.count, total_count)
-                    //}).ToList();
-
-                    // Handle repairResult as needed
-                    var yearlyInventory = new YearlySales();
-                    yearlyInventory.result_per_month = approveResultPerMonth;
-                    yearlyInventory.total_count = total_count;
-                    yearlyInventory.average_count = average_count;
-                    yearlyInventory.total_cost = total_cost;
-                    yearlyInventory.average_cost = average_cost;
-
-                    yearlyRevenueResult.steam_yearly_revenue = yearlyInventory;
+                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                    yearlyRevenueResult.steam_yearly_revenue = yearlyRevenue;
                 }
 
-                if (yearlyRevenueRequest.inventory_type.EqualsIgnore("cleaning") || yearlyRevenueRequest.inventory_type.EqualsIgnore("all"))
+                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("cleaning") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
                 {
-                    var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                    var revenueQuery = GetRevenueQuery(context, query, "cleaning", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
                     var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var total_count = approveResultPerMonth.Sum(g => g.count);
-                    var average_count = total_count / 12;
-                    var total_cost = approveResultPerMonth.Sum(g => g.cost);
-                    var average_cost = total_cost / 12;
-
-                    //// Handle cleaningResult as needed
-                    //var cleaningInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
-                    //{
-                    //    month = g.month,
-                    //    count = g.count,
-                    //    percentage = CalculatePercentage(g.count, total_count)
-                    //}).ToList();
-
-                    var yearlyInventory = new YearlySales();
-                    yearlyInventory.result_per_month = approveResultPerMonth;
-                    yearlyInventory.total_count = total_count;
-                    yearlyInventory.average_count = average_count;
-                    yearlyInventory.total_cost = total_cost;
-                    yearlyInventory.average_cost = average_cost;
-                    yearlyRevenueResult.cleaning_yearly_revenue = yearlyInventory;
+                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                    yearlyRevenueResult.cleaning_yearly_revenue = yearlyRevenue;
                 }
 
-                if (yearlyRevenueRequest.inventory_type.EqualsIgnore("cleaning") || yearlyRevenueRequest.inventory_type.EqualsIgnore("all"))
+                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("residue") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
                 {
-                    var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                    var revenueQuery = GetRevenueQuery(context, query, "residue", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
                     var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var total_count = approveResultPerMonth.Sum(g => g.count);
-                    var average_count = total_count / 12;
-                    var total_cost = approveResultPerMonth.Sum(g => g.cost);
-                    var average_cost = total_cost / 12;
-
-                    //// Handle cleaningResult as needed
-                    //var cleaningInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
-                    //{
-                    //    month = g.month,
-                    //    count = g.count,
-                    //    percentage = CalculatePercentage(g.count, total_count)
-                    //}).ToList();
-
-                    var yearlyInventory = new YearlySales();
-                    yearlyInventory.result_per_month = approveResultPerMonth;
-                    yearlyInventory.total_count = total_count;
-                    yearlyInventory.average_count = average_count;
-                    yearlyInventory.total_cost = total_cost;
-                    yearlyInventory.average_cost = average_cost;
-                    yearlyRevenueResult.cleaning_yearly_revenue = yearlyInventory;
+                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                    yearlyRevenueResult.residue_yearly_revenue = yearlyRevenue;
                 }
 
-                if (yearlyRevenueRequest.inventory_type.EqualsIgnore("lolo") || yearlyRevenueRequest.inventory_type.EqualsIgnore("all"))
+                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("lolo") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
                 {
-                    var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    var revenueQuery = GetRevenueQuery(context, query, "lolo", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
                     var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
-                    var total_count = approveResultPerMonth.Sum(g => g.count);
-                    var average_count = total_count / 12;
-                    var total_cost = approveResultPerMonth.Sum(g => g.cost);
-                    var average_cost = total_cost / 12;
-
-                    //var cleaningResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
-
-                    //// Handle cleaningResult as needed
-                    //var depotInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
-                    //{
-                    //    month = g.month,
-                    //    count = g.count,
-                    //    //percentage = CalculatePercentage(g.count, total_count)
-                    //}).ToList();
-
-                    var yearlyInventory = new YearlySales();
-                    yearlyInventory.result_per_month = approveResultPerMonth;
-                    yearlyInventory.total_count = total_count;
-                    yearlyInventory.average_count = average_count;
-                    yearlyInventory.total_cost = total_cost;
-                    yearlyInventory.average_cost = average_cost;
-                    yearlyRevenueResult.lolo_yearly_revenue = yearlyInventory;
+                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                    yearlyRevenueResult.lolo_yearly_revenue = yearlyRevenue;
                 }
 
-                //if (yearlyRevenueRequest.inventory_type.EqualsIgnore("in-out") || yearlyRevenueRequest.inventory_type.EqualsIgnore("all"))
-                //{
-                //    //var gateInOutInventoryResult = new YearlyGateInOutInventory();
 
-                //    //var (l_OffResult, l_OnResult) = await ProcessInventoryResults(context, query, "lolo", startEpoch, endEpoch, reportFormat);
+                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("gate") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                //    //var l_OffResultPerMonth = await GetResultPerMonth(l_OffResult, startOfMonth, endOfMonth);
-                //    //var l_OnResultPerMonth = await GetResultPerMonth(l_OnResult, startOfMonth, endOfMonth);
-                //    //var loloResult = await MergeYearlyList(l_OffResultPerMonth, l_OnResultPerMonth);
-                //    //// Handle cleaningResult as needed
-                //    //var loloInventoryResult = loloResult.Select(result => new YearlyLoloInventory
-                //    //{
-                //    //    month = result.month,
-                //    //    count = result.appv_cost,
-                //    //    percentage = result.complete_cost // You can combine the costs or map as needed
-                //    //}).ToList();
+                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                    yearlyRevenueResult.gate_yearly_revenue = yearlyRevenue;
+                }
 
-                //    //gateInOutInventoryResult.lolo_inventory = loloInventoryResult;
+                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("preinspection") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    var revenueQuery = GetRevenueQuery(context, query, "preinspection", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
+                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                    yearlyRevenueResult.preinspection_yearly_revenue = yearlyRevenue;
+                }
 
-                //    var (gateInResult, gateOutResult) = await ProcessInventoryResults(context, query, "gate", startEpoch, endEpoch, reportFormat);
-                //    var gateInResultPerMonth = await GetRevenuePerMonth(gateInResult, startOfMonth, endOfMonth);
-                //    var total_count = gateInResultPerMonth.Sum(g => g.count);
-                //    var average_count = total_count / 12;
-                //    var gInInventoryResult = gateInResultPerMonth.Select(g => new InventoryPerMonth
-                //    {
-                //        month = g.month,
-                //        count = g.count,
-                //        percentage = CalculatePercentage(g.count, total_count)
-                //    }).ToList();
+                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("storage") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                {
+                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                    var revenueQuery = GetRevenueQuery(context, query, "storage", startEpoch, endEpoch);
+                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                //    YearlyInventory yearlyGateInInventory = new YearlyInventory();
-                //    yearlyGateInInventory.inventory_per_month = gInInventoryResult;
-                //    yearlyGateInInventory.total_count = total_count;
-                //    yearlyGateInInventory.average_count = average_count;
-                //    yearlyRevenueResult.gate_in_inventory = yearlyGateInInventory;
-
-                //    var gateOutResultPerMonth = await GetRevenuePerMonth(gateOutResult, startOfMonth, endOfMonth);
-                //    total_count = gateOutResultPerMonth.Sum(g => g.count);
-                //    average_count = total_count / 12;
-                //    var gOutInventoryResult = gateInResultPerMonth.Select(g => new InventoryPerMonth
-                //    {
-                //        month = g.month,
-                //        count = g.count,
-                //        percentage = CalculatePercentage(g.count, total_count)
-                //    }).ToList();
-                //    YearlyInventory yearlyGateOutInventory = new YearlyInventory();
-                //    yearlyGateOutInventory.inventory_per_month = gOutInventoryResult;
-                //    yearlyGateOutInventory.total_count = total_count;
-                //    yearlyGateOutInventory.average_count = average_count;
-                //    yearlyRevenueResult.gate_in_inventory = yearlyGateOutInventory;
-                //}
+                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                    yearlyRevenueResult.storage_yearly_revenue = yearlyRevenue;
+                }
 
                 return yearlyRevenueResult;
             }
@@ -1174,7 +1206,6 @@ namespace IDMS.Billing.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
         private async Task<(List<TempRevenueResult>?, List<TempRevenueResult>?)> ProcessRevenueResults(ApplicationBillingDBContext context, IQueryable<TempRevenueResult> query, string inventoryType,
         long startEpoch, long endEpoch, string reportFormat, long? startMonthLastDayEpoch = null)
         {
@@ -1187,15 +1218,7 @@ namespace IDMS.Billing.GqlTypes
                 var newQuery1 = GetRevenueQuery(context, query, "lift-on", startEpoch, endEpoch);
                 var gateOutResult = await newQuery1.OrderBy(c => c.appv_date).ToListAsync();
 
-
-                newQuery.Union(newQuery);
-
                 return (gateInResult, gateOutResult);
-                //var gateInResultPerDay = await GetResultPerDay(gateInResult, startOfMonth, endOfMonth);
-                //var gateOutResultPerDay = await GetResultPerDay(gateOutResult, startOfMonth, endOfMonth);
-
-                //var result = await MergeMonthlyList(gateInResultPerDay, gateOutResultPerDay);
-                //return result;
             }
             else if (inventoryType.EqualsIgnore("gate"))
             {
@@ -1246,149 +1269,136 @@ namespace IDMS.Billing.GqlTypes
                 case "repair":
                     return from result in query
                            join s in context.repair on result.sot_guid equals s.sot_guid
-                           where s.delete_dt == null && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
+                           where context.Set<billing>().Any(b => b.guid == s.owner_billing_guid || b.guid == s.customer_billing_guid)
+                           && s.delete_dt == null && (s.owner_billing_guid != null || s.customer_billing_guid != null)
+                           && !StatusCondition.BeforeEstimateApprove.Contains(s.status_cv)
+                           && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
                            select new TempRevenueResult
                            {
                                sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
                                cost = s.total_hour ?? 0.0,
-                               appv_date = (long)s.approve_dt,
-                               complete_date = (long)s.complete_dt,
+                               appv_date = (long)context.Set<billing>().FirstOrDefault().invoice_dt,
+                               //complete_date = (long)s.complete_dt,
                                status = s.status_cv
                            };
 
                 case "steaming":
                     return from result in query
                            join s in context.steaming on result.sot_guid equals s.sot_guid
-                           where s.delete_dt == null && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
+                           where context.Set<billing>().Any(b => b.guid == s.owner_billing_guid || b.guid == s.customer_billing_guid)
+                           && s.delete_dt == null && (s.owner_billing_guid != null || s.customer_billing_guid != null)
+                           && !StatusCondition.BeforeEstimateApprove.Contains(s.status_cv)
+                           && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
                            select new TempRevenueResult
                            {
                                sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
                                cost = s.total_cost ?? 0.0,
-                               appv_date = (long)s.approve_dt,
-                               complete_date = (long)s.complete_dt,
+                               appv_date = (long)context.Set<billing>().FirstOrDefault().invoice_dt,
+                               //complete_date = (long)s.complete_dt,
                                status = s.status_cv
                            };
 
                 case "residue":
                     return from result in query
                            join s in context.residue on result.sot_guid equals s.sot_guid
-                           where s.delete_dt == null && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
+                           where context.Set<billing>().Any(b => b.guid == s.owner_billing_guid || b.guid == s.customer_billing_guid)
+                           && s.delete_dt == null && (s.owner_billing_guid != null || s.customer_billing_guid != null)
+                           && !StatusCondition.BeforeEstimateApprove.Contains(s.status_cv)
+                           && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
                            select new TempRevenueResult
                            {
                                sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
                                cost = s.total_cost ?? 0.0,
-                               appv_date = (long)s.approve_dt,
-                               complete_date = (long)s.complete_dt,
+                               appv_date = (long)context.Set<billing>().FirstOrDefault().invoice_dt,
+                               //complete_date = (long)s.complete_dt,
                                status = s.status_cv
                            };
 
                 case "cleaning":
                     return from result in query
                            join s in context.cleaning on result.sot_guid equals s.sot_guid
-                           where s.delete_dt == null && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
+                           where context.Set<billing>().Any(b => b.guid == s.owner_billing_guid || b.guid == s.customer_billing_guid)
+                           && s.delete_dt == null && (s.owner_billing_guid != null || s.customer_billing_guid != null)
+                           && !StatusCondition.BeforeEstimateApprove.Contains(s.status_cv)
+                           && s.approve_dt >= startEpoch && s.approve_dt <= endEpoch
                            select new TempRevenueResult
                            {
                                sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
                                cost = s.buffer_cost ?? 0.0 + s.cleaning_cost ?? 0.0,
-                               appv_date = (long)s.approve_dt,
-                               complete_date = (long)s.complete_dt,
+                               appv_date = (long)context.Set<billing>().FirstOrDefault().invoice_dt,
+                               //complete_date = (long)s.complete_dt,
                                status = s.status_cv
                            };
-                case "lift-off":
+                case "preinspection":
+                    //NEED CHECK
                     return from result in query
-                           join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
-                           join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
-                           where s.lift_off == true && ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-                               && s.delete_dt == null
+                           join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                           join b in context.Set<billing>() on s.preinsp_billing_guid equals b.guid
+                           where s.preinspection == true && s.preinsp_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           && b.invoice_dt >= startEpoch && b.invoice_dt <= endEpoch
                            select new TempRevenueResult
                            {
                                sot_guid = result.sot_guid,
+                               cost = s.preinspection_cost ?? 0.0,
                                code = result.code,
                                cc_name = result.cc_name,
-                               cost = (s.lift_off == true ? 1.0 : 0.0) * s.lift_off_cost ?? 0.0,
-                               appv_date = (long)ig.eir_dt,
-                           };
-                case "lift-on":
-                    return from result in query
-                           join ig in context.out_gate on result.sot_guid equals ig.so_tank_guid
-                           join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
-                           where s.lift_on == true && ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-                           //&& s.delete_dt == null
-                           select new TempRevenueResult
-                           {
-                               sot_guid = result.sot_guid,
-                               code = result.code,
-                               cc_name = result.cc_name,
-                               cost = (s.lift_on == true ? 1.0 : 0.0) * s.lift_on_cost ?? 0.0,
-                               appv_date = (long)ig.eir_dt,
-                           };
-                case "gate-in":
-                    return from result in query
-                           join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
-                           join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
-                           where ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-
-                           select new TempRevenueResult
-                           {
-                               sot_guid = result.sot_guid,
-                               code = result.code,
-                               cc_name = result.cc_name,
-                               cost = s.gate_in_cost ?? 0.0,
-                               appv_date = (long)ig.eir_dt,
+                               appv_date = (long)b.invoice_dt
                            };
 
-                case "gate-out":
+                case "lolo":
                     return from result in query
-                           join ig in context.out_gate on result.sot_guid equals ig.so_tank_guid
-                           join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
-                           where ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-                           //&& s.delete_dt == null
+                           //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
+                           join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                           join b in context.Set<billing>() on s.lolo_billing_guid equals b.guid
+                           where (s.lift_off == true || s.lift_on == true) && s.lolo_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           && b.invoice_dt >= startEpoch && b.invoice_dt <= endEpoch
                            select new TempRevenueResult
                            {
                                sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
-                               cost = s.gate_in_cost ?? 0.0,
-                               appv_date = (long)ig.eir_dt,
+                               cost = (s.lift_off == true ? 1.0 : 0.0) * s.lift_off_cost ?? 0.0 + (s.lift_on == true ? 1.0 : 0.0) * s.lift_on_cost ?? 0.0,
+                               appv_date = (long)b.invoice_dt,
                            };
-                case "depot":
+                case "gate":
                     return from result in query
-                           join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
-                           join og in context.out_gate on result.sot_guid equals og.so_tank_guid
-                           where (ig.delete_dt == null && ig.eir_dt <= endEpoch) && (og.delete_dt == null && og.eir_dt > startMonthLastDay)
+                           //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
+                           join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                           join b in context.Set<billing>() on s.gateio_billing_guid equals b.guid
+                           where (s.gate_in == true || s.gate_out == true) && s.gateio_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           && b.invoice_dt >= startEpoch && b.invoice_dt <= endEpoch
                            select new TempRevenueResult
                            {
-                               sot_guid = ig.so_tank_guid,
+                               sot_guid = result.sot_guid,
+                               code = result.code,
+                               cc_name = result.cc_name,
+                               cost = (s.gate_in == true ? 1.0 : 0.0) * s.gate_in_cost ?? 0.0 + (s.gate_out == true ? 1.0 : 0.0) * s.gate_out_cost ?? 0.0,
+                               appv_date = (long)b.invoice_dt,
+                           };
+                case "storage":
+                    return from result in query
+                               //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
+                               //join og in context.out_gate on result.sot_guid equals og.so_tank_guid
+                           join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                           join b in context.Set<billing>() on s.storage_billing_guid equals b.guid
+                           where s.storage_cal_cv != null && s.storage_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           && b.invoice_dt >= startEpoch && b.invoice_dt <= endEpoch
+                           select new TempRevenueResult
+                           {
+                               sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
                                cost = 0.0,
-                               appv_date = (long)ig.eir_dt,
+                               appv_date = (long)b.invoice_dt,
                            };
-                case "preinspection":
-
-                    //NEED CHECK
-                    return from result in query
-                             join s in context.billing_sot on result.sot_guid equals s.sot_guid
-                             join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
-                             from ig in igJoin.DefaultIfEmpty()  // Left Join
-                             where s.preinspection == true && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-                                 && s.delete_dt == null
-                             select new TempRevenueResult
-                             {
-                                 sot_guid = result.sot_guid,
-                                 cost = s.preinspection_cost ?? 0.0,
-                                 code = result.code,
-                                 cc_name = result.cc_name,
-                                 appv_date = (long)ig.eir_dt
-                             };
                 default:
                     return Enumerable.Empty<TempRevenueResult>().AsQueryable();
             }
@@ -1435,5 +1445,93 @@ namespace IDMS.Billing.GqlTypes
 
             return completeGroupedNodes;
         }
+
+        private async Task<YearlySales> GetYearlyRevenue(List<ResultPerMonth?> approveResultPerMonth)
+        {
+            var total_count = approveResultPerMonth.Sum(g => g.count);
+            var average_count = total_count / 12;
+            var total_cost = approveResultPerMonth.Sum(g => g.cost);
+            var average_cost = total_cost / 12;
+
+
+            var yearlyRevenue = new YearlySales();
+            yearlyRevenue.result_per_month = approveResultPerMonth;
+            yearlyRevenue.total_count = total_count;
+            yearlyRevenue.average_count = average_count;
+            yearlyRevenue.total_cost = total_cost;
+            yearlyRevenue.average_cost = average_cost;
+
+            return yearlyRevenue;
+        }
+
+        private async Task<List<ResultPerDay>> GetRevenuePerDay(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
+        {
+            foreach (var item in resultList)
+            {
+                // Convert epoch timestamp to DateTimeOffset (local time zone)
+                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)item.appv_date).ToLocalTime();
+                // Format the date as yyyy-MM-dd and replace the code with date
+                item.date = dateTimeOffset.ToString("dd/MM/yyyy");
+            }
+            // Group nodes by FormattedDate and count the number of SotGuids for each group
+            var groupedNodes = resultList
+                .GroupBy(n => n.date)  // Group by formatted date
+                .Select(g => new
+                {
+                    FormattedDate = g.Key,
+                    //Count = g.Count(),
+                    Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                })
+                .OrderBy(g => g.FormattedDate) // Sort by date
+                .ToList();
+
+            List<string> allDatesInMonth = new List<string>();
+            for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddDays(1))
+            {
+                allDatesInMonth.Add(date.ToString("dd/MM/yyyy"));
+            }
+
+            // Fill missing dates with count = 0 if not present
+            var completeGroupedNodes = allDatesInMonth
+                .Select(date => new ResultPerDay
+                {
+                    date = date,
+                    day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
+                    //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
+                    cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                })
+                .OrderBy(g => g.date) // Sort by date
+                .ToList();
+
+            return completeGroupedNodes;
+        }
+
+        private async Task<MonthlySales> GetMonthlyRevenue(List<ResultPerDay?> approveResultPerDay)
+        {
+            var total_count = approveResultPerDay.Sum(g => g.count);
+            var total_cost = approveResultPerDay.Sum(g => g.cost);
+
+            int daysWithCount = approveResultPerDay.Count(g => g.count > 0);
+            int daysWithCost = approveResultPerDay.Count(g => g.cost > 0);
+
+            // Calculate the average
+            int average_count = daysWithCount > 0 ? total_count / daysWithCount : 0;
+            // Calculate the average
+            double average_cost = daysWithCost > 0 ? total_cost / daysWithCost : 0;
+
+            var monthlyRevenue = new MonthlySales();
+            monthlyRevenue.result_per_day = approveResultPerDay;
+            monthlyRevenue.total_count = total_count;
+            monthlyRevenue.average_count = average_count;
+            monthlyRevenue.total_cost = total_cost;
+            monthlyRevenue.average_cost = average_cost;
+
+            return monthlyRevenue;
+        }
+
+        private void GetStorageCost()
+        {
+        }
+    
     }
 }

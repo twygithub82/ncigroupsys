@@ -11,14 +11,14 @@ namespace IDMS.Billing.GqlTypes.LocalModel
     //}
 
     [NotMapped]
-    public class MonthlyRevenueRequest : InventoryRequest
+    public class MonthlyRevenueRequest : RevenueRequest
     {
         public int month { get; set; }
         public int year { get; set; }
     }
 
     [NotMapped]
-    public class YearlyRevenueRequest : InventoryRequest
+    public class YearlyRevenueRequest : RevenueRequest
     {
         public int start_month { get; set; }
         public int end_month { get; set; }
