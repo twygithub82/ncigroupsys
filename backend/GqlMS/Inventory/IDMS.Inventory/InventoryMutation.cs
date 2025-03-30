@@ -16,6 +16,7 @@ using System.Data.SqlTypes;
 using System.IO;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using IDMS.Models.Billing;
+using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -240,13 +241,13 @@ namespace IDMS.Inventory.GqlTypes
                 {
                     if (transfer.action.EqualsIgnore(SOTankAction.CANCEL))
                     {
-                        var updateTransfer = new transfer() { guid = transfer.guid };   
+                        var updateTransfer = new transfer() { guid = transfer.guid };
                         context.transfer.Attach(updateTransfer);
                         updateTransfer.update_by = user;
                         updateTransfer.update_dt = currentDateTime;
                         updateTransfer.delete_dt = currentDateTime;
 
-                        if(transfer.transfer_in_dt != null)
+                        if (transfer.transfer_in_dt != null)
                         {
                             if (transfer?.storing_order_tank == null || string.IsNullOrEmpty(transfer.storing_order_tank.tank_no))
                                 throw new GraphQLException(new Error($"SOT & tank_no cannot be null", "ERROR"));
@@ -295,12 +296,12 @@ namespace IDMS.Inventory.GqlTypes
                             throw new GraphQLException(new Error($"SOT & tank_no cannot be null", "ERROR"));
 
                         var tankInfo = await context.tank_info.Where(t => t.tank_no == transfer.storing_order_tank.tank_no).FirstOrDefaultAsync();
-                            if (tankInfo != null)
-                            {
-                                tankInfo.yard_cv = transfer.location_to_cv;
-                                tankInfo.update_by = user;
-                                tankInfo.update_dt = currentDateTime;
-                            }
+                        if (tankInfo != null)
+                        {
+                            tankInfo.yard_cv = transfer.location_to_cv;
+                            tankInfo.update_by = user;
+                            tankInfo.update_dt = currentDateTime;
+                        }
                         //}
                     }
                 }
@@ -348,11 +349,11 @@ namespace IDMS.Inventory.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var tank = new tank() { guid = updateTank.guid };
-                context.Attach(tank);   
+                context.Attach(tank);
                 tank.update_by = user;
                 tank.update_dt = currentDateTime;
                 tank.description = updateTank.description;
-                tank.unit_type = updateTank.unit_type;  
+                tank.unit_type = updateTank.unit_type;
                 tank.tariff_depot_guid = updateTank.tariff_depot_guid;
                 tank.preinspect = updateTank.preinspect;
                 tank.lift_on = updateTank.lift_on;
@@ -380,7 +381,7 @@ namespace IDMS.Inventory.GqlTypes
 
                 var tank = new tank() { guid = tankGuid };
                 context.Attach(tank);
-       
+
                 tank.update_by = user;
                 tank.update_dt = currentDateTime;
                 tank.delete_dt = currentDateTime;
@@ -402,6 +403,9 @@ namespace IDMS.Inventory.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
+                if (sot == null || string.IsNullOrEmpty(sot.guid))
+                    throw new GraphQLException(new Error($"SOT object cannot be null or empty", "ERROR"));
+
                 var tank = new storing_order_tank() { guid = sot.guid };
                 context.Attach(tank);
 
@@ -413,6 +417,46 @@ namespace IDMS.Inventory.GqlTypes
                 tank.takein_job_no = sot.takein_job_no;
                 tank.release_job_no = sot.release_job_no;
                 tank.job_no_remarks = sot.job_no_remarks;
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateLastCargo(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, storing_order_tank sot)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (sot == null || string.IsNullOrEmpty(sot.guid))
+                    throw new GraphQLException(new Error($"SOT object cannot be null or empty", "ERROR"));
+
+                var tank = new storing_order_tank() { guid = sot.guid };
+                context.Attach(tank);
+
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.last_cargo_guid = sot.last_cargo_guid;
+                tank.last_cargo_remarks = sot.last_cargo_remarks;
+
+                if (sot.cleaning == null || !sot.cleaning.Any())
+                    throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
+
+                foreach(var item in sot.cleaning)
+                {
+                    var clean = new cleaning() { guid = item.guid };
+                    context.Attach(clean);
+                    clean.update_by = user;
+                    clean.update_dt = currentDateTime;
+                    clean.cleaning_cost = item.cleaning_cost;
+                }
 
                 var res = await context.SaveChangesAsync();
                 return res;
@@ -633,7 +677,7 @@ namespace IDMS.Inventory.GqlTypes
                         }
 
                         if (jobOrders.Any(j => j.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS)))
-                            pendingJob = true;  
+                            pendingJob = true;
 
                         if (await StatusChangeConditionCheck(jobOrders))
                         {
