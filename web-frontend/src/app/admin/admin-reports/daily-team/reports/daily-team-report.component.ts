@@ -33,7 +33,7 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_customer_tank_activity, ReportDS } from 'app/data-sources/reports';
+import { DailyQCDetail, report_customer_tank_activity, ReportDS } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -46,6 +46,9 @@ import {PendingEstimateReportPdfComponent} from 'app/document-template/pdf/pendi
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { DailyRevenuePdfComponent } from 'app/document-template/pdf/admin-reports/daily/revenue/daily-revenue-pdf.component';
+import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-reports/daily/qc-detail/daily-qc-detail-pdf.component';
+import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
 
 @Component({
   selector: 'app-daily-team-report',
@@ -162,7 +165,8 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     ESTIMATE_DATE:"COMMON-FORM.ESTIMATE-DATE",
     QC_DATE:"COMMON-FORM.QC-DATE",
     REVENUE:'COMMON-FORM.REVENUE',
-    APPROVAL:'COMMON-FORM.APPROVAL'
+    APPROVAL:'COMMON-FORM.APPROVAL',
+    QC_DETAIL:'COMMON-FORM.QC-DETAIL'
   }
 
   invForm?: UntypedFormGroup;
@@ -271,10 +275,12 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
         tank_no: [''],
         all_dt_start:[''],
         all_dt_end:[''],
+        app_dt:[''],
         app_dt_start: [''],
         app_dt_end: [''],
         est_dt_start: [''],
         est_dt_end: [''],
+        qc_dt: [''],
         qc_dt_start: [''],
         qc_dt_end: [''],
         rep_type: [''],
@@ -427,6 +433,9 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.selectedEstimateLabourCost = 0;
     this.stmEstList = [];
     this.selection.clear();
+    var date:string='';
+    var team:string='';
+    this.repData=[];
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
     
@@ -437,14 +446,23 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     // }
     if(this.searchForm?.invalid)
       {
-        if(!(this.searchForm!.get('app_dt_start')?.value) || !(this.searchForm!.get('app_dt_end')?.value))
+        if(!(this.searchForm!.get('app_dt')?.value) && this.isDateRequired("APPROVED"))
           {
-            const startDateControl = this.searchForm!.get('app_dt_start');
+            const startDateControl = this.searchForm!.get('app_dt');
           if (startDateControl) {
               startDateControl.setErrors({ required: true });
               startDateControl.markAsTouched();
           }
           }
+        
+          if(!(this.searchForm!.get('qc_dt')?.value) && this.isDateRequired("QC"))
+            {
+              const startDateControl = this.searchForm!.get('qc_dt');
+            if (startDateControl) {
+                startDateControl.setErrors({ required: true });
+                startDateControl.markAsTouched();
+            }
+            }
         return;
       } 
     this.isGeneratingReport=true;
@@ -475,7 +493,16 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
         cond_counter++;
     }
 
-    
+    if((this.searchForm!.get('app_dt')?.value))
+      {
+          var start_dt=new Date(this.searchForm!.value['app_dt']);
+          var end_dt=new Date(this.searchForm!.value['app_dt']);
+          where.approved_start_date=Utility.convertDate(start_dt);
+          where.approved_end_date=Utility.convertDate(end_dt,true);
+          date=Utility.convertDateToStr(start_dt);
+          cond_counter++;
+      }
+
     if((this.searchForm!.get('app_dt_start')?.value) && (this.searchForm!.get('app_dt_end')?.value))
       {
           var start_dt=new Date(this.searchForm!.value['app_dt_start']);
@@ -493,7 +520,18 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
           var end_dt=new Date(this.searchForm!.value['est_dt_end']);
           where.estimate_start_date=Utility.convertDate(start_dt);
           where.estimate_end_date=Utility.convertDate(end_dt,true);
+          cond_counter++;
       }
+
+      if((this.searchForm!.get('qc_dt')?.value))
+        {
+            var start_dt=new Date(this.searchForm!.value['qc_dt']);
+            var end_dt=new Date(this.searchForm!.value['qc_dt']);
+            where.qc_start_date=Utility.convertDate(start_dt);
+            where.qc_end_date=Utility.convertDate(end_dt,true);
+            if([1,3].includes(report_type)) date=Utility.convertDateToStr(start_dt);
+            cond_counter++;
+        }
 
     if((this.searchForm!.get('qc_dt_start')?.value) && (this.searchForm!.get('qc_dt_end')?.value))
         {
@@ -501,13 +539,16 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
             var end_dt=new Date(this.searchForm!.value['qc_dt_end']);
             where.qc_start_date=Utility.convertDate(start_dt);
             where.qc_end_date=Utility.convertDate(end_dt,true);
+            cond_counter++;
         }
+      
      if(this.searchForm!.get('team')?.value)
      {
       const teamValue = this.searchForm!.get('team')?.value;
       if (Array.isArray(teamValue)) {
-          const teams: string[] = teamValue.map(t => t.description);
+          const teams: string[] = teamValue.map(t => t);
           where.team=teams;
+          team=teams.join(", ");;
       }
      }
 
@@ -529,15 +570,42 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.lastSearchCriteria = where;
     if(report_type==2)
     {
-    this.performSearchApproval(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType);
+    this.performSearchApproval(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType,date,team);
+    }
+    else if(report_type==1)
+    {
+    this.performSearchRevenue(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType,date,team);
     }
     else
     {
-    this.performSearchRevenue(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType);
+      this.performSearchQCDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType,date,team);
     }
   }
 
-  performSearchRevenue(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number) {
+  performSearchQCDetail(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
+     before?: string, report_type?: number, queryType?: number,date?:string,team?:string) {
+
+    // if(queryType==1)
+    // {
+    this.subs.sink = this.reportDS.searchAdminReportDailyQCDetail(this.lastSearchCriteria)
+      .subscribe(data => {
+        if(data.length>0)
+        {
+            this.repData =data;
+            this.onExportDailyQCDetailReport(this.repData,date!,team!);
+        }
+        else
+        {
+          this.isGeneratingReport=false
+        }
+     
+      });
+
+
+  }
+
+  performSearchRevenue(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
+     before?: string, report_type?: number, queryType?: number,date?:string,team?:string) {
 
     // if(queryType==1)
     // {
@@ -546,20 +614,20 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
         if(data.length>0)
         {
             this.repData =data;
+            this.onExportDailyRevenueReport(this.repData,date!,team!);
         }
         else
         {
           this.isGeneratingReport=false
         }
-        //
-      //  this.onExportDetail(this.sotList);
      
       });
 
 
   }
 
-  performSearchApproval(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number) {
+  performSearchApproval(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, 
+            before?: string, report_type?: number, queryType?: number,date?:string,team?:string) {
 
     
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamApproval(this.lastSearchCriteria)
@@ -567,6 +635,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       if(data.length>0)
         {
              this.repData =data;
+             this.onExportDailyApprovalReport(this.repData,date!,team!);
         }
         else
         {
@@ -701,12 +770,14 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       all_dt_end:'',
       app_dt_start: '',
       app_dt_end: '',
+      app_dt: '',
       est_dt_start: '',
       est_dt_end: '',
       qc_dt_start: '',
       qc_dt_end: '',
+      qc_dt: '',
       team: '',
-      report_type:'1'
+     // report_type:'1'
     });
     this.customerCodeControl.reset('');
     this.noCond = false;
@@ -732,14 +803,11 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
 
-
-  
-
-  onExportDetail(sot: StoringOrderTankItem[]) {
+  onExportDailyRevenueReport(repData: DailyQCDetail[],date:string,team:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(sot?.length<=0){
+    if(repData?.length<=0){
       this.isGeneratingReport=false;
       return;
 
@@ -751,12 +819,15 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(PendingEstimateReportPdfComponent, {
+    const dialogRef = this.dialog.open(DailyRevenuePdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
       maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
-        sot: sot
+        repData: repData,
+        date:date,
+        team:team
+
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -766,11 +837,16 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  onExportSummary(repCustomerTankActivity: report_customer_tank_activity[], invType: string, date: string, queryType: number) {
+
+  onExportDailyApprovalReport(repData: DailyQCDetail[],date:string,team:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
+    if(repData?.length<=0){
+      this.isGeneratingReport=false;
+      return;
 
+    } 
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -778,15 +854,49 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
-      width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+    const dialogRef = this.dialog.open(DailyApprovalPdfComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
-        report_customer_tank_activity: repCustomerTankActivity,
-        type: invType,
-        date: date,
-        queryType: queryType
+        repData: repData,
+        date:date,
+        team:team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport=false;
+    });
+  }
+  
+  onExportDailyQCDetailReport(repData: DailyQCDetail[],date:string,team:string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    if(repData?.length<=0){
+      this.isGeneratingReport=false;
+      return;
+
+    } 
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyQCDetailPdfComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date:date,
+        team:team
+
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -796,6 +906,41 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
+  isDateRequired(date_type:string):boolean
+  {
+    var retval:boolean = true;
+    var repType:number = Number(this.searchForm?.get("report_type")?.value);
+    if(date_type=="APPROVED")
+    {
+      return [2].includes(repType);
+    }
+    else if(date_type=="QC")
+    {
+    
+      return [1,3].includes(repType);
+    }
+    
+    return retval;
 
+  }
+
+  onReportTypeChange(event: Event) {
+    var startDateControl = this.searchForm?.get('qc_dt')!;
+    startDateControl?.markAsUntouched();
+    // startDateControl.setErrors(null);
+    // if(this.isDateRequired('QC'))
+    //   {
+    //   startDateControl.setValidators([Validators.required]); // Reapply required validator
+    //   startDateControl.updateValueAndValidity(); // Refresh validation state
+    //   }
+    startDateControl = this.searchForm?.get('app_dt')!;
+    startDateControl?.markAsUntouched();
+    // startDateControl.setErrors(null);
+    // if(this.isDateRequired('APPROVED'))
+    // {
+    //   startDateControl.setValidators([Validators.required]); // Reapply required validator
+    //   startDateControl.updateValueAndValidity(); // Refresh validation state
+    // }
+  }
 
 }

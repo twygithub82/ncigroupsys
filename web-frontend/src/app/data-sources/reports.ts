@@ -413,25 +413,31 @@ export class DailyTeamApproval{
 
 }
 
-export class DailyTeamRevenue{
-  code?:string;
+export class DailyTeamRevenue extends DailyTeamApproval{
+  
   eir_no?:string;
   estimate_date?:number;
-  estimate_no?:string;
   qc_by?:string;
-  repair_cost?:number;
-  repair_type?:string;
-  tank_no?:string;
   
   constructor(item: Partial<DailyTeamRevenue> = {}) {
-    this.code=item.code;
+    super(item);
+    
     this.eir_no=item.eir_no;
     this.estimate_date=item.estimate_date;
-    this.estimate_no=item.estimate_no;
     this.qc_by=item.qc_by;
-    this.repair_cost=item.repair_cost;
-    this.repair_type=item.repair_type;
-    this.tank_no=item.tank_no;
+    } 
+
+}
+
+export class DailyQCDetail extends DailyTeamRevenue{
+      appv_hour?:number;
+      appv_material_cost?:number;
+      
+  
+  constructor(item: Partial<DailyQCDetail> = {}) {
+    super(item);
+    this.appv_hour=item.appv_hour;
+    this.appv_material_cost=item.appv_material_cost;
     } 
 
 }
@@ -699,6 +705,13 @@ export const GET_ADMIN_REPORT_DAILY_TEAM_REVENUE_REPORT = gql`
         repair_type
         tank_no
       }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
     }
   }
 `
@@ -714,6 +727,38 @@ export const GET_ADMIN_REPORT_DAILY_TEAM_APPROVAL_REPORT = gql`
         status
         tank_no
       }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`
+
+export const GET_ADMIN_REPORT_DAILY_QC_DETAIL_REPORT = gql`
+  query queryDailyQCDetail($dailyQCDetailRequest: DailyQCDetailRequestInput!,$first:Int) {
+    resultList: queryDailyQCDetail(dailyQCDetailRequest: $dailyQCDetailRequest,first:$first) {
+      nodes {
+        appv_hour
+        appv_material_cost
+        code
+        estimate_date
+        estimate_no
+        qc_by
+        repair_cost
+        repair_type
+        tank_no
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
     }
   }
 `
@@ -969,6 +1014,32 @@ export class ReportDS extends BaseDataSource<any> {
       .query<any>({
         query: GET_ADMIN_REPORT_DAILY_TEAM_REVENUE_REPORT,
         variables: { dailyTeamRevenueRequest,first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  searchAdminReportDailyQCDetail(dailyQCDetailRequest:any): Observable<DailyQCDetail[]> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_DAILY_QC_DETAIL_REPORT,
+        variables: { dailyQCDetailRequest,first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
