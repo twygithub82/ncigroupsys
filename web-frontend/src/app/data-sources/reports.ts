@@ -442,6 +442,180 @@ export class DailyQCDetail extends DailyTeamRevenue{
 
 }
 
+
+export class TempItem {
+  begin_temp?:number;
+  close_temp?:number;
+  constructor(item: Partial<TempItem> = {}) {
+    this.begin_temp=item.begin_temp;
+    this.begin_temp=item.begin_temp;
+    } 
+}
+
+export class SteamPerformance
+{
+  bay?:string;
+  complete_dt?:number;
+  cost?:number;
+  customer_code?:string;
+  duration?:number;
+  eir_dt?:number;
+  eir_no?:string;
+  last_cargo?:string;
+  require_temp?:number;
+  tank_no?:string;
+  bottom?:TempItem; 
+  themometer?:TempItem;
+  top?:TempItem;
+  constructor(item: Partial<SteamPerformance> = {}) {
+    this.bay=item.bay;
+    this.complete_dt=item.complete_dt;
+    this.cost=item.cost;
+    this.customer_code=item.customer_code;
+    this.duration=item.duration;
+    this.eir_dt=item.eir_dt;
+    this.eir_no=item.eir_no;
+    this.last_cargo=item.last_cargo;
+    this.require_temp=item.require_temp;
+    this.tank_no=item.tank_no;
+    this.bottom=item.bottom; 
+    this.themometer=item.themometer;
+    this.top=item.top;
+    } 
+
+}
+
+export class SurveyorEstimate
+{
+    appv_cost?:number;
+    average?:number;
+    diff_cost?:number;
+    est_cost?:number;
+    est_count?:number;
+    rejected?:number;
+    surveyor_name?:string;
+    constructor(item: Partial<SurveyorEstimate> = {}) {
+
+      this.appv_cost=item.appv_cost;
+      this.average=item.average;
+      this.diff_cost=item.diff_cost;
+      this.est_cost=item.est_cost;
+      this.est_count=item.est_count;
+      this.rejected=item.rejected;
+      this.surveyor_name=item.surveyor_name;
+    }
+}
+export class MonthlySummary{
+      month?:string;
+      monthly_total_appv_cost?:number;
+      monthly_total_average?:number;
+      monthly_total_diff_cost?:number;
+      monthly_total_est_cost?:number;
+      monthly_total_est_count?:number;
+      monthly_total_rejected?:number;
+      surveyorList?:SurveyorEstimate[];
+      constructor(item: Partial<MonthlySummary> = {}) {
+
+        this.month=item.month;
+        this.monthly_total_appv_cost=item.monthly_total_appv_cost;
+        this.monthly_total_average=item.monthly_total_average;
+        this.monthly_total_diff_cost=item.monthly_total_diff_cost;
+        this.monthly_total_est_cost=item.monthly_total_est_cost;
+        this.monthly_total_est_count=item.monthly_total_est_count;
+        this.monthly_total_rejected=item.monthly_total_rejected;
+        this.surveyorList=item.surveyorList;
+      }
+}
+
+export class SurveyorPerformanceSummary{
+  grand_total_appv_cost?:number;
+  grand_total_average?:number;
+  grand_total_diff_cost?:number;
+  grand_total_est_cost?:number;
+  grand_total_est_count?:number;
+  grand_total_rejected?:number;
+  monthly_summary?:MonthlySummary[];
+  constructor(item: Partial<SurveyorPerformanceSummary> = {}) {
+    this.grand_total_appv_cost=item.grand_total_appv_cost;
+    this.grand_total_average=item.grand_total_average;
+    this.grand_total_diff_cost=item.grand_total_diff_cost;
+    this.grand_total_est_cost=item.grand_total_est_cost;
+    this.grand_total_est_count=item.grand_total_est_count;
+    this.grand_total_rejected=item.grand_total_rejected;
+    this.monthly_summary=item.monthly_summary;
+  }
+
+}
+
+export class SurveyorDetail
+{
+  appv_cost?:number;
+  appv_date?:number;
+  eir_date?:number;
+  eir_no?:string;
+  est_cost?:number;
+  est_date?:number;
+  est_no?:string;
+  est_status?:string;
+  est_type?:string;
+  tank_no?:string;
+
+  constructor(item: Partial<SurveyorDetail> = {}) {
+    this.appv_cost=item.appv_cost;
+    this.appv_date=item.appv_date;
+    this.eir_date=item.eir_date;
+    this.eir_no=item.eir_no;
+    this.est_cost=item.est_cost;
+    this.est_date=item.est_date;
+    this.est_no=item.est_no;
+    this.est_status=item.est_status;
+    this.est_type=item.est_type;
+    this.tank_no=item.tank_no;
+    } 
+  }
+
+  export class SurveyorPerformanceDetail
+  {
+     surveyor?:string;
+     surveyor_details?:SurveyorDetail[];
+     total_appv_cost?:number;
+     total_est_cost?:number;
+
+     constructor(item: Partial<SurveyorPerformanceDetail> = {}) {
+
+      this.surveyor=item.surveyor;
+      this.surveyor_details=item.surveyor_details;
+      this.total_appv_cost=item.total_appv_cost;
+      this.total_est_cost=item.total_est_cost;
+     }
+  }
+
+  export class CleanerPerformance{
+    bay?:string;
+    cleaner_name?:string;
+    complete_dt?:number;
+    cost?:number;
+    customer_code?:string;
+    eir_dt?:number;
+    eir_no?:string;
+    last_cargo?:string;
+    method?:string;
+    tank_no?:string;
+    constructor(item: Partial<CleanerPerformance> = {}) {
+
+      this.bay=item.bay;
+      this.cleaner_name=item.cleaner_name;
+      this.complete_dt=item.complete_dt;
+      this.cost=item.cost;
+      this.customer_code=item.customer_code;
+      this.eir_dt=item.eir_dt;
+      this.eir_no=item.eir_no;
+      this.last_cargo=item.last_cargo;
+      this.method=item.method;
+      this.tank_no=item.tank_no;
+    }
+  }
+
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
@@ -762,6 +936,130 @@ export const GET_ADMIN_REPORT_DAILY_QC_DETAIL_REPORT = gql`
     }
   }
 `
+export const GET_ADMIN_REPORT_SURVEYOR_PERFORMANCE_DETAIL_REPORT = gql`
+  query querySurveyorPerformanceDetail($surveyorPerfDetailRequest: SurveyorPerformanceDetailRequestInput!,$first:Int) {
+    resultList: querySurveyorPerformanceDetail(surveyorPerfDetailRequest: $surveyorPerfDetailRequest,first:$first) {
+      nodes {
+        surveyor
+        total_appv_cost
+        total_est_cost
+        surveyor_details {
+            appv_cost
+            appv_date
+            eir_date
+            eir_no
+            est_cost
+            est_date
+            est_no
+            est_status
+            est_type
+            tank_no
+          }
+        }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`
+export const GET_ADMIN_REPORT_SURVEYOR_PERFORMANCE_SUMMARY_REPORT = gql`
+  query querySurveyorPerformanceSummary($surveyorPerfSummaryRequest: SurveyorPerformanceSummaryRequestInput!) {
+     querySurveyorPerformanceSummary(surveyorPerfSummaryRequest: $surveyorPerfSummaryRequest) {
+      grand_total_appv_cost
+      grand_total_average
+      grand_total_diff_cost
+      grand_total_est_cost
+      grand_total_est_count
+      grand_total_rejected
+      monthly_summary {
+        month
+        monthly_total_appv_cost
+        monthly_total_average
+        monthly_total_diff_cost
+        monthly_total_est_cost
+        monthly_total_est_count
+        monthly_total_rejected
+        surveyorList {
+          appv_cost
+          average
+          diff_cost
+          est_cost
+          est_count
+          rejected
+          surveyor_name
+        }
+      }
+    }
+  }
+`
+
+export const GET_ADMIN_REPORT_CLEANER_PERFORMANCE_REPORT = gql`
+  query queryCleanerPerformance($cleanerPerformanceRequest: CleanerPerformanceRequestInput!,$first:Int) {
+    resultList: queryCleanerPerformance(cleanerPerformanceRequest: $cleanerPerformanceRequest,first:$first) {
+      nodes {
+        bay
+        cleaner_name
+        complete_dt
+        cost
+        customer_code
+        eir_dt
+        eir_no
+        last_cargo
+        method
+        tank_no
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`
+
+export const GET_ADMIN_REPORT_STEAM_PERFORMANCE_REPORT = gql`
+  query querySteamPerformance($steamPerformanceRequest: SteamPerformanceRequestInput!,$first:Int) {
+    resultList: querySteamPerformance(steamPerformanceRequest: $steamPerformanceRequest,first:$first) {
+      nodes {
+        bay
+        complete_dt
+        cost
+        customer_code
+        duration
+        eir_dt
+        eir_no
+        last_cargo
+        require_temp
+        tank_no
+        bottom {
+          begin_temp
+          close_temp
+        }
+        themometer {
+          begin_temp
+          close_temp
+        }
+        top {
+          begin_temp
+          close_temp
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`
 
 export class ReportDS extends BaseDataSource<any> {
 
@@ -1046,7 +1344,111 @@ export class ReportDS extends BaseDataSource<any> {
         map((result) => result.data),
         catchError((error: ApolloError) => {
           console.error('GraphQL Error:', error);
-          return of([] as cleaning_report_summary_item[]); // Return an empty array on error
+          return of([] as DailyQCDetail[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  searchAdminReportSteamPerformance(steamPerformanceRequest:any): Observable<SteamPerformance[]> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_STEAM_PERFORMANCE_REPORT,
+        variables: { steamPerformanceRequest,first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as SteamPerformance[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  searchAdminReportSurveyorPerformanceDetail(surveyorPerfDetailRequest:any): Observable<SurveyorPerformanceDetail[]> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_SURVEYOR_PERFORMANCE_DETAIL_REPORT,
+        variables: { surveyorPerfDetailRequest,first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as SurveyorPerformanceDetail[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  searchAdminReportSurveyorPerformanceSummary(surveyorPerfSummaryRequest:any): Observable<SurveyorPerformanceSummary> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_SURVEYOR_PERFORMANCE_SUMMARY_REPORT,
+        variables: { surveyorPerfSummaryRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as SurveyorPerformanceDetail[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result ;
+          this.dataSubject.next(resultList);
+          // this.totalCount = resultList.totalCount;
+          // this.pageInfo = resultList.pageInfo;
+          return resultList.querySurveyorPerformanceSummary;
+        })
+      );
+  }
+
+  searchAdminReportCleanerPerformance(cleanerPerformanceRequest:any): Observable<CleanerPerformance[]> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_CLEANER_PERFORMANCE_REPORT,
+        variables: { cleanerPerformanceRequest,first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CleanerPerformance[]); // Return an empty array on error
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {

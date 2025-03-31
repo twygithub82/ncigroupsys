@@ -1,0 +1,66 @@
+.cargo-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits text to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Allows text wrapping */
+    max-width: 100%; /* Adjust width as needed */
+  }
+  .number-range-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .range-separator {
+    font-weight: bold;
+  }
+  
+  input[matInput] {
+    flex: 1;
+    min-width: 0;
+  }
+
+$bg: #4b2e83;
+$fg: lighten($bg,20%);
+$borderWidth: 3px;
+
+body {
+  background: $bg;
+ // font-family: roboto;
+}
+
+input[type=radio] {
+  position: absolute;
+  visibility: hidden;
+  display: none;
+}
+
+label {
+  color: lighten($bg, 30%);
+  display: inline-block;
+  cursor: pointer;
+ // font-weight: bold;
+  padding: 0px 20px; // Increased padding for better centering
+  text-align: center; // Center text horizontally
+  line-height: 1.5; // Better vertical alignment
+  transition: all 0.3s ease; // Smooth transition
+}
+
+input[type=radio]:checked + label{
+  color: lighten($bg,60%);
+  background: $fg;
+}
+
+label + input[type=radio] + label {
+  border-left: solid $borderWidth $fg;
+}
+.radio-group {
+  border: solid $borderWidth $fg;
+  display: inline-block;
+  margin: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+

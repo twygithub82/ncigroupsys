@@ -23,7 +23,7 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard, report_status, DailyQCDetail, DailyTeamRevenue } from 'app/data-sources/reports';
+import { report_status_yard, report_status, AdminReportMonthlyReport, DailyTeamRevenue, CleanerPerformance } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
@@ -31,16 +31,16 @@ import { autoTable, Styles } from 'jspdf-autotable';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: DailyQCDetail[],
+  repData: CleanerPerformance[],
   date:string,
   repType:string,
   customer:string,
   team:string
 }
 @Component({
-  selector: 'app-daily-qc-detail-pdf',
-  templateUrl: './daily-qc-detail-pdf.component.html',
-  styleUrls: ['./daily-qc-detail-pdf.component.scss'],
+  selector: 'app-cleaner-performance-detail-pdf',
+  templateUrl: './cleaner-detail-pdf.component.html',
+  styleUrls: ['./cleaner-detail-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -52,7 +52,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -243,7 +243,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    DAILY_QC_DETAIL_REPORT:'COMMON-FORM.DAILY-QC-DETAIL-REPORT',
+    DAILY_TEAM_REVENUE_REPORT:'COMMON-FORM.DAILY-TEAM-REVENUE-REPORT',
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
     AVERAGE:'COMMON-FORM.AVERAGE',
@@ -256,9 +256,14 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     QC_DATE:'COMMON-FORM.QC-DATE',
     SIGN:'COMMON-FORM.SIGN',
     VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
-    MAN_HOUR:'COMMON-FORM.MAN-HOUR',
-    MATERIAL_COST:'COMMON-FORM.MATERIAL-COST',
-    TOTAL_COST:'COMMON-FORM.TOTAL-COST'
+    BAY:'COMMON-FORM.BAY',
+    COMPLETED_ON:'COMMON-FORM.COMPLETED-ON',
+    COST:"COMMON-FORM.COST",
+    CLEANING_PROCESS:'COMMON-FORM.CLEANING-PROCESS',
+    CLEANER:'COMMON-FORM.CLEANER',
+    CARGO:'COMMON-FORM.CARGO',
+    CLEANING_PERIOD:'COMMON-FORM.CLEANING-PERIOD',
+    CLEANER_PERFORMANCE_REPORT:"COMMON-FORM.CLEANER-PERFORMANCE-REPORT"
   }
 
   type?: string | null;
@@ -307,7 +312,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: DailyQCDetail[];
+  repData?: CleanerPerformance[];
   date?:string;
   repType?:string;
   team?:string;
@@ -319,7 +324,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
 
   constructor(
-    public dialogRef: MatDialogRef<DailyQCDetailPdfComponent>,
+    public dialogRef: MatDialogRef<CleanerPerformanceDetailPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -601,32 +606,32 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 9;
     let minHeightHeaderCol = 3;
-    let fontSz = 6;
+    let fontSz = 5.5;
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.TANK_NO,
-      this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO,this.translatedLangText.ESTIMATE_DATE,
-      this.translatedLangText.REPAIR_TYPE,this.translatedLangText.MAN_HOUR, this.translatedLangText.MATERIAL_COST,
-      this.translatedLangText.TOTAL_COST,this.translatedLangText.QC_BY
+      this.translatedLangText.NO, this.translatedLangText.TANK_NO,this.translatedLangText.EIR_NO,
+      this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_DATE,this.translatedLangText.CARGO,
+      this.translatedLangText.COMPLETED_ON,this.translatedLangText.COST, this.translatedLangText.CLEANING_PROCESS,
+      this.translatedLangText.BAY,this.translatedLangText.CLEANER
       
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle',  cellWidth: 8,minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle',  cellWidth: 15,minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle',  cellWidth: 20, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle',  cellWidth: 20,minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      5: { halign: 'left', valign: 'middle',  cellWidth: 40,minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      
+      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
@@ -651,12 +656,13 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
 
-    let startY = lastTableFinalY ; // Start table 20mm below the customer name
+    let startY = lastTableFinalY+13 ; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
-    // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
-
+    
+    const repGeneratedDate = `${this.translatedLangText.CLEANING_PERIOD} : ${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    startY +=5;
     // if(this.customer)
     // {
     //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
@@ -664,28 +670,21 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // }
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
-    let totalHours=0;
-    let totalMaterialCost=0;
     for (let n = 0; n < (this.repData?.length||0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.repData?.[n];
-      const repairCost = itm?.repair_cost || 0;
-      const materialCost = itm?.appv_material_cost||0;
-      const appHour = itm?.appv_hour||0;
-      totalRepairCost += repairCost; // Add to the total
-      totalMaterialCost += materialCost; // Add to the total
-      totalHours+=appHour;
+      // const repairCost = itm?.repair_cost || 0;
+      // totalRepairCost += repairCost; // Add to the total
         data.push([
-          (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no ||"",this.displayDateTime(itm?.estimate_date)||'',
-          this.getRepairOption(itm?.repair_type||""),Utility.formatNumberDisplay(itm?.appv_hour),Utility.formatNumberDisplay(itm?.appv_material_cost),
-          Utility.formatNumberDisplay(itm?.repair_cost),itm?.qc_by
+          (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", itm?.customer_code ||"",this.displayDate(itm?.eir_dt)||'',
+          itm?.last_cargo||'',this.displayDate(itm?.complete_dt)||'',Utility.formatNumberDisplay(itm?.cost),itm?.method||'',
+          itm?.bay||'',itm?.cleaner_name||''
         ]);
     }
 
 
-    data.push([this.translatedLangText.TOTAL,"","","","","",Utility.formatNumberDisplay(totalHours),
-            Utility.formatNumberDisplay(totalMaterialCost),Utility.formatNumberDisplay(totalRepairCost),""]);
+    //data.push([this.translatedLangText.TOTAL,"","","","","","",Utility.formatNumberDisplay(totalRepairCost)]);
     
 
     // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
@@ -714,27 +713,27 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
         //halign: 'left', // Left-align content for body by default
         //valign: 'middle', // Vertically align content
       },
-      didParseCell: (data: any) => {
-        let colSpan:number=6;
-        let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
+      // didParseCell: (data: any) => {
+      //   let colSpan:number=7;
+      //   let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+      //   // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
+      //   // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
         
-        //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-        if(data.row.index==totalRowIndex){
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor=[231, 231, 231];
-          data.cell.styles.valign = 'middle'; // Center text vertically
-          if (data.column.index === 0) {
-            data.cell.colSpan = colSpan;  // Merge 4 columns into one
-            data.cell.styles.halign = 'right'; // Center text horizontally
-          }
-        }
-        if ((data.row.index==totalRowIndex ) && data.column.index > 0 && data.column.index < colSpan) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-        }
-      },
+      //   //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
+      //   if(data.row.index==totalRowIndex){
+      //     data.cell.styles.fontStyle = 'bold';
+      //     data.cell.styles.fillColor=[231, 231, 231];
+      //     data.cell.styles.valign = 'middle'; // Center text vertically
+      //     if (data.column.index === 0) {
+      //       data.cell.colSpan = colSpan;  // Merge 4 columns into one
+      //       data.cell.styles.halign = 'right'; // Center text horizontally
+      //     }
+      //   }
+      //   if ((data.row.index==totalRowIndex ) && data.column.index > 0 && data.column.index < colSpan) {
+      //     data.cell.text = ''; // Remove text from hidden columns
+      //     data.cell.colSpan = 0; // Hide these columns
+      //   }
+      // },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
 
@@ -776,65 +775,65 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
  
 
-    //Sign , verified tables-------------start--------------
-    var content:string[]=[];
-    var values:string[]=[];
-    var maxSpace = 20;
-    var str='';
-    str= `${this.translatedLangText.SIGN}`;
-    content.push(str.padEnd(maxSpace," "));
-    values.push(": ");
-    str= `${this.translatedLangText.REPORTED_BY}`;
-    content.push(str.padEnd(maxSpace," "));
-    values.push(": ");
-    str= `${this.translatedLangText.QC_DATE}`;
-    content.push(str.padEnd(maxSpace," "));
-    values.push(": "+`${this.date}`);
-    str= `${this.translatedLangText.TEAM}`;
-    content.push(str.padEnd(maxSpace," "));
-    values.push(": "+`${this.team}`);
-    var startX=leftMargin;
+    // //Sign , verified tables-------------start--------------
+    // var content:string[]=[];
+    // var values:string[]=[];
+    // var maxSpace = 20;
+    // var str='';
+    // str= `${this.translatedLangText.SIGN}`;
+    // content.push(str.padEnd(maxSpace," "));
+    // values.push(": ");
+    // str= `${this.translatedLangText.REPORTED_BY}`;
+    // content.push(str.padEnd(maxSpace," "));
+    // values.push(": ");
+    // str= `${this.translatedLangText.QC_DATE}`;
+    // content.push(str.padEnd(maxSpace," "));
+    // values.push(": "+`${this.date}`);
+    // str= `${this.translatedLangText.TEAM}`;
+    // content.push(str.padEnd(maxSpace," "));
+    // values.push(": "+`${this.team}`);
+    // var startX=leftMargin;
     
-    startY = pageHeight-(bottomMargin+10);
-    var buffer = maxSpace *3;
+    // startY = pageHeight-(bottomMargin+10);
+    // var buffer = maxSpace *3;
    
-    pdf.setPage(pdf.getNumberOfPages());
-    pdf.setLineWidth(0.01);
-    pdf.setLineDashPattern([1,1], 1);
-    pdf.setFontSize(8);
-    var bufferStartXValue=1.1;
-    var indx:number=0;
-    content.forEach(c=>{
-      var startXValue=startX+(maxSpace *bufferStartXValue);
-      var valueContent = values[indx++];
-      pdf.line(startX-1, startY, startX+buffer,startY);
-      startY-=2;
-      pdf.text(c,startX, startY , { align: 'left' });
-      pdf.text(valueContent,startXValue,startY , { align: 'left' });
-      startY-=gap;
-    });
-    startX=pageWidth-rightMargin-(buffer);
-    startY =  pageHeight-(bottomMargin+10);
-    content=[];
-    values=[];
-    indx=0;
-    maxSpace = 20;
-    str= `${this.translatedLangText.SIGN}`;
-    content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' ')  );
-    values.push(": ");
-    str= `${this.translatedLangText.VERIFIED_BY}`;
-    content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' '));
-    values.push(": ");
-    content.forEach(c=>{
-      var startXValue=startX+(maxSpace *bufferStartXValue);
-      var valueContent = values[indx++];
-      pdf.line(startX-1, startY, startX+buffer,startY);
-      startY-=2;
-      pdf.text(c,startX, startY, { align: 'left' });
-      pdf.text(valueContent,startXValue,startY , { align: 'left' });
-      startY-=gap;
-    });
-    //Sign , verified tables-------------end--------------
+    // pdf.setPage(pdf.getNumberOfPages());
+    // pdf.setLineWidth(0.01);
+    // pdf.setLineDashPattern([1,1], 1);
+    // pdf.setFontSize(8);
+    // var bufferStartXValue=1.1;
+    // var indx:number=0;
+    // content.forEach(c=>{
+    //   var startXValue=startX+(maxSpace *bufferStartXValue);
+    //   var valueContent = values[indx++];
+    //   pdf.line(startX-1, startY, startX+buffer,startY);
+    //   startY-=2;
+    //   pdf.text(c,startX, startY , { align: 'left' });
+    //   pdf.text(valueContent,startXValue,startY , { align: 'left' });
+    //   startY-=gap;
+    // });
+    // startX=pageWidth-rightMargin-(buffer);
+    // startY =  pageHeight-(bottomMargin+10);
+    // content=[];
+    // values=[];
+    // indx=0;
+    // maxSpace = 20;
+    // str= `${this.translatedLangText.SIGN}`;
+    // content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' ')  );
+    // values.push(": ");
+    // str= `${this.translatedLangText.VERIFIED_BY}`;
+    // content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' '));
+    // values.push(": ");
+    // content.forEach(c=>{
+    //   var startXValue=startX+(maxSpace *bufferStartXValue);
+    //   var valueContent = values[indx++];
+    //   pdf.line(startX-1, startY, startX+buffer,startY);
+    //   startY-=2;
+    //   pdf.text(c,startX, startY, { align: 'left' });
+    //   pdf.text(valueContent,startXValue,startY , { align: 'left' });
+    //   startY-=gap;
+    // });
+    // //Sign , verified tables-------------end--------------
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
@@ -949,7 +948,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
   }
   GetReportTitle(): string {
     var title:string='';
-     title = `${this.translatedLangText.DAILY_QC_DETAIL_REPORT}`
+     title = `${this.translatedLangText.CLEANER_PERFORMANCE_REPORT}`
     return `${title}`
   }
 
@@ -988,4 +987,3 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
   }
  
 }
-
