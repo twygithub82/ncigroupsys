@@ -480,6 +480,34 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
+        public async Task<int> UpdateCleanStatus(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, storing_order_tank sot)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (sot == null || string.IsNullOrEmpty(sot.guid))
+                    throw new GraphQLException(new Error($"SOT object cannot be null or empty", "ERROR"));
+
+                var tank = new storing_order_tank() { guid = sot.guid };
+                context.Attach(tank);
+
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.clean_status_cv = sot.clean_status_cv;
+                tank.clean_status_remarks = sot.clean_status_remarks;
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
 
         #region Private Local Functions
 
