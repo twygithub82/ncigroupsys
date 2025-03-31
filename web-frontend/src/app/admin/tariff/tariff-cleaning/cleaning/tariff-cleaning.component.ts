@@ -1,6 +1,6 @@
 import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
-import { CommonModule, DatePipe, NgClass } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
@@ -26,23 +26,20 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
-import { Utility } from 'app/utilities/utility';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
-import {MessageDialogComponent} from 'app/shared/components/message-dialog/message-dialog.component';
-import { firstValueFrom } from 'rxjs';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { firstValueFrom } from 'rxjs';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tariff-cleaning',
@@ -88,7 +85,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     'category',
     //'duplicate',
     // 'cost',
-     'actions'
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING'
@@ -132,11 +129,11 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
     CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    TARIFF_CARGO_ASSIGNED:'COMMON-FORM.TARIFF-CARGO-ASSIGNED',
-    ARE_U_SURE_DELETE:'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    TARIFF_CARGO_ASSIGNED: 'COMMON-FORM.TARIFF-CARGO-ASSIGNED',
+    ARE_U_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     DELETE: 'COMMON-FORM.DELETE',
-   
+
   }
 
   searchForm?: UntypedFormGroup;
@@ -147,7 +144,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   tcDS: TariffCleaningDS;
   cCategoryDS: CleaningCategoryDS;
   cMethodDS: CleaningMethodDS;
-  sotDS:StoringOrderTankDS;
+  sotDS: StoringOrderTankDS;
 
   previous_endCursor: string | undefined = undefined;
   soList: StoringOrderItem[] = [];
@@ -199,7 +196,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.cCategoryDS = new CleaningCategoryDS(this.apollo);
     this.cMethodDS = new CleaningMethodDS(this.apollo);
-    this.sotDS=new StoringOrderTankDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
   }
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -250,7 +247,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     });
   }
-  
+
 
 
 
@@ -280,7 +277,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       return false;
     });
   }
- 
+
   public loadData() {
 
     let lastSrchCriteria = this.searchCriteriaService.getCriteria();
@@ -606,9 +603,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.searchForm?.patchValue({
       class_no: [''],
       method: [''],
-      category:[''],
-      hazard_level:[''],
-      ban_type:[''],
+      category: [''],
+      hazard_level: [''],
+      ban_type: [''],
     });
     // this.classNoControl.reset();
     // this.methodControl.reset();
@@ -673,81 +670,78 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   async cancelItem(row: TariffCleaningItem) {
     // this.id = row.id;
-   
-     var cargoAssigned:boolean = await this.TariffCleaningAssigned(row.guid!);
-     if(cargoAssigned)
-     {
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          width: '500px',
-          data: {
-            headerText: this.translatedLangText.WARNING,
-            messageText:[this.translatedLangText.TARIFF_CARGO_ASSIGNED,this.translatedLangText.ARE_U_SURE_DELETE],
-            act: "warn"
-          },
-          direction: tempDirection
-        });
-      dialogRef.afterClosed().subscribe(result=>{
-       
-        if(result.action=="confirmed")
-        {
+
+    var cargoAssigned: boolean = await this.TariffCleaningAssigned(row.guid!);
+    if (cargoAssigned) {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        width: '500px',
+        data: {
+          headerText: this.translatedLangText.WARNING,
+          messageText: [this.translatedLangText.TARIFF_CARGO_ASSIGNED, this.translatedLangText.ARE_U_SURE_DELETE],
+          act: "warn"
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed().subscribe(result => {
+
+        if (result.action == "confirmed") {
           this.deleteTariffCleaningAndPackageCleaning(row.guid!);
         }
 
       });
-     }
-     else
-     {
-        this.deleteTariffCleaningAndPackageCleaning(row.guid!);
-     }
-
-  }
-
-  deleteTariffCleaningAndPackageCleaning(tariffCleaningGuid:string)
-  {
-     
-     this.tcDS.deleteTariffCleaning([tariffCleaningGuid]).subscribe(d=>{
-        let count =d.data.deleteTariffClean;
-        if(count>0)
-        {
-            this.handleSaveSuccess(count);
-        }
-     });
-  }
-  
-  async TariffCleaningAssigned(tariffCleaningGuid: string): Promise<boolean> {
-      let retval: boolean = false;
-      var where: any = {};
-  
-      where = {and:[{tariff_cleaning:{ guid: { eq: tariffCleaningGuid }}},
-                    {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}] };
-      
-      try {
-        // Use firstValueFrom to convert Observable to Promise
-        const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {},1));
-        retval=(result.length > 0)
-      } catch (error) {
-        console.error("Error fetching tariff cleaning guid:", error);
-      }
-  
-      return retval;
+    }
+    else {
+      this.deleteTariffCleaningAndPackageCleaning(row.guid!);
     }
 
+  }
+
+  deleteTariffCleaningAndPackageCleaning(tariffCleaningGuid: string) {
+
+    this.tcDS.deleteTariffCleaning([tariffCleaningGuid]).subscribe(d => {
+      let count = d.data.deleteTariffClean;
+      if (count > 0) {
+        this.handleSaveSuccess(count);
+      }
+    });
+  }
+
+  async TariffCleaningAssigned(tariffCleaningGuid: string): Promise<boolean> {
+    let retval: boolean = false;
+    var where: any = {};
+
+    where = {
+      and: [{ tariff_cleaning: { guid: { eq: tariffCleaningGuid } } },
+      { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+    };
+
+    try {
+      // Use firstValueFrom to convert Observable to Promise
+      const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {}, 1));
+      retval = (result.length > 0)
+    } catch (error) {
+      console.error("Error fetching tariff cleaning guid:", error);
+    }
+
+    return retval;
+  }
+
   handleSaveSuccess(count: any) {
-     if ((count ?? 0) > 0) {
-       let successMsg = this.langText.SAVE_SUCCESS;
-       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-         successMsg = res;
-         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-         this.search();
-       });
-     }
-   }
-  
+    if ((count ?? 0) > 0) {
+      let successMsg = this.langText.SAVE_SUCCESS;
+      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+        successMsg = res;
+        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        this.search();
+      });
+    }
+  }
+
 
 }
