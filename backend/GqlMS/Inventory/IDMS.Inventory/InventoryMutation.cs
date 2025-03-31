@@ -17,6 +17,7 @@ using System.IO;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using IDMS.Models.Billing;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using IDMS.Models.Package;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -449,14 +450,54 @@ namespace IDMS.Inventory.GqlTypes
                 if (sot.cleaning == null || !sot.cleaning.Any())
                     throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
 
-                foreach(var item in sot.cleaning)
+                if (sot.tariff_cleaning == null || string.IsNullOrEmpty(sot.tariff_cleaning.cleaning_category_guid))
+                    throw new GraphQLException(new Error($"Cleaning category guid cannot be null or empty", "ERROR"));
+
+                if (sot.storing_order == null || string.IsNullOrEmpty(sot.storing_order.customer_company_guid))
+                    throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+
+                var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
+                var customerGuid = sot?.storing_order?.customer_company_guid;
+                var adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
+                               .Select(c => c.adjusted_price).FirstOrDefaultAsync() ?? 0;
+
+                foreach (var item in sot.cleaning)
                 {
                     var clean = new cleaning() { guid = item.guid };
                     context.Attach(clean);
                     clean.update_by = user;
                     clean.update_dt = currentDateTime;
-                    clean.cleaning_cost = item.cleaning_cost;
+                    clean.cleaning_cost = adjustedPrice;
+                    clean.est_cleaning_cost = adjustedPrice;
                 }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateCleanStatus(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, storing_order_tank sot)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (sot == null || string.IsNullOrEmpty(sot.guid))
+                    throw new GraphQLException(new Error($"SOT object cannot be null or empty", "ERROR"));
+
+                var tank = new storing_order_tank() { guid = sot.guid };
+                context.Attach(tank);
+
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.clean_status_cv = sot.clean_status_cv;
+                tank.clean_status_remarks = sot.clean_status_remarks;
 
                 var res = await context.SaveChangesAsync();
                 return res;

@@ -4,8 +4,6 @@ using IDMS.Models.Master;
 using IDMS.Models.Service;
 using IDMS.Models.Shared;
 using IDMS.Models.Tariff;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -61,6 +59,7 @@ namespace IDMS.Models.Inventory
         public long? last_release_dt { get; set; }
         public string? job_no_remarks { get; set; }
         public string? last_cargo_remarks { get; set; }
+        public string? clean_status_remarks { get; set; }
         public storing_order? storing_order { get; set; }
         public tariff_cleaning? tariff_cleaning { get; set; }
         public customer_company? customer_company { get; set; }
@@ -68,10 +67,8 @@ namespace IDMS.Models.Inventory
 
         [UseFiltering]
         public tank? tank { get; set; }
-
         [UseFiltering]
         public billing_sot? billing_sot { get; set; }
-
         [UseFiltering]
         public IEnumerable<in_gate>? in_gate { get; set; }
         [UseFiltering]

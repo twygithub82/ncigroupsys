@@ -36,7 +36,7 @@
             <mat-card-content>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 d-flex justify-content-end ms-auto">
-                  @if (canOverwriteLastCargo()) {
+                  @if (!(cvDS.loading$ | async) && (canOverwriteLastCargo() || canOverwriteCleanStatus())) {
                   <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
                     [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
                     <mat-icon>menu</mat-icon>
@@ -45,7 +45,11 @@
                   <mat-menu #menu="matMenu">
                     @if (canOverwriteLastCargo()) {
                     <button mat-menu-item
-                      (click)="overwriteJobNoDialog($event)">{{translatedLangText.OVERWRITE_LAST_CARGO}}</button>
+                      (click)="overwriteLastCargoDialog($event)">{{translatedLangText.OVERWRITE_LAST_CARGO}}</button>
+                    }
+                    @if (canOverwriteCleanStatus()) {
+                    <button mat-menu-item
+                      (click)="overwriteCleanStatusDialog($event)">{{translatedLangText.OVERWRITE_CONDITION}}</button>
                     }
                   </mat-menu>
                   }

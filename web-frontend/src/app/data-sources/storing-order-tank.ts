@@ -56,6 +56,7 @@ export class StoringOrderTank {
   public last_release_dt?: number;
   public job_no_remarks?: string;
   public last_cargo_remarks?: string;
+  public clean_status_remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -96,6 +97,7 @@ export class StoringOrderTank {
     this.last_release_dt = item.last_release_dt;
     this.job_no_remarks = item.job_no_remarks;
     this.last_cargo_remarks = item.last_cargo_remarks;
+    this.clean_status_remarks = item.clean_status_remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -2160,6 +2162,7 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
         required_temp
         job_no_remarks
         last_cargo_remarks
+        clean_status_remarks
         tariff_cleaning {
           guid
           open_on_gate_cv
@@ -3600,6 +3603,18 @@ export const UPDATE_JOB_NO = gql`
   }
 `;
 
+export const UPDATE_LAST_CARGO = gql`
+  mutation updateLastCargo($sot: storing_order_tankInput!) {
+    updateLastCargo(sot: $sot)
+  }
+`;
+
+export const UPDATE_CLEAN_STATUS = gql`
+  mutation updateCleanStatus($sot: storing_order_tankInput!) {
+    updateCleanStatus(sot: $sot)
+  }
+`;
+
 export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   constructor(private apollo: Apollo) {
@@ -4325,7 +4340,8 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   getStoringOrderTankForMovementCleaning(sot_guid: any): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
     const where = {
-      guid: { eq: sot_guid }
+      guid: { eq: sot_guid },
+      status_cv: { in: ["APPROVED", "COMPLETED", "JOB_IN_PROGRESS"] }
     }
     return this.apollo
       .query<any>({
@@ -4569,6 +4585,34 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_JOB_NO,
+      variables: {
+        sot
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
+
+  updateLastCargo(sot: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: UPDATE_LAST_CARGO,
+      variables: {
+        sot
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
+
+  updateCleanStatus(sot: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: UPDATE_CLEAN_STATUS,
       variables: {
         sot
       }

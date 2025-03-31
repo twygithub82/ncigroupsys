@@ -97,7 +97,7 @@ export const GET_TANK_Where_r1 = gql`
 
 export const GET_TANK = gql`
   query queryTank {
-    queryTank(where: {delete_dt:  { eq: null }}) {
+    queryTank(where: {delete_dt:  { eq: null }}, first: 100) {
       nodes {
         guid
         unit_type

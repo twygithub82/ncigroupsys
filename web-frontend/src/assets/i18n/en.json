@@ -1122,8 +1122,10 @@
    "REJECTED":"Rejected (%)",
    "MONTH-TOTAL":"Month Total",
    "GRAND-TOTAL":"Grand Total",
-   "STEAM-PERIOD":"Steam Period"
+   "STEAM-PERIOD":"Steam Period",
    
+  
+    "OVERWRITE-CONDITION": "Overwrite Condition"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
