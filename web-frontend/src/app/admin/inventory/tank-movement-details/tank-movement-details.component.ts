@@ -50,7 +50,7 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
-import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
 import { TankDS } from 'app/data-sources/tank';
@@ -69,7 +69,8 @@ import { OverwriteJobNoFormDialogComponent } from './overwrite-job-no-form-dialo
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { OverwriteLastCargoFormDialogComponent } from './overwrite-last-cargo-form-dialog/overwrite-last-cargo-form-dialog.component';
-import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning';
+import { TariffCleaningDS, TariffCleaningGO } from 'app/data-sources/tariff-cleaning';
+import { OverwriteCleanStatusFormDialogComponent } from './overwrite-clean-status-form-dialog/overwrite-clean-status-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -394,6 +395,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     OVERWRITE_JOB_NO: 'COMMON-FORM.OVERWRITE-JOB-NO',
     OVERWRITE_DEPOT_COST: 'COMMON-FORM.OVERWRITE-DEPOT-COST',
     OVERWRITE_LAST_CARGO: 'COMMON-FORM.OVERWRITE-LAST-CARGO',
+    OVERWRITE_CONDITION: 'COMMON-FORM.OVERWRITE-CONDITION',
   }
 
   sot_guid: string | null | undefined;
@@ -1335,19 +1337,63 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (result && this.sot) {
         const newSot = {
           guid: this.sot.guid,
+          tariff_cleaning: new TariffCleaningGO(result.last_cargo),
           last_cargo_guid: result.last_cargo_guid,
           last_cargo_remarks: result.last_cargo_remarks,
-          cleaning: result.cleaning.map((item: any) => new InGateCleaningGO(item))
+          cleaning: result.cleaning.map((item: any) => new InGateCleaningGO(item)),
+          storing_order: new StoringOrderGO(this.sot.storing_order),
         }
 
         // Update current sot for display purpose
         this.sot.last_cargo_guid = result.last_cargo_guid;
         this.sot.last_cargo_remarks = result.last_cargo_remarks;
+        this.sot.tariff_cleaning = result.last_cargo;
 
         console.log(newSot)
         this.sotDS.updateLastCargo(newSot).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.updateLastCargo);
+        });
+      }
+    });
+  }
+
+  overwriteCleanStatusDialog(event: Event) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(OverwriteCleanStatusFormDialogComponent, {
+      width: '600px',
+      data: {
+        sot: this.sot,
+        populateData: {
+          cleanStatusCvList: this.cleanStatusCvList,
+        },
+        translatedLangText: this.translatedLangText,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        const newSot = {
+          guid: this.sot.guid,
+          clean_status_cv: result.clean_status_cv,
+          clean_status_remarks: result.clean_status_remarks
+        }
+
+        // Update current sot for display purpose
+        this.sot.clean_status_cv = result.clean_status_cv;
+        this.sot.clean_status_remarks = result.clean_status_remarks;
+
+        console.log(newSot)
+        this.sotDS.updateCleanStatus(newSot).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateCleanStatus);
         });
       }
     });
@@ -1777,5 +1823,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       }
     }
     return false;
+  }
+
+  canOverwriteCleanStatus() {
+    return true;
   }
 }

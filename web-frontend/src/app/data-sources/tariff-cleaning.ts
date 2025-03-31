@@ -1,15 +1,11 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { BaseDataSource } from './base-ds';
 import { CleaningCategoryItem } from './cleaning-category';
 import { CleaningMethodItem } from './cleaning-method';
-import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
-import { PageInfo } from '@core/models/pageInfo';
-import { BaseDataSource } from './base-ds';
 export class TariffCleaningGO {
   public guid?: string;
   public cleaning_method_guid?: string;
@@ -178,7 +174,7 @@ export const GET_TARIFF_CLEANING_QUERY = gql`
   }
 `;
 
-export const ADD_CLASS_NOA_AND_UN_NO=gql`
+export const ADD_CLASS_NOA_AND_UN_NO = gql`
   mutation addUN_Number($unNo: un_numberInput!) {
     addUN_Number(unNumber: $unNo)
   }
@@ -365,7 +361,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       );
   }
 
-  
+
 
   SearchTariffCleaning(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
@@ -428,7 +424,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     });
   }
 
-  
+
 
 
   updateTariffCleaning(tc: any): Observable<any> {
@@ -460,7 +456,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
   }
 
 
-  AddClassNoAndUnNo(unNo?:any):Observable<any>{
+  AddClassNoAndUnNo(unNo?: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_CLASS_NOA_AND_UN_NO,
       variables: {
