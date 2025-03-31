@@ -1,17 +1,13 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
-import { AnyObject } from 'chart.js/dist/types/basic';
-import { InGateSurveyItem } from './in-gate-survey';
-import { CustomerCompanyItem } from './customer-company';
-import { JobOrderGO, JobOrderItem } from './job-order';
 import { BillingItem } from './billing';
+import { CustomerCompanyItem } from './customer-company';
+import { JobOrderItem } from './job-order';
+import { StoringOrderTankItem } from './storing-order-tank';
 
 export class InGateCleaningGO {
   public action?: string = '';
@@ -22,8 +18,8 @@ export class InGateCleaningGO {
   public approve_by?: string;
   public approve_dt?: number;
   public bill_to_guid?: string;
-  public est_buffer_cost?:number;
-  public est_cleaning_cost?:number;
+  public est_buffer_cost?: number;
+  public est_cleaning_cost?: number;
   public buffer_cost?: number;
   public cleaning_cost?: number;
   public complete_by?: string;
@@ -63,8 +59,8 @@ export class InGateCleaningGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    this.est_buffer_cost=item.est_buffer_cost;
-    this.est_cleaning_cost=item.est_cleaning_cost;
+    this.est_buffer_cost = item.est_buffer_cost;
+    this.est_cleaning_cost = item.est_cleaning_cost;
     this.customer_billing_guid = item.customer_billing_guid;
     this.owner_billing_guid = item.owner_billing_guid;
   }
@@ -653,7 +649,7 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
 
   getCleaningForMovement(sot_guid?: any): Observable<InGateCleaningItem[]> {
     this.loadingSubject.next(true);
-    const where = this.addDeleteDtCriteria({ sot_guid: { eq: sot_guid } })
+    const where = this.addDeleteDtCriteria({ sot_guid: { eq: sot_guid }, status_cv: { in: ["APPROVED", "COMPLETED", "JOB_IN_PROGRESS"] } })
     return this.apollo
       .query<any>({
         query: GET_IN_GATE_CLEANING_BY_SOT,

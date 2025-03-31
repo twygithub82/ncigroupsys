@@ -60,7 +60,21 @@
                   <mat-date-range-picker #est_picker></mat-date-range-picker>
                 </mat-form-field>
               </div>
+
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{ translatedLangText.APPROVED_DATE }}</mat-label>
+                  <input matInput [matDatepicker]="approved_picker" formControlName="app_dt" placeholder="Select date" [required]="isDateRequired('APPROVED')">
+                  <mat-datepicker-toggle matSuffix [for]="approved_picker"></mat-datepicker-toggle>
+                  <mat-datepicker #approved_picker></mat-datepicker>
+                </mat-form-field>
+                @if (searchForm?.get('app_dt')?.hasError('required') && searchForm?.get('app_dt')?.touched) {
+                  <mat-error>
+                    {{ translatedLangText.APPROVED_DATE }} {{ translatedLangText.SO_REQUIRED }}
+                  </mat-error>
+                }
+              </div>
+              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
                   <mat-date-range-input [rangePicker]="approved_picker" required>
@@ -79,7 +93,7 @@
                   </mat-error>
                 }
 
-              </div>
+              </div> -->
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.ALLOCATION_DATE}}</mat-label>
@@ -93,6 +107,19 @@
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{ translatedLangText.QC_DATE }}</mat-label>
+                  <input matInput [matDatepicker]="qc_picker" formControlName="qc_dt" placeholder="Select date" [required]="isDateRequired('QC')">
+                  <mat-datepicker-toggle matSuffix [for]="qc_picker"></mat-datepicker-toggle>
+                  <mat-datepicker #qc_picker></mat-datepicker>
+                </mat-form-field>
+                @if (searchForm?.get('qc_dt')?.hasError('required') && searchForm?.get('qc_dt')?.touched) {
+                  <mat-error>
+                    {{ translatedLangText.QC_DATE }} {{ translatedLangText.SO_REQUIRED }}
+                  </mat-error>
+                }
+              </div>
+              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.QC_DATE}}</mat-label>
                   <mat-date-range-input [rangePicker]="qc_picker">
                     <input matStartDate placeholder="Start date" formControlName="qc_dt_start">
@@ -101,7 +128,7 @@
                   <mat-datepicker-toggle matSuffix [for]="qc_picker"></mat-datepicker-toggle>
                   <mat-date-range-picker #qc_picker></mat-date-range-picker>
                 </mat-form-field>
-              </div>
+              </div> -->
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TEAM}}</mat-label>
@@ -115,9 +142,10 @@
                 </mat-form-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <div class="radio-group">
+                <div class="radio-group" (change)="onReportTypeChange($event)">
                   <input type="radio" id="option-one"  name="report_type" formControlName="report_type" value="1" checked><label for="option-one">{{translatedLangText.REVENUE}}</label>
                   <input type="radio" id="option-two"  name="report_type" formControlName="report_type" value="2"><label for="option-two">{{translatedLangText.APPROVAL}}</label>
+                  <input type="radio" id="option-three"  name="report_type" formControlName="report_type" value="3"><label for="option-three">{{translatedLangText.QC_DETAIL}}</label>
                 </div>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">

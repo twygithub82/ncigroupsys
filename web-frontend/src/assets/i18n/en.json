@@ -1096,10 +1096,17 @@
     "OVERWRITE-DEPOT-COST": "Overwrite Depot Cost",
     "OVERWRITE-LAST-CARGO": "Overwrite Last Cargo",
     "DAILY-TEAM-REPORT": "Daily Team Report",
-    "REVENUE": "Revenue"
-
-
-
+    "REVENUE": "Revenue",
+    "QC-DETAIL":"QC Detail",
+    "DAILY-TEAM-REVENUE-REPORT":"Daily Team Revenue Report",
+    "DAILY-TEAM-APPROVAL-REPORT":"Daily Team Approval Report",
+    "DAILY-QC-DETAIL-REPORT":"Daily QC Detail Report",
+    "QC-BY":"QC by",
+    "REPAIR-COST":"Repair Cost",
+    "REPORTED-BY":"Reported by",
+    "SIGN":"Sign",
+    "VERIFIED-BY":"Verified by",
+   "MAN-HOUR":"Man Hour"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

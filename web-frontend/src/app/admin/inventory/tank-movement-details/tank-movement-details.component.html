@@ -45,7 +45,7 @@
                   <mat-menu #menu="matMenu">
                     @if (canOverwriteLastCargo()) {
                     <button mat-menu-item
-                      (click)="overwriteJobNoDialog($event)">{{translatedLangText.OVERWRITE_LAST_CARGO}}</button>
+                      (click)="overwriteLastCargoDialog($event)">{{translatedLangText.OVERWRITE_LAST_CARGO}}</button>
                     }
                   </mat-menu>
                   }

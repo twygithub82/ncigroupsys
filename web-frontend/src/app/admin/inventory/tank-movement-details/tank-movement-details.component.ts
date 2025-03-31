@@ -39,7 +39,7 @@ import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { InGateCleaningDS, InGateCleaningGO, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { InGateSurveyDS, InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { JobOrderDS } from 'app/data-sources/job-order';
 import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
@@ -68,6 +68,8 @@ import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-pur
 import { OverwriteJobNoFormDialogComponent } from './overwrite-job-no-form-dialog/overwrite-job-no-form-dialog.component';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
+import { OverwriteLastCargoFormDialogComponent } from './overwrite-last-cargo-form-dialog/overwrite-last-cargo-form-dialog.component';
+import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -449,6 +451,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   surveyDS: SurveyDetailDS;
   tiDS: TankInfoDS;
   transferDS: TransferDS;
+  tcDS: TariffCleaningDS;
 
   customerCodeControl = new UntypedFormControl();
   ownerControl = new UntypedFormControl();
@@ -584,6 +587,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.surveyDS = new SurveyDetailDS(this.apollo);
     this.tiDS = new TankInfoDS(this.apollo);
     this.transferDS = new TransferDS(this.apollo);
+    this.tcDS = new TariffCleaningDS(this.apollo);
 
     const breakpointObserver = inject(BreakpointObserver);
     this.stepperOrientation = breakpointObserver
@@ -1308,6 +1312,47 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  overwriteLastCargoDialog(event: Event) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(OverwriteLastCargoFormDialogComponent, {
+      width: '600px',
+      data: {
+        sot: this.sot,
+        cleaning: this.cleaningItem,
+        tcDS: this.tcDS,
+        translatedLangText: this.translatedLangText,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        const newSot = {
+          guid: this.sot.guid,
+          last_cargo_guid: result.last_cargo_guid,
+          last_cargo_remarks: result.last_cargo_remarks,
+          cleaning: result.cleaning.map((item: any) => new InGateCleaningGO(item))
+        }
+
+        // Update current sot for display purpose
+        this.sot.last_cargo_guid = result.last_cargo_guid;
+        this.sot.last_cargo_remarks = result.last_cargo_remarks;
+
+        console.log(newSot)
+        this.sotDS.updateLastCargo(newSot).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateLastCargo);
+        });
+      }
+    });
+  }
+
   onExport(event: Event, selectedItem: RepairItem) {
     this.preventDefault(event);
     let tempDirection: Direction;
@@ -1719,6 +1764,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteLastCargo() {
+    if (this.sot?.purpose_cleaning) {
+      if (!this.cleaningItem?.[0]?.customer_billing_guid) {
+        return true;
+      }
+    }
+
+    if (this.sot?.purpose_steam) {
+      const found = this.steamItem?.some(item => item.create_by === 'system' && item.status_cv === 'COMPLETED');
+      if (!found) {
+        return true;
+      }
+    }
     return false;
   }
 }

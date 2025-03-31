@@ -74,7 +74,7 @@ export class FormDialogComponent {
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
-  lastCargoControl: UntypedFormControl;;
+  lastCargoControl: UntypedFormControl;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
