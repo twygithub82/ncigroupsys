@@ -244,8 +244,8 @@ namespace IDMS.Billing.GqlTypes
                                  surveyor_name = us.UserName,
                                  est_cost = r.est_cost,
                                  appv_cost = r.total_cost,
-                                 diff_cost = r.est_cost ?? 0.0 - r.total_cost,
-                                 repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+                                 diff_cost = (r.est_cost == null || r.est_cost == 0.0) ? 0.0 : (r.est_cost - r.total_cost),
+                                 repair_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
 
                              }).AsQueryable();
 
@@ -339,7 +339,7 @@ namespace IDMS.Billing.GqlTypes
         [UseFiltering]
         [UseSorting]
         public async Task<List<SurveyorPerformanceDetail>?> QuerySurveyorPerformanceDetail(ApplicationBillingDBContext context, [Service] IConfiguration config,
-        [Service] IHttpContextAccessor httpContextAccessor, SurveyorPerformanceDetailRequest surveyorPerfDetailRequest)
+                [Service] IHttpContextAccessor httpContextAccessor, SurveyorPerformanceDetailRequest surveyorPerfDetailRequest)
         {
 
             try
@@ -386,7 +386,7 @@ namespace IDMS.Billing.GqlTypes
                                  customer_code = cc.code,
                                  surveyor_name = us.UserName,
                                  est_status = r.status_cv,
-                                 est_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+                                 est_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
                              }).AsQueryable();
 
 
@@ -459,7 +459,6 @@ namespace IDMS.Billing.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
 
         #endregion
 
@@ -1323,28 +1322,20 @@ namespace IDMS.Billing.GqlTypes
 
         #endregion
 
-        #region DailyReport
-
-        #endregion
-
+        #region DailyTeamRepairReport
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
         public async Task<List<DailyTeamRevenue>> QueryDailyTeamRevenue(ApplicationBillingDBContext context, [Service] IConfiguration config,
-          [Service] IHttpContextAccessor httpContextAccessor, DailyTeamRevenuRequest dailyTeamRevenueRequest)
+            [Service] IHttpContextAccessor httpContextAccessor, DailyTeamRevenuRequest dailyTeamRevenueRequest)
         {
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 List<DailyTeamRevenue> result = new List<DailyTeamRevenue>();
 
-                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
-                //string surveryorCodeValType = "TEST_CLASS";
                 string repairStatus = "QC_COMPLETED";
-
-                //long sDate = dailyTeamRevenueRequest.start_date;
-                //long eDate = dailyTeamRevenueRequest.end_date;
 
                 var query = (from r in context.repair
                              join rp in context.repair_part on r.guid equals rp.repair_guid
@@ -1432,19 +1423,12 @@ namespace IDMS.Billing.GqlTypes
         [UseFiltering]
         [UseSorting]
         public async Task<List<DailyTeamApproval>> QueryDailyTeamApproval(ApplicationBillingDBContext context, [Service] IConfiguration config,
-          [Service] IHttpContextAccessor httpContextAccessor, DailyTeamApprovalRequest dailyTeamApprovalRequest)
+            [Service] IHttpContextAccessor httpContextAccessor, DailyTeamApprovalRequest dailyTeamApprovalRequest)
         {
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 List<DailyTeamApproval> result = new List<DailyTeamApproval>();
-
-                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
-                //string surveryorCodeValType = "TEST_CLASS";
-                //string repairStatus = "QC_COMPLETED";
-
-                //long sDate = dailyTeamRevenueRequest.start_date;
-                //long eDate = dailyTeamRevenueRequest.end_date;
 
                 var query = (from r in context.repair
                              join rp in context.repair_part on r.guid equals rp.repair_guid
@@ -1520,7 +1504,7 @@ namespace IDMS.Billing.GqlTypes
                     query = query.Where(tr => dailyTeamApprovalRequest.team.Contains(tr.team));
                 }
 
-                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.approved_date).ToListAsync();
+                return await query.OrderBy(tr => tr.code).ThenBy(tr => tr.approved_date).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -1533,20 +1517,20 @@ namespace IDMS.Billing.GqlTypes
         [UseFiltering]
         [UseSorting]
         public async Task<List<DailyQCDetail>> QueryDailyQCDetail(ApplicationBillingDBContext context, [Service] IConfiguration config,
-          [Service] IHttpContextAccessor httpContextAccessor, DailyQCDetailRequest dailyQCDetailRequest)
+            [Service] IHttpContextAccessor httpContextAccessor, DailyQCDetailRequest dailyQCDetailRequest)
         {
             try
             {
                 ///Havent complete --- labour cost, material cost   
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                List<DailyTeamApproval> result = new List<DailyTeamApproval>();
+                //List<DailyTeamApproval> result = new List<DailyTeamApproval>();
 
-                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
-                //string surveryorCodeValType = "TEST_CLASS";
                 string repairStatus = "QC_COMPLETED";
 
-                //long sDate = dailyTeamRevenueRequest.start_date;
-                //long eDate = dailyTeamRevenueRequest.end_date;
+                //var query1 = GetDailyRepairQuery(context);
+                //var qq = (from result in query1
+                //          where result.
+                //          )
 
                 var query = (from r in context.repair
                              join rp in context.repair_part on r.guid equals rp.repair_guid
@@ -1571,9 +1555,9 @@ namespace IDMS.Billing.GqlTypes
                                  eir_no = ig.eir_no,
                                  repair_cost = r.total_cost,
                                  //team = t.description,
-                                 appv_hour = 1, // need to change 
-                                 appv_material_cost = 100 - r.material_cost_discount, //need to change
-                                 repair_type = sot.purpose_repair_cv == "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+                                 appv_hour = r.total_hour, // need to change 
+                                 appv_material_cost = r.total_material_cost - r.material_cost_discount, //need to change
+                                 repair_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
 
                              }).AsQueryable();
 
@@ -1616,18 +1600,50 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = query.Where(tr => tr.allocation_date >= dailyQCDetailRequest.allocation_start_date && tr.allocation_date <= dailyQCDetailRequest.allocation_end_date);
                 }
-                //if (dailyQCDetailRequest.team != null && dailyQCDetailRequest.team.Any())
-                //{
-                //    query = query.Where(tr => dailyQCDetailRequest.team.Contains(tr.team));
-                //}
 
-                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.qc_date).ToListAsync();
+                return await query.OrderBy(tr => tr.code).ThenBy(tr => tr.qc_date).ToListAsync();
             }
             catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
+
+        private IQueryable<TempRepairDetail> GetDailyRepairQuery(ApplicationBillingDBContext context)
+        {
+            var query = (from r in context.repair
+                         join rp in context.repair_part on r.guid equals rp.repair_guid
+                         join jo in context.job_order on rp.job_order_guid equals jo.guid
+                         join t in context.team on jo.team_guid equals t.guid
+                         join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
+                         join so in context.storing_order on sot.so_guid equals so.guid into soGroup
+                         from so in soGroup.DefaultIfEmpty()
+                         join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
+                         from cc in ccGroup.DefaultIfEmpty()
+                         join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                         select new TempRepairDetail
+                         {
+                             estimate_no = r.estimate_no,
+                             tank_no = sot.tank_no,
+                             code = cc.code,
+                             estimate_date = r.create_dt,
+                             approved_date = r.approve_dt,
+                             allocation_date = r.allocate_dt,
+                             qc_date = jo.qc_dt,
+                             eir_no = ig.eir_no,
+                             repair_cost = r.total_cost,
+                             team = t.description,
+                             appv_hour = r.total_hour, // need to change 
+                             appv_material_cost = r.total_material_cost - r.material_cost_discount, //need to change
+                             repair_type = sot.purpose_repair_cv
+
+                         }).AsQueryable();
+
+            return query;
+        }
+
+        #endregion
+
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
