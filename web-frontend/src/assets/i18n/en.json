@@ -1124,7 +1124,8 @@
     "GRAND-TOTAL": "Grand Total",
     "STEAM-PERIOD": "Steam Period",
     "OVERWRITE-CONDITION": "Overwrite Condition",
-    "WARNING": "Warning"
+    "WARNING": "Warning",
+    "PAUSE-JOB": "Pause Job"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
