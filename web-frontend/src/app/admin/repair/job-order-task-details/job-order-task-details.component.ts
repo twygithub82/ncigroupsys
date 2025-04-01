@@ -85,6 +85,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
   ]
 })
 export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = 1;
   displayedColumns = [
     'seq',
     'subgroup_name_cv',
@@ -97,8 +98,8 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order' },
-    { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/repair/job-order' }
+    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } }
   ]
   translatedLangText: any = {}
   langText = {
@@ -593,7 +594,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/job-order']);
+      this.router.navigate(['/admin/repair/job-order'], { queryParams: { tabIndex: this.tabIndex } });
     }
   }
 

@@ -26,7 +26,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -150,6 +150,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE'
   }
 
+  selectedTabIndex = 0;
+
   filterRepairForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
@@ -200,6 +202,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
+    private route: ActivatedRoute,
+    private router: Router,
     private translate: TranslateService
   ) {
     super();
@@ -222,12 +226,22 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const tabIndex = params['tabIndex'];
+      if (tabIndex) {
+        this.selectedTabIndex = tabIndex
+      }
+    });
     this.initializeValueChanges();
     this.loadData();
   }
 
   override ngOnDestroy() {
     this.jobOrderSubscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
+  onTabChange(index: number) {
+    this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
   }
 
   refresh() {

@@ -80,6 +80,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
   ]
 })
 export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = 2;
   displayedColumns = [
     'seq',
     'subgroup_name_cv',
@@ -94,8 +95,8 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.QC-DETAILS'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order' },
-    { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/repair/job-order' }
+    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } }
   ]
   translatedLangText: any = {}
   langText = {
@@ -669,7 +670,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/job-order']);
+      this.router.navigate(['/admin/repair/job-order'], { queryParams: { tabIndex: this.tabIndex } });
     }
   }
 
