@@ -54,7 +54,8 @@ namespace IDMS.StoringOrder.GqlTypes
                     newTank.preinspect_job_no = tnk.job_no;
                     newTank.liftoff_job_no = tnk.job_no;
                     newTank.lifton_job_no = tnk.job_no;
-                    newTank.takein_job_no = tnk.job_no;
+                    //newTank.takein_job_no = tnk.job_no;
+                    newTank.job_no = tnk.job_no;
                     newTank.release_job_no = tnk.job_no;
                     newTank.owner_guid = tnk.owner_guid;
                     newTank.tank_status_cv = TankMovementStatus.SO;
