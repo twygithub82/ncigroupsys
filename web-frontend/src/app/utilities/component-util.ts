@@ -9,7 +9,7 @@ export class ComponentUtil {
         snackBar: MatSnackBar
     ) {
         snackBar.open(text, '', {
-            duration: 2000,
+            duration: 200000,
             verticalPosition: placementFrom,
             horizontalPosition: placementAlign,
             panelClass: colorName,

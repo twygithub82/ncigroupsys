@@ -114,7 +114,6 @@ export const GET_SCHEDULING_SOT = gql`
           required_temp
           so_guid
           status_cv
-          takein_job_no
           tank_no
           tank_status_cv
           unit_type_guid

@@ -473,7 +473,6 @@ export const GET_REPAIR_BY_ID = gql`
           preinspect_job_no
           liftoff_job_no
           lifton_job_no
-          takein_job_no
           release_job_no
           last_cargo_guid
           purpose_cleaning
@@ -640,7 +639,6 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
           preinspect_job_no
           liftoff_job_no
           lifton_job_no
-          takein_job_no
           release_job_no
           last_cargo_guid
           purpose_cleaning
@@ -811,7 +809,6 @@ export const GET_REPAIR_FOR_QC_DETAILS = gql`
           preinspect_job_no
           liftoff_job_no
           lifton_job_no
-          takein_job_no
           release_job_no
           last_cargo_guid
           purpose_cleaning
@@ -1006,7 +1003,6 @@ export const GET_REPAIR_FOR_JOB_ORDER = gql`
           preinspect_job_no
           liftoff_job_no
           lifton_job_no
-          takein_job_no
           release_job_no
           last_cargo_guid
           purpose_cleaning
@@ -1235,7 +1231,6 @@ const GET_REPAIR_FOR_MOVEMENT = gql`
           preinspect_job_no
           liftoff_job_no
           lifton_job_no
-          takein_job_no
           release_job_no
           last_cargo_guid
           purpose_cleaning
@@ -1395,7 +1390,6 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
           preinspect_job_no
           liftoff_job_no
           lifton_job_no
-          takein_job_no
           release_job_no
           last_cargo_guid
           purpose_cleaning

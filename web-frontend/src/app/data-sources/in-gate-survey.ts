@@ -216,7 +216,6 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
           preinspect_job_no
           liftoff_job_no
           lifton_job_no
-          takein_job_no
           release_job_no
           last_cargo_guid
           purpose_cleaning
@@ -341,7 +340,6 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
             preinspect_job_no
             liftoff_job_no
             lifton_job_no
-            takein_job_no
             release_job_no
             last_cargo_guid
             purpose_cleaning
@@ -601,7 +599,6 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
             status_cv
             steaming_remarks
             storage_remarks
-            takein_job_no
             tank_no
             tank_note
             tank_status_cv

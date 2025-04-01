@@ -467,6 +467,16 @@ export class Utility {
     }).format(numericValue);
   }
 
+  static booleanToYesNo(input: boolean | undefined): string {
+    const match = BOOLEAN_YES_NO.find(option => option.value === input);
+    return match ? match.label : '';
+  }
+
+  static yesNoToBoolean(input: string | undefined): boolean {
+    const match = BOOLEAN_YES_NO.find(option => option.label.toUpperCase() === input?.toUpperCase());
+    return match ? match.value : false;
+  }
+
   static getBackgroundColorFromNature(natureCv: string | undefined) {
     var color = 'orange';
     switch (natureCv) {
@@ -740,13 +750,13 @@ export class Utility {
     pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
   }
 
- static  removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
-      sot.in_gate = sot?.in_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
-      sot.out_gate = sot?.out_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
-      sot.cleaning = sot?.cleaning?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
-      sot.repair = sot?.repair?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
-   }
-  
+  static removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
+    sot.in_gate = sot?.in_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+    sot.out_gate = sot?.out_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+    sot.cleaning = sot?.cleaning?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+    sot.repair = sot?.repair?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
+  }
+
   static DisplayLastTest(sot: StoringOrderTankItem): string {
     var lastTest: string = '';
     this.removeDeletedInGateAndOutGate(sot);
@@ -786,7 +796,7 @@ export class Utility {
     return lastTest;
   }
 
- static DisplayNextTest(sot: StoringOrderTankItem): string {
+  static DisplayNextTest(sot: StoringOrderTankItem): string {
     var nextTest: string = '';
     var yearsToAdd = 2.5;
     var next_test_dt: Date = new Date();
@@ -825,14 +835,14 @@ export class Utility {
     const today = new Date();
     const currentMonth = today.getMonth() + 1; // getMonth() returns 0-11, so add 1
     const currentYear = today.getFullYear();
-  
+
     // Compare the selected year and month with today's year and month
     if (selectedYear > currentYear) {
       return true; // Selected year is greater
     } else if (selectedYear === currentYear && selectedMonth > currentMonth) {
       return true; // Selected year is the same, but month is greater
     }
-  
+
     return false; // Selected date is not greater than today
   }
 }
@@ -857,3 +867,8 @@ export const TANK_STATUS_IN_YARD = [
 export const TANK_STATUS_POST_IN_YARD = [
   'RELEASED',
 ]
+
+export const BOOLEAN_YES_NO = [
+  { value: true, label: 'Y' },
+  { value: false, label: 'N' }
+];

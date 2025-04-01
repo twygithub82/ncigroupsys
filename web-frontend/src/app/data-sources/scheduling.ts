@@ -91,7 +91,6 @@ export const GET_SCHEDULING = gql`
             required_temp
             so_guid
             status_cv
-            takein_job_no
             tank_no
             tank_status_cv
             unit_type_guid
@@ -176,7 +175,6 @@ export const GET_SCHEDULING_FOR_RO = gql`
             required_temp
             so_guid
             status_cv
-            takein_job_no
             tank_no
             tank_status_cv
             unit_type_guid
@@ -262,7 +260,6 @@ export const GET_SCHEDULING_FOR_MOVEMENT = gql`
             required_temp
             so_guid
             status_cv
-            takein_job_no
             tank_no
             tank_status_cv
             unit_type_guid

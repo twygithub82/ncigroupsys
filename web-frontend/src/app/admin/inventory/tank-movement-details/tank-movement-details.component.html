@@ -1384,7 +1384,7 @@
                       <div class="row">
                         <div
                           class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 d-flex justify-content-end ms-auto">
-                          @if (canOverwriteJobNo()) {
+                          @if (canOverwriteJobNo() && canOverwriteDepotCost()) {
                           <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
                             [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
                             <mat-icon>menu</mat-icon>
@@ -1394,6 +1394,10 @@
                             @if (canOverwriteJobNo()) {
                             <button mat-menu-item
                               (click)="overwriteJobNoDialog($event)">{{translatedLangText.OVERWRITE_JOB_NO}}</button>
+                            }
+                            @if (canOverwriteDepotCost()) {
+                            <button mat-menu-item
+                              (click)="overwriteDepotCostDialog($event)">{{translatedLangText.OVERWRITE_DEPOT_COST}}</button>
                             }
                           </mat-menu>
                           }
@@ -1426,7 +1430,7 @@
                                 </td>
                                 <td class="table-col-2">
                                   <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(pdItem?.preinspection_cost!)}}</span>
+                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.preinspection_cost!)}}</span>
                                   </span>
                                 </td>
                               </tr>
@@ -1444,7 +1448,7 @@
                                 </td>
                                 <td class="table-col-2">
                                   <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(pdItem?.lolo_cost!)}}</span>
+                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.lift_off_cost!)}}</span>
                                   </span>
                                 </td>
                               </tr>
@@ -1462,14 +1466,14 @@
                                 </td>
                                 <td class="table-col-2">
                                   <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(pdItem?.lolo_cost!)}}</span>
+                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.lift_on_cost!)}}</span>
                                   </span>
                                 </td>
                               </tr>
                               <tr>
                                 <td class="table-col-1">4.</td>
                                 <td class="table-col-4">{{translatedLangText.TAKE_IN_REFERENCE}}</td>
-                                <td class="table-col-4">{{sot?.takein_job_no || "-"}}</td>
+                                <td class="table-col-4">{{sot?.job_no || "-"}}</td>
                                 <td class="table-col-1 p-t-0 p-b-0">
                                   @if (sot?.billing_sot?.gateio_billing_guid) {
                                   <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
@@ -1480,7 +1484,7 @@
                                 </td>
                                 <td class="table-col-2">
                                   <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(pdItem?.gate_in_cost!)}}</span>
+                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.gate_in_cost!)}}</span>
                                   </span>
                                 </td>
                               </tr>
@@ -1498,7 +1502,7 @@
                                 </td>
                                 <td class="table-col-2 text-justify">
                                   <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(pdItem?.gate_out_cost!)}}</span>
+                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.gate_out_cost!)}}</span>
                                   </span>
                                 </td>
                               </tr>

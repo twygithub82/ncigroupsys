@@ -330,7 +330,7 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
           required_temp
           so_guid
           status_cv
-          takein_job_no
+          job_no
           tank_no
           tank_status_cv
           unit_type_guid

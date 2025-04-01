@@ -168,11 +168,12 @@ export class BillingSOTGo {
   public preinspection?: boolean;
   public preinspection_cost?: number;
   public remarks?: string;
+  public depot_cost_remarks?: string;
   public sot_guid?: string;
   public storage_billing_guid?: string;
   public storage_cal_cv?: string;
   public storage_cost?: number;
-  // public tariff_depot_guid?:string;
+  public tariff_depot_guid?: string;
 
   public create_dt?: number;
   public create_by?: string;
@@ -185,10 +186,10 @@ export class BillingSOTGo {
     if (!this.guid) this.guid = '';
 
     this.free_storage = item.free_storage;
-    this.gate_in=item.gate_in;
-    this.gate_out=item.gate_out;
+    this.gate_in = item.gate_in;
+    this.gate_out = item.gate_out;
     this.gate_in_cost = item.gate_in_cost;
-    
+
     this.gate_out_cost = item.gate_out_cost;
     this.gateio_billing_guid = item.gateio_billing_guid;
     this.lift_off = item.lift_off;
@@ -204,8 +205,9 @@ export class BillingSOTGo {
     this.storage_billing_guid = item.storage_billing_guid;
     this.storage_cal_cv = item.storage_cal_cv;
     this.storage_cost = item.storage_cost;
-    //this.tariff_depot_guid=item.tariff_depot_guid;
+    this.tariff_depot_guid = item.tariff_depot_guid;
     this.remarks = item.remarks;
+    this.depot_cost_remarks = item.depot_cost_remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -215,15 +217,12 @@ export class BillingSOTGo {
 }
 
 export class BillingSOTItem extends BillingSOTGo {
-
   public gateio_billing?: BillingItem;
   public lolo_billing?: BillingItem;
   public preinsp_billing?: BillingItem;
   public storage_billing?: BillingItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public tariff_depot?: TariffDepotItem;
-
-
 
   constructor(item: Partial<BillingSOTItem> = {}) {
     super(item);
@@ -233,7 +232,6 @@ export class BillingSOTItem extends BillingSOTGo {
     this.storage_billing = item.storage_billing;
     this.storing_order_tank = item.storing_order_tank;
     this.tariff_depot = item.tariff_depot;
-
   }
 }
 
@@ -293,23 +291,22 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
             storage_cost
             tariff_depot_guid
             storing_order_tank {
-                estimate_cv
-                eta_dt
-                etr_dt
+              estimate_cv
+              eta_dt
+              etr_dt
+              guid
+              job_no
+              tank_no
+              tariff_cleaning {cargo}
+              in_gate(where: {delete_dt: { eq: null } }) {
+                delete_dt
+                driver_name
+                eir_dt
+                eir_no
+                eir_status_cv
                 guid
-                job_no
-                tank_no
-                tariff_cleaning { cargo}
-                in_gate(where: { delete_dt: { eq: null } }) {
-                  delete_dt
-                  driver_name
-                  eir_dt
-                  eir_no
-                  eir_status_cv
-                  guid
-                }
-              
               }
+            }
           }
          gateio_billing_sot {
             delete_dt
@@ -378,22 +375,22 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
           sot_guid
           tariff_depot_guid
            storing_order_tank {
-                estimate_cv
-                eta_dt
-                etr_dt
+              estimate_cv
+              eta_dt
+              etr_dt
+              guid
+              job_no
+              tank_no
+              tariff_cleaning { cargo}
+              in_gate(where: { delete_dt: { eq: null } }) {
+                delete_dt
+                driver_name
+                eir_dt
+                eir_no
+                eir_status_cv
                 guid
-                job_no
-                tank_no
-                tariff_cleaning { cargo}
-                in_gate(where: { delete_dt: { eq: null } }) {
-                  delete_dt
-                  driver_name
-                  eir_dt
-                  eir_no
-                  eir_status_cv
-                  guid
-                }
               }
+            }
         }
          cleaning {
             customer_billing_guid
@@ -1044,6 +1041,12 @@ export const UPDATE_BILLING_INVOICES = gql`
   }
 `;
 
+export const UPDATE_BILLING_SOT = gql`
+  mutation updateBillingSOT($billing_sot: billing_sotInput!) {
+    updateBillingSOT(updateBillingSOT: $billing_sot)
+  }
+`;
+
 export class BillingDS extends BaseDataSource<BillingItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -1224,7 +1227,6 @@ export class BillingDS extends BaseDataSource<BillingItem> {
       );
   }
 
-
   addBilling(newBilling: any, billingEstimateRequests: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_BILLING,
@@ -1250,6 +1252,15 @@ export class BillingDS extends BaseDataSource<BillingItem> {
       mutation: UPDATE_BILLING_INVOICES,
       variables: {
         billingInvoices
+      }
+    });
+  }
+
+  updateBillingSot(billing_sot: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_BILLING_SOT,
+      variables: {
+        billing_sot
       }
     });
   }

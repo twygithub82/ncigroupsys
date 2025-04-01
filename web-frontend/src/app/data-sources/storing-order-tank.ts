@@ -32,7 +32,6 @@ export class StoringOrderTank {
   public preinspect_job_no?: string;
   public liftoff_job_no?: string;
   public lifton_job_no?: string;
-  public takein_job_no?: string;
   public release_job_no?: string;
   public eta_dt?: number | Date;
   public purpose_storage: boolean = false;
@@ -73,7 +72,6 @@ export class StoringOrderTank {
     this.preinspect_job_no = item.preinspect_job_no || '';
     this.liftoff_job_no = item.liftoff_job_no || '';
     this.lifton_job_no = item.lifton_job_no || '';
-    this.takein_job_no = item.takein_job_no || '';
     this.release_job_no = item.release_job_no || '';
     this.eta_dt = item.eta_dt || undefined;
     this.purpose_storage = item.purpose_storage !== undefined ? !!item.purpose_storage : false;
@@ -185,7 +183,6 @@ const GET_STORING_ORDER_TANKS = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -234,7 +231,6 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -348,7 +344,6 @@ const GET_STORING_ORDER_TANKS_OUT_GATE = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -417,7 +412,6 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -516,7 +510,6 @@ const GET_STORING_ORDER_TANKS_SURVEY = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -581,7 +574,6 @@ const GET_STORING_ORDER_TANKS_OTH_SURVEY_BY_ID = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -669,7 +661,6 @@ const GET_STORING_ORDER_TANKS_PT_SURVEY_BY_ID = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -756,7 +747,6 @@ const RELOAD_STORING_ORDER_TANKS = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -803,7 +793,6 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -895,7 +884,6 @@ const GET_STORING_ORDER_TANK_BY_ID_OUT_GATE = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -1006,7 +994,6 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -1111,7 +1098,6 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -1213,7 +1199,6 @@ const GET_STORING_ORDER_TANKS_REPAIR_BILLING = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -1378,7 +1363,6 @@ const GET_STORING_ORDER_TANKS_REPAIR = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -1448,7 +1432,6 @@ const GET_STORING_ORDER_TANKS_REPAIR_QC = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -1527,7 +1510,6 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -1705,7 +1687,6 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -1856,7 +1837,6 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_REPAIR = gql`
             preinspect_job_no
             liftoff_job_no
             lifton_job_no
-            takein_job_no
             release_job_no
             last_cargo_guid
             purpose_cleaning
@@ -2142,7 +2122,6 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -2267,7 +2246,10 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
           create_by
           create_dt
           delete_dt
+          depot_cost_remarks
           free_storage
+          gate_in
+          gate_out
           gate_in_cost
           gate_out_cost
           gateio_billing_guid
@@ -2309,7 +2291,6 @@ const GET_STORING_ORDER_TANKS_FOR_REPAIR_QC = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -2496,7 +2477,6 @@ const GET_STORING_ORDER_TANKS_FOR_TRANSFER = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -2591,7 +2571,6 @@ const GET_STORING_ORDER_TANKS_FOR_TRANSFER_DETAILS = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -2704,7 +2683,6 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         purpose_cleaning
         purpose_repair_cv
@@ -2867,7 +2845,6 @@ const GET_STORING_ORDER_TANKS_FOR_STATUS_DETAIL = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning
@@ -3000,7 +2977,6 @@ const GET_STORING_ORDER_FOR_INVENTORY = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         purpose_cleaning
         purpose_repair_cv
@@ -3131,7 +3107,6 @@ const GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -3225,7 +3200,6 @@ const GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         guid
         tank_no
@@ -3334,7 +3308,6 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         so_guid
@@ -3481,7 +3454,6 @@ const GET_STORING_ORDER_TANKS_LOCATION_STATUS_SUMMARY = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning

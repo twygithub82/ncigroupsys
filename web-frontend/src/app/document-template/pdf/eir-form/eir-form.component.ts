@@ -591,7 +591,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
                 <tr>
                   <td>${translatedLangText.TANK_NO}: <b>${eirDetails?.in_gate?.tank?.tank_no}</b></td>
                   <td>${translatedLangText.EIR_NO}: <b>${eirDetails?.in_gate?.eir_no}</b></td>
-                  <td>${translatedLangText.TAKE_IN_REFERENCE}: <b>${eirDetails?.in_gate?.tank?.takein_job_no}</b></td>
+                  <td>${translatedLangText.TAKE_IN_REFERENCE}: <b>${eirDetails?.in_gate?.tank?.job_no}</b></td>
                   <td>${translatedLangText.DATE_OF_INSPECTION}: <b>${eirDetails?.create_dt}</b></td>
                 </tr>
                 <tr>

@@ -1701,12 +1701,15 @@ textarea,
 .mat-mdc-snack-bar-container.snackbar-success .mdc-snackbar__surface {
   background-color: rgb(144, 213, 255) !important;
   text-align: center;
+  // min-width: unset !important;
+
   // color: #333333 !important;
   // .mdc-snackbar__label {
   //   font-weight: bold;
   //   // color: #ffffff !important;
   // }
 }
+
 // .mat-mdc-snack-bar-container .mdc-snackbar__label {
 //   color: var(--mdc-snackbar-supporting-text-color);
 // }

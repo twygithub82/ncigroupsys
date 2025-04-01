@@ -1125,7 +1125,10 @@
     "STEAM-PERIOD": "Steam Period",
     "OVERWRITE-CONDITION": "Overwrite Condition",
     "WARNING": "Warning",
-    "PAUSE-JOB": "Pause Job"
+    "PAUSE-JOB": "Pause Job",
+    "PRE-INSPECTION-COST": "Preinspection $",
+    "LIFT-ON-COST": "Lift-On $",
+    "LIFT-OFF-COST": "Lift-Off $"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
