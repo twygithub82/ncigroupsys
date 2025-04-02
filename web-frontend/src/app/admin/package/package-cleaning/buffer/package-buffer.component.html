@@ -64,7 +64,8 @@
                     <input matInput formControlName="profile_name" type="text">
                   </mat-form-field>
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                <div
+                  class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()">
                     <mat-icon>search</mat-icon>
                   </button>
@@ -96,32 +97,28 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="buffer_type">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.BUFFER_TYPE
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.BUFFER_TYPE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.BUFFER_TYPE
                   }}:</span>{{row.tariff_buffer.buffer_type}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer_code">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer_name">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.COST
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.COST }}:</span> {{row.cost.toFixed(2)}}
@@ -133,14 +130,12 @@
                       <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.tariff_buffer.cost.toFixed(2)}}</mat-cell>
                   </ng-container> -->
             <ng-container matColumnDef="remarks">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.REMARKS }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.REMARKS }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.remarks}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_update_dt">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.LAST_UPDATE
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>

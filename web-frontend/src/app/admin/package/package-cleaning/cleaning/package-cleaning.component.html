@@ -71,7 +71,8 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                <div
+                  class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()">
                     <mat-icon>search</mat-icon>
                   </button>
@@ -108,16 +109,14 @@
               <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
@@ -131,16 +130,14 @@
                 {{row.cleaning_category.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="gender">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.COST
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.COST }}:</span>
                 {{row.adjusted_price.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.TARIFF_COST}}$ :</span>
                 {{row.cleaning_category.cost.toFixed(2)}}</mat-cell>

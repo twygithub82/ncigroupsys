@@ -62,7 +62,8 @@
                     <input matInput formControlName="residue_disposal" type="text">
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                <div
+                  class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()">
                     <mat-icon>search</mat-icon>
                   </button>
@@ -101,9 +102,13 @@
                   }}:</span>{{row.tariff_residue.description}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cutomer_code">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container>
