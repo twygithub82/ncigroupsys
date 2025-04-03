@@ -109,7 +109,6 @@ export const GET_RELEASE_ORDERS = gql`
             required_temp
             so_guid
             status_cv
-            takein_job_no
             tank_no
             tank_status_cv
             unit_type_guid
@@ -210,7 +209,6 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
             required_temp
             so_guid
             status_cv
-            takein_job_no
             tank_no
             tank_status_cv
             unit_type_guid

@@ -242,7 +242,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [''],
+      est_status_cv: [['PENDING', 'APPROVED', 'QC_COMPLETED', 'NO_ACTION']],
     });
   }
 

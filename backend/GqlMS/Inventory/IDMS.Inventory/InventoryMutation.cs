@@ -415,7 +415,10 @@ namespace IDMS.Inventory.GqlTypes
                 tank.preinspect_job_no = sot.preinspect_job_no;
                 tank.liftoff_job_no = sot.liftoff_job_no;
                 tank.lifton_job_no = sot.lifton_job_no;
-                tank.takein_job_no = sot.takein_job_no;
+
+                //tank.takein_job_no = sot.takein_job_no;
+                tank.job_no = sot.job_no;
+
                 tank.release_job_no = sot.release_job_no;
                 tank.job_no_remarks = sot.job_no_remarks;
 

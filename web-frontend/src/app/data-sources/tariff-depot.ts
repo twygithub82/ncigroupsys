@@ -1,16 +1,10 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-import { CleaningCategoryItem } from './cleaning-category';
-import { CleaningMethodItem } from './cleaning-method';
-import { TankItem } from './tank';
-import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
-import { PageInfo } from '@core/models/pageInfo';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
+import { TankItem } from './tank';
 export class TariffDepotGO {
   public guid?: string;
   public profile_name?: string;
@@ -24,8 +18,8 @@ export class TariffDepotGO {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  public gate_in_cost?:number;
-  public gate_out_cost?:number;
+  public gate_in_cost?: number;
+  public gate_out_cost?: number;
 
   constructor(item: Partial<TariffDepotGO> = {}) {
     this.guid = item.guid;
@@ -41,19 +35,17 @@ export class TariffDepotGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    this.gate_in_cost=item.gate_in_cost;
-    this.gate_out_cost=item.gate_out_cost;
+    this.gate_in_cost = item.gate_in_cost;
+    this.gate_out_cost = item.gate_out_cost;
   }
 }
 
 export class TariffDepotItem extends TariffDepotGO {
   public tanks?: TankItem[] = [];
 
-
   constructor(item: Partial<TariffDepotItem> = {}) {
     super(item);
     this.tanks = item.tanks;
-
   }
 }
 
@@ -62,67 +54,35 @@ export interface TariffDepotResult {
   totalCount: number;
 }
 
-const QUERY_TARIFF_CLEAN_UN_NO = gql`
-  query queryTariffCleaning($where: tariff_cleaningFilterInput) {
-    lastCargo: queryTariffCleaning(where: $where) {
-    nodes {
-        alias
-        ban_type_cv
-        cargo
-        class_cv
-        cleaning_category_guid
-        cleaning_method_guid
-        create_by
-        create_dt
-        delete_dt
-        depot_note
-        description
-        flash_point
-        guid
-        hazard_level_cv
-        in_gate_alert
-        nature_cv
-        open_on_gate_cv
-        remarks
-        un_no
-        update_by
-        update_dt
-      
-        }
-      totalCount
-    }
-  }
-`;
-
 export const GET_TARIFF_DEPOT_QUERY_WITH_TANK = gql`
   query queryTariffDepot($where: tariff_depotFilterInput, $order:[tariff_depotSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     tariffDepotResult : queryTariffDepot(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         create_by
-      create_dt
-      delete_dt
-      description
-      free_storage
-      guid
-      lolo_cost
-      preinspection_cost
-      gate_in_cost
-      gate_out_cost
-      profile_name
-      storage_cost
-      update_by
-      update_dt
-      tanks {
-        create_by
         create_dt
         delete_dt
         description
+        free_storage
         guid
-        tariff_depot_guid
-        unit_type
+        lolo_cost
+        preinspection_cost
+        gate_in_cost
+        gate_out_cost
+        profile_name
+        storage_cost
         update_by
         update_dt
-      }
+        tanks {
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          tariff_depot_guid
+          unit_type
+          update_by
+          update_dt
+        }
       }
       pageInfo {
         endCursor
@@ -133,7 +93,6 @@ export const GET_TARIFF_DEPOT_QUERY_WITH_TANK = gql`
       totalCount
     }
   }
-
 `;
 
 
@@ -149,12 +108,11 @@ export const UPDATE_TARIFF_DEPOT = gql`
   }
 `;
 
-
 export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  
+
   SearchTariffDepot(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffDepotItem[]> {
     this.loadingSubject.next(true);
     if (!last)
@@ -183,8 +141,6 @@ export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
       );
   }
 
-
-
   addNewTariffDepot(td: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_TARIFF_DEPOT,
@@ -199,22 +155,17 @@ export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
     );
   }
 
-  
-
-
-
-
-    updateTariffDepot(td: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_TARIFF_DEPOT,
-        variables: {
-          td
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  updateTariffDepot(td: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_TARIFF_DEPOT,
+      variables: {
+        td
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 }

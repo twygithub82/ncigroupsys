@@ -307,7 +307,6 @@ export const GET_RESIDUE_EST = gql`
           required_temp
           so_guid
           status_cv
-          takein_job_no
           tank_no
           tank_status_cv
           unit_type_guid
@@ -448,7 +447,6 @@ export const GET_RESIDUE_EST_JOB_ORDER = gql`
         required_temp
         so_guid
         status_cv
-        takein_job_no
         tank_no
         tank_status_cv
         unit_type_guid

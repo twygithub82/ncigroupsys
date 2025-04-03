@@ -73,6 +73,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dialogTitle: string;
   buttonContent: string;
   customer_company_guid: string;
+  selected4XRepair = "";
 
   repairPartForm: UntypedFormGroup;
   repairPart: any;
@@ -421,12 +422,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         }
       })
     ).subscribe();
-
-
-
   }
-
-
 
   findInvalidControls() {
     const controls = this.repairPartForm.controls;
@@ -549,31 +545,52 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.DisableValidator('quantity');
     this.DisableValidator('damage');
     this.DisableValidator('repair');
-
   }
 
   EnableAllRequireValidator() {
-
     this.EnableValidator('part_name');
     this.EnableValidator('group_name_cv');
     this.EnableValidator('hour');
     this.EnableValidator('quantity');
     this.EnableValidator('damage');
     this.EnableValidator('repair');
-
-
   }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.data.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      //this.router.navigate(['/admin/master/estimate-template']);
-
-      // Navigate to the route and pass the JSON object
-
-
-
     }
+  }
+
+  onRepairSelectionChange(event: any) {
+    if (event.value.includes('4X')) {
+      this.selected4XRepair = "4X";
+    } else {
+      if (event.value.length) {
+        this.selected4XRepair = "oth";
+      } else {
+        this.selected4XRepair = "";
+      }
+    }
+  }
+
+  isDisabledOption(compareValue?: string) {
+    if (!this.selected4XRepair) return false;
+
+    if (this.selected4XRepair === "oth") {
+      if (compareValue !== "4X") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (this.selected4XRepair === "4X") {
+      if (compareValue !== "4X") {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 }

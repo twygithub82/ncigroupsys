@@ -267,7 +267,6 @@ export const GET_STEAM_BILLING_EST = gql`
           required_temp
           so_guid
           status_cv
-          takein_job_no
           tank_no
           tank_status_cv
           unit_type_guid
@@ -415,7 +414,6 @@ export const GET_STEAM_EST = gql`
           required_temp
           so_guid
           status_cv
-          takein_job_no
           tank_no
           tank_status_cv
           unit_type_guid
@@ -562,7 +560,6 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
         required_temp
         so_guid
         status_cv
-        takein_job_no
         tank_no
         tank_status_cv
         unit_type_guid

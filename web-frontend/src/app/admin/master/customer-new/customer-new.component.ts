@@ -43,7 +43,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { DEFAULT_COUNTRY_CODE, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
@@ -271,10 +271,12 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.loadData();
     this.SetCostDecimal();
 
+    const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
     this.countryCodes = getCountries().map(countryISO => ({
-      country: countryISO,
+      country: displayNames.of(countryISO),
       code: `+${getCountryCallingCode(countryISO)}`,
-      iso: countryISO.toLowerCase()
+      iso: countryISO.toLowerCase(),
+      flagUrl: Utility.getFlagUrl(countryISO.toLowerCase())// `https://flagcdn.com/24x18/${countryISO.toLowerCase()}.png`
     }));
     this.countryCodesFiltered = this.countryCodes;
   }
@@ -320,7 +322,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           country.code.toLowerCase().includes(value.code.toLowerCase())
         );
         console.log(value)
-        // this.ccForm?.get('country')?.setValue(value?.country);
+        this.ccForm?.get('country')?.setValue(value?.country);
       } else {
         this.countryCodesFiltered = this.countryCodes;
       }
@@ -335,12 +337,12 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         Validators.required,
         Validators.minLength(3), // Minimum 3 characters
         Validators.maxLength(6), // Maximum 6 characters
-        Validators.pattern('^[A-Za-z0-9]+$') // Only alphabets
+        Validators.pattern('^[A-Za-z]+$') // Only alphabets
       ]],
       customer_name: [''],
       customer_type: [''],
       billing_branches: [''],
-      country_code: [{ country: 'SG', code: '+65', iso: 'sg' }],
+      country_code: [DEFAULT_COUNTRY_CODE],
       phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['', [Validators.required, Validators.email]],
       web: [''],
@@ -367,11 +369,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   PatchCustomerCompanyData() {
     if (this.historyState.customerCompany.customerCompanyData) {
-
       var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
       var contactPsn: ContactPersonItem[] = this.historyState.customerCompany.contactPerson;
       this.ccForm?.patchValue({
-
         address1: cust.address_line1,
         address2: cust.address_line2,
         customer_code: cust.code,
@@ -382,11 +382,11 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         email: cust.email,
         remarks: cust.remarks,
         web: cust.website,
+        country_code: Utility.getCountryCodeObject(cust.country_code, this.countryCodes),
         phone: cust.phone,
         postal_code: cust.postal,
         default_profile: this.getDefaultTank(cust.def_tank_guid!),
         customer_type: this.getCustomerTypeCvObject(cust.type_cv!)
-
       });
       var existContact = contactPsn?.map((row) => ({
         ...row
@@ -542,7 +542,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   displayCountryCodeFn(cc: any): string {
-    return cc && cc.country ? `${cc.country} ${cc.code}` : '';
+    return cc && cc.country ? `${cc.iso?.toUpperCase()} ${cc.code}` : '';
   }
 
   showNotification(
@@ -783,16 +783,16 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         this.ccDS.search(where).subscribe(result => {
           if (result.length == 0 && this.customer_guid == undefined) {
             this.insertNewCustomer();
-          }
-          else if (result.length > 0) {
+          } else if (result.length > 0) {
             if (this.customer_guid == undefined) {
               this.ccForm?.get('customer_code')?.setErrors({ existed: true });
             }
             else {
               this.updateExistCustomer();
             }
-          }
-          else if (result.length == 0 && this.selectedTempEst != undefined) {
+          } else if (result.length == 0 && this.selectedTempEst != undefined) {
+            this.updateExistCustomer();
+          } else if (result.length == 0 && this.customer_guid != undefined) {
             this.updateExistCustomer();
           }
         });
@@ -806,7 +806,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     var cust: CustomerCompanyItem = new CustomerCompanyItem();
     cust.address_line1 = this.ccForm?.get("address1")?.value;
     cust.address_line2 = this.ccForm?.get("address2")?.value;
-    cust.code = this.ccForm?.get("customer_code")?.value;
+    cust.code = this.ccForm?.get("customer_code")?.value?.toUpperCase();
     cust.name = this.ccForm?.get("customer_name")?.value;
     cust.city = this.ccForm?.get("city_name")?.value;
     cust.country = this.ccForm?.get("country")?.value;
@@ -893,7 +893,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
       selectedCusCmp.address_line1 = this.ccForm?.get("address1")?.value;
       selectedCusCmp.address_line2 = this.ccForm?.get("address2")?.value;
-      selectedCusCmp.code = this.ccForm?.get("customer_code")?.value;
+      selectedCusCmp.code = this.ccForm?.get("customer_code")?.value?.toUpperCase();
       selectedCusCmp.name = this.ccForm?.get("customer_name")?.value;
       selectedCusCmp.city = this.ccForm?.get("city_name")?.value;
       selectedCusCmp.country = this.ccForm?.get("country")?.value;
@@ -1173,7 +1173,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     // Navigate to the route and pass the JSON object
 
     if (!this.ccForm?.get("customer_code")?.value!) {
-
       return;
     }
 
@@ -1189,7 +1188,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     cust.guid = this.selectedCustomerCmp?.guid;
     cust.address_line1 = this.ccForm?.get("address1")?.value;
     cust.address_line2 = this.ccForm?.get("address2")?.value;
-    cust.code = this.ccForm?.get("customer_code")?.value;
+    cust.code = this.ccForm?.get("customer_code")?.value?.toUpperCase();
     cust.name = this.ccForm?.get("customer_name")?.value;
     cust.city = this.ccForm?.get("city_name")?.value;
     cust.country = this.ccForm?.get("country")?.value;
@@ -1371,5 +1370,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         }
       }
     });
+  }
+
+  onAlphaOnly(event: Event): void {
+    Utility.onAlphaOnly(event, this.ccForm?.get("customer_code")!);
   }
 }

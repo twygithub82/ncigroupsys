@@ -114,7 +114,6 @@ export const SEARCH_OUT_GATE_FOR_SURVEY_QUERY = gql`
           preinspect_job_no
           liftoff_job_no
           lifton_job_no
-          takein_job_no
           release_job_no
           last_cargo_guid
           purpose_cleaning
@@ -196,7 +195,6 @@ export const GET_OUT_GATE_BY_ID = gql`
           required_temp
           so_guid
           status_cv
-          takein_job_no
           tank_no
           tank_status_cv
           unit_type_guid

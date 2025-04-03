@@ -19,7 +19,8 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                    <input matInput formControlName="customer_code" class="text-uppercase" maxlength="6" required>
+                    <input matInput formControlName="customer_code" class="text-uppercase" maxlength="6"
+                      (input)="onAlphaOnly($event)" required>
                     @if (ccForm?.get('customer_code')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.SO_REQUIRED}}
@@ -36,7 +37,7 @@
                     </mat-error>
                     }
                     @if (ccForm?.get('customer_code')?.hasError('pattern')) {
-                    <mat-error>{{this.translatedLangText.ONLY_ALPHA_NUMERIC}}</mat-error>
+                    <mat-error>{{this.translatedLangText.ONLY_ALPHA}}</mat-error>
                     }
                   </mat-form-field>
                 </div>
@@ -72,6 +73,7 @@
                     <mat-autocomplete #countryCode="matAutocomplete" [displayWith]="displayCountryCodeFn">
                       @for (cc of countryCodesFiltered; track cc) {
                       <mat-option [value]="cc">
+                        <img [src]="cc.flagUrl" width="24" height="18" style="margin-right: 6px;">
                         {{ cc.country }} ({{cc.code}})
                       </mat-option>
                       }
@@ -214,7 +216,7 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex justify-content-end ms-auto">
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                     (click)="addContactPerson($event)">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}

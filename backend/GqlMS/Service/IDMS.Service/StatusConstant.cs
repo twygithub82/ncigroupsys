@@ -41,6 +41,8 @@ namespace IDMS.Service.GqlTypes
         public const string JOB_COMPLETE = "JOB_COMPLETE";
         public const string PARTIAL = "PARTIAL_ASSIGN";
         public const string ASSIGN = "ASSIGN";
+        public const string OVERWRITE = "OVERWRITE";
+
     }
 
     public static class JobType

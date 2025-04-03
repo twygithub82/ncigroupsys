@@ -75,7 +75,7 @@ export class OverwriteJobNoFormDialogComponent {
       preinspect_job_no: [this.sot?.preinspect_job_no],
       liftoff_job_no: [this.sot?.liftoff_job_no],
       lifton_job_no: [this.sot?.lifton_job_no],
-      takein_job_no: [this.sot?.takein_job_no],
+      job_no: [this.sot?.job_no],
       release_job_no: [this.sot?.release_job_no],
       job_no_remarks: [this.sot?.job_no_remarks],
     });
@@ -88,7 +88,7 @@ export class OverwriteJobNoFormDialogComponent {
         preinspect_job_no: this.overwriteForm.get('preinspect_job_no')?.value,
         liftoff_job_no: this.overwriteForm.get('liftoff_job_no')?.value,
         lifton_job_no: this.overwriteForm.get('lifton_job_no')?.value,
-        takein_job_no: this.overwriteForm.get('takein_job_no')?.value,
+        job_no: this.overwriteForm.get('job_no')?.value,
         release_job_no: this.overwriteForm.get('release_job_no')?.value,
         job_no_remarks: this.overwriteForm.get('job_no_remarks')?.value
       }

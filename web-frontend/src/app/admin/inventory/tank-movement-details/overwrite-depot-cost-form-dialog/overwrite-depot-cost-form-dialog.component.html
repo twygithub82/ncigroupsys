@@ -1,0 +1,162 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h3>{{dialogTitle}}</h3>
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    <form class="register-form" [formGroup]="overwriteForm" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.PROFILE_NAME}}</mat-label>
+                <mat-select formControlName="tariff_depot_guid">
+                  @for (td of data.tariffDepotList; track td) {
+                  <mat-option [value]="td.guid">{{td.description}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 pe-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.PRE_INSPECTION}}</mat-label>
+                <mat-select formControlName="preinspection">
+                  @for (codeValue of data.populateData.yesnoCvList; track codeValue) {
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 ps-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.PRE_INSPECTION_COST}}</mat-label>
+                <input matInput formControlName="preinspection_cost">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 pe-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.LIFT_OFF}}</mat-label>
+                <mat-select formControlName="lift_off">
+                  @for (codeValue of data.populateData.yesnoCvList; track codeValue) {
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 ps-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.LIFT_OFF_COST}}</mat-label>
+                <input matInput formControlName="lift_off_cost">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 pe-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.LIFT_ON}}</mat-label>
+                <mat-select formControlName="lift_on">
+                  @for (codeValue of data.populateData.yesnoCvList; track codeValue) {
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 ps-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.LIFT_ON_COST}}</mat-label>
+                <input matInput formControlName="lift_on_cost">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 pe-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.GATE_IN}}</mat-label>
+                <mat-select formControlName="gate_in">
+                  @for (codeValue of data.populateData.yesnoCvList; track codeValue) {
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 ps-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.GATE_IN_COST}}</mat-label>
+                <input matInput formControlName="gate_in_cost">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 pe-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.GATE_OUT}}</mat-label>
+                <mat-select formControlName="gate_out">
+                  @for (codeValue of data.populateData.yesnoCvList; track codeValue) {
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 ps-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.GATE_OUT_COST}}</mat-label>
+                <input matInput formControlName="gate_out_cost">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 pe-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.STORAGE}}</mat-label>
+                <mat-select formControlName="storage_cal_cv">
+                  @for (codeValue of data.populateData.storageCalCvList; track codeValue) {
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-0 ps-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.STORAGE_COST}}</mat-label>
+                <input matInput formControlName="storage_cost">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.FREE_STORAGE_DAYS}}</mat-label>
+                <input matInput formControlName="free_storage">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+                <textarea matInput formControlName="depot_cost_remarks" required></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" (click)="submit()">{{data.translatedLangText.SAVE_AND_SUBMIT}}</button>
+        }
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

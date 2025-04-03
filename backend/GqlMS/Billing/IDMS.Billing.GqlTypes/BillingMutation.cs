@@ -267,6 +267,59 @@ namespace IDMS.Billing.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
+                if (updateBillingSOT == null || string.IsNullOrEmpty(updateBillingSOT.guid))
+                    throw new GraphQLException(new Error($"Billing_SOT guid cannot be null or empty", "ERROR"));
+
+                //var updateBS = new billing_sot() { guid = updateBillingSOT.guid };
+                //context.billing_sot.Attach(updateBS);
+
+                var updateBS = await context.billing_sot.FindAsync(updateBillingSOT.guid);
+                if(updateBS != null)
+                {
+                    updateBS.update_by = user;
+                    updateBS.update_dt = currentDateTime;
+                    updateBS.lift_on_cost = updateBillingSOT.lift_on_cost;
+                    updateBS.lift_off_cost = updateBillingSOT.lift_off_cost;
+                    updateBS.preinspection_cost = updateBillingSOT.preinspection_cost;
+                    updateBS.storage_cost = updateBillingSOT.storage_cost;
+                    updateBS.free_storage = updateBillingSOT.free_storage;
+                    updateBS.storage_cal_cv = updateBillingSOT.storage_cal_cv;
+                    updateBS.remarks = updateBillingSOT.remarks;
+
+                    updateBS.tariff_depot_guid = updateBillingSOT.tariff_depot_guid;
+                    updateBS.preinspection = updateBillingSOT.preinspection;
+                    updateBS.lift_on = updateBillingSOT.lift_on;
+                    updateBS.lift_off = updateBillingSOT.lift_off;
+                    updateBS.gate_in = updateBillingSOT.gate_in;
+                    updateBS.gate_out = updateBillingSOT.gate_out;
+                    updateBS.gate_in_cost = updateBillingSOT.gate_in_cost;
+                    updateBS.gate_out_cost = updateBillingSOT.gate_out_cost;
+                    updateBS.depot_cost_remarks = updateBillingSOT.depot_cost_remarks;
+                }
+
+                var res = await context.SaveChangesAsync();
+                //TODO
+                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                return res;
+
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        private async Task<int> UpdateDepotCost(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, billing_sot updateBillingSOT)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (updateBillingSOT == null || string.IsNullOrEmpty(updateBillingSOT.guid))
+                    throw new GraphQLException(new Error($"Billing_SOT guid cannot be null or empty", "ERROR"));
+
                 var updateBS = new billing_sot() { guid = updateBillingSOT.guid };
                 context.billing_sot.Attach(updateBS);
                 updateBS.update_by = user;

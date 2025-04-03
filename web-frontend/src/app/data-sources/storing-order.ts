@@ -142,7 +142,6 @@ export const SEARCH_STORING_ORDER_BY_ID = gql`
           status_cv
           steaming_remarks
           storage_remarks
-          takein_job_no
           tank_no
           tank_note
           tank_status_cv
@@ -191,7 +190,6 @@ export const GET_STORING_ORDER_BY_ID = gql`
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
-        takein_job_no
         release_job_no
         last_cargo_guid
         purpose_cleaning

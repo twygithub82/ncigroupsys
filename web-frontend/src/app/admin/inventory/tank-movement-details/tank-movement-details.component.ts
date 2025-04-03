@@ -71,6 +71,9 @@ import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-f
 import { OverwriteLastCargoFormDialogComponent } from './overwrite-last-cargo-form-dialog/overwrite-last-cargo-form-dialog.component';
 import { TariffCleaningDS, TariffCleaningGO } from 'app/data-sources/tariff-cleaning';
 import { OverwriteCleanStatusFormDialogComponent } from './overwrite-clean-status-form-dialog/overwrite-clean-status-form-dialog.component';
+import { BillingDS, BillingSOTGo } from 'app/data-sources/billing';
+import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { OverwriteDepotCostFormDialogComponent } from './overwrite-depot-cost-form-dialog/overwrite-depot-cost-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -396,6 +399,15 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     OVERWRITE_DEPOT_COST: 'COMMON-FORM.OVERWRITE-DEPOT-COST',
     OVERWRITE_LAST_CARGO: 'COMMON-FORM.OVERWRITE-LAST-CARGO',
     OVERWRITE_CONDITION: 'COMMON-FORM.OVERWRITE-CONDITION',
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    PRE_INSPECTION_COST: 'COMMON-FORM.PRE-INSPECTION-COST',
+    LIFT_OFF_COST: 'COMMON-FORM.LIFT-OFF-COST',
+    LIFT_ON_COST: 'COMMON-FORM.LIFT-ON-COST',
+    GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
+    GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
+    STORAGE_COST: 'COMMON-FORM.STORAGE-COST',
+    GATE_IN: 'COMMON-FORM.GATE-IN',
+    GATE_OUT: 'COMMON-FORM.GATE-OUT',
   }
 
   sot_guid: string | null | undefined;
@@ -454,6 +466,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tiDS: TankInfoDS;
   transferDS: TransferDS;
   tcDS: TariffCleaningDS;
+  tdDS: TariffDepotDS;
+  billDS: BillingDS;
 
   customerCodeControl = new UntypedFormControl();
   ownerControl = new UntypedFormControl();
@@ -490,6 +504,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   bookingTypeCvList: CodeValuesItem[] = [];
   repairOptionCvList: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
+  yesnoCvList: CodeValuesItem[] = [];
+
+  tariffDepotList: TariffDepotItem[] = [];
 
   last_test_desc?: string = "";
   next_test_desc?: string = "";
@@ -590,6 +607,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.tiDS = new TankInfoDS(this.apollo);
     this.transferDS = new TransferDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
+    this.tdDS = new TariffDepotDS(this.apollo);
+    this.billDS = new BillingDS(this.apollo);
 
     const breakpointObserver = inject(BreakpointObserver);
     this.stepperOrientation = breakpointObserver
@@ -655,6 +674,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
       { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'yesnoCv', codeValType: 'YES_NO' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -753,6 +773,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
     });
+    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
+      this.yesnoCvList = data;
+    });
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
@@ -764,10 +787,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           this.canAddPurpose('steaming');
 
           this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
-          this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
-            console.log(`packageDepot: `, data)
-            this.pdItem = data[0];
-          });
+          // this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
+          //   console.log(`packageDepot: `, data)
+          //   this.pdItem = data[0];
+          // });
           this.tiDS.getTankInfoForMovement(this.sot?.tank_no!).subscribe(data => {
             console.log(`tankInfo: `, data)
             this.tiItem = data[0];
@@ -852,6 +875,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           console.log(`transfer: `, data);
           this.transferList = data;
+        }
+      });
+      this.subs.sink = this.tdDS.SearchTariffDepot({}, null, 100).subscribe(data => {
+        if (data.length > 0) {
+          console.log(`tariffDepot: `, data)
+          this.tariffDepotList = data;
         }
       });
     }
@@ -1293,7 +1322,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         newSot.preinspect_job_no = result.preinspect_job_no;
         newSot.liftoff_job_no = result.liftoff_job_no;
         newSot.lifton_job_no = result.lifton_job_no;
-        newSot.takein_job_no = result.takein_job_no;
+        newSot.job_no = result.job_no;
         newSot.release_job_no = result.release_job_no;
         newSot.job_no_remarks = result.job_no_remarks;
 
@@ -1301,7 +1330,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sot.preinspect_job_no = result.preinspect_job_no;
         this.sot.liftoff_job_no = result.liftoff_job_no;
         this.sot.lifton_job_no = result.lifton_job_no;
-        this.sot.takein_job_no = result.takein_job_no;
+        this.sot.job_no = result.job_no;
         this.sot.release_job_no = result.release_job_no;
         this.sot.job_no_remarks = result.job_no_remarks;
 
@@ -1309,6 +1338,73 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sotDS.updateJobNo(newSot).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.updateJobNo);
+        });
+      }
+    });
+  }
+
+  overwriteDepotCostDialog(event: Event) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(OverwriteDepotCostFormDialogComponent, {
+      width: '600px',
+      data: {
+        billingSot: this.sot?.billing_sot,
+        translatedLangText: this.translatedLangText,
+        tariffDepotList: this.tariffDepotList,
+        populateData: {
+          storageCalCvList: this.storageCalCvList,
+          yesnoCvList: this.yesnoCvList,
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot && this.sot.billing_sot) {
+        const newSot = new BillingSOTGo(this.sot?.billing_sot);
+        newSot.tariff_depot_guid = result.tariff_depot_guid;
+        newSot.preinspection = result.preinspection;
+        newSot.preinspection_cost = result.preinspection_cost;
+        newSot.lift_on = result.lift_on;
+        newSot.lift_on_cost = result.lift_on_cost;
+        newSot.lift_off = result.lift_off;
+        newSot.lift_off_cost = result.lift_off_cost;
+        newSot.gate_in = result.gate_in;
+        newSot.gate_in_cost = result.gate_in_cost;
+        newSot.gate_out = result.gate_out;
+        newSot.gate_out_cost = result.gate_out_cost;
+        newSot.storage_cal_cv = result.storage_cal_cv;
+        newSot.storage_cost = result.storage_cost;
+        newSot.free_storage = result.free_storage;
+        newSot.depot_cost_remarks = result.depot_cost_remarks;
+
+        // Update current sot for display purpose
+        this.sot.billing_sot.tariff_depot_guid = result.tariff_depot_guid;
+        this.sot.billing_sot.preinspection = result.preinspection;
+        this.sot.billing_sot.preinspection_cost = result.preinspection_cost;
+        this.sot.billing_sot.lift_on = result.lift_on;
+        this.sot.billing_sot.lift_on_cost = result.lift_on_cost;
+        this.sot.billing_sot.lift_off = result.lift_off;
+        this.sot.billing_sot.lift_off_cost = result.lift_off_cost;
+        this.sot.billing_sot.gate_in = result.gate_in;
+        this.sot.billing_sot.gate_in_cost = result.gate_in_cost;
+        this.sot.billing_sot.gate_out = result.gate_out;
+        this.sot.billing_sot.gate_out_cost = result.gate_out_cost;
+        this.sot.billing_sot.storage_cal_cv = result.storage_cal_cv;
+        this.sot.billing_sot.storage_cost = result.storage_cost;
+        this.sot.billing_sot.free_storage = result.free_storage;
+        this.sot.billing_sot.depot_cost_remarks = result.depot_cost_remarks;
+
+        console.log(newSot)
+        this.billDS.updateBillingSot(newSot).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateBillingSOT);
         });
       }
     });
@@ -1806,6 +1902,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteJobNo() {
+    return true;
+  }
+
+  canOverwriteDepotCost() {
     return true;
   }
 

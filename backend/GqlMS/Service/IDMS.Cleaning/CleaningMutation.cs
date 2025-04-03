@@ -125,6 +125,12 @@ namespace IDMS.Cleaning.GqlTypes
 
                         tankMovementCheck = true;
                         break;
+                    case ObjectAction.OVERWRITE:
+                        updateCleaning.approve_dt = cleaning.approve_dt;
+                        updateCleaning.overwrite_remarks = cleaning.overwrite_remarks;  
+                        updateCleaning.buffer_cost = cleaning.buffer_cost;
+                        updateCleaning.cleaning_cost = cleaning.cleaning_cost;
+                        break;
                 }
                 var res = await context.SaveChangesAsync();
 

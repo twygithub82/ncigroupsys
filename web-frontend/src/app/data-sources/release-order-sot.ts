@@ -172,7 +172,6 @@ export const GET_RELEASE_ORDER_SOT_FOR_OUT_GATE = gql`
           status_cv
           steaming_remarks
           storage_remarks
-          takein_job_no
           tank_no
           tank_note
           tank_status_cv
