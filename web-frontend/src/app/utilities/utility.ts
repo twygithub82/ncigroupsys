@@ -4,6 +4,7 @@ import { Observable, from, map } from "rxjs";
 import { jsPDF } from 'jspdf';
 import { customerInfo } from 'environments/environment';
 import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
+import { UntypedFormControl } from "@angular/forms";
 
 
 export class Utility {
@@ -508,6 +509,25 @@ export class Utility {
     return color;
   }
 
+  static onAlphaOnly(event: Event, form: any): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^a-zA-Z]/g, '');
+    form?.setValue(input.value, { emitEvent: false });
+  }
+
+  static getFlagUrl(iso: string): string {
+    const knownUnavailable = ['ac', 'xk', 'eu', 'ta']; // unsupported emoji or flagcdn
+    if (knownUnavailable.includes(iso.toLowerCase())) {
+      return `assets/images/flags/icons/${iso.toLowerCase()}.png`;
+    }
+    return `https://flagcdn.com/24x18/${iso.toLowerCase()}.png`;
+  }
+
+  static getCountryCodeObject(code: string | undefined, countryCodeList: any[]): any {
+    const found = countryCodeList.find((item) => item.code === code);
+    return found?.length ? found[0] : null;
+  }
+
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number) {
     pdf.setFontSize(fontSize); // Title font size 
     pdf.text(content, leftPost, topPos); // Position it at the top
@@ -872,3 +892,5 @@ export const BOOLEAN_YES_NO = [
   { value: true, label: 'Y' },
   { value: false, label: 'N' }
 ];
+
+export const DEFAULT_COUNTRY_CODE = { country: 'Singapore', code: '+65', iso: 'sg', flagUrl: 'https://flagcdn.com/24x18/sg.png' };
