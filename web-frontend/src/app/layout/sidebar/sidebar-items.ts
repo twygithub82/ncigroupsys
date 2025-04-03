@@ -252,8 +252,8 @@ export const ROUTES: RouteInfo[] = [
     visible: true,
     submenu: [
       {
-        path: "admin/parameter/cleaning-category",
-        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-CATEGORY",
+        path: "admin/parameter/cleaning-formulas",
+        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -261,7 +261,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        submenu: [],
+        submenu: []
       },
       {
         path: "admin/parameter/cleaning-methods",
@@ -276,8 +276,8 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },
       {
-        path: "admin/parameter/cleaning-formulas",
-        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
+        path: "admin/parameter/cleaning-category",
+        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-CATEGORY",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -285,7 +285,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        submenu: []
+        submenu: [],
       },
       {
         path: "admin/cleaning-procedures",
