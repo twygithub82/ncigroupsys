@@ -486,7 +486,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       tc.cargo = this.tcForm.value['cargo_name'];
       tc.alias = this.tcForm.value['cargo_alias'];
       tc.description = this.tcForm.value['cargo_description'];
-      tc.in_gate_alert = this.tcForm.value['in_gate_alert'];
+      tc.in_gate_alert = this.tcForm.value['in_gate_alert']?.toUpperCase();
       tc.depot_note = this.tcForm.value['depot_note'];;
 
       tc.class_cv = this.tcForm.value['class_no'];
