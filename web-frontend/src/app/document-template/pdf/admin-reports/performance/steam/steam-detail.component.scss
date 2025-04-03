@@ -1,0 +1,279 @@
+.pdf-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.pdf-header {
+    display: flex;
+    padding: 10px 10px 0px 10px;
+    height: 351px;
+}
+
+.pdf-body {
+    display: flex;
+    padding: 0px 10px 0px 10px;
+}
+.pdf-body15 {
+    display: flex;
+    padding: 0px 15px 0px 15px;
+}
+
+.pdf-footer {
+    display: flex;
+    padding: 4px 10px 10px 10px;
+    text-align: left;
+
+    .disclaimer {
+        width: 100%;
+        font-size: 0.5rem;
+        margin-top: 1px;
+    }
+
+    .footer-info-content {
+        width: 100%;
+        font-size: 0.6rem;
+        margin-top: 1px;
+    }
+}
+
+.logo-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    width: 180px;
+    object-fit: contain;
+}
+
+.estimate-title {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.table_customer_info {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 5px; /* Adds spacing below the table */
+    border: none; /* Removes border from the table */
+}
+.table_customer_info tr,
+.table_customer_info td,
+.table_customer_info th {
+    border: 1px; /* Removes borders from table rows and cells */
+    text-align: left;
+}
+
+.table_customer_info td.text_left_width_wider
+{
+    text-align: left;
+    width: 32%; /* Removes borders from table rows and cells */
+}
+
+.table_customer_info td.text_right
+{
+    text-align: right;
+    width: 12%; /* Removes borders from table rows and cells */
+}
+
+.table_customer_info td.text_left
+{
+    text-align: left;
+    width: 18%; /* Removes borders from table rows and cells */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    
+}
+
+table,
+th,
+td {
+    border: 1px solid #9d9d9d;
+}
+
+// th,
+// td {
+//     padding: 1px 4px;
+//     text-align: left;
+//     overflow: hidden; /* Prevent overflow */
+//     text-overflow: ellipsis; /* Add ellipsis (...) if the content overflows */
+//     b {
+//         font-weight: 900;
+//     }
+// }
+
+tr.th {
+    background-color: #353131;
+    text-align: center;
+}
+
+.dmg-repair-code-table {
+    width: 100%;
+    border: 1px double #9d9d9d;
+    padding: 4px;
+    font-size: 0.6rem;
+    display: flex;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.dmg-cv-table {
+    width: 55%;
+}
+
+.repair-cv-table {
+    width: 45%;
+    border-left: 1px double #9d9d9d;
+}
+
+.list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.list-column {
+    flex: 1 1 30%;
+    list-style-type: none;
+}
+
+.list-column ul {
+    margin: 0;
+    padding: 0;
+}
+
+.list-column li {
+    font-size: 0.55rem;
+}
+
+.repair-part-table {
+    font-size: 0.65rem;
+    padding: 0px 10px 0px 10px;
+
+    .sub-header-table {
+        background-color: #d2d2d2;
+    }
+
+    .group-header {
+        background-color: #dedede;
+    }
+}
+
+.repair-remarks {
+    width: 100%;
+    padding-left: 35px;
+    font-size: 0.65rem;
+}
+
+.repair-remarks-title {
+    font-weight: 900;
+}
+
+.header-table {
+    background-color: #c2c2c2;
+}
+
+.footer-info-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.pdf-p-t {
+    padding-top: 10px;
+}
+
+.pdf-p-r {
+    padding-right: 10px;
+}
+
+.pdf-p-b {
+    padding-bottom: 10px;
+}
+
+.pdf-p-l {
+    padding-left: 10px;
+}
+
+.pdf-m-t {
+    margin-top: 10px;
+}
+
+.pdf-m-r {
+    margin-right: 10px;
+}
+
+.pdf-m-b {
+    margin-bottom: 10px;
+}
+
+.pdf-m-l {
+    margin-left: 10px;
+}
+
+.text-right {
+    text-align: right;
+}
+.text-right-border {
+    -webkit-text-stroke: 1px black;
+    padding: 5px;
+    text-align: right;
+    border-bottom: 0px;
+    border-left: 0px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.summary-content {
+    font-size: 0.6rem;
+
+}
+
+.restricted-height {
+        width:100%;
+     //   height: 40px; /* Set the height for the cells */
+        overflow: hidden; /* Prevent overflow */
+        text-overflow: ellipsis; /* Add ellipsis (...) if the content overflows */
+        white-space: nowrap; /* Allow text to wrap */
+        word-wrap: break-word; /* Allow words to break and wrap to the next line */
+}
+
+.fixed_height_40px{
+    overflow:hidden; 
+    min-height:40px;
+    max-height:40px;
+    height:40px;
+    padding:0;
+    border:0;
+}
+
+.th-w2, .th-w3, .th-w5, .th-w6, .th-w7, .th-w8, .th-w10, .th-w12, .th-w15 {
+    text-align: center;
+}
+
+.th-w2{width:2%}
+.th-w3{width:3%}
+.th-w5{width:5%}
+.th-w6{width:6%}
+.th-w7{width:7%}
+.th-w8{width:8%}
+.th-w10{width:10%}
+.th-w12{width:12%}
+.th-w15{width:15%}
+
+.overflow-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits text to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Allows text wrapping */
+    max-width: 100%; /* Adjust width as needed */
+  }

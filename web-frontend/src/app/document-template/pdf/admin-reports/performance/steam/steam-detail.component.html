@@ -1,0 +1,87 @@
+<div mat-dialog-title class="ms-3 mt-3" hidden>
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{translatedLangText.REPORT_TITLE}}</h4>
+</div>
+
+ 
+
+<div mat-dialog-actions class="m-2 align-right" hidden>
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+        file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content >
+<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+  <div class="card">
+    <div class="header">
+      <h2>{{this.translatedLangText.NO_OF_TANKS_BAYS}}</h2>
+    </div>
+    <div class="body">
+      <div style="text-align:center">
+        <ngx-charts-bar-vertical
+        [animations]="false"
+        [view]="chartVerticalOptions.view"
+        [scheme]="chartVerticalOptions.colorScheme"
+        [results]="chartVerticalOptions.chartData"
+        [gradient]="false"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxisLabel]="chartVerticalOptions.xAxisLabel"
+        [yAxisLabel]="chartVerticalOptions.yAxisLabel"
+        [roundEdges]="true"
+        [barPadding]="55"
+        [title]="chartVerticalOptions.title!"
+        (select)="onChartRendered($event)"
+        style="height: 80%; width: 100%;"
+       
+      >
+      </ngx-charts-bar-vertical>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+  <div class="card">
+    <div class="header">
+      <h2>{{this.translatedLangText.NO_OF_TANKS_REQ_TEMP}}</h2>
+    </div>
+    <div class="body">
+      <div style="text-align:center">
+        <apx-chart [series]="pieChartOptions.series2!" [chart]="pieChartOptions.chart!" [labels]="pieChartOptions.labels!"
+        [xaxis]="pieChartOptions.xaxis!"></apx-chart>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+  <div class="card">
+    <div class="header">
+      <h2>{{this.translatedLangText.NO_OF_TANKS_STEAM_CARGO}}</h2>
+    </div>
+    <div class="body">
+      <div style="text-align:center">
+        <!-- <apx-chart [series]="pie2ChartOptions.series2!" [chart]="pie2ChartOptions.chart!"
+        [labels]="pie2ChartOptions.labels!" [responsive]="pie2ChartOptions.responsive!" [plotOptions]="pie2ChartOptions.plotOptions!"
+        [dataLabels]="pie2ChartOptions.dataLabels!" [legend]="pie2ChartOptions.legend!" class="apex-pie-center"> 
+      </apx-chart>-->
+      <apx-chart [series]="pie2ChartOptions.series2!" [chart]="pie2ChartOptions.chart!" [labels]="pie2ChartOptions.labels!"
+        [xaxis]="pie2ChartOptions.xaxis!" [legend]="pie2ChartOptions.legend!" [annotations]="pie2ChartOptions.annotations"></apx-chart>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</div>

@@ -505,6 +505,7 @@ export class SurveyorEstimate
       this.surveyor_name=item.surveyor_name;
     }
 }
+
 export class MonthlySummary{
       month?:string;
       monthly_total_appv_cost?:number;
@@ -616,6 +617,17 @@ export class SurveyorDetail
     }
   }
 
+  export class SteamPerformanceChart{
+     name?:string
+     count?:number
+     value?:number
+
+     constructor(item: Partial<SteamPerformanceChart> = {}) {
+      this.name=item.name;
+      this.count=item.count;
+      this.value=item.value;
+    }
+  }
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {

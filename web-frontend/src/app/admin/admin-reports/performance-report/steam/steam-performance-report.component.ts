@@ -50,6 +50,7 @@ import { DailyRevenuePdfComponent } from 'app/document-template/pdf/admin-report
 import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-reports/daily/qc-detail/daily-qc-detail-pdf.component';
 import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
 import { sequence } from '@angular/animations';
+import { SteamPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/steam/steam-detail.component';
 
 @Component({
   selector: 'app-steam-performance-report',
@@ -675,7 +676,7 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(DailyQCDetailPdfComponent, {
+    const dialogRef = this.dialog.open(SteamPerformanceDetailPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
       maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
@@ -687,6 +688,11 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isGeneratingReport=false;
