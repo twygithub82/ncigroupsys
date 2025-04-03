@@ -1123,7 +1123,21 @@
    "MONTH-TOTAL":"Month Total",
    "GRAND-TOTAL":"Grand Total",
    "STEAM-PERIOD":"Steam Period",
-    "OVERWRITE-CONDITION": "Overwrite Condition"
+   "OVERWRITE-CONDITION": "Overwrite Condition",
+   "ESTIMATE-TYPE":"Estimate Type",
+   "ESTIMATED":"Estimated",
+   "ESTIMATE-PERIOD":"Estimate Period",
+   "DUPLICATE-CARGO-FOUND":"Duplicated Cargo Name found",
+   "WARNING":"Warning",
+   "TOP-LASER":"Top (Laser)",
+   "BOTTOM-LASER":"Bottom (Laser)",
+   "BEGIN":"Begin",
+   "STEAMING-PERIOD":"Steaming Period",
+   "NO-OF-TANKS-BAYS" :"No. of Tank(s) / Bay",
+   "NO-OF-TANKS-REQ-TEMP":"No. of Tank(s) / Required Temperature",
+   "NO-OF-TANKS-STEAM-CARGO":"No. of Tank(s) / Cargo wise"
+   
+   
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

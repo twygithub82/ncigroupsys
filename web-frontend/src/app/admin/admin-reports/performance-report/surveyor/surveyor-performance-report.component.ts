@@ -51,6 +51,7 @@ import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-repor
 import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
 import {UserDS}from 'app/data-sources/user';
 import { SurveyorPerformanceSummaryPdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/summary/surveyor-summary-pdf.component';
+import { SurveyorDetailPerformancePdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/detail/surveyor-detail-pdf.component';
 @Component({
   selector: 'app-surveyor-performance-report',
   standalone: true,
@@ -663,6 +664,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         var end_dt=new Date(searchFrm!.value['est_dt_end']);
         where.start_date=Utility.convertDate(start_dt);
         where.end_date=Utility.convertDate(end_dt,true);
+        date=`${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`
         cond_counter++;
     }
     if((searchFrm!.get('surveyor')?.value))
@@ -936,7 +938,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(DailyQCDetailPdfComponent, {
+    const dialogRef = this.dialog.open(SurveyorDetailPerformancePdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
       maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
