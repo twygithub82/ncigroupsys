@@ -85,6 +85,7 @@ import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
   ]
 })
 export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
+  tabIndex = 0;
   displayedColumns = [
     'index',
     'group_name_cv',
@@ -93,17 +94,14 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     'repair',
     'description',
     'quantity',
-    // 'hour',
-    // 'price',
-    // 'material',
     'actions'
   ];
   pageTitleNew = 'MENUITEMS.MASTER.LIST.CUSTOMER-NEW'
   pageTitleEdit = 'MENUITEMS.MASTER.LIST.CUSTOMER-EDIT'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/customer' },
-    { text: 'MENUITEMS.MASTER.LIST.CUSTOMER', route: '/admin/master/customer' }
+    { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/customer', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.MASTER.LIST.CUSTOMER', route: '/admin/master/customer', queryParams: { tabIndex: this.tabIndex } }
   ]
   translatedLangText: any = {}
   langText = {
@@ -1107,9 +1105,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         //this.router.navigate(['/admin/master/estimate-template']);
         // Navigate to the route and pass the JSON object
         this.router.navigate(['/admin/master/customer'], {
-          state: this.historyState
-        }
-        );
+          state: this.historyState,
+          queryParams: { tabIndex: this.tabIndex }
+        });
       });
     }
   }
@@ -1217,7 +1215,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.historyState.customerCompany = custCmp;
 
     this.router.navigate(['/admin/master/customer/billing-branch/new/ '], {
-      state: this.historyState
+      state: this.historyState,
+      queryParams: { tabIndex: this.tabIndex }
     });
   }
 
@@ -1225,7 +1224,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/master/customer'], {
-      state: this.historyState
+      state: this.historyState,
+      queryParams: { tabIndex: this.tabIndex }
     });
   }
 
