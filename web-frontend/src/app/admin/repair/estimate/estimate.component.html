@@ -161,7 +161,7 @@
             @for(row of sotList; track row) {
             <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
               <mat-accordion>
-                <mat-expansion-panel>
+                <mat-expansion-panel [expanded]="true">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                       <mat-card-header class="p-0 d-flex justify-content-between align-items-center">
