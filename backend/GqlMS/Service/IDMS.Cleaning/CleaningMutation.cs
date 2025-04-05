@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory;
 using IDMS.Repair.GqlTypes.LocalModel;
 using System.Data.SqlTypes;
+using IDMS.Models.Parameter;
 
 namespace IDMS.Cleaning.GqlTypes
 {
@@ -59,7 +60,7 @@ namespace IDMS.Cleaning.GqlTypes
         }
 
         public async Task<int> UpdateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, cleaning cleaning)
+            [Service] IHttpContextAccessor httpContextAccessor, cleaning cleaning, in_gate_survey? inGateSurvey)
         {
             try
             {
@@ -70,8 +71,12 @@ namespace IDMS.Cleaning.GqlTypes
                 if (cleaning == null)
                     throw new GraphQLException(new Error("Cleaning object cannot be null or empty.", "ERROR"));
 
-                var updateCleaning = new cleaning() { guid = cleaning.guid };
-                context.cleaning.Attach(updateCleaning);
+                //var updateCleaning = new cleaning() { guid = cleaning.guid };
+                //context.cleaning.Attach(updateCleaning);
+
+                var updateCleaning = await context.cleaning.FindAsync(cleaning.guid);
+                if (updateCleaning == null)
+                    throw new GraphQLException(new Error("Cleaning object not found.", "ERROR"));
 
                 updateCleaning.job_no = cleaning.job_no;
                 updateCleaning.remarks = cleaning.remarks;
@@ -127,9 +132,23 @@ namespace IDMS.Cleaning.GqlTypes
                         break;
                     case ObjectAction.OVERWRITE:
                         updateCleaning.approve_dt = cleaning.approve_dt;
-                        updateCleaning.overwrite_remarks = cleaning.overwrite_remarks;  
+                        updateCleaning.overwrite_remarks = cleaning.overwrite_remarks;
                         updateCleaning.buffer_cost = cleaning.buffer_cost;
                         updateCleaning.cleaning_cost = cleaning.cleaning_cost;
+                        //updateCleaning.cleaning_cost cleaning.storing_order_tank.in_gate.FirstOrDefault().in_gate_survey.tank_comp_guid;
+
+                        //updateCleaning.storing_order_tank.in_gate.Where(ig => ig.guid == inGateSurvey.in_gate_guid)
+                        //                                         .SingleOrDefault().in_gate_survey.tank_comp_guid = inGateSurvey.tank_comp_guid;
+
+                        if (inGateSurvey == null || string.IsNullOrEmpty(inGateSurvey.guid))
+                            throw new GraphQLException(new Error("Ingate survey object cannot be null when overwrite.", "ERROR"));
+
+                        var updateSurvey = new in_gate_survey() { guid = inGateSurvey.guid };
+                        context.Attach(updateSurvey);
+                        updateSurvey.tank_comp_guid = inGateSurvey.tank_comp_guid;
+                        updateSurvey.update_dt = currentDateTime;
+                        updateSurvey.update_by = user;
+
                         break;
                 }
                 var res = await context.SaveChangesAsync();
