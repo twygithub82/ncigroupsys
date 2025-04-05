@@ -88,5 +88,10 @@ button.secondary {
   color: mat.get-color-from-palette($custom-secondary, default-contrast);
 }
 
+button.light-purple {
+  background-color: mat.get-color-from-palette($custom-primary, A200);
+  color: mat.get-color-from-palette($custom-primary, A200-contrast);
+}
+
 // Include the theme styles
 @include mat.all-component-themes($custom-theme);

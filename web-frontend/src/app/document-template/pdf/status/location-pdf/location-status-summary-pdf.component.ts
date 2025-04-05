@@ -12,7 +12,6 @@ import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-// import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -28,7 +27,6 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
-// import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
   report_summary_status: report_status[],
@@ -286,9 +284,6 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
   report_summary_status: report_status[] = [];
   yards: CodeValuesItem[] = [];
 
-
-
-
   constructor(
     public dialogRef: MatDialogRef<LocationStatusSummaryPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -312,7 +307,6 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     this.report_summary_status = data.report_summary_status;
     this.yards = data.yards;
 
-
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -321,11 +315,9 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-
   }
 
   ngAfterViewInit() {
-
     this.onDownloadClick();
   }
 

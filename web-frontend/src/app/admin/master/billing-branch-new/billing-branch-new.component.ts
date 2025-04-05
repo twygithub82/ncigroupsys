@@ -43,7 +43,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { DEFAULT_COUNTRY_CODE, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
@@ -300,15 +300,19 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     super();
     this.translateLangText();
     this.initCCForm();
-    // this.soDS = new StoringOrderDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.curDS = new CurrencyDS(this.apollo);
-    // this.igDS = new InGateDS(this.apollo);
-    // this.trLabourDS = new TariffLabourDS(this.apollo);
-    // this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
+    
+    const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
+    this.countryCodes = getCountries().map(countryISO => ({
+      country: displayNames.of(countryISO),
+      code: `+${getCountryCallingCode(countryISO)}`,
+      iso: countryISO.toLowerCase(),
+      flagUrl: Utility.getFlagUrl(countryISO.toLowerCase())// `https://flagcdn.com/24x18/${countryISO.toLowerCase()}.png`
+    }));
+    this.countryCodesFiltered = this.countryCodes;
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -317,16 +321,9 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeFilter();
     this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
-    this.countryCodes = getCountries().map(countryISO => ({
-      country: countryISO,
-      code: `+${getCountryCallingCode(countryISO)}`,
-      iso: countryISO.toLowerCase()
-    }));
-    this.countryCodesFiltered = this.countryCodes;
   }
 
   SetCostDecimal() {
@@ -362,8 +359,16 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   initializeValueChange() {
     this.ccForm?.get('country_code')?.valueChanges.subscribe(value => {
-      if (value !== null && value !== '') {
-        this.countryCodesFiltered = this.countryCodes.filter((country: any) => country.code.toLowerCase().includes(value.toLowerCase()));
+      if (typeof value === 'string') {
+        this.countryCodesFiltered = this.countryCodes.filter((country: any) =>
+          country.code.toLowerCase().includes(value.toLowerCase()) || country.country.toLowerCase().includes(value.toLowerCase()) || country.iso.toLowerCase().includes(value.toLowerCase())
+        );
+      } else if (value && typeof value === 'object') {
+        this.countryCodesFiltered = this.countryCodes.filter((country: any) =>
+          country?.code?.toLowerCase().includes(value?.code?.toLowerCase())
+        );
+        console.log(value)
+        this.ccForm?.get('country')?.setValue(value?.country);
       } else {
         this.countryCodesFiltered = this.countryCodes;
       }
@@ -382,7 +387,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         Validators.pattern('^[A-Za-z0-9]+$') // Only alphabets
       ]],
       branch_name: [''],
-      country_code: [''],
+      country_code: [DEFAULT_COUNTRY_CODE],
       phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['', [Validators.required, Validators.email]],
       web: [''],
@@ -398,9 +403,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  initializeFilter() {
-  }
-
   SortRepairEstPart(items: TemplateEstPartItem[]): TemplateEstPartItem[] {
     if (items.length == 0) return [];
     var retval: TemplateEstPartItem[] = items.sort((a, b) => b.create_dt! - a.create_dt!);
@@ -410,12 +412,13 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   patchData(currentBillingBranch: CustomerCompanyItem) {
     if (currentBillingBranch) {
+      const patchCountryCodeValue = Utility.getCountryCodeObject(currentBillingBranch.country_code, this.countryCodes);
       this.ccForm?.patchValue({
         guid: currentBillingBranch.guid,
-        // customer_company_guid: [''],
         customer_code: this.getCustomerCompanyItem(currentBillingBranch.main_customer_guid!),
         branch_code: currentBillingBranch.code,
         branch_name: currentBillingBranch.name,
+        country_code: patchCountryCodeValue,
         phone: currentBillingBranch.phone,
         email: currentBillingBranch.email,
         web: currentBillingBranch.email,
@@ -537,7 +540,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     return retval.sort((a, b) => (a.code_cv ?? 0) - (b.code_cv ?? 0));
   }
 
-
   populateSOT(rep: any[]) {
     if (rep?.length) {
       this.updateData(rep);
@@ -549,7 +551,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   displayCountryCodeFn(cc: any): string {
-    return cc && cc.country ? `${cc.country} (${cc.code})` : '';
+    return cc && cc.country ? `${cc.iso?.toUpperCase()} ${cc.code}` : '';
   }
 
   showNotification(
@@ -790,8 +792,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       if (!this.repList.data.length) {
         this.ccForm.get('repList')?.setErrors({ required: true });
       } else {
-
-
         var customerCode = this.ccForm?.get("branch_code")?.value;
         var mainCustomer = this.ccForm?.get("customer_code")?.value as CustomerCompanyItem;
         if (customerCode == mainCustomer?.code) {
@@ -802,7 +802,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         const where: any = {};
         where.code = { eq: customerCode };
         this.ccDS.search(where).subscribe(result => {
-
           if (result.length == 0 && this.branch_guid == undefined) {
             if (this.ccForm?.get("customer_code")?.value) {
               let mainCust = this.ccForm?.get("customer_code")?.value as CustomerCompanyItem;
@@ -812,15 +811,12 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
               else {
                 this.insertNewBillingBranch();
               }
-
             }
             else {
               this.insertNewBillingBranch();
             }
-
           }
           else if (result.length > 0 && this.branch_guid == undefined) {
-
             this.ccForm?.get('branch_code')?.setErrors({ existed: true });
           }
           else if (result.length > 0 && this.branch_guid != undefined) {
@@ -833,7 +829,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
             }
           }
         });
-
       }
     } else {
       console.log('Invalid soForm', this.ccForm?.value);
@@ -841,9 +836,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   UpdateBillingBranches() {
-
-
-
     var selectedBillingBranch: CustomerCompanyItem = new CustomerCompanyItem(this.selectedBillingBranch);
     var cust: CustomerCompanyItem = new CustomerCompanyItem(selectedBillingBranch);
 
@@ -923,31 +915,17 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     delete cust.currency;
 
     var existContactPersons = existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
-
-
-
-
-
     this.ccDS.UpdateCustomerCompany(cust, existContactPersons, undefined).subscribe(result => {
-
-
       var count = result.data.updateCustomerCompany;
       if (count > 0) {
-
         this.handleSaveSuccess(count);
       }
     });
-
-
-
   }
 
   UpdateCustomerBillingBranches() {
-
     const mainCustomer: CustomerCompanyItem = new CustomerCompanyItem(this.ccForm?.get("customer_code")?.value!);
     if (mainCustomer.guid) {
-
-
       delete mainCustomer.update_by;
       delete mainCustomer.update_dt;
       delete mainCustomer.create_by;
@@ -959,7 +937,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       if (this.selectedBillingBranch) {
         cust = new CustomerCompanyItem(this.selectedBillingBranch);
       }
-
       cust.address_line1 = this.ccForm?.get("address1")?.value;
       cust.address_line2 = this.ccForm?.get("address2")?.value;
       cust.code = this.ccForm?.get("branch_code")?.value;
@@ -973,6 +950,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       cust.type_cv = "BRANCH";
       cust.phone = this.ccForm?.get("phone")?.value;
       cust.postal = this.ccForm?.get("postal_code")?.value;
+      cust.country_code = this.ccForm?.get("country_code")?.value?.code;
       if (this.ccForm?.get("default_profile")?.value) {
         let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
         cust.def_tank_guid = defTank.guid;
@@ -998,19 +976,14 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       }));
 
       updContactPerson.forEach(data => {
-
         var matchContact = existContactPerson?.filter(d => d.guid === data.guid);
         let Cnt: any = new ContactPersonItem();
-
         if (matchContact?.length! > 0) {
           Cnt = matchContact![0];
           Cnt.action = data.action;
-
         }
         else {
-
           Cnt.action = "NEW";
-
         }
         Cnt.did = data.did;
         Cnt.email = data.email;
@@ -1019,21 +992,12 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         Cnt.phone = data.phone;
         Cnt.title_cv = data.title_cv;
         Cnt.department = data.department;
-
         if (Cnt.action === "NEW") {
           existContactPerson?.push(Cnt);
         }
-
-
       });
-      // var contactPerson =  this.repList.data.map((row) => ({
-      //   ...row,
-      //   title_cv : row.title_cv,
-      //   action:'NEW'
-      // }));
 
       var billingBranches: BillingBranchesItem[] = [];
-
       var exist_billing_branch: BillingBranchesItem = new BillingBranchesItem();
       let customerCmp = this.getBillingBranches(mainCustomer.guid!);
       if (customerCmp) {
@@ -1060,7 +1024,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
       new_billing_branch.branchContactPerson = [];
       existContactPerson?.forEach(p => {
-
         let person = new BillingContactPersonItem(p);
         person.action = p.action;
 
@@ -1077,8 +1040,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
       billingBranches.push(new_billing_branch);
       this.ccDS.UpdateCustomerCompany(mainCustomer, undefined, billingBranches).subscribe(result => {
-
-
         var count = result.data.updateCustomerCompany;
         if (count > 0) {
           if (this.historyState.customerCompany) {
@@ -1087,8 +1048,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
           this.handleSaveSuccess(count);
         }
       });
-
-
     }
     else {
       this.ccForm?.get('customer_code')?.setErrors({ required: true });
@@ -1096,7 +1055,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   insertNewBillingBranch() {
-
     var cust: CustomerCompanyItem = new CustomerCompanyItem();
     cust.address_line1 = this.ccForm?.get("address1")?.value;
     cust.address_line2 = this.ccForm?.get("address2")?.value;
@@ -1110,11 +1068,11 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     cust.website = this.ccForm?.get("web")?.value;
     cust.type_cv = "BRANCH";
     cust.phone = this.ccForm?.get("phone")?.value;
+    cust.country_code = this.ccForm?.get("country_code")?.value?.code;
     cust.postal = this.ccForm?.get("postal_code")?.value;
 
     const mainCustomer: CustomerCompanyItem = this.ccForm?.get("customer_code")?.value!;
     if (mainCustomer) {
-
       cust.main_customer_guid = mainCustomer.guid;
     }
 
@@ -1127,44 +1085,13 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     delete cust.currency;
-    //  cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
 
     var contactPerson = this.repList.data.map((row) => ({
       ...row,
       title_cv: row.title_cv,
       action: 'NEW'
     }));
-
-
-    //var billingBranches:BillingBranchesItem[]=[]; 
-    // if(mainCustomer?.guid)
-    // {
-    //   var exist_billing_branch:BillingBranchesItem= new BillingBranchesItem();
-    //   let customerCmp=  this.getBillingBranches(mainCustomer.guid!);
-    //   if(customerCmp)
-    //   {
-    //     exist_billing_branch.branchCustomer = new BillingCustomerItem(customerCmp);
-    //     exist_billing_branch.branchCustomer!.action="EDIT";
-    //     exist_billing_branch.branchCustomer!.main_customer_guid="";
-
-    //     delete exist_billing_branch.branchCustomer.update_by;
-    //     delete exist_billing_branch.branchCustomer.update_dt;
-    //     delete exist_billing_branch.branchCustomer.create_by;
-    //     delete exist_billing_branch.branchCustomer.create_dt;
-    //     delete exist_billing_branch.branchCustomer.delete_dt;
-    //     delete exist_billing_branch.branchCustomer.cc_contact_person;
-    //     delete exist_billing_branch.branchCustomer.currency;
-
-    //     billingBranches.push(exist_billing_branch);
-    //   }
-
-
-    // }
-
-
     this.ccDS.AddCustomerCompany(cust, contactPerson, undefined).subscribe(result => {
-
-
       var count = result.data.addCustomerCompany;
       if (count > 0) {
         if (this.historyState.customerCompany) {
@@ -1173,127 +1100,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         this.handleSaveSuccess(count);
       }
     });
-
-  }
-
-  updateExistTemplate() {
-
-    // // const tempEstimateCustomerItems: TemplateEstimateCustomerItem[] = this.selectedTempEst!.template_est_customer!.map((node: any) => new TemplateEstimateCustomerItem(node));
-
-    // // this.selectedTempEst!.template_name=this.ccForm?.get("template_name")?.value;
-    // // this.selectedTempEst!.labour_cost_discount=this.ccForm?.get("labour_discount")?.value;
-    // // this.selectedTempEst!.remarks=this.ccForm?.get("remarks")?.value;
-    // // this.selectedTempEst!.material_cost_discount=this.ccForm?.get("material_discount")?.value;
-    // // this.selectedTempEst!.template_est_customer=tempEstimateCustomerItems;
-    // // var existdata_cust=this.selectedTempEst!.template_est_customer;
-    // // existdata_cust?.forEach(value=>{value.action="CANCEL";value.customer_company=undefined;});
-    // // this.selectedTempEst!.type_cv="GENERAL";
-    // // if(this.ccForm?.get("customer_code")?.value?.length>0)
-    // //   {
-    // //     var newdata_cust = this.ccForm?.get('customer_code')?.value;
-    // //     this.selectedTempEst!.type_cv="EXCLUSIVE";
-    // //     var customerCodes : CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
-    // //     //temp.template_est_customer=[];
-    // //     customerCodes.forEach(data=>{
-    // //          const found=existdata_cust.filter(value=>value.customer_company_guid===data.guid);
-    // //         if(found!.length>0)
-    // //         {
-    // //           found[0].action=""; 
-    // //           found[0].customer_company=undefined;
-
-    // //     }
-    // //     else {
-    // //       var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
-    // //       custItem.action = "NEW";
-    // //       custItem.customer_company_guid = data.guid;
-    // //       custItem.customer_company = undefined;
-    // //       custItem.guid = "";
-    // //       this.selectedTempEst!.template_est_customer?.push(custItem)
-    // //     }
-
-    // //   });
-
-    // // }
-    // // const tempEstimatePartItems: TemplateEstPartItem[] = this.selectedTempEst!.template_est_part!.map((node: any) => new TemplateEstPartItem(node));
-    // // this.selectedTempEst!.template_est_part = tempEstimatePartItems;
-    // // this.selectedTempEst!.template_est_part.forEach(value => {
-    // //   value.action = "CANCEL"; 
-    // //   value.tariff_repair=undefined;
-    // //   value.tep_damage_repair= value.tep_damage_repair?.map((node:any)=>new TepDamageRepairItem(node));
-
-    // // });
-
-    // // if(this.repList.data.length>0)
-    // // {
-    // //   this.repList.data.forEach(value=>{
-
-    // //     var existData = this.selectedTempEst?.template_est_part?.filter(data=>data.guid===value.guid);
-    // //     if(existData?.length!>0)
-    // //     {
-    // //       var childNodeUpdated:Boolean=false;
-    // //       //if template estimate part found
-    // //       existData![0]!.action = "";
-    // //       existData![0]!.tariff_repair = undefined;
-    // //       existData![0]!.tep_damage_repair = existData![0]!.tep_damage_repair!.map((node: any) => new TepDamageRepairItem(node));
-    // //       //set all the tep_damage_repair action to cancel first
-    // //       existData![0]!.tep_damage_repair.forEach(value => {value.action = "CANCEL";});
-
-    // //       // consolidate new repair + new damage to tep_damage_repair
-    // //       var rep_damage_repairItems=value.tep_damage_repair!;
-
-    // //         rep_damage_repairItems.forEach(repItm=>{
-    // //           var existRepItm = existData![0]!.tep_damage_repair?.filter(data=>data.code_cv===repItm.code_cv && data.code_type===repItm.code_type);
-    // //           if(existRepItm?.length!>0)
-    // //           {
-    // //             //set the damage or repair  to unchange
-    // //             existRepItm![0]!.action="";
-    // //           }
-    // //           else
-    // //           {
-    // //             let tepDamageRepairItm :TepDamageRepairItem= new TepDamageRepairItem();
-    // //             tepDamageRepairItm.code_cv=repItm.code_cv;
-    // //             tepDamageRepairItm.code_type=repItm.code_type;
-    // //             tepDamageRepairItm.action="NEW";
-    // //             //add new damage or repair 
-    // //             existData![0].tep_damage_repair!.push(tepDamageRepairItm);
-    // //             childNodeUpdated=true;
-    // //           }
-    // //         });
-    // //         if(childNodeUpdated) existData![0]!.action="EDIT";
-
-    // //     }
-    // //     else {
-    // //       var repEstItem: TemplateEstPartItem = value;
-    // //       var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
-    // //       tempEstPartItem.action = "NEW";
-    // //       tempEstPartItem.guid = "";
-    // //       tempEstPartItem.tariff_repair_guid = value.tariff_repair_guid;
-    // //       tempEstPartItem.hour = repEstItem.hour;
-    // //       tempEstPartItem.quantity = repEstItem.quantity;
-    // //       tempEstPartItem.location_cv = repEstItem.location_cv;
-    // //       tempEstPartItem.remarks = repEstItem.remarks;
-    // //       tempEstPartItem.description = repEstItem.description;
-    // //       tempEstPartItem.tep_damage_repair = [];
-    // //       let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!.map((node:any)=>new TepDamageRepairItem(node));;
-    // //       dmg.forEach(d => {
-    // //         let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-    // //         tepDamageRepairItm.code_cv = d.code_cv;
-    // //         tepDamageRepairItm.code_type = d.code_type;
-    // //         tepDamageRepairItm.action = "NEW";
-    // //         tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
-    // //       });
-    // //       this.selectedTempEst?.template_est_part?.push(tempEstPartItem);
-    // //     }
-    // //   });
-    // }
-
-    //delete this.selectedTempEst!.totalMaterialCost;
-    // this.estTempDS.UpdateMasterTemplate(this.selectedTempEst).subscribe(result => {
-    //   var count = result.data.updateTemplateEstimation;
-    //   if (count > 0) {
-    //     this.handleSaveSuccess(count);
-    //   }
-    // });
   }
 
   updateData(newData: any[]): void {
@@ -1360,21 +1166,16 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
         //this.router.navigate(['/admin/master/estimate-template']);
-
         if (!this.isFromBranch) {
           this.router.navigate(['/admin/master/customer/new/ '], {
             state: this.historyState
-
-          }
-          );
+          });
         }
         else {
           // Navigate to the route and pass the JSON object
-          this.router.navigate(['/admin/master/billing-branch'], {
+          this.router.navigate(['/admin/master/customer'], {
             state: this.historyState
-
-          }
-          );
+          });
         }
       });
     }

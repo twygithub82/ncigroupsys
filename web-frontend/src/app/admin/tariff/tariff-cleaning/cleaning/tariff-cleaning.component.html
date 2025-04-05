@@ -13,7 +13,7 @@
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
-                <button mat-mini-fab color="" (click)="refresh()" (click)="$event.stopPropagation()">
+                <button mat-mini-fab class="light-purple" color="" (click)="refresh()" (click)="$event.stopPropagation()">
                   <mat-icon>refresh</mat-icon>
                 </button>
               </div>
@@ -93,14 +93,6 @@
                   </mat-autocomplete> -->
                 </mat-form-field>
               </div>
-            </div>
-            <div class="row">
-              <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{langText.CARGO_FLASH_POINT | translate}}</mat-label>
-                  <input matInput formControlName="flash_point">
-                </mat-form-field>
-              </div> -->
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CARGO_UN_NO }}</mat-label>
@@ -121,20 +113,6 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
-              <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.CARGO_HAZARD_LEVEL }}</mat-label>
-                  <input matInput formControlName="hazard_level" [formControl]="hazardLevelControl"
-                    [matAutocomplete]="hazard_level">
-                  <mat-autocomplete #hazard_level="matAutocomplete" [displayWith]="displayCodeValueFn">
-                    @for (hLevel of hazardLevelCvList; track hLevel) {
-                    <mat-option [value]="hLevel">
-                      {{hLevel.code_val}}
-                    </mat-option>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
-              </div> -->
               <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto d-flex justify-content-end">
                 <button mat-mini-fab color="primary" (click)="search()">

@@ -315,7 +315,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.ccForm?.get('country_code')?.valueChanges.subscribe(value => {
       if (typeof value === 'string') {
         this.countryCodesFiltered = this.countryCodes.filter((country: any) =>
-          country.code.toLowerCase().includes(value.toLowerCase()) || country.country.toLowerCase().includes(value.toLowerCase())
+          country.code.toLowerCase().includes(value.toLowerCase()) || country.country.toLowerCase().includes(value.toLowerCase()) || country.iso.toLowerCase().includes(value.toLowerCase())
         );
       } else if (typeof value === 'object') {
         this.countryCodesFiltered = this.countryCodes.filter((country: any) =>
@@ -890,7 +890,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   updateExistCustomer() {
     if (this.selectedCustomerCmp) {
       var selectedCusCmp = new CustomerCompanyItem(this.selectedCustomerCmp);
-
       selectedCusCmp.address_line1 = this.ccForm?.get("address1")?.value;
       selectedCusCmp.address_line2 = this.ccForm?.get("address2")?.value;
       selectedCusCmp.code = this.ccForm?.get("customer_code")?.value?.toUpperCase();
