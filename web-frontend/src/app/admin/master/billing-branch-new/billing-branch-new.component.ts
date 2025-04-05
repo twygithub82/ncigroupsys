@@ -85,6 +85,7 @@ import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
   ]
 })
 export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = 1;
   displayedColumns = [
     'index',
     'group_name_cv',
@@ -93,16 +94,14 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     'repair',
     'description',
     'quantity',
-    // 'hour',
-    // 'price',
-    // 'material',
     'actions'
   ];
   pageTitleNew = 'MENUITEMS.MASTER.LIST.BILLING-BRANCH-NEW'
   pageTitleEdit = 'MENUITEMS.MASTER.LIST.BILLING-BRANCH-EDIT'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.MASTER.LIST.BILLING-BRANCH', route: '/admin/master/customer' }
+    { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/customer', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.MASTER.LIST.BILLING-BRANCH', route: '/admin/master/customer', queryParams: { tabIndex: this.tabIndex } }
   ]
   translatedLangText: any = {}
   langText = {
@@ -304,7 +303,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.curDS = new CurrencyDS(this.apollo);
-    
+
     const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
     this.countryCodes = getCountries().map(countryISO => ({
       country: displayNames.of(countryISO),
@@ -384,7 +383,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         Validators.required,
         Validators.minLength(3), // Minimum 3 characters
         Validators.maxLength(6), // Maximum 6 characters
-        Validators.pattern('^[A-Za-z0-9]+$') // Only alphabets
+        Validators.pattern('^[A-Za-z]+$') // Only alphabets
       ]],
       branch_name: [''],
       country_code: [DEFAULT_COUNTRY_CODE],
@@ -792,7 +791,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       if (!this.repList.data.length) {
         this.ccForm.get('repList')?.setErrors({ required: true });
       } else {
-        var customerCode = this.ccForm?.get("branch_code")?.value;
+        var customerCode = this.ccForm?.get("branch_code")?.value?.toUpperCase();
         var mainCustomer = this.ccForm?.get("customer_code")?.value as CustomerCompanyItem;
         if (customerCode == mainCustomer?.code) {
           this.ccForm.get('branch_code')?.setErrors({ duplicated: true });
@@ -841,7 +840,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
     cust.address_line1 = this.ccForm?.get("address1")?.value;
     cust.address_line2 = this.ccForm?.get("address2")?.value;
-    cust.code = this.ccForm?.get("branch_code")?.value;
+    cust.code = this.ccForm?.get("branch_code")?.value?.toUpperCase();
     cust.name = this.ccForm?.get("branch_name")?.value;
     cust.city = this.ccForm?.get("city_name")?.value;
     cust.country = this.ccForm?.get("country")?.value;
@@ -939,7 +938,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       }
       cust.address_line1 = this.ccForm?.get("address1")?.value;
       cust.address_line2 = this.ccForm?.get("address2")?.value;
-      cust.code = this.ccForm?.get("branch_code")?.value;
+      cust.code = this.ccForm?.get("branch_code")?.value?.toUpperCase();
       cust.name = this.ccForm?.get("branch_name")?.value;
       cust.city = this.ccForm?.get("city_name")?.value;
       cust.country = this.ccForm?.get("country")?.value;
@@ -1058,7 +1057,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     var cust: CustomerCompanyItem = new CustomerCompanyItem();
     cust.address_line1 = this.ccForm?.get("address1")?.value;
     cust.address_line2 = this.ccForm?.get("address2")?.value;
-    cust.code = this.ccForm?.get("branch_code")?.value;
+    cust.code = this.ccForm?.get("branch_code")?.value?.toUpperCase();
     cust.name = this.ccForm?.get("branch_name")?.value;
     cust.city = this.ccForm?.get("city_name")?.value;
     cust.country = this.ccForm?.get("country")?.value;
@@ -1165,16 +1164,17 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        //this.router.navigate(['/admin/master/estimate-template']);
         if (!this.isFromBranch) {
           this.router.navigate(['/admin/master/customer/new/ '], {
-            state: this.historyState
+            state: this.historyState,
+            queryParams: { tabIndex: this.tabIndex }
           });
         }
         else {
           // Navigate to the route and pass the JSON object
           this.router.navigate(['/admin/master/customer'], {
-            state: this.historyState
+            state: this.historyState,
+            queryParams: { tabIndex: this.tabIndex }
           });
         }
       });
@@ -1252,17 +1252,15 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     // Navigate to the route and pass the JSON object
     if (this.isFromBranch) {
       this.router.navigate(['/admin/master/customer'], {
-        state: this.historyState
-
-      }
-      );
+        state: this.historyState,
+        queryParams: { tabIndex: this.tabIndex }
+      });
     }
     else {
       this.router.navigate(['/admin/master/customer/new/ '], {
-        state: this.historyState
-
-      }
-      );
+        state: this.historyState,
+        queryParams: { tabIndex: this.tabIndex }
+      });
     }
   }
 
@@ -1392,5 +1390,9 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         return undefined;
     }
     return undefined;
+  }
+
+  onAlphaOnly(event: Event): void {
+    Utility.onAlphaOnly(event, this.ccForm?.get("branch_code")!);
   }
 }

@@ -37,7 +37,8 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BRANCH_CODE }}</mat-label>
-                    <input matInput formControlName="branch_code" required>
+                    <input matInput formControlName="branch_code" class="text-uppercase" (input)="onAlphaOnly($event)"
+                      maxlength="6" required>
                     @if (ccForm?.get('branch_code')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.SO_REQUIRED}}

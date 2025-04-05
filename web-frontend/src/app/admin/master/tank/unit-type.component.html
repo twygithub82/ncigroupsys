@@ -4,21 +4,17 @@
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
     </div>
-
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-
           <mat-accordion>
             <mat-expansion-panel [expanded]="true">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-
                   <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                    <button mat-mini-fab color="primary" (click)="addNew()"
-                      (click)="$event.stopPropagation()">
+                    <button mat-mini-fab color="primary" (click)="addNew()" (click)="$event.stopPropagation()">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
@@ -31,11 +27,11 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2" >
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-                        <input matInput formControlName="unit_type" [matAutocomplete]="unitType" >
-                        <mat-autocomplete #unitType="matAutocomplete" [displayWith]="displayTankFn" >
+                        <input matInput formControlName="unit_type" [matAutocomplete]="unitType">
+                        <mat-autocomplete #unitType="matAutocomplete" [displayWith]="displayTankFn">
                           @for (tnk of tankList; track tnk) {
                           <mat-option [value]="tnk">
                             {{tnk.unit_type}}
@@ -76,58 +72,65 @@
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                
+
                 <ng-container matColumnDef="unittype">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.UNIT_TYPE}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef
+                    mat-sort-header>{{this.translatedLangText.UNIT_TYPE}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.UNIT_TYPE
                       }}:</span>{{row.unit_type}}</mat-cell>
                 </ng-container>
-              
+
                 <ng-container matColumnDef="gatein">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.GATE_IN}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
+                    mat-sort-header>{{this.translatedLangText.GATE_IN}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.GATE_IN}}:</span>
                     @if (row.gate_in){
-                      <mat-icon class="col-green font-bold" >check</mat-icon>
-                      }
-                      @else {
-                      <mat-icon class="col-red font-bold">close</mat-icon>
-                      }
-                    </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="gateout">
-                  <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.GATE_OUT}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.GATE_OUT}}:</span>
-                    @if(row.gate_out){
-                      <mat-icon class="col-green font-bold" >check</mat-icon>
-                      }
-                      @else {
-                      <mat-icon class="col-red font-bold">close</mat-icon>
-                      }
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="lifton">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LIFT_ON}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.LIFT_ON}}:</span>
-                    @if(row.lift_on){
-                      <mat-icon class="col-green font-bold" >check</mat-icon>
+                    <mat-icon class="col-green font-bold">check</mat-icon>
                     }
                     @else {
                     <mat-icon class="col-red font-bold">close</mat-icon>
                     }
-                      </mat-cell>
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="gateout">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
+                    mat-sort-header>{{this.translatedLangText.GATE_OUT}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'d-flex justify-content-center'">
+                    <span class="mobile-label">{{this.translatedLangText.GATE_OUT}}:</span>
+                    @if(row.gate_out){
+                    <mat-icon class="col-green font-bold">check</mat-icon>
+                    }
+                    @else {
+                    <mat-icon class="col-red font-bold">close</mat-icon>
+                    }
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="lifton">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
+                    mat-sort-header>{{this.translatedLangText.LIFT_ON}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'d-flex justify-content-center'">
+                    <span class="mobile-label">{{this.translatedLangText.LIFT_ON}}:</span>
+                    @if(row.lift_on){
+                    <mat-icon class="col-green font-bold">check</mat-icon>
+                    }
+                    @else {
+                    <mat-icon class="col-red font-bold">close</mat-icon>
+                    }
+                  </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="liftoff">
-                  <mat-header-cell *matHeaderCellDef
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
                     mat-sort-header>{{this.translatedLangText.LIFT_OFF}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.LIFT_OFF}}:</span>
                     @if(row.lift_off){
-                      <mat-icon class="col-green font-bold" >check</mat-icon>
+                    <mat-icon class="col-green font-bold">check</mat-icon>
                     }
                     @else {
                     <mat-icon class="col-red font-bold">close</mat-icon>
@@ -135,29 +138,31 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="preinspect">
-                  <mat-header-cell *matHeaderCellDef
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
                     mat-sort-header>{{this.translatedLangText.PREINSPECT}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.PREINSPECT}}:</span>
                     @if(row.preinspect){
-                      <mat-icon class="col-green font-bold" >check</mat-icon>
-                      }
-                      @else {
-                      <mat-icon class="col-red font-bold">close</mat-icon>
-                      }
+                    <mat-icon class="col-green font-bold">check</mat-icon>
+                    }
+                    @else {
+                    <mat-icon class="col-red font-bold">close</mat-icon>
+                    }
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="isoformat">
-                  <mat-header-cell *matHeaderCellDef
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
                     mat-sort-header>{{this.translatedLangText.ISO_FORMAT}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.ISO_FORMAT}}:</span>
                     @if(row.iso_format){
-                      <mat-icon class="col-green font-bold" >check</mat-icon>
-                      }
-                      @else {
-                      <mat-icon class="col-red font-bold">close</mat-icon>
-                      }
+                    <mat-icon class="col-green font-bold">check</mat-icon>
+                    }
+                    @else {
+                    <mat-icon class="col-red font-bold">close</mat-icon>
+                    }
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lastUpdate">
@@ -176,10 +181,10 @@
                     [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     @if(!row.tariff_depot_guid)
                     {
-                      <button mat-icon-button  (click)="$event.stopPropagation()" (click)="cancelItem(row)"
-                        [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
-                        <mat-icon>delete_forever</mat-icon>
-                      </button>
+                    <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
+                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                      <mat-icon>delete_forever</mat-icon>
+                    </button>
                     }
                   </mat-cell>
                 </ng-container>
