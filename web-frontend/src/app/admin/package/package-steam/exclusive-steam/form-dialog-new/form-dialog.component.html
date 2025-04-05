@@ -104,7 +104,7 @@
                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                      <mat-label>{{translatedLangText.LABOUR }}</mat-label>
-                     <input matInput formControlName="labour" type="number" required >
+                     <input matInput formControlName="labour" type="number">
                      @if (pcForm.get('labour')?.hasError('required')) {
                        <mat-error>
                          {{translatedLangText.LABOUR }} {{translatedLangText.CARGO_REQUIRED | translate}}
