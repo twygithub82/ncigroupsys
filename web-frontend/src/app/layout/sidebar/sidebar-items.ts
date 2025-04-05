@@ -1248,6 +1248,18 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true
+      },
+      {
+        path: "admin/admin-reports/main-zero-approval-cost-report",
+        title: "MENUITEMS.ADMIN-REPORTS.LIST.ZERO-APPROVAL-COST-REPORT",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: true
       }
     ].filter(item => item.visible !== false),
   },

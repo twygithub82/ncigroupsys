@@ -628,6 +628,39 @@ export class SurveyorDetail
       this.value=item.value;
     }
   }
+
+  export class ZeroApprovalCostItem{
+    approve_dt?:number;
+    complete_dt?:number;
+    customer_code?:string;
+    customer_name?:string;
+    eir_dt?:number;
+    eir_no?:string;
+    est_cost?:number;
+    estimate_no?:string;
+    tank_no?:string;
+
+    constructor(item: Partial<ZeroApprovalCostItem> = {}) {
+     this.approve_dt=item.approve_dt;
+     this.complete_dt=item.complete_dt;
+     this.customer_code=item.customer_code;
+     this.customer_name=item.customer_name;
+     this.eir_dt=item.eir_dt;
+     this.eir_no=item.eir_no;
+     this.est_cost=item.est_cost;
+     this.estimate_no=item.estimate_no;
+     this.tank_no=item.tank_no;
+   }
+
+    // Static grouping method
+    static groupByCustomer(items: ZeroApprovalCostItem[]): Record<string, ZeroApprovalCostItem[]> {
+      return items.reduce((acc, item) => {
+          const key = item.customer_code || item.customer_name || 'unknown';
+          (acc[key] = acc[key] || []).push(item);
+          return acc;
+      }, {} as Record<string, ZeroApprovalCostItem[]>);
+  }
+ }
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
@@ -1073,6 +1106,30 @@ export const GET_ADMIN_REPORT_STEAM_PERFORMANCE_REPORT = gql`
   }
 `
 
+export const GET_ADMIN_REPORT_ZERO_APPROVAL_COST_REPORT = gql`
+  query queryZeroApprovalCost($zeroApprovalRequest: ZeroApprovalRequestInput!,$first:Int) {
+    resultList: queryZeroApprovalCost(zeroApprovalRequest: $zeroApprovalRequest,first:$first) {
+      nodes {
+        approve_dt
+        complete_dt
+        customer_code
+        customer_name
+        eir_dt
+        eir_no
+        est_cost
+        estimate_no
+        tank_no
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`
 export class ReportDS extends BaseDataSource<any> {
 
   private first: number=20000;
@@ -1454,6 +1511,32 @@ export class ReportDS extends BaseDataSource<any> {
       .query<any>({
         query: GET_ADMIN_REPORT_CLEANER_PERFORMANCE_REPORT,
         variables: { cleanerPerformanceRequest,first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CleanerPerformance[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  searchAdminReportZeroApprovalCostReport(zeroApprovalRequest:any): Observable<CleanerPerformance[]> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_ZERO_APPROVAL_COST_REPORT,
+        variables: { zeroApprovalRequest,first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

@@ -1,0 +1,225 @@
+<div class="row">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="card">
+      <mat-accordion>
+        <mat-expansion-panel expanded="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+            </mat-panel-title>
+            <mat-panel-description>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+            <div class="row">
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+                  <input matInput formControlName="tank_no">
+                </mat-form-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
+                  <input matInput formControlName="eir_no">
+                </mat-form-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+                  <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                    [matAutocomplete]="customerCode">
+                  <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                    @for (cc of customer_companyList; track cc) {
+                    <mat-option [value]="cc">
+                      {{ccDS.displayName(cc)}}
+                    </mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
+                  <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
+                    formControlName="last_cargo">
+                  <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
+                    @for (tc of last_cargoList; track tc) {
+                    <mat-option [value]="tc">
+                      {{tc.cargo}}
+                    </mat-option>
+                    }
+                  </mat-autocomplete>
+                  @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
+                  <mat-error>
+                    {{translatedLangText.INVALID_SELECTION}}
+                  </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.MONTH}}</mat-label>
+                  <mat-select formControlName="month">
+                    @for (month of monthList; track month) {
+                    <mat-option [value]="month">
+                      {{month}}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.YEAR}}</mat-label>
+                  <mat-select formControlName="year">
+                    @for (year of yearList; track year) {
+                    <mat-option [value]="year">
+                      {{year}}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
+                  <mat-select formControlName="depot_status_cv">
+                    @for (codeValue of depotStatusCvList; track codeValue) {
+                    <mat-option [value]="codeValue.code_val">
+                      {{codeValue.description}}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.COST_TYPE}}</mat-label>
+                  <input matInput formControlName="cost_type" 
+                    [matAutocomplete]="costType">
+                  <mat-autocomplete #costType="matAutocomplete" [displayWith]="displayCostTypeFn" >
+                    @for (cs of costTypeCvList; track cs) {
+                    @if(filterCostType.includes(cs.code_val!))
+                    {
+                      <mat-option [value]="cs">
+                        {{cs.description}}
+                      </mat-option>
+                      }
+                   }
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div
+                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center  ms-auto justify-content-end">
+                <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.DETAIL_REPORT}} [disabled]="((repDS.loading$ | async)||isGeneratingReport)">
+                  <mat-icon>assignment</mat-icon>
+                </button>
+                <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
+                  <mat-icon>cached</mat-icon>
+                </button> -->
+                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)" [disabled]="((repDS.loading$ | async)||isGeneratingReport)"
+                  matTooltip={{translatedLangText.CLEAR_ALL}}>
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
+            </div>
+          </form>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <div class="body row" hidden>
+        <div class="row">
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-label>{{translatedLangText.INVOICE_DETAILS}}</mat-label>
+          </div>
+        </div>
+        <div class="card">
+          <div class="row">
+            &nbsp;
+          </div>
+          <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
+                <input matInput [formControl]="invoiceNoControl">
+                @if (this.invoiceNoControl.hasError('required')) {
+                <mat-error>
+                  {{this.translatedLangText.INVOICE_NO}} {{this.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
+                <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date"
+                  [formControl]="invoiceDateControl">
+                <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
+                <mat-datepicker #invoice_date_picker></mat-datepicker>
+                @if (this.invoiceDateControl.hasError('required')) {
+                <mat-error>
+                  {{this.translatedLangText.INVOICE_DATE}} {{this.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>{{translatedLangText.TOTAL_COST}}</mat-label>
+                <input matInput [formControl]="invoiceTotalCostControl" readonly>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+              <button mat-flat-button color="primary" class="m-r-5">
+                <mat-icon>
+                  save
+                </mat-icon>
+                {{translatedLangText.SAVE_AND_SUBMIT}}
+              </button>
+              <button mat-flat-button color="accent" class="m-r-5">
+                <mat-icon>
+                  close
+                </mat-icon>
+                {{translatedLangText.CANCEL}}
+              </button>
+              <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5">
+                <mat-icon>
+                  delete_forever
+                </mat-icon>
+                {{translatedLangText.DELETE}}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="body overflow-auto">
+       
+        <!-- No result -->
+        @if (!(repDS.loading$ | async) && !repData.length) {
+        <mat-divider></mat-divider>
+        <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
+          <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+        </div>
+        }
+
+        @if (!(repDS.loading$ | async) && this.noCond) {
+        <mat-divider></mat-divider>
+        <div class="no-results m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
+          <h5 class="m-b-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
+        </div>
+        }
+        <!-- Loading spinner -->
+        @if ((repDS.loading$ | async)||isGeneratingReport) {
+        <div class="tbl-spinner">
+          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+          </mat-progress-spinner>
+        </div>
+        }
+        <mat-paginator #paginator [length]="repDS.totalCount" [pageIndex]="0" [pageSize]="10"
+          [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)" hidden>
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>

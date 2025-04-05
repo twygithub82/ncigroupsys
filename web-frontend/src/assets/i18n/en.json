@@ -288,7 +288,8 @@
         "YEARLY-REPORTS": "Yearly Reports",
         "SALES-REPORTS": "Sales Reports",
         "DAILY-TEAM-REPORT": "Daily Team Reports",
-        "PERFORMANCE-REPORTS": "Performance Reports"
+        "PERFORMANCE-REPORTS": "Performance Reports",
+        "ZERO-APPROVAL-COST-REPORT":"Zero Approval Cost Report"
       }
     }
   },
@@ -1141,7 +1142,9 @@
    "STEAMING-PERIOD":"Steaming Period",
    "NO-OF-TANKS-BAYS" :"No. of Tank(s) / Bay",
    "NO-OF-TANKS-REQ-TEMP":"No. of Tank(s) / Required Temperature",
-   "NO-OF-TANKS-STEAM-CARGO":"No. of Tank(s) / Cargo wise"
+   "NO-OF-TANKS-STEAM-CARGO":"No. of Tank(s) / Cargo wise",
+   "CUSTOMER-TOTAL":"Customer Total",
+   "ZERO-APPROVAL-COST":"Zero Approval Cost"
    
    
   },

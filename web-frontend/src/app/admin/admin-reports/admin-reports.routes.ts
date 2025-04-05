@@ -4,6 +4,7 @@ import { MainYearlyComponent } from "./yearly-report/main-yearly.component";
 import {MainSalesReportComponent} from "./sales-report/main-sales-report.component";
 import { MainDailyTeamComponent } from "./daily-team/main-daily-team.component";
 import { MainPerformanceComponent } from "./performance-report/main-performance.component";
+import { MainZeroApprovalCostComponent } from "./zero-approval-cost/main-zero-approval-cost.component";
 
 
 export const ADMIN_REPORTS_ROUTE: Routes = [
@@ -26,5 +27,9 @@ export const ADMIN_REPORTS_ROUTE: Routes = [
     {
         path: "main-performance-report",
         component: MainPerformanceComponent,
+    },
+    {
+        path: "main-zero-approval-cost-report",
+        component: MainZeroApprovalCostComponent,
     }
 ];

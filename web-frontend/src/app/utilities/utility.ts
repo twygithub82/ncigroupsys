@@ -865,6 +865,11 @@ export class Utility {
 
     return false; // Selected date is not greater than today
   }
+
+  static isParsableToNumber(value: string): boolean {
+    const num = Number(value);
+    return !isNaN(num) && !isNaN(parseFloat(value));
+  }
 }
 
 export const TANK_STATUS_PRE_IN_YARD = [
