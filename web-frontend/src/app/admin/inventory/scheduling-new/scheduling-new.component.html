@@ -61,7 +61,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CLEAN_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="clean_dt_picker">
@@ -71,11 +71,17 @@
                       <mat-datepicker-toggle matSuffix [for]="clean_dt_picker"></mat-datepicker-toggle>
                       <mat-date-range-picker #clean_dt_picker></mat-date-range-picker>
                     </mat-form-field>
-                  </div>
+                  </div> -->
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
                       <input matInput formControlName="capacity">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
+                      <input matInput formControlName="tare_weight">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -90,12 +96,12 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                       <input matInput formControlName="eir_no">
                     </mat-form-field>
-                  </div>
+                  </div> -->
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
@@ -105,12 +111,6 @@
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                       <mat-date-range-picker #eir_picker></mat-date-range-picker>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
-                      <input matInput formControlName="tare_weight">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -198,14 +198,14 @@
                     <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
                     {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
                   </div>
-                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
+                  <!-- <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.CAPACITY}}:</span> {{
                     igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.TARE_WEIGHT}}:</span> {{
                     igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
-                  </div>
+                  </div> -->
                   <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.STATUS}}:</span>
                     {{getTankStatusDescription(row.tank_status_cv)}}
