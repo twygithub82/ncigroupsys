@@ -509,6 +509,26 @@ export class Utility {
     return color;
   }
 
+  static getProcessStatusBadgeClass(status: string | undefined): string {
+    switch (status) {
+      case 'QC_COMPLETED':
+      case 'COMPLETED':
+      case 'APPROVED':
+        return 'badge badge-solid-green';
+      case 'PENDING':
+        return 'badge badge-solid-cyan';
+      case 'CANCEL':
+      case 'NO_ACTION':
+        return 'badge badge-solid-red';
+      case 'JOB_IN_PROGRESS':
+      case 'PARTIAL_ASSIGNED':
+      case 'ASSIGNED':
+        return 'badge badge-solid-purple';
+      default:
+        return '';
+    }
+  }
+
   static onAlphaOnly(event: Event, form: any): void {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/[^a-zA-Z]/g, '');

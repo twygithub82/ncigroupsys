@@ -1699,7 +1699,7 @@ textarea,
 }
 
 .mat-mdc-snack-bar-container.snackbar-success .mdc-snackbar__surface {
-  background-color: rgb(144, 213, 255) !important;
+  background-color: rgb(0, 161, 16) !important;
   text-align: center;
   // min-width: unset !important;
 
@@ -1777,4 +1777,8 @@ textarea,
 
 .w-33 {
   width: 33.33333% !important;
+}
+
+.addContainer {
+  overflow-y: auto;       // 👈 allow vertical scrolling
 }

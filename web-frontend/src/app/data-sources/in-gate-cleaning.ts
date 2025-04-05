@@ -27,15 +27,15 @@ export class InGateCleaningGO {
   public na_dt?: number;
   public remarks?: string;
   public sot_guid?: string;
+  public customer_billing_guid?: string;
+  public owner_billing_guid?: string;
+  public overwrite_remarks?: string;
   public status_cv?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-
-  public customer_billing_guid?: string;
-  public owner_billing_guid?: string;
 
   constructor(item: Partial<InGateCleaningGO> = {}) {
     this.action = item.action || '';
@@ -53,16 +53,17 @@ export class InGateCleaningGO {
     this.na_dt = item.na_dt;
     this.remarks = item.remarks;
     this.sot_guid = item.sot_guid;
+    this.est_buffer_cost = item.est_buffer_cost;
+    this.est_cleaning_cost = item.est_cleaning_cost;
+    this.customer_billing_guid = item.customer_billing_guid;
+    this.owner_billing_guid = item.owner_billing_guid;
+    this.overwrite_remarks = item.overwrite_remarks;
     this.status_cv = item.status_cv;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    this.est_buffer_cost = item.est_buffer_cost;
-    this.est_cleaning_cost = item.est_cleaning_cost;
-    this.customer_billing_guid = item.customer_billing_guid;
-    this.owner_billing_guid = item.owner_billing_guid;
   }
 }
 
@@ -573,8 +574,8 @@ const GET_IN_GATE_CLEANING_BY_ID_FOR_ESTIMATE_PDF = gql`
 `;
 
 export const UPDATE_IN_GATE_CLEANING = gql`
-  mutation updateCleaning($clean: cleaningInput!) {
-    updateCleaning(cleaning: $clean)
+  mutation updateCleaning($clean: cleaningInput!, $in_gate_survey: in_gate_surveyInput) {
+    updateCleaning(cleaning: $clean, inGateSurvey: $in_gate_survey)
   }
 `;
 
@@ -697,11 +698,12 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
       );
   }
 
-  updateInGateCleaning(clean: any): Observable<any> {
+  updateInGateCleaning(clean: any, in_gate_survey?: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_IN_GATE_CLEANING,
       variables: {
-        clean
+        clean,
+        in_gate_survey
       }
     });
   }

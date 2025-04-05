@@ -1511,12 +1511,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     if (this.updateSelectedItem) {
       this.updateSelectedItem.item.edited = false;
       this.updateSelectedItem = null;
-
     }
     this.resetValue();
   }
-
-
 
   getFooterBackgroundColor(): string {
     return 'light-green';
@@ -1583,7 +1580,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     return ret.toFixed(2);
   }
 
-  getTotalApprovedLabourCost():number{
+  getTotalApprovedLabourCost(): number {
     return this.deList.reduce((acc, row) => {
       if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
@@ -1597,13 +1594,13 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }, 0);
   }
 
-  getTotalMaterialCost():number{
+  getTotalMaterialCost(): number {
     return this.deList.reduce((acc, row) => {
       if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
           return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
         } else {
-          return acc + ((row.quantity || 0) * (row.cost || 0) );
+          return acc + ((row.quantity || 0) * (row.cost || 0));
         }
 
       }
@@ -1715,7 +1712,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       });
       re.total_labour_cost = this.getTotalApprovedLabourCost();
       re.total_material_cost = this.getTotalMaterialCost();
-      re.total_cost= this.getTotalCost();
+      re.total_cost = this.getTotalCost();
       console.log(re)
       this.steamDS.approveSteaming(re).subscribe(result => {
         console.log(result)
