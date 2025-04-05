@@ -661,6 +661,68 @@ export class SurveyorDetail
       }, {} as Record<string, ZeroApprovalCostItem[]>);
   }
  }
+
+ export class CustomerMonthlySales{
+  total_clean_cost?:number;
+  total_clean_count?:number;
+  total_in_service_cost?:number;
+  total_in_service_count?:number;
+  total_offhire_cost?:number;
+  total_offhire_count?:number;
+  total_residue_cost?:number;
+  total_residue_count?:number;
+  total_steam_cost?:number;
+  total_steam_count?:number;
+  total_tank_in?:number;
+  customer_sales?:CustomerSales[]; 
+  constructor(item: Partial<CustomerMonthlySales> = {}) {
+
+    this.total_clean_cost=this.total_clean_cost;
+    this.total_clean_count=this.total_clean_cost;
+    this.total_in_service_cost=this.total_in_service_cost;
+    this.total_in_service_count=this.total_in_service_count;
+    this.total_offhire_cost=this.total_offhire_cost;
+    this.total_offhire_count=this.total_offhire_count;
+    this.total_residue_cost=this.total_residue_cost;
+    this.total_residue_count=this.total_residue_count;
+    this.total_steam_cost=this.total_steam_cost;
+    this.total_steam_count=this.total_steam_count;
+    this.total_tank_in=this.total_tank_in;
+    this.customer_sales=this.customer_sales;
+  }
+ }
+
+ export class CustomerSales{
+  clean_cost?:number;
+  clean_count?:number;
+  code?:string;
+  in_service_cost?:number;
+  in_service_count?:number;
+  name?:string;
+  offhire_cost?:number;
+  offhire_count?:number;
+  residue_cost?:number;
+  residue_count?:number;
+  steam_cost?:number;
+  steam_count?:number;
+  tank_in_count?:number;
+  constructor(item: Partial<CustomerSales> = {}) {
+    this.clean_cost=this.clean_cost;
+    this.clean_count=this.clean_count;
+    this.code=this.code;
+    this.in_service_cost=this.in_service_cost;
+    this.in_service_count=this.in_service_count;
+    this.name=this.name;
+    this.offhire_cost=this.offhire_cost
+    this.offhire_count=this.offhire_count;
+    this.residue_cost=this.residue_cost
+    this.residue_count=this.residue_count
+    this.steam_cost=this.steam_cost
+    this.steam_count=this.steam_count
+    this.tank_in_count=this.tank_in_count;
+  }
+
+ }
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
@@ -1130,6 +1192,39 @@ export const GET_ADMIN_REPORT_ZERO_APPROVAL_COST_REPORT = gql`
     }
   }
 `
+
+export const GET_ADMIN_REPORT_CUSTOMER_MONTHLY_SALES_REPORT = gql`
+  query queryCustomerMonthlySalesReport($customerMonthlySalesRequest: CustomerMonthlySalesRequestInput!) {
+    resultList: queryCustomerMonthlySalesReport(customerMonthlySalesRequest: $customerMonthlySalesRequest) {
+        total_clean_cost
+        total_clean_count
+        total_in_service_cost
+        total_in_service_count
+        total_offhire_cost
+        total_offhire_count
+        total_residue_cost
+        total_residue_count
+        total_steam_cost
+        total_steam_count
+        total_tank_in
+        customer_sales {
+          clean_cost
+          clean_count
+          code
+          in_service_cost
+          in_service_count
+          name
+          offhire_cost
+          offhire_count
+          residue_cost
+          residue_count
+          steam_cost
+          steam_count
+          tank_in_count
+        }
+    }
+  }
+`
 export class ReportDS extends BaseDataSource<any> {
 
   private first: number=20000;
@@ -1555,6 +1650,32 @@ export class ReportDS extends BaseDataSource<any> {
         })
       );
   }
+
+  
+  searchAdminReportCustomerMonthlySalesReport(customerMonthlySalesRequest:any): Observable<CustomerMonthlySales> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_ADMIN_REPORT_CUSTOMER_MONTHLY_SALES_REPORT,
+        variables: { customerMonthlySalesRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CleanerPerformance[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList);
+          return resultList;
+        })
+      );
+  }
+
 }
 
 
