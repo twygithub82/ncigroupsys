@@ -44,6 +44,7 @@ import { SteamMonthlyAdminReportComponent } from './steam-monthly/steam-monthly.
 import { ResidueMonthlyAdminReportComponent } from './residue-monthly/residue-monthly.component';
 import { RepairMonthlyAdminReportComponent } from './repair-monthly/repair-monthly.component';
 import { CleanMonthlyAdminReportComponent } from './clean-monthly/clean-monthly.component';
+import { CustomerMonthlyAdminReportComponent } from './customer-monthly/customer-monthly.component';
 
 @Component({
   selector: 'app-main-monthly',
@@ -78,7 +79,8 @@ import { CleanMonthlyAdminReportComponent } from './clean-monthly/clean-monthly.
     SteamMonthlyAdminReportComponent,
     ResidueMonthlyAdminReportComponent,
     RepairMonthlyAdminReportComponent,
-    CleanMonthlyAdminReportComponent
+    CleanMonthlyAdminReportComponent,
+    CustomerMonthlyAdminReportComponent
     
   ]
 })
@@ -137,7 +139,7 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
     RESIDUE_REPORT:'COMMON-FORM.RESIDUE-REPORT',
     REPAIR_REPORT:'COMMON-FORM.REPAIR-REPORT',
     CLEAN_REPORT:'COMMON-FORM.CLEAN-REPORT',
-
+    CUSTOMER_REPORT:'COMMON-FORM.CUSTOMER-REPORT'
   }
 
   filterCleanForm?: UntypedFormGroup;

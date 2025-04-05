@@ -1079,6 +1079,7 @@
     "CLEAN-MONTHLY-DETAILS-REPORT": "Cleaning Monthly Details Report",
     "RESIDUE-MONTHLY-OVERVIEW-REPORT": "Residue Disposal Monthly Overview Report",
     "RESIDUE-MONTHLY-DETAILS-REPORT": "Residue Disposal Monthly Details Report",
+    "CUSTOMER-MONTHLY-SALES-REPORT": "Customer Monthly Sales Report",
     "TOTAL-TANK": "Total Tank",
     "AVERAGE": "Average",
     "MONTH-START": "Month Start",
@@ -1144,9 +1145,10 @@
    "NO-OF-TANKS-REQ-TEMP":"No. of Tank(s) / Required Temperature",
    "NO-OF-TANKS-STEAM-CARGO":"No. of Tank(s) / Cargo wise",
    "CUSTOMER-TOTAL":"Customer Total",
-   "ZERO-APPROVAL-COST":"Zero Approval Cost"
-   
-   
+   "ZERO-APPROVAL-COST":"Zero Approval Cost",
+   "TANK-IN-QTY":"Tank-in Qty.",
+   "IN-SERVICE":"In-Service",
+   "OFFHIRE":"Off-Hire"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
