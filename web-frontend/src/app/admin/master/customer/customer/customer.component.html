@@ -53,24 +53,27 @@
                     </mat-select>
                   </mat-form-field>
                 </div> -->
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.ALIAS_NAME}}</mat-label>
-                    <input matInput formControlName="alias_name" type="text">
-                  </mat-form-field>
-                </div>
+
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.COUNTRY}}</mat-label>
                     <input matInput formControlName="country" type="text">
                   </mat-form-field>
                 </div>
+                <!--TODO-->
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.CATEGORY}}</mat-label>
+                    <input matInput formControlName="alias_name" type="text">
+                  </mat-form-field>
+                </div>
+
+                <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CONTACT_PERSON }}</mat-label>
                     <input matInput formControlName="contact_person" type="text">
                   </mat-form-field>
-                </div>
+                </div> -->
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()">
                     <mat-icon>search</mat-icon>
@@ -104,7 +107,7 @@
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.name}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="mobile">
+            <!-- <ng-container matColumnDef="mobile">
               <mat-header-cell *matHeaderCellDef mat-sort-header
                 [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.CONTACT_NO}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -116,7 +119,7 @@
                 mat-sort-header>{{this.translatedLangText.EMAIL }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
-            </ng-container>
+            </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
               <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl'" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.LAST_UPDATE

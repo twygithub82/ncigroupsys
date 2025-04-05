@@ -83,8 +83,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   displayedColumns = [
     'customer_code',
     'customer_name',
-    'mobile',
-    'email',
+    //'mobile',
+    //'email',
     'category',
     'last_update_dt',
     'actions'
@@ -216,7 +216,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     CODE: 'COMMON-FORM.CODE',
-    CATEGORY: 'COMMON-FORM.CATEGORY',
+    CATEGORY: 'COMMON-FORM.DEFAULT-PROFILE',
     CUSTOMER_ASSIGNED: 'COMMON-FORM.CUSTOMER-ASSIGNED',
     WARNING: 'COMMON-FORM.WARNING'
   }

@@ -90,11 +90,12 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     'desc',
     'fName',
     'lName',
-    'mobile',
+    //'mobile',
     // 'gender',
+    'category',
     'bDate',
 
-    'email',
+    //'email',
     // 'actions',
   ];
 
@@ -229,7 +230,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     BILLING_BRANCH: "COMMON-FORM.BILLING-BRANCH",
     BRANCH_CODE: "COMMON-FORM.BRANCH-CODE",
     SAME: "COMMON-FORM.SAME",
-    MAIN_CUSTOMER: "COMMON-FORM.MAIN-CUSTOMER"
+    MAIN_CUSTOMER: "COMMON-FORM.MAIN-CUSTOMER",
+    CATEGORY: 'COMMON-FORM.DEFAULT-PROFILE',
   }
 
   constructor(
