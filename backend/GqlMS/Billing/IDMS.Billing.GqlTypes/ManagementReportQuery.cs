@@ -646,7 +646,6 @@ namespace IDMS.Billing.GqlTypes
 
         #endregion
 
-
         private double CalculatePercentage(int count, int totalCount)
         {
 
