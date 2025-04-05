@@ -4,10 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace IDMS.Billing.GqlTypes.LocalModel
 {
     [NotMapped]
-    public class DailyInventoryRequest: InventoryRequest
+    public class DailyInventoryRequest
     {
         public long start_date { get; set; }
         public long end_date { get; set; }
+        public string inventory_type { get; set; }
+        public string? customer_code { get; set; }
     }
 
     [NotMapped]
@@ -29,7 +31,7 @@ namespace IDMS.Billing.GqlTypes.LocalModel
     [NotMapped]
     public class InventoryRequest
     {
-        public string inventory_type { get; set; }
+        public List<string> inventory_type { get; set; }
 
         public string? customer_code { get; set; }
     }
