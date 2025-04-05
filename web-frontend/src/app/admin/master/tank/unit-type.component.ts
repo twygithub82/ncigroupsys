@@ -269,7 +269,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     LIFT_OFF:'COMMON-FORM.LIFT-OFF',
     GATE_IN:'COMMON-FORM.GATE-IN',
     GATE_OUT:'COMMON-FORM.GATE-OUT',
-    ISO_FORMAT:'COMMON-FORM.ISO-FORMAT',
+    ISO_FORMAT:'COMMON-FORM.CHECK-DIGIT',
     SAVE:'COMMON-FORM.SAVE',
     
     
