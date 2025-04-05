@@ -1019,12 +1019,30 @@
                               | async)) {
                               @if (sot?.purpose_cleaning) {
                               <div class="position-relative">
-                                @if (!isNoPurpose(sot!, 'cleaning') && canRemovePurpose('cleaning')) {
+                                <!-- @if (!isNoPurpose(sot!, 'cleaning') && canRemovePurpose('cleaning')) {
                                 <button color="warn" [matTooltip]="translatedLangText.REMOVE_CLEANING_PURPOSE"
                                   (click)="updatePurposeDialog($event, 'cleaning', 'remove')"
                                   class="link-button text-danger position-absolute top-0 end-0 p-0">
                                   <mat-icon>cancel</mat-icon>
                                 </button>
+                                } -->
+                                @if (canRemoveCleanPurpose() || canOverwriteCleaningApproval()) {
+                                <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
+                                  [disabled]="(cleaningDS.loading$ | async)"
+                                  class="link-button position-absolute top-0 end-0 p-0">
+                                  <mat-icon>menu</mat-icon>
+                                </button>
+
+                                <mat-menu #menu="matMenu">
+                                  @if (canOverwriteCleaningApproval()) {
+                                  <button mat-menu-item
+                                    (click)="overwriteCleaningApprovalDialog($event)">{{translatedLangText.OVERWRITE_APPROVAL}}</button>
+                                  }
+                                  @if (canRemoveCleanPurpose()) {
+                                  <button mat-menu-item class="text-danger"
+                                    (click)="updatePurposeDialog($event, 'cleaning', 'remove')">{{translatedLangText.REMOVE}}</button>
+                                  }
+                                </mat-menu>
                                 }
                                 <div class="row m-t-10 contact-details-field">
                                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">

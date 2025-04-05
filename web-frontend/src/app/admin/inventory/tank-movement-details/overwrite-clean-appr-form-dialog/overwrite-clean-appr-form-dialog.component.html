@@ -1,0 +1,375 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h3>{{dialogTitle}}</h3>
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    <form class="register-form" [formGroup]="overwriteForm" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <div class="row d-flex justify-content-center">
+            <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.APPROVED_DATE}}</mat-label>
+                <input matInput formControlName="approve_dt" [matDatepicker]="approve_dt_picker" required>
+                <mat-datepicker-toggle matSuffix [for]="approve_dt_picker"></mat-datepicker-toggle>
+                <mat-datepicker #approve_dt_picker></mat-datepicker>
+                @if (overwriteForm.get('approve_dt')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.APPROVED_DATE}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.APPROVED_COST}}</mat-label>
+                <input matInput formControlName="cleaning_cost" type="number" required>
+                @if (overwriteForm.get('cleaning_cost')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.APPROVED_COST}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.APPROVED_BUFFER_CLEANING_COST}}</mat-label>
+                <input matInput formControlName="buffer_cost" type="number" required>
+                @if (overwriteForm.get('buffer_cost')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.APPROVED_DATE}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label></mat-label>
+                <mat-select formControlName="tank_comp_guid" required>
+                  @for (buffer of data.populateData.packageBufferList; track buffer) {
+                  <mat-option [value]="buffer.tariff_buffer_guid">{{buffer.tariff_buffer?.buffer_type}}</mat-option>
+                  }
+                </mat-select>
+                @if (overwriteForm.get('tank_comp_guid')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.APPROVED_BUFFER_CLEANING_COST}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+                <input matInput formControlName="overwrite_remarks" required>
+                @if (overwriteForm.get('overwrite_remarks')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
+            </div>
+          </div>
+          <div class="row mb-2 d-flex justify-content-center">
+            <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1 d-flex justify-content-end">
+              <button mat-flat-button color="primary" (click)="submit()" [disabled]="(tcDS.actionLoading$ | async)">
+                <mat-icon>
+                  @if (!(tcDS.actionLoading$ | async)) {
+                  save
+                  } @else if ((tcDS.actionLoading$ | async)) {
+                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                  }
+                </mat-icon>
+                {{data.translatedLangText.SAVE_AND_SUBMIT}}
+              </button>
+            </div>
+          </div>
+          <div class="card m-4 p-4 m-t-0">
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{data.translatedLangText.TANK_NO}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{sot.tank_no}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{data.translatedLangText.CUSTOMER}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          {{ccDS.displayName(sot.storing_order?.customer_company)}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{data.translatedLangText.JOB_NO}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{cleaningItem.job_no}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{data.translatedLangText.CARGO_NAME}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{sot.tariff_cleaning?.cargo}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{data.translatedLangText.EIR_NO}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{igItem.eir_no}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{data.translatedLangText.EIR_DATE}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{displayDate(igItem.eir_dt)}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{data.translatedLangText.QUOTATION_DATE}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{displayDate(cleaningItem.create_dt)}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{data.translatedLangText.STATUS}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div [class]="'contact-detail-info'"><span
+                            [class]="'font-bold ' + getProcessStatusBadgeClass(cleaningItem.status_cv)">{{getProcessStatusDescription(cleaningItem.status_cv)}}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-4">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1 d-flex justify-content-center">
+                <h3 class="text-decoration-underline">{{data.translatedLangText.LAST_CARGO_CLEANING_QUOTATION}}</h3>
+              </div>
+            </div>
+            <div class="body overflow-auto">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="[cleaningItem]" matSort
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="seq">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+                    <mat-cell *matCellDef="let row; let i = index"
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="description">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-7-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      {{data.translatedLangText.DESCRIPTION}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-7-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.DESCRIPTION}}:</span>{{sot.tariff_cleaning?.cargo}}
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef [ngClass]="''"
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-7-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                    </mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="depot_estimate">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      {{data.translatedLangText.DEPOT_ESTIMATE}} $
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.DEPOT_ESTIMATE}}:</span>{{parse2Decimal(row.est_cleaning_cost)}}
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      <span class="font-bold">{{data.translatedLangText.TOTAL_COST}}</span>
+                    </mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="customer_approval">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      {{data.translatedLangText.CUSTOMER_APPROVAL}} $
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.CUSTOMER_APPROVAL}}:</span>{{parse2Decimal(row.cleaning_cost)}}
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      {{parse2Decimal(cleaningItem.cleaning_cost)}}
+                    </mat-footer-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
+                    matRipple>
+                  </mat-row>
+                  <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+                </table>
+              </div>
+            </div>
+            <div class="row m-3 m-t-0">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                        <span class="font-bold">{{data.translatedLangText.DESCRIPTION}}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  {{data.translatedLangText.APPROVAL}}
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  {{data.translatedLangText.JOB_ALLOCATION}}
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  {{data.translatedLangText.JOB_COMPLETION}}
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                                <div class="table-label cost-label">
+                                  {{data.translatedLangText.BILLING_DETAILS}}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                        <span class="font-bold">{{data.translatedLangText.UPDATED_BY}}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>{{cleaningItem.approve_by || '-'}}</span>
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>{{cleaningItem.job_order?.create_by || "-"}}</span>
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>{{cleaningItem.job_order?.update_by || "-"}}</span>
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>-</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl col-lg col-md col-sm m-b-0">
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                        <span class="font-bold">{{data.translatedLangText.UPDATED_ON}}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label">
+                                  <span>{{displayDate(cleaningItem.approve_dt) || '-'}}</span>
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label">
+                                  <span>{{displayDate(cleaningItem.job_order?.create_dt) || "-"}}</span>
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label">
+                                  <span>{{displayDate(cleaningItem.job_order?.complete_dt) || "-"}}</span>
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label">
+                                  <span>-</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
