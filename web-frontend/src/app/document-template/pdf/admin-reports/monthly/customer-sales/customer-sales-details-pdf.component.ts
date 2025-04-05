@@ -708,7 +708,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
         ]);
     }
 
-    data.push([this.translatedLangText.TOTAL,"","",Utility.formatNumberDisplay(this.repData?.total_tank_in),
+    data.push([this.translatedLangText.TOTAL,"","",(this.repData?.total_tank_in),
       (this.repData?.total_steam_count)||"",Utility.formatNumberDisplay(this.repData?.total_steam_cost),
       (this.repData?.total_clean_count)||"",Utility.formatNumberDisplay(this.repData?.total_clean_cost),
       (this.repData?.total_in_service_count)||"",Utility.formatNumberDisplay(this.repData?.total_in_service_cost),

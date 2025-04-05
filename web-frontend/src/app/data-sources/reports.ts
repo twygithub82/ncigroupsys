@@ -723,6 +723,50 @@ export class SurveyorDetail
   }
 
  }
+
+ export class InventoryPerMonth{
+  percentage?:number;
+  count?:number;
+  month?:string;
+  
+  constructor(item: Partial<InventoryPerMonth> = {}) {
+    this.percentage=item.percentage;
+    this.count=item.count;
+    this.month=item.month;
+    
+    } 
+
+}
+
+ export class InventoryYearly{
+  average_count?:number;
+  total_count?:number;
+  inventory_per_month?:InventoryPerMonth[];
+
+constructor(item: Partial<InventoryYearly> = {}) {
+  this.average_count=item.average_count;
+  this.total_count=item.total_count;
+  this.inventory_per_month=item.inventory_per_month;
+  } 
+}
+
+ export class ManagementReportYearlInventory
+ {
+  cleaning_yearly_inventory?:InventoryYearly;
+  depot_yearly_inventory?:InventoryYearly;
+  gate_in_yearly_inventory?:InventoryYearly;
+  gate_out_yearly_inventory?:InventoryYearly;
+  repair_yearly_inventory?:InventoryYearly;
+  steaming_yearly_inventory?:InventoryYearly;
+  constructor(item: Partial<ManagementReportYearlInventory> = {}) {
+    this.cleaning_yearly_inventory=item.cleaning_yearly_inventory;
+    this.depot_yearly_inventory=item.depot_yearly_inventory;
+    this.gate_in_yearly_inventory=item.gate_in_yearly_inventory;
+    this.gate_out_yearly_inventory=item.gate_out_yearly_inventory;
+    this.repair_yearly_inventory=item.repair_yearly_inventory;
+    this.steaming_yearly_inventory=item.steaming_yearly_inventory;
+    } 
+ }
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
@@ -1222,6 +1266,67 @@ export const GET_ADMIN_REPORT_CUSTOMER_MONTHLY_SALES_REPORT = gql`
           steam_count
           tank_in_count
         }
+    }
+  }
+`
+
+export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
+  query queryYearlyInventory($yearlyInventoryRequest: YearlyInventoryRequestInput!) {
+    resultList: queryYearlyInventory(yearlyInventoryRequest: $yearlyInventoryRequest) {
+        cleaning_yearly_inventory {
+        average_count
+        total_count
+        inventory_per_month {
+          count
+          month
+          percentage
+        }
+      }
+      depot_yearly_inventory {
+        average_count
+        total_count
+        inventory_per_month {
+          count
+          month
+          percentage
+        }
+      }
+      gate_in_inventory {
+        average_count
+        total_count
+        inventory_per_month {
+          count
+          month
+          percentage
+        }
+      }
+      gate_out_inventory {
+        average_count
+        total_count
+        inventory_per_month {
+          count
+          month
+          percentage
+        }
+      }
+      repair_yearly_inventory {
+        average_count
+        total_count
+        inventory_per_month {
+          count
+          month
+          percentage
+        }
+      }
+      steaming_yearly_inventory {
+        average_count
+        total_count
+        inventory_per_month {
+          count
+          month
+          percentage
+        }
+      }
     }
   }
 `

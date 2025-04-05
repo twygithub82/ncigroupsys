@@ -3,6 +3,8 @@ import { GroupNewComponent } from "./group-new/group-new.component";
 import { GroupComponent } from "./group/group.component";
 import { UserNewComponent } from "./user-new/user-new.component";
 import { UserComponent } from "./user/user.component";
+import{MainManagementYearlyComponent} from "./reports/yearly/main-management-yearly.component";
+import{MainManagementMonthlyComponent} from "./reports/monthly/main-management-monthly.component"
 
 export const MANAGEMENT_ROUTE: Routes = [
   {
@@ -20,5 +22,13 @@ export const MANAGEMENT_ROUTE: Routes = [
   {
     path: "group/new/:id",
     component: GroupNewComponent,
+  },
+  {
+    path: "reports/yearly",
+    component: MainManagementYearlyComponent,
+  },
+  {
+    path: "reports/monthly",
+    component: MainManagementMonthlyComponent,
   },
 ];

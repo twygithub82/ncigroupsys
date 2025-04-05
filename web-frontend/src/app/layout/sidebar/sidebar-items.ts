@@ -805,6 +805,30 @@ export const ROUTES: RouteInfo[] = [
   //   badgeClass: "",
   //   submenu: [
   //     {
+  //       path: "admin/management/reports/yearly",
+  //       title: "MENUITEMS.MANAGEMENT.LIST.YEARLY-REPORTS",
+  //       iconType: "",
+  //       icon: "",
+  //       class: "ml-menu",
+  //       groupTitle: false,
+  //       badge: "",
+  //       badgeClass: "",
+  //       submenu: [],
+  //       visible: true
+  //     },
+  //     {
+  //       path: "admin/management/reports/monthly",
+  //       title: "MENUITEMS.MANAGEMENT.LIST.MONTHLY-REPORTS",
+  //       iconType: "",
+  //       icon: "",
+  //       class: "ml-menu",
+  //       groupTitle: false,
+  //       badge: "",
+  //       badgeClass: "",
+  //       submenu: [],
+  //       visible: true
+  //     },
+  //     {
   //       path: "admin/management/user",
   //       title: "MENUITEMS.MANAGEMENT.LIST.USER",
   //       iconType: "",
@@ -814,6 +838,7 @@ export const ROUTES: RouteInfo[] = [
   //       badge: "",
   //       badgeClass: "",
   //       submenu: [],
+  //       visible: false
   //     },
   //     {
   //       path: "admin/management/group",
@@ -824,7 +849,8 @@ export const ROUTES: RouteInfo[] = [
   //       groupTitle: false,
   //       badge: "",
   //       badgeClass: "",
-  //       submenu: []
+  //       submenu: [],
+  //       visible: false
   //     },
   //     {
   //       path: "admin/cleaning-groups",

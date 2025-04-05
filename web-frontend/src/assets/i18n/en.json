@@ -163,7 +163,9 @@
         "USER-EDIT": "Edit User",
         "GROUP": "Group",
         "GROUP-NEW": "New Group",
-        "GROUP-EDIT": "Edit Group"
+        "GROUP-EDIT": "Edit Group",
+        "MONTHLY-REPORTS":"Monthly Reports",
+        "YEARLY-REPORTS":"Yearly Reports"
       }
     },
     "NEW": {
@@ -1148,7 +1150,11 @@
    "ZERO-APPROVAL-COST":"Zero Approval Cost",
    "TANK-IN-QTY":"Tank-in Qty.",
    "IN-SERVICE":"In-Service",
-   "OFFHIRE":"Off-Hire"
+   "OFFHIRE":"Off-Hire",
+   "REVENUE-REPORT":"Revenue Report",
+   "INVENTORY-REPORT":"Inventory Report",
+   "MANHOUR-REPORT":"Man-Hour Report"
+   
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
