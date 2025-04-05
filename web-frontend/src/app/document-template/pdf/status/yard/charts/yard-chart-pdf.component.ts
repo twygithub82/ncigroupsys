@@ -44,6 +44,7 @@ import {
 export type HorizontalBarOptions = {
   showXAxis?: boolean;
   showYAxis?: boolean;
+  animations?:boolean;
   gradient?: boolean;
   showLegend?: boolean;
   showXAxisLabel?: boolean;
@@ -1132,7 +1133,8 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     this.horizontalBarOptions.single = singleValues.filter((s: { name: string }) => s.name != "Offhire");
     this.chartAnimatedCounter++;
     console.log(`horizontalBarOptions rendered chartAnimatedCounter: `, this.chartAnimatedCounter)
-    this.onChartRendered();
+    setTimeout(()=>{
+    this.onChartRendered();},1000);
   }
 
   InitialDefaultData() {
@@ -1304,6 +1306,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
     this.horizontalBarOptions = {
       hbarxAxisLabel: this.translatedLangText.NO_OF_TANKS,
+      animations:false,
       showXAxis: true,
       showYAxis: true,
       gradient: false,
@@ -1316,7 +1319,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       colorScheme: {
         domain: ['#008ffb', '#00e396', '#feb019', '#ff4560'],
         group: ScaleType.Ordinal,
-        selectable: true,
+        selectable: false,
         name: 'Customer Usage',
       },
       showLabels: true,
