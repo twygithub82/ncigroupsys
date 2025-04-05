@@ -545,7 +545,7 @@ export class Utility {
 
   static getCountryCodeObject(code: string | undefined, countryCodeList: any[]): any {
     const found = countryCodeList.find((item) => item.code === code);
-    return found?.length ? found[0] : null;
+    return found;
   }
 
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number) {

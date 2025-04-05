@@ -1,7 +1,7 @@
-// ::ng-deep .cdk-overlay-pane {
-//   width: auto !important; /* Allow automatic width */
-//   min-width: 300px !important; /* Set a reasonable minimum */
-//   max-width: none !important; /* Remove max-width restriction */
-//   display: table !important; /* Ensures width expands based on content */
-//   white-space: nowrap !important; /* Prevents text from wrapping */
-// }
+::ng-deep .cdk-overlay-pane {
+    width: auto !important;
+    min-width: 300px !important;
+    max-width: none !important;
+    display: table !important;
+    white-space: nowrap !important;
+}
