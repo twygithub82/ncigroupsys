@@ -15,122 +15,84 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-                <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.METHOD_NAME | translate}}</mat-label>
-                    <input matInput formControlName="name" type="text" required>
-                    @if (pcForm.get('name')?.hasError('required')) {
-                      <mat-error>
-                        {{langText.METHOD_NAME | translate}} {{langText.CARGO_REQUIRED | translate}}
-                      </mat-error>
-                      }
-                      @if (pcForm.get('name')?.hasError('existed')) {
-                        <mat-error>
-                          {{langText.METHOD_NAME | translate}}: {{langText.EXISTED | translate}}
-                        </mat-error>
-                        }
-                  </mat-form-field>
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
+                <input matInput formControlName="name" type="text" required>
+                @if (pcForm.get('name')?.hasError('required')) {
+                <mat-error>
+                  {{translatedLangText.PROCESS_NAME}} {{translatedLangText.CARGO_REQUIRED}}
+                </mat-error>
+                }
+                @if (pcForm.get('name')?.hasError('existed')) {
+                <mat-error>
+                  {{translatedLangText.PROCESS_NAME}}: {{translatedLangText.EXISTED}}
+                </mat-error>
+                }
+              </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
-                  <mat-label>{{translatedLangText.DESCRIPTION | translate }}</mat-label>
-                  <input matInput formControlName="description" type="text">
-                 
-                </mat-form-field>
+                <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
+                <input matInput formControlName="description" type="text">
+              </mat-form-field>
             </div>
             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
               <mat-form-field class="example-full-width">
-                  <mat-label>{{translatedLangText.CLEANING_FORMULA}}</mat-label>
-                  <input matInput formControlName="formula" [formControl]="cleanFormulaControl"
-                    [matAutocomplete]="formulaCode">
-                  <mat-autocomplete #formulaCode="matAutocomplete" [displayWith]="displayCleaningFormulaFn">
-                    @for (cf of cleanFormulaList; track cf) {
-                    <mat-option [value]="cf">
-                      {{cf.description}}
-                    </mat-option>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
+                <mat-label>{{translatedLangText.CLEANING_FORMULA}}</mat-label>
+                <input matInput formControlName="formula" [formControl]="cleanFormulaControl"
+                  [matAutocomplete]="formulaCode">
+                <mat-autocomplete #formulaCode="matAutocomplete" [displayWith]="displayCleaningFormulaFn">
+                  @for (cf of cleanFormulaList; track cf) {
+                  <mat-option [value]="cf">
+                    {{cf.description}} - {{cf.duration}} mins
+                  </mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
             </div>
             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
-              <button mat-mini-fab color="primary"  (click)="$event.stopPropagation()" (click)="AddCleaningStep()" [matTooltip]="translatedLangText.ADD" [disabled]="!canAddFormula()">
+              <button mat-mini-fab color="primary" (click)="$event.stopPropagation()" (click)="AddCleaningStep()"
+                [matTooltip]="translatedLangText.ADD" [disabled]="!canAddFormula()">
                 <mat-icon class="col-white">add</mat-icon>
               </button>
             </div>
           </div>
-
           <div class="row clearfix">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
               <div class="card">
                 <div class="header">
-                  <h2>{{translatedLangText.CLEANING_STEPS}}</h2>
+                  <h2>{{translatedLangText.CLEANING_STEPS}} ({{getCleaningFormulaTotalDuration()}})</h2>
                 </div>
                 <div class="body">
-                  <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                      <div cdkDropList class="steps-list" (cdkDropListDropped)="drop2($event)">
-                        @for (movie of updatedMethodFormulaLinkList; track movie) {
-                          <div class="step-box" cdkDrag>
-                            <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                            {{movie.cleaning_formula?.description}}
-                            <button mat-icon-button  (click)="$event.stopPropagation()" (click)="cancelItem(movie)"
-                            [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
-                            <mat-icon>close</mat-icon>
-                            </button>
-                          </div>
-                        }
-                      </div>
+                  @if (updatedMethodFormulaLinkList.length) {
+                  <div cdkDropList class="steps-list" (cdkDropListDropped)="drop2($event)">
+                    @for (movie of updatedMethodFormulaLinkList; let i = $index; track movie) {
+                    <div class="step-box cursor-pointer p-2 mb-2 rounded" cdkDrag>
+                      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                      <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
+                        mins</span>
+                      <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem($event, i)"
+                        [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                        <mat-icon>close</mat-icon>
+                      </button>
                     </div>
+                    }
                   </div>
+                  }
+                  @else {
+                  <div class="text-center">
+                    <h5>{{translatedLangText.NO_RESULT}}</h5>
+                  </div>
+                  }
                 </div>
               </div>
             </div>
           </div>
-          <!-- <div class="row">
-            <div class="materialTableHeader">
-            </div>
-            <div class="body overflow-auto" >
-
-              <div class="responsive_table fixed-height-table" cdkDropList (cdkDropListDropped)="drop($event)">
-                <table mat-table [dataSource]="updatedMethodFormulaLinkList" matSort
-                  class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                  <div cdkDrag>
-                    <div *cdkDragPlaceholder></div>
-                  <ng-container matColumnDef="customer_code">
-                    <mat-header-cell [ngClass]="'tbl-col-width-per-10-xl tbl-col-width-per-12-lg'" *matHeaderCellDef mat-sort-header>{{translatedLangText.CLEANING_STEPS
-                      }}</mat-header-cell>
-                    <mat-cell  [ngClass]="'tbl-col-width-per-10-xl tbl-col-width-per-12-lg'" *matCellDef="let row">
-                      <span class="mobile-label">{{translatedLangText.CLEANING_STEPS
-                        }}:</span>{{row.cleaning_formula?.description}}</mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="actions">
-                    <mat-header-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      *matHeaderCellDef></mat-header-cell>
-                    <mat-cell *matCellDef="let row; let i=index;"
-                      [ngClass]="'pr-0 justify-content-end tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                     
-                     
-                      <button mat-icon-button  (click)="$event.stopPropagation()" (click)="cancelItem(row)"
-                        [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
-                        <mat-icon>delete_forever</mat-icon>
-                      </button>
-                    </mat-cell>
-                  </ng-container>
-                  </div>
-                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                  <mat-row *matRowDef="let row; columns: displayedColumns;"  matRipple>
-                  </mat-row>
-                </table>
-              </div>
-            </div>
-          </div> -->
-        
         </div>
-        
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-          <button mat-flat-button color="primary" (click)="save()">{{GetButtonCaption()}}</button>
+        <button mat-flat-button color="primary" (click)="save()">{{GetButtonCaption()}}</button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
       </div>

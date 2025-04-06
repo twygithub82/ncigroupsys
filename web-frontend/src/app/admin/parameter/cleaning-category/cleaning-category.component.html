@@ -33,13 +33,13 @@
                 <div class="row">
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.CATEGORY_NAME | translate}}</mat-label>
+                      <mat-label>{{langText.NAME | translate}}</mat-label>
                       <input matInput formControlName="name">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.CATEGORY_DESCRIPTION | translate}}</mat-label>
+                      <mat-label>{{langText.DESCRIPTION | translate}}</mat-label>
                       <input matInput formControlName="description">
                     </mat-form-field>
                   </div>
@@ -75,18 +75,18 @@
                 </ng-container>
                 <ng-container matColumnDef="category_name">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.CATEGORY_NAME| translate}}
+                    {{langText.NAME| translate}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.CATEGORY_NAME | translate}}:</span>{{row.name}}
+                    <span class="mobile-label">{{langText.NAME | translate}}:</span>{{row.name}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_description">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
-                    {{langText.CATEGORY_DESCRIPTION | translate}}
+                    {{langText.DESCRIPTION | translate}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.description}}
+                    <span class="mobile-label">{{langText.DESCRIPTION | translate}}:</span>{{row.description}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_cost">
