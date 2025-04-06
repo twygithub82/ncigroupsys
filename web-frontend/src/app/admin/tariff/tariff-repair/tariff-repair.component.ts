@@ -921,6 +921,5 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     this.initPcForm();
 
     //this.customerCodeControl.reset('');
-
   }
 }

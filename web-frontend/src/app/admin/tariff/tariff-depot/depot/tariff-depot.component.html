@@ -2,7 +2,7 @@
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div class="card">
       <mat-accordion>
-        <mat-expansion-panel>
+        <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
             <mat-panel-description>
               <div class="m-l-" [matTooltip]="translatedLangText.ADD">
@@ -11,7 +11,7 @@
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
-                <button mat-mini-fab color="" (click)="refresh()" (click)="$event.stopPropagation()">
+                <button mat-mini-fab class="light-purple" color="" (click)="refresh()" (click)="$event.stopPropagation()">
                   <mat-icon>refresh</mat-icon>
                 </button>
               </div>

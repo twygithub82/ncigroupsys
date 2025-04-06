@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -25,31 +25,22 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageDepotItem } from 'app/data-sources/package-depot';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
+import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffRepairDS, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { TankDS,TankItem } from 'app/data-sources/tank';
-import { MessageDialogComponent } from '@shared/components/message-dialog/message-dialog.component';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-package-repair',
@@ -65,7 +56,6 @@ import { MessageDialogComponent } from '@shared/components/message-dialog/messag
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
@@ -135,7 +125,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   trfRepairDS: TariffRepairDS;
   packRepairDS: PackageRepairDS;
   ccDS: CustomerCompanyDS;
-  tnkDS:TankDS;
+  tnkDS: TankDS;
   //tariffDepotDS:TariffDepotDS;
   // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
@@ -143,7 +133,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   //packDepotItems:PackageDepotItem[]=[];
   packRepairItems: PackageRepairItem[] = [];
 
-  unitTypeItems:TankItem[]=[];
+  unitTypeItems: TankItem[] = [];
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   cleaning_categoryList?: CleaningCategoryItem[];
@@ -151,7 +141,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { unit_type:  "ASC"  };
+  lastOrderBy: any = { unit_type: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -163,7 +153,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
   id?: number;
   pcForm?: UntypedFormGroup;
-  tankList?:TankItem[]=[];
+  tankList?: TankItem[] = [];
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -172,8 +162,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
-    CUSTOMER:'COMMON-FORM.CUSTOMER',
-    LABOUR:'COMMON-FORM.LABOUR',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
+    LABOUR: 'COMMON-FORM.LABOUR',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -264,15 +254,15 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     DIMENSION: "COMMON-FORM.DIMENSION",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    PREINSPECT:'COMMON-FORM.PREINSPECTION',
-    LIFT_ON:'COMMON-FORM.LIFT-ON',
-    LIFT_OFF:'COMMON-FORM.LIFT-OFF',
-    GATE_IN:'COMMON-FORM.GATE-IN',
-    GATE_OUT:'COMMON-FORM.GATE-OUT',
-    ISO_FORMAT:'COMMON-FORM.CHECK-DIGIT',
-    SAVE:'COMMON-FORM.SAVE',
-    
-    
+    PREINSPECT: 'COMMON-FORM.PREINSPECTION',
+    LIFT_ON: 'COMMON-FORM.LIFT-ON',
+    LIFT_OFF: 'COMMON-FORM.LIFT-OFF',
+    GATE_IN: 'COMMON-FORM.GATE-IN',
+    GATE_OUT: 'COMMON-FORM.GATE-OUT',
+    ISO_FORMAT: 'COMMON-FORM.CHECK-DIGIT',
+    SAVE: 'COMMON-FORM.SAVE',
+
+
   }
 
   constructor(
@@ -288,7 +278,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   ) {
     super();
     this.initPcForm();
-   
+
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.packRepairDS = new PackageRepairDS(this.apollo);
@@ -306,33 +296,33 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-   // this.loadData();
+    // this.loadData();
     this.translateLangText();
     this.search();
   }
 
   initializeFilterTank() {
-      this.pcForm!.get('unit_type')!.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        tap(value => {
-          var searchCriteria = '';
-          if (typeof value === 'string') {
-            searchCriteria = value;
-          } else {
-            searchCriteria = value.unit_type;
-          }
-          this.subs.sink = this.tnkDS.search_r1({ or: [{ unit_type: { contains: searchCriteria } }] }, { unit_type: 'ASC' }).subscribe(data => {
-            this.tankList = data
-          });
-        })
-      ).subscribe();
-  
+    this.pcForm!.get('unit_type')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.unit_type;
+        }
+        this.subs.sink = this.tnkDS.search_r1({ or: [{ unit_type: { contains: searchCriteria } }] }, { unit_type: 'ASC' }).subscribe(data => {
+          this.tankList = data
+        });
+      })
+    ).subscribe();
 
-    }
+
+  }
   initPcForm() {
     this.pcForm = this.fb.group({
-       unit_type: [''],
+      unit_type: [''],
     });
   }
 
@@ -372,10 +362,10 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
         // {
         this.handleSaveSuccess(result);
         this.refresh();
-      //   if (this.packRepairItems.length > 1)
-      //     this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      //   //}
-       }
+        //   if (this.packRepairItems.length > 1)
+        //     this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        //   //}
+      }
     });
 
   }
@@ -400,7 +390,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-   
+
     const dialogRef = this.dialog.open(FormDialogComponent, {
 
       width: '800px',
@@ -424,7 +414,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  
+
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
@@ -435,7 +425,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     return numSelected === numRows;
   }
 
- 
+
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
@@ -447,18 +437,18 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-   
+
     const where: any = {};
     if (this.pcForm?.get("unit_type")?.value) {
-      
-        const tnk: TankItem = this.pcForm?.get("unit_type")?.value;
-        //var guids = customerCodes.map(cc => cc.guid);
-        where.guid = { eq: tnk.guid };
-      
+
+      const tnk: TankItem = this.pcForm?.get("unit_type")?.value;
+      //var guids = customerCodes.map(cc => cc.guid);
+      where.guid = { eq: tnk.guid };
+
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.tnkDS.search_r1(where, this.lastOrderBy,this.pageSize).subscribe(data => {
+    this.subs.sink = this.tnkDS.search_r1(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.unitTypeItems = data;
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
@@ -473,7 +463,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
         this.previous_endCursor = undefined;
     });
   }
- 
+
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -525,7 +515,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
-      if(this.pageIndex!=pageIndex) this.previous_endCursor = this.endCursor;
+    if (this.pageIndex != pageIndex) this.previous_endCursor = this.endCursor;
     this.subs.sink = this.tnkDS.search_r1(where, order, first, after, last, before).subscribe(data => {
       this.unitTypeItems = data;
       this.endCursor = this.tnkDS.pageInfo?.endCursor;
@@ -753,8 +743,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     return `${itm.unit_type || ''}`;
   }
 
-  cancelItem(row: TankItem)
-  {
+  cancelItem(row: TankItem) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -775,21 +764,18 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  deleteSelectedUnitType(row: TankItem)
-  {
-      if(row)
-      {
-        var tankguid =  row.guid;
-        this.tnkDS.deleteTank(tankguid).subscribe((result)=>{
-          if(result.data.deleteTank)
-          {
-            this.handleSaveSuccess(result.data.deleteTank);
-            this.refresh();
-          }
-        })
-      }
+  deleteSelectedUnitType(row: TankItem) {
+    if (row) {
+      var tankguid = row.guid;
+      this.tnkDS.deleteTank(tankguid).subscribe((result) => {
+        if (result.data.deleteTank) {
+          this.handleSaveSuccess(result.data.deleteTank);
+          this.refresh();
+        }
+      })
+    }
   }
-  
+
 }
 // export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
 //   // Check if the list already contains the default value

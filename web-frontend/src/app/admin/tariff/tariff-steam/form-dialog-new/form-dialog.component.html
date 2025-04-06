@@ -13,6 +13,16 @@
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+          @if (pcForm.hasError('tempRangeInvalid')) {
+          <mat-error>
+            {{translatedLangText.TEMP_RANGE_ERROR}}
+          </mat-error>
+          }
+          @if (pcForm.hasError('overlaps')) {
+          <mat-error>
+            {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
+          </mat-error>
+          }
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
@@ -27,16 +37,6 @@
               </mat-form-field>
             </div>
           </div>
-          @if (pcForm.hasError('tempRangeInvalid')) {
-          <mat-error>
-            {{translatedLangText.TEMP_RANGE_ERROR}}
-          </mat-error>
-          }
-          @if (pcForm.hasError('overlaps')) {
-          <mat-error>
-            {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
-          </mat-error>
-          }
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">

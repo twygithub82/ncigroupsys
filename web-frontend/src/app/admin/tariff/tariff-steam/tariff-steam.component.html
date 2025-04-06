@@ -8,7 +8,7 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <mat-accordion>
-            <mat-expansion-panel>
+            <mat-expansion-panel [disabled]="true" hideToggle>
               <mat-expansion-panel-header>
                 <mat-panel-title>
                 </mat-panel-title>
@@ -24,10 +24,10 @@
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
-              <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
-                    <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PACKAGE_MIN_LABOUR}}</mat-label>
                         <input matInput formControlName="min_labour" type="number">
@@ -50,7 +50,7 @@
                         <mat-label>{{translatedLangText.PACKAGE_MAX_COST }}</mat-label>
                         <input matInput formControlName="max_cost" type="number">
                       </mat-form-field>
-                    </div> -->
+                    </div>
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                       <button mat-mini-fab color="primary" (click)="search()">
                         <mat-icon>search</mat-icon>
@@ -61,7 +61,7 @@
                     </div>
                   </div>
                 </form>
-              </div>
+              </div> -->
             </mat-expansion-panel>
           </mat-accordion>
           <div class="body overflow-auto">

@@ -37,7 +37,8 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BRANCH_CODE }}</mat-label>
-                    <input matInput formControlName="branch_code" required>
+                    <input matInput formControlName="branch_code" class="text-uppercase" (input)="onAlphaOnly($event)"
+                      maxlength="6" required>
                     @if (ccForm?.get('branch_code')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.SO_REQUIRED}}
@@ -78,10 +79,11 @@
                 <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 mb-0 p-r-0">
                   <mat-form-field class="example-full-width">
                     <mat-label><mat-icon>flag</mat-icon></mat-label>
-                    <input matInput formControlName="country_code" [matAutocomplete]="countryCode">
+                    <input matInput formControlName="country_code" [matAutocomplete]="countryCode" required>
                     <mat-autocomplete #countryCode="matAutocomplete" [displayWith]="displayCountryCodeFn">
                       @for (cc of countryCodesFiltered; track cc) {
                       <mat-option [value]="cc">
+                        <img [src]="cc.flagUrl" width="24" height="18" style="margin-right: 6px;">
                         {{ cc.country }} ({{cc.code}})
                       </mat-option>
                       }
@@ -179,7 +181,11 @@
                 <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
-                    <input matInput formControlName="country" required>
+                    <mat-select formControlName="country" required>
+                      @for (country of countryCodes; track country) {
+                      <mat-option [value]="country.country">{{country.country}}</mat-option>
+                      }
+                    </mat-select>
                   </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-1">

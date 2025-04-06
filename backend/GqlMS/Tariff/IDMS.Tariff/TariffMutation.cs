@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using System;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace IDMS.Models.Tariff.GqlTypes
@@ -438,9 +439,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                     foreach (var guid in deletedTariffGuid)
                     {
                         var count = await context.package_buffer.Where(b => b.tariff_buffer_guid == guid)
-                                        .ExecuteUpdateAsync(setters => setters.SetProperty(b =>b.delete_dt, currentDateTime)
-                                                                  .SetProperty(b=> b.update_dt, currentDateTime)
-                                                                  .SetProperty(b=>b.update_by, uid));
+                                        .ExecuteUpdateAsync(setters => setters.SetProperty(b => b.delete_dt, currentDateTime)
+                                                                  .SetProperty(b => b.update_dt, currentDateTime)
+                                                                  .SetProperty(b => b.update_by, uid));
                         retval = retval + count;
                     }
                     await transaction.CommitAsync();
@@ -821,9 +822,8 @@ namespace IDMS.Models.Tariff.GqlTypes
             return retval;
         }
 
-
         public async Task<int> UpdateTariffRepairs(ApplicationTariffDBContext context, [Service] IConfiguration config,
-        [Service] IHttpContextAccessor httpContextAccessor, List<string> updatedTariffRepair_guids, string group_name_cv, string subgroup_name_cv,
+            [Service] IHttpContextAccessor httpContextAccessor, List<string> updatedTariffRepair_guids, string group_name_cv, string subgroup_name_cv,
             string dimension, double height_diameter, string height_diameter_unit_cv, double width_diameter, string width_diameter_unit_cv, double labour_hour, double length,
             string length_unit_cv, double material_cost, string part_name, string alias, double thickness, string thickness_unit_cv, string remarks)
         {
@@ -861,8 +861,6 @@ namespace IDMS.Models.Tariff.GqlTypes
                     r.update_dt = GqlUtils.GetNowEpochInSec();
                 }
 
-
-
                 retval = await context.SaveChangesAsync();
 
             }
@@ -877,7 +875,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
         public async Task<int> UpdateTariffRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
-            int? length, string? guid, double material_cost_percentage, double labour_hour_percentage) // double labor_hour_percentage
+            int? length, List<string?>? guid, double material_cost_percentage, double labour_hour_percentage) // double labor_hour_percentage
         {
             int retval = 0;
             bool isAll = true;
@@ -889,10 +887,10 @@ namespace IDMS.Models.Tariff.GqlTypes
                     var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     var currentDateTime = GqlUtils.GetNowEpochInSec();
 
-                    var dbTariffRepairs = context.tariff_repair.Where(i => i.delete_dt == null || i.delete_dt == 0).ToArray();
-                    if (!string.IsNullOrEmpty(guid))
+                    var dbTariffRepairs = await context.tariff_repair.Where(i => i.delete_dt == null || i.delete_dt == 0).ToArrayAsync();
+                    if (guid != null && guid.Any())
                     {
-                        dbTariffRepairs = dbTariffRepairs.Where(t => t.guid == guid).ToArray();
+                        dbTariffRepairs = dbTariffRepairs.Where(t => guid.Contains(t.guid)).ToArray();
                         isAll = false;
                     }
                     else
@@ -935,7 +933,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                     if (isAll)
                     {
-                        retval = await context.package_repair.ExecuteUpdateAsync(s => s
+                        retval = await context.tariff_repair.ExecuteUpdateAsync(s => s
                           .SetProperty(e => e.update_dt, currentDateTime)
                           .SetProperty(e => e.update_by, uid)
                           .SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
@@ -944,23 +942,8 @@ namespace IDMS.Models.Tariff.GqlTypes
                     }
                     else
                     {
-                        //foreach (var r in dbTariffRepairs)
-                        //{
-                        //    r.material_cost = Math.Round(Convert.ToDouble(r.material_cost.Value * material_cost_percentage), 2);
-                        //    r.labour_hour = Math.Ceiling((r.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4;
-
-                        //    r.update_by = uid;
-                        //    r.update_dt = currentDateTime;
-                        //}
-                        //retval = await context.SaveChangesAsync();
-
                         var guids = dbTariffRepairs.Select(p => p.guid).ToList();
                         string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
-
-                        //string sql = $"UPDATE tariff_repair SET material_cost = (material_cost * {material_cost_percentage}), " +
-                        //             $"labour_hour = (labour_hour * {labour_hour_percentage}), " +
-                        //             $"update_dt = {currentDateTime}, update_by = '{uid}' " +
-                        //             $"WHERE guid IN ({guidList})";
 
                         string sql = $"UPDATE tariff_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
                                      $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
@@ -1037,7 +1020,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 }
             }
 
-        
+
             return retval;
         }
         #endregion Tariff Repair methods
@@ -1148,7 +1131,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 }
             }
 
-  
+
             return retval;
         }
         #endregion Tariff Steaming methods

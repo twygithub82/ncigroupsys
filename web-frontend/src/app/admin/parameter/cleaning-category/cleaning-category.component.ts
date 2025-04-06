@@ -70,7 +70,6 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    PreventNonNumericDirective
   ]
 })
 export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -112,8 +111,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
-    CATEGORY_NAME: "COMMON-FORM.CATEGORY-NAME",
-    CATEGORY_DESCRIPTION: "COMMON-FORM.DESCRIPTION",
+    CATEGORY_NAME: "COMMON-FORM.NAME",
+    CATEGORY_DESCRIPTION: "COMMON-FORM.CATEGORY-DESCRIPTION",
     CATEGORY_COST: "COMMON-FORM.CARGO-COST",
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',

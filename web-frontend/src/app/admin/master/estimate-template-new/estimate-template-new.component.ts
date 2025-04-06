@@ -252,15 +252,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
-
-
   showHeader: boolean = false;
   selectedCustomers: any[] = [];
-
-  //returnedString:string = `1 \n 2 \n 3 \n 4`;
-
   constructor(
-
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -295,7 +289,6 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
-
   }
 
   SetCostDecimal() {
@@ -304,9 +297,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
         // Ensure the value has two decimal places
         const formattedValue = parseFloat(value).toFixed(2);
         this.tempForm?.get('material_discount_amount')?.setValue(formattedValue, { emitEvent: false });
-        // this.tempForm.get('material_discount_amount').setValue(formattedValue, { emitEvent: false });
       }
-
     });
   }
   calculateCostSummary() {
@@ -320,8 +311,6 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       total_material_cost: Number(totalMaterialCost).toFixed(2),
       labour_hour: totalLabourHours
     });
-
-    //const totalCost= this.repList.data.reduce((total,part)=>total+(part.material_cost??0));
   }
 
   GetNetCost(): string {
