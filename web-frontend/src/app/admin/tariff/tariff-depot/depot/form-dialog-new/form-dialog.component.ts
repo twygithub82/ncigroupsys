@@ -106,6 +106,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
+  formSubmitted:boolean=false;
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -337,7 +338,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
 
   save() {
-
+    this.formSubmitted = true;
     if (!this.pcForm?.valid) return;
 
     let where: any = {};
@@ -366,11 +367,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
             }
 
 
-          });
-
-
-
-        }
         if (insert) {
           let newDepot = new TariffDepotItem();
           newDepot.lolo_cost = Number(this.pcForm!.value['lolo_cost']);
@@ -387,6 +383,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
             this.handleSaveSuccess(result?.data?.addTariffDepot);
           });
         }
+      });
+      }
 
 
 

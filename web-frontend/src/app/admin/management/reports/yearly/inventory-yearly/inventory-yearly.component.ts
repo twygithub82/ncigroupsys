@@ -33,7 +33,7 @@ import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { AdminReportMonthlyReport, daily_inventory_summary, report_customer_inventory, report_inventory_yard, ReportDS } from 'app/data-sources/reports';
+import { AdminReportMonthlyReport, daily_inventory_summary, ManagementReportMonthlyInventory, ManagementReportYearlyInventory, report_customer_inventory, report_inventory_yard, ReportDS } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -49,6 +49,7 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
 import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/overview/yearly-chart-pdf.component';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
+import { InventoryYearlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/yearly/inventory/inventory-sales-details-pdf.component';
 
 @Component({
   selector: 'app-inventory-yearly',
@@ -536,18 +537,15 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   }
 
-  ProcessYearlyReport(repData: AdminReportMonthlyReport, date: string,report_type:number,customerName:string) {
+  ProcessYearlyReport(repData: ManagementReportYearlyInventory, date: string,report_type:number,customerName:string) {
     
    
 
     if(repData)
     {
-      if (report_type == 1) {
+      
         this.onExportChart_r1(repData, date,customerName);
-      }
-      else if (report_type == 2) {
-        this.onExportSummary(repData, date,customerName);
-      }
+      
       
    }
    else
@@ -561,45 +559,9 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   
 
-  onExportSummary(repData: AdminReportMonthlyReport, date: string,customerName:string) {
-    //this.preventDefault(event);
-    let cut_off_dt = new Date();
+  
 
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(YearlyReportDetailsPdfComponent, {
-      width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
-      data: {
-        repData: repData,
-        date: date,
-        repType:this.processType,
-        customer:customerName
-      
-      },
-
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-
-    dialogRef.updatePosition({
-      top: '-9999px',  // Move far above the screen
-      left: '-9999px'  // Move far to the left of the screen
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
-    });
-  }
-
-  onExportChart_r1(repData: AdminReportMonthlyReport, date: string,customerName:string)
+  onExportChart_r1(repData: ManagementReportYearlyInventory, date: string,customerName:string)
   {
      //this.preventDefault(event);
      let cut_off_dt = new Date();

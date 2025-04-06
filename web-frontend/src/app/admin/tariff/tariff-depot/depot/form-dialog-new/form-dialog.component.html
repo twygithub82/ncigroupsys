@@ -33,7 +33,12 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DESCRIPTION | translate}}</mat-label>
-                    <input matInput formControlName="description" type="text" >
+                    <input matInput formControlName="description" type="text" required>
+                    @if (pcForm.get('description')?.hasError('required')) {
+                      <mat-error>
+                        {{langText.DESCRIPTION | translate}} {{langText.CARGO_REQUIRED | translate}}
+                      </mat-error>
+                      }
                   </mat-form-field> 
                 </div>
             
@@ -117,13 +122,18 @@
              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <!-- <mat-form-field class="example-full-width"> -->
                 <mat-label>{{langText.UNIT_TYPE | translate}}</mat-label>
-                <mat-select formControlName="unit_types" multiple>
+                <mat-select formControlName="unit_types" multiple required>
                   <mat-option *ngFor="let t of tnkItems" [value]="t">
                    
                       {{ t.unit_type }}
                    
                   </mat-option>
                 </mat-select>
+                @if (pcForm.get('unit_types')?.hasError('required')  && (pcForm.get('unit_types')?.touched || formSubmitted) ) {
+                  <mat-error>
+                    {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED}}
+                  </mat-error>
+                  }
                 @if (pcForm.get('unit_types')?.hasError('assigned')) {
                   <mat-error>
                     {{langText.UNIT_TYPE | translate}} {{langText.ASSIGNED | translate}}
