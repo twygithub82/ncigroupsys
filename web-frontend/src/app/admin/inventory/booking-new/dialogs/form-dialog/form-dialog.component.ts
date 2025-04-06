@@ -11,7 +11,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
@@ -26,7 +25,6 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
-
 
 export interface DialogData {
   action?: string;
@@ -51,7 +49,6 @@ export interface DialogData {
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatRadioModule,
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
@@ -121,10 +118,10 @@ export class FormDialogComponent {
 
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
-      reference: this.booking?.reference,
-      book_type_cv: this.booking?.book_type_cv,
-      booking_dt: Utility.convertDate(this.booking?.booking_dt),
-      test_class_cv: this.booking?.test_class_cv
+      reference: [this.booking?.reference],
+      book_type_cv: [this.booking?.book_type_cv],
+      booking_dt: [Utility.convertDate(this.booking?.booking_dt)],
+      test_class_cv: [this.booking?.test_class_cv]
     });
   }
 
@@ -140,7 +137,6 @@ export class FormDialogComponent {
         test_class_cv: this.bookingForm.get('test_class_cv')?.value,
         status_cv: this.booking?.status_cv
       }
-      console.log('valid');
       console.log(booking);
       if (booking.guid) {
         this.bkDS.updateBooking([booking]).subscribe(result => {
@@ -192,8 +188,11 @@ export class FormDialogComponent {
       startWith(''),
       debounceTime(100),
       tap(booking_dt => {
-        const value = this.bookingForm!.get('book_type_cv')?.value;
-        this.validateBookingType(value, booking_dt);
+        if (booking_dt) {
+          const safeBookingDt = booking_dt.clone();
+          const value = this.bookingForm!.get('book_type_cv')?.value;
+          this.validateBookingType(value, safeBookingDt);
+        }
       })
     ).subscribe();
   }

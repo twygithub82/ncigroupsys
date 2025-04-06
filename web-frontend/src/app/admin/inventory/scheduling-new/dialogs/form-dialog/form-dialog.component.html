@@ -75,8 +75,7 @@
                       <input matInput formControlName="scheduling_dt" [matDatepicker]="scheduling_dt_picker"
                         [min]="getStartDate(row.get('scheduling_dt')?.value)" required>
                       <mat-datepicker-toggle matSuffix [for]="scheduling_dt_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #scheduling_dt_picker
-                        [startAt]="getStartDate(row.get('scheduling_dt')?.value)"></mat-datepicker>
+                      <mat-datepicker #scheduling_dt_picker></mat-datepicker>
                       @if (row.get('scheduling_dt')?.hasError('required')) {
                       <mat-error>
                         {{data.translatedLangText.SCHEDULING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
