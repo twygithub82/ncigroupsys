@@ -106,7 +106,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
-  formSubmitted:boolean=false;
+  formSubmitted: boolean = false;
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -274,7 +274,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     const where: any = {};
     where.tariff_depot_guid = { or: [{ eq: null }, { eq: '' }] };
-    const order:any={unit_type:'ASC'};
+    const order: any = { unit_type: 'ASC' };
     this.subs.sink = this.tnkDS.search(where, order).subscribe(data => {
       this.tnkItems = data;
     }
@@ -323,19 +323,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-
       console.log('valid');
       this.dialogRef.close(count);
-      // let successMsg = this.langText.SAVE_SUCCESS;
-      // this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-      //   successMsg = res;
-      //   ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
-      // });
     }
   }
-
-
 
   save() {
     this.formSubmitted = true;
@@ -365,8 +356,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
               insert = false;
               this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
             }
-
-
+          });
+        }
         if (insert) {
           let newDepot = new TariffDepotItem();
           newDepot.lolo_cost = Number(this.pcForm!.value['lolo_cost']);
@@ -379,27 +370,14 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
           newDepot.storage_cost = Number(this.pcForm.value['storage_cost']);
           newDepot.tanks = unit_types;
           this.trfDepotDS.addNewTariffDepot(newDepot).subscribe(result => {
-
             this.handleSaveSuccess(result?.data?.addTariffDepot);
           });
         }
-      });
-      }
-
-
-
       }
       else {
         this.pcForm?.get('name')?.setErrors({ existed: true });
       }
-
-
     });
-
-
-
-
-
   }
 
   displayLastUpdated(r: TariffDepotItem) {
