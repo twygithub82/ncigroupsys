@@ -7,40 +7,43 @@
     <form class="register-form" [formGroup]="storingOrderForm" #formDirective="ngForm">
       <div formArrayName="storingOrder">
         @for (so of storingOrderArray().controls; track so; let index = $index) {
-        <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-light-grey')">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-            <div [class]="'row pt-2'">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
-                <h5>{{data.langText.SO_NO | translate}}: {{so.get('so_no')?.value}}</h5>
-              </div>
-            </div>
+        <mat-card [formGroupName]="index" [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-grey': index % 2 == 1}"
+          matRipple>
+          <mat-card-header class="pt-2 pe-2 pb-0">
+            <mat-card-title class="pt-1">
+              {{data.langText.SO_NO | translate}}: {{so.get('so_no')?.value}}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
             @for (sot of getStoringOrderTanksArray(so).controls; track sot) {
-            <div [class]="'row'">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
+            <div [class]="'row mb-1'">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
                 <mat-label>
                   {{data.langText.TANK_NO | translate}}: {{sot.get('tank_no')?.value}}
-                  @if (sot.get('status_cv')?.value === 'WAITING') {
+                  @if (sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER') {
                   <span class="badge bg-red">{{data.langText.TO_BE_CANCELED | translate}}</span>
                   }
                 </mat-label>
               </div>
             </div>
             }
-          </div>
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
-                <input matInput formControlName="remarks">
-                @if (so?.get('remarks')?.hasError('required')) {
-                <mat-error>
-                  {{data.langText.REMARKS | translate}} {{data.langText.SO_REQUIRED | translate}}
-                </mat-error>
-                }
-              </mat-form-field>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
+                  <input matInput formControlName="remarks">
+                  @if (so?.get('remarks')?.hasError('required')) {
+                  <mat-error>
+                    {{data.langText.REMARKS | translate}} {{data.langText.SO_REQUIRED | translate}}
+                  </mat-error>
+                  }
+                </mat-form-field>
+              </div>
             </div>
-          </div>
-        </div>
+          </mat-card-content>
+          <mat-card-actions [ngClass]="'empty-card-actions'">
+          </mat-card-actions>
+        </mat-card>
         }
       </div>
     </form>
