@@ -162,7 +162,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
       tank_no: [''],
-      // eir_status_cv: [['PENDING', 'YET_TO_SURVEY']]
+      eir_status_cv: [['PENDING', 'YET_TO_SURVEY']]
     });
   }
 
