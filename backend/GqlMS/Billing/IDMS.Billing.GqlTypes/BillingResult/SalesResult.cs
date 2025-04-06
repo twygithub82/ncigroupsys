@@ -95,6 +95,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public string cc_name { get; set; }
         public long date { get; set; }
         public string purpose_repair { get; set; }
+        public string tank_status { get; set; }
     }
 
     [NotMapped]

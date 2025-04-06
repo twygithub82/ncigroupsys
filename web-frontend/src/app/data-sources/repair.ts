@@ -2122,16 +2122,16 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       case 'QC_COMPLETED':
       case 'COMPLETED':
       case 'APPROVED':
-        return 'badge-solid-green';
+        return 'badge badge-solid-green';
       case 'PENDING':
-        return 'badge-solid-cyan';
+        return 'badge badge-solid-cyan';
       case 'CANCEL':
       case 'NO_ACTION':
-        return 'badge-solid-red';
+        return 'badge badge-solid-red';
       case 'JOB_IN_PROGRESS':
       case 'PARTIAL_ASSIGNED':
       case 'ASSIGNED':
-        return 'badge-solid-purple';
+        return 'badge badge-solid-purple';
       default:
         return '';
     }

@@ -44,21 +44,7 @@
                     }
                   </mat-form-field>
                 </div>
-                <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                    <mat-select formControlName="customer_code" multiple>
-                      <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
-                        {{ ccDS.displayName(cc) }}
-                      </mat-option>
-                    </mat-select>
-                    @if (pcForm?.get('customer_code')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.CUSTOMER_CODE }} {{translatedLangText.CARGO_REQUIRED }}
-                    </mat-error>
-                    }
-                  </mat-form-field>
-                </div> -->
+
                 <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CARGO_CATEGORY}}</mat-label>
@@ -71,6 +57,22 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
+                                <!--TODO-->
+                                <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.CUSTOMER_COST}}</mat-label>
+                                    <mat-select formControlName="customer_code" multiple>
+                                      <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
+                                        {{ ccDS.displayName(cc) }}
+                                      </mat-option>
+                                    </mat-select>
+                                    @if (pcForm?.get('customer_code')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.CUSTOMER_CODE }} {{translatedLangText.CARGO_REQUIRED }}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
                 <div
                   class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()">

@@ -40,11 +40,11 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { InGateCleaningDS, InGateCleaningGO, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
-import { InGateSurveyDS, InGateSurveyItem } from 'app/data-sources/in-gate-survey';
+import { InGateSurveyDS, InGateSurveyGO, InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { JobOrderDS } from 'app/data-sources/job-order';
 import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
 import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-survey';
-import { PackageBufferDS } from 'app/data-sources/package-buffer';
+import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
@@ -74,6 +74,7 @@ import { OverwriteCleanStatusFormDialogComponent } from './overwrite-clean-statu
 import { BillingDS, BillingSOTGo } from 'app/data-sources/billing';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { OverwriteDepotCostFormDialogComponent } from './overwrite-depot-cost-form-dialog/overwrite-depot-cost-form-dialog.component';
+import { OverwriteCleaningApprovalFormDialogComponent } from './overwrite-clean-appr-form-dialog/overwrite-clean-appr-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -294,7 +295,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TANK_SUMMARY_DETAILS: 'COMMON-FORM.TANK-SUMMARY-DETAILS',
     BOTTOM_DIS_TYPE: 'COMMON-FORM.BOTTOM-DIS-TYPE',
     CHECK_DIGIT: 'COMMON-FORM.CHECK-DIGIT',
-    SPECIAL_NOTES: 'COMMON-FORM.SPECIAL-NOTES',
+    SPECIAL_NOTES: 'COMMON-FORM.NOTES',
     RELEASE_NOTES: 'COMMON-FORM.RELEASE-NOTES',
     GATE_DETAILS: 'COMMON-FORM.GATE-DETAILS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
@@ -408,6 +409,20 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     STORAGE_COST: 'COMMON-FORM.STORAGE-COST',
     GATE_IN: 'COMMON-FORM.GATE-IN',
     GATE_OUT: 'COMMON-FORM.GATE-OUT',
+    OVERWRITE_APPROVAL: 'COMMON-FORM.OVERWRITE-APPROVAL',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    APPROVED_COST: 'COMMON-FORM.APPROVED-COST',
+    APPROVED_BUFFER_CLEANING_COST: 'COMMON-FORM.APPROVED-BUFFER-CLEANING-COST',
+    LAST_CARGO_CLEANING_QUOTATION: 'COMMON-FORM.LAST-CARGO-CLEANING-QUOTATION',
+    DEPOT_ESTIMATE: 'COMMON-FORM.DEPOT-ESTIMATE',
+    CUSTOMER_APPROVAL: 'COMMON-FORM.CUSTOMER-APPROVAL',
+    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
+    UPDATED_ON: 'COMMON-FORM.UPDATED-ON',
+    UPDATED_BY: 'COMMON-FORM.UPDATED-BY',
+    APPROVAL: 'COMMON-FORM.APPROVAL',
+    JOB_ALLOCATION: 'COMMON-FORM.JOB-ALLOCATION',
+    JOB_COMPLETION: 'COMMON-FORM.JOB-COMPLETION',
+    BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
   }
 
   sot_guid: string | null | undefined;
@@ -507,6 +522,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   yesnoCvList: CodeValuesItem[] = [];
 
   tariffDepotList: TariffDepotItem[] = [];
+  packageBufferList?: PackageBufferItem[];
 
   last_test_desc?: string = "";
   next_test_desc?: string = "";
@@ -784,8 +800,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           console.log(`sot: `, data)
           this.sot = data[0];
-          this.canAddPurpose('steaming');
-
+          this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
           this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
           // this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
           //   console.log(`packageDepot: `, data)
@@ -842,7 +857,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           console.log(`cleaning: `, data)
           this.cleaningItem = data;
-          this.canAddPurpose('cleaning');
         }
       });
       this.subs.sink = this.repairDS.getRepairForMovement(this.sot_guid).subscribe(data => {
@@ -850,7 +864,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           console.log(`repair: `, data);
           this.repairItem = data;
           this.displayColumnChanged();
-          this.canAddPurpose('repair');
         }
       });
       this.subs.sink = this.bkDS.getBookingForMovement(this.sot_guid).subscribe(data => {
@@ -891,12 +904,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const where = {
       and: [
         { customer_company_guid: { eq: customer_company_guid } },
-        { tariff_buffer_guid: { eq: tank_comp_guid } }
+        // { tariff_buffer_guid: { eq: tank_comp_guid } }
       ]
     }
     this.subs.sink = this.pbDS.getCustomerPackageCost(where).subscribe(data => {
       if (data?.length > 0) {
-        console.log(data)
+        console.log(`getCustomerPackageCost: `, data)
+        this.packageBufferList = data;
       }
     });
   }
@@ -1495,6 +1509,63 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  overwriteCleaningApprovalDialog(event: Event) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(OverwriteCleaningApprovalFormDialogComponent, {
+      width: '80vw',
+      height: '90vh',
+      data: {
+        sot: this.sot,
+        cleaning: this.cleaningItem,
+        ig: this.ig,
+        igs: this.igs,
+        tcDS: this.tcDS,
+        ccDS: this.ccDS,
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          packageBufferList: this.packageBufferList,
+          processStatusCvList: this.processStatusCvList
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        console.log(result)
+        const newSot = new InGateCleaningGO(result.cleaning);
+        newSot.approve_dt = result.approve_dt;
+        newSot.cleaning_cost = result.cleaning_cost;
+        newSot.buffer_cost = result.buffer_cost;
+        newSot.overwrite_remarks = result.overwrite_remarks;
+        newSot.action = "OVERWRITE";
+
+        // Update current sot for display purpose
+        const newIgs = new InGateSurveyGO(result.igs);
+        newIgs.tank_comp_guid = result.tank_comp_guid;
+
+        console.log(newSot)
+        console.log(newIgs)
+        this.cleaningDS.updateInGateCleaning(newSot, newIgs).subscribe(result => {
+          console.log(result)
+          this.subs.sink = this.cleaningDS.getCleaningForMovement(this.sot_guid).subscribe(data => {
+            if (data.length > 0) {
+              console.log(`reload cleaning: `, data)
+              this.cleaningItem = data;
+            }
+          });
+          this.handleSaveSuccess(result?.data?.updateCleaning);
+        });
+      }
+    });
+  }
+
   onExport(event: Event, selectedItem: RepairItem) {
     this.preventDefault(event);
     let tempDirection: Direction;
@@ -1927,5 +1998,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canOverwriteCleanStatus() {
     return true;
+  }
+
+  canRemoveCleanPurpose() {
+    return !this.isNoPurpose(this.sot!, 'cleaning') && this.canRemovePurpose('cleaning');
+  }
+
+  canOverwriteCleaningApproval() {
+    const allowOverwriteStatus = ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS'];
+    return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '');
   }
 }

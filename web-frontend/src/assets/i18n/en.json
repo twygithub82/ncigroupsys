@@ -291,7 +291,7 @@
         "SALES-REPORTS": "Sales Reports",
         "DAILY-TEAM-REPORT": "Daily Team Reports",
         "PERFORMANCE-REPORTS": "Performance Reports",
-        "ZERO-APPROVAL-COST-REPORT":"Zero Approval Cost Report"
+        "ZERO-APPROVAL-COST-REPORT": "Zero Approval Cost Report"
       }
     }
   },
@@ -688,7 +688,7 @@
     "TEMPLATE-TYPE-GENERAL": "General",
     "TEMPLATE-TYPE-EXCLUSIVE": "Exclusive",
     "LABOUR": "Labour",
-    "LABOUR$": "Labour$",
+    "LABOUR$": "Labour $",
     "NO-PARTS": "No Parts",
     "SDS-FILE": "SDS File:",
     "CLEAR-ALL": "Clear All",
@@ -1133,28 +1133,30 @@
     "PRE-INSPECTION-COST": "Preinspection $",
     "LIFT-ON-COST": "Lift-On $",
     "LIFT-OFF-COST": "Lift-Off $",
-    
-   "ESTIMATE-TYPE":"Estimate Type",
-   "ESTIMATED":"Estimated",
-   "ESTIMATE-PERIOD":"Estimate Period",
-   "DUPLICATE-CARGO-FOUND":"Duplicated Cargo Name found",
-   
-   "TOP-LASER":"Top (Laser)",
-   "BOTTOM-LASER":"Bottom (Laser)",
-   "BEGIN":"Begin",
-   "STEAMING-PERIOD":"Steaming Period",
-   "NO-OF-TANKS-BAYS" :"No. of Tank(s) / Bay",
-   "NO-OF-TANKS-REQ-TEMP":"No. of Tank(s) / Required Temperature",
-   "NO-OF-TANKS-STEAM-CARGO":"No. of Tank(s) / Cargo wise",
-   "CUSTOMER-TOTAL":"Customer Total",
-   "ZERO-APPROVAL-COST":"Zero Approval Cost",
-   "TANK-IN-QTY":"Tank-in Qty.",
-   "IN-SERVICE":"In-Service",
-   "OFFHIRE":"Off-Hire",
-   "REVENUE-REPORT":"Revenue Report",
-   "INVENTORY-REPORT":"Inventory Report",
-   "MANHOUR-REPORT":"Man-Hour Report"
-   
+
+    "ESTIMATE-TYPE": "Estimate Type",
+    "ESTIMATED": "Estimated",
+    "ESTIMATE-PERIOD": "Estimate Period",
+    "DUPLICATE-CARGO-FOUND": "Duplicated Cargo Name found",
+
+    "TOP-LASER": "Top (Laser)",
+    "BOTTOM-LASER": "Bottom (Laser)",
+    "BEGIN": "Begin",
+    "STEAMING-PERIOD": "Steaming Period",
+    "NO-OF-TANKS-BAYS": "No. of Tank(s) / Bay",
+    "NO-OF-TANKS-REQ-TEMP": "No. of Tank(s) / Required Temperature",
+    "NO-OF-TANKS-STEAM-CARGO": "No. of Tank(s) / Cargo wise",
+    "CUSTOMER-TOTAL": "Customer Total",
+    "ZERO-APPROVAL-COST": "Zero Approval Cost",
+    "TANK-IN-QTY": "Tank-in Qty.",
+    "IN-SERVICE": "In-Service",
+    "OFFHIRE": "Off-Hire",
+    "REVENUE-REPORT": "Revenue Report",
+    "INVENTORY-REPORT": "Inventory Report",
+    "MANHOUR-REPORT": "Man-Hour Report",
+    "OVERWRITE-APPROVAL": "Overwrite Approval",
+    "APPROVED-BUFFER-CLEANING-COST": "Approved Buffer Cleaning Cost"
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

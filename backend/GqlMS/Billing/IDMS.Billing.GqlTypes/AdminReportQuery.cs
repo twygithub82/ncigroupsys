@@ -1155,8 +1155,8 @@ namespace IDMS.Billing.GqlTypes
                                  sot_guid = sot.guid,
                                  code = cc.code,
                                  cc_name = cc.name,
-                                 purpose_repair = sot.purpose_repair_cv
-                                 //date = (long)s.complete_dt
+                                 purpose_repair = sot.purpose_repair_cv,
+                                 tank_status = sot.tank_status_cv
                              }).AsQueryable();
 
 
@@ -1262,8 +1262,8 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = (from result in query
                              join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
-                             where ig.delete_dt == null && ig.eir_status_cv == "PUBLISHED" && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-                             && ig.publish_dt != null
+                             where ig.delete_dt == null && !StatusCondition.BeforeTankIn.Contains(result.tank_status)
+                             && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
                              select new TempReport
                              {
                                  sot_guid = result.sot_guid,

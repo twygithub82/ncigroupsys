@@ -3,6 +3,12 @@
     <div class="row">
       <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
         <mat-form-field class="example-full-width" appearance="fill">
+          <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+          <input matInput formControlName="tank_no">
+        </mat-form-field>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+        <mat-form-field class="example-full-width" appearance="fill">
           <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
           <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
             [matAutocomplete]="customerCode">
@@ -13,12 +19,6 @@
             </mat-option>
             }
           </mat-autocomplete>
-        </mat-form-field>
-      </div>
-      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-        <mat-form-field class="example-full-width" appearance="fill">
-          <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-          <input matInput formControlName="tank_no">
         </mat-form-field>
       </div>
       <div
