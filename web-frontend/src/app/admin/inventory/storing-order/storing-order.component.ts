@@ -283,6 +283,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '50vw',
       data: {
         item: [...row],
         langText: this.langText

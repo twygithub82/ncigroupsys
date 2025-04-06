@@ -142,8 +142,7 @@ export class FormDialogComponent {
     this.storingOrderTankForm.get('purpose')?.setErrors(null);
     this.storingOrderTankForm.get('required_temp')?.setErrors(null);
     if (this.storingOrderTankForm?.valid) {
-      if (!this.validatePurpose()) {
-        this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
+      if (!this.validatePurpose() || !this.validateRequireTemp()) {
       } else {
         this.storingOrderTankForm.get('purpose')?.setErrors(null);
         let actions = Array.isArray(this.storingOrderTank.actions!) ? [...this.storingOrderTank.actions!] : [];
@@ -399,7 +398,6 @@ export class FormDialogComponent {
     const purposeSteam = this.storingOrderTankForm.get('purpose_steam')?.value;
     const purposeCleaning = this.storingOrderTankForm.get('purpose_cleaning')?.value;
     const purposeRepairCV = this.storingOrderTankForm.get('purpose_repair_cv')?.value;
-    const requiredTemp = this.storingOrderTankForm.get('required_temp')?.value;
 
     // Validate that at least one of the purpose checkboxes is checked
     if (!purposeStorage && !purposeSteam && !purposeCleaning && !purposeRepairCV) {
@@ -407,10 +405,24 @@ export class FormDialogComponent {
       this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
     }
 
+    return isValid;
+  }
+
+  validateRequireTemp(): boolean {
+    let isValid = true;
+    const purposeSteam = this.storingOrderTankForm.get('purpose_steam')?.value;
+    const requiredTemp = this.storingOrderTankForm.get('required_temp')?.value;
+    const flashPoint = this.storingOrderTankForm.get('flash_point')?.value;
+
     // Validate that required_temp is filled in if purpose_steam is checked
     if (purposeSteam && !requiredTemp) {
       isValid = false; // required_temp must be filled if purpose_steam is checked
       this.storingOrderTankForm.get('required_temp')?.setErrors({ required: true });
+    } else if (requiredTemp && flashPoint) {
+      if (requiredTemp > flashPoint) {
+        isValid = false;
+        this.storingOrderTankForm.get('required_temp')?.setErrors({ max: true });
+      }
     }
 
     return isValid;
