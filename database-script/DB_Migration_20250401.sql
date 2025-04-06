@@ -11,5 +11,4 @@ INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_
 INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('585', 'Cleaning', 'INVENTORY_TYPE', 'CLEANING');
 INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('586', 'Repair', 'INVENTORY_TYPE', 'REPAIR');
 INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('587', 'Depot', 'INVENTORY_TYPE', 'DEPOT');
-
 INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('606', 'Month wise', 'REPORT_TYPE', 'MONTH_WISE');
