@@ -750,7 +750,7 @@ constructor(item: Partial<InventoryYearly> = {}) {
   } 
 }
 
- export class ManagementReportYearlInventory
+ export class ManagementReportYearlyInventory
  {
   cleaning_yearly_inventory?:InventoryYearly;
   depot_yearly_inventory?:InventoryYearly;
@@ -758,7 +758,7 @@ constructor(item: Partial<InventoryYearly> = {}) {
   gate_out_yearly_inventory?:InventoryYearly;
   repair_yearly_inventory?:InventoryYearly;
   steaming_yearly_inventory?:InventoryYearly;
-  constructor(item: Partial<ManagementReportYearlInventory> = {}) {
+  constructor(item: Partial<ManagementReportYearlyInventory> = {}) {
     this.cleaning_yearly_inventory=item.cleaning_yearly_inventory;
     this.depot_yearly_inventory=item.depot_yearly_inventory;
     this.gate_in_yearly_inventory=item.gate_in_yearly_inventory;
@@ -767,6 +767,85 @@ constructor(item: Partial<InventoryYearly> = {}) {
     this.steaming_yearly_inventory=item.steaming_yearly_inventory;
     } 
  }
+
+ export class MonthlyReportItem{
+    approved_cost?:number;
+    completed_cost?:number;
+    date?:number;
+    day?:number;
+    constructor(item: Partial<MonthlyReportItem> = {}) {
+      this.approved_cost=item.approved_cost;
+      this.completed_cost=item.completed_cost;
+      this.date=item.date;
+      this.day=item.day;
+      } 
+ }
+
+ export class RepairMonthlyReportItem{
+  approved_hour?:number;
+  completed_hour?:number;
+  date?:number;
+  day?:number;
+  constructor(item: Partial<RepairMonthlyReportItem> = {}) {
+    this.approved_hour=item.approved_hour;
+    this.completed_hour=item.completed_hour;
+    this.date=item.date;
+    this.day=item.day;
+    } 
+}
+
+
+ export class GateIOMonthlyReportItem{
+  gate_in_cost?:number;
+  gate_out_cost?:number;
+  date?:number;
+  day?:number;
+  constructor(item: Partial<GateIOMonthlyReportItem> = {}) {
+    this.gate_in_cost=item.gate_in_cost;
+    this.gate_out_cost=item.gate_out_cost;
+    this.date=item.date;
+    this.day=item.day;
+    } 
+}
+
+
+
+export class LOLOMonthlyReportItem{
+  lift_off_cost?:number;
+  lift_on_cost?:number;
+  date?:number;
+  day?:number;
+  constructor(item: Partial<LOLOMonthlyReportItem> = {}) {
+    this.lift_off_cost=item.lift_off_cost;
+    this.lift_on_cost=item.lift_on_cost;
+    this.date=item.date;
+    this.day=item.day;
+    } 
+}
+export class GateIOInventoryItem{
+  gate_inventory?:GateIOMonthlyReportItem;
+  lolo_inventory?:LOLOMonthlyReportItem;
+  constructor(item: Partial<GateIOInventoryItem> = {}) {
+    this.gate_inventory=item.gate_inventory;
+    this.lolo_inventory=item.lolo_inventory;
+    
+    } 
+}
+
+export class ManagementReportMonthlyInventory{
+  cleaning_inventory?:MonthlyReportItem;
+  repair_inventory?:RepairMonthlyReportItem;
+  steaming_inventory?:MonthlyReportItem;
+  gate_in_out_inventory?:GateIOInventoryItem;
+  
+  constructor(item: Partial<ManagementReportMonthlyInventory> = {}) {
+    this.cleaning_inventory=item.cleaning_inventory;
+    this.repair_inventory=item.repair_inventory;
+    this.steaming_inventory=item.steaming_inventory;
+    this.gate_in_out_inventory=item.gate_in_out_inventory;
+    } 
+}
+
 export const GET_CLEANING_INVENTORY_REPORT = gql`
   query queryCleaningInventorySummary($cleaningInventoryRequest: CleaningInventoryRequestInput!,$first:Int) {
     resultList: queryCleaningInventorySummary(cleaningInventoryRequest: $cleaningInventoryRequest,first:$first) {
@@ -1270,6 +1349,45 @@ export const GET_ADMIN_REPORT_CUSTOMER_MONTHLY_SALES_REPORT = gql`
   }
 `
 
+export const GET_MANAGEMENT_REPORT_MONTHLY_INVENTORY_REPORT = gql`
+  query queryMonthlyInventory($monthlyInventoryRequest: MonthlyInventoryRequestInput!) {
+    resultList: queryMonthlyInventory(monthlyInventoryRequest: $monthlyInventoryRequest) {
+      cleaning_inventory {
+        approved_cost
+        completed_cost
+        date
+        day
+      }
+      gate_in_out_inventory {
+        gate_inventory {
+          date
+          day
+          gate_in_cost
+          gate_out_cost
+        }
+        lolo_inventory {
+          date
+          day
+          lift_off_cost
+          lift_on_cost
+        }
+      }
+      repair_inventory {
+        approved_hour
+        completed_hour
+        date
+        day
+      }
+      steaming_inventory {
+        approved_cost
+        completed_cost
+        date
+        day
+      }
+    }
+  }
+`
+
 export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
   query queryYearlyInventory($yearlyInventoryRequest: YearlyInventoryRequestInput!) {
     resultList: queryYearlyInventory(yearlyInventoryRequest: $yearlyInventoryRequest) {
@@ -1330,6 +1448,8 @@ export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
     }
   }
 `
+
+
 export class ReportDS extends BaseDataSource<any> {
 
   private first: number=20000;
@@ -1764,6 +1884,54 @@ export class ReportDS extends BaseDataSource<any> {
       .query<any>({
         query: GET_ADMIN_REPORT_CUSTOMER_MONTHLY_SALES_REPORT,
         variables: { customerMonthlySalesRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CleanerPerformance[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList);
+          return resultList;
+        })
+      );
+  }
+
+  searchManagementReportInventoryYearlyReport(yearlyInventoryRequest:any): Observable<ManagementReportYearlyInventory> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT,
+        variables: { yearlyInventoryRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CleanerPerformance[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList);
+          return resultList;
+        })
+      );
+  }
+
+  searchManagementReportInventoryMonthlyReport(monthlyInventoryRequest:any): Observable<ManagementReportMonthlyInventory> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_MANAGEMENT_REPORT_MONTHLY_INVENTORY_REPORT,
+        variables: { monthlyInventoryRequest },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

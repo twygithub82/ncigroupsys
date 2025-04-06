@@ -68,9 +68,12 @@
                   <mat-label>{{translatedLangText.INVENTORY_TYPE}}</mat-label>
                   <mat-select formControlName="inv_type">
                     @for (codeValue of inventoryTypeCvList; track codeValue) {
-                    <mat-option [value]="codeValue.code_val">
-                      {{codeValue.description}}
-                    </mat-option>
+                      @if(invTypes.includes(codeValue.code_val!))
+                      {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                      }
                     }
                   </mat-select>
                 </mat-form-field>

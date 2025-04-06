@@ -208,7 +208,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
   isGeneratingReport =false;
-
+  invTypes:string[]=["","MASTER_IN","MASTER_OUT"]
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,

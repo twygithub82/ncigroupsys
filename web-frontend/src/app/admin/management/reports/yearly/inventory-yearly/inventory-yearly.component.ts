@@ -159,10 +159,8 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     YEAR:'COMMON-FORM.YEAR',
     MONTH_START:'COMMON-FORM.MONTH-START',
     MONTH_END:'COMMON-FORM.MONTH-END',
-    
-
-
-    
+    GENERATE_REPORT:'COMMON-FORM.GENERATE-REPORT',
+    REPORT_TYPE:'COMMON-FORM.REPORT-TYPE'
   }
 
   invForm?: UntypedFormGroup;
@@ -195,6 +193,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   inventoryTypeCvList: CodeValuesItem[] = [];
+  reportTypeCvList: CodeValuesItem[] = [];
 
   processType: string = "STEAMING";
   billingParty: string = "CUSTOMER";
@@ -216,6 +215,8 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   isGeneratingReport =false;
   yearList:string[]=[];
   monthList:string[]=[];
+  invTypes:string[]=["ALL","STEAMING","CLEANING","IN_OUT","REPAIR","DEPOT"];
+  repTypes:string[]=["MONTH_WISE","CUSTOMER_WISE"];
   repData:any;
 
   constructor(
@@ -260,6 +261,8 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
       year: [`${thisYear}`],
       month_start: [`${thisMonth}`],
       month_end: [`${thisMonth}`],
+      inventory_type:['ALL'],
+      report_type:['CUSTOMER_WISE'],
     });
   }
 
@@ -295,16 +298,19 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   }
 
   public loadData() {
-    // const queries = [
-    //   // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //   // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-    //   // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-    //   { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
-    // ];
-    // this.cvDS.getCodeValuesByType(queries);
-    // this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
-    //   this.inventoryTypeCvList = addDefaultSelectOption(data, 'All');;
-    // });
+    const queries = [
+      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
+       { alias: 'reportTypeCv', codeValType: 'REPORT_TYPE' },
+      { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
+      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All','ALL');;
+    });
+    this.cvDS.connectAlias('reportTypeCv').subscribe(data => {
+      this.reportTypeCvList =data;
+    });
     var thisYear = new Date().getFullYear();
     var startYear = thisYear-5;
     for(var i=startYear ; i<=thisYear;i++)
@@ -370,7 +376,19 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
    
 
       var customerName:string="";
-      where.report_type=this.processType;
+      where.inventory_type =this.invTypes;
+      if(this.searchForm?.get('report_type')?.value!="ALL")
+      {
+        where.inventory_type =this.searchForm?.get('report_type')?.value;
+      }
+      if (this.searchForm?.get('report_type')?.value) {
+        // if(!where.storing_order_tank) where.storing_order_tank={};
+        where.report_format_type = `${this.searchForm!.get('report_type')?.value}`;
+        cond_counter++;
+      }
+
+
+
       if (this.searchForm?.get('customer_code')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
         where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
@@ -411,7 +429,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.reportDS.searchAdminReportYearlyProcess(this.lastSearchCriteria)
+    this.subs.sink = this.reportDS.searchManagementReportInventoryYearlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
         this.ProcessYearlyReport(this.repData,date!,reportType!,customerName!);
@@ -485,8 +503,9 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
     this.searchForm?.patchValue({
       year: thisYear,
-      month_start: thisMonth,
-      month_end: thisMonth,
+      month: thisMonth,
+      inventory_type:'ALL',
+      report_type:'CUSTOMER_WISE',
     });
     this.customerCodeControl.reset('');
    

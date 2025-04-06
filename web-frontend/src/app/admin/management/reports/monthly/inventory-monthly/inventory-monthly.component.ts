@@ -157,9 +157,9 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     DETAIL_SUMMARY:'COMMON-FORM.DETAIL-SUMMARY',
     LOCATION:'COMMON-FORM.LOCATION',
     YEAR:'COMMON-FORM.YEAR',
-    MONTH_START:'COMMON-FORM.MONTH-START',
+    MONTH:'COMMON-FORM.MONTH',
     MONTH_END:'COMMON-FORM.MONTH-END',
-    
+    GENERATE_REPORT:"COMMON-FORM.GENERATE-REPORT"
 
 
     
@@ -217,6 +217,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
   yearList:string[]=[];
   monthList:string[]=[];
   repData:any;
+  invTypes:string[]=["ALL","STEAMING","CLEANING","IN_OUT","REPAIR"];
 
   constructor(
     public httpClient: HttpClient,
@@ -258,8 +259,8 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
       year: [`${thisYear}`],
-      month_start: [`${thisMonth}`],
-      month_end: [`${thisMonth}`],
+      month: [`${thisMonth}`],
+      inventory_type:['ALL'],
     });
   }
 
@@ -295,16 +296,16 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
   }
 
   public loadData() {
-    // const queries = [
-    //   // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //   // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-    //   // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-    //   { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
-    // ];
-    // this.cvDS.getCodeValuesByType(queries);
-    // this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
-    //   this.inventoryTypeCvList = addDefaultSelectOption(data, 'All');;
-    // });
+    const queries = [
+      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
+      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
+      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All',"ALL");;
+    });
     var thisYear = new Date().getFullYear();
     var startYear = thisYear-5;
     for(var i=startYear ; i<=thisYear;i++)
@@ -370,7 +371,12 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
    
 
       var customerName:string="";
-      where.report_type=this.processType;
+      where.inventory_type =this.invTypes;
+      if(this.searchForm?.get('report_type')?.value!="ALL")
+      {
+        where.inventory_type =this.searchForm?.get('report_type')?.value;
+      }
+      
       if (this.searchForm?.get('customer_code')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
         where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
@@ -378,18 +384,16 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
         cond_counter++;
       }
       
-      var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
+      var date: string = `${this.searchForm?.get('month')?.value} ${this.searchForm?.get('year')?.value}`;
     // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if (this.searchForm?.get('month_start')?.value) {
-        var month=this.searchForm?.get('month_start')?.value;
+      if (this.searchForm?.get('month')?.value) {
+        var month=this.searchForm?.get('month')?.value;
         const monthIndex = this.monthList.findIndex(m => month === m);
-        where.start_month = (monthIndex+1);
+        where.month = (monthIndex+1);
       }
 
-      if (this.searchForm?.get('month_end')?.value) {
-        var month=this.searchForm?.get('month_end')?.value;
-        const monthIndex = this.monthList.findIndex(m => month === m);
-        where.end_month = (monthIndex+1);
+      if (this.searchForm?.get('inventory_type')?.value) {
+        where.inventory_type = this.searchForm?.get('inventory_type')?.value;
       }
 
       if (this.searchForm?.get('year')?.value) {
@@ -411,7 +415,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.reportDS.searchAdminReportYearlyProcess(this.lastSearchCriteria)
+    this.subs.sink = this.reportDS.searchManagementReportInventoryMonthlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
         this.ProcessYearlyReport(this.repData,date!,reportType!,customerName!);
@@ -485,8 +489,8 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
     this.searchForm?.patchValue({
       year: thisYear,
-      month_start: thisMonth,
-      month_end: thisMonth,
+      month: thisMonth,
+      inventory_type:'ALL',
     });
     this.customerCodeControl.reset('');
    

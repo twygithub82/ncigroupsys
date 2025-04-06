@@ -511,44 +511,60 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       });
     }
     else if (this.selectedItems.length > 1) {
-      let pd_guids: string[] = this.selectedItems
-        .map(cc => cc.guid)
-        .filter((guid): guid is string => guid !== undefined);
+      this.updateMaterialCostAndLabourCostByPercentage();
+      // let pd_guids: string[] = this.selectedItems
+      //   .map(cc => cc.guid)
+      //   .filter((guid): guid is string => guid !== undefined);
 
-      var trfRepairItem = new TariffRepairItem();
-      trfRepairItem.part_name = this.pcForm!.get('part_name')?.value;
-      trfRepairItem.dimension = this.pcForm!.get('dimension')?.value;
-      trfRepairItem.height_diameter = -1;
-      trfRepairItem.height_diameter_unit_cv = this.RetrieveCodeValue(this.pcForm!.value['height_diameter_unit_cv']);
-      trfRepairItem.width_diameter = -1;
-      trfRepairItem.width_diameter_unit_cv = String(this.RetrieveCodeValue(this.pcForm!.value['width_diameter_unit_cv']));
-      trfRepairItem.subgroup_name_cv = String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
-      trfRepairItem.group_name_cv = String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
-      trfRepairItem.labour_hour = -1;
-      if (this.pcForm!.value['labour_hour']) trfRepairItem.labour_hour = this.pcForm!.value['labour_hour'];
-      trfRepairItem.material_cost = -1;
-      if (this.pcForm!.value['material_cost']) trfRepairItem.material_cost = this.pcForm!.value['material_cost'];
-      trfRepairItem.alias = this.pcForm!.get('alias')?.value;
-      trfRepairItem.length = -1;
-      trfRepairItem.length_unit_cv = this.RetrieveCodeValue(this.pcForm!.value['length_unit_cv']);
-      trfRepairItem.width_diameter = -1;
-      trfRepairItem.thickness = -1;
-      trfRepairItem.thickness_unit_cv = this.RetrieveCodeValue(this.pcForm!.value['thickness_unit_cv']);
+      // var trfRepairItem = new TariffRepairItem();
+      // trfRepairItem.part_name = this.pcForm!.get('part_name')?.value;
+      // trfRepairItem.dimension = this.pcForm!.get('dimension')?.value;
+      // trfRepairItem.height_diameter = -1;
+      // trfRepairItem.height_diameter_unit_cv = this.RetrieveCodeValue(this.pcForm!.value['height_diameter_unit_cv']);
+      // trfRepairItem.width_diameter = -1;
+      // trfRepairItem.width_diameter_unit_cv = String(this.RetrieveCodeValue(this.pcForm!.value['width_diameter_unit_cv']));
+      // trfRepairItem.subgroup_name_cv = String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
+      // trfRepairItem.group_name_cv = String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
+      // trfRepairItem.labour_hour = -1;
+      // if (this.pcForm!.value['labour_hour']) trfRepairItem.labour_hour = this.pcForm!.value['labour_hour'];
+      // trfRepairItem.material_cost = -1;
+      // if (this.pcForm!.value['material_cost']) trfRepairItem.material_cost = this.pcForm!.value['material_cost'];
+      // trfRepairItem.alias = this.pcForm!.get('alias')?.value;
+      // trfRepairItem.length = -1;
+      // trfRepairItem.length_unit_cv = this.RetrieveCodeValue(this.pcForm!.value['length_unit_cv']);
+      // trfRepairItem.width_diameter = -1;
+      // trfRepairItem.thickness = -1;
+      // trfRepairItem.thickness_unit_cv = this.RetrieveCodeValue(this.pcForm!.value['thickness_unit_cv']);
 
-      trfRepairItem.remarks = this.RetrieveCodeValue(this.pcForm!.value['remarks']);
+      // trfRepairItem.remarks = this.RetrieveCodeValue(this.pcForm!.value['remarks']);
 
-      if (!update) return;
+      // if (!update) return;
 
-      this.trfRepairDS.updateTariffRepairs(pd_guids, trfRepairItem.group_name_cv, trfRepairItem.subgroup_name_cv, trfRepairItem.dimension, trfRepairItem.height_diameter,
-        trfRepairItem.height_diameter_unit_cv, trfRepairItem.width_diameter, trfRepairItem.width_diameter_unit_cv, trfRepairItem.labour_hour,
-        trfRepairItem.length, trfRepairItem.length_unit_cv, trfRepairItem.material_cost, trfRepairItem.part_name, trfRepairItem.alias, trfRepairItem.thickness, trfRepairItem.thickness_unit_cv,
-        trfRepairItem.remarks
-      ).subscribe(result => {
-        this.handleSaveSuccess(result?.data?.updateTariffRepairs);
-      });
+      // this.trfRepairDS.updateTariffRepairs(pd_guids, trfRepairItem.group_name_cv, trfRepairItem.subgroup_name_cv, trfRepairItem.dimension, trfRepairItem.height_diameter,
+      //   trfRepairItem.height_diameter_unit_cv, trfRepairItem.width_diameter, trfRepairItem.width_diameter_unit_cv, trfRepairItem.labour_hour,
+      //   trfRepairItem.length, trfRepairItem.length_unit_cv, trfRepairItem.material_cost, trfRepairItem.part_name, trfRepairItem.alias, trfRepairItem.thickness, trfRepairItem.thickness_unit_cv,
+      //   trfRepairItem.remarks
+      // ).subscribe(result => {
+      //   this.handleSaveSuccess(result?.data?.updateTariffRepairs);
+      // });
     }
   }
 
+  updateMaterialCostAndLabourCostByPercentage()
+  {
+    let pd_guids = this.selectedItems.map(i=>i.guid)||[];
+    let materialCostPercentage = 1;
+    let labourCostPercentage = 1;
+    if (this.pcForm!.value['labour_hour'])labourCostPercentage=(Number(this.pcForm!.value['labour_hour']) / 100) + 1;
+    if (this.pcForm!.value['material_cost'])materialCostPercentage=(Number(this.pcForm!.value['material_cost']) / 100) + 1;
+
+    this.trfRepairDS.updateTariffRepairs_MaterialCost("","",
+      "", "",-1, pd_guids, materialCostPercentage, labourCostPercentage
+      ).subscribe(result => {
+        this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
+      });
+
+  }
   displayLastUpdated(r: TariffDepotItem) {
     var updatedt = r.update_dt;
     if (updatedt === null) {
@@ -646,5 +662,26 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       return !!control.value; // Convert the value to a boolean
     }
     return false; // Return false if the control doesn't exist
+  }
+
+  isMultiSelect():boolean{
+    var bRetval:boolean = this.selectedItems.length >1;
+    return bRetval;
+  }
+  
+  GetLabourCostLabel()
+  {
+    var content = this.translatedLangText.LABOUR_HOUR ;
+    if(this.isMultiSelect()) content+='(%)';
+    content +=' :';
+    return content
+  }
+
+  GetMaterialCostLabel()
+  {
+    var content = this.translatedLangText.MATERIAL_COST ;
+    if(this.isMultiSelect()) content+='(%)';
+    content +=' :';
+    return content
   }
 }

@@ -27,6 +27,21 @@
               </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.INVENTORY_TYPE}}</mat-label>
+                  <mat-select formControlName="inventory_type">
+                    @for (invType of inventoryTypeCvList; track invType) {
+                      @if(invTypes.includes(invType.code_val!))
+                      {
+                      <mat-option [value]="invType.code_val">
+                        {{invType.description}}
+                      </mat-option>
+                      }
+                  }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.MONTH_START}}</mat-label>
                   <mat-select formControlName="month_start">
                     @for (month of monthList; track month) {
@@ -37,7 +52,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.MONTH_END}}</mat-label>
                   <mat-select formControlName="month_end">
@@ -61,18 +76,33 @@
                   </mat-select>
                 </mat-form-field>
               </div>
+              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.REPORT_TYPE}}</mat-label>
+                  <mat-select formControlName="report_type">
+                    @for (repType of reportTypeCvList; track repType) {
+                      @if(repTypes.includes(repType.code_val!))
+                      {
+                      <mat-option [value]="repType.code_val">
+                        {{repType.description}}
+                      </mat-option>
+                      }
+                  }
+                  </mat-select>
+                </mat-form-field>
+              </div>
               <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center  ms-auto justify-content-end">
                 <button mat-mini-fab color="primary" (click)="search_overview_summary()"  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport"
-                  matTooltip={{translatedLangText.OVERVIEW_SUMMARY}} [disabled]="!AllowToSearch()">
+                  matTooltip={{translatedLangText.OVERVIEW_SUMMARY}} [disabled]="!AllowToSearch()" hidden>
                   <mat-icon>show_chart</mat-icon>
                 </button>
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail_summary()"  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport"
-                  matTooltip={{translatedLangText.DETAIL_SUMMARY}} [disabled]="!AllowToSearch()">
+                  matTooltip={{translatedLangText.DETAIL_SUMMARY}} [disabled]="!AllowToSearch()" hidden>
                   <mat-icon>assessment</mat-icon>
                 </button>
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport"
-                  matTooltip={{translatedLangText.DETAIL_REPORT}} hidden>
+                  matTooltip={{translatedLangText.GENERATE_REPORT}} [disabled]="!AllowToSearch()">
                   <mat-icon>assignment</mat-icon>
                 </button>
                 <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">

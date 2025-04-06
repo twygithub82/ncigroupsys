@@ -151,7 +151,7 @@ export const UPDATE_TARIFF_REPAIR = gql`
 
 export const UPDATE_TARIFF_REPAIRS_MATERIAL_COST = gql`
   mutation updateTariffRepair_MaterialCost($group_name_cv:String,$subgroup_name_cv:String,
-    $part_name:String,$dimension:String,$length:Int,$guid:String,$material_cost_percentage:Float!,$labour_hour_percentage:Float!) {
+    $part_name:String,$dimension:String,$length:Int,$guid:[String],$material_cost_percentage:Float!,$labour_hour_percentage:Float!) {
     updateTariffRepair_MaterialCost(group_name_cv:$group_name_cv,subgroup_name_cv:$subgroup_name_cv,
     part_name:$part_name,dimension:$dimension,length:$length,guid:$guid,material_cost_percentage:$material_cost_percentage,
     labour_hour_percentage:$labour_hour_percentage)

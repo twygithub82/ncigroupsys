@@ -672,12 +672,13 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     }
     trfRepairItem.dimension = String(this.pcForm!.value['dimension'] || '');
     trfRepairItem.length = Number(this.pcForm!.value['length'] || -1);
-    if (this.selectedTariffRepair) trfRepairItem.guid = this.selectedTariffRepair?.guid;
+   
+    //if (this.selectedTariffRepair) trfRepairItem.guid = this.selectedTariffRepair?.guid;
     //var material_cost_percentage=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
 
     if (this.checkCondition(trfRepairItem)) {
       this.trfRepairDS.updateTariffRepairs_MaterialCost(trfRepairItem.group_name_cv, trfRepairItem.subgroup_name_cv,
-        trfRepairItem.part_name, trfRepairItem.dimension, trfRepairItem.length, trfRepairItem.guid, trfRepairItem.material_cost, trfRepairItem.labour_hour).subscribe(result => {
+        trfRepairItem.part_name, trfRepairItem.dimension, trfRepairItem.length, [], trfRepairItem.material_cost, trfRepairItem.labour_hour).subscribe(result => {
           this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
           this.EnableValidator('material_cost_percentage');
           this.EnableValidator('labour_hour_percentage');
@@ -744,10 +745,10 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     if (!retval) retval = (trfRepairItem.part_name?.trim() != "" && trfRepairItem.part_name != undefined);
     if (!retval) retval = (trfRepairItem.dimension?.trim() != "" && trfRepairItem.dimension != undefined);
     if (!retval) retval = (trfRepairItem.guid?.trim() != "" && trfRepairItem.guid != undefined);
-
+    retval = true;
     if (!retval)
       msg = `${this.translatedLangText.ONE_CONDITION}`;
-
+     
     if (trfRepairItem.labour_hour == 1 && trfRepairItem.material_cost == 1 && retval) {
       msg = `${this.translatedLangText.NO_VALUE_CHNAGE}`;
       retval = false;
