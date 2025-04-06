@@ -260,7 +260,6 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       profile_name: [''],
       description: [''],
       unit_type: this.unit_type_control
-
     });
   }
 
@@ -274,13 +273,14 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  displayUnitTypeFn(tnk:TankItem):string
-  {
-    return tnk.unit_type||'';
+  displayUnitTypeFn(tnk?: TankItem): string {
+    return tnk?.unit_type || '';
   }
+
   refresh() {
     this.loadData();
   }
+
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -313,25 +313,23 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     // });
   }
 
-   initializeFilterValues() {
-        this.tdForm!.get('unit_type')!.valueChanges.pipe(
-          startWith(''),
-          debounceTime(300),
-          tap(value => {
-            var searchCriteria = '';
-            if (typeof value === 'string') {
-              searchCriteria = value;
-            } else {
-              searchCriteria = value.code;
-            }
-            this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, { unit_type: 'ASC' }).subscribe(data => {
-              this.tankItemList = data
-            });
-          })
-        ).subscribe();
-    
-    
-      }
+  initializeFilterValues() {
+    this.tdForm!.get('unit_type')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, [{ unit_type: 'ASC' }]).subscribe(data => {
+          this.tankItemList = data
+        });
+      })
+    ).subscribe();
+  }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission

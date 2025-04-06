@@ -1,6 +1,6 @@
-
 .table-container {
-  max-height: 400px; /* Adjust height as needed */
+  max-height: 400px;
+  /* Adjust height as needed */
   overflow: auto;
 }
 
@@ -9,103 +9,121 @@ table.mat-table {
   border-collapse: collapse;
 }
 
-.mat-cell, .mat-header-cell {
+.mat-cell,
+.mat-header-cell {
   padding: 8px;
 }
 
-   mat-tab-group {
-     width:50vh;
-     //height: 70vh;
-    // transition: transform 0.2s;
-   }
-  
+mat-tab-group {
+  width: 50vh;
+  //height: 70vh;
+  // transition: transform 0.2s;
+}
+
 td div img:hover {
-    transform: scale(1.1);
-    cursor: pointer;
-  }
+  transform: scale(1.1);
+  cursor: pointer;
+}
 
 
-  
-  td div {
-    //display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping */
-    justify-content: center;
-    align-items: center;
-    height: 95%;
-    //overflow: hidden;
-  }
-  
-  td div img {
-    max-width: 50vh;
-    height: 10vh;
-   
-    transition: transform 0.2s;
-    padding-right: 10px;
-  }
 
-  .mat-tab-group {
-    margin-bottom: 48px;
-  }
-  .mat-tab-labels{ 
-    flex-wrap: wrap;
-   }
+td div {
+  //display: flex;
+  flex-wrap: nowrap;
+  /* Prevent wrapping */
+  justify-content: center;
+  align-items: center;
+  height: 95%;
+  //overflow: hidden;
+}
 
-   .fixed-height-table {
-    height: 300px; /* Adjust this value as needed */
-    overflow-y: auto; /* Enable vertical scrollbar */
-    display: block;
-  }
-  
-  /* Ensure the table header is sticky */
-  .mat-header-row {
-    position: sticky;
-    top: 0;
-    background-color: white; /* Match the background color of your header */
-    z-index: 1; /* Ensure the header stays above the rows */
-  }
-  
-  /* Optional: Add some padding and border for better appearance */
-  .responsive_table {
-    border: 1px solid #ddd; /* Light border around the table */
-    border-radius: 4px; /* Rounded corners */
-  }
-  
-  /* Ensure the table rows are visible */
-  .mat-row {
-    background-color: white; /* Match the background color of your rows */
-  }
+td div img {
+  max-width: 50vh;
+  height: 10vh;
 
-  .container .ex-moved {
-    background-color: rgba(293, 21, 45, 0.75);
-    color: #fff;
-  }
-  .container.ex-over {
-    background-color: rgba(255, 255, 255, 0.3);
-  }
+  transition: transform 0.2s;
+  padding-right: 10px;
+}
 
-  .steps-list {
-    height: 300px; /* Fixed height */
-    overflow-y: auto; /* Enable scrollbar */
-    border: 1px solid #ccc; /* Optional */
-    padding: 10px; /* Optional */
-  }
-  
-  .step-box {
-    position:relative;
-    margin-bottom: 10px; /* Optional */
-    padding: 5px 10px 10px 5px; /* Optional */
-    background-color: #f9f9f9; /* Optional */
-    border: 1px solid #ddd; /* Optional */
-    overflow: hidden; 
-  }
+.mat-tab-group {
+  margin-bottom: 48px;
+}
 
-  .tbl-action-btn {
-    
-    position: absolute; /* Position the button absolutely */
-  right: 10px; /* Distance from the right */
-  top: 50%; /* Center vertically */
-  transform: translateY(-50%); /* Adjust for exact vertical centering */
+.mat-tab-labels {
+  flex-wrap: wrap;
+}
+
+.fixed-height-table {
+  height: 300px;
+  /* Adjust this value as needed */
+  overflow-y: auto;
+  /* Enable vertical scrollbar */
+  display: block;
+}
+
+/* Ensure the table header is sticky */
+.mat-header-row {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  /* Match the background color of your header */
+  z-index: 1;
+  /* Ensure the header stays above the rows */
+}
+
+/* Optional: Add some padding and border for better appearance */
+.responsive_table {
+  border: 1px solid #ddd;
+  /* Light border around the table */
+  border-radius: 4px;
+  /* Rounded corners */
+}
+
+/* Ensure the table rows are visible */
+.mat-row {
+  background-color: white;
+  /* Match the background color of your rows */
+}
+
+.container .ex-moved {
+  background-color: rgba(293, 21, 45, 0.75);
+  color: #fff;
+}
+
+.container.ex-over {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.steps-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 0px solid #ccc;
+  padding: 0px;
+}
+
+.step-box {
+  position: relative;
+  margin-bottom: 10px;
+  /* Optional */
+  padding: 5px 10px 10px 5px;
+  /* Optional */
+  background-color: #f9f9f9;
+  /* Optional */
+  border: 1px solid #ddd;
+  /* Optional */
+  overflow: hidden;
+}
+
+.tbl-action-btn {
+
+  position: absolute;
+  /* Position the button absolutely */
+  right: 10px;
+  /* Distance from the right */
+  top: 50%;
+  /* Center vertically */
+  transform: translateY(-50%);
+  /* Adjust for exact vertical centering */
   //bottom: -10px; /* Distance from the bottom */
-    
-  }
-  
+
+}

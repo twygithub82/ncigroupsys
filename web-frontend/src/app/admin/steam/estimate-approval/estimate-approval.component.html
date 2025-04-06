@@ -71,12 +71,12 @@
                       <mat-date-range-picker #eir_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                       <input matInput formControlName="part_name">
                     </mat-form-field>
-                  </div>
+                  </div> -->
                   <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CHANGE_REQUEST}}</mat-label>
@@ -89,18 +89,18 @@
                       </mat-select>
                     </mat-form-field>
                   </div> -->
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                       <input matInput formControlName="eir_no">
                     </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  </div> -->
+                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                       <input matInput formControlName="job_no">
                     </mat-form-field>
-                  </div>
+                  </div> -->
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
@@ -112,7 +112,7 @@
                       <mat-date-range-picker #est_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.APPROVAL_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="approval_picker">
@@ -122,7 +122,7 @@
                       <mat-datepicker-toggle matSuffix [for]="approval_picker"></mat-datepicker-toggle>
                       <mat-date-range-picker #approval_picker></mat-date-range-picker>
                     </mat-form-field>
-                  </div>
+                  </div> -->
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
@@ -138,7 +138,7 @@
 
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.TANK_STATUS }}</mat-label>
                       <mat-select formControlName="tank_status" multiple>
@@ -149,20 +149,9 @@
                         </mat-option>
                         }
                         }
-                        <!-- <mat-option *ngFor="let ts of tankStatusCvList" [value]="ts">
-                             
-                              @if (availableTankStatus.includes(ts.code_val ?? '')) {
-                              <ng-container *ngIf="ts !== null">
-                               
-                                {{ ts.description }}
-                                
-                              </ng-container>
-                              }
-                             
-                            </mat-option> -->
                       </mat-select>
                     </mat-form-field>
-                  </div>
+                  </div> -->
                   <div
                     class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                     <button mat-mini-fab color="primary" (click)="search()">
