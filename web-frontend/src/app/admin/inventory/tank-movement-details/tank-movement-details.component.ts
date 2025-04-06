@@ -295,7 +295,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TANK_SUMMARY_DETAILS: 'COMMON-FORM.TANK-SUMMARY-DETAILS',
     BOTTOM_DIS_TYPE: 'COMMON-FORM.BOTTOM-DIS-TYPE',
     CHECK_DIGIT: 'COMMON-FORM.CHECK-DIGIT',
-    SPECIAL_NOTES: 'COMMON-FORM.NOTES',
+    NOTES: 'COMMON-FORM.NOTES',
     RELEASE_NOTES: 'COMMON-FORM.RELEASE-NOTES',
     GATE_DETAILS: 'COMMON-FORM.GATE-DETAILS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
@@ -1826,6 +1826,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+  verifySection(expectedSection: string) {
+    return this.section === expectedSection || this.section === 'all';
   }
 
   setSection(section: string) {
