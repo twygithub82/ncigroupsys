@@ -47,6 +47,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { TankDS, TankItem } from 'app/data-sources/tank';
 
 @Component({
   selector: 'app-billing-branch',
@@ -107,6 +108,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   storageCalCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
   CodeValuesDS?: CodeValuesDS;
+  tankDS: TankDS;
 
   ccDS: CustomerCompanyDS;
   // tariffResidueDS:TariffResidueDS;
@@ -115,6 +117,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   custCompDS: CustomerCompanyDS;
 
   packResidueItems: PackageResidueItem[] = [];
+  unit_typeList: TankItem[] = []
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
@@ -231,7 +234,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     BRANCH_CODE: "COMMON-FORM.BRANCH-CODE",
     SAME: "COMMON-FORM.SAME",
     MAIN_CUSTOMER: "COMMON-FORM.MAIN-CUSTOMER",
-    CATEGORY: 'COMMON-FORM.DEFAULT-PROFILE',
+    DEFAULT_PROFILE: 'COMMON-FORM.DEFAULT-PROFILE',
   }
 
   constructor(
@@ -249,11 +252,9 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.tariffResidueDS = new TariffResidueDS(this.apollo);
-    // this.packResidueDS= new PackageResidueDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
-
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
+    this.tankDS = new TankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -291,6 +292,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
+      default_profile: [''],
       branch_code: [''],
       phone: [''],
       fax_no: [''],
@@ -385,8 +387,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-
-
   editBillingBranch(row: CustomerCompanyItem) {
     this.router.navigate([`/admin/master/customer/billing-branch/new/${row.guid} `], {
       state: {
@@ -401,7 +401,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
-
           showResult: this.ccDS.totalCount > 0
         }
       }
@@ -415,7 +414,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
-  
+
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.packResidueItems.length;
@@ -444,22 +443,18 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       { type_cv: { in: ["BRANCH"] } }
     ];
     if (this.customerCodeControl.value) {
-
-        // if (this.customerCodeControl.value.length > 0) 
-        {
-          const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
-          //var guids = customerCodes.map(cc => cc.guid);
-          where.guid = { eq: customerCode.guid };
-        }
-      // if (this.customerCodeControl.value.length > 0) {
-      //   const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-      //   var guids = customerCodes.map(cc => cc.guid);
-      //   where.guid = { in: guids };
-      // }
+      const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
+      where.guid = { eq: customerCode.guid };
     }
 
     if (this.pcForm!.value["branch_code"]) {
       where.and = [{ code: { contains: this.pcForm!.value["branch_code"] } }, { type_cv: { eq: 'BRANCH' } }];
+    }
+
+    if (this.pcForm!.get("default_profile")?.value) {
+      const tankSearch: any = {};
+      tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
+      where.tank = tankSearch;
     }
 
     // if (this.pcForm!.value["fax_no"]) {
@@ -613,48 +608,36 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   }
 
   initializeFilterCustomerCompany() {
-          this.pcForm!.get('customer_code')!.valueChanges.pipe(
-            startWith(''),
-            debounceTime(300),
-            tap(value => {
-              var searchCriteria = '';
-              if (typeof value === 'string') {
-                searchCriteria = value;
-              } else {
-                searchCriteria = value.code;
-              }
-              this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-                this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
-              });
-            })
-          ).subscribe();
-      
-    
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
         }
-
-  public loadData() {
-    var cond: any = {};
-   // cond.main_customer_guid = { neq: null };
-    cond.type_cv = { in:[ "OWNER", "BRANCH", "LEESSEE"] }
-    this.subs.sink = this.custCompDS.search(cond, { code: 'ASC' }, 100).subscribe(data => {
-      //this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
-      this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
-    });
-
-    // this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});
-
-    // const queries = [
-    //   { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
-
-    // ];
-    // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
-    //   this.handledItemCvList=data;
-    // });
-
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
+        });
+      })
+    ).subscribe();
 
 
   }
+
+  public loadData() {
+    var cond: any = {};
+    cond.type_cv = { in: ["OWNER", "BRANCH", "LEESSEE"] }
+    this.subs.sink = this.custCompDS.search(cond, { code: 'ASC' }, 100).subscribe(data => {
+      this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
+    });
+    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
+      this.unit_typeList = data
+    });
+  }
+
   showNotification(
     colorName: string,
     text: string,

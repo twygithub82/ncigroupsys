@@ -48,6 +48,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { firstValueFrom } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { TankDS, TankItem } from 'app/data-sources/tank';
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -102,8 +103,10 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   ccDS: CustomerCompanyDS;
   custCompDS: CustomerCompanyDS;
   sotDS: StoringOrderTankDS;
+  tankDS: TankDS;
 
   packResidueItems: PackageResidueItem[] = [];
+  unit_typeList: TankItem[] = []
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
@@ -216,7 +219,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     CODE: 'COMMON-FORM.CODE',
-    CATEGORY: 'COMMON-FORM.DEFAULT-PROFILE',
+    DEFAULT_PROFILE: 'COMMON-FORM.DEFAULT-PROFILE',
     CUSTOMER_ASSIGNED: 'COMMON-FORM.CUSTOMER-ASSIGNED',
     WARNING: 'COMMON-FORM.WARNING'
   }
@@ -239,6 +242,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.custCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.tankDS = new TankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -272,30 +276,28 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   initializeFilterCustomerCompany() {
-        this.pcForm!.get('customer_code')!.valueChanges.pipe(
-          startWith(''),
-          debounceTime(300),
-          tap(value => {
-            var searchCriteria = '';
-            if (typeof value === 'string') {
-              searchCriteria = value;
-            } else {
-              searchCriteria = value.code;
-            }
-            this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-              this.customer_companyList = data
-            });
-          })
-        ).subscribe();
-    
-  
-      }
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+  }
 
   initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      alias_name: [''],
+      default_profile: [''],
       phone: [''],
       fax_no: [''],
       email: [''],
@@ -391,10 +393,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     });
   }
 
-
-
   editCall(row: CustomerCompanyItem) {
-
     this.router.navigate([`/admin/master/customer/new/${row.guid} `], {
       state: {
         id: row.guid,
@@ -408,9 +407,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
-
           showResult: this.ccDS.totalCount > 0
-
         }
       }
     });
@@ -480,24 +477,23 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   search() {
+    if (this.pcForm?.invalid) {
+      return;
+    }
     const where: any = {
       type_cv: { neq: "SURVEYOR" }
 
     };
     if (this.customerCodeControl.value) {
-      // if (this.customerCodeControl.value.length > 0) 
-       {
-         const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
-         //var guids = customerCodes.map(cc => cc.guid);
-         where.guid = { eq: customerCode.guid };
-       }
-     }
-
-    if (this.pcForm!.value["alias"]) {
-      where.alias = { contains: this.pcForm!.value["alias"] };
+      const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
+      where.guid = { eq: customerCode.guid };
     }
 
-
+    if (this.pcForm!.get("default_profile")?.value) {
+      const tankSearch: any = {};
+      tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
+      where.tank = tankSearch;
+    }
 
     if (this.pcForm!.value["country"]) {
       where.country = { eq: this.pcForm!.value["country"] };
@@ -622,6 +618,9 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
   public loadData() {
     this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 50).subscribe(data => {
+    });
+    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
+      this.unit_typeList = data
     });
   }
   showNotification(
