@@ -238,8 +238,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       eir_dt_end: [''],
       eir_no: [''],
       repair_option_cv: [''],
-      est_dt_start: [''],
-      est_dt_end: [''],
+      // est_dt_start: [''],
+      // est_dt_end: [''],
+      est_dt: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
       est_status_cv: [['PENDING', 'APPROVED', 'QC_COMPLETED', 'NO_ACTION']],
@@ -446,6 +447,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   search() {
+    if (this.searchForm?.invalid) return;
+
     const where: any = {
       tank_status_cv: { in: ['REPAIR', 'STORAGE'] },
       purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
@@ -480,27 +483,35 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    if ((this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value) || this.searchForm!.get('est_status_cv')?.value?.length) {
+    if (this.searchForm!.get('est_dt')?.value || (this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value) || this.searchForm!.get('est_status_cv')?.value?.length) {
       let reSome: any = {};
 
-      if (this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value) {
-        const estDtStart = this.searchForm?.get('est_dt_start')?.value;
-        const estDtEnd = this.searchForm?.get('est_dt_end')?.value;
-        const today = new Date();
+      // if (this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value) {
+      //   const estDtStart = this.searchForm?.get('est_dt_start')?.value;
+      //   const estDtEnd = this.searchForm?.get('est_dt_end')?.value;
+      //   const today = new Date();
 
-        // Check if `est_dt_start` is before today and `est_dt_end` is empty
-        if (estDtStart && new Date(estDtStart) < today && !estDtEnd) {
-          reSome.create_dt = {
-            gte: Utility.convertDate(estDtStart),
-            lte: Utility.convertDate(today), // Set end date to today
-          };
-        } else if (estDtStart || estDtEnd) {
-          // Handle general case where either or both dates are provided
-          reSome.create_dt = {
-            gte: Utility.convertDate(estDtStart || today),
-            lte: Utility.convertDate(estDtEnd || today),
-          };
-        }
+      //   // Check if `est_dt_start` is before today and `est_dt_end` is empty
+      //   if (estDtStart && new Date(estDtStart) < today && !estDtEnd) {
+      //     reSome.create_dt = {
+      //       gte: Utility.convertDate(estDtStart),
+      //       lte: Utility.convertDate(today), // Set end date to today
+      //     };
+      //   } else if (estDtStart || estDtEnd) {
+      //     // Handle general case where either or both dates are provided
+      //     reSome.create_dt = {
+      //       gte: Utility.convertDate(estDtStart || today),
+      //       lte: Utility.convertDate(estDtEnd || today),
+      //     };
+      //   }
+      // }
+
+      if (this.searchForm!.get('est_dt')?.value) {
+        const estDtStart = this.searchForm?.get('est_dt')?.value?.clone();
+        reSome.create_dt = {
+          gte: Utility.convertDate(estDtStart),
+          lte: Utility.convertDate(estDtStart, true),
+        };
       }
 
       if (this.searchForm!.get('est_status_cv')?.value?.length) {
@@ -607,6 +618,10 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   getProcessStatusDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
+  }
+
+  getRepairOptionDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.repairOptionCvList);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {

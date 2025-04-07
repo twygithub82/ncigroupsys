@@ -1368,6 +1368,7 @@ const GET_STORING_ORDER_TANKS_REPAIR = gql`
         tank_no
         so_guid
         tank_status_cv
+        purpose_repair_cv
         tariff_cleaning {
           guid
           open_on_gate_cv

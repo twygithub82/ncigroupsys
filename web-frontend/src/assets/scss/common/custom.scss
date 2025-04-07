@@ -1779,6 +1779,24 @@ textarea,
   width: 33.33333% !important;
 }
 
+$grid-breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+@each $breakpoint, $breakpoint-val in $grid-breakpoints {
+  @media (min-width: #{$breakpoint-val}) {
+    @for $i from 1 through 100 {
+      .w-#{$breakpoint}-#{$i} {
+        width: #{$i + '%'} !important;
+      }
+    }
+  }
+}
+
 .addContainer {
   overflow-y: auto;       // 👈 allow vertical scrolling
 }

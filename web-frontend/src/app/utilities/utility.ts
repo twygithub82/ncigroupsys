@@ -54,6 +54,58 @@ export class Utility {
       // ✅ Handle Moment.js Objects (Return Epoch Time in Seconds)
       if (moment.isMoment(date)) {
         const momentDate = endOfDay
+          ? date.endOf('day') // Set to end of day in UTC
+          : date.startOf('day'); // Set to start of day in UTC
+        return Math.floor(momentDate.valueOf() / 1000); // Return epoch time in seconds
+      }
+
+      // ✅ Handle JavaScript Date objects (Return Epoch Time in Seconds)
+      if (date instanceof Date) {
+        const jsDate = new Date(date); // Create a copy of the date
+        if (!includeTime) {
+          //jsDate.setUTCHours(endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0, endOfDay ? 999 : 0);
+          jsDate.setHours(endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0, endOfDay ? 999 : 0);
+        }
+        return Math.floor(jsDate.getTime() / 1000); // Return epoch time in seconds
+      }
+
+      // ✅ Handle Strings (Parse into Epoch Seconds)
+      if (typeof date === 'string' && !isNaN(Date.parse(date))) {
+        const parsedDate = new Date(date); // Parse the string into a Date object
+        if (endOfDay) {
+          parsedDate.setUTCHours(23, 59, 59, 999); // Set to end of day in UTC
+        } else {
+          parsedDate.setUTCHours(0, 0, 0, 0); // Set to start of day in UTC
+        }
+        return Math.floor(parsedDate.getTime() / 1000); // Return epoch time in seconds
+      }
+
+      // ❌ If the input format is unrecognized, log an error
+      console.error('Unrecognized date format:', date);
+      return undefined;
+    } catch (error) {
+      console.error('Error processing date:', date, error);
+      return undefined;
+    }
+  }
+
+  static convertDateMoment(date: any, endOfDay: boolean = false, includeTime: boolean = false): number | moment.Moment | undefined {
+    try {
+      if (!date) {
+        return undefined; // Handle null or undefined input
+      }
+
+      // ✅ If input is a number (epoch time), return a correct Date object
+      if (typeof date === 'number' && !isNaN(date)) {
+        const isSeconds = date < 10000000000; // Check if input is in seconds
+        const epochMs = isSeconds ? date * 1000 : date; // Convert SECONDS to MILLISECONDS
+        // return new Date(epochMs); // Force UTC interpretation
+        return moment(epochMs); // Return as Moment object
+      }
+
+      // ✅ Handle Moment.js Objects (Return Epoch Time in Seconds)
+      if (moment.isMoment(date)) {
+        const momentDate = endOfDay
           ? date.utc().endOf('day') // Set to end of day in UTC
           : date.utc().startOf('day'); // Set to start of day in UTC
         return Math.floor(momentDate.valueOf() / 1000); // Return epoch time in seconds

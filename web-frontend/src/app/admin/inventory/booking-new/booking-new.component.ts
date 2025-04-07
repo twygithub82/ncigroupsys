@@ -76,7 +76,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
   ]
 })
 export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -175,6 +175,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   testClassCvList: CodeValuesItem[] = [];
   testClassCvListNewBooking: CodeValuesItem[] = [];
   tankStatusInYard = TANK_STATUS_IN_YARD;
+
+  selectedCompany?: string = "";
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
@@ -320,52 +322,88 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+    const selectableRows = this.sotList.filter(row => !this.checkDisable(row));
     const numSelected = selectedItems.size;
-    const numRows = this.sotList.length;
+    const numRows = selectableRows.length;
     return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
+    const selectableRows = this.sotList.filter(row => !this.checkDisable(row));
+
     if (this.isAllSelected()) {
       this.clearPageSelection();
     } else {
-      this.selectAllOnPage();
+      if (selectableRows.length > 0) {
+        // Set selectedCompany based on the first selectable row
+        this.selectedCompany = selectableRows[0].storing_order?.customer_company_guid;
+        this.selectAllOnPage(selectableRows);
+      }
     }
   }
 
   /** Clear selection on the current page */
   clearPageSelection() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+
     this.sotList.forEach(row => {
       this.sotSelection.deselect(row);
       selectedItems.delete(row.guid!);
     });
+
+    // If the current page is cleared, also clear the selectedCompany
+    if (selectedItems.size === 0) {
+      this.selectedCompany = undefined;
+    }
+
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Select all items on the current page */
-  selectAllOnPage() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      this.sotSelection.select(row);
-      selectedItems.add(row.guid!);
+  selectAllOnPage(selectableRows: StoringOrderTankItem[]) {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+
+    selectableRows.forEach(row => {
+      // Only select rows that match the selectedCompany
+      if (this.selectedCompany === row.storing_order?.customer_company_guid) {
+        this.sotSelection.select(row);
+        selectedItems.add(row.guid!);
+      }
     });
+
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
-  /** Handle row selection */
-
   toggleRow(row: StoringOrderTankItem) {
-    this.sotSelection.toggle(row);
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+
+    // Check if the row is already selected
     if (this.sotSelection.isSelected(row)) {
-      selectedItems.add(row.guid!);
-    } else {
+      // Deselect the row
+      this.sotSelection.deselect(row);
       selectedItems.delete(row.guid!);
+
+      // If the deselected row was the last selected row, clear the selectedCompany
+      if (selectedItems.size === 0) {
+        this.selectedCompany = undefined;
+      }
+    } else {
+      // If the row is not selected, check if it should be selected based on the company
+      if (!this.selectedCompany || this.selectedCompany === row.storing_order?.customer_company_guid) {
+        this.sotSelection.select(row);
+        this.selectedCompany = row.storing_order?.customer_company_guid;
+        selectedItems.add(row.guid!);
+      }
     }
+
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  checkDisable(row: StoringOrderTankItem): boolean {
+    // Disable if a company is selected and the row's company does not match the selectedCompany
+    return !!this.selectedCompany && this.selectedCompany !== row.storing_order?.customer_company_guid;
   }
 
   /** Update selection for the current page */
@@ -623,7 +661,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
+      width: '90vw',
       data: {
         item: selectedItems,
         action: 'new',
@@ -647,6 +685,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   editBookingDetails(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
     this.preventDefault(event);  // Prevents the form submission
+    if (this.checkDisable(sot)) {
+      return;
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -654,7 +695,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
+      width: '90vw',
       data: {
         item: [sot],
         action: 'edit',
@@ -686,6 +727,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '50vw',
       data: {
         action: "cancel",
         sot: sot,

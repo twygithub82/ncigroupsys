@@ -12,18 +12,19 @@
   <div mat-dialog-content>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-        <div class="responsive_table">
-          <table mat-table [dataSource]="storingOrderTank" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+        <div class="booking-tbl responsive_table">
+          <table mat-table [dataSource]="storingOrderTank" matSort
+            class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <!-- ID Column -->
             <ng-container matColumnDef="id">
               <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
                 {{data.translatedLangText.TANK_NO}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
                 <span class="mobile-label">{{data.translatedLangText.TANK_NO}}:</span>{{row.tank_no}}
               </mat-cell>
             </ng-container>
@@ -37,57 +38,81 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="eir_no">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl'">
                 {{data.translatedLangText.EIR_NO}}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
                 <span
                   class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_no}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="eir_dt">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
                 {{data.translatedLangText.EIR_DATE}}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
                 <span
                   class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="capacity">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
                 {{data.translatedLangText.CAPACITY}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
                 <span
                   class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="tare_weight">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
                 {{data.translatedLangText.TARE_WEIGHT}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
                 <span
                   class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_status">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
                 {{data.translatedLangText.STATUS}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
                 <span
                   class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.tank_status_cv)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="yard">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
                 {{data.translatedLangText.YARD}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
                 <span
                   class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(igDS.getInGateItem(row.in_gate)?.yard_cv)}}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="reference">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{data.translatedLangText.REFERENCE}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                <span class="mobile-label">{{data.translatedLangText.REFERENCE}}:</span>
+                <tlx-form-field customClass="mat-table-form-txt-40px">
+                  <mat-form-field>
+                    <input tlxFormInput matInput [(ngModel)]="row.reference">
+                  </mat-form-field>
+                </tlx-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="action">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row; let i=index;"
+                [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl'">
+                <button mat-icon-button color="warn" (click)="removeSot($event, i)"
+                  [matTooltip]="data.translatedLangText.CANCEL" class="tbl-action-btn">
+                  <mat-icon>cancel</mat-icon>
+                </button>
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -135,7 +160,7 @@
             <input matInput formControlName="booking_dt" [matDatepicker]="booking_dt_picker" [min]="startDateToday"
               required>
             <mat-datepicker-toggle matSuffix [for]="booking_dt_picker"></mat-datepicker-toggle>
-            <mat-datepicker #booking_dt_picker [startAt]="startDateToday"></mat-datepicker>
+            <mat-datepicker #booking_dt_picker></mat-datepicker>
             @if (bookingForm.get('booking_dt')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.BOOKING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
