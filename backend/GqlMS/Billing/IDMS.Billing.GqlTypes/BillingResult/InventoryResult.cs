@@ -106,6 +106,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     public class InventoryPerMonth
     {
         public string month { get; set; }
+        public string? name { get; set; }   
         public int count { get; set; }
         public double percentage { get; set; }
     }
