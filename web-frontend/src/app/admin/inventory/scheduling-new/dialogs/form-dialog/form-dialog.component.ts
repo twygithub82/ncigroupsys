@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { BookingItem } from 'app/data-sources/booking';
@@ -64,6 +65,7 @@ export interface DialogData {
     MatTableModule,
     MatDividerModule,
     MatCardModule,
+    MatTooltipModule,
   ],
 })
 export class FormDialogComponent {
@@ -192,7 +194,7 @@ export class FormDialogComponent {
       tank_status_cv: [schedulingSot.storing_order_tank?.tank_status_cv],
       yard_cv: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.yard_cv],
       reference: [schedulingSot.reference],
-      scheduling_dt: [Utility.convertDate(schedulingSot.scheduling_dt) as Date],
+      scheduling_dt: [Utility.convertDateMoment(schedulingSot.scheduling_dt)],
       startDate: [Utility.getEarlierDate(Utility.convertDate(schedulingSot.scheduling_dt) as Date, this.startDateToday)]
     });
   }
@@ -429,5 +431,11 @@ export class FormDialogComponent {
 
   canEdit(): boolean {
     return true;
+  }
+
+  removeSot(event: Event, index: number) {
+    event.stopPropagation();
+    this.storingOrderTank.splice(index, 1);
+    this.storingOrderTank = [...this.storingOrderTank];
   }
 }

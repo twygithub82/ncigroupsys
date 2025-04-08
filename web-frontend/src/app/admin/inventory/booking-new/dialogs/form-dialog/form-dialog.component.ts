@@ -133,9 +133,7 @@ export class FormDialogComponent {
   submit() {
     if (this.bookingForm?.valid) {
       const sotList: any = [...this.storingOrderTank];
-      debugger
       const bookDt = this.bookingForm.get('booking_dt')?.value?.clone();
-      const bookDt2 = Utility.convertDate(bookDt);
       const selectedIds = sotList.map((item: any) => {
         return {
           guid: this.booking?.guid,
@@ -282,7 +280,6 @@ export class FormDialogComponent {
   removeSot(event: Event, index: number) {
     event.stopPropagation();
     this.storingOrderTank.splice(index, 1);
-    // this.bookingForm.get('storing_order_tank')?.updateValueAndValidity();
     this.storingOrderTank = [...this.storingOrderTank];
   }
 }
