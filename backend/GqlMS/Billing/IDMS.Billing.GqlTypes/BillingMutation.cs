@@ -9,6 +9,8 @@ using IDMS.Billing.GqlTypes.LocalModel;
 using IDMS.Models.Service;
 using System.ComponentModel.Design;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
+using IDMS.Models.Shared;
+using System.Data.Entity;
 
 namespace IDMS.Billing.GqlTypes
 {
@@ -335,6 +337,51 @@ namespace IDMS.Billing.GqlTypes
                 var res = await context.SaveChangesAsync();
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                return res;
+
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateStorageDetail(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, storage_detail storageDetails)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (storageDetails == null)
+                    throw new GraphQLException(new Error($"Storage details cannot be null or empty", "ERROR"));
+
+                if (string.IsNullOrEmpty(storageDetails.guid))
+                {
+                    storage_detail newSD = storageDetails;
+                    newSD.guid = Util.GenerateGUID();
+                    newSD.create_by = user;
+                    newSD.create_dt = currentDateTime;
+                    newSD.state_cv = storageDetails.state_cv;
+                    newSD.total_cost = storageDetails.total_cost;   
+                    newSD.remaining_free_storage = storageDetails.remaining_free_storage;
+
+                    await context.AddAsync(newSD);    
+                }
+                else
+                {
+                    var updateSD = new storage_detail() { guid = storageDetails.guid };
+                    context.storage_detail.Attach(updateSD);
+                    updateSD.update_by = user;
+                    updateSD.update_dt = currentDateTime;
+                    updateSD.remarks = storageDetails.remarks;
+                    updateSD.total_cost = storageDetails.total_cost;
+                    updateSD.remaining_free_storage = storageDetails.remaining_free_storage;
+                    updateSD.state_cv = storageDetails.state_cv;
+                }
+
+                var res = await context.SaveChangesAsync();
                 return res;
 
             }

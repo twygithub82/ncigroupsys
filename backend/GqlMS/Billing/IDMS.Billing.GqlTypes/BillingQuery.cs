@@ -11,6 +11,7 @@ using CommonUtil.Core.Service;
 using IDMS.Models.Tariff;
 using IDMS.Models.Parameter;
 using IDMS.Billing.GqlTypes.BillingResult;
+using IDMS.Models.Shared;
 
 
 namespace IDMS.Billing.GqlTypes
@@ -46,6 +47,24 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 return context.billing_sot.Where(d => d.delete_dt == null || d.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<storage_detail> QueryStorageDetail([Service] IHttpContextAccessor httpContextAccessor,
+                [Service] IConfiguration config, ApplicationBillingDBContext context)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                return context.storage_detail.Where(d => d.delete_dt == null || d.delete_dt == 0);
             }
             catch (Exception ex)
             {

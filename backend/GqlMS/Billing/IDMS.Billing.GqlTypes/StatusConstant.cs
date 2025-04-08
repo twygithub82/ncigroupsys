@@ -8,6 +8,14 @@ namespace IDMS.Billing.GqlTypes
         public const string CANCEL = "CANCEL";
     }
 
+    public class StorageDetailState
+    {
+        public const string START = "START";
+        public const string BILLING = "BILLING";
+        public const string END = "END";
+        public const string START_END = "START_END";     
+    }
+
     public class BillingParty
     {
         public const string OWNER = "OWNER";
