@@ -23,11 +23,30 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard,  CustomerMonthlySales, ManagementReportYearlyInventory } from 'app/data-sources/reports';
+import { report_status_yard,  MonthlyProcessData,InventoryAnalyzer, ManagementReportYearlyInventory } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
+import {
+  ChartComponent,
+  ApexAxisChartSeries,
+  ApexChart,
+  ApexXAxis,
+  ApexDataLabels,
+  ApexPlotOptions,
+  ApexYAxis,
+  ApexLegend,
+  ApexStroke,
+  ApexFill,
+  ApexTooltip,
+  ApexTitleSubtitle,
+  ApexGrid,
+  ApexMarkers,
+  ApexNonAxisChartSeries,
+  ApexResponsive,
+  NgApexchartsModule,
+} from 'ng-apexcharts';
 
 export interface DialogData {
   repData: ManagementReportYearlyInventory,
@@ -35,6 +54,12 @@ export interface DialogData {
   repType:string,
   customer:string
 }
+
+interface SeriesItem {
+  name: string;
+  data: number[];
+}
+
 @Component({
   selector: 'app-inventory-sales-report-details-pdf',
   templateUrl: './inventory-sales-details-pdf.component.html',
@@ -47,7 +72,8 @@ export interface DialogData {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    NgApexchartsModule
   ],
 })
 export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -238,6 +264,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     REPAIR_MONTHLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
     CLEAN_MONTHLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
     CUSTOMER_MONTHLY_SALES_REPORT:'COMMON-FORM.CUSTOMER-MONTHLY-SALES-REPORT',
+    YEARLY_INVENTORY_REPORT:'COMMON-FORM.YEARLY-INVENTORY-REPORT',
+    SUMMARY_OF_INVENTORY:"COMMON-FORM.SUMMARY-OF-INVENTORY",
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
     AVERAGE:'COMMON-FORM.AVERAGE',
@@ -249,7 +277,11 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     YEARLY_SALES_REPORT:'COMMON-FORM.YEARLY-SALES-REPORT',
     GATE_SURCHARGE:'COMMON-FORM.GATE-SURCHARGE',
     LOLO:'COMMON-FORM.LOLO',
-    PREINSPECTION:'COMMON-FORM.PREINSPECTION'
+    PREINSPECTION:'COMMON-FORM.PREINSPECTION',
+    ON_DEPOT:'COMMON-FORM.ON-DEPOT',
+    OUT_GATE:'COMMON-FORM.OUT-GATE',
+    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL'
+    
   }
 
   type?: string | null;
@@ -302,6 +334,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   repType?:string;
   customer?:string;
   index: number = 0;
+  lineChartOptions?:any; 
+  pieChartOptions?:any;
   // date:string='';
   // invType:string='';
 
@@ -317,6 +351,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer) {
     super();
+    this.InitChartValues();
     this.translateLangText();
     this.steamDS = new SteamDS(this.apollo);
     this.steamPartDS = new SteamPartDS(this.apollo);
@@ -343,6 +378,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     this.date= this.data.date;
     this.repType=this.data.repType;
     this.customer=this.data.customer;
+    //this.InitChartValues();
     this.onDownloadClick();
 
   }
@@ -593,6 +629,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
 
+ 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -624,45 +661,45 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const reportTitle = this.GetReportTitle();
     const headers = [[
       { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.MONTH, rowSpan: 2,  styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.GATE_SURCHARGE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.IN_GATE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.OUT_GATE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.ON_DEPOT, rowSpan: 2,colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
+      //{ content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
       { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
       { content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
 
     ],
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for PREINSPECTION
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for LOLO
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for GATE_SURCHARGE
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for STEAM
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for RESIDUE
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for CLEANING
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for PREINSPECTION
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for LOLO
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for GATE_SURCHARGE
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for STEAM
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for RESIDUE
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for CLEANING
+     // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 15,minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+     // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+     // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
@@ -699,30 +736,90 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     }
     var idx = 0;
-    // for (let n = 0; n < (this.repData?.?.length||0); n++) {
 
-    //   //let startY = lastTableFinalY + 15; // Start Y position for the current table
-    //   let itm = this.repData?.customer_sales?.[n];
-    //     data.push([
-    //       (++idx).toString(), itm?.code || "", itm?.name || "",(itm?.tank_in_count),
-    //       (itm?.steam_count)||"",Utility.formatNumberDisplay(itm?.steam_cost),
-    //       (itm?.clean_count)||"",Utility.formatNumberDisplay(itm?.clean_cost),
-    //       (itm?.in_service_count)||"",Utility.formatNumberDisplay(itm?.in_service_cost),
-    //       (itm?.offhire_count)||"",Utility.formatNumberDisplay(itm?.offhire_cost)
-    //     ]);
-    // }
+    var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes(this.repData!);
+   
 
-    // data.push([this.translatedLangText.TOTAL,"","",(this.repData?.total_tank_in),
-    //   (this.repData?.total_steam_count)||"",Utility.formatNumberDisplay(this.repData?.total_steam_cost),
-    //   (this.repData?.total_clean_count)||"",Utility.formatNumberDisplay(this.repData?.total_clean_cost),
-    //   (this.repData?.total_in_service_count)||"",Utility.formatNumberDisplay(this.repData?.total_in_service_cost),
-    //   (this.repData?.total_offhire_count)||"",Utility.formatNumberDisplay(this.repData?.total_offhire_cost)
-    // ]);
+    var series:SeriesItem[]=[];
+    var index:number=1;
+    var prcss:string[]=[
+      this.translatedLangText.IN_GATE,this.translatedLangText.OUT_GATE,
+      this.translatedLangText.STEAM,this.translatedLangText.CLEANING,
+      this.translatedLangText.REPAIR
+    ]
+    var prcsValues:number[]=[]
+    for (const monthData of grpData.monthlyData) {
+      data.push([
+        (++idx).toString(),monthData.key,
+        monthData.gateIn?.count||'',Utility.formatNumberDisplay(monthData.gateIn?.percentage),
+        monthData.gateOut?.count||'',Utility.formatNumberDisplay(monthData.gateOut?.percentage),
+        monthData.depot?.count||'',"",
+        monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.percentage),
+        monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.percentage),
+        monthData.repair?.count||'',Utility.formatNumberDisplay(monthData.repair?.percentage),
+      ]);
+      prcss.forEach(p=>{
+        var s = series.find(s=>s.name==p);
+        var bInsert=false;
+        if(!s)
+        {
+          s={
+            name: p,
+            data: [] // initialize with an empty array or default values
+          };
+          bInsert=true;
+        }
+        switch (p)
+        {
+          case this.translatedLangText.IN_GATE:
+            s.data.push(monthData.gateIn?.count||0);
+          break;
+          case this.translatedLangText.OUT_GATE:
+            s.data.push(monthData.gateOut?.count||0);
+          break;
+          case this.translatedLangText.STEAM:
+            s.data.push(monthData.steaming?.count||0);
+          break;
+          case this.translatedLangText.CLEANING:
+            s.data.push(monthData.cleaning?.count||0);
+          break;
+          case this.translatedLangText.REPAIR:
+            s.data.push(monthData.repair?.count||0);
+          break;
+        }
+        if(bInsert)
+        {
+          series.push(s);
+        }
+      });
+    }
+    data.push([
+      this.translatedLangText.TOTAL,"",
+      this.repData?.gate_in_inventory?.total_count||'','',
+      this.repData?.gate_out_inventory?.total_count||'','',
+      '','',
+      this.repData?.steaming_yearly_inventory?.total_count||'','',
+      this.repData?.cleaning_yearly_inventory?.total_count||'','',
+      this.repData?.repair_yearly_inventory?.total_count||'',''
+    ]);
+
+    data.push([
+      this.translatedLangText.AVERAGE,"",
+      this.repData?.gate_in_inventory?.average_count||'',"",
+      this.repData?.gate_out_inventory?.average_count||'', '',
+      '','',
+      this.repData?.steaming_yearly_inventory?.average_count||'', '',
+      this.repData?.cleaning_yearly_inventory?.average_count||'', '',
+      this.repData?.repair_yearly_inventory?.average_count||'', ''
+    ]);
     
-
-    // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
-    // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
-    // this.displayTotalWithRO()]);
+    prcsValues=[
+      this.repData?.gate_in_inventory?.total_count||0,
+      this.repData?.gate_out_inventory?.total_count||0,
+      this.repData?.steaming_yearly_inventory?.total_count||0,
+      this.repData?.cleaning_yearly_inventory?.total_count||0,
+      this.repData?.repair_yearly_inventory?.total_count||0,
+    ]
 
     pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -747,22 +844,72 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         //valign: 'middle', // Vertically align content
       },
       didParseCell: (data: any) => {
-        let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        let colSpan=3;
-        //let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
+        let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
+        let colSpan=2;
+        let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
+        let depotCell=[6,7];
         
-        
-        if(data.row.index==totalRowIndex){
+        if(data.section=="body" && ((data.column.index%2)==0))
+        {
+           var key = `${data.row.raw[1]}`;
+           var matched=0;
+           var prop="";
+           switch (data.column.index)
+           {
+             case 2:
+               prop="gateIn";
+             
+              break;
+             case 4:
+               prop="gateOut";
+              break;
+             case 8:
+              prop="steaming";
+              break;
+            case 10:
+               prop="cleaning";
+               break;
+            case 12:
+              var prop="repair";
+              break;
+           }
+           if(prop)
+           {
+             var textColor="";
+            if(grpData.processExtremes[prop].highest?.key==key)
+              {
+                textColor="#009F00";
+              }
+              else if(grpData.processExtremes[prop].lowest?.key==key)
+              {
+                textColor="#EF0000";
+              }
+              if(textColor)
+              {
+                data.cell.styles.textColor=textColor;
+              }
+          }
+        }
+        if(data.row.index==totalRowIndex ||data.row.index==averageRowIndex){
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fillColor=[231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
-          if (data.column.index === 0) {
+          if (data.column.index %2==0) {
             data.cell.colSpan = colSpan;  // Merge 4 columns into one
-            data.cell.styles.halign = 'right'; // Center text horizontally
             data.cell.fontSize=8;
+            if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
+            
           }
+        
         }
-        if ((data.row.index==totalRowIndex) && data.column.index > 0 && data.column.index < colSpan) {
+        else if (depotCell.includes(data.column.index))
+        {
+          data.cell.colSpan = colSpan;
+        }
+
+        if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)||depotCell.includes(data.column.index)) 
+          && (data.column.index%2==1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
+        ) {
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
         }
@@ -783,6 +930,66 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
     });
 
+    // var x
+    this.lineChartOptions.xaxis={
+      categories: grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[],
+    };
+    this.lineChartOptions.series=series;
+
+    this.pieChartOptions.labels=prcss;
+    this.pieChartOptions.series2=prcsValues;
+
+    // var lineChartValues={
+    //   xaxis:{
+    //     categories: grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[],
+    //     title: {
+    //       text: 'Month',
+    //     },
+    //     labels: {
+    //       style: {
+    //         colors: '#9aa0ac',
+    //       },
+    //     },
+    //   },
+    //   series:series
+    // };
+
+
+ setTimeout(async()=>{
+
+  startY=lastTableFinalY+10;
+  let chartContentWidth = pageWidth - leftMargin - rightMargin;
+  const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+  for (var i = 0; i < cardElements.length; i++) {
+    if (i > 0) {
+      pdf.addPage();
+      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+      pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+      startY=topMargin+20;
+    }
+    const card1 = cardElements[i];
+    const canvas1 = await html2canvas(card1, { scale: scale });
+    const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+
+    // Calculate aspect ratio
+    const aspectRatio = canvas1.width / canvas1.height;
+
+    // Calculate scaled height based on available width
+    let imgHeight1 = chartContentWidth / aspectRatio;
+
+    // Check if the scaled height exceeds the available page height
+    const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+    if (imgHeight1 > maxPageHeight) {
+      // Adjust height to fit within the page
+      imgHeight1 = maxPageHeight;
+      // Recalculate width to maintain aspect ratio
+      chartContentWidth = imgHeight1 * aspectRatio;
+    }
+
+    // Add the image to the PDF
+    pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+  }
+
     const totalPages = pdf.getNumberOfPages();
 
 
@@ -797,12 +1004,16 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 
-    this.generatingPdfProgress = 100;
+  //  this.generatingPdfProgress = 100;
     //pdf.save(fileName);
-    this.generatingPdfProgress = 0;
+  //  this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
+
+  },50);
+
+   // this.dialogRef.close();
   }
 
  
@@ -911,7 +1122,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   }
   GetReportTitle(): string {
     var title:string='';
-         title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+         title = `${this.translatedLangText.YEARLY_INVENTORY_REPORT} - ${this.repType}`;
     return `${title}`
   }
 
@@ -947,6 +1158,177 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     return retval;
 
+  }
+
+  InitChartValues(){
+    this.pieChartOptions = {
+      title: {
+        text: this.translatedLangText.SUMMARY_OF_INVENTORY,
+        align: 'center',
+      },
+      chart: {
+        height: 450,
+        type: 'pie',
+        foreColor: '#9aa0ac',
+        toolbar: {
+          show: false,
+        },
+        animations: {
+          enabled: false, // <-- disables all animations
+        },
+      },
+      labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+      series2: [44, 55, 13, 43, 22],
+      legend:{
+        fontSize:'14px',
+        // position: "bottom",
+        // horizontalAlign: "center",
+        // itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
+        labels: {
+          colors: "#333", // Set label text color
+          useSeriesColors: false, // Use the color of the series for labels
+      //    padding: 10, // Adjust space between marker and label
+        },
+      
+      },
+      // series: [
+      //   {
+      //     name: 'PRODUCT A',
+      //     data: [44, 55, 41, 67, 22, 43],
+      //   },
+      //   {
+      //     name: 'PRODUCT B',
+      //     data: [13, 23, 20, 8, 13, 27],
+      //   },
+      //   {
+      //     name: 'PRODUCT C',
+      //     data: [11, 17, 15, 15, 21, 14],
+      //   },
+      //   {
+      //     name: 'PRODUCT D',
+      //     data: [21, 7, 25, 13, 22, 8],
+      //   },
+      // ],
+      // responsive: [
+      //   {
+      //     breakpoint: 480,
+      //     options: {
+      //       chart: {
+      //         width: 200,
+      //       },
+      //       legend: {
+      //         position: 'bottom',
+      //       },
+      //     },
+      //   },
+      // ],
+      // xaxis: {
+      //   type: 'category',
+      //   categories: [
+      //     'Feb',
+      //     'Mar',
+      //     'Apr',
+      //     'May',
+      //     'Jun',
+      //     'Jul',
+      //   ],
+      //   labels: {
+      //     style: {
+      //       colors: '#9aa0ac',
+      //     },
+      //   },
+      // },
+    };
+
+    this.lineChartOptions = {
+      
+      chart: {
+        height: 450,
+        type: 'line',
+        toolbar: {
+          show: false,
+        },
+        animations: {
+          enabled: false, // <-- disables all animations
+        },
+        foreColor: '#9aa0ac',
+      },
+      colors: ['#77B6EA', '#545454'],
+      dataLabels: {
+        enabled: true,
+      },
+      stroke: {
+        curve: 'smooth',
+      },
+      series: [
+        {
+          name: 'High - 2013',
+          data: [28, 29, 33, 36, 32, 32, 33],
+        },
+        {
+          name: 'Low - 2013',
+          data: [12, 11, 14, 18, 17, 13, 13],
+        },
+      ],
+      title: {
+      },
+      grid: {
+        show: true,
+        borderColor: '#9aa0ac',
+        strokeDashArray: 1,
+      },
+      markers: {
+        size: 6,
+      },
+      xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      },
+      yaxis: {
+        title: {
+          text: 'Temperature',
+        },
+        labels: {
+          style: {
+            colors: ['#9aa0ac'],
+          },
+        },
+        min: 5,
+        max: 40,
+      },
+      legend:{
+        fontSize:'14px',
+        position: "bottom",
+        horizontalAlign: "center",
+        itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
+        labels: {
+          colors: "#333", // Set label text color
+          useSeriesColors: false, // Use the color of the series for labels
+      //    padding: 10, // Adjust space between marker and label
+        },
+      
+      },
+      // legend: {
+      //   position: 'top',
+      //   horizontalAlign: 'right',
+      //   floating: true,
+      //   offsetY: -25,
+      //   offsetX: -5,
+      // },
+      tooltip: {
+        theme: 'dark',
+        marker: {
+          show: true,
+        },
+        x: {
+          show: true,
+        },
+      },
+    };
   }
  
 }

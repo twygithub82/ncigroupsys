@@ -727,12 +727,15 @@ export class SurveyorDetail
  export class InventoryPerMonth{
   percentage?:number;
   count?:number;
-  month?:string;
+  key?:string;
+  name?:string;
+
   
   constructor(item: Partial<InventoryPerMonth> = {}) {
     this.percentage=item.percentage;
     this.count=item.count;
-    this.month=item.month;
+    this.key=item.key;
+    this.name=item.name;
     
     } 
 
@@ -754,15 +757,15 @@ constructor(item: Partial<InventoryYearly> = {}) {
  {
   cleaning_yearly_inventory?:InventoryYearly;
   depot_yearly_inventory?:InventoryYearly;
-  gate_in_yearly_inventory?:InventoryYearly;
-  gate_out_yearly_inventory?:InventoryYearly;
+  gate_in_inventory?:InventoryYearly;
+  gate_out_inventory?:InventoryYearly;
   repair_yearly_inventory?:InventoryYearly;
   steaming_yearly_inventory?:InventoryYearly;
   constructor(item: Partial<ManagementReportYearlyInventory> = {}) {
     this.cleaning_yearly_inventory=item.cleaning_yearly_inventory;
     this.depot_yearly_inventory=item.depot_yearly_inventory;
-    this.gate_in_yearly_inventory=item.gate_in_yearly_inventory;
-    this.gate_out_yearly_inventory=item.gate_out_yearly_inventory;
+    this.gate_in_inventory=item.gate_in_inventory;
+    this.gate_out_inventory=item.gate_out_inventory;
     this.repair_yearly_inventory=item.repair_yearly_inventory;
     this.steaming_yearly_inventory=item.steaming_yearly_inventory;
     } 
@@ -844,6 +847,177 @@ export class ManagementReportMonthlyInventory{
     this.steaming_inventory=item.steaming_inventory;
     this.gate_in_out_inventory=item.gate_in_out_inventory;
     } 
+}
+
+
+// First, define a proper interface for the monthly data
+export class MonthlyProcessData {
+  key?: string;
+  cleaning?: { count?: number; percentage?: number,key?:string,name?:string };
+  depot?: { count?: number; percentage?: number,key?:string,name?:string };
+  gateIn?: { count?: number; percentage?: number,key?:string,name?:string };
+  gateOut?: { count?: number; percentage?: number,key?:string,name?:string };
+  repair?: { count?: number; percentage?: number,key?:string,name?:string };
+  steaming?: { count?: number; percentage?: number,key?:string,name?:string };
+  constructor(item: Partial<MonthlyProcessData> = {}) {
+    this.key=item.key;
+    this.cleaning=item.cleaning;
+    this.depot=item.depot;
+    this.gateIn=item.gateIn;
+    this.gateOut=item.gateOut;
+    this.repair=item.repair;
+    this.steaming=item.steaming;
+    } 
+}
+
+export class InventoryAnalyzer {
+ static getMonthIndex(monthName: string): number {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months.indexOf(monthName);
+  }
+  static groupByMonthAndFindExtremes(data: ManagementReportYearlyInventory) {
+    // Initialize a map to group by month with proper typing
+    const monthlyData: Record<string, MonthlyProcessData> = {};
+
+    // Process each inventory type
+    const processData = [
+      { name: 'cleaning', data: data.cleaning_yearly_inventory?.inventory_per_month },
+      { name: 'depot', data: data.depot_yearly_inventory?.inventory_per_month },
+      { name: 'gateIn', data: data.gate_in_inventory?.inventory_per_month },
+      { name: 'gateOut', data: data.gate_out_inventory?.inventory_per_month },
+      { name: 'repair', data: data.repair_yearly_inventory?.inventory_per_month },
+      { name: 'steaming', data: data.steaming_yearly_inventory?.inventory_per_month },
+    ];
+
+    // Populate monthlyData with type-safe assignments
+    processData.forEach(process => {
+    
+        process.data?.forEach(monthData => {
+          if (!monthData.key) return;
+          
+          if (!monthlyData[monthData.key]) {
+            monthlyData[monthData.key] = { key: monthData.key };
+          }
+          
+          // Use count if available, otherwise percentage
+          const value = monthData.count ?? monthData.percentage;
+          
+          // Type-safe assignment using a type assertion
+          const monthlyEntry = monthlyData[monthData.key];
+          switch (process.name) {
+            case 'cleaning':
+              monthlyEntry.cleaning= {
+                count: monthData.count,
+                percentage: monthData.percentage,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'depot':
+              monthlyEntry.depot= {
+                count: monthData.count,
+                percentage: monthData.percentage,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'gateIn':
+              monthlyEntry.gateIn = {
+                count: monthData.count,
+                percentage: monthData.percentage,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'gateOut':
+              monthlyEntry.gateOut = {
+                count: monthData.count,
+                percentage: monthData.percentage,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'repair':
+              monthlyEntry.repair = {
+                count: monthData.count,
+                percentage: monthData.percentage,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'steaming':
+              monthlyEntry.steaming = {
+                count: monthData.count,
+                percentage: monthData.percentage,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+          }
+        });
+    });
+
+    // Rest of your code remains the same...
+    // Convert to array and sort by month if needed
+    const monthlyArray = Object.values(monthlyData).sort((a, b) => {
+      const monthIndexA = this.getMonthIndex(a.key!);
+      const monthIndexB = this.getMonthIndex(b.key!);
+      return monthIndexA - monthIndexB;
+    });
+
+    // Find highest and lowest for each process
+    const processExtremes: Record<string, {
+      highest: { key: string; value: number | undefined };
+      lowest: { key: string; value: number | undefined };
+    }> = {};
+
+    processData.forEach(process => {
+      const processName = process.name;
+      const values = monthlyArray
+        .map(item => {
+          let process:any = item[processName as keyof MonthlyProcessData];
+          return{
+            key: item.key!,
+            value: process?.count,
+            percentage: process?.percentage,
+            name: process?.name
+          }
+          // key: item.key!,
+          // value: item[processName as keyof MonthlyProcessData]? //as number | undefined
+        })
+        .filter(item => item.value !== undefined && item.value > 0);
+
+      // const values = monthlyArray
+      // .map(item => ({
+      //   key: item.key,
+      //   value: item[processName as keyof MonthlyProcessData] as number | undefined
+      // }))
+      // .filter(item => item.value !== undefined && (item.value as number) > 0)as { month: string; value: number }[];
+
+      if (values.length > 0) {
+        const sorted = [...values].sort((a, b) => a.value! - b.value!);
+        
+        processExtremes[processName] = {
+          highest: sorted[sorted.length - 1],
+          lowest: sorted[0] // This will now be the smallest value > 0
+        };
+      } else {
+        // Handle case where no values > 0 exist
+        processExtremes[processName] = {
+          highest: { key: '', value: undefined },
+          lowest: { key: '', value: undefined }
+        };
+      }
+    });
+
+    return {
+      monthlyData: monthlyArray,
+      processExtremes
+    };
+  }
 }
 
 export const GET_CLEANING_INVENTORY_REPORT = gql`
@@ -1396,7 +1570,8 @@ export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
         total_count
         inventory_per_month {
           count
-          month
+          key
+          name
           percentage
         }
       }
@@ -1405,7 +1580,8 @@ export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
         total_count
         inventory_per_month {
           count
-          month
+          key
+          name
           percentage
         }
       }
@@ -1414,7 +1590,8 @@ export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
         total_count
         inventory_per_month {
           count
-          month
+          key
+          name
           percentage
         }
       }
@@ -1423,7 +1600,8 @@ export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
         total_count
         inventory_per_month {
           count
-          month
+          key
+          name
           percentage
         }
       }
@@ -1432,7 +1610,8 @@ export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
         total_count
         inventory_per_month {
           count
-          month
+          key
+          name
           percentage
         }
       }
@@ -1441,7 +1620,8 @@ export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
         total_count
         inventory_per_month {
           count
-          month
+          key
+          name
           percentage
         }
       }

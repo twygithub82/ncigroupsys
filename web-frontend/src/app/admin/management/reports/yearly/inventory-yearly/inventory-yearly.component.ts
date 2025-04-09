@@ -161,7 +161,8 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     MONTH_START:'COMMON-FORM.MONTH-START',
     MONTH_END:'COMMON-FORM.MONTH-END',
     GENERATE_REPORT:'COMMON-FORM.GENERATE-REPORT',
-    REPORT_TYPE:'COMMON-FORM.REPORT-TYPE'
+    REPORT_TYPE:'COMMON-FORM.REPORT-TYPE',
+    GATE_SURCHARGE:'COMMON-FORM.GATE-SURCHARGE'
   }
 
   invForm?: UntypedFormGroup;
@@ -230,7 +231,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   ) {
     super();
     this.translateLangText();
-    this.initSearchForm();
+    
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
@@ -247,9 +248,10 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeValueChanges();
+    
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
+    
     
   }
 
@@ -263,7 +265,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
       month_start: [`${thisMonth}`],
       month_end: [`${thisMonth}`],
       inventory_type:['ALL'],
-      report_type:['CUSTOMER_WISE'],
+      report_type:[ this.reportTypeCvList.find(f=>f.code_val=='MONTH_WISE')],
     });
   }
 
@@ -282,7 +284,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
         }
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
-          this.updateValidators(this.customerCodeControl, this.customer_companyList);
+         // this.updateValidators(this.customerCodeControl, this.customer_companyList);
           // if (!this.customerCodeControl.invalid) {
           //   if (this.customerCodeControl.value?.guid) {
           //     let mainCustomerGuid = this.customerCodeControl.value.guid;
@@ -311,17 +313,19 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     });
     this.cvDS.connectAlias('reportTypeCv').subscribe(data => {
       this.reportTypeCvList =data;
-    });
-    var thisYear = new Date().getFullYear();
-    var startYear = thisYear-5;
-    for(var i=startYear ; i<=thisYear;i++)
-    {
-      this.yearList.push(i.toString());
-    }
-    this.monthList=Array.from({ length: 12 }, (_, i) =>
-      new Date(2000, i, 1).toLocaleString("en-US", { month: "long" })
-    );
-   
+      this.initSearchForm();
+      this.initializeValueChanges();
+    
+      var thisYear = new Date().getFullYear();
+      var startYear = thisYear-5;
+      for(var i=startYear ; i<=thisYear;i++)
+      {
+        this.yearList.push(i.toString());
+      }
+      this.monthList=Array.from({ length: 12 }, (_, i) =>
+        new Date(2000, i, 1).toLocaleString("en-US", { month: "long" })
+      );
+   });
   }
   showNotification(
     colorName: string,
@@ -372,19 +376,22 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
+    let reportType="";
     //let processType=this.processType;
 
    
 
       var customerName:string="";
-      where.inventory_type =this.invTypes;
-      if(this.searchForm?.get('report_type')?.value!="ALL")
+      where.inventory_type =this.invTypes.filter(v=>v!=="ALL");
+      if(this.searchForm?.get('inventory_type')?.value!="ALL")
       {
-        where.inventory_type =this.searchForm?.get('report_type')?.value;
+        where.inventory_type =this.searchForm?.get('inventory_type')?.value;
       }
+
       if (this.searchForm?.get('report_type')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
-        where.report_format_type = `${this.searchForm!.get('report_type')?.value}`;
+        where.report_format_type = `${this.searchForm!.get('report_type')?.value.code_val}`;
+        reportType=`${this.searchForm!.get('report_type')?.value.description}`;
         cond_counter++;
       }
 
@@ -420,20 +427,20 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     
 
       this.lastSearchCriteria = where;
-      this.performSearch(report_type,date,customerName);
+      this.performSearch(report_type,date,customerName,reportType);
     }
    
    
   
 
-    performSearch(reportType?: number,date?:string,customerName?:string) {
+    performSearch(reportType?: number,date?:string,customerName?:string,report_type?:string) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchManagementReportInventoryYearlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessYearlyReport(this.repData,date!,reportType!,customerName!);
+        this.ProcessYearlyReport(this.repData,date!,customerName!,report_type!);
      });
     
   }
@@ -506,7 +513,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
       year: thisYear,
       month: thisMonth,
       inventory_type:'ALL',
-      report_type:'CUSTOMER_WISE',
+      report_type:this.reportTypeCvList.find(f=>f.code_val=='MONTH_WISE'),
     });
     this.customerCodeControl.reset('');
    
@@ -537,14 +544,14 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   }
 
-  ProcessYearlyReport(repData: ManagementReportYearlyInventory, date: string,report_type:number,customerName:string) {
+  ProcessYearlyReport(repData: ManagementReportYearlyInventory, date: string,customerName:string,report_type:string) {
     
    
 
     if(repData)
     {
       
-        this.onExportChart_r1(repData, date,customerName);
+        this.onExportChart_r1(repData, date,customerName,report_type);
       
       
    }
@@ -561,7 +568,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   
 
-  onExportChart_r1(repData: ManagementReportYearlyInventory, date: string,customerName:string)
+  onExportChart_r1(repData: ManagementReportYearlyInventory, date: string,customerName:string,report_type:string)
   {
      //this.preventDefault(event);
      let cut_off_dt = new Date();
@@ -574,14 +581,14 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
        tempDirection = 'ltr';
      }
  
-     const dialogRef = this.dialog.open(YearlyChartPdfComponent, {
+     const dialogRef = this.dialog.open(InventoryYearlySalesReportDetailsPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
         date: date,
-        repType:this.processType,
+        repType:report_type,
         customer:customerName
       
       },

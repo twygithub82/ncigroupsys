@@ -1155,8 +1155,12 @@
     "INVENTORY-REPORT": "Inventory Report",
     "MANHOUR-REPORT": "Man-Hour Report",
     "OVERWRITE-APPROVAL": "Overwrite Approval",
-    "APPROVED-BUFFER-CLEANING-COST": "Approved Buffer Cleaning Cost"
-
+    "APPROVED-BUFFER-CLEANING-COST": "Approved Buffer Cleaning Cost",
+    "GATE-SURCHARGE":"Gate Surcharge",
+    "ON-DEPOT":"On Depot",
+    "YEARLY-INVENTORY-REPORT":"Yearly Inventory Report",
+    "SUMMARY-OF-INVENTORY":"Summary of Inventory",
+    "PERCENTAGE-SYMBOL":"%"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -83,7 +83,7 @@
                     @for (repType of reportTypeCvList; track repType) {
                       @if(repTypes.includes(repType.code_val!))
                       {
-                      <mat-option [value]="repType.code_val">
+                      <mat-option [value]="repType">
                         {{repType.description}}
                       </mat-option>
                       }
