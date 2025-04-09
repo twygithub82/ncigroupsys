@@ -2536,6 +2536,7 @@ const GET_STORING_ORDER_TANKS_FOR_TRANSFER = gql`
         in_gate(where: { delete_dt: { eq: null } }) {
           eir_no
           eir_dt
+          yard_cv
           guid
           delete_dt
         }

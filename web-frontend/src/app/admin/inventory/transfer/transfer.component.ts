@@ -74,11 +74,11 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
   displayedColumns = [
     'tank_no',
     'customer',
-    'yard_cv',
     'eir_no',
     'eir_dt',
     'last_cargo',
     'purpose',
+    'yard_cv',
     'tank_status_cv'
   ];
 
@@ -357,11 +357,25 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
 
     // tank_info
     if (this.searchForm!.get('yard_cv')?.value) {
+      const yardValue = this.searchForm!.get('yard_cv')?.value;
       const tiSearch: any = {};
-      if (this.searchForm!.get('yard_cv')?.value) {
-        tiSearch.yard_cv = { eq: this.searchForm!.get('yard_cv')?.value };
-      }
-      where.tank_info = tiSearch;
+      tiSearch.yard_cv = { eq: yardValue };
+
+      const igSearch: any = {}
+      igSearch.yard_cv = { eq: yardValue };
+
+      where.or = [{
+        and: [
+          { tank_info: tiSearch }
+        ]
+      },
+      {
+        and: [
+          { tank_info: { yard_cv: { eq: null } } },
+          { in_gate: { some: igSearch } }
+        ]
+      }];
+      // where.tank_info = tiSearch;
     }
 
     // storing_order

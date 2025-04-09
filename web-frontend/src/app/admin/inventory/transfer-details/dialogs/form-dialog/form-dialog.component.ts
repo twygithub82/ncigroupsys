@@ -83,7 +83,7 @@ export class FormDialogComponent {
     this.lastTransfer = data.lastTransfer;
     if (this.action === 'edit') {
       this.dialogTitle = data.translatedLangText?.EDIT_TRANSFER_DETAILS;
-      this.filteredYardCvList = data.populateData?.yardCvList;
+      this.filteredYardCvList = data.populateData?.yardCvList?.filter((x: any) => x.code_val !== this.lastTransfer?.location_from_cv);
     } else {
       this.dialogTitle = data.translatedLangText?.NEW_TRANSFER_DETAILS;
       this.filteredYardCvList = data.populateData?.yardCvList?.filter((x: any) => x.code_val !== this.lastLocation);

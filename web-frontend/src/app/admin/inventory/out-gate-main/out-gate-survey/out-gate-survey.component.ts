@@ -189,7 +189,7 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
       job_no: [''],
       purpose: [''],
       tank_status_cv: [''],
-      eir_status_cv: ['']
+      eir_status_cv: [['PENDING', 'YET_TO_SURVEY']]
     });
   }
 
@@ -247,6 +247,7 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.search();
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -301,7 +302,7 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
     if (this.searchForm!.get('eir_status_cv')?.value) {
-      where.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
+      where.eir_status_cv = { in: this.searchForm!.get('eir_status_cv')?.value };
     }
 
     if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {

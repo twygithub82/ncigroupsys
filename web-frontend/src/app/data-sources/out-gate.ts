@@ -1,14 +1,11 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
-import { AnyObject } from 'chart.js/dist/types/basic';
 import { OutGateSurveyItem } from './out-gate-survey';
+import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 
 export class OutGate {
   public guid?: string = '';
@@ -448,6 +445,12 @@ export const UPDATE_OUT_GATE = gql`
   }
 `;
 
+export const PUBLISH_OUT_GATE = gql`
+  mutation publishOutgateSurvey($outGate_guid: String!) {
+    publishOutgateSurvey(outGate_guid: $outGate_guid)
+  }
+`;
+
 export class OutGateDS extends BaseDataSource<OutGateItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -590,6 +593,20 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
   //       })
   //     );
   // }
+
+  publishOutGateSurvey(outGate_guid: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: PUBLISH_OUT_GATE,
+      variables: {
+        outGate_guid
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
 
   getOutGateItem(out_gates: OutGateItem[] | undefined): OutGateItem | undefined {
     return out_gates?.find(og => og.eir_status_cv !== 'CANCELED' && !(og.delete_dt));
