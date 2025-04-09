@@ -1,13 +1,9 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, delay, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
-import { CustomerCompanyItem } from './customer-company';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { PageInfo } from '@core/models/pageInfo';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { SchedulingItem, SchedulingUpdateItem } from './scheduling';
+import { CustomerCompanyItem } from './customer-company';
 import { ReleaseOrderSotItem } from './release-order-sot';
 
 export class ReleaseOrderGO {
