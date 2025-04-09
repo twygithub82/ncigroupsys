@@ -88,6 +88,7 @@ namespace IDMS.Booking.GqlTypes
             try
             {
                 bool isSendNotification = false;
+                bool isSOTChanges = false;
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var res = 0;
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -125,6 +126,7 @@ namespace IDMS.Booking.GqlTypes
                         sot.update_dt = currentDateTime;
 
                         isSendNotification = true;
+                        isSOTChanges = true;
                         continue;
                     }
 
@@ -144,6 +146,7 @@ namespace IDMS.Booking.GqlTypes
                         sot.release_job_no = roSOT.storing_order_tank.release_job_no;
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
+                        isSOTChanges = true;
                         continue;
                     }
 
@@ -167,6 +170,7 @@ namespace IDMS.Booking.GqlTypes
                         sot.update_dt = currentDateTime;
 
                         isSendNotification = true;
+                        isSOTChanges = true;
                         continue;
                     }
                 }
@@ -187,28 +191,30 @@ namespace IDMS.Booking.GqlTypes
                 existingRO.release_dt = releaseOrder.release_dt;
 
                 //This function will check and update the RO status
-                var unCancelTanks = await context.release_order_sot.Where(r => r.guid == releaseOrder.guid & r.status_cv != ROStatus.CANCELED
-                                                                              & (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
-
-                string finalStatus = "";
-                if (unCancelTanks != null && unCancelTanks.Any())
+                //only do when there is SOT changes
+                if (isSOTChanges)
                 {
-                    int tnkAlreadyAcceptedCount = unCancelTanks.Count(t => SOTankStatus.ACCEPTED.EqualsIgnore(t.status_cv));
+                    var unCancelTanks = await context.release_order_sot.Where(r => r.ro_guid == releaseOrder.guid & r.status_cv != ROStatus.CANCELED
+                                                              & (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+                    string finalStatus = "";
+                    if (unCancelTanks != null && unCancelTanks.Any())
+                    {
+                        int tnkAlreadyAcceptedCount = unCancelTanks.Count(t => SOTankStatus.ACCEPTED.EqualsIgnore(t.status_cv));
 
-                    if (tnkAlreadyAcceptedCount == 0)
-                        finalStatus = ROStatus.PENDING;
-                    else if (tnkAlreadyAcceptedCount == unCancelTanks.Count)
-                        finalStatus = ROStatus.COMPLETED;
+                        if (tnkAlreadyAcceptedCount == 0)
+                            finalStatus = ROStatus.PENDING;
+                        else if (tnkAlreadyAcceptedCount == unCancelTanks.Count)
+                            finalStatus = ROStatus.COMPLETED;
+                        else
+                            finalStatus = ROStatus.PROCESSING;
+                    }
                     else
-                        finalStatus = ROStatus.PROCESSING;
+                        // All tanks have been cancelled
+                        finalStatus = ROStatus.CANCELED;
+                    existingRO.status_cv = finalStatus;
                 }
-                else
-                    // All tanks have been cancelled
-                    finalStatus = ROStatus.CANCELED;
 
-                existingRO.status_cv = finalStatus;
-                await context.SaveChangesAsync();
-
+                res = res + await context.SaveChangesAsync();
                 return res;
             }
             catch (Exception ex)
