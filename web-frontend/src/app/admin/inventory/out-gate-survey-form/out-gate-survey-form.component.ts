@@ -37,7 +37,7 @@ import { PreviewImageDialogComponent } from '@shared/components/preview-image-di
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { OutGateDS, OutGateGO, OutGateItem } from 'app/data-sources/out-gate';
+import { OutGate, OutGateDS, OutGateGO, OutGateItem } from 'app/data-sources/out-gate';
 import { OutGateSurveyDS, OutGateSurveyGO } from 'app/data-sources/out-gate-survey';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { ReleaseOrderGO } from 'app/data-sources/release-order';
@@ -100,6 +100,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
   ]
 })
 export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = 1;
   pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE-SURVEY-FORM'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.HOME.TEXT', route: '/' },
@@ -1584,6 +1585,17 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     }
   }
 
+  onPublish() {
+    if (this.out_gate) {
+      console.log('publishOutGateSurvey: ', this.out_gate.guid)
+      this.ogDS.publishOutGateSurvey(this.out_gate.guid!).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result.data?.publishIngateSurvey)
+        this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      });
+    }
+  }
+
   markFormGroupTouched(formGroup: UntypedFormGroup | undefined): void {
     if (formGroup) {
       Object.keys(formGroup.controls).forEach((key) => {
@@ -2064,6 +2076,10 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       this.handleSaveSuccess(1);
       this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: 1 } });
     }
+  }
+
+  canPublish() {
+    return this.out_gate?.out_gate_survey?.guid;
   }
 
   chosenYearHandler(normalizedYear: Moment) {

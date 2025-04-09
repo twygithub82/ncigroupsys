@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { BookingItem } from 'app/data-sources/booking';
@@ -64,6 +65,7 @@ export interface DialogData {
     MatTableModule,
     MatDividerModule,
     MatCardModule,
+    MatTooltipModule,
   ],
 })
 export class FormDialogComponent {
@@ -192,7 +194,7 @@ export class FormDialogComponent {
       tank_status_cv: [schedulingSot.storing_order_tank?.tank_status_cv],
       yard_cv: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.yard_cv],
       reference: [schedulingSot.reference],
-      scheduling_dt: [Utility.convertDate(schedulingSot.scheduling_dt) as Date],
+      scheduling_dt: [Utility.convertDateMoment(schedulingSot.scheduling_dt)],
       startDate: [Utility.getEarlierDate(Utility.convertDate(schedulingSot.scheduling_dt) as Date, this.startDateToday)]
     });
   }
@@ -204,8 +206,7 @@ export class FormDialogComponent {
   submit() {
     if (this.schedulingForm?.valid) {
       let scheduling = new SchedulingGO(this.scheduling);
-      //scheduling.status_cv = this.schedulingForm.value['status_cv'];
-      scheduling.book_type_cv = this.schedulingForm.value['book_type_cv'];
+      scheduling.book_type_cv = this.schedulingForm.get('book_type_cv')?.value;
 
       let schedulingSot: SchedulingSotItem[] = [];
       const schedulingSotForm = this.schedulingForm.value['schedulingSot']
@@ -274,7 +275,7 @@ export class FormDialogComponent {
             if (this.scheduling && this.scheduling.book_type_cv !== value && this.existingBookTypeCvs!.some(schedulingSot => schedulingSot?.scheduling?.book_type_cv === value)) {
               schedulingSot.forEach(s_sotForm => {
                 s_sotForm!.get('scheduling_dt')?.setErrors(null);
-                const s_sot = s_sotForm.value
+                const s_sot = s_sotForm.value;
                 if (s_sot.scheduling_dt) {
                   const dateOnly = Utility.convertDate(s_sot.scheduling_dt) as number;
                   if (this.existingBookTypeCvs!.some(
@@ -310,17 +311,17 @@ export class FormDialogComponent {
     this.getSchedulingArray().controls.forEach(
       schedulingSotForm => {
         schedulingSotForm!.get('scheduling_dt')!.valueChanges.pipe(
-          startWith(''),
           debounceTime(100),
           tap(value => {
             schedulingSotForm!.get('scheduling_dt')?.setErrors(null);
             const control = this.schedulingForm!.get('book_type_cv');
             control?.setErrors(null);
             if (value) {
+              const safeSchedulingDt = value.clone();
               if (this.action === 'edit') {
                 // && this.existingBookTypeCvs!.some(schedulingSot => schedulingSot?.scheduling?.book_type_cv === value)
                 if (this.scheduling && this.scheduling.book_type_cv !== control?.value) {
-                  const dateOnly = Utility.convertDate(value) as number;
+                  const dateOnly = Utility.convertDate(safeSchedulingDt) as number;
                   if (this.existingBookTypeCvs!.some(
                     schedulingSot => schedulingSot?.scheduling?.book_type_cv === control?.value && (schedulingSot?.scheduling_dt ?? 0) >= dateOnly
                   )) {
@@ -329,7 +330,7 @@ export class FormDialogComponent {
                   // control?.setErrors({ existed: true });
                 }
               } else {
-                const dateOnly = Utility.convertDate(value) as number;
+                const dateOnly = Utility.convertDate(safeSchedulingDt) as number;
                 if (this.existingBookTypeCvs!.some(
                   schedulingSot => schedulingSot?.scheduling?.book_type_cv === control?.value && (schedulingSot?.scheduling_dt ?? 0) >= dateOnly
                 )) {
@@ -420,11 +421,21 @@ export class FormDialogComponent {
     return false;
   }
 
-  getStartDate(incoming_dt?: number) {
-    return Utility.getEarlierDate(Utility.convertDate(incoming_dt) as Date, new Date());
+  getStartDate(incoming_dt?: any) {
+    if (incoming_dt) {
+      const cloneDate = incoming_dt.clone()
+      return Utility.getEarlierDate(Utility.convertDate(cloneDate) as Date, new Date());
+    }
+    return new Date();
   }
 
   canEdit(): boolean {
     return true;
+  }
+
+  removeSot(event: Event, index: number) {
+    event.stopPropagation();
+    this.storingOrderTank.splice(index, 1);
+    this.storingOrderTank = [...this.storingOrderTank];
   }
 }

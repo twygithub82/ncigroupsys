@@ -331,6 +331,11 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (ro.release_order_sot && ro.release_order_sot.length) {
       this.populateSOT(ro.release_order_sot);
     }
+    if (!this.canEditRO(ro.status_cv)) {
+      this.roForm!.get('release_dt')?.disable();
+      this.roForm!.get('ro_notes')?.disable();
+      this.roForm!.get('haulier')?.disable();
+    }
   }
 
   populateSOT(sotList: ReleaseOrderSotUpdateItem[]) {
@@ -740,6 +745,10 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canEdit(item: UntypedFormGroup): boolean {
     return this.roSotDS.canEdit(item.get('status_cv')?.value) && !item.get('actions')?.value!.includes('cancel') && !item.get('actions')?.value!.includes('rollback');
+  }
+
+  canEditRO(status: string | undefined) {
+    return this.roSotDS.canEdit(status);
   }
 
   translateLangText() {

@@ -322,7 +322,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value.unit_type;
         }
         this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, [{ unit_type: 'ASC' }]).subscribe(data => {
           this.tankItemList = data
@@ -432,32 +432,32 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     //      );
   }
 
-
-
   search() {
     const where: any = {};
-
     if (this.unit_type_control.value) {
       if (this.unit_type_control.value.length > 0) {
-
-
         const tnkItems: TankItem[] = this.unit_type_control.value;
         var guids = tnkItems.map(t => t.guid);
         where.tanks = { some: { guid: { in: guids } } };
       }
     }
 
-
-
-    if (this.tdForm!.value["description"]) {
-      let desc = this.tdForm!.value["description"];
+    if (this.tdForm!.get("description")?.value) {
+      let desc = this.tdForm!.get("description")?.value;
       where.description = { contains: desc }
+    }
+
+    if (this.tdForm!.get("unit_type")?.value) {
+      const tankSome: any = {};
+      tankSome.unit_type = { contains: this.tdForm!.get("unit_type")?.value?.unit_type };
+      where.tanks = { some: tankSome }
     }
 
     if (this.tdForm!.value["profile_name"]) {
       let name = this.tdForm!.value["profile_name"];
       where.profile_name = { contains: name }
     }
+
     this.lastSearchCriteria = where;
     this.subs.sink = this.tfDepotDS.SearchTariffDepot(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.tariffDepotItems = data;

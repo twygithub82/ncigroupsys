@@ -11,10 +11,11 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { CodeValuesDS } from 'app/data-sources/code-values';
@@ -26,7 +27,6 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
-
 
 export interface DialogData {
   action?: string;
@@ -51,7 +51,6 @@ export interface DialogData {
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatRadioModule,
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
@@ -62,6 +61,8 @@ export interface DialogData {
     CommonModule,
     MatTableModule,
     MatDividerModule,
+    MatTooltipModule,
+    TlxFormFieldComponent,
   ],
 })
 export class FormDialogComponent {
@@ -73,7 +74,9 @@ export class FormDialogComponent {
     'capacity',
     'tare_weight',
     'tank_status',
-    'yard'
+    'yard',
+    'reference',
+    'action'
   ];
   action: string;
   dialogTitle: string;
@@ -94,7 +97,6 @@ export class FormDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-
   ) {
     // Set the defaults
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -121,41 +123,59 @@ export class FormDialogComponent {
 
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
-      reference: this.booking?.reference,
-      book_type_cv: this.booking?.book_type_cv,
-      booking_dt: Utility.convertDate(this.booking?.booking_dt),
-      test_class_cv: this.booking?.test_class_cv
+      reference: [this.booking?.reference],
+      book_type_cv: [this.booking?.book_type_cv],
+      booking_dt: [Utility.convertDateMoment(this.booking?.booking_dt)],
+      test_class_cv: [this.booking?.test_class_cv]
     });
   }
 
   submit() {
     if (this.bookingForm?.valid) {
-      const selectedIds = this.storingOrderTank.map(item => item.guid);
-      var booking: any = {
-        guid: this.booking?.guid,
-        sot_guid: selectedIds,
-        book_type_cv: this.bookingForm.get('book_type_cv')?.value,
-        booking_dt: Utility.convertDate(this.bookingForm.get('booking_dt')?.value),
-        reference: this.bookingForm.get('reference')?.value,
-        test_class_cv: this.bookingForm.get('test_class_cv')?.value,
-        status_cv: this.booking?.status_cv
-      }
-      console.log('valid');
-      console.log(booking);
-      if (booking.guid) {
-        this.bkDS.updateBooking([booking]).subscribe(result => {
+      const sotList: any = [...this.storingOrderTank];
+      const bookDt = this.bookingForm.get('booking_dt')?.value?.clone();
+      const selectedIds = sotList.map((item: any) => {
+        return {
+          guid: this.booking?.guid,
+          sot_guid: item.guid,
+          book_type_cv: this.bookingForm.get('book_type_cv')?.value,
+          booking_dt: Utility.convertDate(bookDt),
+          reference: this.bookingForm.get('reference')?.value || item.reference,
+          test_class_cv: this.bookingForm.get('test_class_cv')?.value,
+          status_cv: this.booking?.status_cv
+        }
+      });
+      // var booking: any = {
+      //   guid: this.booking?.guid,
+      //   sot_guid: selectedIds,
+      //   book_type_cv: this.bookingForm.get('book_type_cv')?.value,
+      //   booking_dt: Utility.convertDate(this.bookingForm.get('booking_dt')?.value),
+      //   reference: this.bookingForm.get('reference')?.value,
+      //   test_class_cv: this.bookingForm.get('test_class_cv')?.value,
+      //   status_cv: this.booking?.status_cv
+      // }
+      const withGuid = selectedIds.filter((item: any) => item.guid);
+      const withoutGuid = selectedIds.filter((item: any) => !item.guid);
+      console.log(selectedIds);
+
+      if (withGuid.length > 0) {
+        this.bkDS.updateBooking(withGuid).subscribe(result => {
           const returnDialog: any = {
             savedSuccess: (result?.data?.updateBooking ?? 0) > 0
-          }
+          };
           this.dialogRef.close(returnDialog);
         });
-      } else {
-        this.bkDS.addBooking(booking).subscribe(result => {
-          const returnDialog: any = {
-            savedSuccess: (result?.data?.addBooking ?? 0) > 0
-          }
-          this.dialogRef.close(returnDialog);
-        });
+      }
+      
+      if (withoutGuid.length > 0) {
+        for (const i of withoutGuid) {
+          this.bkDS.addBooking(i).subscribe(result => {
+            const returnDialog: any = {
+              savedSuccess: (result?.data?.addBooking ?? 0) > 0
+            };
+            this.dialogRef.close(returnDialog);
+          });
+        }
       }
     } else {
       console.log('invalid');
@@ -192,8 +212,11 @@ export class FormDialogComponent {
       startWith(''),
       debounceTime(100),
       tap(booking_dt => {
-        const value = this.bookingForm!.get('book_type_cv')?.value;
-        this.validateBookingType(value, booking_dt);
+        if (booking_dt) {
+          const safeBookingDt = booking_dt.clone();
+          const value = this.bookingForm!.get('book_type_cv')?.value;
+          this.validateBookingType(value, safeBookingDt);
+        }
       })
     ).subscribe();
   }
@@ -201,13 +224,13 @@ export class FormDialogComponent {
   validateBookingType(value: string, booking_dt: any): void {
     const control = this.bookingForm!.get('book_type_cv');
     control?.setErrors(null);
-  
+
     const dateOnly = Utility.convertDate(booking_dt) as number;
-  
+
     const condition = this.action === 'edit'
       ? this.booking && this.booking.book_type_cv !== value
       : true;
-  
+
     if (
       condition &&
       this.existingBookTypeCvs!.some(
@@ -252,5 +275,11 @@ export class FormDialogComponent {
       Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  removeSot(event: Event, index: number) {
+    event.stopPropagation();
+    this.storingOrderTank.splice(index, 1);
+    this.storingOrderTank = [...this.storingOrderTank];
   }
 }

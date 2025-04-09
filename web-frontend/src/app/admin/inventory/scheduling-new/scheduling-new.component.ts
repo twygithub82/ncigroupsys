@@ -476,9 +476,9 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       if (this.searchForm!.get('yard_cv')?.value) {
         igSearch.yard_cv = { contains: this.searchForm!.get('yard_cv')?.value }
       }
-      
+
       if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
-        const eirDtStart = this.searchForm?.get('eir_dt_start')?.value;
+        const eirDtStart = this.searchForm?.get('eir_dt_start')?.value?.clone();
         const eirDtEnd = this.searchForm?.get('eir_dt_end')?.value;
         const today = new Date();
 
@@ -641,6 +641,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
   editSchedulingDetails(row: StoringOrderTankItem, scheduling_guid: string | undefined, event: Event) {
     this.preventDefault(event);
+    if (this.checkDisable(row)) return;
+    
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
