@@ -33,7 +33,7 @@ export interface DialogData {
   action?: string;
   selectedItem?: StoringOrderTankItem;
   translatedLangText?: any;
-  dialogTitle?:string;
+  dialogTitle?: string;
 }
 
 @Component({
@@ -73,12 +73,12 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ];
 
   action: string;
- // index: number;
+  // index: number;
   dialogTitle: string;
 
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
-  sotDS:StoringOrderTankDS;
+  sotDS: StoringOrderTankDS;
   partNameControl: UntypedFormControl;
   partNameList?: string[];
   partNameFilteredList?: string[];
@@ -87,10 +87,10 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
   valueChangesDisabled: boolean = false;
   timeTableList: JobOrderItem[] = [];
   translatedLangText: any = {}
-  testTypeCvList:CodeValuesItem[]=[];
-  purposeOptionCvList:CodeValuesItem[]=[];
-  testClassCvList:CodeValuesItem[]=[];
-  sotItem?:StoringOrderTankItem;
+  testTypeCvList: CodeValuesItem[] = [];
+  purposeOptionCvList: CodeValuesItem[] = [];
+  testClassCvList: CodeValuesItem[] = [];
+  sotItem?: StoringOrderTankItem;
   cvDS: CodeValuesDS;
   constructor(
     public dialogRef: MatDialogRef<TankInfoFormDialogComponent>,
@@ -104,14 +104,14 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
     // Set the defaults
     this.cvDS = new CodeValuesDS(this.apollo);
     this.action = data.action!;
-    this.sotItem =data.selectedItem!;
+    this.sotItem = data.selectedItem!;
     this.dialogTitle = `${data.dialogTitle}`;
-    this.translatedLangText=data.translatedLangText;
+    this.translatedLangText = data.translatedLangText;
     //this.timeTableList = data.item ?? [];
-   // this.index = data.index;
-    this.ccDS= new CustomerCompanyDS(this.apollo);
-    this.igDS= new InGateDS(this.apollo);
-    this.sotDS=new StoringOrderTankDS(this.apollo);
+    // this.index = data.index;
+    this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
     this.initializeValueChange();
     this.loadData();
@@ -119,51 +119,13 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.initializePartNameValueChange();
   }
 
-  loadData(){
+  loadData() {
     const queries = [
-      // { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      // { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      // { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
-       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-       { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
       { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-      // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      // { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
-      // { alias: 'jobStatusCv', codeValType: 'JOB_STATUS' },
-      // { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-
-    // this.cvDS.connectAlias('groupNameCv').subscribe(data => {
-    //   this.groupNameCvList = data;
-    //   this.updateData(this.repList);
-    //   const subqueries: any[] = [];
-    //   data.map(d => {
-    //     if (d.child_code) {
-    //       let q = { alias: d.child_code, codeValType: d.child_code };
-    //       const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-    //       if (!hasMatch) {
-    //         subqueries.push(q);
-    //       }
-    //     }
-    //   });
-    //   if (subqueries.length > 0) {
-    //     this.cvDS?.getCodeValuesByType(subqueries);
-    //     subqueries.map(s => {
-    //       this.cvDS?.connectAlias(s.alias).subscribe(data => {
-    //         this.subgroupNameCvList.push(...data);
-    //       });
-    //     });
-    //   }
-    // });
-    // this.cvDS.connectAlias('yesnoCv').subscribe(data => {
-    //   this.yesnoCvList = data;
-    // });
-    // this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
-    //   this.soTankStatusCvList = data;
-    // });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
@@ -173,20 +135,15 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = data;
     });
-    if(this.sotItem)
-    {
-      //  var where:any={};
-      //  where.guid={eq:this.sotItem.guid};
-        this.sotDS.getStoringOrderTanksForOtherSurveyByID(this.sotItem.guid).subscribe(result=>{
+    if (this.sotItem) {
+      this.sotDS.getStoringOrderTanksForOtherSurveyByID(this.sotItem.guid).subscribe(result => {
 
-          if(result.length>0)
-          {
-            //let sotExist = this.sotItem;
-            result[0].tariff_cleaning = this.sotItem?.tariff_cleaning;
-            this.sotItem= result[0];
-          }
+        if (result.length > 0) {
+          result[0].tariff_cleaning = this.sotItem?.tariff_cleaning;
+          this.sotItem = result[0];
+        }
 
-        });
+      });
     }
   }
   patchForm() { }
@@ -226,46 +183,54 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return `${hours} hr ${minutes} min`;
   }
 
- 
-    displayDate(input: number | undefined): string | undefined {
-      return Utility.convertEpochToDateStr(input);
-    }
-  
-    getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
-      if (igs) {
-        const test_type = igs.last_test_cv;
-        const test_class = igs.test_class_cv;
-        const testDt = igs.test_dt as number;
-        return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
-      }
-      return "";
-    }
-  
-    getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
-      if (igs && igs.next_test_cv && igs.test_dt) {
-        const test_type = igs.last_test_cv;
-        const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-        const yearCount = parseFloat(match ? match[0] : "0");
-        const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
-        return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
-      }
-      return "";
-    }
 
-    getTestTypeDescription(codeVal: string | undefined): string | undefined {
-      return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-    }
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
+  }
 
-    getTestClassDescription(codeVal: string | undefined): string | undefined {
-      return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
+  getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
+    if (igs) {
+      const test_type = igs.last_test_cv;
+      const test_class = igs.test_class_cv;
+      const testDt = igs.test_dt as number;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
+    return "";
+  }
 
-    
-    displayTankPurpose(sot: StoringOrderTankItem) {
-      return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
+  getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
+    if (igs && igs.next_test_cv && igs.test_dt) {
+      const test_type = igs.last_test_cv;
+      const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
+      const yearCount = parseFloat(match ? match[0] : "0");
+      const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
+      return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     }
-  
-    getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-      return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-    }
+    return "";
+  }
+
+  getTestTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
+  }
+
+  getTestClassDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
+  }
+
+
+  displayTankPurpose(sot: StoringOrderTankItem) {
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
+  }
+
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  getNatureInGateAlert() {
+    return `${this.sotItem?.tariff_cleaning?.nature_cv} - ${this.sotItem?.tariff_cleaning?.in_gate_alert}`;
+  }
+
+  getBackgroundColorFromNature() {
+    return Utility.getBackgroundColorFromNature(this.sotItem?.tariff_cleaning?.nature_cv);
+  }
 }

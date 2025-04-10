@@ -52,7 +52,7 @@
                         <mat-autocomplete #cleanMethod="matAutocomplete" [displayWith]="displayCleanMethodFn">
                           @for (cm of cleanMethodList; track cm) {
                           <mat-option [value]="cm">
-                            {{cm.description}}
+                            {{cm.name}}
                           </mat-option>
                           }
                         </mat-autocomplete>
@@ -140,7 +140,7 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span
-                          class="mobile-label">{{translatedLangText.PROCESS}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description:'-'}}
+                          class="mobile-label">{{translatedLangText.PROCESS}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.name:'-'}}
                       </mat-cell>
                     </ng-container>
 

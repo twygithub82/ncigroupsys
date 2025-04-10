@@ -25,7 +25,6 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { Apollo } from 'apollo-angular';
@@ -119,11 +118,11 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
-    YET_START:"COMMON-FORM.YET-START",
-    STARTED:"COMMON-FORM.STARTED",
-    YET_COMPLETE:"COMMON-FORM.YET-COMPLETE",
-    BAY_OVERVIEW:"COMMON-FORM.BAY-OVERVIEW",
-    CLEANING_METHOD:"COMMON-FORM.CLEANING-PROCESS",
+    YET_START: "COMMON-FORM.YET-START",
+    STARTED: "COMMON-FORM.STARTED",
+    YET_COMPLETE: "COMMON-FORM.YET-COMPLETE",
+    BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
+    CLEANING_METHOD: "COMMON-FORM.CLEANING-PROCESS",
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     OWNER: 'COMMON-FORM.OWNER',
@@ -132,8 +131,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     LAST_TEST: 'COMMON-FORM.LAST-TEST',
     NEXT_TEST: 'COMMON-FORM.NEXT-TEST',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
-    ARE_SURE_ROLLBACK:'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
-    ARE_SURE_COMPLETE:'COMMON-FORM.ARE-YOU-SURE-COMPLETE'
+    ARE_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    ARE_SURE_COMPLETE: 'COMMON-FORM.ARE-YOU-SURE-COMPLETE'
   }
 
   availableProcessStatus: string[] = [
@@ -158,7 +157,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   clnDS: InGateCleaningDS;
   teamDS: TeamDS;
 
-  teamList:any[]=[];
+  teamList: any[] = [];
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
@@ -203,7 +202,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
     this.clnDS = new InGateCleaningDS(this.apollo);
-    this.teamDS= new TeamDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -228,7 +227,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       filterJobOrder: [''],
       jobStatusCv: [['PENDING', 'JOB_IN_PROGRESS']],
       customer: this.customerCodeControl,
-       team_allocation:['']
+      team_allocation: ['']
     });
   }
 
@@ -305,11 +304,6 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         this.jobOrderList = data;
-        // this.jobOrderList.forEach(jo => {
-        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
-        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
-        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
-        // })
       });
 
     this.pageSizeJobOrder = pageSize;
@@ -362,14 +356,6 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         });
       })
     ).subscribe();
-
-    // this.filterJobOrderForm?.get('jobStatusCv')?.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     this.onFilterJobOrder();
-    //   })
-    // ).subscribe();
   }
 
   translateLangText() {
@@ -454,9 +440,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         const param = [newParam];
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {
-          if(result.data.stopJobTimer>0)
-          {
-             this.completeJob(event,jobOrderItem);
+          if (result.data.stopJobTimer > 0) {
+            this.completeJob(event, jobOrderItem);
           }
 
         });
@@ -464,10 +449,9 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     }
   }
 
-  displayDateTime(jobOrderItem: JobOrderItem):any
-  {
+  displayDateTime(jobOrderItem: JobOrderItem): any {
     //var dtValue?:Date = Utility.convertDate(jobOrderItem.start_dt,false,true);
-    return new Date(Number(jobOrderItem.start_dt)*1000).toLocaleString();
+    return new Date(Number(jobOrderItem.start_dt) * 1000).toLocaleString();
   }
   completeJob(event: Event, jobOrderItem: JobOrderItem) {
     this.preventDefault(event);  // Prevents the form submission
@@ -509,7 +493,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         } else if (data?.onJobCompleted) {
           jobData = data.onJobCompleted;
           eventType = 'onJobCompleted';
-        }else if (data?.onJobStartStop) {
+        } else if (data?.onJobStartStop) {
           jobData = data.onJobStartStop;
           eventType = 'onJobStartStop';
         }
@@ -518,23 +502,6 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
           const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
           this.clearAllTeamButton();
           this.queryOccupiedTeam();
-          // if (foundJob?.length) {
-          //   // foundJob[0].status_cv = jobData.job_status;
-          //   // foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
-          //   // foundJob[0].time_table ??= [];
-
-          //   // if (eventType === 'jobStarted') {
-          //   //   const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
-          //   //   if (foundTimeTable?.length) {
-          //   //     foundTimeTable[0].start_time = jobData.start_time
-          //   //   } else {
-          //   //     foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
-          //   //   }
-          //   // } else if (eventType === 'jobStopped') {
-          //   //   foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
-          //   // }
-          //   console.log(`Updated JobOrder ${eventType} :`, foundJob[0]);
-          // }
         }
       },
       error: (error) => {
@@ -544,23 +511,16 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         console.log('Subscription completed');
       }
     });
-
     this.jobOrderSubscriptions.push(subscription);
   }
 
-
   UpdateCleaningStatusInProgress(clean_guid: string) {
-
-
     const where: any = {
       and: []
     };
-
-
     where.and.push({
       guid: { eq: clean_guid }
     });
-
 
     this.subs.sink = this.clnDS.search(where)
       .subscribe(data => {
@@ -572,19 +532,13 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
           delete rep.job_order;
           delete rep.customer_company;
           this.clnDS.updateInGateCleaning(rep).subscribe(result => {
-
             console.log(result);
-
           });
-          //  this.clnDS.
         }
       });
   }
 
-
   UpdateCleaningStatusCompleted(clean_guid: string) {
-
-
     const where: any = {
       and: []
     };
@@ -597,7 +551,6 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       guid: { eq: clean_guid }
     });
 
-
     this.subs.sink = this.clnDS.search(where)
       .subscribe(data => {
         if (data.length > 0) {
@@ -608,219 +561,115 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
           delete rep.job_order;
           delete rep.customer_company;
           this.clnDS.updateInGateCleaning(rep).subscribe(result => {
-
-            if(result.data.updateCleaning>0)
-            {
+            if (result.data.updateCleaning > 0) {
               this.clearTeamButton(clean_guid);
             }
-
           });
-          //  this.clnDS.
         }
       });
   }
-  clearAllTeamButton()
-  {
+  clearAllTeamButton() {
     this.teamList?.forEach(team => {
       if (team.jobOrderItem) {
-          team.jobOrderItem=undefined;
-          team.isSelected= false;
-          team.isOccupied= false;
-          team.isEditable= false;
-          team.isViewOnly= false;
+        team.jobOrderItem = undefined;
+        team.isSelected = false;
+        team.isOccupied = false;
+        team.isEditable = false;
+        team.isViewOnly = false;
       }
     });
   }
 
-  
-
-  clearTeamButton(cleanGuid:string)
-  {
+  clearTeamButton(cleanGuid: string) {
     this.teamList?.forEach(team => {
       if (team.jobOrderItem) {
-        if(team.jobOrderItem.cleaning![0]!.guid==cleanGuid)
-        {
-          team.jobOrderItem=undefined;
-          team.isSelected= false;
-          team.isOccupied= false;
-          team.isEditable= false;
-          team.isViewOnly= false;
+        if (team.jobOrderItem.cleaning![0]!.guid == cleanGuid) {
+          team.jobOrderItem = undefined;
+          team.isSelected = false;
+          team.isOccupied = false;
+          team.isEditable = false;
+          team.isViewOnly = false;
         }
       }
     });
   }
-  QueryBays()
-  {
 
-  this.teamDS.getTeamListByDepartment(["CLEANING"]).subscribe(data => {
-    if (data?.length) {
-      
-      this.teamList = data.map((row, index) => ({
-        ...row,
-        index:index,
-        isSelected: false,
-        isOccupied:false,
-        isEditable:false,
-        isViewOnly:true
-      }));
-      this.sortBayList(this.teamList);
-      this.subscribeTeamEvent();
-      this.queryOccupiedTeam();
-    }
-  });
- }
-
- sortBayList( bayList:any[]) {
-  bayList.sort((a:any, b:any) => {
-    const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
-    const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
-    return numA - numB;
-  });
-}
-
-
-subscribeTeamEvent()
-{
-    this.teamList.forEach(t => {
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), t.guid!);
-        })
-}
-
-queryOccupiedTeam()
-  {
-    const teamGuids = this.teamList?.map(team => team.guid);
-    
-    const where: any = {
-      and:[]
-    }; 
-    where.and.push({team: { guid:{in: teamGuids }}});
-    where.and.push({job_type_cv: { eq:'CLEANING'}});
-    where.and.push({status_cv: { in:['JOB_IN_PROGRESS','PENDING','ASSIGNED']}});
-    where.and.push({delete_dt: { eq:null}});
-
-    this.joDS?.searchStartedJobOrder(where).subscribe(data=>{
+  QueryBays() {
+    this.teamDS.getTeamListByDepartment(["CLEANING"]).subscribe(data => {
       if (data?.length) {
-        data.forEach(d=>{
+
+        this.teamList = data.map((row, index) => ({
+          ...row,
+          index: index,
+          isSelected: false,
+          isOccupied: false,
+          isEditable: false,
+          isViewOnly: true
+        }));
+        this.sortBayList(this.teamList);
+        this.subscribeTeamEvent();
+        this.queryOccupiedTeam();
+      }
+    });
+  }
+
+  sortBayList(bayList: any[]) {
+    bayList.sort((a: any, b: any) => {
+      const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
+      const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
+      return numA - numB;
+    });
+  }
+
+  subscribeTeamEvent() {
+    this.teamList.forEach(t => {
+      this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), t.guid!);
+    })
+  }
+
+  queryOccupiedTeam() {
+    const teamGuids = this.teamList?.map(team => team.guid);
+    const where: any = {
+      and: []
+    };
+    where.and.push({ team: { guid: { in: teamGuids } } });
+    where.and.push({ job_type_cv: { eq: 'CLEANING' } });
+    where.and.push({ status_cv: { in: ['JOB_IN_PROGRESS', 'PENDING', 'ASSIGNED'] } });
+    where.and.push({ delete_dt: { eq: null } });
+
+    this.joDS?.searchStartedJobOrder(where).subscribe(data => {
+      if (data?.length) {
+        data.forEach(d => {
           this.teamList?.forEach(team => {
             if (team.guid === d.team?.guid) {
-              // If the team GUID matches, update isOccupied to true
-              team.jobOrderItem=d;
+              team.jobOrderItem = d;
               team.isOccupied = true;
-              team.isEditable=false;
-              //team.storing_order_tank=d.storing_order_tank!;
-              // team.tank_no=d.storing_order_tank?.tank_no;
-              // team.cleaning_method= d.storing_order_tank?.tariff_cleaning?.cleaning_method?.description;
-              // team.cleaning_category=d.storing_order_tank?.tariff_cleaning?.cleaning_category?.name;
-              
-              // if(team.isEditable)
-              // {
-              //   this.toggleTeam(team);
-              //   team.isOccupied=false;
-              // }
+              team.isEditable = false;
             }
           });
         });
       }
     });
-
   }
+
   toggleTeam(team: any) {
-    let selected:boolean =!team.isSelected;
-    if(team.isViewOnly) return;
-    if(selected)
-    {
+    let selected: boolean = !team.isSelected;
+    if (team.isViewOnly) return;
+    if (selected) {
       this.teamList!.forEach(team => team.isSelected = false);
       this.filterJobOrderForm?.patchValue({
-        team_allocation:team
+        team_allocation: team
       });
     }
-    else
-    {
+    else {
       this.filterJobOrderForm?.patchValue({
-        team_allocation:''
+        team_allocation: ''
       });
     }
     team.isSelected = !team.isSelected;
   }
 
-  rollBackCleaningJob(event: Event,team:any)
-  {
-    this.preventDefault(event);  // Prevents the form submission
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          width: '800px',
-          height: '250px',
-          data: {
-            action: "EDIT",
-            item: team.jobOrderItem,
-            langText: this.translatedLangText,
-            confirmStatement:this.translatedLangText.ARE_SURE_ROLLBACK,
-            index:-1
-          
-          },
-          direction: tempDirection
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
-          if (result.action==='confirmed') {
-                const clnJobOrder = new ClnJobOrderRequest({
-                  guid: team.jobOrderItem?.cleaning[0]?.guid,
-                  sot_guid: team.jobOrderItem?.sot_guid,
-                  job_order: [new JobOrderGO({...team.jobOrderItem, remarks: result.remarks})],
-                  sot_status: team.jobOrderItem.storing_order_tank?.tank_status_cv,
-                  remarks:result.remarks
-                });
-        
-                console.log(clnJobOrder)
-                this.joDS.rollbackJobInProgressCleaning(clnJobOrder).subscribe(result => {
-                  console.log(result)
-                  if ((result?.data?.rollbackJobInProgressCleaning ?? 0) > 0) {
-                    if(team.jobOrderItem)
-                    {
-                      team.jobOrderItem=undefined;
-                      team.isSelected= false;
-                      team.isOccupied= false;
-                      team.isEditable= false;
-                      team.isViewOnly= false;
-                    }
-                    this.triggerRefresh();
-                    //this.handleSaveSuccess(result?.data?.rollbackJobInProgressRepair);
-                  }
-                });
-              }
-
-        });
-
-  }
-  showTankInfo(event: Event,team:any)
-  {
-      this.preventDefault(event);  // Prevents the form submission
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(TankInfoFormDialogComponent, {
-          width: '1000px',
-          data: {
-            selectedItem: team.jobOrderItem?.storing_order_tank!,
-            action: 'new',
-            translatedLangText: this.translatedLangText,
-            dialogTitle: team.description,
-          
-          },
-          direction: tempDirection
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => { });
-  }
-  jobComplete(event: Event,team:any)
-  {
-
+  rollBackCleaningJob(event: Event, team: any) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -835,45 +684,89 @@ queryOccupiedTeam()
         action: "EDIT",
         item: team.jobOrderItem,
         langText: this.translatedLangText,
-        confirmStatement:this.translatedLangText.ARE_SURE_COMPLETE,
-        index:-1
-      
+        confirmStatement: this.translatedLangText.ARE_SURE_ROLLBACK,
+        index: -1
+
       },
       direction: tempDirection
     });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        const clnJobOrder = new ClnJobOrderRequest({
+          guid: team.jobOrderItem?.cleaning[0]?.guid,
+          sot_guid: team.jobOrderItem?.sot_guid,
+          job_order: [new JobOrderGO({ ...team.jobOrderItem, remarks: result.remarks })],
+          sot_status: team.jobOrderItem.storing_order_tank?.tank_status_cv,
+          remarks: result.remarks
+        });
 
-
-      if (result?.action=="confirmed") {
-       
-        this.toggleJobState(event,true,team.jobOrderItem)
-        
+        console.log(clnJobOrder)
+        this.joDS.rollbackJobInProgressCleaning(clnJobOrder).subscribe(result => {
+          console.log(result)
+          if ((result?.data?.rollbackJobInProgressCleaning ?? 0) > 0) {
+            if (team.jobOrderItem) {
+              team.jobOrderItem = undefined;
+              team.isSelected = false;
+              team.isOccupied = false;
+              team.isEditable = false;
+              team.isViewOnly = false;
+            }
+            this.triggerRefresh();
+          }
+        });
       }
-
     });
-
   }
-  
+
+  showTankInfo(event: Event, team: any) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(TankInfoFormDialogComponent, {
+      width: '1000px',
+      data: {
+        selectedItem: team.jobOrderItem?.storing_order_tank!,
+        action: 'new',
+        translatedLangText: this.translatedLangText,
+        dialogTitle: team.description,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => { });
+  }
+
+  jobComplete(event: Event, team: any) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '800px',
+      data: {
+        action: "EDIT",
+        item: team.jobOrderItem,
+        langText: this.translatedLangText,
+        confirmStatement: this.translatedLangText.ARE_SURE_COMPLETE,
+        index: -1
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action == "confirmed") {
+        this.toggleJobState(event, true, team.jobOrderItem)
+      }
+    });
+  }
 
   RefreshContent(): void {
-  
     this.clearAllTeamButton();
     this.queryOccupiedTeam();
   }
- 
-// buttonViewOnly():boolean
-// {
-//   let bView:boolean=false;
-//   let viewOnlyStatus:string[]=['JOB_IN_PROGRESS','COMPLETED','NO_ACTION','CANCELED'];
-//   if(this.selectedItems?.length>0)
-//   {
-//      bView = viewOnlyStatus.includes(this.selectedItems[0]?.status_cv!);
-//     //  if(bView && this.selectedItems[0]?.status_cv==="APPROVED" )
-//     //  {
-//     //   var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
-//     //   bView=this.isTeamContainTheTank(tankNo);
-//     //  }
-//   }
-//   return bView;
-// }
 }
