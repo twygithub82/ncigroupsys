@@ -29,7 +29,7 @@ namespace IDMS.Billing.GqlTypes.LocalModel
     [NotMapped]
     public class RevenueRequest
     {
-        public string revenue_type { get; set; }
+        public List<string?>? revenue_type { get; set; }
 
         public string? customer_code { get; set; }
     }

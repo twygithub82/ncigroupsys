@@ -48,16 +48,16 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     }
 
     [NotMapped]
-    public class YearlyRevenueResult
+    public class YearlyRevenueManagementResult
     {
-        public YearlySales? preinspection_yearly_revenue { get; set; }
-        public YearlySales? lolo_yearly_revenue { get; set; }
-        public YearlySales? storage_yearly_revenue { get; set; }
-        public YearlySales? gate_yearly_revenue { get; set; }
-        public YearlySales? steam_yearly_revenue { get; set; }
-        public YearlySales? residue_yearly_revenue { get; set; }
-        public YearlySales? cleaning_yearly_revenue { get; set; }
-        public YearlySales? repair_yearly_revenue { get; set; }
+        public YearlyRevenueManagement? preinspection_yearly_revenue { get; set; }
+        public YearlyRevenueManagement? lolo_yearly_revenue { get; set; }
+        public YearlyRevenueManagement? storage_yearly_revenue { get; set; }
+        public YearlyRevenueManagement? gate_yearly_revenue { get; set; }
+        public YearlyRevenueManagement? steam_yearly_revenue { get; set; }
+        public YearlyRevenueManagement? residue_yearly_revenue { get; set; }
+        public YearlyRevenueManagement? cleaning_yearly_revenue { get; set; }
+        public YearlyRevenueManagement? repair_yearly_revenue { get; set; }
     }
 
     [NotMapped]
@@ -69,6 +69,18 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public double total_cost { get; set; }
         public double average_cost { get; set; }
     }
+
+
+    [NotMapped]
+    public class YearlyRevenueManagement
+    {
+        public List<RevenuePerMonth> revenue_per_month { get; set; }
+        public int total_count { get; set; }
+        public int average_count { get; set; }
+        public double total_cost { get; set; }
+        public double average_cost { get; set; }
+    }
+
 
     [NotMapped]
     public class MonthlyRevenue
@@ -112,6 +124,15 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     {
         public int count { get; set; } //for opening_balance
         public string month { get; set; }
+        public double cost { get; set; }
+    }
+
+    [NotMapped]
+    public class RevenuePerMonth
+    {
+        public int count { get; set; } //for opening_balance
+        public string key { get; set; }
+        public string? name { get; set; }
         public double cost { get; set; }
     }
 

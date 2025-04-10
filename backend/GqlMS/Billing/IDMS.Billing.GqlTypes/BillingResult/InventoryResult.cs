@@ -105,19 +105,11 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     [NotMapped]
     public class InventoryPerMonth
     {
-        public string month { get; set; }
+        public string key { get; set; }
         public string? name { get; set; }   
         public int count { get; set; }
         public double percentage { get; set; }
     }
-
-    //[NotMapped]
-    //public class MergedYearlyResult
-    //{
-    //    public string month { get; set; }
-    //    public double appv_cost { get; set; } //for opening_balance
-    //    public double complete_cost { get; set; }
-    //}
 
     [NotMapped]
     public class TempInventoryResult

@@ -1,4 +1,5 @@
 ﻿using CommonUtil.Core.Service;
+using GreenDonut;
 using HotChocolate;
 using HotChocolate.Types;
 using IDMS.Billing.Application;
@@ -29,7 +30,7 @@ namespace IDMS.Billing.GqlTypes
 
                 string completedStatus = "COMPLETED";
                 string qcCompletedStatus = "QC_COMPLETED";
-                string reportFormat = "yearly";
+                string reportFormat = yearlyInventoryRequest.report_format_type;
 
                 int year = yearlyInventoryRequest.year;
                 int start_month = yearlyInventoryRequest.start_month;
@@ -54,26 +55,33 @@ namespace IDMS.Billing.GqlTypes
                              {
                                  sot_guid = sot.guid,
                                  code = cc.code,
+                                 cc_name = cc.name
                              })
                             .AsQueryable();
 
                 var yearlyInventoryResult = new YearlyInventoryResult();
 
-                foreach(var item in yearlyInventoryRequest.inventory_type)
+                foreach (var item in yearlyInventoryRequest.inventory_type)
                 {
                     if (item.EqualsIgnore("repair") || item.EqualsIgnore("all"))
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
 
-                        var approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
-                        var total_count = approveResultPerMonth.Sum(g => g.count);
-                        var average_count = total_count / 12;
-                        //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
-                        //var repairResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
+                        IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
+                        if (reportFormat.EqualsIgnore("customer_wise")) {
+                            approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth);
+                        }
+                        else
+                            approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
+               
+                        //var total_count = approveResultPerMonth.Sum(g => g.count);
+                        //var average_count = total_count / 12;
+                        (var total_count, var average_count) = CalculateTotalAverage(approveResultPerMonth);
 
                         var repairInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
                         {
-                            month = g.month,
+                            key = g.key,
+                            name = g.name,
                             count = g.count,
                             percentage = CalculatePercentage(g.count, total_count)
                         }).ToList();
@@ -90,17 +98,24 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
 
-                        var approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
-                        //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
-                        var total_count = approveResultPerMonth.Sum(g => g.count);
-                        var average_count = total_count / 12;
+                        IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
+                        if (reportFormat.EqualsIgnore("customer_wise"))
+                        {
+                            approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth);
+                        }
+                        else
+                            approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
+                        //var total_count = approveResultPerMonth.Sum(g => g.count);
+                        //var average_count = total_count / 12;
+                        (var total_count, var average_count) = CalculateTotalAverage(approveResultPerMonth);
 
                         //var steamingResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
 
                         // Handle steamingResult as needed
                         var steamingInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
                         {
-                            month = g.month,
+                            key = g.key,
+                            name = g.name,
                             count = g.count,
                             percentage = CalculatePercentage(g.count, total_count)
                         }).ToList();
@@ -116,17 +131,23 @@ namespace IDMS.Billing.GqlTypes
                     if (item.EqualsIgnore("cleaning") || item.EqualsIgnore("all"))
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
-                        var approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
-                        //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
-                        var total_count = approveResultPerMonth.Sum(g => g.count);
-                        var average_count = total_count / 12;
-
-                        //var cleaningResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
+                        
+                        IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
+                        if (reportFormat.EqualsIgnore("customer_wise"))
+                        {
+                            approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth);
+                        }
+                        else
+                            approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
+                        //var total_count = approveResultPerMonth.Sum(g => g.count);
+                        //var average_count = total_count / 12;
+                        (var total_count, var average_count) = CalculateTotalAverage(approveResultPerMonth);
 
                         // Handle cleaningResult as needed
                         var cleaningInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
                         {
-                            month = g.month,
+                            key = g.key,
+                            name = g.name,
                             count = g.count,
                             percentage = CalculatePercentage(g.count, total_count)
                         }).ToList();
@@ -141,18 +162,23 @@ namespace IDMS.Billing.GqlTypes
                     if (item.EqualsIgnore("depot") || item.EqualsIgnore("all"))
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "depot", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                        var approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
-                        //var completeResultPerMonth = await GetResultPerMonth(completedResult, startOfMonth, endOfMonth);
-                        var total_count = approveResultPerMonth.Sum(g => g.count);
-                        var average_count = total_count / 12;
-
-                        //var cleaningResult = await MergeYearlyList(approveResultPerMonth, completeResultPerMonth);
+                        IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
+                        if (reportFormat.EqualsIgnore("customer_wise"))
+                        {
+                            approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth);
+                        }
+                        else
+                            approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
+                        //var total_count = approveResultPerMonth.Sum(g => g.count);
+                        //var average_count = total_count / 12;
+                        (var total_count, var average_count) = CalculateTotalAverage(approveResultPerMonth);
 
                         // Handle cleaningResult as needed
                         var depotInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
                         {
-                            month = g.month,
+                            key = g.key,
                             count = g.count,
+                            name = g.name
                             //percentage = CalculatePercentage(g.count, total_count)
                         }).ToList();
 
@@ -166,13 +192,24 @@ namespace IDMS.Billing.GqlTypes
                     if (item.EqualsIgnore("in_out") || item.EqualsIgnore("all"))
                     {
                         var (gateInResult, gateOutResult) = await ProcessInventoryResults(context, query, "gate", startEpoch, endEpoch, reportFormat);
-                        var gateInResultPerMonth = await GetInventoryPerMonth(gateInResult, startOfMonth, endOfMonth);
-                        var total_count = gateInResultPerMonth.Sum(g => g.count);
-                        var average_count = total_count / 12;
+
+                        IList<InventoryPerMonth> gateInResultPerMonth = new List<InventoryPerMonth>();
+                        if (reportFormat.EqualsIgnore("customer_wise"))
+                        {
+                            gateInResultPerMonth = await GetInventoryPerCustomer(gateInResult, startOfMonth, endOfMonth);
+                        }
+                        else
+                            gateInResultPerMonth = await GetInventoryPerMonth(gateInResult, startOfMonth, endOfMonth);
+
+                        //var total_count = gateInResultPerMonth.Sum(g => g.count);
+                        //var average_count = total_count / 12;
+                        (var total_count, var average_count) = CalculateTotalAverage(gateInResultPerMonth);
+
                         var gInInventoryResult = gateInResultPerMonth.Select(g => new InventoryPerMonth
                         {
-                            month = g.month,
+                            key = g.key,
                             count = g.count,
+                            name = g.name,
                             percentage = CalculatePercentage(g.count, total_count)
                         }).ToList();
 
@@ -182,20 +219,31 @@ namespace IDMS.Billing.GqlTypes
                         yearlyGateInInventory.average_count = average_count;
                         yearlyInventoryResult.gate_in_inventory = yearlyGateInInventory;
 
-                        var gateOutResultPerMonth = await GetInventoryPerMonth(gateOutResult, startOfMonth, endOfMonth);
-                        total_count = gateOutResultPerMonth.Sum(g => g.count);
-                        average_count = total_count / 12;
-                        var gOutInventoryResult = gateInResultPerMonth.Select(g => new InventoryPerMonth
+                        IList<InventoryPerMonth> gateOutResultPerMonth = new List<InventoryPerMonth>();
+                        if (reportFormat.EqualsIgnore("customer_wise"))
                         {
-                            month = g.month,
+                            gateOutResultPerMonth = await GetInventoryPerCustomer(gateOutResult, startOfMonth, endOfMonth);
+                        }
+                        else
+                            gateOutResultPerMonth = await GetInventoryPerMonth(gateOutResult, startOfMonth, endOfMonth);
+
+                        //total_count = gateOutResultPerMonth.Sum(g => g.count);
+                        //average_count = total_count / 12;
+                        (var total_count_out, var average_count_out) = CalculateTotalAverage(gateOutResultPerMonth);
+
+                        var gOutInventoryResult = gateOutResultPerMonth.Select(g => new InventoryPerMonth
+                        {
+                            key = g.key,
                             count = g.count,
-                            percentage = CalculatePercentage(g.count, total_count)
+                            name = g.name,
+                            percentage = CalculatePercentage(g.count, total_count_out)
                         }).ToList();
+
                         YearlyInventory yearlyGateOutInventory = new YearlyInventory();
                         yearlyGateOutInventory.inventory_per_month = gOutInventoryResult;
-                        yearlyGateOutInventory.total_count = total_count;
-                        yearlyGateOutInventory.average_count = average_count;
-                        yearlyInventoryResult.gate_in_inventory = yearlyGateOutInventory;
+                        yearlyGateOutInventory.total_count = total_count_out;
+                        yearlyGateOutInventory.average_count = average_count_out;
+                        yearlyInventoryResult.gate_out_inventory = yearlyGateOutInventory;
                     }
                 }
 
@@ -242,7 +290,7 @@ namespace IDMS.Billing.GqlTypes
 
                 var monthlyInventoryResult = new MonthlyInventoryResult();
 
-                foreach(var item in monthlyInventoryRequest.inventory_type)
+                foreach (var item in monthlyInventoryRequest.inventory_type)
                 {
                     if (item.EqualsIgnore("repair") || item.EqualsIgnore("all"))
                     {
@@ -603,7 +651,7 @@ namespace IDMS.Billing.GqlTypes
             var completeGroupedNodes = allMonthInYear
                 .Select(date => new InventoryPerMonth
                 {
-                    month = date,
+                    key = date,
                     //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
                     count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
                     //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
@@ -613,6 +661,66 @@ namespace IDMS.Billing.GqlTypes
 
             return completeGroupedNodes;
         }
+        private async Task<List<InventoryPerMonth>> GetInventoryPerCustomer(List<TempInventoryResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
+        {
+            //foreach (var item in resultList)
+            //{
+            //    // Convert epoch timestamp to DateTimeOffset (local time zone)
+            //    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)item.appv_date).ToLocalTime();
+            //    // Format the date as yyyy-MM-dd and replace the code with date
+            //    item.date = dateTimeOffset.ToString("MMMM");
+            //}
+
+
+
+            //salesByCustomer = resultList
+            //    .GroupBy(n => n.code)  // Group by formatted date
+            //    .Select(g => new CustomerSales
+            //    {
+            //        code = g.Key,
+            //        name = g.Select(n => n.cc_name).FirstOrDefault(),
+            //        clean_count = g.Count(),
+            //        clean_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+            //    })
+            //    .OrderBy(g => g.code) // Sort by date
+            //    .ToList();
+
+
+
+            // Group nodes by FormattedDate and count the number of SotGuids for each group
+            var groupedNodes = resultList
+                .GroupBy(n => n.code)  // Group by formatted date
+                .Select(g => new InventoryPerMonth
+                {
+                    key = g.Key,
+                    name = g.Select(n =>n .cc_name).FirstOrDefault(),
+                    count = g.Count(),
+                    //Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                })
+                .OrderBy(g => g.key) // Sort by date
+                .ToList();
+
+            //List<string> allMonthInYear = new List<string>();
+            //for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddMonths(1))
+            //{
+            //    allMonthInYear.Add(date.ToString("MMMM"));
+            //}
+
+            //// Fill missing dates with count = 0 if not present
+            //var completeGroupedNodes = allMonthInYear
+            //    .Select(date => new InventoryPerMonth
+            //    {
+            //        month = date,
+            //        //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
+            //        count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
+            //        //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+            //    })
+            //    //.OrderBy(g => g.date) // Sort by date
+            //    .ToList();
+
+            return groupedNodes;
+        }
+
         private async Task<IEnumerable<MergedMonthlyResult>> MergeMonthlyList(List<ResultPerDay> list1, List<ResultPerDay> list2)
         {
             // Join the results based on Date and Day
@@ -635,9 +743,26 @@ namespace IDMS.Billing.GqlTypes
 
         private double CalculatePercentage(int count, int totalCount)
         {
+            double result = 0;
+            if (totalCount != 0)
+            {
+                result = ((double)count / totalCount) * 100;
+                return Math.Round(result, 1);
+            }
 
-            var result = Math.Ceiling(((float)count / (float)totalCount) * 100);
             return result;
+        }
+
+        private (int, int) CalculateTotalAverage(IList<InventoryPerMonth> result)
+        {
+            // Calculate the total count of SotGuids for the month
+            int totalCount = result.Sum(g => g.count);
+            // Calculate the number of days with SotGuids greater than 0
+            int monthsWithCount = result.Count(g => g.count > 0);
+            // Calculate the average
+            int averageCount = monthsWithCount > 0 ? totalCount / monthsWithCount : 0;
+
+            return (totalCount, averageCount);
         }
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
@@ -850,25 +975,25 @@ namespace IDMS.Billing.GqlTypes
 
 
                 var depotQuery = await (from s in context.in_gate
-                                     join o in context.Set<out_gate>() on s.so_tank_guid equals o.so_tank_guid
-                                     join sot in context.storing_order_tank on s.so_tank_guid equals sot.guid
-                                     join so in context.storing_order on sot.so_guid equals so.guid
-                                     join cc in context.customer_company on so.customer_company_guid equals cc.guid
-                                     where (s.delete_dt == null && s.eir_dt <= endEpoch) && (o.delete_dt == null && o.eir_dt > endEpoch)
-                                     && (string.IsNullOrEmpty(depotPerformanceRequest.customer_code) || cc.code.Contains(depotPerformanceRequest.customer_code))
-                                     select new TempWeeklyData
-                                     {
-                                         guid = s.so_tank_guid,
-                                         date = s.eir_dt,
-                                         type = depotType
-                                     }).ToArrayAsync();
+                                        join o in context.Set<out_gate>() on s.so_tank_guid equals o.so_tank_guid
+                                        join sot in context.storing_order_tank on s.so_tank_guid equals sot.guid
+                                        join so in context.storing_order on sot.so_guid equals so.guid
+                                        join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                                        where (s.delete_dt == null && s.eir_dt <= endEpoch) && (o.delete_dt == null && o.eir_dt > endEpoch)
+                                        && (string.IsNullOrEmpty(depotPerformanceRequest.customer_code) || cc.code.Contains(depotPerformanceRequest.customer_code))
+                                        select new TempWeeklyData
+                                        {
+                                            guid = s.so_tank_guid,
+                                            date = s.eir_dt,
+                                            type = depotType
+                                        }).ToArrayAsync();
 
                 var resDepot = cleaningQuery.OrderBy(s => s.date).ToList();
                 var resultDepot = GetResultInNoOfWeek(resDepot);
 
                 var allWeeks = resultCleaning
                         .Concat(resultRepair)
-                        .Concat(resultInGate)   
+                        .Concat(resultInGate)
                         .Concat(resultOutGate)
                         .Concat(resultDepot)
                         .Select(r => r.Week_Of_year)
@@ -958,94 +1083,98 @@ namespace IDMS.Billing.GqlTypes
 
                 var monthlyRevenueResult = new MonthlyRevenueResult();
 
-                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("repair") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                foreach (var item in monthlyRevenueRequest.revenue_type)
                 {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
-                    var revenueQuery = GetRevenueQuery(context, query, "repair", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("repair"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
+                        var revenueQuery = GetRevenueQuery(context, query, "repair", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
-                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
-                    monthlyRevenueResult.repair_monthly_revenue = monthlyRevenue;
-                }
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                        monthlyRevenueResult.repair_monthly_revenue = monthlyRevenue;
+                    }
 
-                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("steaming") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
+                    if (item.EqualsIgnore("steaming"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
 
-                    var revenueQuery = GetRevenueQuery(context, query, "steaming", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                        var revenueQuery = GetRevenueQuery(context, query, "steaming", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
-                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
-                    monthlyRevenueResult.steam_monthly_revenue = monthlyRevenue;
-                }
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                        monthlyRevenueResult.steam_monthly_revenue = monthlyRevenue;
+                    }
 
-                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("cleaning") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
-                    var revenueQuery = GetRevenueQuery(context, query, "cleaning", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("cleaning"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                        var revenueQuery = GetRevenueQuery(context, query, "cleaning", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
-                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
-                    monthlyRevenueResult.cleaning_monthly_revenue = monthlyRevenue;
-                }
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                        monthlyRevenueResult.cleaning_monthly_revenue = monthlyRevenue;
+                    }
 
-                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("residue") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
-                    var revenueQuery = GetRevenueQuery(context, query, "residue", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("residue"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                        var revenueQuery = GetRevenueQuery(context, query, "residue", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
-                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
-                    monthlyRevenueResult.residue_monthly_revenue = monthlyRevenue;
-                }
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                        monthlyRevenueResult.residue_monthly_revenue = monthlyRevenue;
+                    }
 
-                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("lolo") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                    var revenueQuery = GetRevenueQuery(context, query, "lolo", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("lolo"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                        var revenueQuery = GetRevenueQuery(context, query, "lolo", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
-                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
-                    monthlyRevenueResult.lolo_monthly_revenue = monthlyRevenue;
-                }
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                        monthlyRevenueResult.lolo_monthly_revenue = monthlyRevenue;
+                    }
 
 
-                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("gate") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                    var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("gate"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                        var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
-                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
-                    monthlyRevenueResult.gate_monthly_revenue = monthlyRevenue;
-                }
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                        monthlyRevenueResult.gate_monthly_revenue = monthlyRevenue;
+                    }
 
-                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("preinspection") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                    var revenueQuery = GetRevenueQuery(context, query, "preinspection", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("preinspection"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                        var revenueQuery = GetRevenueQuery(context, query, "preinspection", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
-                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
-                    monthlyRevenueResult.preinspection_monthly_revenue = monthlyRevenue;
-                }
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                        monthlyRevenueResult.preinspection_monthly_revenue = monthlyRevenue;
+                    }
 
-                if (monthlyRevenueRequest.revenue_type.EqualsIgnore("storage") || monthlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                    var revenueQuery = GetRevenueQuery(context, query, "storage", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("storage"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                        var revenueQuery = GetRevenueQuery(context, query, "storage", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
-                    var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
-                    monthlyRevenueResult.storage_monthly_revenue = monthlyRevenue;
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
+                        monthlyRevenueResult.storage_monthly_revenue = monthlyRevenue;
+                    }
+
                 }
 
                 return monthlyRevenueResult;
@@ -1056,7 +1185,7 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        public async Task<YearlyRevenueResult?> QueryYearlyRevenue(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        public async Task<YearlyRevenueManagementResult?> QueryYearlyRevenue(ApplicationBillingDBContext context, [Service] IConfiguration config,
                 [Service] IHttpContextAccessor httpContextAccessor, YearlyRevenueRequest yearlyRevenueRequest)
         {
             try
@@ -1065,7 +1194,7 @@ namespace IDMS.Billing.GqlTypes
 
                 string completedStatus = "COMPLETED";
                 string qcCompletedStatus = "QC_COMPLETED";
-                string reportFormat = "yearly";
+                string reportFormat = yearlyRevenueRequest.report_format_type;
 
                 int year = yearlyRevenueRequest.year;
                 int start_month = yearlyRevenueRequest.start_month;
@@ -1090,99 +1219,117 @@ namespace IDMS.Billing.GqlTypes
                              {
                                  sot_guid = sot.guid,
                                  code = cc.code,
+                                 cc_name = cc.name
                              })
                             .AsQueryable();
 
-                var yearlyRevenueResult = new YearlyRevenueResult();
+                var yearlyRevenueResult = new YearlyRevenueManagementResult();
 
-                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("repair") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
+                foreach (var item in yearlyRevenueRequest.revenue_type)
                 {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
-                    var revenueQuery = GetRevenueQuery(context, query, "repair", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("repair"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
+                        var revenueQuery = GetRevenueQuery(context, query, "repair", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                    yearlyRevenueResult.repair_yearly_revenue = yearlyRevenue;
-                }
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth);
+                        yearlyRevenueResult.repair_yearly_revenue = yearlyRevenue;
+                    }
 
-                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("steaming") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
+                    if (item.EqualsIgnore("steaming"))
+                    {
+                        var revenueQuery = GetRevenueQuery(context, query, "steaming", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var revenueQuery = GetRevenueQuery(context, query, "steaming", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                        //IList<ResultPerMonth> approveResultPerMonth = new List<ResultPerMonth>();
+                        //if (reportFormat.EqualsIgnore("customer_wise"))
+                        //{
+                        //     approveResultPerMonth = await GetRevenuePerCustomer(approvedResult, startOfMonth, endOfMonth);
+                        //}
+                        //else
+                        //    approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
 
-                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                    yearlyRevenueResult.steam_yearly_revenue = yearlyRevenue;
-                }
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth);
+                        yearlyRevenueResult.steam_yearly_revenue = yearlyRevenue;
+                    }
 
-                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("cleaning") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
-                    var revenueQuery = GetRevenueQuery(context, query, "cleaning", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("cleaning"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                        var revenueQuery = GetRevenueQuery(context, query, "cleaning", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                    yearlyRevenueResult.cleaning_yearly_revenue = yearlyRevenue;
-                }
+                        //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+                        //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
 
-                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("residue") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
-                    var revenueQuery = GetRevenueQuery(context, query, "residue", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth);
+                        yearlyRevenueResult.cleaning_yearly_revenue = yearlyRevenue;
+                    }
 
-                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                    yearlyRevenueResult.residue_yearly_revenue = yearlyRevenue;
-                }
+                    if (item.EqualsIgnore("residue"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
+                        var revenueQuery = GetRevenueQuery(context, query, "residue", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("lolo") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                    var revenueQuery = GetRevenueQuery(context, query, "lolo", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                        //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+                        //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth);
+                        yearlyRevenueResult.residue_yearly_revenue = yearlyRevenue;
+                    }
 
-                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                    yearlyRevenueResult.lolo_yearly_revenue = yearlyRevenue;
-                }
+                    if (item.EqualsIgnore("lolo"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                        var revenueQuery = GetRevenueQuery(context, query, "lolo", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                        //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+                        //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth);
+                        yearlyRevenueResult.lolo_yearly_revenue = yearlyRevenue;
+                    }
 
 
-                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("gate") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                    var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                    if (item.EqualsIgnore("gate"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                        var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                    yearlyRevenueResult.gate_yearly_revenue = yearlyRevenue;
-                }
+                        //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+                        //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
 
-                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("preinspection") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                    var revenueQuery = GetRevenueQuery(context, query, "preinspection", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth);
+                        yearlyRevenueResult.gate_yearly_revenue = yearlyRevenue;
+                    }
 
-                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                    yearlyRevenueResult.preinspection_yearly_revenue = yearlyRevenue;
-                }
+                    if (item.EqualsIgnore("preinspection"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                        var revenueQuery = GetRevenueQuery(context, query, "preinspection", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                if (yearlyRevenueRequest.revenue_type.EqualsIgnore("storage") || yearlyRevenueRequest.revenue_type.EqualsIgnore("all"))
-                {
-                    //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                    var revenueQuery = GetRevenueQuery(context, query, "storage", startEpoch, endEpoch);
-                    var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+                        //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+                        //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
 
-                    var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
-                    var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                    yearlyRevenueResult.storage_yearly_revenue = yearlyRevenue;
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth);
+                        yearlyRevenueResult.preinspection_yearly_revenue = yearlyRevenue;
+                    }
+
+                    if (item.EqualsIgnore("storage"))
+                    {
+                        //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
+                        var revenueQuery = GetRevenueQuery(context, query, "storage", startEpoch, endEpoch);
+                        var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
+
+                        //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+                        //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
+
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth);
+                        yearlyRevenueResult.storage_yearly_revenue = yearlyRevenue;
+                    }
                 }
 
                 return yearlyRevenueResult;
@@ -1341,7 +1488,7 @@ namespace IDMS.Billing.GqlTypes
 
                 case "lolo":
                     return from result in query
-                           //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
+                               //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
                            join s in context.billing_sot on result.sot_guid equals s.sot_guid
                            join b in context.Set<billing>() on s.lolo_billing_guid equals b.guid
                            where (s.lift_off == true || s.lift_on == true) && s.lolo_billing_guid != null && s.delete_dt == null && b.delete_dt == null
@@ -1356,7 +1503,7 @@ namespace IDMS.Billing.GqlTypes
                            };
                 case "gate":
                     return from result in query
-                           //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
+                               //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
                            join s in context.billing_sot on result.sot_guid equals s.sot_guid
                            join b in context.Set<billing>() on s.gateio_billing_guid equals b.guid
                            where (s.gate_in == true || s.gate_out == true) && s.gateio_billing_guid != null && s.delete_dt == null && b.delete_dt == null
@@ -1390,7 +1537,7 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        private async Task<List<ResultPerMonth>> GetRevenuePerMonth(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
+        private async Task<List<RevenuePerMonth>> GetRevenuePerMonth(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
         {
             foreach (var item in resultList)
             {
@@ -1406,7 +1553,7 @@ namespace IDMS.Billing.GqlTypes
                 {
                     FormattedDate = g.Key,
                     Count = g.Count(),
-                    //Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                    Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
                 })
                 //.OrderBy(g => g.FormattedDate) // Sort by date
                 .ToList();
@@ -1419,12 +1566,12 @@ namespace IDMS.Billing.GqlTypes
 
             // Fill missing dates with count = 0 if not present
             var completeGroupedNodes = allMonthInYear
-                .Select(date => new ResultPerMonth
+                .Select(date => new RevenuePerMonth
                 {
-                    month = date,
+                    key = date,
                     //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
                     count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
-                    //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                    cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
                 })
                 //.OrderBy(g => g.date) // Sort by date
                 .ToList();
@@ -1432,16 +1579,73 @@ namespace IDMS.Billing.GqlTypes
             return completeGroupedNodes;
         }
 
-        private async Task<YearlySales> GetYearlyRevenue(List<ResultPerMonth?> approveResultPerMonth)
+        private async Task<List<RevenuePerMonth>> GetRevenuePerCustomer(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
         {
+            //foreach (var item in resultList)
+            //{
+            //    // Convert epoch timestamp to DateTimeOffset (local time zone)
+            //    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)item.appv_date).ToLocalTime();
+            //    // Format the date as yyyy-MM-dd and replace the code with date
+            //    item.date = dateTimeOffset.ToString("MMMM");
+            //}
+            // Group nodes by FormattedDate and count the number of SotGuids for each group
+            var groupedNodes = resultList
+                .GroupBy(n => n.code)  // Group by formatted date
+                .Select(g => new RevenuePerMonth
+                {
+                    key = g.Key,
+                    name = g.Select(n => n.cc_name).FirstOrDefault(),
+                    count = g.Count(),
+                    cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                })
+                .OrderBy(g => g.key) // Sort by date
+                .ToList();
+
+            //List<string> allMonthInYear = new List<string>();
+            //for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddMonths(1))
+            //{
+            //    allMonthInYear.Add(date.ToString("MMMM"));
+            //}
+
+            //// Fill missing dates with count = 0 if not present
+            //var completeGroupedNodes = allMonthInYear
+            //    .Select(date => new ResultPerMonth
+            //    {
+            //        month = date,
+            //        //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
+            //        count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
+            //        //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+            //    })
+            //    //.OrderBy(g => g.date) // Sort by date
+            //    .ToList();
+
+            return groupedNodes;
+        }
+
+        private async Task<YearlyRevenueManagement> GetYearlyRevenue(List<TempRevenueResult> approvedResult, string reportFormat, DateTime startOfMonth, DateTime endOfMonth)
+        {
+            IList<RevenuePerMonth> approveResultPerMonth = new List<RevenuePerMonth>();
+            if (reportFormat.EqualsIgnore("customer_wise"))
+            {
+                approveResultPerMonth = await GetRevenuePerCustomer(approvedResult, startOfMonth, endOfMonth);
+            }
+            else
+                approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
+
             var total_count = approveResultPerMonth.Sum(g => g.count);
-            var average_count = total_count / 12;
+            int monthsWithCount = approveResultPerMonth.Count(g => g.count > 0);
+            // Calculate the average
+            var average_count = monthsWithCount > 0 ? total_count / monthsWithCount : 0;
+            //var average_count = total_count / 12;
+
             var total_cost = approveResultPerMonth.Sum(g => g.cost);
-            var average_cost = total_cost / 12;
+            var monthsWithCost = approveResultPerMonth.Count(g => g.cost > 0);
+            var average_cost = monthsWithCost > 0 ? total_cost / monthsWithCost : 0;
+            //var average_cost = total_cost / 12;
 
 
-            var yearlyRevenue = new YearlySales();
-            yearlyRevenue.result_per_month = approveResultPerMonth;
+            var yearlyRevenue = new YearlyRevenueManagement();
+            yearlyRevenue.revenue_per_month = (List<RevenuePerMonth>)approveResultPerMonth;
             yearlyRevenue.total_count = total_count;
             yearlyRevenue.average_count = average_count;
             yearlyRevenue.total_cost = total_cost;
@@ -1449,6 +1653,7 @@ namespace IDMS.Billing.GqlTypes
 
             return yearlyRevenue;
         }
+
 
         private async Task<List<ResultPerDay>> GetRevenuePerDay(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
         {
@@ -1518,6 +1723,6 @@ namespace IDMS.Billing.GqlTypes
         private void GetStorageCost()
         {
         }
-    
+
     }
 }
