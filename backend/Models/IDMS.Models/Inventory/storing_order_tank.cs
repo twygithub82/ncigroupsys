@@ -92,6 +92,7 @@ namespace IDMS.Models.Inventory
         [UseFiltering]
         [UseSorting]
         public IEnumerable<transfer?>? transfer { get; set; }
-
+        [UseFiltering]
+        public IEnumerable<storage_detail?>? storage_detail { get; set; }
     }
 }

@@ -53,6 +53,7 @@ namespace IDMS.Models.DB
 
         public DbSet<billing> billing { get; set; }
         public DbSet<billing_sot> billing_sot { get; set; }
+        public DbSet<storage_detail> storage_detail { get; set; }
         public DbSet<currency> currency { get; set; }
         public DbSet<storing_order_tank> storing_order_tank { get; set; }
         public DbSet<storing_order> storing_order { get; set; }

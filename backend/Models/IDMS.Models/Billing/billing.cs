@@ -45,5 +45,7 @@ namespace IDMS.Models.Billing
         public IEnumerable<billing_sot?>? storage_billing_sot { get; set; }
         [UseFiltering]
         public IEnumerable<billing_sot?>? gateio_billing_sot { get; set; }
+        [UseFiltering]
+        public IEnumerable<storage_detail?>? storage_detail { get; set; }
     }
 }
