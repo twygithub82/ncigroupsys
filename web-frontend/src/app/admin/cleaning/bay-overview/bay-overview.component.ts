@@ -597,7 +597,6 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   QueryBays() {
     this.teamDS.getTeamListByDepartment(["CLEANING"]).subscribe(data => {
       if (data?.length) {
-
         this.teamList = data.map((row, index) => ({
           ...row,
           index: index,

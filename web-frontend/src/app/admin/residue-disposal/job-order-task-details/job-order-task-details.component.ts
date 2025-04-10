@@ -209,7 +209,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     STOP_TIME: 'COMMON-FORM.STOP-TIME',
     TIME_HISTORY: 'COMMON-FORM.TIME-HISTORY',
     START_JOB: 'COMMON-FORM.START-JOB',
-    STOP_JOB: 'COMMON-FORM.STOP-JOB',
+    PAUSE_JOB: 'COMMON-FORM.PAUSE-JOB',
     COMPLETE: 'COMMON-FORM.COMPLETE',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     DURATION: 'COMMON-FORM.DURATION'
@@ -427,7 +427,6 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     if (this.job_order_guid) {
       this.subs.sink = this.joDS.getJobOrderByID(this.job_order_guid).subscribe(jo => {
         if (jo?.length) {
-          console.log(jo)
           this.jobOrderItem = jo[0];
           this.jobOrderItem.time_table = this.jobOrderItem.time_table?.filter(d => d.delete_dt == null || d.delete_dt == 0);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
@@ -437,7 +436,6 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
 
             this.residueDS.getResidueIDForJobOrder(this.residue_guid, this.job_order_guid!).subscribe(residue => {
               if (residue?.length) {
-                console.log(residue)
                 this.residueItem = residue[0];
                 this.sotItem = this.residueItem?.storing_order_tank;
                 this.populateResidue(this.residueItem);
@@ -805,12 +803,8 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     return this.joDS.canStartJob(this.jobOrderItem)
   }
 
-  // canCompleteJob() {
-  //   return this.repairPartDS.canCompleteJob(this.repairItem?.repair_part) && this.joDS.canStartJob(this.jobOrderItem)
-  // }
-
   canCompleteJob() {
-    return this.joDS.canCompleteJob(this.jobOrderItem) && !this.isStarted()
+    return this.joDS.canCompleteJob(this.jobOrderItem)
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined) {
@@ -846,42 +840,53 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {
           console.log(result)
-
         });
       }
     }
   }
 
-  completeJobItem(event: Event, repair_part: RepairPartItem) {
-    this.preventDefault(event);  // Prevents the form submission
-    if (this.repairPartDS.isCompleted(repair_part)) return;
-    const newParam = new JobItemRequest({
-      guid: repair_part.guid,
-      job_order_guid: repair_part.job_order_guid,
-      job_type_cv: repair_part.job_order?.job_type_cv
-    });
-    const param = [newParam];
-    console.log(param)
-    this.joDS.completeJobItem(param).subscribe(result => {
-      console.log(result)
-    });
-  }
-
   completeJob(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
-    const newParam = new UpdateJobOrderRequest({
-      guid: this.jobOrderItem?.guid,
-      remarks: this.jobOrderItem?.remarks,
-      start_dt: this.jobOrderItem?.start_dt,
-      complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-    });
-    const param = [newParam];
-    console.log(param)
-    this.joDS.completeJobOrder(param).subscribe(result => {
-      if (result.data.completeJobOrder > 0) {
-        this.UpdateResidueStatusCompleted(this.residueItem?.guid!);
+    if (this.isStarted()) {
+      // auto stop job timer
+      const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      if (found?.length) {
+        const newParam = new TimeTableItem(found[0]);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({ ...this.jobOrderItem });
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          const newParam = new UpdateJobOrderRequest({
+            guid: this.jobOrderItem?.guid,
+            remarks: this.jobOrderItem?.remarks,
+            start_dt: this.jobOrderItem?.start_dt,
+            complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+          });
+          const param = [newParam];
+          console.log(param)
+          this.joDS.completeJobOrder(param).subscribe(result => {
+            if (result.data.completeJobOrder > 0) {
+              this.UpdateResidueStatusCompleted(this.residueItem?.guid!);
+            }
+          });
+        });
       }
-    });
+    } else {
+      const newParam = new UpdateJobOrderRequest({
+        guid: this.jobOrderItem?.guid,
+        remarks: this.jobOrderItem?.remarks,
+        start_dt: this.jobOrderItem?.start_dt,
+        complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+      });
+      const param = [newParam];
+      console.log(param)
+      this.joDS.completeJobOrder(param).subscribe(result => {
+        if (result.data.completeJobOrder > 0) {
+          this.UpdateResidueStatusCompleted(this.residueItem?.guid!);
+        }
+      });
+    }
   }
 
   viewTimeTableDetails(event: Event) {
@@ -1061,7 +1066,6 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     })
 
     this.residueDS.search(where).subscribe(result => {
-
       if (result.length > 0) {
         var resItem: ResidueItem = result[0];
         let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
@@ -1069,16 +1073,11 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
         residueStatus.guid = resItem?.guid;
         residueStatus.sot_guid = resItem?.sot_guid;
         this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
-
           console.log(result);
         });
-
-
       }
       this.handleSaveSuccess(1);
-
     });
-
   }
 
   rollbackJob(event: Event) {

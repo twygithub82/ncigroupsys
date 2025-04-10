@@ -1338,7 +1338,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   }
 
   updateJobProcessStatus(residueGuid: string, job_type: string, process_status: string) {
-
     var updateJobProcess: JobProcessRequest = new JobProcessRequest();
     updateJobProcess.guid = residueGuid;
     updateJobProcess.job_type_cv = job_type;
@@ -1348,10 +1347,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       if (result.data.updateJobProcessStatus > 0) {
         this.handleSaveSuccess(result.data.updateJobProcessStatus);
       }
-
     });
-
-
   }
 
   canSave(): boolean {
@@ -1361,15 +1357,13 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
   canRollBack(): boolean {
     var validActions: string[] = ["COMPLETED"];
-    var selItem = this.residueItem!;
-    if (validActions.includes(selItem.status_cv!)) {
-      return (selItem.residue_part?.length! > 0);
+    var selItem = this.residueItem;
+    if (validActions.includes(selItem?.status_cv || '')) {
+      return (selItem?.residue_part?.length! > 0);
     }
     else {
       return false;
     }
-
-
   }
 
   rollbackJobs(event: Event) {
