@@ -73,10 +73,19 @@
 .col-4-5 {
   width: 37.5%;
 }
+  
+.col-xl-5-25 {
+  width: 43.75%;
+}
 
-.col-5-5 {
+.col-xl-5-5 {
   width: 45.83333333%;
 }
+
+.col-xl-5-75 {
+  width: 47.91666667%;
+}
+
 
 .col-6-5 {
   width: 54.16666667%;
@@ -182,9 +191,17 @@
   .col-xs-5 {
     width: 41.66666667%;
   }
+  
+  .col-xl-5-25 {
+    width: 43.75%;
+  }
 
-  .col-xs-5-5 {
+  .col-xl-5-5 {
     width: 45.83333333%;
+  }
+
+  .col-xl-5-75 {
+    width: 47.91666667%;
   }
 
   .col-xs-6 {
@@ -310,8 +327,16 @@
     width: 50%;
   }
 
+  .col-sm-5-75 {
+    width: 47.91666667%;
+  }
+
   .col-sm-5-5 {
     width: 45.83333333%;
+  }
+  
+  .col-sm-5-25 {
+    width: 43.75%;
   }
 
   .col-sm-5 {
@@ -449,8 +474,16 @@
     width: 50%;
   }
 
+  .col-md-5-75 {
+    width: 47.91666667%;
+  }
+
   .col-md-5-5 {
     width: 45.83333333%;
+  }
+  
+  .col-md-5-25 {
+    width: 43.75%;
   }
 
   .col-md-5 {
@@ -589,8 +622,16 @@
     width: 50%;
   }
 
+  .col-lg-5-75 {
+    width: 47.91666667%;
+  }
+
   .col-lg-5-5 {
     width: 45.83333333%;
+  }
+  
+  .col-lg-5-25 {
+    width: 43.75%;
   }
 
   .col-lg-5 {
@@ -728,8 +769,16 @@
     width: 50%;
   }
 
+  .col-xl-5-75 {
+    width: 47.91666667%;
+  }
+
   .col-xl-5-5 {
     width: 45.83333333%;
+  }
+  
+  .col-xl-5-25 {
+    width: 43.75%;
   }
 
   .col-xl-5 {
@@ -1799,4 +1848,16 @@ $grid-breakpoints: (
 
 .addContainer {
   overflow-y: auto;       // 👈 allow vertical scrolling
+}
+
+.card {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }

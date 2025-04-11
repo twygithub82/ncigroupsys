@@ -433,9 +433,11 @@ export class FormDialogComponent {
     return true;
   }
 
-  removeSot(event: Event, index: number) {
-    event.stopPropagation();
-    this.storingOrderTank.splice(index, 1);
-    this.storingOrderTank = [...this.storingOrderTank];
+  removeSot(event: Event, index: number): void {
+    event.stopPropagation(); // optional: prevent ripple or row click
+    const formArray = this.getSchedulingArray();
+    if (formArray && formArray.length > index) {
+      formArray.removeAt(index);
+    }
   }
 }

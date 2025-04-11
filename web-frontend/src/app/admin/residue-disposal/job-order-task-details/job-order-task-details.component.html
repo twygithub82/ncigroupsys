@@ -165,7 +165,7 @@
                     {{translatedLangText.COMPLETE_JOB}}
                   </button>
                   @if (canRollbackJob()) {
-                  <button mat-flat-button color="accent" (click)="rollbackJob($event)">
+                  <button mat-flat-button color="" class="bg-light-purple" (click)="rollbackJob($event)">
                     <mat-icon>undo</mat-icon>
                     {{translatedLangText.ROLLBACK}}
                   </button>

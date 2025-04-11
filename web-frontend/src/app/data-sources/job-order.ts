@@ -414,7 +414,6 @@ const GET_STARTED_JOB_ORDER = gql`
         update_by
         update_dt
         working_hour
-
         cleaning {
           guid
           job_no
@@ -436,6 +435,8 @@ const GET_STARTED_JOB_ORDER = gql`
           }
           tariff_cleaning{
             cargo
+            nature_cv
+            in_gate_alert
             cleaning_category {
               guid
               name

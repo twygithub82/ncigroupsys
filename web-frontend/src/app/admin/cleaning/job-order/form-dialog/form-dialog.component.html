@@ -26,9 +26,7 @@
                 <div class="body">
                   <div class="team-container">
                     <div class="team-buttons">
-
                       @for (team of teamList; track team) {
-
                       <button mat-button (click)="toggleTeam(team)" [ngClass]="{'selected': team.isSelected}"
                         [disabled]="team.isOccupied" class="team-button">
                         <!-- Team description at the top-left -->
@@ -40,13 +38,8 @@
                           @else{
                           {{team.description}}
                           }
-
-
                         </span>
-
-
                       </button>
-
                       }
                     </div>
                   </div>
@@ -85,7 +78,7 @@
           <div class="card l-bg-{{this.getBackgroundColorFromNature()}}">
             <div class="row">
               <div
-                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
                 <mat-icon class="">error</mat-icon>
                 <mat-label class="ms-1">{{this.getNatureInGateAlert()}}</mat-label>
               </div>

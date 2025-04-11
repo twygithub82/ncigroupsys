@@ -211,7 +211,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       customer_code: this.customerCodeControl,
       eir_no: [''],
       last_cargo: this.lastCargoControl,
-      approval_status: [['APPROVED']],
+      approval_status: [''],
     });
   }
 
@@ -274,6 +274,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.search();
   }
+
   showNotification(
     colorName: string,
     text: string,

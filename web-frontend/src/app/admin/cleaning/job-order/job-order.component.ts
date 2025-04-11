@@ -93,7 +93,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   //   'last_cargo',
   //   'tank_status_cv'
   // ];
-
   displayedColumnsRepair = [
     'tank_no',
     'customer',
@@ -187,7 +186,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED',
     'ASSIGNED',
     'NO_ACTION',
     'CANCELED'
@@ -268,7 +266,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.filterCleanForm = this.fb.group({
       filterClean: [''],
       cleanMethod: [''],
-      status_cv: [['APPROVED', 'ASSIGNED']],
+      status_cv: [''],
       customer: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
@@ -416,6 +414,10 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.filterCleanForm?.get('status_cv')?.value.length > 0) {
       where.and.push({
         status_cv: { in: this.filterCleanForm!.get('status_cv')?.value }
+      });
+    } else {
+      where.and.push({
+        status_cv: { in: this.availableProcessStatus }
       });
     }
 
@@ -682,7 +684,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         } else {
           searchCriteria = value.description;
         }
-        this.subs.sink = this.cmDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { description: { contains: searchCriteria } }] }, { name: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.cmDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { description: { contains: searchCriteria } }] }, { name: 'ASC' }, 100).subscribe(data => {
           this.cleanMethodList = data;
           this.sortList(this.cleanMethodList);
         });

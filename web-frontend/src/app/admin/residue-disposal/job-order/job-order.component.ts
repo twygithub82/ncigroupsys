@@ -1,58 +1,50 @@
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule, DatePipe, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { Utility } from 'app/utilities/utility';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
-import { ComponentUtil } from 'app/utilities/component-util';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
+import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { MatCardModule } from '@angular/material/card';
-import { RepairDS, RepairItem } from 'app/data-sources/repair';
-import { MatTabsModule } from '@angular/material/tabs';
-import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
-import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
-import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { JobOrderQCComponent } from "../job-order-qc/job-order-qc.component";
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
+import { debounceTime, startWith, tap } from 'rxjs';
 //import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
@@ -69,13 +61,10 @@ import { JobOrderTaskComponent } from "../job-order-task/job-order-task.componen
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -89,9 +78,8 @@ import { JobOrderTaskComponent } from "../job-order-task/job-order-task.componen
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    JobOrderQCComponent,
     JobOrderTaskComponent
-]
+  ]
 })
 export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // displayedColumns = [
@@ -123,7 +111,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-     'MENUITEMS.RESIDUE-DISPOSAL.TEXT'
+    'MENUITEMS.RESIDUE-DISPOSAL.TEXT'
   ]
 
   translatedLangText: any = {};
@@ -173,8 +161,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     QC: 'COMMON-FORM.QC',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    METHOD:"COMMON-FORM.METHOD",
-    RESIDUE_DISPOSAL:'COMMON-FORM.RESIDUE-DISPOSAL',
+    METHOD: "COMMON-FORM.METHOD",
+    RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE'
   }
 
@@ -187,16 +175,16 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  residueDS:ResidueDS;
+  residueDS: ResidueDS;
   joDS: JobOrderDS;
 
   availableProcessStatus: string[] = [
     'APPROVED',
-     'JOB_IN_PROGRESS',
+    'JOB_IN_PROGRESS',
     // 'QC_COMPLETED',
-     'COMPLETED',
-     'ASSIGNED',
-     'PARTIAL_ASSIGNED',
+    // 'COMPLETED',
+    'ASSIGNED',
+    'PARTIAL_ASSIGNED',
   ]
 
   rsdEstList: ResidueItem[] = [];
@@ -204,18 +192,18 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  processStatusCvList:CodeValuesItem[]=[];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  previous_endCursorResidue:string|undefined=undefined;
+  previous_endCursorResidue: string | undefined = undefined;
   pageIndexResidue = 0;
   pageSizeResidue = 10;
   lastSearchCriteriaResidue: any;
-  lastOrderByResidue: any = { storing_order_tank:{tank_no: "DESC" }};
+  lastOrderByResidue: any = { storing_order_tank: { tank_no: "DESC" } };
   endCursorResidue: string | undefined = undefined;
   startCursorResidue: string | undefined = undefined;
   hasNextPageResidue = false;
@@ -249,9 +237,9 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    
+
     this.joDS = new JobOrderDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
+    this.residueDS = new ResidueDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -271,8 +259,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   initSearchForm() {
     this.filterResidueForm = this.fb.group({
       filterResidue: [''],
-      status_cv:[['APPROVED','ASSIGNED']],
-      customer:['']
+      status_cv: [''],
+      customer: this.customerCodeControl,
     });
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
@@ -393,20 +381,30 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     //  and:[]
     // };
     const where: any = {
-      and:[
+      and: [
         //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
-        {storing_order_tank:{tank_status_cv:{in:["CLEANING"]}}}
+        { storing_order_tank: { tank_status_cv: { in: ["CLEANING"] } } }
       ]
     };
 
-    where.and.push({status_cv : {
-      neq: 'PENDING'
-    }});
+    where.and.push({
+      status_cv: {
+        neq: 'PENDING'
+      }
+    });
 
     if (this.filterResidueForm!.get('status_cv')?.value?.length) {
-      where.and.push({status_cv : {
-        in: this.filterResidueForm!.get('status_cv')?.value
-      }});
+      where.and.push({
+        status_cv: {
+          in: this.filterResidueForm!.get('status_cv')?.value
+        }
+      });
+    } else {
+      where.and.push({
+        status_cv: {
+          in: this.availableProcessStatus
+        }
+      });
     }
     // or: [
     //   { storing_order_tank: { tank_no: { contains: "" } } },
@@ -451,7 +449,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     this.subs.sink = this.residueDS.search(this.lastSearchCriteriaResidue, this.lastOrderByResidue, first, after, last, before)
       .subscribe(data => {
         this.rsdEstList = data.map(re => {
-          return {...re, net_cost: this.calculateNetCost(re)}
+          return { ...re, net_cost: this.calculateNetCost(re) }
         });
         this.endCursorResidue = this.residueDS.pageInfo?.endCursor;
         this.startCursorResidue = this.residueDS.pageInfo?.startCursor;
@@ -551,6 +549,21 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   initializeFilterCustomerCompany() {
+    this.filterResidueForm!.get('customer')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
   }
 
   translateLangText() {
@@ -564,11 +577,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   calculateNetCost(residue: ResidueItem): any {
-    
-
     const total = this.residueDS.getTotal(residue?.residue_part)
-     
-     return total.total_mat_cost.toFixed(2);
+    return total.total_mat_cost.toFixed(2);
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
@@ -632,44 +642,44 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayTankStatus(status:string):string{
-    var retval:string="-";
+  displayTankStatus(status: string): string {
+    var retval: string = "-";
 
-    retval= this.processStatusCvList!
-    .filter(item => item.code_val === status)
-    .map(item => item.description)[0]!; // Returns the description of the first match
+    retval = this.processStatusCvList!
+      .filter(item => item.code_val === status)
+      .map(item => item.description)[0]!; // Returns the description of the first match
 
-    if(retval==="") retval="-"
+    if (retval === "") retval = "-"
     return retval;
   }
 
-  AllocationResidueDisposalEstimate(event:Event, row:ResidueItem)
-  {
+  AllocationResidueDisposalEstimate(event: Event, row: ResidueItem) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-       this.router.navigate(['/admin/residue-disposal/job-order/allocation/',row.guid], {
-         state: { id: '' ,
-           action:"UPDATE",
-           selectedRow:row,
-           type:'residue-approval',
-           pagination:{
-             where :this.lastSearchCriteriaResidue,
-             pageSize:this.pageSizeResidue,
-             pageIndex:this.pageIndexResidue,
-             hasPreviousPage:this.hasPreviousPageResidue,
-             startCursor:this.startCursorResidue,
-             endCursor:this.endCursorResidue,
-             previous_endCursor:this.previous_endCursorResidue,
-             
-             showResult: this.sotDS.totalCount>0
-             
-           }
-         }
-       });
+    this.router.navigate(['/admin/residue-disposal/job-order/allocation/', row.guid], {
+      state: {
+        id: '',
+        action: "UPDATE",
+        selectedRow: row,
+        type: 'residue-approval',
+        pagination: {
+          where: this.lastSearchCriteriaResidue,
+          pageSize: this.pageSizeResidue,
+          pageIndex: this.pageIndexResidue,
+          hasPreviousPage: this.hasPreviousPageResidue,
+          startCursor: this.startCursorResidue,
+          endCursor: this.endCursorResidue,
+          previous_endCursor: this.previous_endCursorResidue,
+
+          showResult: this.sotDS.totalCount > 0
+
+        }
       }
-    
-      getStatusDescription(codeValType: string | undefined): string | undefined {
-        return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
-      }
- 
+    });
+  }
+
+  getStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
+  }
+
 }

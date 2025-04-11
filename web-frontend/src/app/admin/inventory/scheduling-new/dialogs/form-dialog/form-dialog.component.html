@@ -55,7 +55,7 @@
             }
           </div>
           <div formArrayName="schedulingSot">
-            @for(row of getSchedulingArray().controls; track row; let index = $index){
+            @for(row of getSchedulingArray().controls; track row; let index = $index) {
             <mat-card [formGroupName]="index" [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
               <mat-card-content [ngClass]="">
                 <div class="row">
@@ -96,7 +96,8 @@
                   </div>
                   <div class="col-xl-0-75 col-lg-0-75 col-md-12 col-sm-12 mb-1 d-flex">
                     <button mat-icon-button color="warn" (click)="removeSot($event, index)"
-                      [matTooltip]="data.translatedLangText.CANCEL" class="tbl-action-btn">
+                      [disabled]="getSchedulingArray().length <= 1" [matTooltip]="data.translatedLangText.CANCEL"
+                      class="tbl-action-btn">
                       <mat-icon>cancel</mat-icon>
                     </button>
                   </div>
