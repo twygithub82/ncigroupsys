@@ -47,8 +47,8 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     {
         public string date { get; set; }
         public string day { get; set; }
-        public double gate_in_cost { get; set; }
-        public double gate_out_cost { get; set; }
+        public double gate_in_count { get; set; }
+        public double gate_out_count { get; set; }
     }
 
     [NotMapped]
@@ -56,8 +56,8 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     {
         public string date { get; set; }
         public string day { get; set; }
-        public double lift_off_cost { get; set; }
-        public double lift_on_cost { get; set; }
+        public double lift_off_count { get; set; }
+        public double lift_on_count { get; set; }
     }
 
     [NotMapped]
@@ -65,8 +65,8 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     {
         public string date { get; set; }
         public string day { get; set; }
-        public double approved_cost { get; set; }
-        public double completed_cost { get; set; }
+        public double approved_count { get; set; }
+        public double completed_count { get; set; }
     }
 
 
@@ -75,7 +75,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     {
         public string date { get; set; }
         public string day { get; set; }
-        public double appv_cost { get; set; }
+        public double appv_cost { get; set; }   
         public double complete_cost { get; set; }
     }
 
@@ -115,7 +115,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     public class TempInventoryResult
     {
         public string sot_guid { get; set; } //for opening_balance
-        public double cost { get; set; } //cost
+        public double? cost { get; set; } //cost
         public string code { get; set; }
         public string cc_name { get; set; }
         public long? appv_date { get; set; }
