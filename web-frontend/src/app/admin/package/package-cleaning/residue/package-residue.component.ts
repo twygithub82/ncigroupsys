@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,28 +25,20 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
 import { TariffResidueDS } from 'app/data-sources/tariff-residue';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-package-residue',
@@ -104,7 +97,6 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   ccDS: CustomerCompanyDS;
   tariffResidueDS: TariffResidueDS;
   packResidueDS: PackageResidueDS;
-  // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
 
   packResidueItems: PackageResidueItem[] = [];
@@ -225,7 +217,6 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
@@ -250,6 +241,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.search();
   }
 
   initPcForm() {
@@ -260,7 +252,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  
+
   initializeFilterCustomerCompany() {
     this.pcForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
@@ -407,11 +399,11 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
-   
+
     if (this.customerCodeControl.value) {
       //if (this.customerCodeControl.value.length > 0) 
       {
-       // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
+        // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         //var guids = customerCodes.map(cc => cc.guid);
         where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
       }

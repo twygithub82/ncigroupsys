@@ -232,6 +232,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.search();
   }
 
   translateLangText() {

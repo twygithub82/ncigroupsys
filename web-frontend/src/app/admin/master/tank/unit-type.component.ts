@@ -93,23 +93,11 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
   pageTitle = 'MENUITEMS.MASTER.LIST.UNIT-TYPE'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/unit-type' }
   ]
 
   minMaterialCost: number = -20;
   maxMaterialCost: number = 20;
-
-  //customerCodeControl = new UntypedFormControl();
-  // categoryControl = new UntypedFormControl();
-  // profileNameControl = new UntypedFormControl();
-
-  // lengthControl = new UntypedFormControl();
-  // dimensionControl = new UntypedFormControl();
-
-  // groupNameControl = new UntypedFormControl();
-  // subGroupNameControl = new UntypedFormControl();
-  // handledItemControl = new UntypedFormControl();
 
   lengthItems: TariffRepairLengthItem[] = [];
   dimensionItems: string[] = [];

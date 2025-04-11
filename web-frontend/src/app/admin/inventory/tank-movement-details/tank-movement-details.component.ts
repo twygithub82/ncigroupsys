@@ -178,7 +178,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT-DETAILS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT', route: '/admin/inventory/tank-movement' }
   ]
 

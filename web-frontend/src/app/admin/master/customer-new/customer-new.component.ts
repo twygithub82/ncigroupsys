@@ -99,7 +99,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   pageTitleNew = 'MENUITEMS.MASTER.LIST.CUSTOMER-NEW'
   pageTitleEdit = 'MENUITEMS.MASTER.LIST.CUSTOMER-EDIT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/customer', queryParams: { tabIndex: this.tabIndex } },
     { text: 'MENUITEMS.MASTER.LIST.CUSTOMER', route: '/admin/master/customer', queryParams: { tabIndex: this.tabIndex } }
   ]

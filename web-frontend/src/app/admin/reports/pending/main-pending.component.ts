@@ -107,7 +107,6 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
 
   pageTitle = 'MENUITEMS.REPORTS.LIST.PENDING'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/pending' }
   ]
 

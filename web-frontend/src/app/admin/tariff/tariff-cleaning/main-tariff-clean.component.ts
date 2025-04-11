@@ -123,7 +123,6 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
 
   pageTitle = 'COMMON-FORM.CLEANING'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.TARIFF.TEXT', route: '/admin/tariff/tariff-cleaning' }
   ]
 

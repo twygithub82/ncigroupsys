@@ -84,7 +84,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.CLEANING-MANAGEMENT.TEXT', route: '/admin/parameter/cleaning-formulas' }
   ]
 

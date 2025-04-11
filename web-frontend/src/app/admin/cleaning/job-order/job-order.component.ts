@@ -114,7 +114,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.CLEANING.TEXT', route: '/admin/cleaning/job-order' }
   ]
 

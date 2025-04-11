@@ -110,7 +110,6 @@ export class MainSalesReportComponent extends UnsubscribeOnDestroyAdapter implem
 
   pageTitle = 'MENUITEMS.ADMIN-REPORTS.LIST.SALES-REPORTS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.ADMIN-REPORTS.TEXT', route: '/admin/admin-reports/main-sales-reports' }
   ]
 

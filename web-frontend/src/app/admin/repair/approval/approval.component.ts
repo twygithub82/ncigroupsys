@@ -96,7 +96,6 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.APPROVAL'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/approval' }
   ]
 

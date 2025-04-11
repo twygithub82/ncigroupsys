@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,13 +25,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Utility } from 'app/utilities/utility';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { PackageSteamingDS, PackageSteamingItem } from 'app/data-sources/package-steam';
@@ -38,6 +36,8 @@ import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffSteamingItem } from 'app/data-sources/tariff-steam';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 @Component({
   selector: 'app-package-steam',
@@ -585,15 +585,12 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
         });
       })
     ).subscribe();
-
-
   }
 
   public loadData() {
-
-
-
+    this.search();
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -671,9 +668,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.initTcForm();
-
-    //this.customerCodeControl.reset('');
-
   }
   displayTempMax(tempMax: any): String {
     var retval: String = '';

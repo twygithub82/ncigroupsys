@@ -120,7 +120,6 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
 
   pageTitle = 'COMMON-FORM.DEPOT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/depot' }
   ]
 

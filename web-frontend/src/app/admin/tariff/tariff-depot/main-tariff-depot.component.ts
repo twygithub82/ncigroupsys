@@ -117,7 +117,6 @@ export class MainTariffDepotComponent extends UnsubscribeOnDestroyAdapter implem
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-DEPOT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.TARIFF.TEXT', route: '/admin/tariff/tariff-depot' }
   ]
 

@@ -93,7 +93,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-NEW'
   pageTitleEdit = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-EDIT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER', route: '/admin/inventory/storing-order' }
   ]
   translatedLangText: any = {}

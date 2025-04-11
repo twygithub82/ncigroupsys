@@ -90,7 +90,6 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.SURVEY.TEXT', route: '/admin/survey/periodic-test' }
   ]
 

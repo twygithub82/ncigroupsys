@@ -103,7 +103,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-REPAIR'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.TARIFF.TEXT', route: '/admin/tariff/tariff-repair' }
   ]
 

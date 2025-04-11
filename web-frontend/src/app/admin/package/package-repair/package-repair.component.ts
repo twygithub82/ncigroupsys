@@ -93,7 +93,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.PACKAGE.TEXT', route: '/admin/package/package-repair' }
   ]
 
@@ -730,7 +729,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   }
   public loadData() {
-
     this.trfRepairDS.searchDistinctLength(undefined, undefined).subscribe(data => {
       this.lengthItems = data;
     });
@@ -740,19 +738,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     });
 
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-      // this.customer_companyList1 = data
     });
 
-    // this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
-
-    // const queries = [
-    //   { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-
-    // ];
-    // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-    //   this.storageCalCvList=data;
-    // });
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
       //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
@@ -794,6 +781,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.CodeValuesDS.connectAlias('unitType').subscribe(data => {
       this.unitTypeCvList = data;
     });
+    this.search();
   }
 
   showNotification(

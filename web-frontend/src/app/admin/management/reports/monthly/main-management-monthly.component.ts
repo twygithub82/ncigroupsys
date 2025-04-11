@@ -111,7 +111,6 @@ export class MainManagementMonthlyComponent extends UnsubscribeOnDestroyAdapter 
 
   pageTitle = 'MENUITEMS.MANAGEMENT.LIST.MONTHLY-REPORTS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.MANAGEMENT.TEXT', route: '/admin/management/reports/monthly' }
   ]
 

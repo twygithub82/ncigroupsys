@@ -100,7 +100,6 @@ export class GroupComponent extends UnsubscribeOnDestroyAdapter
 
   pageTitle = 'MENUITEMS.MANAGEMENT.LIST.GROUP'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.MANAGEMENT.TEXT', route: '/admin/management' }
   ]
 

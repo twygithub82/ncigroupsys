@@ -103,7 +103,6 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/estimate-template' },
     { text: 'MENUITEMS.MASTER.LIST.ESTIMATE-TEMPLATE', route: '/admin/master/estimate-template' }
   ]

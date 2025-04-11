@@ -103,7 +103,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   pageTitleNew = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING-NEW'
   pageTitleEdit = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING-EDIT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.TARIFF.TEXT', route: '/admin/tariff/tariff-cleaning' },
     { text: 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING', route: '/admin/tariff/tariff-cleaning' }
   ]

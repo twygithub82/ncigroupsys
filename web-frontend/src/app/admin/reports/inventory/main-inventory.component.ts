@@ -110,7 +110,6 @@ export class MainInventoryComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitle = 'MENUITEMS.REPORTS.LIST.INVENTORY'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/inventory' }
   ]
 

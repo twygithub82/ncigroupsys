@@ -84,7 +84,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
   pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-PROCESS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.CLEANING-MANAGEMENT.TEXT', route: '/admin/parameter/cleaning-methods' }
   ]
 

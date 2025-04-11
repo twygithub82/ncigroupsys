@@ -109,7 +109,6 @@ export class MainStatusComponent extends UnsubscribeOnDestroyAdapter implements 
 
   pageTitle = 'MENUITEMS.REPORTS.LIST.STATUS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/status' }
   ]
 

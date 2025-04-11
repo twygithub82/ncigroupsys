@@ -105,7 +105,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitle = 'MENUITEMS.BILLING.LIST.REPAIR-BILL'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
+    { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/repair' }
   ]
 
   translatedLangText: any = {};

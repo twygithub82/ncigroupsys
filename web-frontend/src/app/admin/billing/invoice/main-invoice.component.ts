@@ -109,7 +109,6 @@ export class MainInvoiceComponent extends UnsubscribeOnDestroyAdapter implements
 
   pageTitle = 'MENUITEMS.BILLING.LIST.INVOICES'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/invoices' }
   ]
 

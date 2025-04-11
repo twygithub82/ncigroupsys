@@ -97,7 +97,6 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER-ALLOCATION'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } },
     { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } }
   ]

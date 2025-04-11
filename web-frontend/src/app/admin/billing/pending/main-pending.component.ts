@@ -113,8 +113,7 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
 
   pageTitle = 'MENUITEMS.BILLING.LIST.PENDING'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
-    { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/clean' }
+    { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/pending' }
   ]
 
   translatedLangText: any = {};
