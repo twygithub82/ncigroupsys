@@ -157,7 +157,7 @@
                     [disabled]="!canStartJob()"
                     [ngClass]="{'m-r-10': true, 'bg-red': canStartJob() && isStarted(), 'bg-green': canStartJob() && !isStarted()}">
                     <mat-icon>timer</mat-icon>
-                    {{ isStarted() ? translatedLangText.STOP_JOB : translatedLangText.START_JOB }}
+                    {{ isStarted() ? translatedLangText.PAUSE_JOB : translatedLangText.START_JOB }}
                   </button>
                   <button mat-flat-button color="accent" [disabled]="!canCompleteJob()" (click)="completeJob($event)"
                     [ngClass]="'m-r-10'">
