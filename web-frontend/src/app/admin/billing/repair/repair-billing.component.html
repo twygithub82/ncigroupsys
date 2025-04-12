@@ -75,7 +75,7 @@
                       <mat-datepicker #cutoff_picker></mat-datepicker>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
                       <input matInput [matDatepicker]="release_picker" placeholder="Select date"
@@ -83,7 +83,7 @@
                       <mat-datepicker-toggle matSuffix [for]="release_picker"></mat-datepicker-toggle>
                       <mat-datepicker #release_picker></mat-datepicker>
                     </mat-form-field>
-                  </div>
+                  </div> -->
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
@@ -102,7 +102,7 @@
 
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+                  <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -120,7 +120,7 @@
                       </mat-error>
                       }
                     </mat-form-field>
-                  </div>
+                  </div> -->
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
@@ -284,7 +284,7 @@
           <div class="body overflow-auto">
             @for(sotRow of sotRepList; track sotRow) {
             <mat-accordion>
-              <mat-expansion-panel>
+              <mat-expansion-panel [expanded]="true">
                 <mat-expansion-panel-header class="pt-1 pb-0 d-flex justify-content-between align-items-center">
                   <mat-panel-title [ngClass]="'custom-title d-flex align-items-center'">
                     <!-- <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
@@ -428,6 +428,22 @@
                             @else
                             {
                             <span class="mobile-label">{{translatedLangText.INVOICE_NO}}: </span> -
+                            }
+
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="invoice_date">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.INVOICE_DATE}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let row" class="">
+                            @if(row.invoiced)
+                            {
+                            <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{getInvoiceNo(row)}}
+                            }
+                            @else
+                            {
+                            <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}: </span> -
                             }
 
                           </mat-cell>

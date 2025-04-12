@@ -70,7 +70,6 @@ export class MainCustomerComponent extends UnsubscribeOnDestroyAdapter implement
   tabIndex = 0;
   pageTitle = 'MENUITEMS.MASTER.LIST.CUSTOMER'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/customer', queryParams: { tabIndex: this.tabIndex } }
   ]
 

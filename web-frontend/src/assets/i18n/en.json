@@ -1023,6 +1023,7 @@
     "OPENING-BALANCE": "Opening Balance",
     "CLOSING-BALANCE": "Closing Balance",
     "DUE-TYPE": "Due Type",
+    "NEXT-TEST-TYPE-DUE": "Next Test Type Due",
     "OTHERS": "Others",
     "EMPTY-FORM": "Empty Form",
     "COMPARTMENT-TYPE-BTM-EMPTY": "Compartment Type (Bottom) is empty",

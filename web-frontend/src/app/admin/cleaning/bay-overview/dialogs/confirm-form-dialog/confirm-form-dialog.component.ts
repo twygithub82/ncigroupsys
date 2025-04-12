@@ -60,18 +60,18 @@ export class ConfirmationDialogComponent {
     this.dialogRef.close('cancel');
   }
   confirmDelete(): void {
-    const returnDialog: DialogData = {
+    const returnDialog: any = {
       action: 'confirmed',
       item: this.jobItm,
       index: this.index,
-      remarks: this.pcForm.value["remarks"]
+      // remarks: this.pcForm.value["remarks"]
     }
     this.dialogRef.close(returnDialog);
   }
 
    createPackageCleaning(): UntypedFormGroup {
       return this.fb.group({
-        remarks:['']
+        // remarks:['']
       });
     }
 }

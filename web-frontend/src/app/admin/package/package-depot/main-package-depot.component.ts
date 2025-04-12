@@ -110,7 +110,6 @@ export class MainPackageDepotComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.PACKAGE.TEXT', route: '/admin/package/package-depot' }
   ]
 
@@ -169,23 +168,10 @@ export class MainPackageDepotComponent extends UnsubscribeOnDestroyAdapter imple
     RESIDUE_BILLING: "MENUITEMS.BILLING.LIST.RESIDUE-DISPOSAL-BILL",
     PACKAGE_LABOUR: 'MENUITEMS.PACKAGE.LIST.PACKAGE-LABOUR',
     PACKAGE_DEPOT: 'MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT',
-
-
   }
 
   filterCleanForm?: UntypedFormGroup;
   filterJobOrderForm?: UntypedFormGroup;
-
-  // cvDS: CodeValuesDS;
-  // soDS: StoringOrderDS;
-  // sotDS: StoringOrderTankDS;
-  // ccDS: CustomerCompanyDS;
-  // tcDS: TariffCleaningDS;
-  // igDS: InGateDS;
-  // cleanDS: InGateCleaningDS;
-  // joDS: JobOrderDS;
-  // ttDS: TimeTableDS;
-  // cmDS:CleaningMethodDS;
 
   availableProcessStatus: string[] = [
     'APPROVED',
@@ -239,18 +225,6 @@ export class MainPackageDepotComponent extends UnsubscribeOnDestroyAdapter imple
   ) {
     super();
     this.translateLangText();
-    // this.initSearchForm();
-    // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
-    // this.soDS = new StoringOrderDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.cvDS = new CodeValuesDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.tcDS = new TariffCleaningDS(this.apollo);
-    // this.igDS = new InGateDS(this.apollo);
-    // this.cleanDS = new InGateCleaningDS(this.apollo);
-    // this.ttDS= new TimeTableDS(this.apollo);
-    // this.joDS = new JobOrderDS(this.apollo);
-    // this.cmDS=new CleaningMethodDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -259,8 +233,6 @@ export class MainPackageDepotComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    // this.initializeFilterCustomerCompany();
-    // this.loadData();
   }
 
   refresh() {

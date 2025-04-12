@@ -108,7 +108,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/estimate' },
     { text: 'MENUITEMS.REPAIR.LIST.ESTIMATE', route: '/admin/repair/estimate' }
   ]

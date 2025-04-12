@@ -94,7 +94,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.QC-DETAILS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } },
     { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } }
   ]

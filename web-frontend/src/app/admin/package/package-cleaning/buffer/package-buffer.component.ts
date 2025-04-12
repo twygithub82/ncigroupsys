@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,22 +25,20 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Utility } from 'app/utilities/utility';
-import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { PackageDepotItem } from 'app/data-sources/package-depot';
-import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-package-buffer',
@@ -239,6 +238,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.search();
   }
 
   initPcForm() {
@@ -249,25 +249,25 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-   initializeFilterCustomerCompany() {
-        this.pcForm!.get('customer_code')!.valueChanges.pipe(
-          startWith(''),
-          debounceTime(300),
-          tap(value => {
-            var searchCriteria = '';
-            if (typeof value === 'string') {
-              searchCriteria = value;
-            } else {
-              searchCriteria = value.code;
-            }
-            this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-              this.customer_companyList = data
-            });
-          })
-        ).subscribe();
-    
-    
-      }
+  initializeFilterCustomerCompany() {
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+
+
+  }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -390,7 +390,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     if (this.customerCodeControl.value) {
       //if (this.customerCodeControl.value.length > 0) 
       {
-       // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
+        // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         //var guids = customerCodes.map(cc => cc.guid);
         where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
       }

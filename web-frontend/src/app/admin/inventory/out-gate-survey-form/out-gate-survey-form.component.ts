@@ -103,7 +103,6 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   tabIndex = 1;
   pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE-SURVEY-FORM'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: '1' } },
     { text: 'MENUITEMS.INVENTORY.LIST.OUT-GATE-SURVEY', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: '1' } }
   ]

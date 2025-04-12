@@ -416,7 +416,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           status_cv: inGateClnItem.status_cv,
           approve_dt: this.displayDateFromEpoch(inGateClnItem.approve_dt),
           na_dt: this.displayDateFromEpoch(inGateClnItem.na_dt),
-          remarks: inGateClnItem.remarks,
+          //remarks: inGateClnItem.remarks,
           cleaning_cost: inGateClnItem.cleaning_cost,
           buffer_cost: inGateClnItem.buffer_cost
         });

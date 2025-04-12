@@ -30,7 +30,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                      <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                      <input matInput [formControl]="customerCodeControl"
                         [matAutocomplete]="customerCode">
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                         @for (cc of customer_companyList; track cc) {
@@ -44,8 +44,8 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                      <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
-                        formControlName="last_cargo">
+                      <input matInput [formControl]="lastCargoControl"
+                        [matAutocomplete]="lastCargo">
                       <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
                         @for (tc of last_cargoList; track tc) {
                         <mat-option [value]="tc">
@@ -169,10 +169,10 @@
                     <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span> {{
                     ccDS.displayName(row.storing_order?.customer_company)}}
                   </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
+                  <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
                     {{igDS.getInGateItem(row.in_gate)?.eir_no}}
-                  </div>
+                  </div> -->
                   <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
                     {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}

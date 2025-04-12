@@ -214,7 +214,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   hasPreviousPage = false;
   previous_endCursor: any;
 
-
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -274,8 +273,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   initSearchForm() {
     this.searchForm = this.fb.group({
       tank_no: [''],
-      customer_code: [''],
-      last_cargo: [''],
+      customer_code: this.customerCodeControl,
+      last_cargo: this.lastCargoControl,
       eir_dt_start: [''],
       eir_dt_end: [''],
       part_name: [''],
@@ -569,6 +568,10 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       if (!where.residue) where.residue = {};
       if (!where.residue.some) where.residue.some = {};
       where.residue.some.status_cv = { in: this.searchForm!.value['est_status_cv'] };
+    } else {
+      if (!where.residue) where.residue = {};
+      if (!where.residue.some) where.residue.some = {};
+      where.residue.some.status_cv = { in: this.availableProcessStatus };
     }
     // if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
     //   let reSome: any = {};
@@ -678,7 +681,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   }
 
   initializeFilterCustomerCompany() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    this.customerCodeControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -694,7 +697,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       })
     ).subscribe();
 
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+    this.lastCargoControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {

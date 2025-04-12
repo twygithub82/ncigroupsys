@@ -10,6 +10,15 @@
     </button>
   </div>
   <div mat-dialog-content>
+    <div class="card l-bg-{{this.getBackgroundColorFromNature()}}">
+      <div class="row">
+        <div
+          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+          <mat-icon class="">error</mat-icon>
+          <mat-label class="ms-1">{{this.getNatureInGateAlert()}}</mat-label>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
@@ -58,7 +67,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row">
+                  <!-- <div class="row">
                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.OWNER}}:</span>
                     </div>
@@ -67,7 +76,7 @@
                         {{ccDS.displayName(sotItem!.customer_company)}}
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="row">
                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.CLEANING_METHOD}}:</span>
@@ -80,7 +89,7 @@
                   </div>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
+                  <!-- <div class="row">
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
                       <span>{{translatedLangText.EIR_NO}}:</span>
                     </div>
@@ -89,7 +98,7 @@
                         {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="row">
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
                       <span>{{translatedLangText.EIR_DATE}}:</span>
@@ -109,7 +118,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row">
+                  <!-- <div class="row">
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
                       <span>{{translatedLangText.LAST_TEST}}:</span>
                     </div>
@@ -118,8 +127,8 @@
                         {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
                       </div>
                     </div>
-                  </div>
-                  <div class="row">
+                  </div> -->
+                  <!-- <div class="row">
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
                       <span>{{translatedLangText.NEXT_TEST}}:</span>
                     </div>
@@ -128,7 +137,7 @@
                         {{getNextTest(igDS.getInGateItem(sotItem?.in_gate!)?.in_gate_survey)}}
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </mat-card-content>

@@ -113,7 +113,6 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageTitle = 'COMMON-FORM.CLEANING'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/clean' }
   ]
 

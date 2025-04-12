@@ -112,7 +112,6 @@ export class MainPackageCleaningComponent extends UnsubscribeOnDestroyAdapter im
 
   pageTitle = 'COMMON-FORM.CLEANING'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.PACKAGE.TEXT', route: '/admin/package/package-cleaning' }
   ]
 

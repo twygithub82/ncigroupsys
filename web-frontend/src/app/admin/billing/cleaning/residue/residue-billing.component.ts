@@ -81,10 +81,11 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     'eir_no',
     'eir_dt',
     'last_cargo',
-    'purpose',
+    //'purpose',
     'cost',
     'tank_status_cv',
     'invoice_no',
+    'invoice_date',
      //'invoiced',
    // 'action'
   ];

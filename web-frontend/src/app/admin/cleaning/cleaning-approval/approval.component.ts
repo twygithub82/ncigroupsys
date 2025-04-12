@@ -86,7 +86,6 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.CLEANING.LIST.APPROVAL'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.CLEANING.TEXT', route: '/admin/cleaning/approval' }
   ]
 
@@ -211,7 +210,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       customer_code: this.customerCodeControl,
       eir_no: [''],
       last_cargo: this.lastCargoControl,
-      approval_status: [['APPROVED']],
+      approval_status: [''],
     });
   }
 
@@ -274,6 +273,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.search();
   }
+
   showNotification(
     colorName: string,
     text: string,

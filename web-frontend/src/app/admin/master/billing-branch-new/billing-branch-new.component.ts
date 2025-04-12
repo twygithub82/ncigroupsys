@@ -99,7 +99,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   pageTitleNew = 'MENUITEMS.MASTER.LIST.BILLING-BRANCH-NEW'
   pageTitleEdit = 'MENUITEMS.MASTER.LIST.BILLING-BRANCH-EDIT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/customer', queryParams: { tabIndex: this.tabIndex } },
     { text: 'MENUITEMS.MASTER.LIST.BILLING-BRANCH', route: '/admin/master/customer', queryParams: { tabIndex: this.tabIndex } }
   ]

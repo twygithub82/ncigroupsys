@@ -114,7 +114,6 @@ export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements 
 
   pageTitle = 'MENUITEMS.ADMIN-REPORTS.LIST.YEARLY-REPORTS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.ADMIN-REPORTS.TEXT', route: '/admin/admin-reports/main-yearly' }
   ]
 

@@ -92,7 +92,6 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.OUT-GATE-DETAILS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: '0' } },
     { text: 'MENUITEMS.INVENTORY.LIST.OUT-GATE', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: '0' } }
   ]

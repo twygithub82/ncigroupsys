@@ -8,7 +8,6 @@
     <div class="body">
       <div class="">
         <div class="team-buttons">
-
           @for (team of teamList; track team) {
           <mat-card
             [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-green': team.isOccupied, 'bg-lightest-blue': !team.isOccupied}"
@@ -78,27 +77,6 @@
       </div>
       <div class="spacer"></div>
       <div mat-dialog-actions class="align-right">
-
-        <!-- @if(canAbort())
-        {
-          
-          <button mat-flat-button color="warn"  (click)="onAbort($event)" class="m-r-5">{{translatedLangText.ABORT}}</button>
-        }
-
-        @if (canEdit() && !buttonViewOnly()) {
-          <button mat-flat-button color="primary"  (click)="save()" [disabled]="!canSave()" class="m-r-5">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
-        }
-
-       
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1" class="m-r-5">
-          @if(canEdit()){
-          {{translatedLangText.CANCEL}}
-          }
-          @if(!canEdit()){
-            {{translatedLangText.CLOSE}}
-          } -->
-
-        <!-- </button> -->
       </div>
     </div>
     @if (joDS.loading$ | async) {

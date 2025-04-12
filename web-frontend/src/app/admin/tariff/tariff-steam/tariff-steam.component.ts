@@ -84,31 +84,20 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
 export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    // 'select',
-    // // 'img',
     'minTemp',
     'maxTemp',
     'cost',
     'labour',
-    // 'qty',
     'lastUpdate',
-
-    // 'mobile',
-    //  'actions',
   ];
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-STEAM'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.TARIFF.TEXT', route: '/admin/tariff/tariff-steam' }
   ]
 
   customerCodeControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
-
-  // ccDS: CustomerCompanyDS;
-  // clnCatDS:CleaningCategoryDS;
-  // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   tariffSteamDS: TariffSteamingDS;
 
   tariffSteamItems: TariffSteamingItem[] = [];

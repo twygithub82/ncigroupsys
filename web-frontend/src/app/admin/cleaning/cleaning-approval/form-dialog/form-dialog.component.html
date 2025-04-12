@@ -27,7 +27,7 @@
                     }
                   </mat-form-field>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApprovedDate()">
+                <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApprovedDate()">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
                     <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date"
@@ -40,7 +40,7 @@
                     </mat-error>
                     }
                   </mat-form-field>
-                </div>
+                </div> -->
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDate()">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.NO_ACTION}} {{translatedLangText.DATE}}</mat-label>
@@ -72,9 +72,9 @@
           <div class="card l-bg-{{this.getBackgroundColorFromNature()}}">
             <div class="row">
               <div
-                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                <mat-icon style="margin-right: 10px;">error</mat-icon>
-                <mat-label style="display: flex; justify-content: left;">{{this.getNatureInGateAlert()}}</mat-label>
+                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+                <mat-icon class="me-2">error</mat-icon>
+                <mat-label >{{this.getNatureInGateAlert()}}</mat-label>
               </div>
             </div>
           </div>

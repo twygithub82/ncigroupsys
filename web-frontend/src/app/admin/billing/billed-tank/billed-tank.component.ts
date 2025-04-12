@@ -83,7 +83,7 @@ export class BilledTankComponent extends UnsubscribeOnDestroyAdapter implements 
 
   pageTitle = 'MENUITEMS.BILLING.LIST.BILLED-TANK'
   breadcrumsMiddleList = [
-    'MENUITEMS.BILLING.TEXT'
+    { text: 'MENUITEMS.BILLING.TEXT', route: '/admin/billing/billed-tank' }
   ]
 
   translatedLangText: any = {};

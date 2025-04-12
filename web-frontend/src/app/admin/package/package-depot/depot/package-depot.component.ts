@@ -26,18 +26,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
@@ -78,7 +71,6 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatAutocompleteModule,
     MatDividerModule,
   ]
-
 })
 
 
@@ -106,7 +98,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   packDepotDS: PackageDepotDS;
   ccDS: CustomerCompanyDS;
   tariffDepotDS: TariffDepotDS;
-  // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
 
   packDepotItems: PackageDepotItem[] = [];
@@ -250,6 +241,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.search();
   }
 
    initializeFilterCustomerCompany() {

@@ -77,15 +77,12 @@ export class Dashboard1Component implements OnInit {
   sotDS: StoringOrderTankDS;
   constructor(
     private apollo: Apollo,
-
-    // private graphqlNotificationService: GraphqlNotificationService
   ) {
     this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     //constructor
   }
-
 
   ngOnInit() {
     // this.chart1();
@@ -106,7 +103,6 @@ export class Dashboard1Component implements OnInit {
       this.sot_waiting = data;
     });
   }
-
 
   private messageSubscribe() {
     this.messageSubscription = this.graphqlNotificationService?.newMessageReceived.subscribe(

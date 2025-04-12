@@ -80,7 +80,6 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
   pageTitle = 'MENUITEMS.MASTER.LIST.ESTIMATE-TEMPLATE'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/estimate-template' }
   ]
 

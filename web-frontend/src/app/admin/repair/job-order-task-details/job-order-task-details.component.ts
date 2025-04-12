@@ -97,7 +97,6 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } },
     { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/repair/job-order', queryParams: { tabIndex: this.tabIndex } }
   ]
@@ -802,9 +801,9 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
         }
       });
     } else {
-      const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-      if (found?.length) {
-        const newParam = new TimeTableItem(found[0]);
+      const found = this.jobOrderItem?.time_table?.find(x => x?.start_time && !x?.stop_time);
+      if (found) {
+        const newParam = new TimeTableItem(found);
         newParam.stop_time = Utility.convertDate(new Date()) as number;
         newParam.job_order = new JobOrderGO({ ...this.jobOrderItem });
         const param = [newParam];
@@ -819,66 +818,44 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
   completeJob(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     if (this.isStarted()) {
-      // to auto stop the job
-      const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-      if (found?.length) {
-        const newParam = new TimeTableItem(found[0]);
-        newParam.stop_time = Utility.convertDate(new Date()) as number;
-        newParam.job_order = new JobOrderGO({ ...this.jobOrderItem });
-        const param = [newParam];
-        console.log(param)
-        this.ttDS.stopJobTimer(param).subscribe(result => {
-          console.log(result)
-          const newParam = new UpdateJobOrderRequest({
-            guid: this.jobOrderItem?.guid,
-            remarks: this.jobOrderItem?.remarks,
-            start_dt: this.jobOrderItem?.start_dt,
-            complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-          });
-          const param = [newParam];
-          console.log(param)
-          this.joDS.completeJobOrder(param).subscribe(result => {
-            console.log(result)
-            if ((result?.data?.completeJobOrder ?? 0) > 0) {
-              const firstJobPart = this.jobOrderItem?.repair_part?.[0];
-              const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
-                guid: firstJobPart!.repair?.guid,
-                sot_guid: this.jobOrderItem?.storing_order_tank?.guid,
-                action: "COMPLETE"
-              });
-              console.log(repairStatusReq);
-              this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
-                console.log(result);
-              });
-            }
-          });
+      const found = this.jobOrderItem?.time_table?.find(x => x?.start_time && !x?.stop_time);
+    
+      if (found) {
+        const stopJobParam = [new TimeTableItem({
+          ...found,
+          stop_time: Utility.convertDate(new Date()) as number,
+          job_order: new JobOrderGO({ ...this.jobOrderItem })
+        })];
+    
+        this.ttDS.stopJobTimer(stopJobParam).subscribe(() => {
+          this.completeJobOrder();
         });
       }
     } else {
-      const newParam = new UpdateJobOrderRequest({
-        guid: this.jobOrderItem?.guid,
-        remarks: this.jobOrderItem?.remarks,
-        start_dt: this.jobOrderItem?.start_dt,
-        complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-      });
-      const param = [newParam];
-      console.log(param)
-      this.joDS.completeJobOrder(param).subscribe(result => {
-        console.log(result)
-        if ((result?.data?.completeJobOrder ?? 0) > 0) {
-          const firstJobPart = this.jobOrderItem?.repair_part?.[0];
-          const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
-            guid: firstJobPart!.repair?.guid,
-            sot_guid: this.jobOrderItem?.storing_order_tank?.guid,
-            action: "COMPLETE"
-          });
-          console.log(repairStatusReq);
-          this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
-            console.log(result);
-          });
-        }
-      });
+      this.completeJobOrder();
     }
+  }
+  
+  completeJobOrder(): void {
+    const completeJobParam = [new UpdateJobOrderRequest({
+      guid: this.jobOrderItem?.guid,
+      remarks: this.jobOrderItem?.remarks,
+      start_dt: this.jobOrderItem?.start_dt,
+      complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+    })];
+  
+    this.joDS.completeJobOrder(completeJobParam).subscribe(result => {
+      if ((result?.data?.completeJobOrder ?? 0) > 0) {
+        const firstJobPart = this.jobOrderItem?.repair_part?.[0];
+        const repairStatusReq = new RepairStatusRequest({
+          guid: firstJobPart?.repair?.guid,
+          sot_guid: this.jobOrderItem?.storing_order_tank?.guid,
+          action: "COMPLETE"
+        });
+  
+        this.repairDS.updateRepairStatus(repairStatusReq).subscribe();
+      }
+    });
   }
 
   rollbackJob(event: Event) {

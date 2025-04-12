@@ -108,7 +108,6 @@ export class MainDailyTeamComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitle = 'MENUITEMS.ADMIN-REPORTS.LIST.DAILY-TEAM-REPORT'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.ADMIN-REPORTS.TEXT', route: '/admin/admin-reports/main-daily-team-report' }
   ]
 

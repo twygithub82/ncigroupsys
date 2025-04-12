@@ -112,7 +112,6 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
 
   pageTitle = 'MENUITEMS.ADMIN-REPORTS.LIST.PERFORMANCE-REPORTS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.ADMIN-REPORTS.TEXT', route: '/admin/admin-reports/main-performance-report' }
   ]
 

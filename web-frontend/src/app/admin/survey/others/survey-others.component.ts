@@ -90,7 +90,6 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' },
     { text: 'MENUITEMS.SURVEY.TEXT', route: '/admin/survey/others' }
   ]
 
