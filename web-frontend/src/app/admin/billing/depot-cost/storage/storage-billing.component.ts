@@ -85,6 +85,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     'cost',
     'tank_status_cv',
     'invoice_no',
+    'invoice_date',
     //  'invoiced',
     // 'action'
   ];

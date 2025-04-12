@@ -84,6 +84,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     'cost',
     'tank_status_cv',
     'invoice_no',
+    'invoice_date',
     //  'invoiced',
     // 'action'
   ];

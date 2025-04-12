@@ -321,6 +321,21 @@
 
               </mat-cell>
             </ng-container>
+            <ng-container matColumnDef="invoice_date">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{translatedLangText.INVOICE_DATE}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" class="">
+                @if(row.invoiced)
+                {
+                <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{row.gateio_billing?.invoice_date}}
+                }
+                @else
+                {
+                <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}: </span> -
+                }
+              </mat-cell>
+            </ng-container>
             <ng-container matColumnDef="invoiced">
               <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                 {{translatedLangText.INVOICED}}
