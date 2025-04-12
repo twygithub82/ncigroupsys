@@ -91,6 +91,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     'status_cv',
     //'remarks',
     'invoice_no',
+    'invoice_date',
     //'actions'
   ];
 
