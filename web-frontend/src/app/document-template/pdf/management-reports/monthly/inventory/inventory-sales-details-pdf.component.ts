@@ -52,8 +52,7 @@ export interface DialogData {
   repData: ManagementReportYearlyInventory,
   date:string,
   repType:string,
-  customer:string,
-  inventory_type:string[]
+  customer:string
 }
 
 interface SeriesItem {
@@ -62,7 +61,7 @@ interface SeriesItem {
 }
 
 @Component({
-  selector: 'app-yearly-inventory-sales-report-details-pdf',
+  selector: 'app-monthly-inventory-sales-report-details-pdf',
   templateUrl: './inventory-sales-details-pdf.component.html',
   styleUrls: ['./inventory-sales-details-pdf.component.scss'],
   standalone: true,
@@ -77,7 +76,7 @@ interface SeriesItem {
     NgApexchartsModule
   ],
 })
-export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -266,6 +265,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     CLEAN_MONTHLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
     CUSTOMER_MONTHLY_SALES_REPORT:'COMMON-FORM.CUSTOMER-MONTHLY-SALES-REPORT',
     YEARLY_INVENTORY_REPORT:'COMMON-FORM.YEARLY-INVENTORY-REPORT',
+    MONTHLY_INVENTORY_REPORT:'COMMON-FORM.MONTHLY-INVENTORY-REPORT',
     SUMMARY_OF_INVENTORY:"COMMON-FORM.SUMMARY-OF-INVENTORY",
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
@@ -337,14 +337,13 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   index: number = 0;
   lineChartOptions?:any; 
   pieChartOptions?:any;
-  invTypes?:string[];
   // date:string='';
   // invType:string='';
 
 
 
   constructor(
-    public dialogRef: MatDialogRef<InventoryYearlySalesReportDetailsPdfComponent>,
+    public dialogRef: MatDialogRef<InventoryMonthlySalesReportDetailsPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -360,11 +359,6 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.repData = data.repData;
-    this.date= data.date;
-    this.repType=data.repType;
-    this.customer=data.customer;
-    this.invTypes=data.inventory_type;
     // this.repair_guid = data.repair_guid;
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
@@ -381,11 +375,10 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   async ngOnInit() {
     await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-    // this.repData = this.data.repData;
-    // this.date= this.data.date;
-    // this.repType=this.data.repType;
-    // this.customer=this.data.customer;
-    // this.invTypes=this.data.inventory_type;
+    this.repData = this.data.repData;
+    this.date= this.data.date;
+    this.repType=this.data.repType;
+    this.customer=this.data.customer;
     //this.InitChartValues();
     this.onDownloadClick();
 
@@ -666,58 +659,26 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
-    let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
-    let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
-    let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
-    let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
     const reportTitle = this.GetReportTitle();
     const headers = [[
       { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      ...(showGateSurcharge?
-      [{ content: this.translatedLangText.IN_GATE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.OUT_GATE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.ON_DEPOT, rowSpan: 2,colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
-      ...(showSteamSurcharge? [{ content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
-      //{ content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
-      ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: 'middle' }}]:[]),
+      { content: this.translatedLangText.DATE, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
+      { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
+      { content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
 
     ],
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      ...(showGateSurcharge?[
-      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for PREINSPECTION
-      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for LOLO
-    //  ...(showGateSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for GATE_SURCHARGE
-      ...(showSteamSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for STEAM
-      ...(showCleanSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for RESIDUE
-      ...(showRepairSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for CLEANING
+      // this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for PREINSPECTION
+      // this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for LOLO
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for STEAM
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for RESIDUE
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for CLEANING
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for REPAIR
      // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
     ]];
-
-    // const headers = [[
-    //   { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-    //   { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-    //   { content: this.translatedLangText.IN_GATE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-    //   { content: this.translatedLangText.OUT_GATE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-    //   { content: this.translatedLangText.ON_DEPOT, rowSpan: 2,colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-    //   { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-    //   //{ content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
-    //   { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
-    //   { content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-
-    // ],
-    // [
-    //   // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-    //   this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for PREINSPECTION
-    //   this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for LOLO
-    //   this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for GATE_SURCHARGE
-    //   this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for STEAM
-    //   this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for RESIDUE
-    //   this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for CLEANING
-    //  // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
-    // ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
@@ -728,13 +689,13 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 10: { halign: 'center', valign: 'middle', cellWidth: 15,minCellHeight: minHeightBodyCell },
+      // 11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
      // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
      // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
@@ -780,21 +741,20 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     var series:SeriesItem[]=[];
     var index:number=1;
     var prcss:string[]=[
-      ...(showGateSurcharge?[this.translatedLangText.IN_GATE,this.translatedLangText.OUT_GATE]:[]),
-      ...(showSteamSurcharge?[this.translatedLangText.STEAM]:[]),
-      ...(showCleanSurcharge?[this.translatedLangText.CLEANING]:[]),
-      ...(showRepairSurcharge?[this.translatedLangText.REPAIR]:[])
+      this.translatedLangText.IN_GATE,this.translatedLangText.OUT_GATE,
+      this.translatedLangText.STEAM,this.translatedLangText.CLEANING,
+      this.translatedLangText.REPAIR
     ]
     var prcsValues:number[]=[]
     for (const monthData of grpData.monthlyData) {
       data.push([
         (++idx).toString(),monthData.key,
-        ...(showGateSurcharge?[ monthData.gateIn?.count||'',Utility.formatNumberDisplay(monthData.gateIn?.percentage),
-        monthData.gateOut?.count||'',Utility.formatNumberDisplay(monthData.gateOut?.percentage),monthData.depot?.count||'',""]:[]),
-        
-        ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.percentage)]:[]),
-        ...(showCleanSurcharge?[monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.percentage)]:[]),
-        ...(showRepairSurcharge?[monthData.repair?.count||'',Utility.formatNumberDisplay(monthData.repair?.percentage)]:[]),
+        monthData.gateIn?.count||'',Utility.formatNumberDisplay(monthData.gateIn?.percentage),
+        monthData.gateOut?.count||'',Utility.formatNumberDisplay(monthData.gateOut?.percentage),
+        monthData.depot?.count||'',"",
+        monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.percentage),
+        monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.percentage),
+        monthData.repair?.count||'',Utility.formatNumberDisplay(monthData.repair?.percentage),
       ]);
       prcss.forEach(p=>{
         var s = series.find(s=>s.name==p);
@@ -810,19 +770,19 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         switch (p)
         {
           case this.translatedLangText.IN_GATE:
-           if(showGateSurcharge) s.data.push(monthData.gateIn?.count||0);
+            s.data.push(monthData.gateIn?.count||0);
           break;
           case this.translatedLangText.OUT_GATE:
-            if(showGateSurcharge) s.data.push(monthData.gateOut?.count||0);
+            s.data.push(monthData.gateOut?.count||0);
           break;
           case this.translatedLangText.STEAM:
-            if(showSteamSurcharge) s.data.push(monthData.steaming?.count||0);
+            s.data.push(monthData.steaming?.count||0);
           break;
           case this.translatedLangText.CLEANING:
-            if(showCleanSurcharge) s.data.push(monthData.cleaning?.count||0);
+            s.data.push(monthData.cleaning?.count||0);
           break;
           case this.translatedLangText.REPAIR:
-            if(showRepairSurcharge)  s.data.push(monthData.repair?.count||0);
+            s.data.push(monthData.repair?.count||0);
           break;
         }
         if(bInsert)
@@ -833,32 +793,31 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     }
     data.push([
       this.translatedLangText.TOTAL,"",
-      ...(showGateSurcharge?[ 
       this.repData?.gate_in_inventory?.total_count||'','',
-      this.repData?.gate_out_inventory?.total_count||'','','','']:[]),
-      
-      ...(showSteamSurcharge?[ this.repData?.steaming_yearly_inventory?.total_count||'','']:[]),
-      ...(showCleanSurcharge?[ this.repData?.cleaning_yearly_inventory?.total_count||'','']:[]),
-      ...(showRepairSurcharge?[this.repData?.repair_yearly_inventory?.total_count||'','']:[])
+      this.repData?.gate_out_inventory?.total_count||'','',
+      '','',
+      this.repData?.steaming_yearly_inventory?.total_count||'','',
+      this.repData?.cleaning_yearly_inventory?.total_count||'','',
+      this.repData?.repair_yearly_inventory?.total_count||'',''
     ]);
 
     data.push([
       this.translatedLangText.AVERAGE,"",
-      ...(showGateSurcharge?[ 
       this.repData?.gate_in_inventory?.average_count||'',"",
-      this.repData?.gate_out_inventory?.average_count||'', '','','']:[]),
-      
-      ...(showSteamSurcharge?[ this.repData?.steaming_yearly_inventory?.average_count||'', '']:[]),
-      ...(showCleanSurcharge?[ this.repData?.cleaning_yearly_inventory?.average_count||'', '']:[]),
-      ...(showRepairSurcharge?[this.repData?.repair_yearly_inventory?.average_count||'', '']:[])   ]);
+      this.repData?.gate_out_inventory?.average_count||'', '',
+      '','',
+      this.repData?.steaming_yearly_inventory?.average_count||'', '',
+      this.repData?.cleaning_yearly_inventory?.average_count||'', '',
+      this.repData?.repair_yearly_inventory?.average_count||'', ''
+    ]);
     
     prcsValues=[
-      ...(showGateSurcharge?[ 
       this.repData?.gate_in_inventory?.total_count||0,
-      this.repData?.gate_out_inventory?.total_count||0]:[]),
-      ...(showSteamSurcharge?[ this.repData?.steaming_yearly_inventory?.total_count||0]:[]),
-      ...(showCleanSurcharge?[ this.repData?.cleaning_yearly_inventory?.total_count||0]:[]),
-      ...(showRepairSurcharge?[this.repData?.repair_yearly_inventory?.total_count||0]:[]) ];
+      this.repData?.gate_out_inventory?.total_count||0,
+      this.repData?.steaming_yearly_inventory?.total_count||0,
+      this.repData?.cleaning_yearly_inventory?.total_count||0,
+      this.repData?.repair_yearly_inventory?.total_count||0,
+    ]
 
     pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -887,32 +846,29 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         let colSpan=2;
         let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
         let depotCell=[6,7];
-        if(!showGateSurcharge) depotCell=[];
+        
         if(data.section=="body" && ((data.column.index%2)==0))
         {
            var key = `${data.row.raw[1]}`;
-          
            var matched=0;
            var prop="";
            switch (data.column.index)
            {
              case 2:
-              if(showGateSurcharge) prop="gateIn";
-              else if(showSteamSurcharge) prop="steaming";
-              else if(showCleanSurcharge) prop="cleaning";
-              else if(showRepairSurcharge) prop="repair";
-               break;
+               prop="gateIn";
+             
+              break;
              case 4:
-              if(showGateSurcharge) prop="gateOut";
+               prop="gateOut";
               break;
              case 8:
-              if(showSteamSurcharge) prop="steaming";
+              prop="steaming";
               break;
             case 10:
-              if(showCleanSurcharge)prop="cleaning";
+               prop="cleaning";
                break;
             case 12:
-              if(showRepairSurcharge)var prop="repair";
+              var prop="repair";
               break;
            }
            if(prop)
@@ -946,20 +902,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         }
         else if (depotCell.includes(data.column.index))
         {
-          var dpWidth=10
           data.cell.colSpan = colSpan;
-          data.column.width = `${dpWidth}px`;  // Add unit
-    
-    // Alternative approach if above doesn't work
-    // setTimeout(() => {
-    //     data.column.width = `${dpWidth}px`;
-    //     // If your framework has a refresh/update method, call it here
-    //     // e.g., gridApi.refreshHeader() for AG-Grid
-    // }, 0);
-    
-    // Or try setting minWidth and maxWidth as well
-    data.column.minWidth = dpWidth;
-    data.column.maxWidth = dpWidth;
         }
 
         if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)||depotCell.includes(data.column.index)) 
@@ -989,19 +932,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     this.lineChartOptions.xaxis={
       categories: grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[],
     };
-
-
     this.lineChartOptions.series=series;
 
-    if(!showGateSurcharge) 
-      {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["In Gate","Out Gate"].includes(s.name));}
-    if(!showSteamSurcharge) 
-      {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steaming"].includes(s.name));}
-    if(!showCleanSurcharge) 
-      {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
-    if(!showRepairSurcharge) 
-      {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
-    
     this.pieChartOptions.labels=prcss;
     this.pieChartOptions.series2=prcsValues;
 
@@ -1188,7 +1120,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   }
   GetReportTitle(): string {
     var title:string='';
-         title = `${this.translatedLangText.YEARLY_INVENTORY_REPORT} - ${this.repType}`;
+         title = `${this.translatedLangText.MONTHLY_INVENTORY_REPORT}`;
     return `${title}`
   }
 
@@ -1309,7 +1241,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     this.lineChartOptions = {
       
       chart: {
-        height: 350,
+        height: 450,
         type: 'line',
         toolbar: {
           show: false,

@@ -836,10 +836,10 @@ export class GateIOInventoryItem{
 }
 
 export class ManagementReportMonthlyInventory{
-  cleaning_inventory?:MonthlyReportItem;
-  repair_inventory?:RepairMonthlyReportItem;
-  steaming_inventory?:MonthlyReportItem;
-  gate_in_out_inventory?:GateIOInventoryItem;
+  cleaning_inventory?:MonthlyReportItem[];
+  repair_inventory?:RepairMonthlyReportItem[];
+  steaming_inventory?:MonthlyReportItem[];
+  gate_in_out_inventory?:GateIOInventoryItem[];
   
   constructor(item: Partial<ManagementReportMonthlyInventory> = {}) {
     this.cleaning_inventory=item.cleaning_inventory;

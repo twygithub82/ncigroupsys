@@ -49,6 +49,7 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
 import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/overview/yearly-chart-pdf.component';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
+import { ManagementReportDS } from 'app/data-sources/reports-management';
 
 @Component({
   selector: 'app-inventory-monthly',
@@ -179,7 +180,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
   tcDS: TariffCleaningDS;
 
  
-  reportDS:ReportDS;
+  reportDS:ManagementReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -237,7 +238,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     this.tcDS = new TariffCleaningDS(this.apollo);
     
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.reportDS=new ReportDS(this.apollo);
+    this.reportDS=new ManagementReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -371,7 +372,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
    
 
       var customerName:string="";
-      where.inventory_type =this.invTypes;
+      where.inventory_type =this.invTypes.filter(v => v !== "ALL");
       if(this.searchForm?.get('report_type')?.value!="ALL")
       {
         where.inventory_type =this.searchForm?.get('report_type')?.value;
