@@ -82,11 +82,12 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'customer',
     'eir_no',
     'eir_dt',
-    'last_cargo',
-    'purpose',
+    //'last_cargo',
+    //'purpose',
     'cost',
     'tank_status_cv',
     'invoice_no',
+    'invoice_date'
     // 'invoiced',
     // 'action'
   ];
