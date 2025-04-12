@@ -88,7 +88,7 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="inv_picker">
-                        <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
+                        <input matStartDate placeholder="Start date" formControlName="inv_dt_start" >
                         <input matEndDate placeholder="End date" formControlName="inv_dt_end">
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="inv_picker"></mat-datepicker-toggle>
@@ -439,7 +439,7 @@
                           <mat-cell mat-cell *matCellDef="let row" class="">
                             @if(row.invoiced)
                             {
-                            <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{getInvoiceNo(row)}}
+                            <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{getInvoiceDate(row)}}
                             }
                             @else
                             {

@@ -328,7 +328,7 @@
               <mat-cell mat-cell *matCellDef="let row" class="">
                 @if(row.invoiced)
                 {
-                <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{row.gateio_billing?.invoice_date}}
+                <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{displayDate(row.lolo_billing?.invoice_dt)}}
                 }
                 @else
                 {

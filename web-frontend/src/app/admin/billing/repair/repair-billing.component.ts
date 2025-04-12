@@ -1240,4 +1240,16 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     return '-';
 
   }
+
+  getInvoiceDate(row: RepairItem): string | undefined {
+
+    if (row.bill_to_guid == row.customer_billing?.bill_to_guid) {
+      return this.displayDate(row.customer_billing?.invoice_dt!);
+    }
+    else if (row.bill_to_guid == row.owner_billing?.bill_to_guid) {
+      return this.displayDate(row.owner_billing?.invoice_dt!);
+    }
+    return '-';
+
+  }
 }

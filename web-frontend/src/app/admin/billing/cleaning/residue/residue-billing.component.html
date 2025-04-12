@@ -335,7 +335,7 @@
                 @if(row.invoiced)
                 {
                 <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span>
-                {{row.customer_billing?.invoice_date}}
+                {{displayDate(row.customer_billing?.invoice_dt)}}
                 }
                 @else
                 {
