@@ -67,7 +67,7 @@
                   <mat-datepicker #cutoff_picker></mat-datepicker>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
                   <input matInput [matDatepicker]="release_picker" placeholder="Select date"
@@ -75,7 +75,7 @@
                   <mat-datepicker-toggle matSuffix [for]="release_picker"></mat-datepicker-toggle>
                   <mat-datepicker #release_picker></mat-datepicker>
                 </mat-form-field>
-              </div>
+              </div> -->
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
@@ -94,7 +94,7 @@
 
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                   <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -112,7 +112,7 @@
                   </mat-error>
                   }
                 </mat-form-field>
-              </div>
+              </div> -->
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
@@ -279,7 +279,7 @@
                   class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.storing_order_tank?.tank_status_cv)}}
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="last_cargo">
+            <!-- <ng-container matColumnDef="last_cargo">
               <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-2'">
                 {{translatedLangText.LAST_CARGO}}
               </mat-header-cell>
@@ -289,17 +289,16 @@
                   matTooltip="{{ row.storing_order_tank?.tariff_cleaning?.cargo }}" matTooltipPosition="above">
                   {{ row.storing_order_tank?.tariff_cleaning?.cargo }}</span>
               </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="purpose">
+            </ng-container> -->
+            <!-- <ng-container matColumnDef="purpose">
               <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                 {{translatedLangText.RELEASE_DATE}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
                 <span
                   class="mobile-label">{{translatedLangText.RELEASE_DATE}}:</span>{{displayDate(row.storing_order_tank?.out_gate[0]?.out_gate_survey?.create_dt)}}
-                <!-- {{displayDate(row.storing_order_tank?.out_gate[0]?.out_gate_survey?.create_dt)}} -->
               </mat-cell>
-            </ng-container>
+            </ng-container> -->
             <ng-container matColumnDef="cost">
               <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                 {{translatedLangText.COST}}
