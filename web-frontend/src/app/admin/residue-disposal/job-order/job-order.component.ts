@@ -181,8 +181,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    // 'QC_COMPLETED',
-    // 'COMPLETED',
     'ASSIGNED',
     'PARTIAL_ASSIGNED',
   ]
@@ -377,9 +375,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   onFilterResidue() {
-    // const where: any = {
-    //  and:[]
-    // };
     const where: any = {
       and: [
         //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
@@ -406,10 +401,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
         }
       });
     }
-    // or: [
-    //   { storing_order_tank: { tank_no: { contains: "" } } },
-    //   { estimate_no: { contains: "" } }
-    // ]
+    
     if (this.filterResidueForm!.get('filterResidue')?.value) {
       where.and.push({
         storing_order_tank: { tank_no: { contains: this.filterResidueForm!.get('filterResidue')?.value } }

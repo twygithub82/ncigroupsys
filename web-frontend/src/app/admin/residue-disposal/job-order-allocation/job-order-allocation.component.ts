@@ -92,15 +92,9 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'desc',
-    //  'qty',
-    //  'unit_price',
-    //  'cost',
     'approve_part',
     'team',
-    //"actions"
-
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
@@ -219,7 +213,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     ABORT: 'COMMON-FORM.ABORT'
-
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -261,9 +254,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   jobOrderDS: JobOrderDS;
-  // plDS: PackageLabourDS;
-  // repairEstDS: RepairDS;
-  // repairEstPartDS: RepairPartDS;
   residueDS: ResidueDS;
   teamDS: TeamDS;
   mtDS: MasterEstimateTemplateDS;
@@ -300,9 +290,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    // this.plDS = new PackageLabourDS(this.apollo);
-    // this.repairEstDS = new RepairDS(this.apollo);
-    // this.repairEstPartDS = new RepairPartDS(this.apollo);
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
@@ -310,8 +297,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     this.residueDS = new ResidueDS(this.apollo);
     this.teamDS = new TeamDS(this.apollo);
     this.jobOrderDS = new JobOrderDS(this.apollo);
-
   }
+
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
@@ -343,13 +330,10 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       unit_price: [''],
       deList: [''],
       team_allocation: [''],
-
     });
   }
 
   initializeValueChanges() {
-
-
     console.log('initializeValueChanges');
     this.residueEstForm?.get('desc')?.valueChanges.pipe(
       startWith(''),
@@ -364,7 +348,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
             unit_price: desc_value?.cost.toFixed(2)
           });
         }
-
       })
     ).subscribe();
   }
@@ -383,8 +366,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-
-
     this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
       this.soTankStatusCvList = data;
     });
@@ -410,11 +391,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       this.unitTypeCvList = data;
     });
 
-
-    //this.getSurveyorList();
-
     this.sot_guid = this.route.snapshot.paramMap.get('id');
-    //this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
 
     this.subs.sink = this.teamDS.getTeamListByDepartment(["RESIDUE_DISPOSAL"]).subscribe(data => {
       if (data?.length) {
