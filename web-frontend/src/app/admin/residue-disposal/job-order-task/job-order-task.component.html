@@ -27,9 +27,11 @@
         <mat-label>{{translatedLangText.STATUS}}</mat-label>
         <mat-select multiple formControlName="jobStatusCv">
           @for (codeValue of jobStatusCvList; track codeValue) {
+          @if (availableProcessStatus.includes(codeValue.code_val || '')) {
           <mat-option [value]="codeValue.code_val">
             {{codeValue.description}}
           </mat-option>
+          }
           }
         </mat-select>
       </mat-form-field>

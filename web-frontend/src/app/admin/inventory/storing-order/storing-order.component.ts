@@ -87,7 +87,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/storing-order' }
   ]
 
   translatedLangText: any = {};

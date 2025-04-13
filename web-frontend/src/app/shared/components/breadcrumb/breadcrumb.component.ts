@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-breadcrumb',
@@ -18,9 +19,16 @@ export class BreadcrumbComponent {
   @Input()
   active_item!: string;
 
-  constructor() { }
+  constructor(private router: Router, private route: ActivatedRoute) { }
 
   isString(value: any): boolean {
     return typeof value === 'string';
+  }
+
+  onClickBreadcrumbs(route: any, queryParams: any, historyState: any) {
+    this.router.navigate([route], {
+      queryParams: queryParams,
+      state: historyState,
+    });
   }
 }

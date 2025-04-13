@@ -18,7 +18,10 @@
         }
         @else {
         <li class="breadcrumb-item">
-          <a [routerLink]="item.route" [queryParams]="item.queryParams">
+          <!-- <a [routerLink]="item.route" [queryParams]="item.queryParams">
+            {{item.text | translate}}
+          </a> -->
+          <a class="cursor-pointer" (click)="onClickBreadcrumbs(item.route, item.queryParams, item.historyState)">
             {{item.text | translate}}
           </a>
         </li>

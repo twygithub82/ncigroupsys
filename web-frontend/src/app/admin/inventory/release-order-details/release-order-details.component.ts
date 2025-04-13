@@ -99,6 +99,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-NEW'
   pageTitleEdit = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-EDIT'
   breadcrumsMiddleList = [
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/release-order' },
     { text: 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER', route: '/admin/inventory/release-order' }
   ]
 

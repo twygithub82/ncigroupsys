@@ -81,11 +81,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    'custCode',
+    //'custCode',
     'custCompanyName',
+    'PartName',
     'group',
     'subgroup',
-    'alias_name',
     'labour_hour',
     'material_cost',
     'mobile',
@@ -154,6 +154,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -293,10 +294,12 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       dimension: this.dimensionControl,
       min_len: [''],
       max_len: [''],
-      min_labour: [''],
-      max_labour: [''],
-      min_cost: [''],
-      max_cost: [''],
+      labour_hour: [''],
+      material_cost: [''],
+      //min_labour: [''],
+      //max_labour: [''],
+      //min_cost: [''],
+      //max_cost: [''],
       handled_item_cv: this.handledItemControl
     });
   }
@@ -501,114 +504,123 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
 
     // Handling material_cost
-    if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.material_cost = { gte: minCost, lte: maxCost };
-    } else if (this.pcForm!.value["min_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.material_cost = { gte: minCost };
-    } else if (this.pcForm!.value["max_cost"]) {
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.material_cost = { lte: maxCost };
+    if (this.pcForm!.value["material_cost"]) {
+      const selectedCost: number = Number(this.pcForm!.value["material_cost"]);
+      where.material_cost = { lte: selectedCost }
     }
+    // if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
+    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
+    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+    //   where.material_cost = { gte: minCost, lte: maxCost };
+    // } else if (this.pcForm!.value["min_cost"]) {
+    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
+    //   where.material_cost = { gte: minCost };
+    // } else if (this.pcForm!.value["max_cost"]) {
+    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+    //   where.material_cost = { lte: maxCost };
+    // }
 
     const unifiedConditions: any[] = [];
 
-    // Handling Dimension
-    if (this.pcForm!.value["dimension"]) {
-      let dimensionConditions: any = {};
-      let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
+    // // Handling Dimension
+    // if (this.pcForm!.value["dimension"]) {
+    //   let dimensionConditions: any = {};
+    //   let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
 
-      // Initialize tariff_repair if it doesn't exist
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.and = where.tariff_repair.and || [];
+    //   // Initialize tariff_repair if it doesn't exist
+    //   where.tariff_repair = where.tariff_repair || {};
+    //   where.tariff_repair.and = where.tariff_repair.and || [];
 
-      dimensionConditions.or = [];
-      selectedTarifRepairDimensionItems.forEach((item) => {
-        const condition: any = {};
+    //   dimensionConditions.or = [];
+    //   selectedTarifRepairDimensionItems.forEach((item) => {
+    //     const condition: any = {};
 
-        // Only add condition if item is defined (non-undefined)
-        if (item !== undefined && item !== null && item !== '') {
-          condition.dimension = { eq: item };
-        }
+    //     // Only add condition if item is defined (non-undefined)
+    //     if (item !== undefined && item !== null && item !== '') {
+    //       condition.dimension = { eq: item };
+    //     }
 
-        if (Object.keys(condition).length > 0) {
-          dimensionConditions.or.push(condition);
-        }
-      });
+    //     if (Object.keys(condition).length > 0) {
+    //       dimensionConditions.or.push(condition);
+    //     }
+    //   });
 
-      // Push condition to 'and' if it has valid properties
-      if (dimensionConditions.or.length > 0) {
-        where.tariff_repair.and.push(dimensionConditions);
-      }
+    //   // Push condition to 'and' if it has valid properties
+    //   if (dimensionConditions.or.length > 0) {
+    //     where.tariff_repair.and.push(dimensionConditions);
+    //   }
+    // }
+
+    // // Handling Length
+    // if (this.pcForm!.value["len"]) {
+    //   let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
+
+    //   // Initialize tariff_repair if it doesn't exist
+    //   where.tariff_repair = where.tariff_repair || {};
+    //   where.tariff_repair.and = where.tariff_repair.and || [];
+
+    //   const lengthConditions: any = {};
+    //   lengthConditions.or = [];
+    //   selectedTarifRepairLengthItems.forEach((item) => {
+    //     const condition: any = {};
+
+    //     // Add condition for length if defined
+    //     if (item.length !== undefined) {
+    //       condition.length = { eq: item.length };
+    //     }
+
+    //     // Add condition for length_unit_cv if it exists
+    //     if (item.length_unit_cv) {
+    //       condition.length_unit_cv = { eq: item.length_unit_cv };
+    //     }
+
+    //     // Push condition to 'or' if it has valid properties
+    //     if (Object.keys(condition).length > 0) {
+    //       lengthConditions.or.push(condition);
+    //     }
+    //   });
+
+    //   // Push length conditions to 'and' if it has valid properties
+    //   if (lengthConditions.or.length > 0) {
+    //     where.tariff_repair.and.push(lengthConditions);
+    //   }
+    // }
+
+    // // Handling length
+    // if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
+    //   const minLen: number = Number(this.pcForm!.value["min_len"]);
+    //   const maxLen: number = Number(this.pcForm!.value["max_len"]);
+    //   where.tariff_repair = where.tariff_repair || {};
+    //   where.tariff_repair.length = { gte: minLen, lte: maxLen };
+    // } else if (this.pcForm!.value["min_len"]) {
+    //   const minLen: number = Number(this.pcForm!.value["min_len"]);
+    //   where.tariff_repair = where.tariff_repair || {};
+    //   where.tariff_repair.length = { gte: minLen };
+    // } else if (this.pcForm!.value["max_len"]) {
+    //   const maxLen: number = Number(this.pcForm!.value["max_len"]);
+    //   where.tariff_repair = where.tariff_repair || {};
+    //   where.tariff_repair.length = { lte: maxLen };
+    // }
+
+    // // Handling labour_hour
+    if (this.pcForm!.value["labour_hour"]) {
+      const selectedHour: number = Number(this.pcForm!.value["labour_hour"]);
+      where.labour_hour = { lte: selectedHour }
     }
-
-    // Handling Length
-    if (this.pcForm!.value["len"]) {
-      let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
-
-      // Initialize tariff_repair if it doesn't exist
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.and = where.tariff_repair.and || [];
-
-      const lengthConditions: any = {};
-      lengthConditions.or = [];
-      selectedTarifRepairLengthItems.forEach((item) => {
-        const condition: any = {};
-
-        // Add condition for length if defined
-        if (item.length !== undefined) {
-          condition.length = { eq: item.length };
-        }
-
-        // Add condition for length_unit_cv if it exists
-        if (item.length_unit_cv) {
-          condition.length_unit_cv = { eq: item.length_unit_cv };
-        }
-
-        // Push condition to 'or' if it has valid properties
-        if (Object.keys(condition).length > 0) {
-          lengthConditions.or.push(condition);
-        }
-      });
-
-      // Push length conditions to 'and' if it has valid properties
-      if (lengthConditions.or.length > 0) {
-        where.tariff_repair.and.push(lengthConditions);
-      }
-    }
-    // Handling length
-    if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
-      const minLen: number = Number(this.pcForm!.value["min_len"]);
-      const maxLen: number = Number(this.pcForm!.value["max_len"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.length = { gte: minLen, lte: maxLen };
-    } else if (this.pcForm!.value["min_len"]) {
-      const minLen: number = Number(this.pcForm!.value["min_len"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.length = { gte: minLen };
-    } else if (this.pcForm!.value["max_len"]) {
-      const maxLen: number = Number(this.pcForm!.value["max_len"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.length = { lte: maxLen };
-    }
-
-    // Handling labour_hour
-    if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.labour_hour = { gte: minLabour, lte: maxLabour };
-    } else if (this.pcForm!.value["min_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.labour_hour = { gte: minLabour };
-    } else if (this.pcForm!.value["max_labour"]) {
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.labour_hour = { lte: maxLabour };
-    }
+    // if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
+    //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+    //   const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+    //   where.tariff_repair = where.tariff_repair || {};
+    //   where.tariff_repair.labour_hour = { gte: minLabour, lte: maxLabour };
+    // } else if (this.pcForm!.value["min_labour"]) {
+    //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+    //   where.tariff_repair = where.tariff_repair || {};
+    //   where.tariff_repair.labour_hour = { gte: minLabour };
+    // } else if (this.pcForm!.value["max_labour"]) {
+    //   const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+    //   where.tariff_repair = where.tariff_repair || {};
+    //   where.tariff_repair.labour_hour = { lte: maxLabour };
+    // }
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packRepairDS.SearchPackageRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => {
@@ -902,12 +914,13 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   resetForm() {
     this.initPcForm();
 
-    this.customerCodeControl.reset();
-    this.groupNameControl.reset();
-    this.subGroupNameControl.reset();
-    this.lengthControl.reset();
-    this.dimensionControl.reset();
-    this.handledItemControl.reset();
+    this.customerCodeControl.reset('');
+    this.groupNameControl.reset('');
+    this.subGroupNameControl.reset('');
+    this.lengthControl.reset('');
+    this.dimensionControl.reset('');
+    this.handledItemControl.reset('');
+    this.partNameControl.reset('');
   }
 
   updateValidators(validOptions: any[]) {

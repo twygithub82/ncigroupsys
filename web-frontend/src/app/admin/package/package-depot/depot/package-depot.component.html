@@ -54,7 +54,12 @@
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
-                    <input matInput formControlName="profile_name" type="text">
+                    <!-- <input matInput formControlName="profile_name" type="text"> -->
+                    <mat-select formControlName="profile_name">
+                      @for (option of profile_nameList; track option) {
+                      <mat-option [value]="option">{{option.profile_name}}</mat-option>
+                      }
+                    </mat-select>
                   </mat-form-field>
                 </div>
                 <!-- <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -118,19 +123,19 @@
                 <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
                   }}:</span>{{row.tariff_depot.profile_name}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="customer_code">
+            <!-- <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.customer_company.code}}</mat-cell>
-            </ng-container>
+            </ng-container> -->
             <ng-container matColumnDef="customer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
-                  }}:</span>{{row.customer_company.name}}</mat-cell>
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER
+                  }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="preinspection_cost">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PREINSPECTION_COST

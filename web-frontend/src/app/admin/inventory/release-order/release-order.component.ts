@@ -88,7 +88,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/release-order' }
   ]
 
   translatedLangText: any = {};

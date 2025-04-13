@@ -95,6 +95,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
 
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.TRANSFER-DETAILS'
   breadcrumsMiddleList = [
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/transfer' },
     { text: 'MENUITEMS.INVENTORY.LIST.TRANSFER', route: '/admin/inventory/transfer' }
   ]
 

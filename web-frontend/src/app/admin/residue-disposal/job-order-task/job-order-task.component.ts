@@ -168,6 +168,12 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   private jobOrderSubscriptions: Subscription[] = [];
 
+  availableProcessStatus: string[] = [
+    'PENDING',
+    'JOB_IN_PROGRESS',
+    'CANCELED',
+  ]
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -204,7 +210,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   initSearchForm() {
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
-      jobStatusCv: [['PENDING', 'JOB_IN_PROGRESS']],
+      jobStatusCv: [''],
       customer: this.customerCodeControl,
     });
   }
@@ -266,6 +272,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
       where.status_cv = {
         in: this.filterJobOrderForm!.get('jobStatusCv')?.value
+      };
+    } else {
+      where.status_cv = {
+        in: this.availableProcessStatus
       };
     }
 

@@ -142,6 +142,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   customerCodeControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
+  maxManuDOMDt: Date = new Date();
 
 
   sotDS: StoringOrderTankDS;

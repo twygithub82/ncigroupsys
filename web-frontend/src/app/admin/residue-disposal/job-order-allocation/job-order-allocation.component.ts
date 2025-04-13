@@ -90,22 +90,18 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
   ]
 })
 export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = 0;
+  historyState: any = {};
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'desc',
-    //  'qty',
-    //  'unit_price',
-    //  'cost',
     'approve_part',
     'team',
-    //"actions"
-
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.JOB-ORDER'
+    { text: 'MENUITEMS.RESIDUE-DISPOSAL.TEXT', route: '/admin/residue-disposal/job-order', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/residue-disposal/job-order', queryParams: { tabIndex: this.tabIndex } }
   ]
   translatedLangText: any = {}
   langText = {
@@ -218,8 +214,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     METHOD: "COMMON-FORM.METHOD",
     RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
-    ABORT: 'COMMON-FORM.ABORT'
-
+    ABORT: 'COMMON-FORM.ABORT',
+    VIEW: 'COMMON-FORM.VIEW'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -261,9 +257,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   jobOrderDS: JobOrderDS;
-  // plDS: PackageLabourDS;
-  // repairEstDS: RepairDS;
-  // repairEstPartDS: RepairPartDS;
   residueDS: ResidueDS;
   teamDS: TeamDS;
   mtDS: MasterEstimateTemplateDS;
@@ -276,7 +269,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
   isDuplicate = false;
 
-  historyState: any = {};
   updateSelectedItem: any = undefined;
   teamList?: TeamItem[];
 
@@ -300,9 +292,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    // this.plDS = new PackageLabourDS(this.apollo);
-    // this.repairEstDS = new RepairDS(this.apollo);
-    // this.repairEstPartDS = new RepairPartDS(this.apollo);
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
@@ -310,8 +299,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     this.residueDS = new ResidueDS(this.apollo);
     this.teamDS = new TeamDS(this.apollo);
     this.jobOrderDS = new JobOrderDS(this.apollo);
-
   }
+
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
@@ -343,13 +332,10 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       unit_price: [''],
       deList: [''],
       team_allocation: [''],
-
     });
   }
 
   initializeValueChanges() {
-
-
     console.log('initializeValueChanges');
     this.residueEstForm?.get('desc')?.valueChanges.pipe(
       startWith(''),
@@ -360,11 +346,9 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
         if (!desc_value) this.displayPackResidueList = [...this.packResidueList];
         else if (typeof desc_value === 'object') {
           this.residueEstForm?.patchValue({
-
             unit_price: desc_value?.cost.toFixed(2)
           });
         }
-
       })
     ).subscribe();
   }
@@ -383,8 +367,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-
-
     this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
       this.soTankStatusCvList = data;
     });
@@ -410,11 +392,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       this.unitTypeCvList = data;
     });
 
-
-    //this.getSurveyorList();
-
     this.sot_guid = this.route.snapshot.paramMap.get('id');
-    //this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
 
     this.subs.sink = this.teamDS.getTeamListByDepartment(["RESIDUE_DISPOSAL"]).subscribe(data => {
       if (data?.length) {
@@ -426,19 +404,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       this.isDuplicate = routeData['action'] === 'duplicate';
       this.loadHistoryState();
     });
-  }
-
-  getCustomerLabourPackage(customer_company_guid: string) {
-    // const where = {
-    //   and: [
-    //     { customer_company_guid: { eq: customer_company_guid } }
-    //   ]
-    // }
-    // this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
-    //   if (data?.length > 0) {
-    //     this.packageLabourItem = data[0];
-    //   }
-    // });
   }
 
   getCustomer() {
@@ -671,14 +636,10 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        //this.router.navigate(['/admin/master/estimate-template']);
-
         // Navigate to the route and pass the JSON object
         this.router.navigate(['/admin/residue-disposal/job-order'], {
           state: this.historyState
-
-        }
-        );
+        });
       });
     }
   }
@@ -900,7 +861,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
   loadHistoryState() {
     this.historyState = history.state;
-
     if (this.historyState.selectedRow != null) {
 
       this.residueItem = this.historyState.selectedRow;
@@ -908,8 +868,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
       this.getPackageResidue();
       this.loadBillingBranch();
-
-
     }
   }
 
@@ -972,10 +930,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/residue-disposal/job-order'], {
-      state: this.historyState
-
-    }
-    );
+      state: this.historyState,
+    });
   }
 
   populateResiduePartList(residue: ResidueItem) {
@@ -1101,9 +1057,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
       this.router.navigate(['/admin/residue-disposal/job-order'], {
         state: this.historyState
-
-      }
-      );
+      });
     }
   }
 
@@ -1113,9 +1067,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
       this.router.navigate(['/admin/residue-disposal/job-order'], {
         state: this.historyState
-
-      }
-      );
+      });
     }
   }
 

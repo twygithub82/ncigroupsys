@@ -84,7 +84,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TRANSFER'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/transfer' }
   ]
 
   translatedLangText: any = {};

@@ -77,17 +77,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
   ]
 })
 export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  // displayedColumns = [
-  //   'tank_no',
-  //   'customer',
-  //   'eir_no',
-  //   'eir_dt',
-  //   'last_cargo',
-  //   'tank_status_cv'
-  // ];
-
   displayedColumns = [
-    // 'select',
     'estimate_no',
     'job_no',
     'net_cost',
@@ -98,7 +88,6 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.ESTIMATE'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]
 
   translatedLangText: any = {};

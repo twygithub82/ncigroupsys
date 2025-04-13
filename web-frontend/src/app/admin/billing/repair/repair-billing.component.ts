@@ -201,7 +201,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   currentStartCursor: string | undefined = undefined;
   currentEndCursor: string | undefined = undefined;
   lastCursorDirection: string | undefined = undefined;
-
+  maxManuDOMDt: Date = new Date();
 
   pageIndex = 0;
   pageSize = 10;
@@ -1239,5 +1239,16 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     return '-';
 
+  }
+
+  getInvoiceDate(row: RepairItem): string | undefined {
+
+    if (row.bill_to_guid == row.customer_billing?.bill_to_guid) {
+      return this.displayDate(row.customer_billing?.invoice_dt!);
+    }
+    else if (row.bill_to_guid == row.owner_billing?.bill_to_guid) {
+      return this.displayDate(row.owner_billing?.invoice_dt!);
+    }
+    return '-';
   }
 }

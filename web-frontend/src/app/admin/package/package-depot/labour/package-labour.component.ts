@@ -76,9 +76,9 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    'fName',
+    //'fName',
     'lName',
-    'email',
+    'customerCost',
     'gender',
   ];
 
@@ -118,6 +118,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -245,8 +246,9 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     this.plForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      min_cost: [''],
-      max_cost: ['']
+      //min_cost: [''],
+      //max_cost: [''],
+      customer_cost: ['']
     });
   }
   initializeFilterCustomerCompany() {
@@ -409,7 +411,6 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
-   
     if (this.customerCodeControl.value) {
       //if (this.customerCodeControl.value.length > 0) 
       {
@@ -419,18 +420,22 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-
-    if (this.plForm!.value["min_cost"] && this.plForm!.value["max_cost"]) {
-      const minCost: number = Number(this.plForm!.value["min_cost"]);
-      const maxCost: number = Number(this.plForm!.value["max_cost"]);
-      where.cost = { gte: minCost, lte: maxCost };
-    } else if (this.plForm!.value["min_cost"]) {
-      const minCost: number = Number(this.plForm!.value["min_cost"]);
-      where.cost = { gte: minCost };
-    } else if (this.plForm!.value["max_cost"]) {
-      const maxCost: number = Number(this.plForm!.value["max_cost"]);
-      where.cost = { lte: maxCost };
+    if (this.plForm!.value["customer_cost"]){
+      const selectedCost: number = Number(this.plForm!.value["customer_cost"]);
+      where.cost = {eq: selectedCost};
     }
+
+    // if (this.plForm!.value["min_cost"] && this.plForm!.value["max_cost"]) {
+    //   const minCost: number = Number(this.plForm!.value["min_cost"]);
+    //   const maxCost: number = Number(this.plForm!.value["max_cost"]);
+    //   where.cost = { gte: minCost, lte: maxCost };
+    // } else if (this.plForm!.value["min_cost"]) {
+    //   const minCost: number = Number(this.plForm!.value["min_cost"]);
+    //   where.cost = { gte: minCost };
+    // } else if (this.plForm!.value["max_cost"]) {
+    //   const maxCost: number = Number(this.plForm!.value["max_cost"]);
+    //   where.cost = { lte: maxCost };
+    // }
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packLabourDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {

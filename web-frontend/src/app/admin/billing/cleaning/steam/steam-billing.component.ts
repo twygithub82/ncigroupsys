@@ -144,6 +144,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   customerCodeControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
+  maxManuDOMDt: Date = new Date();
 
 
   sotDS: StoringOrderTankDS;

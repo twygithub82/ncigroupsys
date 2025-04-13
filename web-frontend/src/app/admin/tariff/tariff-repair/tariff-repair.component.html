@@ -39,6 +39,12 @@
                   <div class="row">
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                        <input matInput formControlName="part_name" type="text">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
                         <mat-select formControlName="group_name_cv" multiple>
                           @for (cn of groupNameCvList; track cn) {
@@ -113,12 +119,6 @@
                         <input matInput formControlName="max_labour" type="number">
                       </mat-form-field>
                     </div> -->
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                        <input matInput formControlName="part_name" type="text">
-                      </mat-form-field>
-                    </div>
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>

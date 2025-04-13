@@ -21,8 +21,8 @@
                     </button>
                   </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.EDIT +' '+ translatedLangText.MATERIAL_COST">
-                    <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
-                      <mat-icon class="col-white">brush</mat-icon>
+                    <button mat-mini-fab color="accent" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                      <mat-icon class="col-white">percent</mat-icon>
                     </button>
                   </div>
                   <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
@@ -34,6 +34,37 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-2">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
+                        <input matInput formControlName="customer_code" [matAutocomplete]="customerCode">
+                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                          @for (cc of customer_companyList; track cc) {
+                          <mat-option [value]="cc">
+                            {{ccDS.displayName(cc)}}
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                        <input matInput [matAutocomplete]="partName" formControlName="part_name">
+                        <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
+                          @for (pn of partNameList; track pn) {
+                          <mat-option [value]="pn">
+                            {{pn}}
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                        <!-- @if (partNameControl.hasError('invalidAutocompleteSelection')) {
+                        <mat-error>
+                          {{translatedLangText.INVALID_SELECTION}}
+                        </mat-error>
+                        } -->
+                      </mat-form-field>
+                    </div>
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.GROUP}}</mat-label>
@@ -56,6 +87,19 @@
                           </mat-option>
                           }
                         </mat-select>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.LABOUR_HOUR}}</mat-label>
+                        <input matInput formControlName="labour_hour" type="number">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.MATERIAL_COST$}}</mat-label>
+                        <input matInput formControlName="material_cost" type="number">
                       </mat-form-field>
                     </div>
                     <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -86,19 +130,6 @@
                         </mat-select>
                       </mat-form-field>
                     </div> -->
-                    <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-2">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                        <input matInput formControlName="customer_code" [matAutocomplete]="customerCode">
-                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                          @for (cc of customer_companyList; track cc) {
-                          <mat-option [value]="cc">
-                            {{ccDS.displayName(cc)}}
-                          </mat-option>
-                          }
-                        </mat-autocomplete>
-                      </mat-form-field>
-                    </div> -->
                     <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
@@ -116,38 +147,6 @@
                         }
                       </mat-form-field>
                     </div> -->
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
-                      <!-- <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                        <input matInput formControlName="part_name" type="text">
-                      </mat-form-field> -->
-                      <!-- <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                        <mat-select formControlName="part_name">
-                          @for (pn of partNameList; track pn) {
-                          <mat-option [value]="pn">
-                            {{pn}}
-                          </mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field> -->
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                        <input matInput [matAutocomplete]="partName" formControlName="part_name">
-                        <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
-                          @for (pn of partNameList; track pn) {
-                          <mat-option [value]="pn">
-                            {{pn}}
-                          </mat-option>
-                          }
-                        </mat-autocomplete>
-                        @if (partNameControl.hasError('invalidAutocompleteSelection')) {
-                        <mat-error>
-                          {{translatedLangText.INVALID_SELECTION}}
-                        </mat-error>
-                        }
-                      </mat-form-field>
-                    </div>
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
@@ -192,19 +191,26 @@
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="custCode">
+                <!-- <ng-container matColumnDef="custCode">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                       }}:</span>{{row.customer_company.code}}</mat-cell>
-                </ng-container>
+                </ng-container> -->
                 <ng-container matColumnDef="custCompanyName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER
                       }}:</span>{{custCompDS.displayName(row.customer_company)}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="PartName">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.PART_NAME
+                    }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                    <span class="mobile-label">{{translatedLangText.PART_NAME
+                      }}:</span>{{row.tariff_repair.part_name}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="dimension">
                   <mat-header-cell *matHeaderCellDef mat-sort-header
@@ -236,14 +242,14 @@
                     <span class="mobile-label">{{translatedLangText.SUB_GROUP}}:</span>
                     {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair.subgroup_name_cv)}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="alias_name">
+                <!-- <ng-container matColumnDef="alias_name">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.ALIAS_NAME
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.ALIAS_NAME}}:</span>
                     {{getTariffRepairAlias(row.tariff_repair)}}
                   </mat-cell>
-                </ng-container>
+                </ng-container> -->
                 <ng-container matColumnDef="labour_hour">
                   <mat-header-cell *matHeaderCellDef
                     mat-sort-header>{{translatedLangText.LABOUR_HOUR}}</mat-header-cell>

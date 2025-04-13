@@ -97,7 +97,6 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
 
   pageTitle = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]
 
   translatedLangText: any = {};

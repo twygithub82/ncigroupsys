@@ -74,7 +74,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    'customerCode',
+    //'customerCode',
     'companyName',
     'minTemp',
     'maxTemp',
