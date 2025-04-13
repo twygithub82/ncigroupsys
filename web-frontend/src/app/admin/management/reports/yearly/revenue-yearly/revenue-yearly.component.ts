@@ -49,8 +49,9 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
 import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/overview/yearly-chart-pdf.component';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
-import { ManagementReportYearlyRevenueItem } from 'app/data-sources/reports-management';
+import { ManagementReportDS, ManagementReportYearlyRevenueItem } from 'app/data-sources/reports-management';
 import { InventoryYearlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/yearly/inventory/inventory-sales-details-pdf.component';
+import { RevenueYearlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/yearly/revenue/revenue-sales-details-pdf.component';
 
 @Component({
   selector: 'app-revenue-yearly',
@@ -164,8 +165,6 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     GENERATE_REPORT: 'COMMON-FORM.GENERATE-REPORT',
     REPORT_TYPE: 'COMMON-FORM.REPORT-TYPE',
     GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE'
-
-
     
   }
 
@@ -183,7 +182,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   tcDS: TariffCleaningDS;
 
  
-  reportDS:ReportDS;
+  reportDS:ManagementReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -221,7 +220,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   isGeneratingReport =false;
   yearList: string[] = [];
   monthList: string[] = [];
-  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "DEPOT"];
+  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "GATE", "REPAIR", "LOLO","PREINSPECTION","STORAGE","RESIDUE"];
   repTypes: string[] = ["MONTH_WISE", "CUSTOMER_WISE"];
   repData: any;
 
@@ -243,7 +242,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.tcDS = new TariffCleaningDS(this.apollo);
     
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.reportDS=new ReportDS(this.apollo);
+    this.reportDS=new ManagementReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -287,7 +286,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
         }
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
-          this.updateValidators(this.customerCodeControl, this.customer_companyList);
+         // this.updateValidators(this.customerCodeControl, this.customer_companyList);
           // if (!this.customerCodeControl.invalid) {
           //   if (this.customerCodeControl.value?.guid) {
           //     let mainCustomerGuid = this.customerCodeControl.value.guid;
@@ -386,10 +385,18 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
 
     var customerName: string = "";
-    where.inventory_type = this.invTypes.filter(v => v !== "ALL");
+    var invTypes=this.invTypes.filter(v => v !== "ALL");
+    where.revenue_type = invTypes;
     if (this.searchForm?.get('inventory_type')?.value != "ALL") {
-      where.inventory_type = this.searchForm?.get('inventory_type')?.value;
+      where.revenue_type = this.searchForm?.get('inventory_type')?.value;
+      invTypes= [this.searchForm?.get('inventory_type')?.value];
     }
+
+    // if(invTypes.includes("IN_OUT"))
+    //   {
+    //     where.inventory_type= invTypes;
+    //     where.inventory_type.push("DEPOT");
+    //   }
 
     if (this.searchForm?.get('report_type')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
@@ -430,20 +437,20 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
 
     this.lastSearchCriteria = where;
-    this.performSearch(report_type, date, customerName, reportType);
+    this.performSearch(report_type, date, customerName, reportType,invTypes);
   }
 
 
 
 
-  performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string) {
+  performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string,invTypes?:string[]) {
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.reportDS.searchManagementReportInventoryYearlyReport(this.lastSearchCriteria)
+    this.subs.sink = this.reportDS.searchManagementReportRenvenueYearlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!);
+        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!,invTypes!);
       });
 
   }
@@ -546,13 +553,13 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
  
    }
  
-   ProcessYearlyReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string) {
+   ProcessYearlyReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string,invTypes:string[]) {
    
    
    
        if (repData) {
    
-         this.onExportChart_r1(repData, date, customerName, report_type);
+         this.onExportChart_r1(repData, date, customerName, report_type,invTypes);
    
    
        }
@@ -605,7 +612,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
    }
  
 
-  onExportChart_r1(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string) {
+  onExportChart_r1(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string,invTypes:string[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -617,7 +624,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(InventoryYearlySalesReportDetailsPdfComponent, {
+    const dialogRef = this.dialog.open(RevenueYearlySalesReportDetailsPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
@@ -625,7 +632,9 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
         repData: repData,
         date: date,
         repType: report_type,
-        customer: customerName
+        customer: customerName,
+        inventory_type:invTypes
+
 
       },
 

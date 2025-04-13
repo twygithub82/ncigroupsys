@@ -17,3 +17,10 @@ CREATE TABLE `storage_detail` (
   UNIQUE KEY `guid_UNIQUE` (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('588', 'Pre-Inspection', 'INVENTORY_TYPE', 'PREINSPECTION');
+INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('589', 'LOLO', 'INVENTORY_TYPE', 'LOLO');
+INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('590', 'Storage', 'INVENTORY_TYPE', 'STORAGE');
+INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('593', 'Gate Surcharge', 'INVENTORY_TYPE', 'GATE');
+INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('594', 'Residue', 'INVENTORY_TYPE', 'RESIDUE');
+

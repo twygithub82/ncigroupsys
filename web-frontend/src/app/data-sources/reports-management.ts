@@ -5,26 +5,14 @@ import { Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 
-export class resultPerMonth{
-  
-  count?:number;
-  month?:string;
-  cost?:number;
 
-  
-  constructor(item: Partial<resultPerMonth> = {}) {
-    this.count=item.count;
-    this.month=item.month;
-    this.cost=item.cost;
-    } 
-}
 
 export class yearlySales{
   average_cost?:number;
   average_count?:number;
   total_cost?:number;
   total_count?:number;
-  result_per_month?:resultPerMonth[];
+  result_per_month?:InventoryPerMonth[];
    
   constructor(item: Partial<yearlySales> = {}) {
     this.average_cost=item.average_cost;
@@ -35,15 +23,31 @@ export class yearlySales{
     } 
 }
 
+export class yearlyRevenue{
+  average_cost?:number;
+  average_count?:number;
+  total_cost?:number;
+  total_count?:number;
+  revenue_per_month?:RevenuePerMonth[];
+   
+  constructor(item: Partial<yearlyRevenue> = {}) {
+    this.average_cost=item.average_cost;
+    this.average_count=item.average_count;
+    this.total_cost=item.total_cost;
+    this.total_count=item.total_count;
+    this.revenue_per_month=item.revenue_per_month;
+    } 
+}
+
 export class ManagementReportYearlyRevenueItem{
-  lolo_yearly_revenue?:yearlySales;
-  cleaning_yearly_revenue?:yearlySales;
-  gate_yearly_revenue?:yearlySales;
-  preinspection_yearly_revenue?:yearlySales;
-  repair_yearly_revenue?:yearlySales;
-  residue_yearly_revenue?:yearlySales;
-  steam_yearly_revenue?:yearlySales;
-  storage_yearly_revenue?:yearlySales;
+  lolo_yearly_revenue?:yearlyRevenue;
+  cleaning_yearly_revenue?:yearlyRevenue;
+  gate_yearly_revenue?:yearlyRevenue;
+  preinspection_yearly_revenue?:yearlyRevenue;
+  repair_yearly_revenue?:yearlyRevenue;
+  residue_yearly_revenue?:yearlyRevenue;
+  steam_yearly_revenue?:yearlyRevenue;
+  storage_yearly_revenue?:yearlyRevenue;
   constructor(item: Partial<ManagementReportYearlyRevenueItem> = {}) {
       this.lolo_yearly_revenue=item.lolo_yearly_revenue;
       this.cleaning_yearly_revenue=item.cleaning_yearly_revenue;
@@ -55,6 +59,23 @@ export class ManagementReportYearlyRevenueItem{
       this.storage_yearly_revenue=item.storage_yearly_revenue;
     } 
 }
+export class RevenuePerMonth{
+  cost?:number;
+  count?:number;
+  key?:string;
+  name?:string;
+
+  
+  constructor(item: Partial<RevenuePerMonth> = {}) {
+    this.cost=item.cost;
+    this.count=item.count;
+    this.key=item.key;
+    this.name=item.name;
+    
+    } 
+
+}
+
 
  export class InventoryPerMonth{
   percentage?:number;
@@ -143,8 +164,6 @@ constructor(item: Partial<InventoryYearly> = {}) {
     } 
 }
 
-
-
 export class LOLOMonthlyReportItem{
   lift_off_cost?:number;
   lift_on_cost?:number;
@@ -159,8 +178,8 @@ export class LOLOMonthlyReportItem{
 }
 
 export class GateIOInventoryItem{
-  gate_inventory?:GateIOMonthlyReportItem;
-  lolo_inventory?:LOLOMonthlyReportItem;
+  gate_inventory?:GateIOMonthlyReportItem[];
+  lolo_inventory?:LOLOMonthlyReportItem[];
   constructor(item: Partial<GateIOInventoryItem> = {}) {
     this.gate_inventory=item.gate_inventory;
     this.lolo_inventory=item.lolo_inventory;
@@ -182,7 +201,29 @@ export class ManagementReportMonthlyInventory{
     } 
 }
 
+export class MonthlyProcessDataRevenue {
+  key?: string;
+  cleaning?: { count?: number; cost?: number,key?:string,name?:string };
+  repair?: { count?: number; cost?: number,key?:string,name?:string };
+  steaming?: { count?: number; cost?: number,key?:string,name?:string };
+  gate?: { count?: number; cost?: number,key?:string,name?:string };
+  preinspection?: { count?: number; cost?: number,key?:string,name?:string };
+  lolo?: { count?: number; cost?: number,key?:string,name?:string };
+  storage?: { count?: number; cost?: number,key?:string,name?:string };
+  residue?: { count?: number; cost?: number,key?:string,name?:string };
 
+  constructor(item: Partial<MonthlyProcessDataRevenue> = {}) {
+    this.key=item.key;
+    this.cleaning=item.cleaning;
+    this.residue=item.residue;
+    this.repair=item.repair;
+    this.steaming=item.steaming;
+    this.gate=item.gate;
+    this.lolo=item.lolo;
+    this.preinspection=item.preinspection;
+    this.storage=item.storage;
+    } 
+}
 // First, define a proper interface for the monthly data
 export class MonthlyProcessData {
   key?: string;
@@ -192,14 +233,26 @@ export class MonthlyProcessData {
   gateOut?: { count?: number; percentage?: number,key?:string,name?:string };
   repair?: { count?: number; percentage?: number,key?:string,name?:string };
   steaming?: { count?: number; percentage?: number,key?:string,name?:string };
+  // gate?: { count?: number; percentage?: number,key?:string,name?:string };
+  // preinspection?: { count?: number; percentage?: number,key?:string,name?:string };
+  // lolo?: { count?: number; percentage?: number,key?:string,name?:string };
+  // storage?: { count?: number; percentage?: number,key?:string,name?:string };
+  // residue?: { count?: number; percentage?: number,key?:string,name?:string };
+
   constructor(item: Partial<MonthlyProcessData> = {}) {
     this.key=item.key;
     this.cleaning=item.cleaning;
     this.depot=item.depot;
+    
     this.gateIn=item.gateIn;
     this.gateOut=item.gateOut;
     this.repair=item.repair;
     this.steaming=item.steaming;
+    // this.gate=item.gate;
+    // this.lolo=item.lolo;
+    // this.preinspection=item.preinspection;
+    // this.storage=item.storage;
+    // this.residue=item.residue;
     } 
 }
 
@@ -354,6 +407,166 @@ export class InventoryAnalyzer {
       processExtremes
     };
   }
+
+
+  static groupByMonthAndFindExtremesRevenue(data: ManagementReportYearlyRevenueItem) {
+    // Initialize a map to group by month with proper typing
+    const monthlyData: Record<string, MonthlyProcessDataRevenue> = {};
+
+    // Process each inventory type
+    const processData = [
+      { name: 'cleaning', data: data.cleaning_yearly_revenue?.revenue_per_month },
+      { name: 'residue', data: data.residue_yearly_revenue?.revenue_per_month },
+      { name: 'gate', data: data.gate_yearly_revenue?.revenue_per_month },
+      { name: 'steaming', data: data.steam_yearly_revenue?.revenue_per_month },
+      { name: 'repair', data: data.repair_yearly_revenue?.revenue_per_month },
+      { name: 'storage', data: data.steam_yearly_revenue?.revenue_per_month },
+      { name: 'lolo', data: data.lolo_yearly_revenue?.revenue_per_month },
+      { name: 'preinspection', data: data.preinspection_yearly_revenue?.revenue_per_month },
+    ];
+
+    // Populate monthlyData with type-safe assignments
+    processData.forEach(process => {
+    
+        process.data?.forEach(monthData => {
+          if (!monthData.key) return;
+          
+          if (!monthlyData[monthData.key]) {
+            monthlyData[monthData.key] = { key: monthData.key };
+          }
+          
+          // Use count if available, otherwise percentage
+          const value = monthData.count ?? monthData.cost;
+          
+          // Type-safe assignment using a type assertion
+          const monthlyEntry = monthlyData[monthData.key];
+          switch (process.name) {
+            case 'lolo':
+              monthlyEntry.lolo= {
+                count: monthData.count,
+                cost: monthData.cost,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'preinspection':
+              monthlyEntry.preinspection= {
+                count: monthData.count,
+                cost: monthData.cost,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'cleaning':
+              monthlyEntry.cleaning= {
+                count: monthData.count,
+                cost: monthData.cost,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'residue':
+              monthlyEntry.residue= {
+                count: monthData.count,
+                cost: monthData.cost,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'gate':
+              monthlyEntry.gate = {
+                count: monthData.count,
+                cost: monthData.cost,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'storage':
+              monthlyEntry.storage = {
+                count: monthData.count,
+                cost: monthData.cost,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'repair':
+              monthlyEntry.repair = {
+                count: monthData.count,
+                cost: monthData.cost,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'steaming':
+              monthlyEntry.steaming = {
+                count: monthData.count,
+                cost: monthData.cost,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+          }
+        });
+    });
+
+    // Rest of your code remains the same...
+    // Convert to array and sort by month if needed
+    const monthlyArray = Object.values(monthlyData).sort((a, b) => {
+      const monthIndexA = this.getMonthIndex(a.key!);
+      const monthIndexB = this.getMonthIndex(b.key!);
+      return monthIndexA - monthIndexB;
+    });
+
+    // Find highest and lowest for each process
+    const processExtremes: Record<string, {
+      highest: { key: string; value: number | undefined };
+      lowest: { key: string; value: number | undefined };
+    }> = {};
+
+    processData.forEach(process => {
+      const processName = process.name;
+      const values = monthlyArray
+        .map(item => {
+          let process:any = item[processName as keyof MonthlyProcessDataRevenue];
+          return{
+            key: item.key!,
+            value: process?.count,
+            cost: process?.cost,
+            name: process?.name
+          }
+          // key: item.key!,
+          // value: item[processName as keyof MonthlyProcessData]? //as number | undefined
+        })
+        .filter(item => item.value !== undefined && item.value > 0);
+
+      // const values = monthlyArray
+      // .map(item => ({
+      //   key: item.key,
+      //   value: item[processName as keyof MonthlyProcessData] as number | undefined
+      // }))
+      // .filter(item => item.value !== undefined && (item.value as number) > 0)as { month: string; value: number }[];
+
+      if (values.length > 0) {
+        const sorted = [...values].sort((a, b) => a.value! - b.value!);
+        
+        processExtremes[processName] = {
+          highest: sorted[sorted.length - 1],
+          lowest: sorted[0] // This will now be the smallest value > 0
+        };
+      } else {
+        // Handle case where no values > 0 exist
+        processExtremes[processName] = {
+          highest: { key: '', value: undefined },
+          lowest: { key: '', value: undefined }
+        };
+      }
+    });
+
+    return {
+      monthlyData: monthlyArray,
+      processExtremes
+    };
+  }
 }
 
 
@@ -472,16 +685,23 @@ export const GET_MANAGEMENT_REPORT_YEARLY_REVENUE_REPORT = gql`
           average_count
           total_cost
           total_count
+          revenue_per_month {
+            cost
+            count
+            key
+            name
+          }
         }
         cleaning_yearly_revenue {
           average_cost
           average_count
           total_cost
           total_count
-          result_per_month {
+          revenue_per_month {
             cost
             count
-            month
+            key
+            name
           }
         }
         gate_yearly_revenue {
@@ -489,10 +709,11 @@ export const GET_MANAGEMENT_REPORT_YEARLY_REVENUE_REPORT = gql`
           average_count
           total_cost
           total_count
-          result_per_month {
+          revenue_per_month {
             cost
             count
-            month
+            key
+            name
           }
         }
         preinspection_yearly_revenue {
@@ -500,10 +721,11 @@ export const GET_MANAGEMENT_REPORT_YEARLY_REVENUE_REPORT = gql`
           average_count
           total_cost
           total_count
-          result_per_month {
+          revenue_per_month {
             cost
             count
-            month
+            key
+            name
           }
         }
         repair_yearly_revenue {
@@ -511,10 +733,11 @@ export const GET_MANAGEMENT_REPORT_YEARLY_REVENUE_REPORT = gql`
           average_count
           total_cost
           total_count
-          result_per_month {
+          revenue_per_month {
             cost
             count
-            month
+            key
+            name
           }
         }
         residue_yearly_revenue {
@@ -522,10 +745,11 @@ export const GET_MANAGEMENT_REPORT_YEARLY_REVENUE_REPORT = gql`
           average_count
           total_cost
           total_count
-          result_per_month {
+          revenue_per_month {
             cost
             count
-            month
+            key
+            name
           }
         }
         steam_yearly_revenue {
@@ -533,10 +757,11 @@ export const GET_MANAGEMENT_REPORT_YEARLY_REVENUE_REPORT = gql`
           average_count
           total_cost
           total_count
-          result_per_month {
+          revenue_per_month {
             cost
             count
-            month
+            key
+            name
           }
         }
         storage_yearly_revenue {
@@ -544,10 +769,11 @@ export const GET_MANAGEMENT_REPORT_YEARLY_REVENUE_REPORT = gql`
           average_count
           total_cost
           total_count
-          result_per_month {
+          revenue_per_month {
             cost
             count
-            month
+            key
+            name
           }
         }
     }

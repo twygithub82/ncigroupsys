@@ -644,6 +644,38 @@ export class Utility {
     // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
   }
 
+  static DrawImageAtCenterPage(pdf: jsPDF, canvas: HTMLCanvasElement, pageWidth: number,  leftMargin: number, rightMargin: number, topPosition: number,maxChartWidth:number,imgQuality:number) {
+    let chartContentWidth =maxChartWidth;
+    
+    let startY:number=topPosition;
+
+    const imgData1 = canvas.toDataURL('image/jpeg', imgQuality);
+    const aspectRatio = canvas.width / canvas.height;
+
+    // Calculate scaled height based on available width
+    let imgHeight1 = chartContentWidth / aspectRatio;
+
+    // Check if the scaled height exceeds the available page height
+    const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+    if (imgHeight1 > maxPageHeight) {
+      // Adjust height to fit within the page
+      imgHeight1 = maxPageHeight;
+      // Recalculate width to maintain aspect ratio
+      chartContentWidth = imgHeight1 * aspectRatio;
+    }
+
+    let startX=leftMargin+((pageWidth - leftMargin - rightMargin)/2)-(chartContentWidth/2);
+    
+    // Add the image to the PDF
+    pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
+
+
+    // pdf.setLineDashPattern([0, 0], 0);
+    // Draw underline for the title
+    // pdf.setLineWidth(0.1); // Set line width for underline
+    // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+  }
+
   static previewPDF_window(pdf: jsPDF, win: Window) {
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
