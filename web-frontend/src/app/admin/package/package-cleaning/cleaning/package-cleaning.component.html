@@ -110,20 +110,30 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="fName">
+            <!-- <ng-container matColumnDef="fName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.customer_company.code}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+            </ng-container> -->
+
+            <!-- <ng-container matColumnDef="lName">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
-                  }}:</span>{{row.customer_company.name}}</mat-cell>
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER
+                  }}:</span>{{row.customer_company.name + ' (' + row.customer_company.code + ')'}}</mat-cell>
+            </ng-container> -->
+
+            <ng-container matColumnDef="lName">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
+                }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER
+                  }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
             </ng-container>
+
             <ng-container matColumnDef="email">
               <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.PROCEDURE_CLEAN_CATEGORY}}</mat-header-cell>
@@ -132,10 +142,10 @@
                 {{row.cleaning_category.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="gender">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.COST }}:</span>
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span>
                 {{row.adjusted_price.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">

@@ -118,19 +118,19 @@
                 <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
                   }}:</span>{{row.tariff_depot.profile_name}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="customer_code">
+            <!-- <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.customer_company.code}}</mat-cell>
-            </ng-container>
+            </ng-container> -->
             <ng-container matColumnDef="customer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
-                  }}:</span>{{row.customer_company.name}}</mat-cell>
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER
+                  }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="preinspection_cost">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PREINSPECTION_COST

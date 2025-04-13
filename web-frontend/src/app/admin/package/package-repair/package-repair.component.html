@@ -192,18 +192,18 @@
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="custCode">
+                <!-- <ng-container matColumnDef="custCode">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                       }}:</span>{{row.customer_company.code}}</mat-cell>
-                </ng-container>
+                </ng-container> -->
                 <ng-container matColumnDef="custCompanyName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER
                       }}:</span>{{custCompDS.displayName(row.customer_company)}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="dimension">

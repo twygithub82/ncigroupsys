@@ -72,19 +72,19 @@
         <div class="responsive_table">
           <table mat-table [dataSource]="packageSteamItems" matSort
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
-            <ng-container matColumnDef="customerCode">
+            <!-- <ng-container matColumnDef="customerCode">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.package_steaming?.customer_company?.code}}</mat-cell>
-            </ng-container>
+            </ng-container> -->
             <ng-container matColumnDef="companyName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
-                  }}:</span>{{row.package_steaming?.customer_company?.name}}</mat-cell>
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER
+                  }}:</span>{{ccDS.displayName(row.package_steaming?.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastCargo">
               <mat-header-cell *matHeaderCellDef mat-sort-header

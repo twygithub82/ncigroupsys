@@ -72,7 +72,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   displayedColumns = [
     // 'select',
     // // 'img',
-    'customerCode',
+    //'customerCode',
     'companyName',
     'lastCargo',
     'minTemp',

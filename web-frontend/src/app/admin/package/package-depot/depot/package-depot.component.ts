@@ -78,7 +78,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    'customer_code',
+    //'customer_code',
     'customer',
     'profile',
     'preinspection_cost',
@@ -129,6 +129,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
