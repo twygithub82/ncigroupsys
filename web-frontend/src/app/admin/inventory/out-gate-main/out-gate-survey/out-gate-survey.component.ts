@@ -83,7 +83,6 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE-SURVEY'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
   ]
 
   translatedLangText: any = {};

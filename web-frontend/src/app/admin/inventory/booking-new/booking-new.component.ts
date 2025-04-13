@@ -91,7 +91,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/booking' }
   ]
 
   translatedLangText: any = {};

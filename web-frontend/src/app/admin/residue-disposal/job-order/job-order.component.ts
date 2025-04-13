@@ -22,7 +22,7 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -82,21 +82,11 @@ import { debounceTime, startWith, tap } from 'rxjs';
   ]
 })
 export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  // displayedColumns = [
-  //   'tank_no',
-  //   'customer',
-  //   'eir_no',
-  //   'eir_dt',
-  //   'last_cargo',
-  //   'tank_status_cv'
-  // ];
-
   displayedColumnsResidue = [
     'tank_no',
     'customer',
     'estimate_no',
     'approved_dt',
-    // 'approve_part',
     'status_cv'
   ];
 
@@ -110,8 +100,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.RESIDUE-DISPOSAL.TEXT'
+    { text: 'MENUITEMS.RESIDUE-DISPOSAL.TEXT', route: '/admin/residue-disposal/job-order' },
   ]
 
   translatedLangText: any = {};
@@ -178,6 +167,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   residueDS: ResidueDS;
   joDS: JobOrderDS;
 
+  selectedTabIndex = 0;
+
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
@@ -223,7 +214,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private router: Router
+    private route: ActivatedRoute,
+    private router: Router,
   ) {
     super();
     this.translateLangText();
@@ -246,6 +238,12 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const tabIndex = params['tabIndex'];
+      if (tabIndex) {
+        this.selectedTabIndex = tabIndex
+      }
+    });
     this.initializeFilterCustomerCompany();
     this.loadData();
   }
@@ -401,7 +399,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
         }
       });
     }
-    
+
     if (this.filterResidueForm!.get('filterResidue')?.value) {
       where.and.push({
         storing_order_tank: { tank_no: { contains: this.filterResidueForm!.get('filterResidue')?.value } }
@@ -674,4 +672,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
   }
 
+  onTabChange(index: number) {
+    this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
+  }
 }

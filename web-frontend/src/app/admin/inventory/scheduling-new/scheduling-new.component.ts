@@ -89,7 +89,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.SCHEDULING'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.HOME.TEXT', route: '/' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/scheduling' }
   ]
 
   translatedLangText: any = {};

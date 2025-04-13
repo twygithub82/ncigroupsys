@@ -35,7 +35,7 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, ResJobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, ResJobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
@@ -87,20 +87,18 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
   ]
 })
 export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = 1;
+  historyState: any = {};
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'desc',
-    //  'qty',
-    //  'unit_price',
-    //  'cost',
     'approve_part',
     'team',
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.TEXT'
+    { text: 'MENUITEMS.RESIDUE-DISPOSAL.TEXT', route: '/admin/residue-disposal/job-order', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/residue-disposal/job-order', queryParams: { tabIndex: this.tabIndex } }
   ]
   translatedLangText: any = {}
   langText = {
@@ -611,7 +609,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/residue-disposal/job-order']);
+      this.router.navigate(['/admin/residue-disposal/job-order'], { queryParams: { tabIndex: this.tabIndex } });
     }
   }
 
