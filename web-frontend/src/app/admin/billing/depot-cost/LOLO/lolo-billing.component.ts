@@ -167,6 +167,8 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
   depotCvList: CodeValuesItem[] = [];
+  maxManuDOMDt: Date = new Date();
+
 
   pageIndex = 0;
   pageSize = 10;

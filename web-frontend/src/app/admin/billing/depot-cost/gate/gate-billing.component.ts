@@ -153,6 +153,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   billDS: BillingDS;
   processType: string = "GATE";
   billingParty: string = "CUSTOMER";
+  maxManuDOMDt: Date = new Date();
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: BillingSOTItem;

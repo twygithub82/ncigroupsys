@@ -169,6 +169,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
   depotCvList: CodeValuesItem[] = [];
+  maxManuDOMDt: Date = new Date();
 
   pageIndex = 0;
   pageSize = 10;

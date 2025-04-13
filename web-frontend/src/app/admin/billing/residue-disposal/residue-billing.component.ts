@@ -135,6 +135,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
+  maxManuDOMDt: Date = new Date();
 
   pageIndex = 0;
   pageSize = 10;

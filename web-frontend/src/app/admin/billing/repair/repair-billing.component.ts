@@ -201,7 +201,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   currentStartCursor: string | undefined = undefined;
   currentEndCursor: string | undefined = undefined;
   lastCursorDirection: string | undefined = undefined;
-
+  maxManuDOMDt: Date = new Date();
 
   pageIndex = 0;
   pageSize = 10;
@@ -1250,6 +1250,5 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       return this.displayDate(row.owner_billing?.invoice_dt!);
     }
     return '-';
-
   }
 }

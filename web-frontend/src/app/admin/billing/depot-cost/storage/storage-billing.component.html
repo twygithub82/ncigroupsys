@@ -168,8 +168,8 @@
             <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
-                <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date"
-                  [formControl]="invoiceDateControl">
+                <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date" [max]="maxManuDOMDt"
+                  [formControl]="invoiceDateControl" [max]="maxManuDOMDt" required>
                 <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
                 <mat-datepicker #invoice_date_picker></mat-datepicker>
                 @if (this.invoiceDateControl.hasError('required')) {
