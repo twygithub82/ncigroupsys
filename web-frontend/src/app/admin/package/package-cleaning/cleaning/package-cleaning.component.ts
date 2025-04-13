@@ -454,7 +454,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.pcForm!.value["customer_cost"]) {
       const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
-      where.adjusted_price = { eq: selectedCost }
+      where.adjusted_price = { lte: selectedCost }
     }
 
     // if (this.pcForm!.value["min_cost"]) {
