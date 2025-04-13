@@ -80,8 +80,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     //'cutomer_code',
     'customer_name',
     'residue_type',
-    'cost',
-    'remarks',
+    'customer_cost',
+    'tariff_cost',
     'last_update_dt',
   ];
 
@@ -210,7 +210,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     FAX_NO: "COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    RESIDUE_TYPE: 'COMMON-FORM.RESIDUE-TYPE'
+    RESIDUE_TYPE: 'COMMON-FORM.RESIDUE-TYPE',
+    TARIFF_COST: 'COMMON-FORM.TARIFF-COST'
   }
 
   constructor(
@@ -250,6 +251,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
       residue_disposal: [''],
+      customer_cost: ['']
     });
   }
 
@@ -408,6 +410,11 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
         //var guids = customerCodes.map(cc => cc.guid);
         where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
       }
+    }
+
+    if (this.pcForm!.value["customer_cost"]) {
+      const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
+      where.cost = { eq: selectedCost }
     }
 
     if (this.pcForm!.get("residue_disposal")?.value) {
@@ -647,7 +654,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.initPcForm();
-    this.customerCodeControl.reset();
+    this.customerCodeControl.reset('');
   }
 
 

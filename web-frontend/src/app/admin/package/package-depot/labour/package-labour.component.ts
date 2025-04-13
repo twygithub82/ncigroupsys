@@ -246,8 +246,9 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     this.plForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      min_cost: [''],
-      max_cost: ['']
+      //min_cost: [''],
+      //max_cost: [''],
+      customer_cost: ['']
     });
   }
   initializeFilterCustomerCompany() {
@@ -423,12 +424,6 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
       const selectedCost: number = Number(this.plForm!.value["customer_cost"]);
       where.cost = {eq: selectedCost};
     }
-
-    // if (this.plForm!.value["customer_cost"]) {
-    //   const minCost: number = Number(this.plForm!.value["customer_cost"]);
-    //   where.and.push({ cost: { gte: minCost } })
-    // }
-
 
     // if (this.plForm!.value["min_cost"] && this.plForm!.value["max_cost"]) {
     //   const minCost: number = Number(this.plForm!.value["min_cost"]);

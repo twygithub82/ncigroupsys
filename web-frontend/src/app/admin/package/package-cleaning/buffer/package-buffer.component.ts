@@ -81,8 +81,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     //'customer_code',
     'customer_name',
     'buffer_type',
-    'cost',
-    'remarks',
+    'customer_cost',
+    'tariff_cost',
     'last_update_dt',
   ];
 
@@ -210,7 +210,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    BUFFER_TYPE: 'COMMON-FORM.BUFFER-TYPE'
+    BUFFER_TYPE: 'COMMON-FORM.BUFFER-TYPE',
+    TARIFF_COST: 'COMMON-FORM.TARIFF-COST'
   }
 
   constructor(
@@ -246,7 +247,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      profile_name: ['']
+      profile_name: [''],
+      customer_cost: ['']
     });
   }
 
@@ -397,13 +399,11 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    // if (this.profileNameControl.value) {
-    //   if (this.profileNameControl.value.length > 0) {
-    //     const profileNames: TariffDepotItem[] = this.profileNameControl.value;
-    //     const guids = profileNames.map(cc => cc.guid);
-    //     where.tariff_depot_guid = { in: guids };
-    //   }
-    // }
+    if (this.pcForm!.value["customer_cost"]) {
+      const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
+      where.cost = { eq: selectedCost }
+    }
+
     if (this.pcForm?.get('profile_name')?.value) {
       const tariffBuffer: any = {}
       tariffBuffer.buffer_type = { contains: this.pcForm?.get('profile_name')?.value }

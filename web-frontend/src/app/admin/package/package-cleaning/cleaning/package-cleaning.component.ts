@@ -79,8 +79,8 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     //'fName',
     'lName',
     'email',
-    'gender',
-    'cost',
+    'customer_cost',
+    'tariff_cost',
     'updateddt',
   ];
 
@@ -267,8 +267,9 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
       cleaning_category: this.categoryControl,
-      min_cost: [''],
-      max_cost: [''],
+      //min_cost: [''],
+      //max_cost: [''],
+      customer_cost: [''],
       cargo_name: [''],
       hazard_level: this.hazardLevelControl,
       handled_item: this.handledItemControl,
@@ -435,7 +436,6 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
-
     if (this.customerCodeControl.value) {
       //if (this.customerCodeControl.value.length > 0) 
       {
@@ -452,15 +452,21 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    if (this.pcForm!.value["min_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.adjusted_price = { gte: minCost }
+    if (this.pcForm!.value["customer_cost"]) {
+      const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
+      where.adjusted_price = { eq: selectedCost }
     }
 
-    if (this.pcForm!.value["max_cost"]) {
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.adjusted_price = { ngte: maxCost }
-    }
+    // if (this.pcForm!.value["min_cost"]) {
+    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
+    //   where.adjusted_price = { gte: minCost }
+    // }
+
+    // if (this.pcForm!.value["max_cost"]) {
+    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+    //   where.adjusted_price = { ngte: maxCost }
+    // }
+
     this.lastSearchCriteria = where;
     this.subs.sink = this.custCompClnCatDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.custCompClnCatItems = data;
@@ -695,7 +701,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   resetForm() {
     this.initTcForm();
 
-    this.customerCodeControl.reset();
+    this.customerCodeControl.reset('');
     this.categoryControl.reset()
   }
 

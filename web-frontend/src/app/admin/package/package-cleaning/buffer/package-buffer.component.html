@@ -51,18 +51,7 @@
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_COST }}</mat-label>
-                    <mat-select formControlName="customer_code" multiple>
-                      <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
-                        <ng-container *ngIf="cc !== null">
-                          {{ ccDS.displayName(cc) }}
-                        </ng-container>
-                      </mat-option>
-                    </mat-select>
-                    @if (pcForm?.get('customer_code')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.CUSTOMER_CODE }} {{translatedLangText.CARGO_REQUIRED }}
-                    </mat-error>
-                    }
+                    <input matInput formControlName="customer_cost" type="number">
                   </mat-form-field>
                 </div>
                 <div
@@ -118,23 +107,23 @@
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER
                   }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="cost">
+            <ng-container matColumnDef="customer_cost">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> {{row.cost.toFixed(2)}}
               </mat-cell>
             </ng-container>
-            <!-- <ng-container matColumnDef="gender">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STANDARD_COST }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.tariff_buffer.cost.toFixed(2)}}</mat-cell>
-                  </ng-container> -->
-            <ng-container matColumnDef="remarks">
+            <ng-container matColumnDef="tariff_cost">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.TARIFF_COST}} $ </mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                <span class="mobile-label">{{this.translatedLangText.TARIFF_COST}} $ :</span> {{row.tariff_buffer.cost.toFixed(2)}}</mat-cell>
+            </ng-container>
+            <!-- <ng-container matColumnDef="remarks">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.REMARKS }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.remarks}}</mat-cell>
-            </ng-container>
+            </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>

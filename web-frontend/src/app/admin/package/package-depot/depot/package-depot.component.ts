@@ -616,7 +616,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.initPcForm();
-    this.customerCodeControl.reset();
+    this.customerCodeControl.reset('');
   }
 
   displayLastUpdated(r: any) {

@@ -57,22 +57,13 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-                                <!--TODO-->
-                                <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">
-                                  <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.CUSTOMER_COST}}</mat-label>
-                                    <mat-select formControlName="customer_code" multiple>
-                                      <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
-                                        {{ ccDS.displayName(cc) }}
-                                      </mat-option>
-                                    </mat-select>
-                                    @if (pcForm?.get('customer_code')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.CUSTOMER_CODE }} {{translatedLangText.CARGO_REQUIRED }}
-                                    </mat-error>
-                                    }
-                                  </mat-form-field>
-                                </div>
+                <!--TODO-->
+                <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.CUSTOMER_COST}}</mat-label>
+                    <input matInput formControlName="customer_cost" type="number">
+                  </mat-form-field>
+                </div>
                 <div
                   class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()">
@@ -141,14 +132,14 @@
                 <span class="mobile-label">{{this.translatedLangText.PROCEDURE_CLEAN_CATEGORY}}:</span>
                 {{row.cleaning_category.name}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="gender">
+            <ng-container matColumnDef="customer_cost">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span>
                 {{row.adjusted_price.toFixed(2)}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="cost">
+            <ng-container matColumnDef="tariff_cost">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.TARIFF_COST}}$ :</span>
