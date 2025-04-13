@@ -34,12 +34,12 @@ import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
-import { TariffDepotDS } from 'app/data-sources/tariff-depot';
+import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-
+//import { TankDS, TankItem } from 'app/data-sources/tank';
 
 @Component({
   selector: 'app-package-depot',
@@ -99,12 +99,14 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   ccDS: CustomerCompanyDS;
   tariffDepotDS: TariffDepotDS;
   custCompDS: CustomerCompanyDS;
+  //tankDS: TankDS;
 
   packDepotItems: PackageDepotItem[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   cleaning_categoryList?: CleaningCategoryItem[];
+  profile_nameList: TariffDepotItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -231,6 +233,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.custCompDS = new CustomerCompanyDS(this.apollo);
     this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
+    //this.tankDS = new TankDS(this.apollo);
     this.initializeFilterCustomerCompany();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -261,8 +264,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
           });
         })
       ).subscribe();
-  
-  
     }
 
   initPcForm() {
@@ -392,12 +393,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    if (this.pcForm!.get('profile_name')?.value) {
-      const tariffDepot: any = {}
-      tariffDepot.or = [
-        // { description: { contains: this.pcForm!.get('profile_name')?.value } },
-        { profile_name: { contains: this.pcForm!.get('profile_name')?.value } }
-      ]
+    if (this.pcForm!.get("profile_name")?.value) {
+      const tariffDepot: any = {};
+      tariffDepot.guid = { eq: this.pcForm!.get("profile_name")?.value?.guid };
       where.tariff_depot = tariffDepot;
     }
 
@@ -526,7 +524,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       // this.customer_companyList1 = data
     });
 
-    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({}, { profile_name: 'ASC' }).subscribe(data => { });
+    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({}, { profile_name: 'ASC' }).subscribe(data => { 
+      this.profile_nameList = data
+    });
 
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
@@ -616,10 +616,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.initPcForm();
-
     this.customerCodeControl.reset();
-
   }
+
   displayLastUpdated(r: any) {
     var updatedt = r.update_dt;
     if (updatedt === null) {

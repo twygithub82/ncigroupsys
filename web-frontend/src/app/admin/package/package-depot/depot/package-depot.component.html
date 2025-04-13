@@ -54,7 +54,12 @@
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
-                    <input matInput formControlName="profile_name" type="text">
+                    <!-- <input matInput formControlName="profile_name" type="text"> -->
+                    <mat-select formControlName="profile_name">
+                      @for (option of profile_nameList; track option) {
+                      <mat-option [value]="option">{{option.profile_name}}</mat-option>
+                      }
+                    </mat-select>
                   </mat-form-field>
                 </div>
                 <!-- <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
