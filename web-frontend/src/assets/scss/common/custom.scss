@@ -73,7 +73,7 @@
 .col-4-5 {
   width: 37.5%;
 }
-  
+
 .col-xl-5-25 {
   width: 43.75%;
 }
@@ -191,7 +191,7 @@
   .col-xs-5 {
     width: 41.66666667%;
   }
-  
+
   .col-xl-5-25 {
     width: 43.75%;
   }
@@ -231,7 +231,7 @@
   .col-xs-8-5 {
     width: 70.83333333%;
   }
-  
+
   .col-xs-8-75 {
     width: 83.33333333%;
   }
@@ -294,7 +294,7 @@
   .col-sm-9 {
     width: 75%;
   }
-  
+
   .col-sm-8-75 {
     width: 83.33333333%;
   }
@@ -334,7 +334,7 @@
   .col-sm-5-5 {
     width: 45.83333333%;
   }
-  
+
   .col-sm-5-25 {
     width: 43.75%;
   }
@@ -441,7 +441,7 @@
   .col-md-9 {
     width: 75%;
   }
-  
+
   .col-md-8-75 {
     width: 83.33333333%;
   }
@@ -481,7 +481,7 @@
   .col-md-5-5 {
     width: 45.83333333%;
   }
-  
+
   .col-md-5-25 {
     width: 43.75%;
   }
@@ -589,7 +589,7 @@
   .col-lg-9 {
     width: 75%;
   }
-  
+
   .col-lg-8-75 {
     width: 83.33333333%;
   }
@@ -629,7 +629,7 @@
   .col-lg-5-5 {
     width: 45.83333333%;
   }
-  
+
   .col-lg-5-25 {
     width: 43.75%;
   }
@@ -736,7 +736,7 @@
   .col-xl-9 {
     width: 75%;
   }
-  
+
   .col-xl-8-75 {
     width: 83.33333333%;
   }
@@ -776,7 +776,7 @@
   .col-xl-5-5 {
     width: 45.83333333%;
   }
-  
+
   .col-xl-5-25 {
     width: 43.75%;
   }
@@ -1784,9 +1784,10 @@ textarea,
 .side-closed.side-closed-hover {
   .sidebar {
     width: 240px !important;
-    .menu .list li .sidebarIcon{
+
+    .menu .list li .sidebarIcon {
       height: 25px !important;
-    
+
       .active-top>a>i-feather {
         line-height: 1rem;
         top: -3px !important;
@@ -1847,7 +1848,7 @@ $grid-breakpoints: (
 }
 
 .addContainer {
-  overflow-y: auto;       // 👈 allow vertical scrolling
+  overflow-y: auto; // 👈 allow vertical scrolling
 }
 
 .card {
@@ -1860,4 +1861,8 @@ $grid-breakpoints: (
 
 .card:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+mat-panel-description .mat-mdc-mini-fab {
+  box-shadow: none;
 }

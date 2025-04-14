@@ -75,7 +75,6 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    //'select',
     'cargo',
     'desc',
     'class',
@@ -83,16 +82,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     'method',
     'flash_point',
     'category',
-    //'duplicate',
-    // 'cost',
     'actions'
   ];
-
-  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING'
-  breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.TARIFF.TEXT'
-  ]
 
   translatedLangText: any = {};
   langText = {

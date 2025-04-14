@@ -100,8 +100,7 @@ export class GroupNewComponent extends UnsubscribeOnDestroyAdapter implements On
   pageTitleNew = 'MENUITEMS.MANAGEMENT.LIST.GROUP-NEW'
   pageTitleEdit = 'MENUITEMS.MANAGEMENT.LIST.GROUP-EDIT'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.MANAGEMENT.TEXT'
+    // { text: 'MENUITEMS.MANAGEMENT.TEXT', route: '/admin/management/main-zero-approval-cost-report' },
   ]
   translatedLangText: any = {}
   langText = {

@@ -4,7 +4,6 @@ import { ResidueDisposalApprovalComponent } from "./approval/approval.component"
 import { ResidueDisposalEstimateApprovalNewComponent } from "./estimate-approval-new/estimate-approval-new.component";
 import { ResidueDisposalEstimateApprovalComponent } from "./estimate-approval/estimate-approval.component";
 import { ResidueDisposalEstimateNewComponent } from "./estimate-new/estimate-new.component";
-import { ResidueQCViewComponent } from "./estimate-qc/estimate-qc.component";
 import { ResidueDisposalEstimateComponent } from "./estimate/estimate.component";
 import { JobOrderAllocationResidueDisposalComponent } from "./job-order-allocation/job-order-allocation.component";
 import { ResidueJobOrderTaskDetailsComponent } from "./job-order-task-details/job-order-task-details.component";
@@ -46,9 +45,5 @@ export const RESIDUE_DISPOSAL_ROUTE: Routes = [
   {
     path: "job-order/task/:id/:residue_id",
     component: ResidueJobOrderTaskDetailsComponent,
-  },
-  {
-    path: "qc/view/:id",
-    component: ResidueQCViewComponent,
   },
 ];

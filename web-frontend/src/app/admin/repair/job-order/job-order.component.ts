@@ -97,6 +97,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
+    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order' },
   ]
 
   translatedLangText: any = {};

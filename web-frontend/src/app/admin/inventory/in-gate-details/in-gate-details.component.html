@@ -193,7 +193,8 @@
                                   <mat-label>{{translatedLangText.OWNER}}</mat-label>
                                   <input type="text" matInput [formControl]="ownerControl" [matAutocomplete]="ownerCode"
                                     formControlName="owner" required>
-                                  <mat-autocomplete #ownerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                                  <mat-autocomplete #ownerCode="matAutocomplete"
+                                    [displayWith]="displayCustomerCompanyFn">
                                     @for (cc of ownerList; track cc) {
                                     <mat-option [value]="cc">
                                       {{ccDS.displayName(cc)}}
@@ -317,7 +318,8 @@
                         <div class="row m-t-10">
                           <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12">
                             <button mat-flat-button aria-label="Back to previous page"
-                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/in-gate-main']" [queryParams]="{ tabIndex: 0 }">
+                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/in-gate-main']"
+                              [queryParams]="{ tabIndex: tabIndex }">
                               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                             </button>
                           </div>
@@ -466,7 +468,9 @@
                           {{translatedLangText.MSDS}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          <span class="text-decoration-underline cursor-pointer" (click)="onDownloadClick()">{{sdsPdf?.description ? cargoDetails?.cargo + ".pdf" : ""}}</span>
+                          <span class="text-decoration-underline cursor-pointer"
+                            (click)="onDownloadClick()">{{sdsPdf?.description ? cargoDetails?.cargo + ".pdf" :
+                            ""}}</span>
                         </div>
                       </div>
                     </div>

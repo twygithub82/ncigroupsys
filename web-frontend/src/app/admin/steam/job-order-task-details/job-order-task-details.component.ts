@@ -87,20 +87,17 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
   ]
 })
 export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = 1;
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'desc',
-    //  'qty',
-    //  'unit_price',
-    //  'cost',
     'approve_part',
     'team',
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
+  pageTitleDetails = 'MENUITEMS.STEAM.LIST.JOB'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.TEXT'
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/job-order', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.STEAM.LIST.JOB-ORDER', route: '/admin/steam/job-order', queryParams: { tabIndex: this.tabIndex } },
   ]
   translatedLangText: any = {}
   langText = {
@@ -624,7 +621,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/steam/job-order']);
+      this.router.navigate(['/admin/steam/job-order'], { queryParams: { tabIndex: this.tabIndex } });
     }
   }
 

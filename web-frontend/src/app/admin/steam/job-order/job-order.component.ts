@@ -1,62 +1,49 @@
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
-import { ComponentUtil } from 'app/utilities/component-util';
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { Utility } from 'app/utilities/utility';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
+import { ResidueItem } from 'app/data-sources/residue';
+import { SteamDS, SteamItem } from "app/data-sources/steam";
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { MatCardModule } from '@angular/material/card';
-import { RepairDS, RepairItem } from 'app/data-sources/repair';
-import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
-import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
-import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
-import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
-import { JobOrderQCComponent } from "../job-order-qc/job-order-qc.component";
-import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
-import {SteamDS,SteamItem} from "app/data-sources/steam";
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
-//import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-job-order',
@@ -72,13 +59,10 @@ import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -92,19 +76,16 @@ import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    JobOrderQCComponent,
     JobOrderTaskComponent,
     BayOverviewComponent
-]
+  ]
 })
 export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  // @ViewChild('tabGroup') tabGroup!: MatTabGroup;
   displayedColumnsResidue = [
     'tank_no',
     'customer',
     'estimate_no',
     'approved_dt',
-    // 'approve_part',
     'status_cv',
     'actions'
   ];
@@ -117,11 +98,12 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
+  pageTitle = 'MENUITEMS.STEAM.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-     'MENUITEMS.STEAM.TEXT'
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/job-order' },
   ]
+
+  selectedTabIndex = 0;
 
   translatedLangText: any = {};
   langText = {
@@ -170,11 +152,11 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     QC: 'COMMON-FORM.QC',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    METHOD:"COMMON-FORM.METHOD",
-    RESIDUE_DISPOSAL:'COMMON-FORM.RESIDUE-DISPOSAL',
+    METHOD: "COMMON-FORM.METHOD",
+    RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
-    BAY_OVERVIEW:"COMMON-FORM.BAY-OVERVIEW",
-    STEAM_HEAT_TYPE:"COMMON-FORM.STEAM-HEAT-TYPE",
+    BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
+    STEAM_HEAT_TYPE: "COMMON-FORM.STEAM-HEAT-TYPE",
     REPAIR: 'COMMON-FORM.REPAIR',
   }
 
@@ -187,7 +169,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  steamDs:SteamDS;
+  steamDs: SteamDS;
   joDS: JobOrderDS;
 
   availableProcessStatus: string[] = [
@@ -196,7 +178,6 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     'COMPLETED',
     'ASSIGNED',
     'PARTIAL_ASSIGNED'
-    
   ]
 
   rsdEstList: ResidueItem[] = [];
@@ -204,18 +185,18 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  processStatusCvList:CodeValuesItem[]=[];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  previous_endCursorSteam:string|undefined=undefined;
+  previous_endCursorSteam: string | undefined = undefined;
   pageIndexSteam = 0;
   pageSizeSteam = 10;
   lastSearchCriteriaSteam: any;
-  lastOrderBySteam: any = { storing_order_tank:{tank_no: "DESC" }};
+  lastOrderBySteam: any = { storing_order_tank: { tank_no: "DESC" } };
   endCursorSteam: string | undefined = undefined;
   startCursorSteam: string | undefined = undefined;
   hasNextPageSteam = false;
@@ -229,7 +210,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   startCursorJobOrder: string | undefined = undefined;
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
-  isActiveTab=0;
+  isActiveTab = 0;
 
   constructor(
     public httpClient: HttpClient,
@@ -251,12 +232,12 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    
-    this.joDS = new JobOrderDS(this.apollo);
-    this.steamDs=new SteamDS(this.apollo);
 
-    var tabIdx= this.route.snapshot.paramMap.get('idx');
-    if(tabIdx) this.isActiveTab=Number(tabIdx);
+    this.joDS = new JobOrderDS(this.apollo);
+    this.steamDs = new SteamDS(this.apollo);
+
+    var tabIdx = this.route.snapshot.paramMap.get('idx');
+    if (tabIdx) this.isActiveTab = Number(tabIdx);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -265,6 +246,12 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const tabIndex = params['tabIndex'];
+      if (tabIndex) {
+        this.selectedTabIndex = tabIndex
+      }
+    });
     this.initializeFilterCustomerCompany();
     this.loadData();
   }
@@ -276,15 +263,15 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   initSearchForm() {
     this.filterSteamForm = this.fb.group({
       filterSteam: [''],
-      status_cv:[['APPROVED','ASSIGNED']],
-      customer:['']
+      status_cv: [['APPROVED', 'ASSIGNED']],
+      customer: ['']
     });
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
     });
   }
 
- 
+
 
   cancelItem(row: StoringOrderItem) {
     // this.id = row.id;
@@ -401,19 +388,23 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     // };
 
     const where: any = {
-      and:[
+      and: [
         //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
-        {storing_order_tank:{tank_status_cv:{in:["STEAM"]}}}
+        { storing_order_tank: { tank_status_cv: { in: ["STEAM"] } } }
       ]
     };
 
-    where.and.push({status_cv : {
-      neq: 'PENDING'
-    }});
+    where.and.push({
+      status_cv: {
+        neq: 'PENDING'
+      }
+    });
     if (this.filterSteamForm!.get('status_cv')?.value?.length) {
-      where.and.push({status_cv : {
-        in: this.filterSteamForm!.get('status_cv')?.value
-      }});
+      where.and.push({
+        status_cv: {
+          in: this.filterSteamForm!.get('status_cv')?.value
+        }
+      });
     }
     // or: [
     //   { storing_order_tank: { tank_no: { contains: "" } } },
@@ -465,7 +456,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     this.subs.sink = this.steamDs.search(this.lastSearchCriteriaSteam, this.lastOrderBySteam, first, after, last, before)
       .subscribe(data => {
         this.rsdEstList = data.map(re => {
-          return {...re, net_cost: this.calculateNetCost(re)}
+          return { ...re, net_cost: this.calculateNetCost(re) }
         });
         this.endCursorSteam = this.steamDs.pageInfo?.endCursor;
         this.startCursorSteam = this.steamDs.pageInfo?.startCursor;
@@ -578,11 +569,11 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   calculateNetCost(steam: SteamItem): any {
-    
+
 
     const total = this.steamDs.getTotal(steam?.steaming_part)
-     
-     return total.total_mat_cost?.toFixed(2);
+
+    return total.total_mat_cost?.toFixed(2);
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
@@ -646,56 +637,53 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayTankStatus(status:string):string{
-    var retval:string="-";
+  displayTankStatus(status: string): string {
+    var retval: string = "-";
 
-    retval= this.processStatusCvList!
-    .filter(item => item.code_val === status)
-    .map(item => item.description)[0]!; // Returns the description of the first match
+    retval = this.processStatusCvList!
+      .filter(item => item.code_val === status)
+      .map(item => item.description)[0]!; // Returns the description of the first match
 
-    if(retval==="") retval="-"
+    if (retval === "") retval = "-"
     return retval;
   }
 
-  AllocationSteamEstimate(event:Event, row:SteamItem)
-  {
+  AllocationSteamEstimate(event: Event, row: SteamItem) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-     // if(row.approve_by?.toUpperCase()!=="SYSTEM")
-      if(this.canToggleJob(row))
-      {
-       this.router.navigate(['/admin/steam/job-order/allocation/',row.guid], {
-         state: { id: '' ,
-           action:"UPDATE",
-           selectedRow:row,
-           type:'steam',
-           pagination:{
-             where :this.lastSearchCriteriaSteam,
-             pageSize:this.pageSizeSteam,
-             pageIndex:this.pageIndexSteam,
-             hasPreviousPage:this.hasPreviousPageSteam,
-             startCursor:this.startCursorSteam,
-             endCursor:this.endCursorSteam,
-             previous_endCursor:this.previous_endCursorSteam,
-             
-             showResult: this.steamDs.totalCount>0
-             
-           }
-         }
-       });
-      }
-      else
-      {
-          this.popupDialogForm(row,"allocation");
-      }
-    }
-    
-    getStatusDescription(codeValType: string | undefined): string | undefined {
-      return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
-    }
+    // if(row.approve_by?.toUpperCase()!=="SYSTEM")
+    if (this.canToggleJob(row)) {
+      this.router.navigate(['/admin/steam/job-order/allocation/', row.guid], {
+        state: {
+          id: '',
+          action: "UPDATE",
+          selectedRow: row,
+          type: 'steam',
+          pagination: {
+            where: this.lastSearchCriteriaSteam,
+            pageSize: this.pageSizeSteam,
+            pageIndex: this.pageIndexSteam,
+            hasPreviousPage: this.hasPreviousPageSteam,
+            startCursor: this.startCursorSteam,
+            endCursor: this.endCursorSteam,
+            previous_endCursor: this.previous_endCursorSteam,
 
-    popupDialogForm(row:SteamItem, action:string)
-  {
+            showResult: this.steamDs.totalCount > 0
+
+          }
+        }
+      });
+    }
+    else {
+      this.popupDialogForm(row, "allocation");
+    }
+  }
+
+  getStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
+  }
+
+  popupDialogForm(row: SteamItem, action: string) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -703,81 +691,80 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
 
-    if(row.status_cv==='QC_COMPLETED') action='view';
-    var rows :SteamItem[] =[] ;
+    if (row.status_cv === 'QC_COMPLETED') action = 'view';
+    var rows: SteamItem[] = [];
     rows.push(row);
-    
 
-    const dialogRef = this.dialog.open(FormDialogComponent,{
-      
+
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+
       width: '1000px',
       data: {
         action: action,
         langText: this.langText,
-        selectedItems:rows
+        selectedItems: rows
       },
       position: {
         top: '50px'  // Adjust this value to move the dialog down from the top of the screen
       }
-        
+
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          if(result>0)
-            {
+      if (result) {
+        if (result > 0) {
 
-              var where:any={
-                 guid:{eq:row.guid}
-              };
+          var where: any = {
+            guid: { eq: row.guid }
+          };
 
-              this.steamDs.search(where).subscribe(data => {
-             
-                if(data.length>0)
-                {
-                  if(row.status_cv==='APPROVED')
-                  {
-                    var steamParts:any=data[0].steaming_part;
-                    var joborder_guid:string=steamParts[0].job_order_guid;
-                    this.router.navigate(['/admin/steam/job-order/monitor', joborder_guid, row.guid]);
-                  }
-                  else
-                  {
-                    this.onFilterJobOrder();
-                  }
-                }
+          this.steamDs.search(where).subscribe(data => {
+
+            if (data.length > 0) {
+              if (row.status_cv === 'APPROVED') {
+                var steamParts: any = data[0].steaming_part;
+                var joborder_guid: string = steamParts[0].job_order_guid;
+                this.router.navigate(['/admin/steam/job-order/monitor', joborder_guid, row.guid]);
               }
-            );
-
-              // this.router.navigate(['/admin/steam/job-order/allocation/',row.guid], {
-              //   state: { id: '' ,
-              //     action:"UPDATE",
-              //     selectedRow:row,
-              //     type:'steam',
-              //     pagination:{
-              //       where :this.lastSearchCriteriaSteam,
-              //       pageSize:this.pageSizeSteam,
-              //       pageIndex:this.pageIndexSteam,
-              //       hasPreviousPage:this.hasPreviousPageSteam,
-              //       startCursor:this.startCursorSteam,
-              //       endCursor:this.endCursorSteam,
-              //       previous_endCursor:this.previous_endCursorSteam,
-                    
-              //       showResult: this.steamDs.totalCount>0
-                    
-              //     }
-              //   }
-              // });
-              //this.onPageEventSteam({pageIndex:this.pageIndexSteam,pageSize:this.pageSizeSteam,length:this.pageSizeSteam});
+              else {
+                this.onFilterJobOrder();
+              }
             }
+          }
+          );
+
+          // this.router.navigate(['/admin/steam/job-order/allocation/',row.guid], {
+          //   state: { id: '' ,
+          //     action:"UPDATE",
+          //     selectedRow:row,
+          //     type:'steam',
+          //     pagination:{
+          //       where :this.lastSearchCriteriaSteam,
+          //       pageSize:this.pageSizeSteam,
+          //       pageIndex:this.pageIndexSteam,
+          //       hasPreviousPage:this.hasPreviousPageSteam,
+          //       startCursor:this.startCursorSteam,
+          //       endCursor:this.endCursorSteam,
+          //       previous_endCursor:this.previous_endCursorSteam,
+
+          //       showResult: this.steamDs.totalCount>0
+
+          //     }
+          //   }
+          // });
+          //this.onPageEventSteam({pageIndex:this.pageIndexSteam,pageSize:this.pageSizeSteam,length:this.pageSizeSteam});
+        }
       }
-      });
-   
-   }
-   
-   canToggleJob(steam:SteamItem | undefined) {
+    });
+  }
+
+  canToggleJob(steam: SteamItem | undefined) {
     var retval
-    retval= (steam?.steaming_part?.[0]?.tariff_steaming_guid===null && steam?.steaming_part?.[0]?.steaming_exclusive_guid===null);
+    retval = (steam?.steaming_part?.[0]?.tariff_steaming_guid === null && steam?.steaming_part?.[0]?.steaming_exclusive_guid === null);
     return retval;
+  }
+
+  onTabChange(index: number) {
+    this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
   }
 }

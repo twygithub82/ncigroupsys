@@ -100,8 +100,7 @@ export class UserNewComponent extends UnsubscribeOnDestroyAdapter implements OnI
   pageTitleNew = 'MENUITEMS.MANAGEMENT.LIST.USER-NEW'
   pageTitleEdit = 'MENUITEMS.MANAGEMENT.LIST.USER-EDIT'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.MANAGEMENT.TEXT'
+    { text: 'MENUITEMS.MANAGEMENT.TEXT', route: '/admin/management' },
   ]
   translatedLangText: any = {}
   langText = {
