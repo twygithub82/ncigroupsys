@@ -72,14 +72,9 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 })
 export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    // 'category_name',
     'category_description',
     'category_duration',
     'update_date'
-    //'last_cargo',
-    // 'so_no',
-    //'customer_code'
-
   ];
 
   pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA'
@@ -143,10 +138,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   catList: CleaningCategoryItem[] = [];
   clnFormulaList: CleaningFormulaItem[] = [];
   soList: StoringOrderItem[] = [];
-  // sotDS: StoringOrderTankDS;
-  // ccDS: CustomerCompanyDS;
-  // soDS: StoringOrderDS;
-  // catDS: CleaningCategoryDS;
   mthDS: CleaningMethodDS;
   fmlDS: CleaningFormulaDS;
 
@@ -167,15 +158,10 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    // private graphqlNotificationService: GraphqlNotificationService
   ) {
     super();
     this.translateLangText();
     this.initSearchForm();
-    // this.soDS = new StoringOrderDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    //this.catDS = new CleaningCategoryDS(this.apollo);
     this.mthDS = new CleaningMethodDS(this.apollo);
     this.fmlDS = new CleaningFormulaDS(this.apollo);
   }
@@ -192,23 +178,12 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     this.initializeFilterCustomerCompany();
     this.translateLangText();
     this.loadData();
-    // this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
-    //   (message) => {
-    //    // alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
-
-    //   },
-    //   (error) => console.error(error),
-    // );
   }
   refresh() {
     this.onPageEvent({
       pageIndex: this.pageIndex, pageSize: this.pageSize,
       length: 0
     });
-    //onPageEvent({this.pageIndex,this.pageSize}});
-    // this.pageIndex=0;
-    // this.paginator.pageIndex=0;
-    // this.loadData();
   }
 
   initSearchForm() {
@@ -237,19 +212,14 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
 
   canCancelSelectedRows(): boolean {
     return false;
-    // return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
-    //   const index: number = this.soList.findIndex((d) => d === item);
-    //   return this.soDS.canCancel(this.soList[index]);
-    // });
   }
+
   cancelSelectedRows(row: StoringOrderItem[]) {
 
   }
 
   public loadData() {
-
     this.search();
-
   }
 
   showNotification(
@@ -265,8 +235,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       panelClass: colorName,
     });
   }
-
-
 
   // export table data in excel file
   exportExcel() {
@@ -300,11 +268,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
 
   search() {
     const where: any = {};
-
-    var order = this.lastOrderBy;
-
-
-
     if (this.searchForm!.value['name']) {
       where.name = { contains: this.searchForm!.value['name'] };
     }
@@ -325,7 +288,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
-  //searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,  previousPageIndex?: number) {
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number) {
     this.previous_endCursor = this.endCursor;
     this.subs.sink = this.fmlDS.search(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
@@ -338,10 +300,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       this.paginator.pageIndex = this.pageIndex;
       if (!this.hasPreviousPage)
         this.previous_endCursor = undefined;
-
     });
   }
-
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
@@ -394,7 +354,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
     var row = new CleaningMethodItem();
-    //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '50wv',
       maxWidth: '600px',
@@ -403,19 +362,16 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
         langText: this.langText,
         selectedItem: row
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
         this.refresh();
-        // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-
       }
     });
-
   }
+  
   editCall(row: CleaningMethodItem) {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -424,8 +380,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     } else {
       tempDirection = 'ltr';
     }
-    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
-    //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '50wv',
       maxWidth: '600px',
@@ -434,26 +388,15 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
         langText: this.langText,
         selectedItem: row
       }
-
     });
-
-
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-
         this.handleSaveSuccess(result);
         this.refresh();
-        //this.search();
-        // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-
       }
     });
-
   }
-
-
-
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -461,7 +404,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
       });
     }
   }

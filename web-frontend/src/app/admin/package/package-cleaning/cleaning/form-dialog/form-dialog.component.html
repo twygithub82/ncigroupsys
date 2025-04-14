@@ -16,14 +16,24 @@
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{translatedLangText.CUSTOMER_COST | translate}}</mat-label>
-                <input matInput formControlName="adjusted_cost" type="number">
+                <mat-label>{{translatedLangText.CUSTOMER_COST}}</mat-label>
+                <input matInput formControlName="adjusted_cost" type="number" required>
+                @if (pcForm.get('adjusted_cost')?.hasError('required')) {
+                <mat-error>
+                  {{translatedLangText.CUSTOMER_COST}} {{translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{translatedLangText.REMARKS }}</mat-label>
-                <input matInput formControlName="remarks" type="text">
+                <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                <input matInput formControlName="remarks" type="text" required>
+                @if (pcForm.get('remarks')?.hasError('required')) {
+                <mat-error>
+                  {{translatedLangText.REMARKS}} {{translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
               </mat-form-field>
             </div>
           </div>
@@ -34,7 +44,8 @@
                 </div>
                 <div class="body overflow-auto">
                   <div class="responsive_table">
-                    <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                    <table mat-table [dataSource]="selectedItems" matSort
+                      class="mat-cell advance-table striped-rows hover-highlight dark-header">
                       <ng-container matColumnDef="fName">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE
                           }}</mat-header-cell>

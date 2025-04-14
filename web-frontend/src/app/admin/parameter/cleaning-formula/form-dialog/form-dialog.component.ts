@@ -30,12 +30,8 @@ import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: CleaningFormulaItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 @Component({
@@ -69,22 +65,9 @@ export interface DialogData {
   ],
 })
 export class FormDialogComponent {
-  displayedColumns = [
-    //  'select',
-    // 'img',
-    'fName',
-    'lName',
-    // 'email',
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
-  ];
-
   action: string;
   index?: number;
   dialogTitle?: string;
-
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -92,9 +75,6 @@ export class FormDialogComponent {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
-  //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  //  catDS :CleaningCategoryDS;
-  // mthDS: CleaningMethodDS;
   fmlDS: CleaningFormulaDS;
 
   translatedLangText: any = {};
@@ -106,30 +86,7 @@ export class FormDialogComponent {
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
-    SO_NO: 'COMMON-FORM.SO-NO',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
-    HAULIER: 'COMMON-FORM.HAULIER',
-    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    REPAIR: 'COMMON-FORM.REPAIR',
-    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
-    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
-    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
-    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
-    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
@@ -153,32 +110,7 @@ export class FormDialogComponent {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST: 'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
-    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     CATEGORY_NAME: "COMMON-FORM.CATEGORY-NAME",
     CATEGORY_DESCRIPTION: "COMMON-FORM.CATEGORY-DESCRIPTION",
     CATEGORY_COST: "COMMON-FORM.CARGO-COST",
@@ -192,10 +124,7 @@ export class FormDialogComponent {
     DURATION: "COMMON-FORM.DURATION-MIN"
   };
 
-
   selectedItem: CleaningFormulaItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -206,16 +135,11 @@ export class FormDialogComponent {
     private snackBar: MatSnackBar,
   ) {
     // Set the defaults
-
     this.selectedItem = data.selectedItem;
-
     this.pcForm = this.createCleaningFormula();
-
-    // this.mthDS = new CleaningMethodDS(this.apollo);
     this.fmlDS = new CleaningFormulaDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
-
   }
 
   createCleaningFormula(): UntypedFormGroup {
@@ -223,10 +147,8 @@ export class FormDialogComponent {
       selectedItem: this.selectedItem,
       duration: this.selectedItem?.duration || [''],
       description: this.selectedItem?.description || [''],
-
     });
   }
-
 
   GetButtonCaption() {
     if (this.selectedItem.description !== undefined) {
@@ -236,6 +158,7 @@ export class FormDialogComponent {
       return this.translatedLangText.ADD;
     }
   }
+
   GetTitle() {
     if (this.selectedItem.description !== undefined) {
       return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_FORMULA;
@@ -257,69 +180,56 @@ export class FormDialogComponent {
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-
       console.log('valid');
       this.dialogRef.close(count);
-
     }
   }
 
-
-
   save() {
-
     if (!this.pcForm?.valid) return;
-
     let cf: CleaningFormulaItem = new CleaningFormulaItem(this.selectedItem);
-    // tc.guid='';
     cf.duration = this.pcForm.value['duration'];
     cf.description = this.pcForm.value['description'];
-
 
     const where: any = {};
     if (this.pcForm!.value['description']) {
       where.description = { eq: this.pcForm!.value['description'] };
     }
 
-    this.fmlDS.search(where).subscribe(p => {
-      if (p.length == 0) {
-        if (this.selectedItem.guid) {
+    if (this.pcForm!.value['duration']) {
+      where.duration = { eq: this.pcForm!.value['duration'] };
+    }
 
+    if (cf.guid) {
+      where.guid = { neq: cf.guid };
+    }
+
+    this.fmlDS.getCheckExist(where).subscribe(p => {
+      console.log(`getCheckExist: ${p}`)
+      if (p == 0) {
+        if (this.selectedItem.guid) {
           this.fmlDS.updateCleaningFormula(cf).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.updateCleaningFormula);
           });
-
-        }
-        else {
+        } else {
           this.fmlDS.addCleaningFormula(cf).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.addCleaningFormula);
           });
         }
-
-      }
-      else {
-        var allowUpdate = true;
-        for (let i = 0; i < p.length; i++) {
-          if (p[i].guid != this.selectedItem.guid) {
-            allowUpdate = false;
-            break;  // Exit the loop
-          }
-        }
-        if (allowUpdate) {
-
-          if (this.selectedItem.guid) {
-
-            this.fmlDS.updateCleaningFormula(cf).subscribe(result => {
-              console.log(result)
-              this.handleSaveSuccess(result?.data?.updateCleaningFormula);
-            });
-          }
-        }
-        else {
-          this.pcForm?.get('description')?.setErrors({ existed: true });
-        }
+      } else {
+        var allowUpdate = false;
+        // if (allowUpdate) {
+        //   if (this.selectedItem.guid) {
+        //     this.fmlDS.updateCleaningFormula(cf).subscribe(result => {
+        //       console.log(result)
+        //       this.handleSaveSuccess(result?.data?.updateCleaningFormula);
+        //     });
+        //   }
+        // } else {
+        //   this.pcForm?.get('description')?.setErrors({ existed: true });
+        // }
       }
     });
 
