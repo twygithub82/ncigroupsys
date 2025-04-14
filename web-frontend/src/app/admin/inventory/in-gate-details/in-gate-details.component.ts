@@ -81,6 +81,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
   ]
 })
 export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = 0;
   displayedColumns = [
     'select',
     'so_no',
@@ -92,8 +93,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.IN-GATE-DETAILS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '0' } },
-    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: '0' } }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.INVENTORY.LIST.IN-GATE', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: this.tabIndex } }
   ]
 
   translatedLangText: any = {};

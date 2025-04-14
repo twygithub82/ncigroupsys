@@ -88,6 +88,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.ESTIMATE'
   breadcrumsMiddleList = [
+    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/estimate' }
   ]
 
   translatedLangText: any = {};

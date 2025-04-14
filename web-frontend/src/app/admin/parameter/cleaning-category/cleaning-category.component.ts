@@ -33,13 +33,10 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-//import {messageReceived}  from '../../../data-sources/message-received';
 
 @Component({
   selector: 'app-cleaning-category',
@@ -78,10 +75,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     'category_description',
     'category_cost',
     'update_date'
-    //'last_cargo',
-    // 'so_no',
-    //'customer_code'
-
   ];
 
   pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-CATEGORY'
@@ -134,9 +127,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   catList: CleaningCategoryItem[] = [];
   soList: StoringOrderItem[] = [];
-  // sotDS: StoringOrderTankDS;
-  // ccDS: CustomerCompanyDS;
-  // soDS: StoringOrderDS;
   catDS: CleaningCategoryDS;
 
   pageIndex = 0;
@@ -156,14 +146,10 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    // private graphqlNotificationService: GraphqlNotificationService
   ) {
     super();
     this.translateLangText();
     this.initSearchForm();
-    // this.soDS = new StoringOrderDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
     this.catDS = new CleaningCategoryDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -178,13 +164,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.loadData();
-    // this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
-    //   (message) => {
-    //    // alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
-
-    //   },
-    //   (error) => console.error(error),
-    // );
   }
   refresh() {
     this.onPageEvent({
@@ -209,9 +188,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       updatedt = r.create_dt;
     }
     return this.displayDate(updatedt);
-
   }
-
 
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
@@ -219,11 +196,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   canCancelSelectedRows(): boolean {
     return false;
-    // return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
-    //   const index: number = this.soList.findIndex((d) => d === item);
-    //   return this.soDS.canCancel(this.soList[index]);
-    // });
   }
+  
   cancelSelectedRows(row: StoringOrderItem[]) {
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {

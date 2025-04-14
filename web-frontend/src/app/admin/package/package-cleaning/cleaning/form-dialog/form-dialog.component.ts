@@ -283,7 +283,7 @@ export class FormDialogComponent {
   }
 
   save() {
-
+    if (this.pcForm.invalid) return;
     let pc_guids: string[] = this.selectedItems
       .map(cc => cc.guid)
       .filter((guid): guid is string => guid !== undefined);
@@ -294,7 +294,6 @@ export class FormDialogComponent {
     this.custCompClnCatDS.updatePackageCleanings(pc_guids, remarks, adjusted_price).subscribe(result => {
       console.log(result)
       if (result.data.updatePackageCleans > 0) {
-        //this.handleSaveSuccess(result?.data?.updateTariffClean);
         const returnDialog: DialogData = {
           selectedValue: result.data.updatePackageCleans,
           selectedItems: []
@@ -303,9 +302,6 @@ export class FormDialogComponent {
         this.dialogRef.close(returnDialog);
       }
     });
-
-
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {

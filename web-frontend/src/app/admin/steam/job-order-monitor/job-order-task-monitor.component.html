@@ -389,7 +389,6 @@
                   </div>
                   }
                 </div>
-
               </div>
               }
               <mat-divider></mat-divider>
@@ -397,7 +396,8 @@
             <div class="row m-t-5">
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                 <button mat-flat-button type="button" aria-label="Back to previous page"
-                  (click)="$event.preventDefault();" [routerLink]="['/admin/steam/job-order',2]">
+                  (click)="$event.preventDefault();" [routerLink]="['/admin/steam/job-order']"
+                  [queryParams]="{tabIndex: tabIndex}">
                   <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                 </button>
               </div>

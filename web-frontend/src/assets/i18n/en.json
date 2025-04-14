@@ -164,8 +164,8 @@
         "GROUP": "Group",
         "GROUP-NEW": "New Group",
         "GROUP-EDIT": "Edit Group",
-        "MONTHLY-REPORTS":"Monthly Reports",
-        "YEARLY-REPORTS":"Yearly Reports"
+        "MONTHLY-REPORTS": "Monthly Reports",
+        "YEARLY-REPORTS": "Yearly Reports"
       }
     },
     "NEW": {
@@ -225,7 +225,8 @@
         "RESIDUE-DISPOSAL-ESTIMATE-APPROVAL": "Estimate/Approval",
         "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
         "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval",
-        "JOB-ORDER": "Job Order"
+        "JOB-ORDER": "Job Order",
+        "JOB": "Job"
       }
     },
     "STEAM": {
@@ -235,6 +236,7 @@
         "STEAM-ESTIMATE": "Steam Estimate",
         "STEAM-APPROVAL": "Steam Approval",
         "JOB-ORDER": "Job Order",
+        "JOB": "Job",
         "ESTIMATE-NEW": "New Estimate",
         "ESTIMATE-EDIT": "Edit Estimate"
       }
@@ -1135,12 +1137,10 @@
     "PRE-INSPECTION-COST": "Preinspection $",
     "LIFT-ON-COST": "Lift-On $",
     "LIFT-OFF-COST": "Lift-Off $",
-
     "ESTIMATE-TYPE": "Estimate Type",
     "ESTIMATED": "Estimated",
     "ESTIMATE-PERIOD": "Estimate Period",
     "DUPLICATE-CARGO-FOUND": "Duplicated Cargo Name found",
-
     "TOP-LASER": "Top (Laser)",
     "BOTTOM-LASER": "Bottom (Laser)",
     "BEGIN": "Begin",
@@ -1158,12 +1158,12 @@
     "MANHOUR-REPORT": "Man-Hour Report",
     "OVERWRITE-APPROVAL": "Overwrite Approval",
     "APPROVED-BUFFER-CLEANING-COST": "Approved Buffer Cleaning Cost",
-    "GATE-SURCHARGE":"Gate Surcharge",
-    "ON-DEPOT":"On Depot",
-    "YEARLY-INVENTORY-REPORT":"Yearly Inventory Report",
-    "YEARLY-REVENUE-REPORT":"Yearly Revenue Report",
-    "SUMMARY-OF-INVENTORY":"Summary of Inventory",
-    "PERCENTAGE-SYMBOL":"%"
+    "GATE-SURCHARGE": "Gate Surcharge",
+    "ON-DEPOT": "On Depot",
+    "YEARLY-INVENTORY-REPORT": "Yearly Inventory Report",
+    "YEARLY-REVENUE-REPORT": "Yearly Revenue Report",
+    "SUMMARY-OF-INVENTORY": "Summary of Inventory",
+    "PERCENTAGE-SYMBOL": "%"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

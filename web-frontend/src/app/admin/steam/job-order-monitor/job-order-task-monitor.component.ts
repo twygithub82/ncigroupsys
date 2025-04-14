@@ -26,10 +26,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  OwlDateTimeModule,
-  OwlNativeDateTimeModule,
-} from '@danielmoncada/angular-datetime-picker';
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from '@danielmoncada/angular-datetime-picker';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -53,9 +50,6 @@ import { Utility } from 'app/utilities/utility';
 import { Observable, Subscription } from 'rxjs';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-//import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
-
-//import { NgxMatMomentModule } from '@angular-material-components/moment-adapter';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
 @Component({
@@ -98,21 +92,20 @@ import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
 })
 export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   @ViewChild('picker') picker: any;
+  tabIndex = 2;
   displayedColumns = [
     'seq',
     'time',
-    // 'group_name_cv',
     'ther',
     'top_side',
     'bottom_side',
-    //  'cost',
     'remarks',
     'action',
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
+  pageTitleDetails = 'MENUITEMS.STEAM.LIST.JOB'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.TEXT'
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/job-order', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.STEAM.LIST.JOB-ORDER', route: '/admin/steam/job-order', queryParams: { tabIndex: this.tabIndex } },
   ]
   translatedLangText: any = {}
   langText = {

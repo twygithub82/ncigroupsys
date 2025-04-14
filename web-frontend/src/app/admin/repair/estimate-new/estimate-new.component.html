@@ -480,7 +480,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.LABOUR_DISCOUNT"
-                                type="number" min="0">
+                                type="number" min="0" max="99">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -489,7 +489,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.MATERIAL_DISCOUNT"
-                                type="number">
+                                type="number" min="0" max="99">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>

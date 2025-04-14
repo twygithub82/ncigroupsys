@@ -89,19 +89,15 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'desc',
     'qty',
     'unit_price',
     'cost',
     'approve_part',
-    //"actions"
-
   ];
   pageTitleDetails = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL'
+    { text: 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL', route: '/admin/residue-disposal/approval/view' },
   ]
   translatedLangText: any = {}
   langText = {

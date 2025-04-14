@@ -21,7 +21,7 @@ export const DELETE_CLEANING_FORMULA = gql`
    mutation deleteCleaningFormula($guids: [String!]!) {
     deleteCleaningFormula(deleteCleanFormula_guids: $guids)
   }
-  `;
+`;
 
 export const SEARCH_CLEANING_FORMULA_QUERY = gql`
   query queryCleaningFormula($where: cleaning_formulaFilterInput , $order:[cleaning_formulaSortInput!], $first: Int, $after: String, $last: Int, $before: String){
@@ -45,7 +45,15 @@ export const SEARCH_CLEANING_FORMULA_QUERY = gql`
       }
     }
   }
-  `;
+`;
+
+export const SEARCH_CLEANING_FORMULA_COUNT = gql`
+  query queryCleaningFormula($where: cleaning_formulaFilterInput){
+    queryCleaningFormula(where: $where){
+      totalCount
+    }
+  }
+`;
 
 
 export class CleaningFormulaItem {
@@ -76,8 +84,6 @@ export class CleaningFormulaDS extends BaseDataSource<CleaningFormulaItem> {
     super();
   }
 
-
-
   search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<CleaningFormulaItem[]> {
     this.loadingSubject.next(true);
     if (!last)
@@ -102,6 +108,29 @@ export class CleaningFormulaDS extends BaseDataSource<CleaningFormulaItem> {
           this.pageInfo = rst.pageInfo;
           this.totalCount = rst.totalCount;
           return rst.nodes;
+        })
+      );
+  }
+
+  getCheckExist(where?: any): Observable<number> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: SEARCH_CLEANING_FORMULA_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const rst = result.queryCleaningFormula || { nodes: [], totalCount: 0 };
+          this.totalCount = rst.totalCount;
+          return rst.totalCount;
         })
       );
   }

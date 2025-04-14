@@ -103,8 +103,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE'
+    { text: 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE', route: '/admin/residue-disposal/estimate/new' },
   ]
   translatedLangText: any = {}
   langText = {

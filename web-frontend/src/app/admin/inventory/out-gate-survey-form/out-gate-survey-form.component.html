@@ -2190,6 +2190,21 @@
                           </button>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                          @if (canPublish()) {
+                          <button mat-raised-button matStepperNext color="accent" class="msr-2"
+                            [disabled]="(ogsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"
+                            (click)="onPublish()">
+                            <mat-icon>
+                              @if (!(ogsDS.actionLoading$ | async) && !(isImageLoading$| async) &&
+                              !(isFileActionLoading$| async)) {
+                              publish
+                              } @else {
+                              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                              }
+                            </mat-icon>
+                            {{translatedLangText.PUBLISH}}
+                          </button>
+                          }
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
                             [disabled]="(ogsDS.actionLoading$| async) || (isFileActionLoading$| async)"
                             (click)="onFormSubmit()">

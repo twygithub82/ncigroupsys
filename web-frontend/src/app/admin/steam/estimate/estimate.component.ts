@@ -101,7 +101,8 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
 
   pageTitle = 'MENUITEMS.STEAM.LIST.STEAM-ESTIMATE'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/estimate' },
+    { text: 'MENUITEMS.STEAM.LIST.ESTIMATE', route: '/admin/steam/estimate' },
   ]
 
   translatedLangText: any = {};

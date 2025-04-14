@@ -100,7 +100,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
 
   pageTitle = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    { text: 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE', route: '/admin/residue-disposal/estimate' },
   ]
 
   translatedLangText: any = {};

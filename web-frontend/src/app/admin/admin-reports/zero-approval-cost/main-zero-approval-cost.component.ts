@@ -108,8 +108,7 @@ export class MainZeroApprovalCostComponent extends UnsubscribeOnDestroyAdapter i
 
   pageTitle = 'MENUITEMS.ADMIN-REPORTS.LIST.ZERO-APPROVAL-COST-REPORT'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.ADMIN-REPORTS.TEXT'
+    { text: 'MENUITEMS.ADMIN-REPORTS.TEXT', route: '/admin/admin-reports/main-zero-approval-cost-report' },
   ]
 
   translatedLangText: any = {};
