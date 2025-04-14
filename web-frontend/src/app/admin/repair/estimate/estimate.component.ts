@@ -145,6 +145,16 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
   }
 
+  availableProcessStatus: string[] = [
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'PENDING',
+    // 'COMPLETED',
+    // 'NO_ACTION',
+    // 'ASSIGNED',
+    // 'PARTIAL_ASSIGNED',
+  ]
+
   searchForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
@@ -232,7 +242,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       est_dt: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [['PENDING', 'APPROVED', 'QC_COMPLETED', 'NO_ACTION']],
+      est_status_cv: [''],
     });
   }
 
@@ -727,7 +737,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       job_no: '',
       purpose: '',
       eta_dt_start: '',
-      eta_dt_end: ''
+      eta_dt_end: '',
+      est_status_cv: '',
+      repair_option_cv: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

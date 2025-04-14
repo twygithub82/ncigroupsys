@@ -202,7 +202,8 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       jobStatusCv: [['COMPLETED']],
       customer: this.customerCodeControl,
       complete_dt_start: [''],
-      complete_dt_end: ['']
+      complete_dt_end: [''],
+      repairOptionCv: ['']
     });
   }
 
@@ -258,6 +259,10 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       where.status_cv = {
         in: this.filterJobOrderForm!.get('jobStatusCv')?.value
       };
+    }
+
+    if (this.filterJobOrderForm!.get('repair_option_cv')?.value?.length) {
+      where.storing_order_tank.purpose_repair_cv = { in: this.filterJobOrderForm!.get('repair_option_cv')?.value };
     }
 
     if (this.filterJobOrderForm!.get('complete_dt_start')?.value || this.filterJobOrderForm!.get('complete_dt_end')?.value) {
@@ -339,6 +344,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.filterJobOrderForm?.patchValue({
       filterJobOrder: '',
       jobStatusCv: ['COMPLETED'],
+      repairOptionCv: [''],
       complete_dt_start: '',
       complete_dt_end: ''
     });

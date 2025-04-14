@@ -138,7 +138,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     'ASSIGNED',
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED',
+    //'COMPLETED',
     'NO_ACTION',
     'KIV'
   ]
@@ -337,6 +337,11 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
         where.status_cv = { in: this.searchForm!.value['approval_status'] };
       }
     }
+    else{
+      where.status_cv =  {
+        in: this.availableProcessStatus
+      };
+    }
 
     if (this.searchForm!.get('start_approved_date')?.value && this.searchForm!.get('end_approved_date')?.value) {
       where.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['start_approved_date']), lte: Utility.convertDate(this.searchForm!.value['end_approved_date']) };
@@ -471,7 +476,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     this.searchForm?.patchValue({
       tank_no: '',
       eir_no: '',
-      approval_status: 'APPROVED',
+      approval_status: '',
 
     });
     this.customerCodeControl.reset('');
