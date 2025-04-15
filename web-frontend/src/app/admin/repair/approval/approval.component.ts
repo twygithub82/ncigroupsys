@@ -90,6 +90,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     'tank_no',
     'customer',
     'estimate_no',
+    'eir_date',
     'net_cost',
     'status_cv'
   ];
@@ -143,6 +144,17 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     AMEND: 'COMMON-FORM.AMEND',
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
   }
+
+
+  availableProcessStatus: string[] = [
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'PENDING',
+    // 'COMPLETED',
+    'NO_ACTION',
+    'ASSIGNED',
+    'PARTIAL_ASSIGNED',
+  ]
 
   searchForm?: UntypedFormGroup;
 
@@ -224,7 +236,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [['PENDING']]
+      est_status_cv: ['']
     });
   }
 
@@ -442,6 +454,9 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.searchForm!.get('est_status_cv')?.value?.length) {
       where.status_cv = { in: this.searchForm!.get('est_status_cv')?.value }
     }
+    else{
+      where.status_cv = { in: this.availableProcessStatus }
+    }
 
     if (this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) {
       where.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value, true) };
@@ -628,7 +643,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       est_dt_end: '',
       approval_dt_start: '',
       approval_dt_end: '',
-      est_status_cv: ['PENDING']
+      est_status_cv: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

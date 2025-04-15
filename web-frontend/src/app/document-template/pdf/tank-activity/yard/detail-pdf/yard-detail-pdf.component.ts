@@ -247,6 +247,8 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     GATEIO: 'COMMON-FORM.GATEIO-S',
     INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
     TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
+    YARD_REPORT:'COMMON-FORM.YARD-REPORT',
+    DETAILS: 'COMMON-FORM.DETAILS',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
     APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
@@ -1436,7 +1438,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
    }
    GetReportTitle():string
    {
-     return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.DETAIL_REPORT}`
+     return `${this.translatedLangText.YARD_REPORT} - ${this.translatedLangText.DETAILS}`
    }
 
    removeDeletedInGateAndOutGate(sot:StoringOrderTankItem)

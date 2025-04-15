@@ -145,8 +145,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS'
-
   }
+
+  availableProcessStatus: string[] = [
+    'CLEANING',
+    'REPAIR',
+    'STORAGE'
+  ]
 
   invForm?: UntypedFormGroup;
   searchForm?: UntypedFormGroup;

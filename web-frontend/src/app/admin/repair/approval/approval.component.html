@@ -77,12 +77,16 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
+                      <input matInput formControlName="est_dt" [matDatepicker]="est_dt_picker">
+                      <mat-datepicker-toggle matSuffix [for]="est_dt_picker"></mat-datepicker-toggle>
+                      <mat-datepicker #est_dt_picker></mat-datepicker>
+                      <!-- <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="est_picker">
                         <input matStartDate placeholder="Start date" formControlName="est_dt_start">
                         <input matEndDate placeholder="End date" formControlName="est_dt_end">
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="est_picker"></mat-datepicker-toggle>
-                      <mat-date-range-picker #est_picker></mat-date-range-picker>
+                      <mat-date-range-picker #est_picker></mat-date-range-picker> -->
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
@@ -101,9 +105,11 @@
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                       <mat-select multiple formControlName="est_status_cv">
                         @for (codeValue of processStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
+                          @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                            <mat-option [value]="codeValue.code_val">
+                              {{codeValue.description}}
+                            </mat-option>
+                          }
                         }
                       </mat-select>
                     </mat-form-field>
@@ -174,6 +180,16 @@
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="eir_date">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    {{translatedLangText.EIR_DATE}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    <span class="mobile-tab-label">{{translatedLangText.EIR_DATE}}:</span>{{row.eir_dt}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="net_cost">
