@@ -395,9 +395,9 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
         where.month = (monthIndex+1);
       }
 
-      if (this.searchForm?.get('inventory_type')?.value) {
-        where.inventory_type = this.searchForm?.get('inventory_type')?.value;
-      }
+      // if (this.searchForm?.get('inventory_type')?.value) {
+      //   where.inventory_type = this.searchForm?.get('inventory_type')?.value;
+      // }
 
       if (this.searchForm?.get('year')?.value) {
         where.year = Number(this.searchForm?.get('year')?.value); 
