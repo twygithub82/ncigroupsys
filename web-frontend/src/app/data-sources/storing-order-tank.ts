@@ -4630,11 +4630,11 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   displayTankPurpose(sot: StoringOrderTankItem, getPurposeOptionDescription: (code: string | undefined) => string | undefined) {
     let purposes: any[] = [];
-    if (sot?.purpose_cleaning) {
-      purposes.push(getPurposeOptionDescription('CLEANING'));
-    }
     if (sot?.purpose_steam) {
       purposes.push(getPurposeOptionDescription('STEAM'));
+    }
+    if (sot?.purpose_cleaning) {
+      purposes.push(getPurposeOptionDescription('CLEANING'));
     }
     if (sot?.purpose_repair_cv) {
       purposes.push(getPurposeOptionDescription(sot?.purpose_repair_cv));

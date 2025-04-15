@@ -33,22 +33,19 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { DailyQCDetail, report_customer_tank_activity, ReportDS } from 'app/data-sources/reports';
+import { DailyQCDetail, ReportDS } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
+import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-reports/daily/qc-detail/daily-qc-detail-pdf.component';
+import { DailyRevenuePdfComponent } from 'app/document-template/pdf/admin-reports/daily/revenue/daily-revenue-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
-import {PendingEstimateReportPdfComponent} from 'app/document-template/pdf/pending-estimate-report-pdf/pending-estimate-report-pdf.component'
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { reportPreviewWindowDimension } from 'environments/environment';
-import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { DailyRevenuePdfComponent } from 'app/document-template/pdf/admin-reports/daily/revenue/daily-revenue-pdf.component';
-import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-reports/daily/qc-detail/daily-qc-detail-pdf.component';
-import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-daily-team-report',
@@ -78,8 +75,7 @@ import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-repor
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatSlideToggleModule,
-    PreventNonNumericDirective
+    MatSlideToggleModule
   ]
 })
 export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -154,19 +150,19 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    OUTSTANDING_DAYS:'COMMON-FORM.OUTSTANDING-DAYS',
-    MAX_DAYS:'COMMON-FORM.MAX-DAYS',
-    MIN_DAYS:'COMMON-FORM.MIN-DAYS',
-    WARNING_OUTSTANDING_DAYS:'COMMON-FORM.WARNING-OUTSTANDING-DAYS',
-    TEAM:'COMMON-FORM.TEAM',
-    ALLOCATION_DATE:"COMMON-FORM.ALLOCATION-DATE",
-    APPROVED_DATE:"COMMON-FORM.APPROVED-DATE",
-    ESTIMATE_DATE:"COMMON-FORM.ESTIMATE-DATE",
-    QC_DATE:"COMMON-FORM.QC-DATE",
-    REVENUE:'COMMON-FORM.REVENUE',
-    APPROVAL:'COMMON-FORM.APPROVAL',
-    QC_DETAIL:'COMMON-FORM.QC-DETAIL'
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    OUTSTANDING_DAYS: 'COMMON-FORM.OUTSTANDING-DAYS',
+    MAX_DAYS: 'COMMON-FORM.MAX-DAYS',
+    MIN_DAYS: 'COMMON-FORM.MIN-DAYS',
+    WARNING_OUTSTANDING_DAYS: 'COMMON-FORM.WARNING-OUTSTANDING-DAYS',
+    TEAM: 'COMMON-FORM.TEAM',
+    ALLOCATION_DATE: "COMMON-FORM.ALLOCATION-DATE",
+    APPROVED_DATE: "COMMON-FORM.APPROVED-DATE",
+    ESTIMATE_DATE: "COMMON-FORM.ESTIMATE-DATE",
+    QC_DATE: "COMMON-FORM.QC-DATE",
+    REVENUE: 'COMMON-FORM.REVENUE',
+    APPROVAL: 'COMMON-FORM.APPROVAL',
+    QC_DETAIL: 'COMMON-FORM.QC-DETAIL'
   }
 
   invForm?: UntypedFormGroup;
@@ -185,13 +181,13 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   stmDS: SteamDS;
   plDS: PackageLabourDS;
   billDS: BillingDS;
-  teamDS:TeamDS;
-  reportDS:ReportDS;
+  teamDS: TeamDS;
+  reportDS: ReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
   selectedEstimateLabourCost?: number;
-  repairTeamList:TeamItem[]=[];
+  repairTeamList: TeamItem[] = [];
   stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
@@ -220,8 +216,8 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport=false;
-  repData:any[]=[];
+  isGeneratingReport = false;
+  repData: any[] = [];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -243,8 +239,8 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.teamDS= new TeamDS(this.apollo);
-    this.reportDS=new ReportDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
+    this.reportDS = new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -254,11 +250,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeValueChanges();
-    // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
-
-    // var autoSearch:boolean=true;
-    // if(autoSearch) this.search_detail();
   }
 
   initInvoiceForm() {
@@ -273,9 +265,9 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
         customer_code: this.customerCodeControl,
         eir_no: [''],
         tank_no: [''],
-        all_dt_start:[''],
-        all_dt_end:[''],
-        app_dt:[''],
+        all_dt_start: [''],
+        all_dt_end: [''],
+        app_dt: [''],
         app_dt_start: [''],
         app_dt_end: [''],
         est_dt_start: [''],
@@ -285,29 +277,29 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
         qc_dt_end: [''],
         rep_type: [''],
         team: [''],
-        report_type:['1']
+        report_type: ['1']
       },
     );
   }
 
-   // Custom validator to check if min <= max
-   minMaxDaysValidator(form:UntypedFormGroup) {
-    
-      const minControl = form.get('min_days');
-      const maxControl = form.get('max_days');
+  // Custom validator to check if min <= max
+  minMaxDaysValidator(form: UntypedFormGroup) {
 
-      const min = minControl?.value;
-      const max = maxControl?.value;
+    const minControl = form.get('min_days');
+    const maxControl = form.get('max_days');
 
-      if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
-        minControl?.setErrors({ invalidRange: true });
-        maxControl?.setErrors({ invalidRange: true });
-        return { invalidRange: true }; // Form-level error
-      } else {
-        minControl?.setErrors(null);
-        maxControl?.setErrors(null);
-        return null; // No error
-      }
+    const min = minControl?.value;
+    const max = maxControl?.value;
+
+    if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
+      minControl?.setErrors({ invalidRange: true });
+      maxControl?.setErrors({ invalidRange: true });
+      return { invalidRange: true }; // Form-level error
+    } else {
+      minControl?.setErrors(null);
+      maxControl?.setErrors(null);
+      return null; // No error
+    }
   }
 
   initializeValueChanges() {
@@ -354,21 +346,22 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     });
 
 
-    const where : any ={
-      and:[
-          {
-            department_cv:{eq:'REPAIR'}
-          },
-           { or:[
-               {delete_dt:{eq:null}},
-               {delete_dt:{eq:0}}
-             ]
-           }
+    const where: any = {
+      and: [
+        {
+          department_cv: { eq: 'REPAIR' }
+        },
+        {
+          or: [
+            { delete_dt: { eq: null } },
+            { delete_dt: { eq: 0 } }
+          ]
+        }
       ]
     };
-    
-    this.teamDS.loadItems(where,{description:"ASC"},100).subscribe(data=>{
-        this.repairTeamList=data;
+
+    this.teamDS.loadItems(where, { description: "ASC" }, 100).subscribe(data => {
+      this.repairTeamList = data;
     });
 
     // this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
@@ -420,12 +413,12 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   search_detail() {
-    var repType:number = Number(this.searchForm?.get("report_type")?.value);
+    var repType: number = Number(this.searchForm?.get("report_type")?.value);
     this.search(repType);
   }
 
   search(report_type: number) {
-    
+
     var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
@@ -433,218 +426,198 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.selectedEstimateLabourCost = 0;
     this.stmEstList = [];
     this.selection.clear();
-    var date:string='';
-    var team:string='';
-    this.repData=[];
+    var date: string = '';
+    var team: string = '';
+    this.repData = [];
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
-    
+
     // where.repair={some:{status_cv :{in:["JOB_IN_PROGRESS","ASSIGNED"]}},any:true};
     // if (this.searchForm!.get('tank_no')?.value) {
     //   where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     //   cond_counter++;
     // }
-    if(this.searchForm?.invalid)
-      {
-        if(!(this.searchForm!.get('app_dt')?.value) && this.isDateRequired("APPROVED"))
-          {
-            const startDateControl = this.searchForm!.get('app_dt');
-          if (startDateControl) {
-              startDateControl.setErrors({ required: true });
-              startDateControl.markAsTouched();
-          }
-          }
-        
-          if(!(this.searchForm!.get('qc_dt')?.value) && this.isDateRequired("QC"))
-            {
-              const startDateControl = this.searchForm!.get('qc_dt');
-            if (startDateControl) {
-                startDateControl.setErrors({ required: true });
-                startDateControl.markAsTouched();
-            }
-            }
-        return;
-      } 
-    this.isGeneratingReport=true;
+    if (this.searchForm?.invalid) {
+      if (!(this.searchForm!.get('app_dt')?.value) && this.isDateRequired("APPROVED")) {
+        const startDateControl = this.searchForm!.get('app_dt');
+        if (startDateControl) {
+          startDateControl.setErrors({ required: true });
+          startDateControl.markAsTouched();
+        }
+      }
+
+      if (!(this.searchForm!.get('qc_dt')?.value) && this.isDateRequired("QC")) {
+        const startDateControl = this.searchForm!.get('qc_dt');
+        if (startDateControl) {
+          startDateControl.setErrors({ required: true });
+          startDateControl.markAsTouched();
+        }
+      }
+      return;
+    }
+    this.isGeneratingReport = true;
     if (this.searchForm!.get('tank_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.tank_no = `${this.searchForm!.get('tank_no')?.value }`;
+      where.tank_no = `${this.searchForm!.get('tank_no')?.value}`;
       cond_counter++;
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code }`;
+      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
       cond_counter++;
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.eir_no = `${this.searchForm!.get('eir_no')?.value }`;
+      where.eir_no = `${this.searchForm!.get('eir_no')?.value}`;
       cond_counter++;
     }
 
-    if((this.searchForm!.get('all_dt_start')?.value) && (this.searchForm!.get('all_dt_end')?.value))
-    {
-        var start_dt=new Date(this.searchForm!.value['all_dt_start']);
-        var end_dt=new Date(this.searchForm!.value['all_dt_end']);
-        where.allocation_start_date=Utility.convertDate(start_dt);
-        where.allocation_end_date=Utility.convertDate(end_dt,true);
-        cond_counter++;
+    if ((this.searchForm!.get('all_dt_start')?.value) && (this.searchForm!.get('all_dt_end')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['all_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['all_dt_end']);
+      where.allocation_start_date = Utility.convertDate(start_dt);
+      where.allocation_end_date = Utility.convertDate(end_dt, true);
+      cond_counter++;
     }
 
-    if((this.searchForm!.get('app_dt')?.value))
-      {
-          var start_dt=new Date(this.searchForm!.value['app_dt']);
-          var end_dt=new Date(this.searchForm!.value['app_dt']);
-          where.approved_start_date=Utility.convertDate(start_dt);
-          where.approved_end_date=Utility.convertDate(end_dt,true);
-          date=Utility.convertDateToStr(start_dt);
-          cond_counter++;
-      }
+    if ((this.searchForm!.get('app_dt')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['app_dt']);
+      var end_dt = new Date(this.searchForm!.value['app_dt']);
+      where.approved_start_date = Utility.convertDate(start_dt);
+      where.approved_end_date = Utility.convertDate(end_dt, true);
+      date = Utility.convertDateToStr(start_dt);
+      cond_counter++;
+    }
 
-    if((this.searchForm!.get('app_dt_start')?.value) && (this.searchForm!.get('app_dt_end')?.value))
-      {
-          var start_dt=new Date(this.searchForm!.value['app_dt_start']);
-          var end_dt=new Date(this.searchForm!.value['app_dt_end']);
-          where.approved_start_date=Utility.convertDate(start_dt);
-          where.approved_end_date=Utility.convertDate(end_dt,true);
-          cond_counter++;
-      }
-     
+    if ((this.searchForm!.get('app_dt_start')?.value) && (this.searchForm!.get('app_dt_end')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['app_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['app_dt_end']);
+      where.approved_start_date = Utility.convertDate(start_dt);
+      where.approved_end_date = Utility.convertDate(end_dt, true);
+      cond_counter++;
+    }
 
-      
-    if((this.searchForm!.get('est_dt_start')?.value) && (this.searchForm!.get('est_dt_end')?.value))
-      {
-          var start_dt=new Date(this.searchForm!.value['est_dt_start']);
-          var end_dt=new Date(this.searchForm!.value['est_dt_end']);
-          where.estimate_start_date=Utility.convertDate(start_dt);
-          where.estimate_end_date=Utility.convertDate(end_dt,true);
-          cond_counter++;
-      }
 
-      if((this.searchForm!.get('qc_dt')?.value))
-        {
-            var start_dt=new Date(this.searchForm!.value['qc_dt']);
-            var end_dt=new Date(this.searchForm!.value['qc_dt']);
-            where.qc_start_date=Utility.convertDate(start_dt);
-            where.qc_end_date=Utility.convertDate(end_dt,true);
-            if([1,3].includes(report_type)) date=Utility.convertDateToStr(start_dt);
-            cond_counter++;
-        }
 
-    if((this.searchForm!.get('qc_dt_start')?.value) && (this.searchForm!.get('qc_dt_end')?.value))
-        {
-            var start_dt=new Date(this.searchForm!.value['qc_dt_start']);
-            var end_dt=new Date(this.searchForm!.value['qc_dt_end']);
-            where.qc_start_date=Utility.convertDate(start_dt);
-            where.qc_end_date=Utility.convertDate(end_dt,true);
-            cond_counter++;
-        }
-      
-     if(this.searchForm!.get('team')?.value)
-     {
+    if ((this.searchForm!.get('est_dt_start')?.value) && (this.searchForm!.get('est_dt_end')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['est_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['est_dt_end']);
+      where.estimate_start_date = Utility.convertDate(start_dt);
+      where.estimate_end_date = Utility.convertDate(end_dt, true);
+      cond_counter++;
+    }
+
+    if ((this.searchForm!.get('qc_dt')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['qc_dt']);
+      var end_dt = new Date(this.searchForm!.value['qc_dt']);
+      where.qc_start_date = Utility.convertDate(start_dt);
+      where.qc_end_date = Utility.convertDate(end_dt, true);
+      if ([1, 3].includes(report_type)) date = Utility.convertDateToStr(start_dt);
+      cond_counter++;
+    }
+
+    if ((this.searchForm!.get('qc_dt_start')?.value) && (this.searchForm!.get('qc_dt_end')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['qc_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['qc_dt_end']);
+      where.qc_start_date = Utility.convertDate(start_dt);
+      where.qc_end_date = Utility.convertDate(end_dt, true);
+      cond_counter++;
+    }
+
+    if (this.searchForm!.get('team')?.value) {
       const teamValue = this.searchForm!.get('team')?.value;
       if (Array.isArray(teamValue)) {
-          const teams: string[] = teamValue.map(t => t);
-          where.team=teams;
-          team=teams.join(", ");;
+        const teams: string[] = teamValue.map(t => t);
+        where.team = teams;
+        team = teams.join(", ");;
       }
-     }
+    }
 
-     if(this.searchForm!.get('repair_type')?.value)
-      {
-       const repTypes = this.searchForm!.get('repair_type')?.value;
-       if (Array.isArray(repTypes)) {
-           const repairTypes: string[] = repTypes.map(t => t.code_val);
-           where.repair_type=repairTypes;
-       }
+    if (this.searchForm!.get('repair_type')?.value) {
+      const repTypes = this.searchForm!.get('repair_type')?.value;
+      if (Array.isArray(repTypes)) {
+        const repairTypes: string[] = repTypes.map(t => t.code_val);
+        where.repair_type = repairTypes;
       }
-    
+    }
+
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
-     this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
       return;
     }
 
     this.lastSearchCriteria = where;
-    if(report_type==2)
-    {
-    this.performSearchApproval(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType,date,team);
+    if (report_type == 2) {
+      this.performSearchApproval(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
     }
-    else if(report_type==1)
-    {
-    this.performSearchRevenue(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType,date,team);
+    else if (report_type == 1) {
+      this.performSearchRevenue(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
     }
-    else
-    {
-      this.performSearchQCDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType,date,team);
+    else {
+      this.performSearchQCDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
     }
   }
 
   performSearchQCDetail(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
-     before?: string, report_type?: number, queryType?: number,date?:string,team?:string) {
+    before?: string, report_type?: number, queryType?: number, date?: string, team?: string) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchAdminReportDailyQCDetail(this.lastSearchCriteria)
       .subscribe(data => {
-        if(data.length>0)
-        {
-            this.repData =data;
-            this.onExportDailyQCDetailReport(this.repData,date!,team!);
+        if (data.length > 0) {
+          this.repData = data;
+          this.onExportDailyQCDetailReport(this.repData, date!, team!);
         }
-        else
-        {
-          this.isGeneratingReport=false
+        else {
+          this.isGeneratingReport = false
         }
-     
+
       });
 
 
   }
 
   performSearchRevenue(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
-     before?: string, report_type?: number, queryType?: number,date?:string,team?:string) {
+    before?: string, report_type?: number, queryType?: number, date?: string, team?: string) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamRevenue(this.lastSearchCriteria)
       .subscribe(data => {
-        if(data.length>0)
-        {
-            this.repData =data;
-            this.onExportDailyRevenueReport(this.repData,date!,team!);
+        if (data.length > 0) {
+          this.repData = data;
+          this.onExportDailyRevenueReport(this.repData, date!, team!);
         }
-        else
-        {
-          this.isGeneratingReport=false
+        else {
+          this.isGeneratingReport = false
         }
-     
+
       });
 
 
   }
 
-  performSearchApproval(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, 
-            before?: string, report_type?: number, queryType?: number,date?:string,team?:string) {
+  performSearchApproval(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
+    before?: string, report_type?: number, queryType?: number, date?: string, team?: string) {
 
-    
+
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamApproval(this.lastSearchCriteria)
-    .subscribe(data => {
-      if(data.length>0)
-        {
-             this.repData =data;
-             this.onExportDailyApprovalReport(this.repData,date!,team!);
+      .subscribe(data => {
+        if (data.length > 0) {
+          this.repData = data;
+          this.onExportDailyApprovalReport(this.repData, date!, team!);
         }
-        else
-        {
-          this.isGeneratingReport=false
+        else {
+          this.isGeneratingReport = false
         }
-      //
-    //  this.onExportDetail(this.sotList);
-   
-    });
+        //
+        //  this.onExportDetail(this.sotList);
+
+      });
 
 
   }
@@ -678,7 +651,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       }
     }
 
-   // this.performSearch(pageSize, pageIndex, first, after, last, before);
+    // this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -766,8 +739,8 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       eir_no: '',
       tank_no: '',
       rep_type: '',
-      all_dt_start:'',
-      all_dt_end:'',
+      all_dt_start: '',
+      all_dt_end: '',
       app_dt_start: '',
       app_dt_end: '',
       app_dt: '',
@@ -777,7 +750,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       qc_dt_end: '',
       qc_dt: '',
       team: '',
-     // report_type:'1'
+      // report_type:'1'
     });
     this.customerCodeControl.reset('');
     this.noCond = false;
@@ -803,15 +776,15 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
 
-  onExportDailyRevenueReport(repData: DailyQCDetail[],date:string,team:string) {
+  onExportDailyRevenueReport(repData: DailyQCDetail[], date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(repData?.length<=0){
-      this.isGeneratingReport=false;
+    if (repData?.length <= 0) {
+      this.isGeneratingReport = false;
       return;
 
-    } 
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -821,32 +794,32 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
     const dialogRef = this.dialog.open(DailyRevenuePdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
-        date:date,
-        team:team
+        date: date,
+        team: team
 
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
 
-  onExportDailyApprovalReport(repData: DailyQCDetail[],date:string,team:string) {
+  onExportDailyApprovalReport(repData: DailyQCDetail[], date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(repData?.length<=0){
-      this.isGeneratingReport=false;
+    if (repData?.length <= 0) {
+      this.isGeneratingReport = false;
       return;
 
-    } 
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -856,31 +829,31 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
     const dialogRef = this.dialog.open(DailyApprovalPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
-        date:date,
-        team:team
+        date: date,
+        team: team
 
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
-  
-  onExportDailyQCDetailReport(repData: DailyQCDetail[],date:string,team:string) {
+
+  onExportDailyQCDetailReport(repData: DailyQCDetail[], date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(repData?.length<=0){
-      this.isGeneratingReport=false;
+    if (repData?.length <= 0) {
+      this.isGeneratingReport = false;
       return;
 
-    } 
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -890,36 +863,33 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
     const dialogRef = this.dialog.open(DailyQCDetailPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
-        date:date,
-        team:team
+        date: date,
+        team: team
 
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
-  isDateRequired(date_type:string):boolean
-  {
-    var retval:boolean = true;
-    var repType:number = Number(this.searchForm?.get("report_type")?.value);
-    if(date_type=="APPROVED")
-    {
+  isDateRequired(date_type: string): boolean {
+    var retval: boolean = true;
+    var repType: number = Number(this.searchForm?.get("report_type")?.value);
+    if (date_type == "APPROVED") {
       return [2].includes(repType);
     }
-    else if(date_type=="QC")
-    {
-    
-      return [1,3].includes(repType);
+    else if (date_type == "QC") {
+
+      return [1, 3].includes(repType);
     }
-    
+
     return retval;
 
   }

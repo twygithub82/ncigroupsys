@@ -352,6 +352,10 @@ export const GET_REPAIR = gql`
               guid
             }
           }
+          in_gate (where: { delete_dt: { eq: null } }) {
+            eir_dt
+            delete_dt
+          }
         }
         repair_part {
           approve_cost
@@ -1922,7 +1926,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canAssign(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED';
+    return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'ASSIGNED';
   }
 
   canQCComplete(re: RepairItem | undefined): boolean {

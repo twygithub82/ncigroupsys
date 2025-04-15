@@ -12,4 +12,8 @@ export class BusinessLogicUtil {
         }
         return '';
     }
+
+    static displayName(cc: any): string {
+        return cc?.code ? (cc?.name ? `${cc.code} (${cc.name})` : `${cc.code}`) : '';
+    }
 }

@@ -89,6 +89,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   displayedColumns = [
     'tank_no',
     'customer',
+    'eir_dt',
     'estimate_no',
     'eir_date',
     'net_cost',
@@ -187,6 +188,13 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+
+  availableProcessStatus: string[] = [
+    'PENDING',
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED'
+  ]
 
   constructor(
     public httpClient: HttpClient,
@@ -453,6 +461,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.searchForm!.get('est_status_cv')?.value?.length) {
       where.status_cv = { in: this.searchForm!.get('est_status_cv')?.value }
+    } else {
+      where.status_cv = { in: this.availableProcessStatus }
     }
     else{
       where.status_cv = { in: this.availableProcessStatus }
