@@ -221,7 +221,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       this.purposeOptionCvList = data;
     });
     this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
-      this.repairOptionCvList = addDefaultSelectOption(data, "No Repair");
+      this.repairOptionCvList = data;
     });
     this.cvDS.connectAlias('jobStatusCv').subscribe(data => {
       this.jobStatusCvList = data;
@@ -261,8 +261,9 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       };
     }
 
-    if (this.filterJobOrderForm!.get('repair_option_cv')?.value?.length) {
-      where.storing_order_tank.purpose_repair_cv = { in: this.filterJobOrderForm!.get('repair_option_cv')?.value };
+    if (this.filterJobOrderForm!.get('repairOptionCv')?.value?.length) {
+      where.storing_order_tank = where.storing_order_tank || {};
+      where.storing_order_tank.purpose_repair_cv = { in: this.filterJobOrderForm!.get('repairOptionCv')?.value };
     }
 
     if (this.filterJobOrderForm!.get('complete_dt_start')?.value || this.filterJobOrderForm!.get('complete_dt_end')?.value) {
