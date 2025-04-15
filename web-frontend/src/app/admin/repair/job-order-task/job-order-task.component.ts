@@ -277,8 +277,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     }
     else {
       where.status_cv = {
-          in: this.availableJobStatus
-        };
+        in: this.availableJobStatus
+      };
     }
 
     if (this.filterJobOrderForm!.get('allocate_dt_start')?.value || this.filterJobOrderForm!.get('allocate_dt_end')?.value) {
@@ -303,9 +303,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     // TODO:: Get login user team
-    // if (false) {
-    //   where.team_guid = { eq: "" }
-    // }
+    if (this.filterJobOrderForm!.get('teamList')?.value?.length) {
+      const team_guidList = this.filterJobOrderForm!.get('teamList')?.value?.map((x: any) => x.guid) ?? []
+      where.team_guid = { in: team_guidList }
+    }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
     this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
