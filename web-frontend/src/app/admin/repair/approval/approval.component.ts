@@ -91,7 +91,6 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     'customer',
     'eir_dt',
     'estimate_no',
-    'eir_date',
     'net_cost',
     'status_cv'
   ];
