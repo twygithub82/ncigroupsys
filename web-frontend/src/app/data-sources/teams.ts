@@ -113,11 +113,11 @@ export class TeamDS extends BaseDataSource<TeamItem> {
       department_cv: { in: department_cv }
     }
     const order = { description: "ASC" }
-    const first=100;
+    const first = 100;
     return this.apollo
       .query<any>({
         query: GET_TEAM_BY_DEPARTMENT_QUERY,
-        variables: { where, order,first },
+        variables: { where, order, first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
