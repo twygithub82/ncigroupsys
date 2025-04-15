@@ -1112,7 +1112,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   isDisabled(repairPart: RepairPartItem): boolean {
-    return !this.repairDS.canApprove(this.repairItem) || (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true)
+    return !this.repairDS.canApprove(this.repairItem) || (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true) || !(repairPart?.approve_part ?? true)
   }
 
   getLabourCost(): number | undefined {
@@ -1122,7 +1122,14 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   toggleApprovePart(event: Event, rep: RepairPartItem) {
     this.stopPropagation(event);
     if (!this.repairDS.canAmend(this.repairItem)) return;
+    const previousValue = rep.approve_part;
     rep.approve_part = rep.approve_part !== null ? !rep.approve_part : false;
+
+    if (previousValue === false && rep.approve_part === true) {
+      rep.approve_qty = rep.quantity;
+      rep.approve_hour = rep.hour;
+      rep.approve_cost = rep.material_cost;
+    }
     this.updateData(this.repList);
   }
 

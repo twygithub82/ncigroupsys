@@ -177,6 +177,13 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   hasNextPage = false;
   hasPreviousPage = false;
 
+  availableProcessStatus: string[] = [
+    'PENDING',
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED'
+  ]
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -225,7 +232,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [['PENDING']]
+      est_status_cv: ['']
     });
   }
 
@@ -442,6 +449,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.searchForm!.get('est_status_cv')?.value?.length) {
       where.status_cv = { in: this.searchForm!.get('est_status_cv')?.value }
+    } else {
+      where.status_cv = { in: this.availableProcessStatus }
     }
 
     if (this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) {
