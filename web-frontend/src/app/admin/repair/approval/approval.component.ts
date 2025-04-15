@@ -89,6 +89,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   displayedColumns = [
     'tank_no',
     'customer',
+    'eir_dt',
     'estimate_no',
     'net_cost',
     'status_cv'

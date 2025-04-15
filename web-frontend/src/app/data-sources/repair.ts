@@ -352,6 +352,10 @@ export const GET_REPAIR = gql`
               guid
             }
           }
+          in_gate (where: { delete_dt: { eq: null } }) {
+            eir_dt
+            delete_dt
+          }
         }
         repair_part {
           approve_cost
