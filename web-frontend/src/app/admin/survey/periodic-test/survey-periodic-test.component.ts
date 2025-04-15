@@ -39,7 +39,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -172,6 +172,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
   bookingStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
   yesnoCvList: CodeValuesItem[] = [];
+  depotCvList: CodeValuesItem[] = [];
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
@@ -226,7 +227,8 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       purpose: [''],
       survey_dt_start: [''],
       survey_dt_end: [''],
-      certificate_cv: ['']
+      certificate_cv: [''],
+      depot_status_cv: ['']
     });
   }
 
@@ -241,7 +243,8 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
       { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' }
+      { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -262,6 +265,9 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('depotCv').subscribe(data => {
+      this.depotCvList = addDefaultSelectOption(data, 'All');
     });
 
     this.search();
@@ -376,7 +382,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
     const where: any = {
       and: [
         { status_cv: { eq: "ACCEPTED" } },
-        { tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
+        //{ tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
         { in_gate: { some: { delete_dt: { eq: null } } } },
         {
           repair: {
@@ -408,8 +414,17 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       where.job_no = { contains: this.searchForm!.get('job_no')?.value };
     }
 
-    if (this.searchForm!.get('tank_status_cv')?.value) {
-      where.tank_status_cv = { in: [this.searchForm!.get('tank_status_cv')?.value] };
+    // if (this.searchForm!.get('tank_status_cv')?.value) {
+    //   where.tank_status_cv = { in: [this.searchForm!.get('tank_status_cv')?.value] };
+    // }
+
+    if (this.searchForm!.get('depot_status_cv')?.value) {
+      where.tank_status_cv = where.tank_status_cv || {};
+      var cond: any = { in: TANK_STATUS_POST_IN_YARD };
+      if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
+        cond = { in: TANK_STATUS_IN_YARD };
+      }
+      where.tank_status_cv = cond;
     }
 
     if (this.searchForm!.get('certificate_cv')?.value) {
