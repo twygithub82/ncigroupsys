@@ -503,7 +503,7 @@ export class Utility {
   }
 
   static formatNumberDisplay(input: number | string | undefined, locale: string = 'en-US'): string {
-    if (!input) {
+    if (input === undefined || input === null || input === '') {
       return '';
     }
 

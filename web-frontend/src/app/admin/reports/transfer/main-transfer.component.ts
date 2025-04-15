@@ -106,8 +106,7 @@ export class MainTransferComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageTitle = 'MENUITEMS.REPORTS.LIST.LOCATION-TRANSFER'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPORTS.TEXT'
+    { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/transfer' },
   ]
 
   translatedLangText: any = {};

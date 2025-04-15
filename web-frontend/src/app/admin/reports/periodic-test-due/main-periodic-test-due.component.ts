@@ -107,8 +107,7 @@ export class MainPeriodicTestDueComponent extends UnsubscribeOnDestroyAdapter im
 
   pageTitle = 'MENUITEMS.REPORTS.LIST.PERIODIC-TEST-DUE'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPORTS.TEXT'
+    { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/periodic-test-due' },
   ]
 
   translatedLangText: any = {};

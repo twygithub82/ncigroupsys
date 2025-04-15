@@ -34,17 +34,17 @@ import { Utility } from 'app/utilities/utility';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { SteamMonthlyAdminReportComponent } from './steam-monthly/steam-monthly.component';
-import { ResidueMonthlyAdminReportComponent } from './residue-monthly/residue-monthly.component';
-import { RepairMonthlyAdminReportComponent } from './repair-monthly/repair-monthly.component';
 import { CleanMonthlyAdminReportComponent } from './clean-monthly/clean-monthly.component';
 import { CustomerMonthlyAdminReportComponent } from './customer-monthly/customer-monthly.component';
+import { RepairMonthlyAdminReportComponent } from './repair-monthly/repair-monthly.component';
+import { ResidueMonthlyAdminReportComponent } from './residue-monthly/residue-monthly.component';
+import { SteamMonthlyAdminReportComponent } from './steam-monthly/steam-monthly.component';
 
 @Component({
   selector: 'app-main-monthly',
@@ -81,7 +81,7 @@ import { CustomerMonthlyAdminReportComponent } from './customer-monthly/customer
     RepairMonthlyAdminReportComponent,
     CleanMonthlyAdminReportComponent,
     CustomerMonthlyAdminReportComponent
-    
+
   ]
 })
 export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -121,7 +121,7 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
 
   translatedLangText: any = {};
   langText = {
-   
+
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
@@ -134,11 +134,11 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     CLEANING: "COMMON-FORM.CLEANING",
     CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
-    STEAM_REPORT:'COMMON-FORM.STEAM-REPORT',
-    RESIDUE_REPORT:'COMMON-FORM.RESIDUE-REPORT',
-    REPAIR_REPORT:'COMMON-FORM.REPAIR-REPORT',
-    CLEAN_REPORT:'COMMON-FORM.CLEAN-REPORT',
-    CUSTOMER_REPORT:'COMMON-FORM.CUSTOMER-REPORT'
+    STEAM_REPORT: 'COMMON-FORM.STEAM-REPORT',
+    RESIDUE_REPORT: 'COMMON-FORM.RESIDUE-REPORT',
+    REPAIR_REPORT: 'COMMON-FORM.REPAIR-REPORT',
+    CLEAN_REPORT: 'COMMON-FORM.CLEAN-REPORT',
+    CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT'
   }
 
   filterCleanForm?: UntypedFormGroup;

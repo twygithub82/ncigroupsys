@@ -22,6 +22,18 @@
         </mat-autocomplete>
       </mat-form-field>
     </div>
+    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>{{translatedLangText.REPAIR_TYPE}}</mat-label>
+        <mat-select multiple formControlName="repairOptionCv">
+          @for (codeValue of repairOptionCvList; track codeValue) {
+          <mat-option [value]="codeValue.code_val">
+            {{codeValue.description}}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
     <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>{{translatedLangText.COMPLETE_DATE}}</mat-label>

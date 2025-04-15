@@ -267,8 +267,6 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
       cleaning_category: this.categoryControl,
-      //min_cost: [''],
-      //max_cost: [''],
       customer_cost: [''],
       cargo_name: [''],
       hazard_level: this.hazardLevelControl,
@@ -294,8 +292,6 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
         });
       })
     ).subscribe();
-
-
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -305,6 +301,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   refresh() {
     this.loadData();
   }
+
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -312,7 +309,6 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-
   }
 
   preventDefault(event: Event) {
@@ -328,13 +324,12 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: '900px',
       data: {
         action: 'new',
         langText: this.langText,
         selectedItems: this.selection.selected
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -346,6 +341,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       }
     });
   }
+
   editCall(row: CustomerCompanyCleaningCategoryItem) {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -357,27 +353,23 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '700px',
+      width: '900px',
       data: {
         action: 'new',
         langText: this.langText,
         selectedItems: rows
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         if (result.selectedValue > 0) {
           this.handleSaveSuccess(result.selectedValue);
-          //this.search();
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
       }
     });
-
   }
-
 
   deleteItem(row: any) {
     // this.id = row.id;
@@ -437,12 +429,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
 
     if (this.customerCodeControl.value) {
-      //if (this.customerCodeControl.value.length > 0) 
-      {
-        // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        //var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
-      }
+      where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
     }
 
     if (this.categoryControl.value) {
@@ -454,7 +441,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.pcForm!.value["customer_cost"]) {
       const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
-      where.adjusted_price = { eq: selectedCost }
+      where.adjusted_price = { lte: selectedCost }
     }
 
     // if (this.pcForm!.value["min_cost"]) {
@@ -520,18 +507,11 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
         before = this.startCursor;
       }
       else if (pageIndex == this.pageIndex) {
-
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
-
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,

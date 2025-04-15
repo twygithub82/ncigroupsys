@@ -104,12 +104,16 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
+                      <input matInput formControlName="est_dt" [matDatepicker]="est_dt_picker">
+                      <mat-datepicker-toggle matSuffix [for]="est_dt_picker"></mat-datepicker-toggle>
+                      <mat-datepicker #est_dt_picker></mat-datepicker>
+                      <!-- <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="est_picker">
                         <input matStartDate placeholder="Start date" formControlName="est_dt_start">
                         <input matEndDate placeholder="End date" formControlName="est_dt_end">
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="est_picker"></mat-datepicker-toggle>
-                      <mat-date-range-picker #est_picker></mat-date-range-picker>
+                      <mat-date-range-picker #est_picker></mat-date-range-picker> -->
                     </mat-form-field>
                   </div>
                   <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">

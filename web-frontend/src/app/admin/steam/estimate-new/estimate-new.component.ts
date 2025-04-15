@@ -94,33 +94,29 @@ import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
 export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'desc',
     'qty',
     'unit_price',
     'hour',
     'cost',
     "actions"
-
   ];
+
   footerColumns1 = [
     'seq',
-    // 'group_name_cv',
     'desc',
     'qty',
     'unit_price',
     'hour',
     'cost',
     "actions"
-
   ];
-
 
   pageTitleNew = 'MENUITEMS.STEAM.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.STEAM.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE'
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/estimate' },
+    { text: 'MENUITEMS.STEAM.LIST.STEAM-ESTIMATE', route: '/admin/steam/estimate' },
   ]
   translatedLangText: any = {}
   langText = {

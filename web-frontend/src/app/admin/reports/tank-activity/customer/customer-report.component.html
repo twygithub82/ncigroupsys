@@ -132,8 +132,8 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.YARD_STATUS}}</mat-label>
-                  <mat-select formControlName="tank_status_cv">
-                    @for (codeValue of tankStatusCvList; track codeValue) {
+                  <mat-select formControlName="depot_status_cv">
+                    @for (codeValue of depotStatusCvList; track codeValue) {
                     <mat-option [value]="codeValue.code_val">
                       {{codeValue.description}}
                     </mat-option>
@@ -144,11 +144,13 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
-                  <mat-select formControlName="depot_status_cv">
-                    @for (codeValue of depotStatusCvList; track codeValue) {
-                    <mat-option [value]="codeValue.code_val">
-                      {{codeValue.description}}
-                    </mat-option>
+                  <mat-select formControlName="tank_status_cv">
+                    @for (codeValue of tankStatusCvList; track codeValue) {
+                      @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
                     }
                   </mat-select>
                 </mat-form-field>

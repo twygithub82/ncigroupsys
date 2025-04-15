@@ -76,8 +76,8 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 })
 export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'survey_type_cv',
     'surveyor',
+    'survey_type_cv',
     'survey_dt',
     'status_cv',
     'remarks',
@@ -131,7 +131,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
-    SURVEY_DATE: 'COMMON-FORM.TEST-DATE',
+    SURVEY_DATE: 'COMMON-FORM.SURVEY-DATE',
     BOOKED: 'COMMON-FORM.BOOKED',
     SCHEDULED: 'COMMON-FORM.SCHEDULED',
     REMARKS: 'COMMON-FORM.REMARKS',

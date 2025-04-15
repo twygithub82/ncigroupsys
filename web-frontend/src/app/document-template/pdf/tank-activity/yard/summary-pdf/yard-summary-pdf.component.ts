@@ -241,7 +241,9 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     GATEIO:'COMMON-FORM.GATEIO',
     INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
     TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
+    YARD_REPORT:'COMMON-FORM.YARD-REPORT',
     SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
+    SUMMARY : 'COMMON-FORM.SUMMARY',
     INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
     STEAM:"COMMON-FORM.STEAM",
     CLEANING:"COMMON-FORM.CLEANING",
@@ -1329,7 +1331,7 @@ async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.SUMMARY_REPORT}`
+    return `${this.translatedLangText.YARD_REPORT} - ${this.translatedLangText.SUMMARY}`
   }
 
 }

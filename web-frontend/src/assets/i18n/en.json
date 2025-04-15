@@ -164,8 +164,8 @@
         "GROUP": "Group",
         "GROUP-NEW": "New Group",
         "GROUP-EDIT": "Edit Group",
-        "MONTHLY-REPORTS":"Monthly Reports",
-        "YEARLY-REPORTS":"Yearly Reports"
+        "MONTHLY-REPORTS": "Monthly Reports",
+        "YEARLY-REPORTS": "Yearly Reports"
       }
     },
     "NEW": {
@@ -225,7 +225,8 @@
         "RESIDUE-DISPOSAL-ESTIMATE-APPROVAL": "Estimate/Approval",
         "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
         "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval",
-        "JOB-ORDER": "Job Order"
+        "JOB-ORDER": "Job Order",
+        "JOB": "Job"
       }
     },
     "STEAM": {
@@ -235,6 +236,7 @@
         "STEAM-ESTIMATE": "Steam Estimate",
         "STEAM-APPROVAL": "Steam Approval",
         "JOB-ORDER": "Job Order",
+        "JOB": "Job",
         "ESTIMATE-NEW": "New Estimate",
         "ESTIMATE-EDIT": "Edit Estimate"
       }
@@ -971,6 +973,7 @@
     "LOCATION-STATUS": "Location Status",
     "SESSION-EXPIRE-WARNING": "Session Expire Warning",
     "SESSION-EXPIRE-WARNING-DESCRIPTION": "Your session will expire in {0}, do you want to extend the session?",
+    "SUMMARY": "Summary",
     "RENEW": "Renew",
     "LOGOUT": "Logout",
     "CONFIRM-LOGOUT": "Confirm Logout?",
@@ -1041,7 +1044,7 @@
     "NEXT-PERIODIC-TEST": "Next Periodic Test",
     "DUE-DAYS": "Due Days",
     "TYPE": "Type",
-    "DAILY-TANK-SURVEY": "Daily Tank Survey",
+    "DAILY-TANK-SURVEY": "Tank Survey",
     "SURVEY-PERIOD": "Survey Period",
     "VISIT": "Visit",
     "CLEAN-CERT-DATE": "Clean Cert Date",
@@ -1135,12 +1138,10 @@
     "PRE-INSPECTION-COST": "Preinspection $",
     "LIFT-ON-COST": "Lift-On $",
     "LIFT-OFF-COST": "Lift-Off $",
-
     "ESTIMATE-TYPE": "Estimate Type",
     "ESTIMATED": "Estimated",
     "ESTIMATE-PERIOD": "Estimate Period",
     "DUPLICATE-CARGO-FOUND": "Duplicated Cargo Name found",
-
     "TOP-LASER": "Top (Laser)",
     "BOTTOM-LASER": "Bottom (Laser)",
     "BEGIN": "Begin",

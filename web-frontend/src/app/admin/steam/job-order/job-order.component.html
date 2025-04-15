@@ -8,7 +8,7 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <div class="body overflow-auto">
-            <mat-tab-group #tabGroup dynamicHeight [selectedIndex]="isActiveTab" >
+            <mat-tab-group #tabGroup dynamicHeight [selectedIndex]="isActiveTab" [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
                 <form class="ms-0" [formGroup]="filterSteamForm!" (ngSubmit)="onFilterSteam()" #formDirective="ngForm">
                   <div class="row">

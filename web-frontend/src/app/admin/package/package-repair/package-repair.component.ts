@@ -263,13 +263,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   ) {
     super();
     this.initPcForm();
-    this.partNameControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.partNameList)]);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.packRepairDS = new PackageRepairDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
-    this.initializeFilterCustomerCompany();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -279,27 +277,19 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeValueChange();
+    this.initializeFilterCustomerCompany();
     this.loadData();
     this.translateLangText();
   }
 
   initPcForm() {
     this.pcForm = this.fb.group({
-      guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
+      part_name: this.partNameControl,
       group_name_cv: this.groupNameControl,
       sub_group_name_cv: this.subGroupNameControl,
-      part_name: this.partNameControl,
-      len: this.lengthControl,
-      dimension: this.dimensionControl,
-      min_len: [''],
-      max_len: [''],
       labour_hour: [''],
       material_cost: [''],
-      //min_labour: [''],
-      //max_labour: [''],
-      //min_cost: [''],
-      //max_cost: [''],
       handled_item_cv: this.handledItemControl
     });
   }
@@ -471,12 +461,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
     if (this.customerCodeControl.value) {
-      //if (this.customerCodeControl.value.length > 0) 
-      {
-       // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        //var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
-      }
+      where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
     }
 
     if (this.groupNameControl.value) {
@@ -912,32 +897,22 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   resetForm() {
-    this.initPcForm();
-
     this.customerCodeControl.reset('');
+    this.partNameControl.reset('');
     this.groupNameControl.reset('');
     this.subGroupNameControl.reset('');
-    this.lengthControl.reset('');
-    this.dimensionControl.reset('');
+    this.pcForm?.get('labour_hour')?.reset('');
+    this.pcForm?.get('material_cost')?.reset('');
     this.handledItemControl.reset('');
-    this.partNameControl.reset('');
-  }
-
-  updateValidators(validOptions: any[]) {
-    this.partNameControl.setValidators([
-      Validators.required,
-      AutocompleteSelectionValidator(validOptions)
-    ]);
   }
 
   initializeValueChange() {
-    this.pcForm!.get('part_name')!.valueChanges.pipe(
+    this.partNameControl.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         this.trfRepairDS.searchDistinctPartName(undefined, undefined, value).subscribe(data => {
           this.partNameList = data
-          this.updateValidators(this.partNameList);
         });
       })
     ).subscribe();

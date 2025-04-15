@@ -106,8 +106,7 @@ export class MainTankSurveyComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageTitle = 'MENUITEMS.REPORTS.LIST.TANK-SURVEY'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPORTS.TEXT'
+    { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/tank-survey' },
   ]
 
   translatedLangText: any = {};

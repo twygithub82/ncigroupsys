@@ -38,6 +38,7 @@ import { RepairDS, RepairItem, RepairStatusRequest } from 'app/data-sources/repa
 import { StoringOrderDS } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -84,6 +85,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     'customer',
     'estimate_no',
     'allocate_dt',
+    'team',
     'status_cv',
     'actions'
   ];
@@ -116,8 +118,14 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE'
+    ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
+    TEAM: 'COMMON-FORM.TEAM'
   }
+
+  availableJobStatus: string[] = [
+    'PENDING',
+    'JOB_IN_PROGRESS',
+  ]
 
   filterJobOrderForm?: UntypedFormGroup;
 
@@ -129,6 +137,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   repairDS: RepairDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
+  teamDS: TeamDS;
 
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
@@ -155,6 +164,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   currentEndCursor: string | undefined = undefined;
   lastCursorDirection: string | undefined = undefined;
 
+  teamList: TeamItem[] = [];
+
   private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
@@ -177,6 +188,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairDS = new RepairDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -192,10 +204,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   initSearchForm() {
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
-      jobStatusCv: [['PENDING', 'JOB_IN_PROGRESS']],
+      jobStatusCv: [''],
       customer: this.customerCodeControl,
       allocate_dt_start: [''],
-      allocate_dt_end: ['']
+      allocate_dt_end: [''],
+      teamList: ['']
     });
   }
 
@@ -224,6 +237,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
+    });
+
+    this.teamDS.getTeamListByDepartment(['REPAIR']).subscribe(data => {
+      this.teamList = data
     });
   }
 
@@ -257,6 +274,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       where.status_cv = {
         in: this.filterJobOrderForm!.get('jobStatusCv')?.value
       };
+    }
+    else {
+      where.status_cv = {
+          in: this.availableJobStatus
+        };
     }
 
     if (this.filterJobOrderForm!.get('allocate_dt_start')?.value || this.filterJobOrderForm!.get('allocate_dt_end')?.value) {
@@ -338,7 +360,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   resetForm() {
     this.filterJobOrderForm?.patchValue({
       filterJobOrder: '',
-      jobStatusCv: ['PENDING', 'JOB_IN_PROGRESS'],
+      jobStatusCv: '',
       allocate_dt_start: '',
       allocate_dt_end: ''
     });

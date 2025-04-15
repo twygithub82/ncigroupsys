@@ -422,7 +422,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.plForm!.value["customer_cost"]){
       const selectedCost: number = Number(this.plForm!.value["customer_cost"]);
-      where.cost = {eq: selectedCost};
+      where.cost = {lte: selectedCost};
     }
 
     // if (this.plForm!.value["min_cost"] && this.plForm!.value["max_cost"]) {

@@ -97,6 +97,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
+    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order' },
   ]
 
   translatedLangText: any = {};
@@ -173,7 +174,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED',
+    //'COMPLETED',
     'PARTIAL_ASSIGNED',
     'ASSIGNED',
   ]
@@ -250,7 +251,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   initSearchForm() {
     this.filterRepairForm = this.fb.group({
       filterRepair: [''],
-      status_cv: [['APPROVED', 'PARTIAL_ASSIGNED']],
+      status_cv: [''],
       customer: this.customerCodeControl,
       approval_dt_start: [''],
       approval_dt_end: ['']
@@ -346,6 +347,11 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
     if (this.filterRepairForm!.get('status_cv')?.value) {
       where.status_cv = { in: this.filterRepairForm!.get('status_cv')?.value };
+    }
+    else{
+      where.status_cv = {
+        in: this.availableProcessStatus
+      };
     }
 
     if (this.filterRepairForm!.get('approval_dt_start')?.value || this.filterRepairForm!.get('approval_dt_end')?.value) {
@@ -567,7 +573,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   resetForm() {
     this.filterRepairForm?.patchValue({
       filterRepair: '',
-      status_cv: ['APPROVED', 'PARTIAL_ASSIGNED'],
+      status_cv: '',
       approval_dt_start: '',
       approval_dt_end: ''
     });

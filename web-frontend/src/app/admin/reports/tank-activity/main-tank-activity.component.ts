@@ -116,8 +116,7 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.REPORTS.LIST.TANK-ACTIVITY'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPORTS.TEXT'
+    { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/tank-activity' },
   ]
 
   translatedLangText: any = {};

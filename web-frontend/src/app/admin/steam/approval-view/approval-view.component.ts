@@ -102,8 +102,8 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
   ];
   pageTitleDetails = 'MENUITEMS.STEAM.LIST.STEAM-APPROVAL'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.STEAM.LIST.STEAM-APPROVAL'
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/approval' },
+    { text: 'MENUITEMS.STEAM.LIST.STEAM-APPROVAL', route: '/admin/steam/approval' },
   ]
   translatedLangText: any = {}
   langText = {

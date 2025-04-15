@@ -77,6 +77,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'surveyor',
+    'survey_type',
     'survey_dt',
     'status_cv',
     'remarks',
@@ -474,9 +475,6 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
 
   displayTankPurpose(sot: StoringOrderTankItem | undefined) {
     let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
     if (sot?.purpose_cleaning) {
       purposes.push(this.getPurposeOptionDescription('CLEANING'));
     }
@@ -485,6 +483,9 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     }
     if (sot?.purpose_repair_cv) {
       purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
+    }
+    if (sot?.purpose_storage) {
+      purposes.push(this.getPurposeOptionDescription('STORAGE'));
     }
     return purposes.join('; ');
   }

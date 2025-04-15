@@ -414,7 +414,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.pcForm!.value["customer_cost"]) {
       const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
-      where.cost = { eq: selectedCost }
+      where.cost = { lte: selectedCost }
     }
 
     if (this.pcForm!.get("residue_disposal")?.value) {

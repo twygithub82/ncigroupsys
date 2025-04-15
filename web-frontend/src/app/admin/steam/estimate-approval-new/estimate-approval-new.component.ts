@@ -119,8 +119,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   pageTitleNew = 'MENUITEMS.STEAM.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.STEAM.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.STEAM.LIST.STEAM-ESTIMATE'
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/estimate-approval' },
+    { text: 'MENUITEMS.STEAM.LIST.STEAM-ESTIMATE-APPROVAL', route: '/admin/steam/estimate-approval' },
   ]
   translatedLangText: any = {}
   langText = {

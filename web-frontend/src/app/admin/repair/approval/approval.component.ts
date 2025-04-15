@@ -89,6 +89,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   displayedColumns = [
     'tank_no',
     'customer',
+    'eir_dt',
     'estimate_no',
     'net_cost',
     'status_cv'
@@ -144,6 +145,17 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
   }
 
+
+  availableProcessStatus: string[] = [
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'PENDING',
+    // 'COMPLETED',
+    'NO_ACTION',
+    'ASSIGNED',
+    'PARTIAL_ASSIGNED',
+  ]
+
   searchForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
@@ -175,6 +187,13 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+
+  // availableProcessStatus: string[] = [
+  //   'PENDING',
+  //   'APPROVED',
+  //   'JOB_IN_PROGRESS',
+  //   'COMPLETED'
+  // ]
 
   constructor(
     public httpClient: HttpClient,
@@ -224,7 +243,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [['PENDING']]
+      est_status_cv: ['']
     });
   }
 
@@ -441,6 +460,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.searchForm!.get('est_status_cv')?.value?.length) {
       where.status_cv = { in: this.searchForm!.get('est_status_cv')?.value }
+    } else {
+      where.status_cv = { in: this.availableProcessStatus }
     }
 
     if (this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) {
@@ -628,7 +649,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       est_dt_end: '',
       approval_dt_start: '',
       approval_dt_end: '',
-      est_status_cv: ['PENDING']
+      est_status_cv: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

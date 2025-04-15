@@ -86,22 +86,16 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 export class UserComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    // 'select',
-    //'desc',
     'fName',
     'lName',
     'mobile',
-    // 'gender',
     'bDate',
-
     'email',
-    // 'actions',
   ];
 
   pageTitle = 'MENUITEMS.MANAGEMENT.LIST.USER'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.MANAGEMENT.TEXT'
+    { text: 'MENUITEMS.MANAGEMENT.TEXT', route: '/admin/management' },
   ]
 
   CLEANING_LAST_UPDATED_DT = 'COMMON-FORM.LAST-UPDATED'

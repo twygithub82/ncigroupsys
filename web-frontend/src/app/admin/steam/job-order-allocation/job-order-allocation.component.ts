@@ -93,22 +93,17 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
   ]
 })
 export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = 0;
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'desc',
-    //  'qty',
-    //  'unit_price',
-    //  'cost',
     'approve_part',
     'team',
-    //"actions"
-
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
+  pageTitleDetails = 'MENUITEMS.STEAM.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.JOB-ORDER'
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/job-order', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.STEAM.LIST.JOB-ORDER', route: '/admin/steam/job-order', queryParams: { tabIndex: this.tabIndex } },
   ]
   translatedLangText: any = {}
   langText = {
@@ -221,8 +216,8 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     METHOD: "COMMON-FORM.METHOD",
     RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
-    ABORT: 'COMMON-FORM.ABORT'
-
+    ABORT: 'COMMON-FORM.ABORT',
+    VIEW: 'COMMON-FORM.VIEW'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -975,10 +970,8 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/steam/job-order'], {
-      state: this.historyState
-
-    }
-    );
+      state: this.historyState, queryParams: { tabIndex: this.tabIndex }
+    });
   }
 
   populateSteamPartList(steam: SteamItem) {

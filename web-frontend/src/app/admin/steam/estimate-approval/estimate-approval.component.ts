@@ -101,10 +101,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     'actions'
   ];
 
-  pageTitle = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE-APPROVAL'
+  pageTitle = 'MENUITEMS.STEAM.LIST.STEAM-ESTIMATE-APPROVAL'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.STEAM.TEXT'
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/estimate-approval' },
   ]
 
   translatedLangText: any = {};

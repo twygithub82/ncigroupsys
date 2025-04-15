@@ -176,6 +176,17 @@
                               class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{getTestClassDescription(row?.test_class_cv)}}
                           </mat-cell>
                         </ng-container>
+                        <ng-container matColumnDef="survey_type">
+                          <mat-header-cell mat-header-cell mat-sort-header *matHeaderCellDef
+                            [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            {{translatedLangText.TEST_TYPE}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let row"
+                            [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            <span
+                              class="mobile-tab-label">{{translatedLangText.TEST_TYPE}}:</span>{{getTestTypeDescription(row?.test_type_cv)}}
+                          </mat-cell>
+                        </ng-container>
                         <ng-container matColumnDef="survey_dt">
                           <mat-header-cell mat-header-cell mat-sort-header *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
