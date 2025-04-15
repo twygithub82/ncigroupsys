@@ -147,7 +147,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS'
   }
 
-  availableProcessStatus: string[] = [
+  availableProcessStatus: string[] = 
+  [
+    '',
     'CLEANING',
     'REPAIR',
     'STORAGE'
