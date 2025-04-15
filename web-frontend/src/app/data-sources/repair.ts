@@ -1926,7 +1926,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canAssign(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED';
+    return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'ASSIGNED';
   }
 
   canQCComplete(re: RepairItem | undefined): boolean {
