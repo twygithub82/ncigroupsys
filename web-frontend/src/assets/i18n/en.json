@@ -1154,6 +1154,8 @@
     "IN-SERVICE": "In-Service",
     "OFFHIRE": "Off-Hire",
     "REVENUE-REPORT": "Revenue Report",
+    "MONTHLY-REVENUE-REPORT": "Monthly Revenue Report",
+    "MONTHLY-INVENTORY-REPORT": "Monthly Inventory Report",
     "INVENTORY-REPORT": "Inventory Report",
     "MANHOUR-REPORT": "Man-Hour Report",
     "OVERWRITE-APPROVAL": "Overwrite Approval",
@@ -1163,7 +1165,14 @@
     "YEARLY-INVENTORY-REPORT":"Yearly Inventory Report",
     "YEARLY-REVENUE-REPORT":"Yearly Revenue Report",
     "SUMMARY-OF-INVENTORY":"Summary of Inventory",
-    "PERCENTAGE-SYMBOL":"%"
+    "PERCENTAGE-SYMBOL":"%",
+    "COMPLETED-COUNT":"Completed Count",
+    "APPROVED-COUNT":"Approved Count",
+    "COMPLETED-HOUR":"Completed Hour",
+    "APPROVED-HOUR":"Approved Hour",
+    "GATE":"Gate",
+    "DIFFERENCE":"Difference"
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

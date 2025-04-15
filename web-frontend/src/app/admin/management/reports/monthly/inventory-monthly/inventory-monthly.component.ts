@@ -50,6 +50,7 @@ import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-report
 import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/overview/yearly-chart-pdf.component';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
 import { ManagementReportDS } from 'app/data-sources/reports-management';
+import { InventoryMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/monthly/inventory/inventory-sales-details-pdf.component';
 
 @Component({
   selector: 'app-inventory-monthly',
@@ -372,10 +373,11 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
    
 
       var customerName:string="";
-      where.inventory_type =this.invTypes.filter(v => v !== "ALL");
-      if(this.searchForm?.get('report_type')?.value!="ALL")
-      {
-        where.inventory_type =this.searchForm?.get('report_type')?.value;
+      var invTypes=this.invTypes.filter(v => v !== "ALL");
+      where.inventory_type = invTypes;
+      if (this.searchForm?.get('inventory_type')?.value != "ALL") {
+        where.inventory_type = this.searchForm?.get('inventory_type')?.value;
+        invTypes= [this.searchForm?.get('inventory_type')?.value];
       }
       
       if (this.searchForm?.get('customer_code')?.value) {
@@ -406,20 +408,20 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     
 
       this.lastSearchCriteria = where;
-      this.performSearch(report_type,date,customerName);
+      this.performSearch(report_type,date,customerName,invTypes);
     }
    
    
   
 
-    performSearch(reportType?: number,date?:string,customerName?:string) {
+    performSearch(reportType?: number,date?:string,customerName?:string,invTypes?:string[]) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchManagementReportInventoryMonthlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessYearlyReport(this.repData,date!,reportType!,customerName!);
+        this.ProcessReport(this.repData,date!,reportType!,customerName!,invTypes!);
      });
     
   }
@@ -522,19 +524,15 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
 
   }
 
-  ProcessYearlyReport(repData: AdminReportMonthlyReport, date: string,report_type:number,customerName:string) {
+  ProcessReport(repData: AdminReportMonthlyReport, date: string,report_type:number,customerName:string,invTypes:string[]) {
     
    
 
     if(repData)
     {
-      if (report_type == 1) {
-        this.onExportChart_r1(repData, date,customerName);
-      }
-      else if (report_type == 2) {
-        this.onExportSummary(repData, date,customerName);
-      }
-      
+      //if (report_type == 1) {
+        this.onExportChart_r1(repData, date,customerName,invTypes);
+      //}
    }
    else
    {
@@ -585,7 +583,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     });
   }
 
-  onExportChart_r1(repData: AdminReportMonthlyReport, date: string,customerName:string)
+  onExportChart_r1(repData: AdminReportMonthlyReport, date: string,customerName:string, invTypes:string[])
   {
      //this.preventDefault(event);
      let cut_off_dt = new Date();
@@ -598,7 +596,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
        tempDirection = 'ltr';
      }
  
-     const dialogRef = this.dialog.open(YearlyChartPdfComponent, {
+     const dialogRef = this.dialog.open(InventoryMonthlySalesReportDetailsPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
      maxHeight: reportPreviewWindowDimension.report_maxHeight,
@@ -606,8 +604,8 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
         repData: repData,
         date: date,
         repType:this.processType,
-        customer:customerName
-      
+        customer:customerName,
+        inventory_type:invTypes
       },
 
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',

@@ -59,6 +59,7 @@ export class ManagementReportYearlyRevenueItem{
       this.storage_yearly_revenue=item.storage_yearly_revenue;
     } 
 }
+
 export class RevenuePerMonth{
   cost?:number;
   count?:number;
@@ -125,13 +126,13 @@ constructor(item: Partial<InventoryYearly> = {}) {
  }
 
  export class MonthlyReportItem{
-    approved_cost?:number;
-    completed_cost?:number;
-    date?:number;
-    day?:number;
+    approved_count?:number;
+    completed_count?:number;
+    date?:string;
+    day?:string;
     constructor(item: Partial<MonthlyReportItem> = {}) {
-      this.approved_cost=item.approved_cost;
-      this.completed_cost=item.completed_cost;
+      this.approved_count=item.approved_count;
+      this.completed_count=item.completed_count;
       this.date=item.date;
       this.day=item.day;
       } 
@@ -140,8 +141,8 @@ constructor(item: Partial<InventoryYearly> = {}) {
  export class RepairMonthlyReportItem{
   approved_hour?:number;
   completed_hour?:number;
-  date?:number;
-  day?:number;
+  date?:string;
+  day?:string;
   constructor(item: Partial<RepairMonthlyReportItem> = {}) {
     this.approved_hour=item.approved_hour;
     this.completed_hour=item.completed_hour;
@@ -154,8 +155,8 @@ constructor(item: Partial<InventoryYearly> = {}) {
  export class GateIOMonthlyReportItem{
   gate_in_cost?:number;
   gate_out_cost?:number;
-  date?:number;
-  day?:number;
+  date?:string;
+  day?:string;
   constructor(item: Partial<GateIOMonthlyReportItem> = {}) {
     this.gate_in_cost=item.gate_in_cost;
     this.gate_out_cost=item.gate_out_cost;
@@ -167,8 +168,8 @@ constructor(item: Partial<InventoryYearly> = {}) {
 export class LOLOMonthlyReportItem{
   lift_off_cost?:number;
   lift_on_cost?:number;
-  date?:number;
-  day?:number;
+  date?:string;
+  day?:string;
   constructor(item: Partial<LOLOMonthlyReportItem> = {}) {
     this.lift_off_cost=item.lift_off_cost;
     this.lift_on_cost=item.lift_on_cost;
@@ -201,6 +202,8 @@ export class ManagementReportMonthlyInventory{
     } 
 }
 
+
+
 export class MonthlyProcessDataRevenue {
   key?: string;
   cleaning?: { count?: number; cost?: number,key?:string,name?:string };
@@ -224,6 +227,60 @@ export class MonthlyProcessDataRevenue {
     this.storage=item.storage;
     } 
 }
+
+export class InventoryPerDay{
+  cost?:number;
+  count?:number;
+  date?:string;
+  day?:string;
+
+  
+  constructor(item: Partial<InventoryPerDay> = {}) {
+    this.cost=item.cost;
+    this.count=item.count;
+    this.date=item.date;
+    this.day=item.day;
+    
+    } 
+}
+
+export class MonthlySales{
+  average_cost?:number;
+  average_count?:number;
+  total_cost?:number;
+  total_count?:number;
+  result_per_day?:InventoryPerDay[];
+   
+  constructor(item: Partial<MonthlySales> = {}) {
+    this.average_cost=item.average_cost;
+    this.average_count=item.average_count;
+    this.total_cost=item.total_cost;
+    this.total_count=item.total_count;
+    this.result_per_day=item.result_per_day;
+    } 
+}
+
+export class ManagementReportMonthlyRevenueItem{
+  lolo_monthly_revenue?:MonthlySales;
+  cleaning_monthly_revenue?:MonthlySales;
+  gate_monthly_revenue?:MonthlySales;
+  preinspection_monthly_revenue?:MonthlySales;
+  repair_monthly_revenue?:MonthlySales;
+  residue_monthly_revenue?:MonthlySales;
+  steam_monthly_revenue?:MonthlySales;
+  storage_monthly_revenue?:MonthlySales;
+  constructor(item: Partial<ManagementReportMonthlyRevenueItem> = {}) {
+      this.lolo_monthly_revenue=item.lolo_monthly_revenue;
+      this.cleaning_monthly_revenue=item.cleaning_monthly_revenue;
+      this.gate_monthly_revenue=item.gate_monthly_revenue;
+      this.preinspection_monthly_revenue=item.preinspection_monthly_revenue;
+      this.repair_monthly_revenue=item.repair_monthly_revenue;
+      this.residue_monthly_revenue=item.residue_monthly_revenue;
+      this.steam_monthly_revenue=item.steam_monthly_revenue;
+      this.storage_monthly_revenue=item.storage_monthly_revenue;
+    } 
+}
+
 // First, define a proper interface for the monthly data
 export class MonthlyProcessData {
   key?: string;
@@ -256,6 +313,19 @@ export class MonthlyProcessData {
     } 
 }
 
+
+export class GroupedInventoryMonthly {
+  [date: string]: {
+    day: string;
+    cleaning?: any;
+    gateInOut?: {
+      gate?: any;
+      lolo?: any;
+    };
+    repair?: any;
+    steaming?: any;
+  };
+}
 
 
 
@@ -567,15 +637,181 @@ export class InventoryAnalyzer {
       processExtremes
     };
   }
+
+  static groupInventoryMonthlyByDate(data: ManagementReportMonthlyInventory): GroupedInventoryMonthly {
+    const grouped: GroupedInventoryMonthly = {};
+  
+    // Group cleaning inventory
+    data.cleaning_inventory?.forEach(item => {
+      if (!grouped[item.date!]) {
+        grouped[item.date!] = { day: item.day! };
+      }
+
+      grouped[item.date!].cleaning = item;
+    });
+  
+    data.gate_in_out_inventory?.gate_inventory?.forEach(item => {
+      if (item.date && item.day) {
+        if (!grouped[item.date]) {
+          grouped[item.date] = {
+            day: item.day,
+            gateInOut: {}
+          };
+        }
+        if(!grouped[item.date].gateInOut)grouped[item.date].gateInOut={};
+        grouped[item.date].gateInOut!.gate = item;
+      }
+    });
+  
+   // Group lolo_inventory
+  data.gate_in_out_inventory?.lolo_inventory?.forEach(item => {
+    if (item.date && item.day) {
+      if (!grouped[item.date]) {
+        grouped[item.date] = {
+          day: item.day,
+          gateInOut: {}
+        };
+      }
+
+      // Ensure gateInOut object exists
+      if (!grouped[item.date].gateInOut) grouped[item.date].gateInOut = {};
+      
+
+      grouped[item.date].gateInOut!.lolo = item;
+    }
+  });
+  
+    // Group repair inventory
+    data.repair_inventory?.forEach(item => {
+      if (!grouped[item.date!]) {
+        grouped[item.date!] = { day: item.day! };
+      }
+      grouped[item.date!].repair = item;
+    });
+  
+    // Group steaming inventory
+    data.steaming_inventory?.forEach(item => {
+      if (!grouped[item.date!]) {
+        grouped[item.date!] = { day: item.day! };
+      }
+      grouped[item.date!].steaming = item;
+    });
+  
+    return grouped;
+  }
 }
+
+
+export const GET_MANAGEMENT_REPORT_MONTHLY_REVENUE_REPORT = gql`
+  query queryMonthlyRevenue($monthlyRevenueRequest: MonthlyRevenueRequestInput!) {
+    resultList: queryMonthlyRevenue(monthlyRevenueRequest: $monthlyRevenueRequest) {
+        cleaning_monthly_revenue {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+      gate_monthly_revenue {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+      lolo_monthly_revenue {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+      preinspection_monthly_revenue {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+      repair_monthly_revenue {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+      residue_monthly_revenue {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+      steam_monthly_revenue {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+      storage_monthly_revenue {
+        average_cost
+        average_count
+        total_cost
+        total_count
+        result_per_day {
+          cost
+          count
+          date
+          day
+        }
+      }
+    }
+  }
+`
 
 
 export const GET_MANAGEMENT_REPORT_MONTHLY_INVENTORY_REPORT = gql`
   query queryMonthlyInventory($monthlyInventoryRequest: MonthlyInventoryRequestInput!) {
     resultList: queryMonthlyInventory(monthlyInventoryRequest: $monthlyInventoryRequest) {
       cleaning_inventory {
-        approved_cost
-        completed_cost
+        approved_count
+        completed_count
         date
         day
       }
@@ -583,14 +819,14 @@ export const GET_MANAGEMENT_REPORT_MONTHLY_INVENTORY_REPORT = gql`
         gate_inventory {
           date
           day
-          gate_in_cost
-          gate_out_cost
+          gate_in_count
+          gate_out_count
         }
         lolo_inventory {
           date
           day
-          lift_off_cost
-          lift_on_cost
+          lift_off_count
+          lift_on_count
         }
       }
       repair_inventory {
@@ -600,8 +836,8 @@ export const GET_MANAGEMENT_REPORT_MONTHLY_INVENTORY_REPORT = gql`
         day
       }
       steaming_inventory {
-        approved_cost
-        completed_cost
+        approved_count
+        completed_count
         date
         day
       }
@@ -844,6 +1080,30 @@ export class ManagementReportDS extends BaseDataSource<any> {
       .query<any>({
         query: GET_MANAGEMENT_REPORT_YEARLY_REVENUE_REPORT,
         variables: { yearlyRevenueRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as ManagementReportYearlyRevenueItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList);
+          return resultList;
+        })
+      );
+  }
+
+  searchManagementReportRenvenueMonthlyReport(monthlyRevenueRequest:any): Observable<ManagementReportMonthlyRevenueItem> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_MANAGEMENT_REPORT_MONTHLY_REVENUE_REPORT,
+        variables: { monthlyRevenueRequest },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
