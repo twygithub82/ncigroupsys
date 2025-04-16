@@ -21,40 +21,26 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-//import { Apollo } from 'apollo-angular';
-//import { CodeValuesItem } from 'app/data-sources/code-values';
-import { CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { StoringOrderItem } from 'app/data-sources/storing-order';
-import { Utility } from 'app/utilities/utility';
-//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { Apollo } from 'apollo-angular';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-//import { FormDialogComponent } from './form-dialog/form-dialog.component';
-//import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
-import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { TariffBufferComponent } from './buffer/tariff-buffer.component';
 import { TariffCleaningComponent } from './cleaning/tariff-cleaning.component';
 import { TariffResidueComponent } from './residue/tariff-residue.component';
-// import { CleanBillingComponent } from './clean/clean-billing.component';
-// import { ResidueBillingComponent } from './residue/residue-billing.component';
-// import { SteamBillingComponent } from './steam/steam-billing.component';
-//import { FormDialogComponent } from './form-dialog/form-dialog.component';
-//import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
-import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
-import { TariffBufferComponent } from './buffer/tariff-buffer.component';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatCardModule } from '@angular/material/card';
-import { CodeValuesItem } from 'app/data-sources/code-values';
-import { Apollo } from 'apollo-angular';
-// import { CleanBillingComponent } from './clean/clean-billing.component';
-// import { ResidueBillingComponent } from './residue/residue-billing.component';
-// import { SteamBillingComponent } from './steam/steam-billing.component';
 @Component({
   selector: 'app-tariff-main-clean',
   standalone: true,
@@ -72,7 +58,6 @@ import { Apollo } from 'apollo-angular';
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-   // TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatInputModule,
@@ -83,7 +68,6 @@ import { Apollo } from 'apollo-angular';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-   // MatCardModule,
     MatTabsModule,
     TariffCleaningComponent,
     TariffBufferComponent,
@@ -92,16 +76,6 @@ import { Apollo } from 'apollo-angular';
   ]
 })
 export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
-  // displayedColumns = [
-  //   'tank_no',
-  //   'customer',
-  //   'eir_no',
-  //   'eir_dt',
-  //   'last_cargo',
-  //   'tank_status_cv'
-  // ];
-
   displayedColumnsRepair = [
     'tank_no',
     'customer',
@@ -187,17 +161,6 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
 
   filterCleanForm?: UntypedFormGroup;
   filterJobOrderForm?: UntypedFormGroup;
-
-  // cvDS: CodeValuesDS;
-  // soDS: StoringOrderDS;
-  // sotDS: StoringOrderTankDS;
-  // ccDS: CustomerCompanyDS;
-  // tcDS: TariffCleaningDS;
-  // igDS: InGateDS;
-  // cleanDS: InGateCleaningDS;
-  // joDS: JobOrderDS;
-  // ttDS: TimeTableDS;
-  // cmDS:CleaningMethodDS;
 
   availableProcessStatus: string[] = [
     'APPROVED',

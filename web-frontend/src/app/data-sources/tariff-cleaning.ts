@@ -253,51 +253,51 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
   query queryTariffCleaning($where: tariff_cleaningFilterInput, $order:[tariff_cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     lastCargo: queryTariffCleaning(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-          alias
-      ban_type_cv
-      cargo
-      class_cv
-      cleaning_category_guid
-      cleaning_method_guid
-      create_by
-      create_dt
-      delete_dt
-      depot_note
-      description
-      flash_point
-      guid
-      hazard_level_cv
-      in_gate_alert
-      msds_guid
-      nature_cv
-      open_on_gate_cv
-      remarks
-      un_no
-      update_by
-      update_dt
-      cleaning_category {
-        cost
+        alias
+        ban_type_cv
+        cargo
+        class_cv
+        cleaning_category_guid
+        cleaning_method_guid
         create_by
         create_dt
         delete_dt
+        depot_note
         description
+        flash_point
         guid
-        name
-        sequence
+        hazard_level_cv
+        in_gate_alert
+        msds_guid
+        nature_cv
+        open_on_gate_cv
+        remarks
+        un_no
         update_by
         update_dt
-      }
-      cleaning_method {
-        create_by
-        create_dt
-        delete_dt
-        description
-        guid
-        name
-        sequence
-        update_by
-        update_dt
-      }
+        cleaning_category {
+          cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          sequence
+          update_by
+          update_dt
+        }
+        cleaning_method {
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          sequence
+          update_by
+          update_dt
+        }
       }
       pageInfo {
         endCursor
@@ -308,10 +308,7 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
       totalCount
     }
   }
-
 `;
-
-
 
 export const ADD_TARIFF_CLEANING = gql`
   mutation addTariffCleaning($tc: tariff_cleaningInput!) {
@@ -330,7 +327,6 @@ export const DELETE_TARIFF_CLEANING = gql`
     deleteTariffClean(deleteTariffClean_guids: $deleteTariffClean_guids)
   }
 `;
-
 
 export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
   constructor(private apollo: Apollo) {
@@ -360,8 +356,6 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
         })
       );
   }
-
-
 
   SearchTariffCleaning(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
@@ -414,7 +408,6 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       );
   }
 
-
   addNewTariffCleaning(tc: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_TARIFF_CLEANING,
@@ -423,9 +416,6 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       }
     });
   }
-
-
-
 
   updateTariffCleaning(tc: any): Observable<any> {
     return this.apollo.mutate({
@@ -454,7 +444,6 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       }),
     );
   }
-
 
   AddClassNoAndUnNo(unNo?: any): Observable<any> {
     return this.apollo.mutate({
