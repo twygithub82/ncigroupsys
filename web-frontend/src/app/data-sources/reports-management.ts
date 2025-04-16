@@ -327,7 +327,19 @@ export class GroupedInventoryMonthly {
   };
 }
 
-
+export class GroupedByDate {
+  [date: string]: {
+    day: string;
+    residue?:any;
+    lolo?:any;
+    preinspection?:any;
+    storage?:any;
+    cleaning?: any;
+    gate?: any;
+    repair?: any;
+    steaming?: any;
+  };
+}
 
 export class InventoryAnalyzer {
  static getMonthIndex(monthName: string): number {
@@ -699,6 +711,95 @@ export class InventoryAnalyzer {
   
     return grouped;
   }
+
+  static groupRevenueMonthlyByDate(data: ManagementReportMonthlyRevenueItem): GroupedByDate {
+    const grouped: GroupedByDate = {};
+  
+    // Group cleaning inventory
+    data.cleaning_monthly_revenue?.result_per_day?.forEach(item => {
+      if (!grouped[item.date!]) {
+        grouped[item.date!] = { day: item.day! };
+      }
+
+      grouped[item.date!].cleaning = item;
+    });
+  
+    data.gate_monthly_revenue?.result_per_day?.forEach(item => {
+      if (item.date && item.day) {
+        if (!grouped[item.date]) {
+          grouped[item.date] = {
+            day: item.day,
+          };
+        }
+        grouped[item.date].gate = item;
+      }
+    });
+  
+    data.preinspection_monthly_revenue?.result_per_day?.forEach(item => {
+      if (item.date && item.day) {
+        if (!grouped[item.date]) {
+          grouped[item.date] = {
+            day: item.day,
+          };
+        }
+        grouped[item.date].preinspection = item;
+      }
+    });
+
+    data.residue_monthly_revenue?.result_per_day?.forEach(item => {
+      if (item.date && item.day) {
+        if (!grouped[item.date]) {
+          grouped[item.date] = {
+            day: item.day,
+          };
+        }
+        grouped[item.date].residue = item;
+      }
+    });
+
+    data.lolo_monthly_revenue?.result_per_day?.forEach(item => {
+      if (item.date && item.day) {
+        if (!grouped[item.date]) {
+          grouped[item.date] = {
+            day: item.day,
+          };
+        }
+        grouped[item.date].lolo = item;
+      }
+    });
+
+    data.storage_monthly_revenue?.result_per_day?.forEach(item => {
+      if (item.date && item.day) {
+        if (!grouped[item.date]) {
+          grouped[item.date] = {
+            day: item.day,
+          };
+        }
+        grouped[item.date].storage = item;
+      }
+    });
+  
+  
+    // Group repair inventory
+    data.repair_monthly_revenue?.result_per_day?.forEach(item => {
+      if (!grouped[item.date!]) {
+        grouped[item.date!] = { day: item.day! };
+      }
+      grouped[item.date!].repair = item;
+    });
+  
+    // Group steaming inventory
+    data.steam_monthly_revenue?.result_per_day?.forEach(item => {
+      if (!grouped[item.date!]) {
+        grouped[item.date!] = { day: item.day! };
+      }
+      grouped[item.date!].steaming = item;
+    });
+  
+    return grouped;
+  }
+
+
 }
 
 

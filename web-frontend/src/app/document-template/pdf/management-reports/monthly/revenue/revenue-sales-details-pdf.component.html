@@ -1,0 +1,56 @@
+<div mat-dialog-title class="ms-3 mt-3">
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+
+  
+
+  <div id="pdf-form-body" class="pdf-container pdf-body" >
+    <div #pdfTable id="pdfTable" mat-dialog-content>
+      <div class="row clearfix">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+    
+          <!-- <div class="card">
+            <div class="body">
+              <div  style="display: flex; justify-content: center;">
+              <div style="width: 40vw">
+                <apx-chart [series]="lineChartOptions.series!" [chart]="lineChartOptions.chart!" [colors]="lineChartOptions.colors!"
+                [grid]="lineChartOptions.grid!" [xaxis]="lineChartOptions.xaxis!" [title]="lineChartOptions.title!" [legend]="lineChartOptions.legend!" >
+              </apx-chart>
+              </div>
+            </div>
+            </div>
+          </div> -->
+          <!-- <div class="card">
+            <div class="body">
+              <div  style="display: flex; justify-content: center;">
+              <div style="width: 40vw">
+                <apx-chart [series]="pieChartOptions.series2!" [chart]="pieChartOptions.chart!" [labels]="pieChartOptions.labels!"
+                [title]="pieChartOptions.title!" [legend]="pieChartOptions.legend!" [colors]="lineChartOptions.colors!">
+              </apx-chart>
+              </div>
+            </div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+
+<div mat-dialog-actions class="m-2 align-right" hidden>
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+        file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>

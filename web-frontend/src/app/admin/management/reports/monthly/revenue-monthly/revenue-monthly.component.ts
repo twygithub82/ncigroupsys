@@ -51,6 +51,7 @@ import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
 import { ManagementReportDS } from 'app/data-sources/reports-management';
 import {InventoryMonthlySalesReportDetailsPdfComponent} from 'app/document-template/pdf/management-reports/monthly/inventory/inventory-sales-details-pdf.component';
+import { RevenueMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/monthly/revenue/revenue-sales-details-pdf.component';
 
 @Component({
   selector: 'app-revenue-monthly',
@@ -219,7 +220,7 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
   yearList:string[]=[];
   monthList:string[]=[];
   repData:any;
-  invTypes:string[]=["ALL","STEAMING","CLEANING","IN_OUT","REPAIR"];
+  invTypes:string[]=["ALL","STEAMING","CLEANING","IN_OUT","REPAIR","LOLO","STORAGE","RESIDUE","PREINSPECTION"];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -596,7 +597,7 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
          tempDirection = 'ltr';
        }
    
-       const dialogRef = this.dialog.open(InventoryMonthlySalesReportDetailsPdfComponent, {
+       const dialogRef = this.dialog.open(RevenueMonthlySalesReportDetailsPdfComponent, {
         width: reportPreviewWindowDimension.portrait_width_rate,
         maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
        maxHeight: reportPreviewWindowDimension.report_maxHeight,
