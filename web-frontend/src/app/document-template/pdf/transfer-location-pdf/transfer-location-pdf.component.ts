@@ -581,7 +581,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
         { content: this.translatedLangText.FROM_YARD, rowSpan: 2, styles: { halign: 'center' } },
         { content: this.translatedLangText.TO_YARD, rowSpan: 2, styles: { halign: 'center' } },
         { content: this.translatedLangText.TRANSFER, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.STORAGE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+        //{ content: this.translatedLangText.STORAGE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       ],
       [
         // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
@@ -623,7 +623,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       6: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      //9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
     };
 
     lastTableFinalY += 8;
@@ -671,7 +671,8 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
           data.push([
             (b + 1).toString(), itm.tank_no || "", this.DisplayEIRNo(itm) || "",
             this.DisplayEIRDateIn(itm), this.DisplayEIRDateOut(itm), this.DisplayFromYard(itm) || "",
-            this.DisplayToYard(itm) || "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || "", this.DisplayStorageDays(itm) || ""
+            this.DisplayToYard(itm) || "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || "", 
+            // this.DisplayStorageDays(itm) || ""
           ]);
         }
         pdf.setDrawColor(0, 0, 0); // red line color
@@ -712,9 +713,6 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
           },
         });
       }
-
-
-
     }
 
     const totalPages = pdf.getNumberOfPages();
@@ -727,8 +725,9 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      var offset = 5;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20 + offset, pdf.internal.pageSize.height - 9, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - offset), pdf.internal.pageSize.height - lineBuffer);
     });
 
     this.generatingPdfProgress = 100;
