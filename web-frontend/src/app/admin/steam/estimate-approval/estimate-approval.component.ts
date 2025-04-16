@@ -46,7 +46,6 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
-import { ResidueItem } from 'app/data-sources/residue';
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
 
@@ -282,15 +281,10 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       eir_dt_start: [''],
       eir_dt_end: [''],
       part_name: [''],
-      bill_completed_cv: [''],
       status_cv: [''],
       eir_no: [''],
       job_no: [''],
-      //      repair_type_cv: [''],
-      est_dt_start: [''],
-      est_dt_end: [''],
-      approval_dt_start: [''],
-      approval_dt_end: [''],
+      est_dt: [''],
       est_status_cv: [''],
       current_status_cv: [''],
       tank_status: [['STEAM']]
@@ -299,17 +293,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
-  }
-
-  toggleRow(row: ResidueItem) {
-    // this.reSelection.toggle(row);
-    // const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    // if (this.reSelection.isSelected(row)) {
-    //   selectedItems.add(row.guid!);
-    // } else {
-    //   selectedItems.delete(row.guid!);
-    // }
-    // this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Update selection for the current page */
@@ -323,7 +306,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     // });
   }
 
-  cancelRow(row: ResidueItem) {
+  cancelRow(row: SteamItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
     if (!found) {
@@ -333,7 +316,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.cancelSelectedRows(selectedList)
   }
 
-  cancelSelectedRows(row: ResidueItem[]) {
+  cancelSelectedRows(row: SteamItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -365,10 +348,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
           this.handleCancelSuccess(result?.data?.UpdateSteamStatus)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
-        //  this.residueDS.cancelResidue(reList).subscribe((result: { data: { cancelResidue: any; }; }) => {
-        //    this.handleCancelSuccess(result?.data?.cancelResidue)
-        //    this.performSearch(this.pageSize, 0, this.pageSize);
-        //  });
       }
     });
   }
@@ -423,8 +402,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     });
   }
 
-
-  copyResidueEst(steamEst: SteamItem) {
+  copySteamEst(steamEst: SteamItem) {
     this.copiedSteamEst = steamEst;
   }
 
@@ -534,36 +512,16 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
       if (!where.in_gate) where.in_gate = {};
       where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) } } };
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
-
 
     if (this.searchForm!.value['customer_code']) {
       where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
 
-
-    if (this.searchForm!.value['part_name']) {
-      if (!where.residue) where.residue = {};
-      where.residue.some = { residue_part: { some: { description: { contains: this.searchForm!.value['part_name'] } } } };
-    }
-
-    if (this.searchForm!.value['residue_job_no']) {
-
-      if (!where.residue) where.residue = {};
-      where.residue = { some: { job_no: { contains: this.searchForm!.value['job_no'] } } };
-    }
-
-    if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
-      if (!where.residue) where.residue = {};
-      if (!where.residue.some) where.residue.some = {};
-      where.residue.some.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
-    }
-
-    if (this.searchForm!.value['approval_dt_start'] && this.searchForm!.value['approval_dt_end']) {
-      if (!where.residue) where.residue = {};
-      if (!where.residue.some) where.residue.some = {};
-      where.residue.some.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
+    if (this.searchForm!.value['est_dt']) {
+      if (!where.steaming) where.steaming = {};
+      if (!where.steaming.some) where.steaming.some = {};
+      where.steaming.some.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt']), lte: Utility.convertDate(this.searchForm!.value['est_dt'], true) };
     }
 
     if (this.searchForm!.value['est_status_cv'] !== undefined && this.searchForm!.value['est_status_cv'].length > 0) {
@@ -583,7 +541,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       .subscribe(data => {
         if (data) {
           var steamingStatusFilter = this.searchForm!.value['est_status_cv'];
-
           this.sotList = data.map(sot => {
             sot.steaming = sot.steaming?.map(stm => {
               if (steamingStatusFilter.length) {
@@ -600,9 +557,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
                 return { ...stm, net_cost: this.calculateNetCost(stm) };
               }
             });
-
-            console.log(sot.steaming)
-
             return sot;
           });
         }
@@ -796,14 +750,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       eir_dt_start: '',
       eir_dt_end: '',
       part_name: '',
-      bill_completed_cv: '',
       status_cv: '',
       eir_no: '',
-      residue_job_no: '',
-      est_dt_start: '',
-      est_dt_end: '',
-      approval_dt_start: '',
-      approval_dt_end: '',
+      est_dt: '',
       est_status_cv: '',
       current_status_cv: '',
       tank_status: [['STEAM']]
@@ -847,15 +796,13 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
-
           showResult: this.sotDS.totalCount > 0
-
         }
       }
     });
   }
 
-  pasteSteamEstimate(event: Event, sot: StoringOrderItem, row: ResidueItem) {
+  pasteSteamEstimate(event: Event, sot: StoringOrderItem, row: SteamItem) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/steam/estimate-approval/new/', row.guid], {
@@ -873,9 +820,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
-
           showResult: this.sotDS.totalCount > 0
-
         }
       }
     });
@@ -919,7 +864,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     re.steaming_part = row.steaming_part?.map((rep: SteamPartItem) => {
       return new SteamPartItem({
         ...rep,
-        // tariff_residue: undefined,
         action: 'EDIT',
         tariff_steaming_guid: (rep.tariff_steaming_guid ? rep.tariff_steaming_guid : ''),
         approve_part: (rep.approve_part == null ? true : rep.approve_part),

@@ -323,6 +323,25 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     });
   }
 
+  refreshPageDetail() {
+    this.subs.sink = this.sotDS.getStoringOrderTanksForPTSurveyByID(this.sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        this.sotItem = data[0];
+        this.surveyDetailItem = this.sotItem?.survey_detail || [];
+        this.last_test_desc = this.getLastTest();
+        this.next_test_desc = this.getNextTest();
+
+        this.tiDS.getTankInfoForLastTest(this.sotItem.tank_no!).subscribe(data => {
+          if (data.length > 0) {
+            this.tiItem = data[0];
+            this.last_test_desc = this.getLastTest();
+            this.next_test_desc = this.getNextTest();
+          }
+        });
+      }
+    });
+  }
+
   showNotification(
     colorName: string,
     text: string,
@@ -389,7 +408,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && result.savedSuccess) {
         ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
-        this.refreshSurveyDetail();
+        this.refreshPageDetail();
       }
     });
   }
@@ -428,7 +447,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && result.savedSuccess) {
         ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
-        this.refreshSurveyDetail();
+        this.refreshPageDetail();
       }
     });
   }

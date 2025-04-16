@@ -8,7 +8,8 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <div class="body overflow-auto">
-            <mat-tab-group #tabGroup dynamicHeight [selectedIndex]="isActiveTab" [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
+            <mat-tab-group #tabGroup dynamicHeight [selectedIndex]="isActiveTab" [(selectedIndex)]="selectedTabIndex"
+              (selectedIndexChange)="onTabChange($event)">
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
                 <form class="ms-0" [formGroup]="filterSteamForm!" (ngSubmit)="onFilterSteam()" #formDirective="ngForm">
                   <div class="row">
@@ -48,8 +49,9 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-4 col-md-2 col-sm-2 mb-2 pt-3 d-flex align-items-center ms-auto justify-content-end">
-                      <button mat-mini-fab color="primary" >
+                    <div
+                      class="col-xl-3 col-lg-4 col-md-2 col-sm-2 mb-2 pt-3 d-flex align-items-center ms-auto justify-content-end">
+                      <button mat-mini-fab color="primary">
                         <mat-icon>search</mat-icon>
                       </button>
                     </div>
@@ -67,7 +69,8 @@
                         {{translatedLangText.TANK_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
+                        <span
+                          class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="customer">
@@ -96,13 +99,14 @@
                         <span>{{displayDate(row.approve_dt)}}</span>
                       </mat-cell>
                     </ng-container>
-    
+
                     <ng-container matColumnDef="status_cv">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}}
+                        <span
+                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
@@ -113,24 +117,21 @@
                         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                         @if(canToggleJob(row))
                         {
-                         
-                          <button mat-menu-item (click)="stopEventTrigger($event)" >
-                            <mat-icon>build</mat-icon>
-                          </button>
-                          
+                        <button mat-menu-item (click)="stopEventTrigger($event)">
+                          <mat-icon>build</mat-icon>
+                        </button>
                         }
                         @else
                         {
-                          <button mat-menu-item (click)="stopEventTrigger($event)" >
-                            <mat-icon>whatshot</mat-icon>
-                          </button>
+                        <button mat-menu-item (click)="stopEventTrigger($event)">
+                          <mat-icon>whatshot</mat-icon>
+                        </button>
                         }
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
-                     (click)="this.AllocationSteamEstimate($event,row)"
-                      [style.cursor]="'pointer'" matRipple>
+                      (click)="this.AllocationSteamEstimate($event,row)" [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                   </table>
                 </div>
