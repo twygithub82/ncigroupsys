@@ -56,6 +56,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-estimate-new',
@@ -96,7 +97,6 @@ import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
 export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'desc',
     'qty',
     'unit_price',
@@ -104,17 +104,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     'cost',
     'approve_part'
   ];
-  footerColumns1 = [
-    'seq',
-    // 'group_name_cv',
-    'desc',
-    'qty',
-    'unit_price',
-    'hour',
-    'cost',
-    'approve_part'
-  ];
-
 
   pageTitleNew = 'MENUITEMS.STEAM.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.STEAM.LIST.ESTIMATE-EDIT'
@@ -347,9 +336,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   initializeValueChanges() {
-
-
-
     this.newDesc?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -359,30 +345,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           this.newUnitPrice.setValue(desc_value?.material_cost?.toFixed(2));
           this.newQty.setValue(1);
           this.newHour.setValue(desc_value?.labour_hour ? desc_value?.labour_hour : 0)
-
-          // this.steamEstForm?.patchValue({
-
-          //     unit_price: desc_value?.material_cost?.toFixed(2),
-          //     qty: 1,
-          //     hour: desc_value?.labour_hour?desc_value?.labour_hour:0,
-          // });
         }
         else if (desc_value) {
           this.getPackageSteamAlias(desc_value);
         }
-
-        // this.displayPackSteamList= this.packSteamList.filter(data=> data.tariff_repair?.alias && data.tariff_repair?.alias?.includes(desc_value));
-        // if(!desc_value) this.displayPackSteamList= [...this.packSteamList];
-        // else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
-        // {
-        //   this.steamEstForm?.patchValue({
-
-        //      unit_price: desc_value?.material_cost?.toFixed(2),
-        //      qty: 1,
-        //      hour: desc_value?.labour_hour?desc_value?.labour_hour:0,
-        //   });
-        // }
-
       })
     ).subscribe();
   }
@@ -428,9 +394,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
       this.unitTypeCvList = data;
     });
-
-
-    //this.getSurveyorList();
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     this.steam_guid = this.route.snapshot.paramMap.get('steam_est_id');
@@ -592,9 +555,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.calculateCost();
   }
 
-
   checkCompulsoryEst(fields: string[]) {
-
     if (!this.newDesc.value) {
       this.newDesc.setErrors({ required: true });
       this.newDesc.markAsTouched();
@@ -613,15 +574,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         this.newHour.markAsTouched();
       }
     }
-
-    // fields.forEach(name=>{
-    // //if( !this.steamEstForm?.get(name)?.value)
-    // if(this.steamEstForm?.get(name)?.value == null || this.steamEstForm?.get(name)?.value === "")
-    //   {
-    //     this.steamEstForm?.get(name)?.setErrors({ required: true });
-    //     this.steamEstForm?.get(name)?.markAsTouched(); // Trigger validation display
-    //   }
-    // });
   }
 
   checkDuplicationEst(item: PackageResidueItem, index: number = -1) {
@@ -635,7 +587,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   addEstDetails(event: Event) {
-
     this.preventDefault(event);  // Prevents the form submission
 
     var descObject: SteamPartItem;
@@ -710,8 +661,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     if (row.delete_dt) return;
     var itm = this.deList[index];
     var IsEditedRow = itm.edited;
-
-
     this.resetSelectedItemForUpdating();
 
     if (IsEditedRow) {
@@ -740,7 +689,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       descValue.tariff_residue = new TariffResidueItem();
       descValue.tariff_residue.description = row.description;
       descValue.cost = Number(row.cost);
-
     }
     this.steamEstForm?.patchValue({
       desc: descValue,
@@ -748,9 +696,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       hour: row.labour,
       unit_price: row.cost
     });
-
-
-
   }
 
   deleteItem(event: Event, row: ResiduePartItem, index: number) {
@@ -862,15 +807,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         steamStatus.sot_guid = this.steamItem?.sot_guid;
         steamStatus.remarks = reList[0].remarks;
         this.steamDS.updateSteamStatus(steamStatus).subscribe(result => {
-
           this.handleCancelSuccess(result?.data?.updateSteamingStatus);
           if (result?.data?.updateSteamingStatus > 0) {
             this.GoBackPrevious(event);
           }
         });
-        // this.residueDS.cancelResidue(reList).subscribe(result => {
-        //   this.handleCancelSuccess(result?.data?.cancelResidue)
-        // });
       }
     });
   }
@@ -906,7 +847,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-
         const reList = result.item.map((item: any) => {
           const SteamEstimateRequestInput = {
             customer_guid: item.customer_company_guid,
@@ -924,7 +864,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           if (result?.data?.rollbackSteaming > 0) {
             this.GoBackPrevious(event);
           }
-          //this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
     });
@@ -976,7 +915,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   onFormSubmit() {
-
     this.newDesc?.setErrors(null);
     this.newQty?.setErrors(null);
     this.newQty?.setErrors(null);
@@ -1370,14 +1308,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       this.populateSteamPartList(this.steamItem!);
       //this.populateResiduePartList(this.residueItem!);
     });
-
-    // this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
-
-    //   this.packResidueList=data;
-    //   this.displayPackResidueList=data;
-    //   this.populateResiduePartList(this.residueItem!);
-    // });
-
   }
 
   loadBillingBranch() {
@@ -1392,25 +1322,20 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
       this.patchSteamEstForm(this.steamItem!);
     });
-
   }
 
   loadHistoryState() {
     this.historyState = history.state;
-
     if (this.historyState.selectedRow != null) {
-
       this.isDuplicate = this.historyState.action === 'DUPLICATE';
-
       this.sotItem = this.historyState.selectedRow;
       this.steamItem = this.historyState.selectedSteam;
+      console.log(this.steamItem)
       this.steam_guid = this.steamItem?.guid;
       this.getPackageSteam();
       this.loadBillingBranch();
       var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
       this.getCustomerLabourPackage(ccGuid!);
-
-
     }
   }
 
@@ -1664,25 +1589,30 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }
     return false;
   }
+
   isAllowToSaveSubmit() {
     var NoDel = this.deList.filter(d => d.action != 'cancel');
     return (NoDel.length && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid);
   }
+
   isDisabled(): boolean {
     const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS']
-    return validStatus.includes(this.steamItem?.status_cv!);
+    return validStatus.includes(this.steamItem?.status_cv!) || this.isAutoApproveSteaming(this.steamItem);
   }
+
   IsApproved() {
     const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
     return validStatus.includes(this.steamItem?.status_cv!);
-
   }
 
   updateAction(steamPart: any) {
     if (steamPart?.action === '' || steamPart?.action === null || steamPart?.action === undefined) {
       steamPart.action = 'EDIT';
-
     }
+  }
+
+  isAutoApproveSteaming(row: any) {
+    return BusinessLogicUtil.isAutoApproveSteaming(row);
   }
 
   approveRow(event: Event) {
