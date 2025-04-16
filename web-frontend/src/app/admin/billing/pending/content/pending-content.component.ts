@@ -504,7 +504,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
 
   resetForm() {
     this.searchForm?.patchValue({
-      cut_off_dt: ''
+      cutoff_dt: ''
     });
     this.customerCodeControl.reset('');
   }

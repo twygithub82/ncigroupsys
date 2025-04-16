@@ -308,7 +308,6 @@
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
-
                   </ng-container>
                   <ng-container matColumnDef="desc">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
@@ -435,9 +434,6 @@
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
                   </ng-container>
-                  <!-- <ng-container matcolumnDef="unit_price">
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.LABOUR}}:</mat-footer-cell>
-                    </ng-container> -->
                   <ng-container matColumnDef="cost">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -480,7 +476,7 @@
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
                     matRipple>
                   </mat-row>
-                  <mat-footer-row *matFooterRowDef="footerColumns1"></mat-footer-row>
+                  <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
                 </table>
                 <div class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">
                   <div class="row">

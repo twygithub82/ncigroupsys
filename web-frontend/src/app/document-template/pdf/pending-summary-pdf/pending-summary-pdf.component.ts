@@ -242,8 +242,9 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     STORAGE: 'COMMON-FORM.STORAGE',
     LOLO: 'COMMON-FORM.LOLO',
     GATEIO: 'COMMON-FORM.GATEIO',
-    REPORT_TITLE: 'COMMON-FORM.PENDING-INVOICE-SUMMARY',
-    CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE'
+    REPORT_TITLE: 'COMMON-FORM.PENDING-INVOICE_REPORT',
+    CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
+    SUMMARY: 'COMMON-FORM.SUMMARY'
   }
 
   cut_off_dt: string;
@@ -838,7 +839,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   GetReportTitle(): string {
-    return `${this.translatedLangText.REPORT_TITLE}`
+    return `${this.translatedLangText.REPORT_TITLE} - ${this.translatedLangText.SUMMARY}`
   }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {

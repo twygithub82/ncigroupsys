@@ -998,7 +998,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         for (let b = 0; b < (cust.items?.length || 0); b++) {
           var itm = cust.items?.[b]!;
           data.push([
-            (b + 1).toString(), itm.tank_no || "", itm.tank_no || "", itm.eir_no || "",
+            (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
             itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
             (itm.clean_cost === "0.00" ? '' : itm.clean_cost), (itm.repair_cost === "0.00" ? '' : itm.repair_cost),
             (itm.preins_cost === "0.00" ? '' : itm.preins_cost), (itm.lolo_cost === "0.00" ? '' : itm.lolo_cost),
@@ -1056,7 +1056,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 10, pdf.internal.pageSize.height - 9, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 

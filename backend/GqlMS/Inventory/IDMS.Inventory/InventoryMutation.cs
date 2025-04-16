@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using IDMS.Models.Billing;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using IDMS.Models.Package;
+using Microsoft.Extensions.Primitives;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -142,7 +143,7 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
         public async Task<int> UpdateSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail)
+            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail, PeriodicTestRequest? periodicTest)
         {
             try
             {
@@ -162,6 +163,57 @@ namespace IDMS.Inventory.GqlTypes
                 updateSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
                 updateSuyDetail.test_class_cv = surveyDetail.test_class_cv;
                 updateSuyDetail.survey_dt = surveyDetail.survey_dt;
+
+                if (periodicTest != null) 
+                {
+                    //Update Tank Info
+                    var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                    if (tankInfo == null)
+                        throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+
+                    tankInfo.test_dt = surveyDetail.survey_dt;
+                    tankInfo.update_by = user;
+                    tankInfo.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> DeleteSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, string deletedGuid, survey_detail surveyDetail, PeriodicTestRequest? periodicTest)
+        {
+            try
+            {
+                //long epochNow = GqlUtils.GetNowEpochInSec();
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var deleteSuyDetail = new survey_detail() { guid = deletedGuid };
+                context.Attach(deleteSuyDetail);
+                deleteSuyDetail.update_by = user;
+                deleteSuyDetail.update_dt = currentDateTime;
+                deleteSuyDetail.delete_dt = currentDateTime;
+
+                if (periodicTest != null)
+                {
+                    //Update Tank Info
+                    var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                    if (tankInfo == null)
+                        throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+
+                    tankInfo.test_dt = surveyDetail.survey_dt;
+                    tankInfo.test_class_cv = surveyDetail.test_class_cv;
+                    tankInfo.last_test_cv = periodicTest.last_test_cv;
+                    tankInfo.next_test_cv = periodicTest.next_test_cv;
+                    tankInfo.update_by = user;
+                    tankInfo.update_dt = currentDateTime;
+                }
 
                 var res = await context.SaveChangesAsync();
                 return res;

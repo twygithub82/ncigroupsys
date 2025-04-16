@@ -75,6 +75,7 @@ import { BillingDS, BillingSOTGo } from 'app/data-sources/billing';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { OverwriteDepotCostFormDialogComponent } from './overwrite-depot-cost-form-dialog/overwrite-depot-cost-form-dialog.component';
 import { OverwriteCleaningApprovalFormDialogComponent } from './overwrite-clean-appr-form-dialog/overwrite-clean-appr-form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -2011,5 +2012,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   canOverwriteCleaningApproval() {
     const allowOverwriteStatus = ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS'];
     return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '');
+  }
+
+  isAutoApproveSteaming(row: any) {
+    return BusinessLogicUtil.isAutoApproveSteaming(row);
   }
 }

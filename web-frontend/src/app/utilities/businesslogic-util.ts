@@ -16,4 +16,8 @@ export class BusinessLogicUtil {
     static displayName(cc: any): string {
         return cc?.code ? (cc?.name ? `${cc.code} (${cc.name})` : `${cc.code}`) : '';
     }
+
+    static isAutoApproveSteaming(row: any) {
+        return row?.estimate_no?.startsWith('SE');
+    }
 }

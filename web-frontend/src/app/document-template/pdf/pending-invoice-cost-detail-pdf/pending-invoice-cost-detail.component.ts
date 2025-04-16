@@ -235,11 +235,12 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     REPAIR_COST: 'COMMON-FORM.REPAIR-COST-REPORT',
     PREINSP_COST: 'COMMON-FORM.PREINSP-COST-REPORT',
     STORAGE_COST: 'COMMON-FORM.STORAGE-COST-REPORT',
-    REPORT_TITLE: 'COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT',
+    REPORT_TITLE: 'COMMON-FORM.PENDING-INVOICE_REPORT',//'COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     GATEIO_S: 'COMMON-FORM.GATEIO-S',
     GATE_SURCHAGRGE_PENDING_REPORT: "COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
-    TOTAL_COST: "COMMON-FORM.TOTAL-COST"
+    TOTAL_COST: "COMMON-FORM.TOTAL-COST",
+    DETAILS: 'COMMON-FORM.DETAILS'
 
   }
 
@@ -809,7 +810,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   GetReportTitle(): string {
-    return `${this.translatedLangText.REPORT_TITLE} `
+    return `${this.translatedLangText.REPORT_TITLE} - ${this.translatedLangText.DETAILS}`
   }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {

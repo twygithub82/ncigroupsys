@@ -6,30 +6,7 @@
     </div>
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="body overflow-auto">
-            <mat-tab-group dynamicHeight (selectedTabChange)="onTabSelected($event)">
-              <mat-tab [label]="translatedLangText.PERIODIC_TEST_DUE">
-                <app-periodic-test-due-report></app-periodic-test-due-report>
-              </mat-tab>
-              <!-- <mat-tab [label]="translatedLangText.YARD_REPORT">
-                <app-yard-report></app-yard-report>
-              </mat-tab> -->
-              <!-- <mat-tab [label]="translatedLangText.STEAM_BILLING">
-                  <app-steam-billing></app-steam-billing>
-              </mat-tab>
-              <mat-tab [label]="translatedLangText.RESIDUE_BILLING">
-                 <app-residue-billing></app-residue-billing>
-              </mat-tab> -->
-              <!-- <mat-tab>
-                <ng-template mat-tab-label>
-                  <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
-                </ng-template>
-                <app-job-order-qc></app-job-order-qc>
-              </mat-tab> -->
-            </mat-tab-group>
-          </div>
-        </div>
+        <app-periodic-test-due-report></app-periodic-test-due-report>
       </div>
     </div>
   </div>
