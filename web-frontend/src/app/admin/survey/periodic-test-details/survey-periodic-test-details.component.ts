@@ -40,6 +40,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-survey-periodic-test-details',
@@ -81,6 +82,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     'survey_dt',
     'status_cv',
     'remarks',
+    'action'
   ];
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY-DETAILS'
@@ -138,7 +140,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     CONFIRM: 'COMMON-FORM.CONFIRM',
     EXISTED: 'COMMON-FORM.EXISTED',
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
-    CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
+    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     LAST_TEST: 'COMMON-FORM.LAST-TEST',
@@ -154,6 +156,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     TEST_TYPE: 'COMMON-FORM.TEST-TYPE',
     PERIODIC_TEST_SURVEY: 'COMMON-FORM.PERIODIC-TEST-SURVEY',
     EDIT: 'COMMON-FORM.EDIT',
+    DELETE: 'COMMON-FORM.DELETE',
   }
 
   ptForm?: UntypedFormGroup;
@@ -356,18 +359,6 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     });
   }
 
-  // context menu
-  onContextMenu(event: MouseEvent, item: StoringOrderItem) {
-    event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-      this.contextMenu.menuData = { item: item };
-      this.contextMenu.menu.focusFirstItem('mouse');
-      this.contextMenu.openMenu();
-    }
-  }
-
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -434,12 +425,13 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
           surveyStatusCvList: this.surveyStatusCvList,
         },
         surveyDetail: row,
+        tiItem: this.tiItem,
         sot: this.sotItem,
         cvDS: this.cvDS,
         ccDS: this.ccDS,
         surveyDS: this.surveyDS,
         tiDS: this.tiDS,
-        next_test_desc: this.getNextTestIGS(),
+        next_test_desc: this.getNextTest(),
         next_test_cv: this.getNextTestCv()
       },
       direction: tempDirection
@@ -451,6 +443,80 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
       }
     });
   }
+
+  deleteSurveyDialog(event: Event, row: SurveyDetailItem) {
+    this.stopPropagation(event); // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        //this.deleteSurveyDetail(row);
+        console.log('confirm delete survey');
+      }
+    });
+  }
+
+  // deleteSurveyDetail(row: SurveyDetailItem) {
+  //   const deletedGuid = row.guid;
+  //   var surveyDetail: any = {
+  //     guid: row?.guid,
+  //     sot_guid: row?.sot_guid,
+  //     survey_type_cv: 'PERIODIC_TEST',
+  //     test_class_cv: this.surveyForm.get('test_class_cv')?.value,
+  //     survey_dt: Utility.convertDate(this.surveyForm.get('survey_dt')?.value),
+  //     status_cv: this.surveyForm.get('status_cv')?.value,
+  //     remarks: this.surveyForm.get('remarks')?.value,
+  //     test_type_cv: this.surveyForm.get('test_type_cv')?.value,
+  //   }
+  //   var periodicTest: any = {
+  //     last_test_cv: surveyDetail.test_type_cv,
+  //     next_test_cv: this.tiDS.getNextTestCv(surveyDetail.test_type_cv),
+  //     tank_no: this.sot?.tank_no
+  //   }
+  //   console.log('submit surveyDetail: ', surveyDetail);
+  //   console.log('submit periodicTest: ', periodicTest);
+  //   if (surveyDetail.guid) {
+  //     const isSameDate = this.isSameDateAsLastTestDt(this.originalSurveyDt, this.tiItem?.test_dt);
+  //     if (isSameDate) {
+  //       this.surveyDS.updateSurveyDetail(surveyDetail, periodicTest).subscribe(result => {
+  //         const returnDialog: any = {
+  //           savedSuccess: (result?.data?.updateSurveyDetail ?? 0) > 0,
+  //           surveyDetail: surveyDetail,
+  //           action: this.action
+  //         }
+  //         this.dialogRef.close(returnDialog);
+  //       });
+  //     } else {
+  //       this.surveyDS.updateSurveyDetail(surveyDetail).subscribe(result => {
+  //         const returnDialog: any = {
+  //           savedSuccess: (result?.data?.updateSurveyDetail ?? 0) > 0,
+  //           surveyDetail: surveyDetail,
+  //           action: this.action
+  //         }
+  //         this.dialogRef.close(returnDialog);
+  //       });
+  //     }
+  //   } else {
+  //     this.surveyDS.addSurveyDetail(surveyDetail, periodicTest).subscribe(result => {
+  //       const returnDialog: any = {
+  //         savedSuccess: (result?.data?.addSurveyDetail ?? 0) > 0,
+  //         action: this.action
+  //       }
+  //       this.dialogRef.close(returnDialog);
+  //     });
+  //   }
+  // }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {

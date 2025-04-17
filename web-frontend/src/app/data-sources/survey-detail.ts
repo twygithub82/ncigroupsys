@@ -112,8 +112,14 @@ export const ADD_SURVEY = gql`
 `;
 
 export const UPDATE_SURVEY = gql`
-  mutation updateSurveyDetail($surveyDetail: survey_detailInput!) {
-    updateSurveyDetail(surveyDetail: $surveyDetail)
+  mutation updateSurveyDetail($surveyDetail: survey_detailInput!, $periodicTest: PeriodicTestRequestInput) {
+    updateSurveyDetail(surveyDetail: $surveyDetail, periodicTest: $periodicTest)
+  }
+`;
+
+export const DELETE_SURVEY = gql`
+  mutation deleteSurveyDetail($deletedGuid: String!, $surveyDetail: survey_detailInput!, $periodicTest: PeriodicTestRequestInput) {
+    deleteSurveyDetail(deletedGuid: $deletedGuid, surveyDetail: $surveyDetail, periodicTest: $periodicTest)
   }
 `;
 
@@ -179,12 +185,25 @@ export class SurveyDetailDS extends BaseDataSource<SurveyDetailItem> {
     });
   }
 
-  updateSurveyDetail(surveyDetail: any): Observable<any> {
+  updateSurveyDetail(surveyDetail: any, periodicTest?: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_SURVEY,
       variables: {
-        surveyDetail
+        surveyDetail, periodicTest
       }
     });
+  }
+
+  deleteSurveyDetail(deleteGuid: string, surveyDetail: any, periodicTest?: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_SURVEY,
+      variables: {
+        deleteGuid, surveyDetail, periodicTest
+      }
+    });
+  }
+
+  canDelete(surveyDetail: any) {
+    return true;
   }
 }

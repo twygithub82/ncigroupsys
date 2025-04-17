@@ -20,7 +20,7 @@ import { CodeValuesDS } from 'app/data-sources/code-values';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
-import { TankInfoDS } from 'app/data-sources/tank-info';
+import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
@@ -37,6 +37,7 @@ export interface DialogData {
   ccDS: CustomerCompanyDS;
   surveyDS: SurveyDetailDS;
   tiDS: TankInfoDS;
+  tiItem?: TankInfoItem;
 }
 
 @Component({
@@ -72,9 +73,11 @@ export class FormDialogComponent {
   surveyForm: UntypedFormGroup;
   surveyDetail?: SurveyDetailItem;
   sot: StoringOrderTankItem;
+  tiItem?: TankInfoItem;
   next_test_desc?: string;
   next_test_cv?: string;
   maxDate = new Date();
+  originalSurveyDt?: number;
 
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
@@ -86,7 +89,6 @@ export class FormDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-
   ) {
     // Set the defaults
     this.cvDS = data.cvDS;
@@ -94,10 +96,13 @@ export class FormDialogComponent {
     this.surveyDS = data.surveyDS;
     this.tiDS = data.tiDS;
     this.sot = data.sot;
+    this.tiItem = data.tiItem;
     this.surveyDetail = data.surveyDetail;
+    this.originalSurveyDt = data.surveyDetail.survey_dt;
     this.action = data.action!;
     this.next_test_desc = data.next_test_desc;
     this.next_test_cv = data.next_test_cv;
+
     if (this.action === 'edit') {
       this.dialogTitle = data.translatedLangText.EDIT + " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
       // this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.booking.booking_dt) as Date, this.startDateToday);
@@ -140,14 +145,26 @@ export class FormDialogComponent {
       console.log('submit surveyDetail: ', surveyDetail);
       console.log('submit periodicTest: ', periodicTest);
       if (surveyDetail.guid) {
-        this.surveyDS.updateSurveyDetail(surveyDetail).subscribe(result => {
-          const returnDialog: any = {
-            savedSuccess: (result?.data?.updateSurveyDetail ?? 0) > 0,
-            surveyDetail: surveyDetail,
-            action: this.action
-          }
-          this.dialogRef.close(returnDialog);
-        });
+        const isSameDate = this.isSameDateAsLastTestDt(this.originalSurveyDt, this.tiItem?.test_dt);
+        if (isSameDate) {
+          this.surveyDS.updateSurveyDetail(surveyDetail, periodicTest).subscribe(result => {
+            const returnDialog: any = {
+              savedSuccess: (result?.data?.updateSurveyDetail ?? 0) > 0,
+              surveyDetail: surveyDetail,
+              action: this.action
+            }
+            this.dialogRef.close(returnDialog);
+          });
+        } else {
+          this.surveyDS.updateSurveyDetail(surveyDetail).subscribe(result => {
+            const returnDialog: any = {
+              savedSuccess: (result?.data?.updateSurveyDetail ?? 0) > 0,
+              surveyDetail: surveyDetail,
+              action: this.action
+            }
+            this.dialogRef.close(returnDialog);
+          });
+        }
       } else {
         this.surveyDS.addSurveyDetail(surveyDetail, periodicTest).subscribe(result => {
           const returnDialog: any = {
@@ -227,5 +244,9 @@ export class FormDialogComponent {
       return this.data.populateData.surveyorList.find((x: any) => x.guid === guid)
     }
     return undefined;
+  }
+
+  isSameDateAsLastTestDt(surveyDt: any, lastTestDt: any) {
+    return Utility.isSameDate(surveyDt, lastTestDt)
   }
 }
