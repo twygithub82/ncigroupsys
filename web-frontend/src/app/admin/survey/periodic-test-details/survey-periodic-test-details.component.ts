@@ -172,6 +172,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
   sotItem?: StoringOrderTankItem;
   tiItem?: TankInfoItem;
   surveyDetailItem: SurveyDetailItem[] = [];
+  latestSurveyDetailItem: SurveyDetailItem[] = [];
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   // surveyorList: CustomerCompanyItem[] = [];
   last_cargoList?: TariffCleaningItem[];
@@ -293,24 +294,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
-      this.subs.sink = this.sotDS.getStoringOrderTanksForPTSurveyByID(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          this.sotItem = data[0];
-          this.surveyDetailItem = this.sotItem?.survey_detail || [];
-          this.last_test_desc = this.getLastTest();
-          this.next_test_desc = this.getNextTest();
-
-          this.tiDS.getTankInfoForLastTest(this.sotItem.tank_no!).subscribe(data => {
-            if (data.length > 0) {
-              this.tiItem = data[0];
-              this.last_test_desc = this.getLastTest();
-              this.next_test_desc = this.getNextTest();
-            }
-          });
-        }
-      });
-    } else {
-      // NEW
+      this.refreshPageDetail();
     }
   }
 
@@ -330,33 +314,23 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     this.subs.sink = this.sotDS.getStoringOrderTanksForPTSurveyByID(this.sot_guid).subscribe(data => {
       if (data.length > 0) {
         this.sotItem = data[0];
-        this.surveyDetailItem = this.sotItem?.survey_detail || [];
+        this.surveyDetailItem = this.sortSurveyDetail(this.sotItem?.survey_detail || []);
+        this.tiItem = this.sotItem.tank_info;
         this.last_test_desc = this.getLastTest();
         this.next_test_desc = this.getNextTest();
 
-        this.tiDS.getTankInfoForLastTest(this.sotItem.tank_no!).subscribe(data => {
-          if (data.length > 0) {
-            this.tiItem = data[0];
-            this.last_test_desc = this.getLastTest();
-            this.next_test_desc = this.getNextTest();
-          }
+        this.surveyDS.getSurveyDetailByTankNo(this.sotItem.tank_no!).subscribe(data => {
+          this.latestSurveyDetailItem = data;
+          console.log(this.latestSurveyDetailItem)
         });
       }
     });
   }
 
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
+  sortSurveyDetail(surveyDetail?: SurveyDetailItem[]): SurveyDetailItem[] {
+    if (!surveyDetail?.length) return [];
+  
+    return [...surveyDetail].sort((a, b) => (b.survey_dt ?? 0) - (a.survey_dt ?? 0));
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -386,6 +360,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
           surveyTypeCvList: this.surveyTypeCvList,
           surveyStatusCvList: this.surveyStatusCvList,
         },
+        latestSurveyDetailItem: this.latestSurveyDetailItem,
         sot: this.sotItem,
         cvDS: this.cvDS,
         ccDS: this.ccDS,
@@ -425,7 +400,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
           surveyStatusCvList: this.surveyStatusCvList,
         },
         surveyDetail: row,
-        tiItem: this.tiItem,
+        latestSurveyDetailItem: this.latestSurveyDetailItem,
         sot: this.sotItem,
         cvDS: this.cvDS,
         ccDS: this.ccDS,
@@ -461,62 +436,59 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        //this.deleteSurveyDetail(row);
+        this.deleteSurveyDetail(row);
         console.log('confirm delete survey');
       }
     });
   }
 
-  // deleteSurveyDetail(row: SurveyDetailItem) {
-  //   const deletedGuid = row.guid;
-  //   var surveyDetail: any = {
-  //     guid: row?.guid,
-  //     sot_guid: row?.sot_guid,
-  //     survey_type_cv: 'PERIODIC_TEST',
-  //     test_class_cv: this.surveyForm.get('test_class_cv')?.value,
-  //     survey_dt: Utility.convertDate(this.surveyForm.get('survey_dt')?.value),
-  //     status_cv: this.surveyForm.get('status_cv')?.value,
-  //     remarks: this.surveyForm.get('remarks')?.value,
-  //     test_type_cv: this.surveyForm.get('test_type_cv')?.value,
-  //   }
-  //   var periodicTest: any = {
-  //     last_test_cv: surveyDetail.test_type_cv,
-  //     next_test_cv: this.tiDS.getNextTestCv(surveyDetail.test_type_cv),
-  //     tank_no: this.sot?.tank_no
-  //   }
-  //   console.log('submit surveyDetail: ', surveyDetail);
-  //   console.log('submit periodicTest: ', periodicTest);
-  //   if (surveyDetail.guid) {
-  //     const isSameDate = this.isSameDateAsLastTestDt(this.originalSurveyDt, this.tiItem?.test_dt);
-  //     if (isSameDate) {
-  //       this.surveyDS.updateSurveyDetail(surveyDetail, periodicTest).subscribe(result => {
-  //         const returnDialog: any = {
-  //           savedSuccess: (result?.data?.updateSurveyDetail ?? 0) > 0,
-  //           surveyDetail: surveyDetail,
-  //           action: this.action
-  //         }
-  //         this.dialogRef.close(returnDialog);
-  //       });
-  //     } else {
-  //       this.surveyDS.updateSurveyDetail(surveyDetail).subscribe(result => {
-  //         const returnDialog: any = {
-  //           savedSuccess: (result?.data?.updateSurveyDetail ?? 0) > 0,
-  //           surveyDetail: surveyDetail,
-  //           action: this.action
-  //         }
-  //         this.dialogRef.close(returnDialog);
-  //       });
-  //     }
-  //   } else {
-  //     this.surveyDS.addSurveyDetail(surveyDetail, periodicTest).subscribe(result => {
-  //       const returnDialog: any = {
-  //         savedSuccess: (result?.data?.addSurveyDetail ?? 0) > 0,
-  //         action: this.action
-  //       }
-  //       this.dialogRef.close(returnDialog);
-  //     });
-  //   }
-  // }
+  deleteSurveyDetail(row: SurveyDetailItem) {
+    const deletedGuid = row.guid!;
+    const isLatestDeleted = deletedGuid === this.latestSurveyDetailItem.reduce((latest, item) =>
+      !latest || item.survey_dt! > latest.survey_dt! ? item : latest,
+      null as SurveyDetailItem | null
+    )?.guid;
+    if (isLatestDeleted) {
+      let surveyDetail: any = {};
+      let periodicTest: any = null;
+
+      // Always at least one item in the list
+      if ((this.latestSurveyDetailItem?.length ?? 0) >= 2) {
+        const fallbackDetail = new SurveyDetailItem(this.latestSurveyDetailItem[1]);
+        surveyDetail = fallbackDetail;
+        periodicTest = {
+          last_test_cv: fallbackDetail.test_type_cv,
+          next_test_cv: this.tiDS.getNextTestCv(fallbackDetail.test_type_cv),
+          tank_no: this.sotItem?.tank_no,
+          test_dt: fallbackDetail.survey_dt
+        };
+      } else {
+        const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey;
+        surveyDetail = {
+          test_class_cv: igs?.test_class_cv
+        };
+        periodicTest = {
+          last_test_cv: igs?.last_test_cv,
+          next_test_cv: igs?.next_test_cv,
+          tank_no: this.sotItem?.tank_no,
+          test_dt: igs?.test_dt
+        };
+      }
+
+      this.surveyDS.deleteSurveyDetail(deletedGuid, surveyDetail, periodicTest).subscribe(result => {
+        this.handleDeleteSuccess(result?.data?.handleDeleteSuccess);
+        this.refreshPageDetail();
+      });
+
+    } else {
+      // No need to update tank info
+      const surveyDetail = new SurveyDetailItem(row);
+      this.surveyDS.deleteSurveyDetail(deletedGuid, surveyDetail, null).subscribe(result => {
+        this.handleDeleteSuccess(result?.data?.handleDeleteSuccess);
+        this.refreshPageDetail();
+      });
+    }
+  }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {

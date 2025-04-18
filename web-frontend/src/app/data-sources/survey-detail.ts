@@ -105,6 +105,26 @@ const GET_SURVEY_DETAIL_FOR_MOVEMENT = gql`
   }
 `;
 
+export const GET_SURVEY_DETAIL_BY_TANK_NO = gql`
+  query querySurveyDetailByTankNo($tankNo: String!, $rowCount: Int!){
+    resultList: querySurveyDetailByTankNo(tankNo: $tankNo, rowCount: $rowCount) {
+      delete_dt
+      guid
+      remarks
+      sot_guid
+      status_cv
+      survey_dt
+      survey_type_cv
+      test_class_cv
+      test_type_cv
+      update_by
+      update_dt
+      create_by
+      create_dt
+    }
+  }
+`
+
 export const ADD_SURVEY = gql`
   mutation addSurveyDetail($surveyDetail: survey_detailInput!, $periodicTest: PeriodicTestRequestInput) {
     addSurveyDetail(surveyDetail: $surveyDetail, periodicTest: $periodicTest)
@@ -127,6 +147,7 @@ export class SurveyDetailDS extends BaseDataSource<SurveyDetailItem> {
   constructor(private apollo: Apollo) {
     super();
   }
+
   searchSurveyDetail(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<SurveyDetailItem[]> {
     this.loadingSubject.next(true);
 
@@ -148,6 +169,7 @@ export class SurveyDetailDS extends BaseDataSource<SurveyDetailItem> {
         finalize(() => this.loadingSubject.next(false))
       );
   }
+
   searchSurveyDetailForMovement(sot_guid: any): Observable<SurveyDetailItem[]> {
     this.loadingSubject.next(true);
     const where = {
@@ -176,7 +198,26 @@ export class SurveyDetailDS extends BaseDataSource<SurveyDetailItem> {
       );
   }
 
-  addSurveyDetail(surveyDetail: any, periodicTest: any): Observable<any> {
+  getSurveyDetailByTankNo(tankNo: string): Observable<SurveyDetailItem[]> {
+    this.loadingSubject.next(true);
+    const rowCount = 2;
+    return this.apollo
+      .query<any>({
+        query: GET_SURVEY_DETAIL_BY_TANK_NO,
+        variables: { tankNo, rowCount },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const resultList = result.data?.resultList || [];
+          return resultList;
+        }),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+
+  addSurveyDetail(surveyDetail: any, periodicTest?: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_SURVEY,
       variables: {
@@ -194,11 +235,11 @@ export class SurveyDetailDS extends BaseDataSource<SurveyDetailItem> {
     });
   }
 
-  deleteSurveyDetail(deleteGuid: string, surveyDetail: any, periodicTest?: any): Observable<any> {
+  deleteSurveyDetail(deletedGuid: string, surveyDetail: any, periodicTest?: any): Observable<any> {
     return this.apollo.mutate({
       mutation: DELETE_SURVEY,
       variables: {
-        deleteGuid, surveyDetail, periodicTest
+        deletedGuid, surveyDetail, periodicTest
       }
     });
   }
