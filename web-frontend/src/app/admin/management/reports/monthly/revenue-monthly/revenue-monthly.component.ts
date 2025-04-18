@@ -299,9 +299,6 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
 
   public loadData() {
     const queries = [
-      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
@@ -419,7 +416,7 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
 
       // if(queryType==1)
       // {
-      this.subs.sink = this.reportDS.searchManagementReportRenvenueMonthlyReport(this.lastSearchCriteria)
+      this.subs.sink = this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
         .subscribe(data => {
           this.repData = data;
           this.ProcessReport(this.repData,date!,reportType!,customerName!,invTypes!);

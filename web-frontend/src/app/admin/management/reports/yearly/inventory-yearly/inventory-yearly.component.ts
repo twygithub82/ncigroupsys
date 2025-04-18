@@ -295,8 +295,6 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   public loadData() {
     const queries = [
-      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'reportTypeCv', codeValType: 'REPORT_TYPE' },
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
     ];

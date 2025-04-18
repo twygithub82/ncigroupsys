@@ -23,11 +23,11 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
+import { report_status_yard,  MonthlyProcessData,InventoryAnalyzer, ManagementReportYearlyInventory } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
-import { ManagementReportYearlyRevenueItem, MonthlyProcessData,InventoryAnalyzer, ManagementReportMonthlyInventory  } from 'app/data-sources/reports-management';
 import {
   ChartComponent,
   ApexAxisChartSeries,
@@ -47,10 +47,10 @@ import {
   ApexResponsive,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-
+import { WeeklyPerformmanceItem } from 'app/data-sources/reports-management';
 
 export interface DialogData {
-  repData: ManagementReportMonthlyInventory,
+  repData: WeeklyPerformmanceItem[],
   date:string,
   repType:string,
   customer:string,
@@ -63,9 +63,9 @@ interface SeriesItem {
 }
 
 @Component({
-  selector: 'app-monthly-inventory-sales-report-details-pdf',
-  templateUrl: './inventory-sales-details-pdf.component.html',
-  styleUrls: ['./inventory-sales-details-pdf.component.scss'],
+  selector: 'app-performance-weekly-report-details-pdf',
+  templateUrl: './performance-weekly-details-pdf.component.html',
+  styleUrls: ['./performance-weekly-details-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -78,7 +78,7 @@ interface SeriesItem {
     NgApexchartsModule
   ],
 })
-export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -277,24 +277,21 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     TANK:"COMMON-FORM.TANK",
     COST:"COMMON-FORM.COST",
     YEARLY_SALES_REPORT:'COMMON-FORM.YEARLY-SALES-REPORT',
-    YEARLY_REVENUE_REPORT:'COMMON-FORM.YEARLY-REVENUE-REPORT',
     GATE_SURCHARGE:'COMMON-FORM.GATE-SURCHARGE',
     LOLO:'COMMON-FORM.LOLO',
     PREINSPECTION:'COMMON-FORM.PREINSPECTION',
     ON_DEPOT:'COMMON-FORM.ON-DEPOT',
     OUT_GATE:'COMMON-FORM.OUT-GATE',
     PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
-    GATE:'COMMON-FORM.GATE',
-    LIFT_ON:'COMMON-FORM.LIFT-ON',
-    LIFT_OFF:'COMMON-FORM.LIFT-OFF',
-    GATE_IN:'COMMON-FORM.GATE-IN',
-    GATE_OUT:'COMMON-FORM.GATE-OUT',
-    APPROVED_COUNT:'COMMON-FORM.APPROVED-COUNT',
-    COMPLETED_COUNT:'COMMON-FORM.COMPLETED-COUNT',
-    APPROVED_HOUR:'COMMON-FORM.APPROVED-HOUR',
-    COMPLETED_HOUR:'COMMON-FORM.COMPLETED-HOUR',
-    DIFFERENCE:'COMMON-FORM.DIFFERENCE',
-    MONTHLY_INVENTORY_REPORT:'COMMON-FORM.MONTHLY-INVENTORY-REPORT'
+    NO_OF_CLEAN:'COMMON-FORM.NO-OF-CLEAN',
+    NO_OF_REPAIR_ORDER:'COMMON-FORM.NO-OF-REPAIR-ORDER',
+    NO_OF_GATE_IN:'COMMON-FORM.NO-OF-GATE-IN',
+    NO_OF_GATE_OUT:'COMMON-FORM.NO-OF-GATE-OUT',
+    TOTAL_IN_OUT:'COMMON-FORM.TOTAL-IN-OUT',
+    AVERAGE_IN_OUT:'COMMON-FORM.AVERAGE-IN-OUT',
+    DEPOT_PERFORMANCE_DATA_WEEKLY:'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY'
+    
+    
   }
 
   type?: string | null;
@@ -342,7 +339,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: ManagementReportMonthlyInventory;
+  repData?: WeeklyPerformmanceItem[];
   date?:string;
   repType?:string;
   customer?:string;
@@ -350,18 +347,13 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   lineChartOptions?:any; 
   pieChartOptions?:any;
   invTypes?:string[];
-  colors?: [
-    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
-    "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
-    "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"
-  ]
   // date:string='';
   // invType:string='';
 
 
 
   constructor(
-    public dialogRef: MatDialogRef<InventoryMonthlySalesReportDetailsPdfComponent>,
+    public dialogRef: MatDialogRef<WeeklyPerformanceReportDetailsPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -656,11 +648,11 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
  
   async exportToPDF_r1(fileName: string = 'document.pdf') {
-    const pageWidth = 297; // A4 width in mm (landscape)
-    const pageHeight = 220; // A4 height in mm (landscape)
-    const leftMargin = 5;
-    const rightMargin = 5;
-    const topMargin = 8;
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
     const bottomMargin = 5;
     const contentWidth = pageWidth - leftMargin - rightMargin;
     const maxContentHeight = pageHeight - topMargin - bottomMargin;
@@ -668,7 +660,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
 
-    const pdf = new jsPDF('l', 'mm', 'a4');
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
 
@@ -683,50 +675,13 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
-    // let showPreinspectSurcharge:boolean=this.invTypes?.includes("PREINSPECTION")!;
-    // let showLoloSurcharge:boolean=this.invTypes?.includes("LOLO")!;
-    // let showStorageSurcharge:boolean=this.invTypes?.includes("STORAGE")!;
     let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
-    // let showResidueSurcharge:boolean=this.invTypes?.includes("RESIDUE")!;
     let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
     let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
     let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
     const reportTitle = this.GetReportTitle();
-    const headers = [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.DATE, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.DAY, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-     // ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
-      //...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
-      //...(showStorageSurcharge? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
-      ...(showGateSurcharge? [
-        { content: this.translatedLangText.GATE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      ]:[]),
-      ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      // ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: 'middle' }}]:[]),
-      // { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+    const headers = [[ ]];
 
-    ],
-    [
-      // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      // ...(showPreinspectSurcharge?[this.translatedLangText.QTY, this.translatedLangText.COST]:[]), // Sub-headers for preinspection
-      // ...(showLoloSurcharge?[this.translatedLangText.QTY, this.translatedLangText.COST]:[]), // Sub-headers for LOLO
-      // ...(showStorageSurcharge?[this.translatedLangText.QTY, this.translatedLangText.COST]:[]), // Sub-headers for storage
-      ...(showGateSurcharge?[
-        this.translatedLangText.GATE_IN, this.translatedLangText.GATE_OUT,
-        this.translatedLangText.LIFT_ON, this.translatedLangText.LIFT_OFF
-      ]:[]), // Sub-headers for GATE_SURCHARGE
-      ...(showSteamSurcharge?[this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT]:[]), // Sub-headers for STEAM
-      // ...(showResidueSurcharge?[this.translatedLangText.QTY, this.translatedLangText.COST]:[]), // Sub-headers for residue
-      ...(showCleanSurcharge?[this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT]:[]), // Sub-headers for RESIDUE
-      ...(showRepairSurcharge?[this.translatedLangText.APPROVED_HOUR, this.translatedLangText.COMPLETED_HOUR]:[]), // Sub-headers for CLEANING
-     // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
-    ]];
-
-   
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
@@ -743,12 +698,9 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      // 13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      // 16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      // 17: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      // 18: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+     // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+     // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
@@ -774,7 +726,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     let lastTableFinalY = 45;
 
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-    const data: any[][] = []; // Explicitly define data as a 2D array
+   // const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
@@ -785,188 +737,53 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
       Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     }
     var idx = 0;
-
-    var grpData= InventoryAnalyzer.groupInventoryMonthlyByDate(this.repData!);
+    var hdr:string[][]=[['']];
+    var data:string[][]=[
+      [`${this.translatedLangText.NO_OF_CLEAN}`],
+      [`${this.translatedLangText.NO_OF_REPAIR_ORDER}`],
+      [`${this.translatedLangText.NO_OF_GATE_IN}`],
+      [`${this.translatedLangText.NO_OF_GATE_OUT}`],
+      [`${this.translatedLangText.TOTAL_IN_OUT}`],
+      [`${this.translatedLangText.AVERAGE_IN_OUT}`],
+      [`${this.translatedLangText.ON_DEPOT}`]
+     ];
+    // var cleaning:string[][]=[[`${this.translatedLangText.NO_OF_CLEANING}`]];
+    // var repair:string[]=[`${this.translatedLangText.NO_OF_REPAIR_ORDER}`];
+    // var gateIn:string[]=[`${this.translatedLangText.NO_OF_GATE_IN}`];
+    // var gateOut:string[]=[`${this.translatedLangText.NO_OF_GATE_OUT}`];
+    // var totalInOut:string[]=[`${this.translatedLangText.TOTAL_IN_OUT}`];
+    // var averageInOut:string[]=[`${this.translatedLangText.AVERAGE_IN_OUT}`];
+    var year :number = Utility.extractYearFromMonthYear(this.date!)||(new Date()).getFullYear();
+    this.repData?.forEach(itm=>{
+        var isoWkRange = `WK-${ String(itm.week_of_year!).padStart(2, '0')} (${Utility.getISOWeekRange(year, itm.week_of_year!)})`;
+        hdr[0].push(isoWkRange!);
+        data[0].push(`${itm.cleaning_count||''}`);
+        data[1].push(`${itm.repair_count||''}`);
+        data[2].push(`${itm.gate_in_count||''}`);
+        data[3].push(`${itm.gate_out_count||''}`);
+        data[4].push(`${itm.total_gate_count||''}`);
+        data[5].push(`${itm.average_gate_count||''}`);
+        data[6].push(`${itm.depot_count||''}`);
+    } );
+    //var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes(this.repData!);
    
 
-    var series:SeriesItem[]=[];
-    var index:number=1;
-    var prcss:string[]=[
-      //...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
-      //...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
-     // ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
-      ...(showGateSurcharge? [
-        this.translatedLangText.GATE_IN, 
-        this.translatedLangText.GATE_OUT,
-        this.translatedLangText.LIFT_ON,  
-        this.translatedLangText.LIFT_OFF,  
-      ]:[]),
-      ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
-      //...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
-      ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
-      ...(showRepairSurcharge? [this.translatedLangText.REPAIR]:[]),
-    ]
+    // var series:SeriesItem[]=[];
+    // var index:number=1;
+    // var prcss:string[]=[
+    //   ...(showGateSurcharge?[this.translatedLangText.IN_GATE,this.translatedLangText.OUT_GATE]:[]),
+    //   ...(showSteamSurcharge?[this.translatedLangText.STEAM]:[]),
+    //   ...(showCleanSurcharge?[this.translatedLangText.CLEANING]:[]),
+    //   ...(showRepairSurcharge?[this.translatedLangText.REPAIR]:[])
+    // ]
     var prcsValues:number[]=[]
-    var total_all_cost:number=0;
-    var average_counter=0;
-    var clnAppCount=0,clnCmpCount=0;
-    var stmAppCount=0,stmCmpCount=0;
-    var repAppHour=0,repCmpHour=0;
-    var gateInCount=0,gateOutCount=0;
-    var liftOnCount=0,liftOffCount=0;
-
-    for (const date in grpData) {
-      // var total:number =(monthData.gate?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.gate?.cost||0)
-      // +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
-      // total_all_cost+=total;
-      // average_counter++;
-      const entry = grpData[date];
-      data.push([
-        (++idx).toString(),date,entry.day,
-     //   ...(showPreinspectSurcharge?[ monthData.gate?.count||'',Utility.formatNumberDisplay(monthData.gate?.cost)]:[]),
-      //  ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
-      //  ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
-         
-        ...(showGateSurcharge?[
-          Utility.formatNumberDisplay(entry.gateInOut?.gate?.gate_in_count),Utility.formatNumberDisplay(entry.gateInOut?.gate?.gate_out_count),
-          Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_on_count),Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_off_count)
-        ]:[]),
-        ...(showSteamSurcharge?[Utility.formatNumberDisplay( entry.steaming?.approved_count),Utility.formatNumberDisplay(entry.steaming?.completed_count)]:[]),
-       // ...(showResidueSurcharge?[ monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.cost)]:[]),
-        ...(showCleanSurcharge?[Utility.formatNumberDisplay(entry.cleaning?.approved_count),Utility.formatNumberDisplay(entry.cleaning?.completed_count)]:[]),
-        ...(showRepairSurcharge?[Utility.formatNumberDisplay(entry.repair?.approved_hour),Utility.formatNumberDisplay(entry.repair?.completed_hour)]:[]),
-       // Utility.formatNumberDisplay(total)
-      ]);
-
-      clnAppCount+=(entry.cleaning?.approved_count||0);
-      clnCmpCount+=(entry.cleaning?.completed_count||0)
-      stmAppCount+=(entry.steaming?.approved_count||0);
-      stmCmpCount+=(entry.steaming?.completed_count||0)
-      repAppHour+=(entry.repair?.approved_hour||0);
-      repCmpHour+=(entry.repair?.completed_hour||0);
-      gateInCount+=(entry.gateInOut?.gate?.gate_in_count||0);
-      gateOutCount+=(entry.gateInOut?.gate?.gate_out_count||0)
-      liftOnCount+=(entry.gateInOut?.lolo?.lift_on_count||0);
-      liftOffCount+=(entry.gateInOut?.lolo?.lift_off_count||0)
-
-
-      prcss.forEach(p=>{
-        var s = series.find(s=>s.name==p);
-        var bInsert=false;
-        if(!s)
-        {
-          s={
-            name: p,
-            data: [] // initialize with an empty array or default values
-          };
-          bInsert=true;
-        }
-        switch (p)
-        {
-          // case this.translatedLangText.PREINSPECTION:
-          //  if(showPreinspectSurcharge) s.data.push(monthData.preinspection?.cost||0);
-          // break;
-          // case this.translatedLangText.LOLO:
-          //   if(showLoloSurcharge) s.data.push(monthData.lolo?.cost||0);
-          // break;
-          // case this.translatedLangText.STORAGE:
-          //   if(showStorageSurcharge) s.data.push(monthData.storage?.cost||0);
-          // break;
-          case this.translatedLangText.STEAM:
-            if(showSteamSurcharge) s.data.push(entry.steaming?.completed_count||0);
-          break;
-          case this.translatedLangText.CLEANING:
-            if(showCleanSurcharge) s.data.push(entry.cleaning?.completed_count||0);
-          break;
-          case this.translatedLangText.REPAIR:
-            if(showRepairSurcharge)  s.data.push(entry.repair?.completed_hour||0);
-          break;
-          // case this.translatedLangText.RESIDUE:
-          //   if(showResidueSurcharge) s.data.push(monthData.residue?.cost||0);
-          // break;
-          case this.translatedLangText.GATE_IN:
-            if(showGateSurcharge) 
-              { 
-                s.data.push(entry.gateInOut?.gate.gate_in_count||0);
-                // s.data.push(entry.gateInOut?.gate.gate_out_count||0);
-                // s.data.push(entry.gateInOut?.gate.lift_on_count||0);
-                // s.data.push(entry.gateInOut?.gate.lift_off_count||0);
-              }
-          break;
-          case this.translatedLangText.GATE_OUT:
-            if(showGateSurcharge) 
-              { 
-                //s.data.push(entry.gateInOut?.gate.gate_in_count||0);
-                 s.data.push(entry.gateInOut?.gate.gate_out_count||0);
-                // s.data.push(entry.gateInOut?.gate.lift_on_count||0);
-                // s.data.push(entry.gateInOut?.gate.lift_off_count||0);
-              }
-          break;
-          case this.translatedLangText.LIFT_ON:
-            if(showGateSurcharge) 
-              { 
-                //s.data.push(entry.gateInOut?.gate.gate_in_count||0);
-                // s.data.push(entry.gateInOut?.gate.gate_out_count||0);
-                 s.data.push(entry.gateInOut?.gate.lift_on_count||0);
-                // s.data.push(entry.gateInOut?.gate.lift_off_count||0);
-              }
-          break;
-          case this.translatedLangText.LIFT_OFF:
-            if(showGateSurcharge) 
-              { 
-                //s.data.push(entry.gateInOut?.gate.gate_in_count||0);
-                // s.data.push(entry.gateInOut?.gate.gate_out_count||0);
-                 //s.data.push(entry.gateInOut?.gate.lift_on_count||0);
-                 s.data.push(entry.gateInOut?.gate.lift_off_count||0);
-              }
-          break;
-        }
-        if(bInsert)
-        {
-          series.push(s);
-        }
-      });
-    }
-    data.push([
-      this.translatedLangText.TOTAL,"","",
-     // ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.total_cost),'']:[]),
-     // ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.total_cost),'']:[]),
-     // ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost),'']:[]),
-      ...(showGateSurcharge?[
-        Utility.formatNumberDisplay(gateInCount),Utility.formatNumberDisplay(gateOutCount),
-        Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
-        ]:[]),
-      ...(showSteamSurcharge?[Utility.formatNumberDisplay(stmAppCount),Utility.formatNumberDisplay(stmCmpCount)]:[]),
-     // ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.total_cost),'']:[]),
-      ...(showCleanSurcharge?[Utility.formatNumberDisplay(clnAppCount),Utility.formatNumberDisplay(clnCmpCount)]:[]),
-      ...(showRepairSurcharge?[Utility.formatNumberDisplay(repAppHour),Utility.formatNumberDisplay(repCmpHour)]:[]),
-      //Utility.formatNumberDisplay(total_all_cost)
-    ]);
-
-    data.push([
-      this.translatedLangText.DIFFERENCE,"","",
-     // ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.average_cost||''),'']:[]),
-     // ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.average_cost||''),'']:[]),
-     // ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showGateSurcharge?[
-        (gateInCount-gateOutCount),'',
-        (liftOnCount-liftOffCount),'',  
-      ]:[]),
-      ...(showSteamSurcharge?[(stmAppCount-stmCmpCount),'']:[]),
-      //...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showCleanSurcharge?[(clnAppCount-clnCmpCount),'']:[]),
-      ...(showRepairSurcharge?[(repAppHour-repCmpHour),'']:[]),  
-      //Utility.formatNumberDisplay((total_all_cost/average_counter))
-    ]);
-   
-
     pdf.setDrawColor(0, 0, 0); // red line color
 
     pdf.setLineWidth(0.1);
     pdf.setLineDashPattern([0, 0], 0);
     // Add table using autoTable plugin
     autoTable(pdf, {
-      head: headers,
+      head: hdr,
       body: data,
       startY: startY, // Start table at the current startY value
       theme: 'grid',
@@ -982,87 +799,93 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         //halign: 'left', // Left-align content for body by default
         //valign: 'middle', // Vertically align content
       },
-      didParseCell: (data: any) => {
-        let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
-        let colSpan=3;
-        let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-       // let lastColumnIndex = data.table.columns.length-1;
-        // let depotCell=[6,7];
-        // if(!showGateSurcharge) depotCell=[];
-        if(data.section=="body" && ((data.column.index%2)==0))
-        {
-           var key = `${data.row.raw[1]}`;
+    //   didParseCell: (data: any) => {
+    //     let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
+    //     let colSpan=2;
+    //     let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
+    //     let depotCell=[6,7];
+    //     if(!showGateSurcharge) depotCell=[];
+    //     if(data.section=="body" && ((data.column.index%2)==0))
+    //     {
+    //        var key = `${data.row.raw[1]}`;
           
-           var matched=0;
-           var prop="";
-           switch (data.column.index)
-           {
-             case 2:
-             // if(showPreinspectSurcharge) prop="preinspection";
-               if(showGateSurcharge) prop="gate";
-              else if(showSteamSurcharge) prop="steaming";
-              else if(showCleanSurcharge) prop="cleaning";
-              else if(showRepairSurcharge) prop="repair";
-               break;
-             case 6:
-              if(showSteamSurcharge) prop="steaming";
-              break;
-             case 8:
-              if(showCleanSurcharge) prop="cleaning";
-              break;
-            case 10:
-              if(showRepairSurcharge)var prop="repair";
-               break;
-           
-           }
-           if(prop)
-           {
-             var textColor="";
-         
-          }
-        }
-
-        if((data.row.index==averageRowIndex||data.row.index==totalRowIndex )){
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor=[231, 231, 231];
-          data.cell.styles.valign = 'middle'; // Center text vertically
-          data.cell.fontSize=8;
-          colSpan=1;
-          if (data.column.index>0 && data.row.index==averageRowIndex)  colSpan=2;
-          else if (data.column.index==0) colSpan=3
-          if (((data.column.index %2==1 &&data.column.index!=1)||data.column.index==0)) {
-            data.cell.colSpan = colSpan;  // Merge 4 columns into one
-            if(data.row.index==averageRowIndex&&data.column.index!=1&&data.column.index %2==1)
-            {
-              var cellValue = Number(data.cell.text);
-              var negValue:boolean = cellValue<0;
-              
-              data.cell.text = Utility.formatNumberDisplay(Math.abs(cellValue));
-              if(negValue) 
-                {
-                  data.cell.text =`(${data.cell.text})`;
-                  data.cell.styles.textColor =  [250, 60, 60];
-
-                }
-
-            }
-            if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
+    //        var matched=0;
+    //        var prop="";
+    //        switch (data.column.index)
+    //        {
+    //          case 2:
+    //           if(showGateSurcharge) prop="gateIn";
+    //           else if(showSteamSurcharge) prop="steaming";
+    //           else if(showCleanSurcharge) prop="cleaning";
+    //           else if(showRepairSurcharge) prop="repair";
+    //            break;
+    //          case 4:
+    //           if(showGateSurcharge) prop="gateOut";
+    //           break;
+    //          case 8:
+    //           if(showSteamSurcharge) prop="steaming";
+    //           break;
+    //         case 10:
+    //           if(showCleanSurcharge)prop="cleaning";
+    //            break;
+    //         case 12:
+    //           if(showRepairSurcharge)var prop="repair";
+    //           break;
+    //        }
+    //        if(prop)
+    //        {
+    //          var textColor="";
+    //         if(grpData.processExtremes[prop].highest?.key==key)
+    //           {
+    //             textColor="#009F00";
+    //           }
+    //           else if(grpData.processExtremes[prop].lowest?.key==key)
+    //           {
+    //             textColor="#EF0000";
+    //           }
+    //           if(textColor)
+    //           {
+    //             data.cell.styles.textColor=textColor;
+    //           }
+    //       }
+    //     }
+    //     if(data.row.index==totalRowIndex ||data.row.index==averageRowIndex){
+    //       data.cell.styles.fontStyle = 'bold';
+    //       data.cell.styles.fillColor=[231, 231, 231];
+    //       data.cell.styles.valign = 'middle'; // Center text vertically
+    //       if (data.column.index %2==0) {
+    //         data.cell.colSpan = colSpan;  // Merge 4 columns into one
+    //         data.cell.fontSize=8;
+    //         if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
             
-          }
+    //       }
         
-        }
-        else if(data.section=="body" && data.row.raw[2]=="Sunday")
-        {
-          data.cell.styles.fillColor=[221, 221, 221];
-        }
+    //     }
+    //     else if (depotCell.includes(data.column.index))
+    //     {
+    //       var dpWidth=10
+    //       data.cell.colSpan = colSpan;
+    //       data.column.width = `${dpWidth}px`;  // Add unit
     
+    // // Alternative approach if above doesn't work
+    // // setTimeout(() => {
+    // //     data.column.width = `${dpWidth}px`;
+    // //     // If your framework has a refresh/update method, call it here
+    // //     // e.g., gridApi.refreshHeader() for AG-Grid
+    // // }, 0);
+    
+    // // Or try setting minWidth and maxWidth as well
+    // data.column.minWidth = dpWidth;
+    // data.column.maxWidth = dpWidth;
+    //     }
 
-        if (((data.row.index==averageRowIndex)) && (data.column.index%2==0)&&(data.column.index>0)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
-        ) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-        }
-      },
+    //     if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)||depotCell.includes(data.column.index)) 
+    //       && (data.column.index%2==1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
+    //     ) {
+    //       data.cell.text = ''; // Remove text from hidden columns
+    //       data.cell.colSpan = 0; // Hide these columns
+    //     }
+    //   },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
 
@@ -1079,89 +902,76 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
       },
     });
 
-    var labelStyle = {
-      style: {
-        fontSize: '8px',     // Adjust font size here (e.g., '12px', '14px')
-        colors: '#9aa0ac',
-      }
-    };
-
-
-
-    var catgries= Object.keys(grpData) as string[];
     // var x
-    this.lineChartOptions.xaxis={
-      categories: catgries,
-      labels:labelStyle
-    };
+    // this.lineChartOptions.xaxis={
+    //   categories: grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[],
+    // };
 
-    this.lineChartOptions.yaxis={
-      title: {
-        text: `${this.translatedLangText.COMPLETED_COUNT}/${this.translatedLangText.COMPLETED_HOUR}`, // 👈 This is your label
-      }
-    }
 
-    //this.lineChartOptions.colors=this.colors?.slice(0,catgries.length);
+    //this.lineChartOptions.series=series;
 
-    this.lineChartOptions.series=series;
-    this.lineChartOptions.colors=[ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
-      "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
-
-   // if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
-   // if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
-   // if(!showStorageSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Storage"].includes(s.name));}
-    if(!showGateSurcharge){
-      this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate In"].includes(s.name));
-      this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate Out"].includes(s.name));
-      this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Lift On"].includes(s.name));
-      this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Lift Off"].includes(s.name));
-    }
-    if(!showSteamSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steam"].includes(s.name));}
-    
-    if(!showCleanSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
-    if(!showRepairSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
-
+    // if(!showGateSurcharge) 
+    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["In Gate","Out Gate"].includes(s.name));}
+    // if(!showSteamSurcharge) 
+    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steaming"].includes(s.name));}
+    // if(!showCleanSurcharge) 
+    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
+    // if(!showRepairSurcharge) 
+    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
     
     // this.pieChartOptions.labels=prcss;
     // this.pieChartOptions.series2=prcsValues;
-    //this.pieChartOptions.colors=this.colors;
+
+    // var lineChartValues={
+    //   xaxis:{
+    //     categories: grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[],
+    //     title: {
+    //       text: 'Month',
+    //     },
+    //     labels: {
+    //       style: {
+    //         colors: '#9aa0ac',
+    //       },
+    //     },
+    //   },
+    //   series:series
+    // };
 
 
  setTimeout(async()=>{
 
-  startY=lastTableFinalY+10;
-  let chartContentWidth = pageWidth - leftMargin - rightMargin;
-  const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-  for (var i = 0; i < cardElements.length; i++) {
-    if (i > 0) {
-      pdf.addPage();
-      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-      pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      startY=topMargin+20;
-    }
-    const card1 = cardElements[i];
-    const canvas1 = await html2canvas(card1, { scale: scale });
-    Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
-    // const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+  // startY=lastTableFinalY+10;
+  // let chartContentWidth = pageWidth - leftMargin - rightMargin;
+  // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+  // for (var i = 0; i < cardElements.length; i++) {
+  //   if (i > 0) {
+  //     pdf.addPage();
+  //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+  //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+  //     startY=topMargin+20;
+  //   }
+  //   const card1 = cardElements[i];
+  //   const canvas1 = await html2canvas(card1, { scale: scale });
+  //   const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
 
-    // // Calculate aspect ratio
-    // const aspectRatio = canvas1.,width / canvas1.height;
+  //   // Calculate aspect ratio
+  //   const aspectRatio = canvas1.width / canvas1.height;
 
-    // // Calculate scaled height based on available width
-    // let imgHeight1 = chartContentWidth / aspectRatio;
+  //   // Calculate scaled height based on available width
+  //   let imgHeight1 = chartContentWidth / aspectRatio;
 
-    // // Check if the scaled height exceeds the available page height
-    // const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-    // if (imgHeight1 > maxPageHeight) {
-    //   // Adjust height to fit within the page
-    //   imgHeight1 = maxPageHeight;
-    //   // Recalculate width to maintain aspect ratio
-    //   chartContentWidth = imgHeight1 * aspectRatio;
-    // }
+  //   // Check if the scaled height exceeds the available page height
+  //   const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+  //   if (imgHeight1 > maxPageHeight) {
+  //     // Adjust height to fit within the page
+  //     imgHeight1 = maxPageHeight;
+  //     // Recalculate width to maintain aspect ratio
+  //     chartContentWidth = imgHeight1 * aspectRatio;
+  //   }
 
-    // // Add the image to the PDF
-    // pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-  }
+  //   // Add the image to the PDF
+  //   pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+  // }
 
     const totalPages = pdf.getNumberOfPages();
 
@@ -1184,7 +994,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
 
-  },100);
+  },50);
 
    // this.dialogRef.close();
   }
@@ -1295,20 +1105,20 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   }
   GetReportTitle(): string {
     var title:string='';
-         title = `${this.translatedLangText.MONTHLY_INVENTORY_REPORT}`;
+         title = `${this.translatedLangText.DEPOT_PERFORMANCE_DATA_WEEKLY}`;
     return `${title}`
   }
 
-  // displayLocation(yard: report_status_yard): string {
-  //   return this.cvDS.getCodeDescription(yard.code, this.yardCvList) || '';;
-  // }
-  // displayInYardTotal(yard: report_status_yard): number {
-  //   var total = 0;
+  displayLocation(yard: report_status_yard): string {
+    return this.cvDS.getCodeDescription(yard.code, this.yardCvList) || '';;
+  }
+  displayInYardTotal(yard: report_status_yard): number {
+    var total = 0;
 
-  //   total = (yard.noTank_storage || 0) + (yard.noTank_clean || 0) + (yard.noTank_steam || 0) + (yard.noTank_repair || 0);
-  //   return total;
+    total = (yard.noTank_storage || 0) + (yard.noTank_clean || 0) + (yard.noTank_steam || 0) + (yard.noTank_repair || 0);
+    return total;
 
-  // }
+  }
 
   ResetIndex() {
     this.index = 0;
@@ -1334,42 +1144,87 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   }
 
   InitChartValues(){
-    // this.pieChartOptions = {
-    //   colors: this.colors,
-    //   title: {
-    //     text: this.translatedLangText.SUMMARY_OF_INVENTORY,
-    //     align: 'center',
-    //   },
-    //   chart: {
-    //     height: 450,
-    //     type: 'pie',
-    //     foreColor: '#9aa0ac',
-    //     toolbar: {
-    //       show: false,
-    //     },
-    //     animations: {
-    //       enabled: false, // <-- disables all animations
-    //     },
-    //   },
-    //   labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
-    //   series2: [44, 55, 13, 43, 22],
-    //   legend:{
-    //     fontSize:'14px',
-    //     // position: "bottom",
-    //     // horizontalAlign: "center",
-    //     // itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
-    //     labels: {
-    //       colors: "#333", // Set label text color
-    //       useSeriesColors: false, // Use the color of the series for labels
-    //   //    padding: 10, // Adjust space between marker and label
-    //     },
+    this.pieChartOptions = {
+      title: {
+        text: this.translatedLangText.SUMMARY_OF_INVENTORY,
+        align: 'center',
+      },
+      chart: {
+        height: 450,
+        type: 'pie',
+        foreColor: '#9aa0ac',
+        toolbar: {
+          show: false,
+        },
+        animations: {
+          enabled: false, // <-- disables all animations
+        },
+      },
+      labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+      series2: [44, 55, 13, 43, 22],
+      legend:{
+        fontSize:'14px',
+        // position: "bottom",
+        // horizontalAlign: "center",
+        // itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
+        labels: {
+          colors: "#333", // Set label text color
+          useSeriesColors: false, // Use the color of the series for labels
+      //    padding: 10, // Adjust space between marker and label
+        },
       
-    //   },
-    
-    // };
+      },
+      // series: [
+      //   {
+      //     name: 'PRODUCT A',
+      //     data: [44, 55, 41, 67, 22, 43],
+      //   },
+      //   {
+      //     name: 'PRODUCT B',
+      //     data: [13, 23, 20, 8, 13, 27],
+      //   },
+      //   {
+      //     name: 'PRODUCT C',
+      //     data: [11, 17, 15, 15, 21, 14],
+      //   },
+      //   {
+      //     name: 'PRODUCT D',
+      //     data: [21, 7, 25, 13, 22, 8],
+      //   },
+      // ],
+      // responsive: [
+      //   {
+      //     breakpoint: 480,
+      //     options: {
+      //       chart: {
+      //         width: 200,
+      //       },
+      //       legend: {
+      //         position: 'bottom',
+      //       },
+      //     },
+      //   },
+      // ],
+      // xaxis: {
+      //   type: 'category',
+      //   categories: [
+      //     'Feb',
+      //     'Mar',
+      //     'Apr',
+      //     'May',
+      //     'Jun',
+      //     'Jul',
+      //   ],
+      //   labels: {
+      //     style: {
+      //       colors: '#9aa0ac',
+      //     },
+      //   },
+      // },
+    };
 
     this.lineChartOptions = {
-      colors:this.colors,
+      
       chart: {
         height: 350,
         type: 'line',
@@ -1381,6 +1236,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         },
         foreColor: '#9aa0ac',
       },
+      colors: ['#77B6EA', '#545454'],
       dataLabels: {
         enabled: true,
       },
@@ -1411,12 +1267,9 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
         labels: {
           style: {
-            fontSize: '16px',     // Adjust font size here (e.g., '12px', '14px')
-            fontWeight: 600,      // Boldness (400 = normal, 700 = bold)
-            colors: '#FF0000',    // Single color for all labels (or array for per-label colors)
-            fontFamily: 'Arial'   // Optional: Change font type
-          }
-        }
+            colors: '#9aa0ac',
+          },
+        },
       },
       yaxis: {
         title: {
@@ -1434,7 +1287,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         fontSize:'14px',
         position: "bottom",
         horizontalAlign: "center",
-        itemMargin: { horizontal: 10, vertical: 5 }, // Adjusts spacing between items
+        itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
         labels: {
           colors: "#333", // Set label text color
           useSeriesColors: false, // Use the color of the series for labels

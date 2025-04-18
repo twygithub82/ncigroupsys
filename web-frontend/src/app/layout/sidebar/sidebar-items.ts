@@ -829,6 +829,18 @@ export const ROUTES: RouteInfo[] = [
         visible: true
       },
       {
+        path: "admin/management/reports/performance",
+        title: "MENUITEMS.MANAGEMENT.LIST.PERFORMANCE-REPORTS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: true
+      },
+      {
         path: "admin/management/user",
         title: "MENUITEMS.MANAGEMENT.LIST.USER",
         iconType: "",

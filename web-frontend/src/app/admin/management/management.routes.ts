@@ -4,7 +4,8 @@ import { GroupComponent } from "./group/group.component";
 import { UserNewComponent } from "./user-new/user-new.component";
 import { UserComponent } from "./user/user.component";
 import{MainManagementYearlyComponent} from "./reports/yearly/main-management-yearly.component";
-import{MainManagementMonthlyComponent} from "./reports/monthly/main-management-monthly.component"
+import{MainManagementMonthlyComponent} from "./reports/monthly/main-management-monthly.component";
+import{MainManagementPerformanceComponent} from "./reports/performance/main-management-performance.component";
 
 export const MANAGEMENT_ROUTE: Routes = [
   {
@@ -30,5 +31,9 @@ export const MANAGEMENT_ROUTE: Routes = [
   {
     path: "reports/monthly",
     component: MainManagementMonthlyComponent,
+  },
+  {
+    path: "reports/performance",
+    component: MainManagementPerformanceComponent,
   },
 ];

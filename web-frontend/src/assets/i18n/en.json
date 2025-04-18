@@ -165,7 +165,8 @@
         "GROUP-NEW": "New Group",
         "GROUP-EDIT": "Edit Group",
         "MONTHLY-REPORTS": "Monthly Reports",
-        "YEARLY-REPORTS": "Yearly Reports"
+        "YEARLY-REPORTS": "Yearly Reports",
+        "PERFORMANCE-REPORTS":"Performance Reports"
       }
     },
     "NEW": {
@@ -1161,6 +1162,7 @@
     "MONTHLY-INVENTORY-REPORT": "Monthly Inventory Report",
     "INVENTORY-REPORT": "Inventory Report",
     "MANHOUR-REPORT": "Man-Hour Report",
+    "PERFORMANCE-REPORT":"Performance Report",
     "OVERWRITE-APPROVAL": "Overwrite Approval",
     "APPROVED-BUFFER-CLEANING-COST": "Approved Buffer Cleaning Cost",
     "GATE-SURCHARGE": "Gate Surcharge",
@@ -1168,6 +1170,7 @@
     "YEARLY-INVENTORY-REPORT": "Yearly Inventory Report",
     "YEARLY-REVENUE-REPORT": "Yearly Revenue Report",
     "SUMMARY-OF-INVENTORY": "Summary of Inventory",
+    "DEPOT-PERFORMANCE-DATA-WEEKLY":"Depot Performance Data Weekly",
     "PERCENTAGE-SYMBOL": "%",
     "COMPLETED-COUNT": "Completed Count",
     "APPROVED-COUNT": "Approved Count",
@@ -1175,6 +1178,12 @@
     "APPROVED-HOUR": "Approved Hour",
     "GATE": "Gate",
     "DIFFERENCE": "Difference",
+    "NO-OF-CLEAN":"No. of Cleaning",
+    "NO-OF-REPAIR-ORDER":"No. of Repair Order",
+    "NO-OF-GATE-IN":"No. of Gate-In",
+    "NO-OF-GATE-OUT":"No. of Gate-Out",
+    "TOTAL-IN-OUT":"Total In and Out",
+    "AVERAGE-IN-OUT":"Average In and Out"
     "ARE-YOU-SURE-TO-PUBLISH": "Are you sure to publish?"
   },
   "CLEAN-PROCEDURES": {

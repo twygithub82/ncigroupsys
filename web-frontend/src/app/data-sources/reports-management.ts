@@ -313,6 +313,30 @@ export class MonthlyProcessData {
     } 
 }
 
+export class WeeklyPerformmanceItem
+{
+      average_gate_count?:number;
+      cleaning_count?:number;
+      depot_count?:number;
+      gate_in_count?:number;
+      gate_out_count?:number;
+      repair_count?:number;
+      total_gate_count?:number;
+      week_of_year?:number;
+
+      constructor(item: Partial<WeeklyPerformmanceItem> = {}) {
+        this.average_gate_count=item.average_gate_count;
+        this.cleaning_count=item.cleaning_count;
+        this.depot_count=item.depot_count;
+        
+        this.gate_in_count=item.gate_in_count;
+        this.gate_out_count=item.gate_out_count;
+        this.repair_count=item.repair_count;
+        this.total_gate_count=item.total_gate_count;
+        this.week_of_year=item.week_of_year;
+
+        } 
+     }
 
 export class GroupedInventoryMonthly {
   [date: string]: {
@@ -1117,6 +1141,30 @@ export const GET_MANAGEMENT_REPORT_YEARLY_REVENUE_REPORT = gql`
   }
 `
 
+export const GET_MANAGEMENT_REPORT_WEEKLY_PERFORMANCE_REPORT = gql`
+  query queryDepotPerformance($depotPerformanceRequest: DepotPerformanceRequestInput!) {
+    resultList:  queryDepotPerformance(depotPerformanceRequest:$depotPerformanceRequest) {
+    totalCount
+    nodes {
+      average_gate_count
+      cleaning_count
+      depot_count
+      gate_in_count
+      gate_out_count
+      repair_count
+      total_gate_count
+      week_of_year
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+  }
+    
+  }
+`
 
 export class ManagementReportDS extends BaseDataSource<any> {
 
@@ -1174,7 +1222,7 @@ export class ManagementReportDS extends BaseDataSource<any> {
   }
 
   
-  searchManagementReportRenvenueYearlyReport(yearlyRevenueRequest:any): Observable<ManagementReportYearlyRevenueItem> {
+  searchManagementReportRevenueYearlyReport(yearlyRevenueRequest:any): Observable<ManagementReportYearlyRevenueItem> {
     this.loadingSubject.next(true);
     var first=this.first;
     return this.apollo
@@ -1198,7 +1246,7 @@ export class ManagementReportDS extends BaseDataSource<any> {
       );
   }
 
-  searchManagementReportRenvenueMonthlyReport(monthlyRevenueRequest:any): Observable<ManagementReportMonthlyRevenueItem> {
+  searchManagementReportRevenueMonthlyReport(monthlyRevenueRequest:any): Observable<ManagementReportMonthlyRevenueItem> {
     this.loadingSubject.next(true);
     var first=this.first;
     return this.apollo
@@ -1218,6 +1266,30 @@ export class ManagementReportDS extends BaseDataSource<any> {
           const resultList = result.resultList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(resultList);
           return resultList;
+        })
+      );
+  }
+  
+  searchManagementReportPerformanceWeeklyReport(depotPerformanceRequest:any): Observable<WeeklyPerformmanceItem[]> {
+    this.loadingSubject.next(true);
+    var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_MANAGEMENT_REPORT_WEEKLY_PERFORMANCE_REPORT,
+        variables: { depotPerformanceRequest },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as ManagementReportYearlyRevenueItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList);
+          return resultList.nodes;
         })
       );
   }

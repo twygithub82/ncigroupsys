@@ -295,16 +295,6 @@ export class RepairYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   }
 
   public loadData() {
-    // const queries = [
-    //   // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //   // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-    //   // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-    //   { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
-    // ];
-    // this.cvDS.getCodeValuesByType(queries);
-    // this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
-    //   this.inventoryTypeCvList = addDefaultSelectOption(data, 'All');;
-    // });
     var thisYear = new Date().getFullYear();
     var startYear = thisYear-5;
     for(var i=startYear ; i<=thisYear;i++)

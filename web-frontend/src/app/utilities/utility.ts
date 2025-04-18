@@ -987,6 +987,70 @@ export class Utility {
     const num = Number(value);
     return !isNaN(num) && !isNaN(parseFloat(value));
   }
+
+ /**
+ * Get the date range (Monday-Sunday) for a given ISO week of the year.
+ * @param year - Full year (e.g., 2025).
+ * @param weekOfYear - ISO week number (1-53).
+ * @returns Date range string (e.g., "30-Dec - 05-Jan") or null if invalid.
+ */
+static getISOWeekRange(
+  year: number,
+  weekOfYear: number
+): string | null {
+  // Validate week number (ISO weeks range from 1 to 52 or 53)
+  if (weekOfYear < 1 || weekOfYear > 53) return null;
+
+  // Get January 1st of the year
+  const janFirst = new Date(year, 0, 1);
+  const janFirstDay = janFirst.getDay() || 7; // Convert Sunday (0) to 7
+
+  // Calculate the first Thursday of the year (ISO week 1 starts here)
+  const firstThursday =
+    janFirstDay <= 4
+      ? new Date(year, 0, 1 + (4 - janFirstDay)) // Same week
+      : new Date(year, 0, 1 + (11 - janFirstDay)); // Next week
+
+  // Calculate the start of the requested ISO week (Monday)
+  const weekStart = new Date(firstThursday);
+  weekStart.setDate(firstThursday.getDate() - 3 + (weekOfYear - 1) * 7);
+
+  // Calculate the end of the week (Sunday)
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+
+  // Format dates (e.g., "01-Jan")
+  const startStr = this.formatDate(weekStart);
+  const endStr = this.formatDate(weekEnd);
+
+  return `${startStr} - ${endStr}`;
+}
+
+
+
+/**
+ * Helper: Format date as "DD-MMM" (e.g., "01-Jan").
+ */
+static formatDate(date: Date): string {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = date.toLocaleString('default', { month: 'short' });
+  return `${day}-${month}`;
+}
+
+static extractYearFromMonthYear(monthYearStr: string): number | null {
+  // Split the string at " - " and get the second part (year)
+  const parts = monthYearStr.split(' - ');
+  
+  if (parts.length !== 2) return null; // Invalid format
+
+  const yearStr = parts[1].trim();
+  const year = parseInt(yearStr, 10);
+
+  // Validate (e.g., 2025 is a valid year, "ABC" is not)
+  return !isNaN(year) && year > 0 ? year : null;
+}
+
+
 }
 
 export const TANK_STATUS_PRE_IN_YARD = [

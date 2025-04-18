@@ -258,7 +258,7 @@ export class TankInfoDS extends BaseDataSource<TankInfoItem> {
       );
   }
 
-  getNextTestCv(last_test_cv: string): string | undefined {
+  getNextTestCv(last_test_cv?: string): string | undefined {
     if (!last_test_cv) return "";
     const test_type = last_test_cv;
     const mappedVal = testTypeMapping[test_type!];
