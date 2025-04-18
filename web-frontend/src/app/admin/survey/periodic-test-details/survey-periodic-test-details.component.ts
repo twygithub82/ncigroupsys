@@ -19,7 +19,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -27,11 +27,11 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
@@ -40,7 +40,6 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-survey-periodic-test-details',
@@ -479,7 +478,6 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
         this.handleDeleteSuccess(result?.data?.handleDeleteSuccess);
         this.refreshPageDetail();
       });
-
     } else {
       // No need to update tank info
       const surveyDetail = new SurveyDetailItem(row);

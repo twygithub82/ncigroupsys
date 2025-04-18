@@ -617,7 +617,7 @@ const GET_STORING_ORDER_TANKS_OTH_SURVEY_BY_ID = gql`
             next_test_cv
           }
         }
-        survey_detail(where: { survey_type_cv: { neq: "PERIODIC_TEST" } }) {
+        survey_detail(where: { survey_type_cv: { neq: "PERIODIC_TEST" }, delete_dt: { eq: null } }) {
           create_by
           create_dt
           delete_dt
@@ -631,6 +631,33 @@ const GET_STORING_ORDER_TANKS_OTH_SURVEY_BY_ID = gql`
           test_type_cv
           update_by
           update_dt
+        }
+        tank_info {
+          capacity
+          cladding_cv
+          create_by
+          create_dt
+          delete_dt
+          dom_dt
+          guid
+          height_cv
+          last_notify_dt
+          last_test_cv
+          manufacturer_cv
+          max_weight_cv
+          next_test_cv
+          owner_guid
+          tank_comp_guid
+          tank_no
+          tare_weight
+          test_class_cv
+          test_dt
+          unit_type_guid
+          update_by
+          update_dt
+          walkway_cv
+          yard_cv
+          last_release_dt
         }
       }
       pageInfo {
