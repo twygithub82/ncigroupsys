@@ -419,7 +419,7 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
 
       // if(queryType==1)
       // {
-      this.subs.sink = this.reportDS.searchManagementReportRenvenueMonthlyReport(this.lastSearchCriteria)
+      this.subs.sink = this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
         .subscribe(data => {
           this.repData = data;
           this.ProcessReport(this.repData,date!,reportType!,customerName!,invTypes!);
