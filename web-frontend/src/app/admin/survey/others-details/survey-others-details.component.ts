@@ -82,7 +82,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'survey_dt',
     'status_cv',
     'remarks',
-    'action',
+    'actions',
   ];
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY-DETAILS'

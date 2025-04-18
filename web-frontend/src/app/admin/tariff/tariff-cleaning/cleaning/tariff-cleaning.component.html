@@ -13,7 +13,8 @@
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
-                <button mat-mini-fab class="light-purple" color="" (click)="refresh()" (click)="$event.stopPropagation()">
+                <button mat-mini-fab class="light-purple" color="" (click)="refresh()"
+                  (click)="$event.stopPropagation()">
                   <mat-icon>refresh</mat-icon>
                 </button>
               </div>
@@ -27,7 +28,7 @@
             <div class="row">
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                 <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.CARGO_NAME }}</mat-label>
+                  <mat-label>{{translatedLangText.NAME }}</mat-label>
                   <input matInput formControlName="cargo_name">
                 </mat-form-field>
               </div>
@@ -133,75 +134,80 @@
             <!-- ID Column -->
             <ng-container matColumnDef="id">
               <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-              <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+              <mat-cell *matCellDef="let row">{{row.tariff_cleaning?.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cargo">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_NAME }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.NAME }}</mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row">
-                <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE }}:</span>{{row.cargo}}
+                <span class="mobile-label">{{translatedLangText.NAME }}:</span>{{row.tariff_cleaning?.cargo}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="desc">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{translatedLangText.CARGO_DESCRIPTION}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.DESCRIPTION}}</mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row">
-                <span class="mobile-label">{{translatedLangText.CARGO_DESCRIPTION}}:</span>{{row.description}}
+                <span
+                  class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.tariff_cleaning?.description}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="class">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
-                [ngClass]="''">{{translatedLangText.CARGO_CLASS}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
-                <span class="mobile-label">{{translatedLangText.NO_OF_TANKS }}:</span>
-                {{row.class_cv}}
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                mat-sort-header>{{translatedLangText.CARGO_CLASS}}</mat-header-cell>
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                (contextmenu)="onContextMenu($event, row)">
+                <span class="mobile-label">{{translatedLangText.CARGO_CLASS }}:</span>
+                {{row.tariff_cleaning?.class_cv}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="un_no">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_UN_NO }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.un_no}}</mat-cell>
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                mat-sort-header>{{translatedLangText.CARGO_UN_NO }}</mat-header-cell>
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                (contextmenu)="onContextMenu($event, row)">
+                <span class="mobile-label">{{translatedLangText.CARGO_UN_NO }}:</span>
+                {{row.tariff_cleaning?.un_no}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_CATEGORY}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <div *ngIf="row.cleaning_category !== null && row.cleaning_category !== undefined; else elseBlock">
-                  <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.cleaning_category.name}}
-                </div>
-                <ng-template #elseBlock>
-                  <span class="mobile-label">{{translatedLangText.STATUS }}:</span> -
-                </ng-template>
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                mat-sort-header>{{translatedLangText.CARGO_CATEGORY}}</mat-header-cell>
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                (contextmenu)="onContextMenu($event, row)">
+                <span class="mobile-label">{{translatedLangText.CARGO_CATEGORY }}:</span>
+                {{row.tariff_cleaning?.cleaning_category?.name}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="method">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_METHOD}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <div *ngIf="row.cleaning_method!== null && row.cleaning_method !== undefined; else elseBlock">
-                  <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.cleaning_method.name}}
-                </div>
-                <ng-template #elseBlock>
-                  <span class="mobile-label">{{translatedLangText.STATUS }}:</span> -
-                </ng-template>
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                mat-sort-header>{{translatedLangText.CARGO_METHOD}}</mat-header-cell>
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                (contextmenu)="onContextMenu($event, row)">
+                <span class="mobile-label">{{translatedLangText.CARGO_METHOD }}:</span>
+                {{row.tariff_cleaning?.cleaning_method?.name}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="flash_point">
               <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 mat-sort-header>{{translatedLangText.CARGO_FLASH_POINT}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.flash_point}}</mat-cell>
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                (contextmenu)="onContextMenu($event, row)">
+                <span class="mobile-label">{{translatedLangText.CARGO_FLASH_POINT}}:</span>
+                {{row.tariff_cleaning?.flash_point}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_COST}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <div *ngIf="row.cleaning_category !== null ; else elseBlock">
-                  <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
-                  {{row.cleaning_category_with_tariff.cost}}
-                </div>
-                <ng-template #elseBlock>
-                  <span class="mobile-label">{{translatedLangText.STATUS }}:</span> -
-                </ng-template>
+                <span class="mobile-label">{{translatedLangText.CARGO_COST}}:</span>
+                {{row.tariff_cleaning?.cleaning_category_with_tariff?.cost}}
               </mat-cell>
-              <!-- <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.un_no}}</mat-cell> -->
             </ng-container>
             <ng-container matColumnDef="actions">
               <mat-header-cell
@@ -209,12 +215,12 @@
                 *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row; let i=index;"
                 [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-
+                @if (!row.tank_count) {
                 <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
                   [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
                   <mat-icon>delete_forever</mat-icon>
                 </button>
-
+                }
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
