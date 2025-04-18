@@ -124,6 +124,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     INVOICE_DATE: 'COMMON-FORM.INVOICE-DATE',
     INVOICE_NO: 'COMMON-FORM.INVOICE-NO',
     CURRENCY: 'COMMON-FORM.CURRENCY',
+    INVOICE_TYPE: 'COMMON-FORM.INVOICE-TYPE',
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CONFIRM_REMOVE_INVOICES: 'COMMON-FORM.CONFIRM-REMOVE-INVOICES',
@@ -161,6 +162,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
   depotCvList: CodeValuesItem[] = [];
+  invoiceTypeCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -285,6 +287,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
+      { alias: 'invoiceTypeCv', codeValType: 'INVOICE_TYPE'}
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -302,6 +305,9 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     });
     this.cvDS.connectAlias('depotCv').subscribe(data => {
       this.depotCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('invoiceTypeCvList').subscribe(data => {
+      this.invoiceTypeCvList = addDefaultSelectOption(data, 'All');
     });
     this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
       this.currencyList = data;
