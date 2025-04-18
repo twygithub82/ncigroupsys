@@ -1173,7 +1173,8 @@
     "COMPLETED-HOUR": "Completed Hour",
     "APPROVED-HOUR": "Approved Hour",
     "GATE": "Gate",
-    "DIFFERENCE": "Difference"
+    "DIFFERENCE": "Difference",
+    "ARE-YOU-SURE-TO-PUBLISH": "Are you sure to publish?"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
