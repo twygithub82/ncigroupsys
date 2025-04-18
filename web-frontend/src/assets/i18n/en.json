@@ -1183,6 +1183,7 @@
     "NO-OF-GATE-OUT":"No. of Gate-Out",
     "TOTAL-IN-OUT":"Total In and Out",
     "AVERAGE-IN-OUT":"Average In and Out"
+    "ARE-YOU-SURE-TO-PUBLISH": "Are you sure to publish?"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

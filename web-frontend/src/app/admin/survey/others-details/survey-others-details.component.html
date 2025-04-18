@@ -218,6 +218,20 @@
                             <span class="mobile-tab-label">{{translatedLangText.REMARKS}}:</span>{{row?.remarks}}
                           </mat-cell>
                         </ng-container>
+                        <ng-container matColumnDef="action">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef
+                            [ngClass]="'tbl-col-width-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let row"
+                            [ngClass]="'tbl-col-width-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            @if (surveyDS.canDelete(row)) {
+                            <button mat-icon-button color="warn"
+                              (click)="deleteSurveyDialog($event, row)" [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                              <mat-icon>cancel</mat-icon>
+                            </button>
+                            }
+                          </mat-cell>
+                        </ng-container>
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                         <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" (click)="editSurveyDetail($event, row)" matRipple>
                         </mat-row>

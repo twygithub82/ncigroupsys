@@ -6,16 +6,7 @@
     </div>
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="body overflow-auto">
-            <mat-tab-group dynamicHeight (selectedTabChange)="onTabSelected($event)">
-               <mat-tab [label]="translatedLangText.DAILY_TEAM_REPORT">
-                <app-zero-approval-cost-report></app-zero-approval-cost-report>
-              </mat-tab>
-             
-            </mat-tab-group>
-          </div>
-        </div>
+        <app-zero-approval-cost-report></app-zero-approval-cost-report>
       </div>
     </div>
   </div>

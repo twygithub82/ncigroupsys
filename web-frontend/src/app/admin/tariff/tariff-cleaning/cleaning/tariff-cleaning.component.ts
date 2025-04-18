@@ -130,7 +130,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   searchForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
-  //soDS: StoringOrderDS;
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   cCategoryDS: CleaningCategoryDS;
@@ -152,8 +151,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   banTypeCvList: CodeValuesItem[] = [];
   hazardLevelCvList: CodeValuesItem[] = [];
 
-  // classNoControl = new UntypedFormControl();
-  // methodControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
   banTypeControl = new UntypedFormControl();
   hazardLevelControl = new UntypedFormControl();
@@ -181,7 +178,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     super();
     this.translateLangText();
     this.initSearchForm();
-    // this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
@@ -197,7 +193,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    // this.initializeFilterCustomerCompany();
     this.loadData();
 
     var state = history.state;
@@ -270,9 +265,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   public loadData() {
-
     let lastSrchCriteria = this.searchCriteriaService.getCriteria();
-
     this.lastSearchCriteria = this.tcDS.addDeleteDtCriteria({});
 
     if (lastSrchCriteria.pageIndex) {
@@ -281,7 +274,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.startCursor = lastSrchCriteria.before;
       this.hasNextPage = lastSrchCriteria.hasNextPage;
       this.hasPreviousPage = lastSrchCriteria.hasPreviousPage;
-      //this.paginator.pageIndex= lastSrchCriteria.pageIndex;
     }
     else {
       lastSrchCriteria.pageIndex = 0;
@@ -293,13 +285,10 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     this.onPageEvent({ pageIndex: lastSrchCriteria.pageIndex, pageSize: this.pageSize, length: lastSrchCriteria.length })
-
-
     this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cCategoryDS.totalCount > 0) {
         this.cCategoryList = data;
       }
-
     });
 
     this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
@@ -325,7 +314,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.banTypeCvList = data;
     });
   }
-
 
   showNotification(
     colorName: string,
@@ -358,7 +346,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
-
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = after;
@@ -375,7 +362,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
         this.previous_endCursor = undefined;
     });
   }
-
 
   searchTC(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
@@ -430,10 +416,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
   }
-
-
 
   storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {

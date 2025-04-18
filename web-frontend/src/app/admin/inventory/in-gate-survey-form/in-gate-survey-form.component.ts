@@ -229,7 +229,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     COMPARTMENT_TYPE_MANLID_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-MANLID-EMPTY',
     ARE_YOU_SURE_TO_SUBMIT: 'COMMON-FORM.ARE-YOU-SURE-TO-SUBMIT',
     SAVE: 'COMMON-FORM.SAVE',
-    DOWNLOAD: 'COMMON-FORM.DOWNLOAD'
+    DOWNLOAD: 'COMMON-FORM.DOWNLOAD',
+    ARE_YOU_SURE_TO_PUBLISH: 'COMMON-FORM.ARE-YOU-SURE-TO-PUBLISH'
   }
   private destroy$ = new Subject<void>();
 
@@ -1370,110 +1371,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     // TableExportUtil.exportToExcel(exportData, 'excel');
   }
 
-  onPublish() {
-    if (this.in_gate) {
-      const inGateSurveyItem = new InGateSurveyGO({ tank_comp_guid: this.in_gate?.in_gate_survey?.tank_comp_guid });
-      const inGateItem: any = new InGate(this.in_gate);
-      inGateItem.in_gate_survey = inGateSurveyItem
-      console.log('publishInGateSurvey: ', inGateItem)
-      this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
-        console.log(result)
-        this.handleSaveSuccess(result.data?.publishIngateSurvey)
-        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
-      });
-    }
-  }
-
-  onDownload() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(EirFormComponent, {
-      width: '794px',
-      height: '80vh',
-      data: {
-        type: "in",
-        in_gate_survey_guid: this.in_gate?.in_gate_survey?.guid,
-        eir_no: this.in_gate?.eir_no,
-        igsDS: this.igsDS,
-        cvDS: this.cvDS,
-        eirPdf: this.eirPdf
-      },
-      panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe((result) => {
-      console.log(`Event received from MatDialog: publishedEir type = ${result?.type}`);
-      if (result?.type === 'published') {
-        if (this.in_gate) {
-          this.in_gate.eir_status_cv = 'PUBLISHED';
-        }
-      } else if (result?.type === 'uploaded') {
-        this.eirPdf = result?.eirPdf;
-      }
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    });
-
-    // this.container.clear();
-
-    // const componentRef = this.container.createComponent(EirFormComponent);
-
-    // const instance = componentRef.instance;
-    // instance.type = "in";
-    // instance.in_gate_survey_guid = this.in_gate?.in_gate_survey?.guid;
-    // instance.igsDS = this.igsDS;
-    // instance.cvDS = this.cvDS;
-
-    // instance.populateCodeValues = {
-    //   purposeOptionCvList: this.purposeOptionCvList,
-    //   cleanStatusCvList: this.cleanStatusCvList,
-    //   testTypeCvList: this.testTypeCvList,
-    //   testClassCvList: this.testClassCvList,
-    //   manufacturerCvList: this.manufacturerCvList,
-    //   claddingCvList: this.claddingCvList,
-    //   maxGrossWeightCvList: this.maxGrossWeightCvList,
-    //   tankHeightCvList: this.tankHeightCvList,
-    //   walkwayCvList: this.walkwayCvList,
-    //   airlineCvList: this.airlineCvList,
-    //   airlineConnCvList: this.airlineConnCvList,
-    //   disCompCvList: this.disCompCvList,
-    //   disValveCvList: this.disValveCvList,
-    //   disValveSpecCvList: this.disValveSpecCvList,
-    //   disTypeCvList: this.disTypeCvList,
-    //   footValveCvList: this.footValveCvList,
-    //   manlidCoverCvList: this.manlidCoverCvList,
-    //   manlidSealCvList: this.manlidSealCvList,
-    //   pvSpecCvList: this.pvSpecCvList,
-    //   pvTypeCvList: this.pvTypeCvList,
-    //   thermometerCvList: this.thermometerCvList,
-    //   tankCompTypeCvList: this.tankCompTypeCvList,
-    //   valveBrandCvList: this.valveBrandCvList,
-    //   tankSideCvList: this.tankSideCvList,
-    //   tankStatusCvList: this.tankStatusCvList,
-    //   packageBufferList: this.packageBufferList,
-    // }
-
-    // instance.generatePDF().then((data) => {
-    //   console.log(data)
-    //   componentRef.destroy();
-
-    //   const dialogRef = this.dialog.open(PreviewPdfDialogComponent, {
-    //     width: '80vw',
-    //     height: '80vh',
-    //     data: {
-    //       pdfBlob: data,
-    //     },
-    //     direction: tempDirection
-    //   });
-    //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   });
-    // });
-  }
-
   compartmentTypeFormCheck(): any[] {
     const compartmentTypeFormChecks = [];
 
@@ -1513,7 +1410,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.preventDefault(event);  // Prevents the form submission
     if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
       const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
-
       if (compartmentTypeFormChecks.length) {
         let tempDirection: Direction;
         if (localStorage.getItem('isRtl') === 'true') {
@@ -1524,7 +1420,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
           width: '500px',
           data: {
-            action: 'edit',
+            action: 'submit',
             translatedLangText: this.translatedLangText,
             confirmForm: compartmentTypeFormChecks
           },
@@ -1658,6 +1554,140 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       console.log('Invalid soForm', this.surveyForm?.value);
       this.markFormGroupTouched(this.surveyForm);
     }
+  }
+
+  onPublishCheck(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
+      const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
+        width: '500px',
+        data: {
+          action: 'publish',
+          translatedLangText: this.translatedLangText,
+          confirmForm: compartmentTypeFormChecks
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.confirmed) {
+          //this.onPublish();
+        }
+      });
+    } else {
+      console.log('Invalid soForm', this.surveyForm?.value);
+      this.markFormGroupTouched(this.surveyForm);
+    }
+  }
+
+  onPublish() {
+    if (this.in_gate) {
+      const inGateSurveyItem = new InGateSurveyGO({ tank_comp_guid: this.in_gate?.in_gate_survey?.tank_comp_guid });
+      const inGateItem: any = new InGate(this.in_gate);
+      inGateItem.in_gate_survey = inGateSurveyItem
+      console.log('publishInGateSurvey: ', inGateItem)
+      this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result.data?.publishIngateSurvey)
+        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      });
+    }
+  }
+
+  onDownload() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(EirFormComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        type: "in",
+        in_gate_survey_guid: this.in_gate?.in_gate_survey?.guid,
+        eir_no: this.in_gate?.eir_no,
+        igsDS: this.igsDS,
+        cvDS: this.cvDS,
+        eirPdf: this.eirPdf
+      },
+      panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe((result) => {
+      console.log(`Event received from MatDialog: publishedEir type = ${result?.type}`);
+      if (result?.type === 'published') {
+        if (this.in_gate) {
+          this.in_gate.eir_status_cv = 'PUBLISHED';
+        }
+      } else if (result?.type === 'uploaded') {
+        this.eirPdf = result?.eirPdf;
+      }
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+
+    // this.container.clear();
+
+    // const componentRef = this.container.createComponent(EirFormComponent);
+
+    // const instance = componentRef.instance;
+    // instance.type = "in";
+    // instance.in_gate_survey_guid = this.in_gate?.in_gate_survey?.guid;
+    // instance.igsDS = this.igsDS;
+    // instance.cvDS = this.cvDS;
+
+    // instance.populateCodeValues = {
+    //   purposeOptionCvList: this.purposeOptionCvList,
+    //   cleanStatusCvList: this.cleanStatusCvList,
+    //   testTypeCvList: this.testTypeCvList,
+    //   testClassCvList: this.testClassCvList,
+    //   manufacturerCvList: this.manufacturerCvList,
+    //   claddingCvList: this.claddingCvList,
+    //   maxGrossWeightCvList: this.maxGrossWeightCvList,
+    //   tankHeightCvList: this.tankHeightCvList,
+    //   walkwayCvList: this.walkwayCvList,
+    //   airlineCvList: this.airlineCvList,
+    //   airlineConnCvList: this.airlineConnCvList,
+    //   disCompCvList: this.disCompCvList,
+    //   disValveCvList: this.disValveCvList,
+    //   disValveSpecCvList: this.disValveSpecCvList,
+    //   disTypeCvList: this.disTypeCvList,
+    //   footValveCvList: this.footValveCvList,
+    //   manlidCoverCvList: this.manlidCoverCvList,
+    //   manlidSealCvList: this.manlidSealCvList,
+    //   pvSpecCvList: this.pvSpecCvList,
+    //   pvTypeCvList: this.pvTypeCvList,
+    //   thermometerCvList: this.thermometerCvList,
+    //   tankCompTypeCvList: this.tankCompTypeCvList,
+    //   valveBrandCvList: this.valveBrandCvList,
+    //   tankSideCvList: this.tankSideCvList,
+    //   tankStatusCvList: this.tankStatusCvList,
+    //   packageBufferList: this.packageBufferList,
+    // }
+
+    // instance.generatePDF().then((data) => {
+    //   console.log(data)
+    //   componentRef.destroy();
+
+    //   const dialogRef = this.dialog.open(PreviewPdfDialogComponent, {
+    //     width: '80vw',
+    //     height: '80vh',
+    //     data: {
+    //       pdfBlob: data,
+    //     },
+    //     direction: tempDirection
+    //   });
+    //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   });
+    // });
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup | undefined): void {

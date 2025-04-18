@@ -109,27 +109,27 @@ namespace IDMS.Inventory.GqlTypes
                 newSuyDetail.survey_dt = surveyDetail.survey_dt;
                 newSuyDetail.test_class_cv = surveyDetail.test_class_cv;
                 newSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
+                newSuyDetail.test_type_cv = surveyDetail.test_type_cv;
 
                 if (surveyDetail.survey_type_cv.EqualsIgnore("PERIODIC_TEST"))
                 {
-                    if (periodicTest == null)
-                        throw new GraphQLException(new Error($"Periodic test object cannot be null", "ERROR"));
-
-                    newSuyDetail.test_class_cv = surveyDetail.test_class_cv;
-                    newSuyDetail.test_type_cv = surveyDetail.test_type_cv;
-                    if (surveyDetail.status_cv.EqualsIgnore(SurveyStatus.ACCEPT))
+                    if (periodicTest != null)
                     {
-                        //Update Tank Info
-                        var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
-                        if (tankInfo == null)
-                            throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+                        //newSuyDetail.test_class_cv = surveyDetail.test_class_cv;
+                        if (surveyDetail.status_cv.EqualsIgnore(SurveyStatus.ACCEPT))
+                        {
+                            //Update Tank Info
+                            var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                            if (tankInfo == null)
+                                throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
 
-                        tankInfo.last_test_cv = periodicTest.last_test_cv;
-                        tankInfo.next_test_cv = periodicTest.next_test_cv;
-                        tankInfo.test_class_cv = surveyDetail.test_class_cv;
-                        tankInfo.test_dt = newSuyDetail.survey_dt;
-                        tankInfo.update_by = user;
-                        tankInfo.update_dt = currentDateTime;
+                            tankInfo.last_test_cv = periodicTest.last_test_cv;
+                            tankInfo.next_test_cv = periodicTest.next_test_cv;
+                            tankInfo.test_class_cv = surveyDetail.test_class_cv;
+                            tankInfo.test_dt = periodicTest.test_dt; //newSuyDetail.survey_dt;
+                            tankInfo.update_by = user;
+                            tankInfo.update_dt = currentDateTime;
+                        }
                     }
                 }
 
@@ -164,16 +164,19 @@ namespace IDMS.Inventory.GqlTypes
                 updateSuyDetail.test_class_cv = surveyDetail.test_class_cv;
                 updateSuyDetail.survey_dt = surveyDetail.survey_dt;
 
-                if (periodicTest != null) 
+                if (surveyDetail.survey_type_cv.EqualsIgnore("PERIODIC_TEST"))
                 {
-                    //Update Tank Info
-                    var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
-                    if (tankInfo == null)
-                        throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+                    if (periodicTest != null)
+                    {
+                        //Update Tank Info
+                        var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                        if (tankInfo == null)
+                            throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
 
-                    tankInfo.test_dt = surveyDetail.survey_dt;
-                    tankInfo.update_by = user;
-                    tankInfo.update_dt = currentDateTime;
+                        tankInfo.test_dt = periodicTest.test_dt; //surveyDetail.survey_dt;
+                        tankInfo.update_by = user;
+                        tankInfo.update_dt = currentDateTime;
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -200,19 +203,22 @@ namespace IDMS.Inventory.GqlTypes
                 deleteSuyDetail.update_dt = currentDateTime;
                 deleteSuyDetail.delete_dt = currentDateTime;
 
-                if (periodicTest != null)
+                if (surveyDetail.survey_type_cv.EqualsIgnore("PERIODIC_TEST"))
                 {
-                    //Update Tank Info
-                    var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
-                    if (tankInfo == null)
-                        throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+                    if (periodicTest != null)
+                    {
+                        //Update Tank Info
+                        var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                        if (tankInfo == null)
+                            throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
 
-                    tankInfo.test_dt = surveyDetail.survey_dt;
-                    tankInfo.test_class_cv = surveyDetail.test_class_cv;
-                    tankInfo.last_test_cv = periodicTest.last_test_cv;
-                    tankInfo.next_test_cv = periodicTest.next_test_cv;
-                    tankInfo.update_by = user;
-                    tankInfo.update_dt = currentDateTime;
+                        tankInfo.test_class_cv = surveyDetail.test_class_cv;
+                        tankInfo.test_dt = periodicTest.test_dt;
+                        tankInfo.last_test_cv = periodicTest.last_test_cv;
+                        tankInfo.next_test_cv = periodicTest.next_test_cv;
+                        tankInfo.update_by = user;
+                        tankInfo.update_dt = currentDateTime;
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();

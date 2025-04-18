@@ -27,6 +27,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -81,6 +82,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'survey_dt',
     'status_cv',
     'remarks',
+    'action',
   ];
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY-DETAILS'
@@ -286,14 +288,8 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           this.sotItem = data[0];
           this.surveyDetailItem = this.sotItem?.survey_detail || [];
+          this.tiItem = this.sotItem?.tank_info;
           this.last_test_desc = this.getLastTest();
-
-          this.tiDS.getTankInfoForLastTest(this.sotItem.tank_no!).subscribe(data => {
-            if (data.length > 0) {
-              this.tiItem = data[0];
-              this.last_test_desc = this.getLastTest();
-            }
-          });
         }
       });
     } else {
@@ -306,7 +302,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       sot_guid: { eq: this.sot_guid },
       survey_type_cv: { neq: 'PERIODIC_TEST' }
     }
-    this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "ASC" }).subscribe(data => {
+    this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "DESC" }).subscribe(data => {
       if (data.length > 0) {
         this.surveyDetailItem = data;
       }
@@ -408,6 +404,38 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
         ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
         this.refreshSurveyDetail();
       }
+    });
+  }
+
+  deleteSurveyDialog(event: Event, row: SurveyDetailItem) {
+    this.stopPropagation(event); // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.deleteSurveyDetail(row);
+        console.log('confirm delete survey');
+      }
+    });
+  }
+
+  deleteSurveyDetail(row: SurveyDetailItem) {
+    const deletedGuid = row.guid!;
+    const surveyDetail = new SurveyDetailItem(row);
+    this.surveyDS.deleteSurveyDetail(deletedGuid, surveyDetail, null).subscribe(result => {
+      this.handleDeleteSuccess(result?.data?.handleDeleteSuccess);
+      this.refreshSurveyDetail()
     });
   }
 

@@ -600,6 +600,19 @@ export class Utility {
     return found;
   }
 
+  static isSameDate(date1: Date | number | undefined, date2: Date | number | undefined): boolean {
+    if (!date1 || !date2) return false;
+  
+    const d1 = typeof date1 === 'number' ? this.convertDate(date1) as Date : date1;
+    const d2 = typeof date2 === 'number' ? this.convertDate(date2) as Date : date2;
+  
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
+  }
+
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number) {
     pdf.setFontSize(fontSize); // Title font size 
     pdf.text(content, leftPost, topPos); // Position it at the top

@@ -226,7 +226,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.lastCargoControl = new UntypedFormControl('', [AutocompleteSelectionValidator(this.last_cargoList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -516,9 +516,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     }
 
     if (this.searchForm!.value['last_cargo']) {
-
       if (!where.tariff_cleaning) where.tariff_cleaning = {};
-
       where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
     }
 
@@ -539,14 +537,12 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
 
-
     if (this.searchForm!.value['part_name']) {
       if (!where.residue) where.residue = {};
       where.residue.some = { residue_part: { some: { description: { contains: this.searchForm!.value['part_name'] } } } };
     }
 
     if (this.searchForm!.value['residue_job_no']) {
-
       if (!where.residue) where.residue = {};
       where.residue = { some: { job_no: { contains: this.searchForm!.value['job_no'] } } };
     }
@@ -568,9 +564,29 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       if (!where.residue.some) where.residue.some = {};
       where.residue.some.status_cv = { in: this.searchForm!.value['est_status_cv'] };
     } else {
-      if (!where.residue) where.residue = {};
-      if (!where.residue.some) where.residue.some = {};
-      where.residue.some.status_cv = { in: this.availableProcessStatus };
+      if (!where.or) where.or = [];
+      const residue = {
+        residue: {
+          some: {
+            status_cv: {
+              in: this.availableProcessStatus
+            }
+          }
+        }
+      }
+      const tank_status = {
+        tank_status_cv: {
+          in: ['CLEANING', 'STORAGE']
+        },
+        cleaning: {
+          all: { status_cv: { in: ["APPROVED", "JOB_IN_PROGRESS", "ASSIGNED"] } }
+        }
+      }
+      where.or.push(residue);
+      where.or.push(tank_status);
+      // if (!where.residue) where.residue = {};
+      // if (!where.residue.some) where.residue.some = {};
+      // where.residue.some.status_cv = { in: this.availableProcessStatus };
     }
     // if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
     //   let reSome: any = {};
@@ -748,7 +764,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
 
   updateValidators(validOptions: any[]) {
     this.lastCargoControl.setValidators([
-      Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
   }
@@ -949,14 +964,14 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     re.status_cv = row?.status_cv;
     // re.job_no=this.residueEstForm?.get("job_no")?.value
     //  re.remarks=this.residueEstForm?.get("remarks")?.value
-    var total_cost:number =0;
+    var total_cost: number = 0;
     re.residue_part?.forEach((rep: any) => {
       rep.action = 'EDIT';
       rep.approve_qty = (this.IsApproved(row) ? rep.approve_qty : rep.quantity);
       // rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
       rep.approve_cost = (this.IsApproved(row) ? rep.approve_cost : rep.cost);
-      rep.approve_part= (rep.approve_part==null||rep.approve_part?true:false);
-      if(rep.approve_part==1)  total_cost += rep.approve_qty* rep.approve_cost;
+      rep.approve_part = (rep.approve_part == null || rep.approve_part ? true : false);
+      if (rep.approve_part == 1) total_cost += rep.approve_qty * rep.approve_cost;
     })
 
     re.residue_part = re.residue_part?.map((rep: ResiduePartItem) => {
@@ -968,7 +983,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
         approve_cost: rep.approve_cost
       })
     });
-    re.total_cost=total_cost;
+    re.total_cost = total_cost;
     delete re.storing_order_tank;
     console.log(re)
     this.residueDS.approveResidue(re).subscribe(result => {

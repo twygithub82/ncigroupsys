@@ -20,7 +20,7 @@ import { CodeValuesDS } from 'app/data-sources/code-values';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
-import { TankInfoDS } from 'app/data-sources/tank-info';
+import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
@@ -37,6 +37,7 @@ export interface DialogData {
   ccDS: CustomerCompanyDS;
   surveyDS: SurveyDetailDS;
   tiDS: TankInfoDS;
+  latestSurveyDetailItem?: SurveyDetailItem[];
 }
 
 @Component({
@@ -72,6 +73,7 @@ export class FormDialogComponent {
   surveyForm: UntypedFormGroup;
   surveyDetail?: SurveyDetailItem;
   sot: StoringOrderTankItem;
+  latestSurveyDetailItem?: SurveyDetailItem[];
   next_test_desc?: string;
   next_test_cv?: string;
   maxDate = new Date();
@@ -86,7 +88,6 @@ export class FormDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-
   ) {
     // Set the defaults
     this.cvDS = data.cvDS;
@@ -94,10 +95,12 @@ export class FormDialogComponent {
     this.surveyDS = data.surveyDS;
     this.tiDS = data.tiDS;
     this.sot = data.sot;
+    this.latestSurveyDetailItem = data.latestSurveyDetailItem;
     this.surveyDetail = data.surveyDetail;
     this.action = data.action!;
     this.next_test_desc = data.next_test_desc;
     this.next_test_cv = data.next_test_cv;
+
     if (this.action === 'edit') {
       this.dialogTitle = data.translatedLangText.EDIT + " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
       // this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.booking.booking_dt) as Date, this.startDateToday);
@@ -110,10 +113,12 @@ export class FormDialogComponent {
   }
 
   createStorigOrderTankForm(): UntypedFormGroup {
+    const today = Utility.convertDate(new Date());
+    const defaultSurveyDt = Utility.convertDateMoment(this.surveyDetail?.survey_dt) || Utility.convertDateMoment(today);
     return this.fb.group({
       survey_type_cv: 'PERIODIC_TEST',
       test_class_cv: this.surveyDetail?.test_class_cv,
-      survey_dt: Utility.convertDate(this.surveyDetail?.survey_dt) || new Date(),
+      survey_dt: defaultSurveyDt,
       status_cv: [{ value: this.surveyDetail?.status_cv, disabled: this.action === 'edit' }],
       remarks: this.surveyDetail?.remarks,
       test_type_cv: [{ value: this.surveyDetail?.test_type_cv || this.data.next_test_cv, disabled: this.action === 'edit' }],
@@ -122,41 +127,54 @@ export class FormDialogComponent {
 
   submit() {
     if (this.surveyForm?.valid) {
-      var surveyDetail: any = {
+      const surveyDt = this.surveyForm.get('survey_dt')?.value?.clone();
+      const surveyDetail: any = {
         guid: this.surveyDetail?.guid,
         sot_guid: this.sot?.guid,
         survey_type_cv: 'PERIODIC_TEST',
         test_class_cv: this.surveyForm.get('test_class_cv')?.value,
-        survey_dt: Utility.convertDate(this.surveyForm.get('survey_dt')?.value),
+        survey_dt: Utility.convertDate(surveyDt),
         status_cv: this.surveyForm.get('status_cv')?.value,
         remarks: this.surveyForm.get('remarks')?.value,
         test_type_cv: this.surveyForm.get('test_type_cv')?.value,
-      }
-      var periodicTest: any = {
-        last_test_cv: surveyDetail.test_type_cv,
-        next_test_cv: this.tiDS.getNextTestCv(surveyDetail.test_type_cv),
-        tank_no: this.sot?.tank_no
-      }
-      console.log('submit surveyDetail: ', surveyDetail);
-      console.log('submit periodicTest: ', periodicTest);
-      if (surveyDetail.guid) {
-        this.surveyDS.updateSurveyDetail(surveyDetail).subscribe(result => {
-          const returnDialog: any = {
-            savedSuccess: (result?.data?.updateSurveyDetail ?? 0) > 0,
-            surveyDetail: surveyDetail,
-            action: this.action
-          }
-          this.dialogRef.close(returnDialog);
-        });
-      } else {
-        this.surveyDS.addSurveyDetail(surveyDetail, periodicTest).subscribe(result => {
-          const returnDialog: any = {
-            savedSuccess: (result?.data?.addSurveyDetail ?? 0) > 0,
-            action: this.action
-          }
-          this.dialogRef.close(returnDialog);
-        });
-      }
+      };
+      
+      const shouldUpdate = this.shouldUpdateLastTestDt(surveyDetail, this.latestSurveyDetailItem);
+
+      // Determine which testTypeCV to use for periodicTest
+      const baseTestTypeCV = shouldUpdate.needUpdate
+        ? shouldUpdate.latestItem?.test_type_cv
+        : surveyDetail.test_type_cv;
+
+      const periodicTest: any = {
+        last_test_cv: baseTestTypeCV,
+        next_test_cv: this.tiDS.getNextTestCv(baseTestTypeCV),
+        tank_no: this.sot?.tank_no,
+        test_dt: shouldUpdate?.latestItem?.survey_dt
+      };
+
+      console.log('submit surveyDetail:', surveyDetail);
+      console.log('submit periodicTest:', periodicTest);
+      console.log('submit shouldUpdate:', shouldUpdate);
+
+      const isEdit = !!surveyDetail.guid;
+      const saveRequest = isEdit
+        ? this.surveyDS.updateSurveyDetail(surveyDetail, shouldUpdate.needUpdate ? periodicTest : undefined)
+        : this.surveyDS.addSurveyDetail(surveyDetail, shouldUpdate.needUpdate ? periodicTest : undefined);
+
+      saveRequest.subscribe(result => {
+        const savedSuccess = isEdit
+          ? (result?.data?.updateSurveyDetail ?? 0) > 0
+          : (result?.data?.addSurveyDetail ?? 0) > 0;
+
+        const returnDialog: any = {
+          savedSuccess,
+          surveyDetail,
+          action: this.action
+        };
+
+        this.dialogRef.close(returnDialog);
+      });
     } else {
       console.log('invalid');
       this.findInvalidControls();
@@ -227,5 +245,51 @@ export class FormDialogComponent {
       return this.data.populateData.surveyorList.find((x: any) => x.guid === guid)
     }
     return undefined;
+  }
+
+  shouldUpdateLastTestDt(
+    currentSurveyDetailItem: SurveyDetailItem,
+    latestSurveyDetailItem?: SurveyDetailItem[]
+  ): { needUpdate: boolean; latestItem: SurveyDetailItem | null } {
+    if (!currentSurveyDetailItem || currentSurveyDetailItem.status_cv !== 'ACCEPTED') {
+      return { needUpdate: false, latestItem: null };
+    }
+
+    // If list is empty, update is definitely needed
+    if (!latestSurveyDetailItem?.length) {
+      return { needUpdate: true, latestItem: currentSurveyDetailItem };
+    }
+
+    // Filter out invalid survey_dt
+    const validItems = latestSurveyDetailItem.filter(
+      item => typeof item.survey_dt === 'number' && isFinite(item.survey_dt)
+    );
+
+    // Check if current is already in the list
+    const isCurrentLatestInList = validItems.length > 0
+      ? currentSurveyDetailItem.guid === validItems.reduce((latest, item) =>
+        !latest || item.survey_dt! > latest.survey_dt! ? item : latest,
+        null as SurveyDetailItem | null
+      )?.guid
+      : false;
+
+    // Filter out current item from comparison
+    const filteredItems = validItems.filter(item => item.guid !== currentSurveyDetailItem.guid);
+
+    // Combine current with remaining list to find latest
+    const allItems = [...filteredItems, currentSurveyDetailItem];
+    const latestItem = allItems.reduce((latest, item) =>
+      !latest || item.survey_dt! > latest.survey_dt! ? item : latest,
+      null as SurveyDetailItem | null
+    );
+
+    const needUpdate = isCurrentLatestInList
+      ? true
+      : latestItem?.guid === currentSurveyDetailItem.guid;
+
+    return {
+      needUpdate,
+      latestItem
+    };
   }
 }

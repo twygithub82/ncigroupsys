@@ -2228,7 +2228,7 @@
                           @if (canPublish()) {
                           <button mat-raised-button matStepperNext color="accent" class="msr-2"
                             [disabled]="(igsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"
-                            (click)="onPublish()">
+                            (click)="onPublishCheck($event)">
                             <mat-icon>
                               @if (!(igsDS.actionLoading$ | async) && !(isImageLoading$| async) &&
                               !(isFileActionLoading$| async)) {

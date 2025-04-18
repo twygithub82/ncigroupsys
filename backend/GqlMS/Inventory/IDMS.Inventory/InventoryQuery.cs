@@ -1,11 +1,13 @@
 ﻿using HotChocolate;
 using HotChocolate.Types;
 using Microsoft.AspNetCore.Http;
-using IDMS.Models.Master;
 using IDMS.Models.Shared;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Inventory.GqlTypes.LocalModel;
 using IDMS.Models.Inventory;
+using Microsoft.EntityFrameworkCore;
+using IDMS.Models;
+using CommonUtil.Core.Service;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -109,6 +111,50 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 return context.transfer.Where(t => t.delete_dt == null || t.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
+
+        public async Task<List<survey_detail?>?> QuerySurveyDetailByTankNo([Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context, string tankNo, int rowCount)
+        {
+            try
+            {
+                string testType = "PERIODIC_TEST";
+                string status = "ACCEPTED";
+
+                var query = from ti in context.tank_info
+                            join sot in context.storing_order_tank on ti.tank_no equals sot.tank_no into tankStoringOrders
+                            from sot in tankStoringOrders.DefaultIfEmpty()
+                            join sd in context.survey_detail on sot.guid equals sd.sot_guid into storingOrderSurveys
+                            from sd in storingOrderSurveys.DefaultIfEmpty()
+                            where ti.tank_no.Equals(tankNo) && sd.survey_type_cv.ToUpper().Equals(testType)
+                            && sd.status_cv.Equals(status) && sd.delete_dt == null
+                            orderby sd.survey_dt descending
+                            select new
+                            {
+                                TankInfo = ti,
+                                StoringOrderTank = sot,
+                                SurveyDetail = sd
+                            };
+                //var result = await query.Take(rowCount).ToListAsync();
+
+                var result = await query.Select(x => x.SurveyDetail).Take(rowCount).ToListAsync();
+                return result;
+
+                //var specificResult = await query.Select(x => new
+                //{
+                //    //last_test_cv = x.TankInfo.last_test_cv,
+                //    survey_detail = x.SurveyDetail,
+                //}).Take(rowCount).ToListAsync();
+
+                //List<survey_detail> result = specificResult
+                //    .Select(item => item.survey_detail)
+                //    .ToList();
+
+
             }
             catch (Exception ex)
             {

@@ -1087,8 +1087,10 @@ namespace IDMS.Billing.GqlTypes
             return result;
         }
 
+
+        #region RevenueReport
         public async Task<MonthlyRevenueResult?> QueryMonthlyRevenue(ApplicationBillingDBContext context, [Service] IConfiguration config,
-                [Service] IHttpContextAccessor httpContextAccessor, MonthlyRevenueRequest monthlyRevenueRequest)
+            [Service] IHttpContextAccessor httpContextAccessor, MonthlyRevenueRequest monthlyRevenueRequest)
         {
             try
             {
@@ -1734,10 +1736,7 @@ namespace IDMS.Billing.GqlTypes
 
             return monthlyRevenue;
         }
-
-        private void GetStorageCost()
-        {
-        }
+        #endregion
 
     }
 }
