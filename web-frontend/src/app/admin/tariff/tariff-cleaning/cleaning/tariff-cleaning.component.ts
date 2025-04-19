@@ -343,7 +343,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = after;
-    this.subs.sink = this.tcDS.SearchTariffCleaning1(where, order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.tcDS.SearchTariffResidueWithCount(where, order, first, after, last, before).subscribe(data => {
       this.tcList = data;
       this.endCursor = this.tcDS.pageInfo?.endCursor;
       this.startCursor = this.tcDS.pageInfo?.startCursor;
@@ -463,7 +463,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     where = this.appendDeleteDt(where);
 
-    this.subs.sink = this.tcDS.SearchTariffCleaning1(where).subscribe(data => {
+    this.subs.sink = this.tcDS.SearchTariffResidueWithCount(where).subscribe(data => {
       this.tcList = data;
       console.log(data)
     });

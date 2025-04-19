@@ -309,8 +309,8 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
 `;
 
 export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION_1 = gql`
-  query queryTariffCleaning1($where: TariffCleaningResultFilterInput, $order: [TariffCleaningResultSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
-    lastCargo: queryTariffCleaning1(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
+  query queryTariffCleaningWithCount($where: TariffCleaningResultFilterInput, $order: [TariffCleaningResultSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    lastCargo: queryTariffCleaningWithCount(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         tank_count
         tariff_cleaning {
@@ -447,7 +447,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       );
   }
 
-  SearchTariffCleaning1(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
+  SearchTariffResidueWithCount(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
     if (!last)
       if (!first)
