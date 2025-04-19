@@ -490,7 +490,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   cancelItem(row: TariffRepairItem) {
-    debugger
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
