@@ -95,6 +95,55 @@ export const GET_TARIFF_DEPOT_QUERY_WITH_TANK = gql`
   }
 `;
 
+export const GET_TARIFF_DEPOT_QUERY_WITH_TANK_WITH_COUNT = gql`
+  query queryTariffDepotWithCount($where: TariffDepotResultFilterInput, $order:[TariffDepotResultSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    tariffDepotResult : queryTariffDepotWithCount(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        tank_count
+        tariff_depot {
+          create_by
+          create_dt
+          delete_dt
+          description
+          free_storage
+          gate_in_cost
+          gate_out_cost
+          guid
+          lolo_cost
+          preinspection_cost
+          profile_name
+          storage_cost
+          update_by
+          update_dt
+          tanks {
+            create_by
+            create_dt
+            delete_dt
+            description
+            gate_in
+            gate_out
+            guid
+            iso_format
+            lift_off
+            lift_on
+            preinspect
+            tariff_depot_guid
+            unit_type
+            update_by
+            update_dt
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
 
 export const ADD_TARIFF_DEPOT = gql`
   mutation addTariffDepot($td: tariff_depotInput!) {
@@ -105,6 +154,12 @@ export const ADD_TARIFF_DEPOT = gql`
 export const UPDATE_TARIFF_DEPOT = gql`
   mutation updateTariffDepot($td: tariff_depotInput!) {
     updateTariffDepot(updateTariffDepot: $td)
+  }
+`;
+
+export const DELETE_TARIFF_DEPOT = gql`
+  mutation deleteTariffDepot($deleteTariffDepot_guids: [String!]!) {
+    deleteTariffDepot(deleteTariffDepot_guids: $deleteTariffDepot_guids)
   }
 `;
 
@@ -121,6 +176,34 @@ export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
     return this.apollo
       .query<any>({
         query: GET_TARIFF_DEPOT_QUERY_WITH_TANK,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffDepotItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const tariffDepotResult = result.tariffDepotResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(tariffDepotResult.nodes);
+          this.pageInfo = tariffDepotResult.pageInfo;
+          this.totalCount = tariffDepotResult.totalCount;
+          return tariffDepotResult.nodes;
+        })
+      );
+  }
+
+  SearchTariffDepotWithCount(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffDepotItem[]> {
+    this.loadingSubject.next(true);
+    if (!last)
+      if (!first)
+        first = 10;
+    return this.apollo
+      .query<any>({
+        query: GET_TARIFF_DEPOT_QUERY_WITH_TANK_WITH_COUNT,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -160,6 +243,20 @@ export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
       mutation: UPDATE_TARIFF_DEPOT,
       variables: {
         td
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  deleteTariffDepot(deleteTariffDepot_guids: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_TARIFF_DEPOT,
+      variables: {
+        deleteTariffDepot_guids
       }
     }).pipe(
       catchError((error: ApolloError) => {

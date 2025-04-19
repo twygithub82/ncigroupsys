@@ -386,7 +386,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         langText: this.langText,
         selectedItems: this.selection.selected
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -445,48 +444,12 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        //if(result.selectedValue>0)
-        //{
         this.handleSaveSuccess(result);
-        //this.search();
         if (this.trfRepairDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
-        //}
       }
     });
-  }
-
-  deleteItem(row: any) {
-    // this.id = row.id;
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(DeleteDialogComponent, {
-    //   data: row,
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // for delete we use splice in order to remove single object from DataService
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'snackbar-danger',
-    //         'Delete Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
   }
 
   cancelItem(row: TariffRepairItem) {
