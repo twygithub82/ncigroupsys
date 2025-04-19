@@ -308,7 +308,7 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
   }
 `;
 
-export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION_1 = gql`
+export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION_WITH_COUNT = gql`
   query queryTariffCleaningWithCount($where: TariffCleaningResultFilterInput, $order: [TariffCleaningResultSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     lastCargo: queryTariffCleaningWithCount(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -454,7 +454,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
         first = 10;
     return this.apollo
       .query<any>({
-        query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION_1,
+        query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION_WITH_COUNT,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

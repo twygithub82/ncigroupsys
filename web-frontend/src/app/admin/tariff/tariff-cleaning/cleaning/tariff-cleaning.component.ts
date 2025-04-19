@@ -632,7 +632,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       width: '500px',
       data: {
         headerText: this.translatedLangText.ARE_U_SURE_DELETE,
-        // messageText: [this.translatedLangText.ARE_U_SURE_DELETE],
         act: "warn"
       },
       direction: tempDirection
