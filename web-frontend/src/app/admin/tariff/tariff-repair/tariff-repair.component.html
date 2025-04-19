@@ -19,7 +19,8 @@
                     </button>
                   </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
-                    <button mat-mini-fab class="light-purple" color="" (click)="editCallSelection()" (click)="$event.stopPropagation()">
+                    <button mat-mini-fab class="light-purple" color="" (click)="editCallSelection()"
+                      (click)="$event.stopPropagation()">
                       <mat-icon class="">edit</mat-icon>
                     </button>
                   </div>
@@ -123,7 +124,6 @@
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
                         <mat-select formControlName="handled_item_cv">
-                          <mat-option>ALL</mat-option>
                           @for (cn of handledItemCvList; track cn) {
                           <mat-option [value]="cn.code_val">
                             {{cn.description}}
@@ -132,7 +132,8 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                    <div
+                      class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                       <button mat-mini-fab color="primary" (click)="search()">
                         <mat-icon>search</mat-icon>
                       </button>
@@ -158,8 +159,9 @@
                     </mat-checkbox>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                    <mat-checkbox (click)="$event.stopPropagation()"
+                      (change)="$event ? selection.toggle(row.tariff_repair) : null"
+                      [checked]="selection.isSelected(row.tariff_repair)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
@@ -168,58 +170,59 @@
                     {{this.translatedLangText.PART_NAME
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_75-xl'"
-                    (contextmenu)="onContextMenu($event, row)">
+                    (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.PART_NAME
-                      }}:</span>{{getTariffRepairAlias(row)}}</mat-cell>
+                      }}:</span>{{getTariffRepairAlias(row.tariff_repair)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="dimension">
                   <mat-header-cell *matHeaderCellDef mat-sort-header
                     [ngClass]="''">{{this.translatedLangText.DIMENSION}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
-                    <span class="mobile-label">{{this.translatedLangText.DIMENSION}}:</span>{{row.dimension ||
-                    "-"}}</mat-cell>
+                    <span
+                      class="mobile-label">{{this.translatedLangText.DIMENSION}}:</span>{{row.tariff_repair?.dimension
+                    || "-"}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header
                     [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.LENGTH
                     }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_repair)"
                     [ngClass]="'tbl-col-width-per-1'">
-                    <span class="mobile-label">{{this.translatedLangText.LENGTH }}:</span>{{row.length ||
+                    <span class="mobile-label">{{this.translatedLangText.LENGTH }}:</span>{{row.tariff_repair?.length ||
                     "-"}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="email">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
                     mat-sort-header>{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    (contextmenu)="onContextMenu($event, row)">
+                    (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span>
-                    {{this.displayGroupNameCodeValue_Description(row.group_name_cv)}}</mat-cell>
+                    {{this.displayGroupNameCodeValue_Description(row.tariff_repair?.group_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subgroup">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75-xl'"
                     mat-sort-header>{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl'"
-                    (contextmenu)="onContextMenu($event, row)">
+                    (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
-                    {{this.displaySubGroupNameCodeValue_Description(row.subgroup_name_cv)}}</mat-cell>
+                    {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair?.subgroup_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="gender">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
                     mat-sort-header>{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    (contextmenu)="onContextMenu($event, row)">
+                    (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span>
-                    {{row.labour_hour || "-"}}</mat-cell>
+                    {{row.tariff_repair?.labour_hour || "-"}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="bDate">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
                     mat-sort-header>{{this.translatedLangText.MATERIAL_COST$}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    (contextmenu)="onContextMenu($event, row)">
+                    (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST$}}:</span>
                     <div class="cost-label">
-                      <span></span><span>{{row.material_cost?.toFixed(2)}}</span>
+                      <span></span><span>{{row.tariff_repair?.material_cost?.toFixed(2)}}</span>
                     </div>
                   </mat-cell>
                 </ng-container>
@@ -227,34 +230,33 @@
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
                     mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    (contextmenu)="onContextMenu($event, row)">
+                    (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
-                    {{this.displayLastUpdated(row)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="dup">
-                  <mat-header-cell
-                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                    *matHeaderCellDef></mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;"
-                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                    <button mat-icon-button color="primary" (click)="$event.stopPropagation()" (click)="dupCall(row)"
-                      [matTooltip]="translatedLangText.DUPLICATE" class="tbl-action-btn">
-                      <mat-icon>add_to_photos</mat-icon>
-                    </button>
-                  </mat-cell>
+                    {{this.displayLastUpdated(row.tariff_repair)}}</mat-cell>
                 </ng-container>
                 <!-- actions -->
                 <ng-container matColumnDef="actions">
-                  <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="addCall()"
-                      class="tbl-action-btn">
-                      <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+                  <mat-header-cell class="pr-0" *matHeaderCellDef></mat-header-cell>
+                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0 justify-content-end">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                      <mat-icon>more_vert</mat-icon>
                     </button>
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
-                      class="tbl-action-btn">
-                      <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
-                    </button>
+                    <mat-menu #menu="matMenu">
+                      <button mat-menu-item (click)="dupCall(row.tariff_repair)">
+                        <mat-icon>add_to_photos</mat-icon>
+                        <span>{{translatedLangText.DUPLICATE}}</span>
+                      </button>
+                      @if (!row.tank_count) {
+                      <button mat-menu-item (click)="cancelItem(row.tariff_repair)" class="text-danger">
+                        <mat-icon class="text-danger">delete_forever</mat-icon>
+                        <span>{{translatedLangText.DELETE}}</span>
+                      </button>
+                      }
+                    </mat-menu>
+                    <!-- <button mat-icon-button color="primary" (click)="$event.stopPropagation()" (click)="dupCall(row)"
+                      [matTooltip]="translatedLangText.DUPLICATE" class="tbl-action-btn">
+                      <mat-icon>add_to_photos</mat-icon>
+                    </button> -->
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

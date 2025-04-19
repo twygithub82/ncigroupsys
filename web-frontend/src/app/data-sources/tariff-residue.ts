@@ -100,13 +100,11 @@ export const UPDATE_TARIFF_RESIDUE = gql`
   }
 `;
 
-
 export const DELETE_TARIFF_RESIDUE = gql`
   mutation deleteTariffResidue($deleteTariffResidue_guids: [String!]!) {
     deleteTariffResidue(deleteTariffResidue_guids: $deleteTariffResidue_guids)
   }
 `;
-
 
 export class TariffResidueDS extends BaseDataSource<TariffResidueItem> {
   constructor(private apollo: Apollo) {
@@ -196,7 +194,6 @@ export class TariffResidueDS extends BaseDataSource<TariffResidueItem> {
       }),
     );
   }
-
 
   deleteTariffResidue(deleteTariffResidue_guids: any): Observable<any> {
     return this.apollo.mutate({

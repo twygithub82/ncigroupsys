@@ -27,23 +27,15 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
-import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -65,7 +57,6 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
@@ -90,15 +81,12 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   displayedColumns = [
     'select',
     'fName',
-    // 'dimension',
-    // 'lName',
     'email',
     'subgroup',
     'gender',
     'bDate',
     'mobile',
-    'dup',
-
+    'actions',
   ];
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-REPAIR'
@@ -128,14 +116,14 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { part_name: "ASC" };
+  lastOrderBy: any = { tariff_repair: { part_name: "ASC" } };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
 
-  selection = new SelectionModel<TariffResidueItem>(true, []);
+  selection = new SelectionModel<TariffRepairItem>(true, []);
 
   id?: number;
   pcForm?: UntypedFormGroup;
@@ -353,10 +341,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  preventDefault(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-  }
-
   displayGroupNameCodeValue_Description(codeValue: String) {
     return this.GetCodeValue_Description(codeValue, this.groupNameCvList);
   }
@@ -407,10 +391,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-
         this.handleSaveSuccess(result);
         this.search();
-
       }
     });
   }
@@ -473,10 +455,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         //}
       }
     });
-
   }
-
-
 
   deleteItem(row: any) {
     // this.id = row.id;
@@ -509,19 +488,50 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     //   }
     // });
   }
+
+  cancelItem(row: TariffRepairItem) {
+    debugger
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '500px',
+      data: {
+        headerText: this.translatedLangText.ARE_U_SURE_DELETE,
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.action == "confirmed") {
+        this.deleteTariffAndPackageRepair(row.guid!);
+      }
+    });
+  }
+
+  deleteTariffAndPackageRepair(tariffRepairGuid: string) {
+    this.trfRepairDS.deleteTariffRepair([tariffRepairGuid]).subscribe(d => {
+      let count = d.data.deleteTariffRepair;
+      if (count > 0) {
+        this.handleSaveSuccess(count);
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+      }
+    });
+  }
+
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.trfRepairItems.length;
     return numSelected === numRows;
   }
-
-  // isSelected(option: any): boolean {
-  //   return this.customerCodeControl.value.includes(option);
-  // }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
@@ -532,136 +542,177 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
-    const where: any = {};
+    const where: any = {
+      and: [
+        {
+          tariff_repair: {
+            delete_dt: {
+              eq: null
+            }
+          }
+        }
+      ]
+    };
 
     if (this.pcForm!.get('group_name_cv')?.value) {
       if (this.pcForm!.get('group_name_cv')?.value?.length > 0) {
         const cdValues: string[] = this.pcForm!.get('group_name_cv')?.value;
-        where.group_name_cv = { in: cdValues };
+        // where.group_name_cv = { in: cdValues };
+        const tariff_repair: any = { group_name_cv: { in: cdValues } }
+        where.and.push({ tariff_repair: tariff_repair })
       }
     }
 
     if (this.pcForm!.get('sub_group_name_cv')?.value) {
       if (this.pcForm!.get('sub_group_name_cv')?.value?.length > 0) {
         const cdValues: CodeValuesItem[] = this.pcForm!.get('sub_group_name_cv')?.value;
-        where.subgroup_name_cv = { in: cdValues };
+        // where.subgroup_name_cv = { in: cdValues };
+        const tariff_repair: any = { subgroup_name_cv: { in: cdValues } }
+        where.and.push({ tariff_repair: tariff_repair })
       }
     }
 
     if (this.pcForm!.value["part_name"]) {
       const description: Text = this.pcForm!.value["part_name"];
-      where.part_name = { contains: description }
+      // where.part_name = { contains: description }
+      const tariff_repair: any = { part_name: { contains: description } }
+      where.and.push({ tariff_repair: tariff_repair })
     }
 
-    // Handling material_cost
-    if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.material_cost = { gte: minCost, lte: maxCost };
-    } else if (this.pcForm!.value["min_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.material_cost = { gte: minCost };
-    } else if (this.pcForm!.value["max_cost"]) {
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.material_cost = { lte: maxCost };
+    if (this.pcForm!.value["handled_item_cv"]) {
+      const handled = this.pcForm!.value["handled_item_cv"];
+      // where.part_name = { contains: description }
+      if (handled === 'HANDLED') {
+        where.and.push({ tank_count: { gt: 0 } })
+      } else if (handled === 'NON_HANDLE') {
+        where.and.push({ tank_count: { lte: 0 } })
+      }
     }
 
+    // // Handling material_cost
+    // if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
+    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
+    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+    //   // where.material_cost = { gte: minCost, lte: maxCost };
+    //   const tariff_repair: any = { material_cost: { gte: minCost, lte: maxCost } }
+    //   where.and.push({ tariff_repair: tariff_repair })
+    // } else if (this.pcForm!.value["min_cost"]) {
+    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
+    //   // where.material_cost = { gte: minCost };
+    //   const tariff_repair: any = { material_cost: { gte: minCost } }
+    //   where.and.push({ tariff_repair: tariff_repair })
+    // } else if (this.pcForm!.value["max_cost"]) {
+    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+    //   // where.material_cost = { lte: maxCost };
+    //   const tariff_repair: any = { material_cost: { lte: maxCost } }
+    //   where.and.push({ tariff_repair: tariff_repair })
+    // }
 
     // Handling Dimension
-    if (this.pcForm!.value["dimension"]) {
-      let dimensionConditions: any = {};
-      let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
+    // if (this.pcForm!.value["dimension"]) {
+    //   let dimensionConditions: any = {};
+    //   let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
 
-      // Initialize tariff_repair if it doesn't exist
-      // where.tariff_repair = where.tariff_repair || {};
-      where.and = where.and || [];
+    //   // Initialize tariff_repair if it doesn't exist
+    //   where.and = where.and || [];
+    //   dimensionConditions.or = [];
+    //   selectedTarifRepairDimensionItems.forEach((item) => {
+    //     const condition: any = {};
 
-      dimensionConditions.or = [];
-      selectedTarifRepairDimensionItems.forEach((item) => {
-        const condition: any = {};
+    //     // Only add condition if item is defined (non-undefined)
+    //     if (item !== undefined && item !== null && item !== '') {
+    //       condition.dimension = { eq: item };
+    //     }
 
-        // Only add condition if item is defined (non-undefined)
-        if (item !== undefined && item !== null && item !== '') {
-          condition.dimension = { eq: item };
-        }
+    //     if (Object.keys(condition).length > 0) {
+    //       dimensionConditions.or.push(condition);
+    //     }
+    //   });
 
-        if (Object.keys(condition).length > 0) {
-          dimensionConditions.or.push(condition);
-        }
-      });
-
-      // Push condition to 'and' if it has valid properties
-      if (dimensionConditions.or.length > 0) {
-        where.and.push(dimensionConditions);
-      }
-    }
+    //   // Push condition to 'and' if it has valid properties
+    //   if (dimensionConditions.or.length > 0) {
+    //     // where.and.push(dimensionConditions);
+    //     const tariff_repair: any = { or: dimensionConditions }
+    //     where.and.push({ tariff_repair: tariff_repair })
+    //   }
+    // }
 
     // Handling Length
-    if (this.pcForm!.value["len"]) {
-      let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
+    // if (this.pcForm!.value["len"]) {
+    //   let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
 
-      // Initialize tariff_repair if it doesn't exist
-      //  where.tariff_repair = where.tariff_repair || {};
-      where.and = where.and || [];
+    //   // Initialize tariff_repair if it doesn't exist
+    //   //  where.tariff_repair = where.tariff_repair || {};
+    //   where.and = where.and || [];
 
-      const lengthConditions: any = {};
-      lengthConditions.or = [];
-      selectedTarifRepairLengthItems.forEach((item) => {
-        const condition: any = {};
+    //   const lengthConditions: any = {};
+    //   lengthConditions.or = [];
+    //   selectedTarifRepairLengthItems.forEach((item) => {
+    //     const condition: any = {};
 
-        // Add condition for length if defined
-        if (item.length !== undefined) {
-          condition.length = { eq: item.length };
-        }
+    //     // Add condition for length if defined
+    //     if (item.length !== undefined) {
+    //       condition.length = { eq: item.length };
+    //     }
 
-        // Add condition for length_unit_cv if it exists
-        if (item.length_unit_cv) {
-          condition.length_unit_cv = { eq: item.length_unit_cv };
-        }
+    //     // Add condition for length_unit_cv if it exists
+    //     if (item.length_unit_cv) {
+    //       condition.length_unit_cv = { eq: item.length_unit_cv };
+    //     }
 
-        // Push condition to 'or' if it has valid properties
-        if (Object.keys(condition).length > 0) {
-          lengthConditions.or.push(condition);
-        }
-      });
+    //     // Push condition to 'or' if it has valid properties
+    //     if (Object.keys(condition).length > 0) {
+    //       lengthConditions.or.push(condition);
+    //     }
+    //   });
 
-      // Push length conditions to 'and' if it has valid properties
-      if (lengthConditions.or.length > 0) {
-        where.and.push(lengthConditions);
-      }
-    }
+    //   // Push length conditions to 'and' if it has valid properties
+    //   if (lengthConditions.or.length > 0) {
+    //     where.and.push(lengthConditions);
+    //   }
+    // }
 
+    // // Handling length
+    // if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
+    //   const minLen: number = Number(this.pcForm!.value["min_len"]);
+    //   const maxLen: number = Number(this.pcForm!.value["max_len"]);
+    //   where.length = { gte: minLen, lte: maxLen };
+    // } else if (this.pcForm!.value["min_len"]) {
+    //   const minLen: number = Number(this.pcForm!.value["min_len"]);
+    //   where.length = { gte: minLen };
+    // } else if (this.pcForm!.value["max_len"]) {
+    //   const maxLen: number = Number(this.pcForm!.value["max_len"]);
+    //   where.length = { lte: maxLen };
+    // }
 
-    // Handling length
-    if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
-      const minLen: number = Number(this.pcForm!.value["min_len"]);
-      const maxLen: number = Number(this.pcForm!.value["max_len"]);
-      where.length = { gte: minLen, lte: maxLen };
-    } else if (this.pcForm!.value["min_len"]) {
-      const minLen: number = Number(this.pcForm!.value["min_len"]);
-      where.length = { gte: minLen };
-    } else if (this.pcForm!.value["max_len"]) {
-      const maxLen: number = Number(this.pcForm!.value["max_len"]);
-      where.length = { lte: maxLen };
-    }
-
-    // Handling labour_hour
-    if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.labour_hour = { gte: minLabour, lte: maxLabour };
-    } else if (this.pcForm!.value["min_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      where.labour_hour = { gte: minLabour };
-    } else if (this.pcForm!.value["max_labour"]) {
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.labour_hour = { lte: maxLabour };
-    }
+    // // Handling labour_hour
+    // if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
+    //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+    //   const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+    //   where.labour_hour = { gte: minLabour, lte: maxLabour };
+    // } else if (this.pcForm!.value["min_labour"]) {
+    //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+    //   where.labour_hour = { gte: minLabour };
+    // } else if (this.pcForm!.value["max_labour"]) {
+    //   const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+    //   where.labour_hour = { lte: maxLabour };
+    // }
     this.lastSearchCriteria = where;
-    this.subs.sink = this.trfRepairDS.SearchTariffRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    // this.subs.sink = this.trfRepairDS.SearchTariffRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    //   this.trfRepairItems = data;
+    //   this.previous_endCursor = undefined;
+    //   this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
+    //   this.startCursor = this.trfRepairDS.pageInfo?.startCursor;
+    //   this.hasNextPage = this.trfRepairDS.pageInfo?.hasNextPage ?? false;
+    //   this.hasPreviousPage = this.trfRepairDS.pageInfo?.hasPreviousPage ?? false;
+    //   this.pageIndex = 0;
+    //   this.paginator.pageIndex = 0;
+    //   this.selection.clear();
+    //   if (!this.hasPreviousPage)
+    //     this.previous_endCursor = undefined;
+    // });
+    this.subs.sink = this.trfRepairDS.SearchTariffRepairWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.trfRepairItems = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
@@ -676,15 +727,12 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
-
       });
     }
   }
@@ -728,7 +776,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = after;
-    this.subs.sink = this.trfRepairDS.SearchTariffRepair(where, order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.trfRepairDS.SearchTariffRepairWithCount(where, order, first, after, last, before).subscribe(data => {
       this.trfRepairItems = data;
       this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
       this.startCursor = this.trfRepairDS.pageInfo?.startCursor;
@@ -805,7 +853,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
           const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
           if (!hasMatch) {
             subqueries.push(q);
-
           }
         }
       });
@@ -816,7 +863,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
             this.subGroupNameCvList.push(...data);
           });
         });
-
       }
       // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
@@ -824,7 +870,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       this.subGroupNameCvList = data;
     });
     this.cvDS.connectAlias('handledItem').subscribe(data => {
-      this.handledItemCvList = data;
+      this.handledItemCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('unitType').subscribe(data => {
       this.unitTypeCvList = data;
@@ -832,7 +878,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
-  getTariffRepairAlias(row : TariffRepairItem) {
+  getTariffRepairAlias(row: TariffRepairItem) {
     const alias = `${this.trfRepairDS.displayRepairAlias(row)} ${this.getUnitTypeDescription(row.length_unit_cv)}`;
     return alias;
   }
@@ -875,7 +921,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   // context menu
   onContextMenu(event: MouseEvent, item: any) {
-    event.preventDefault();
+    this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
     if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
@@ -894,7 +940,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   resetDialog(event: Event) {
-    event.preventDefault(); // Prevents the form submission
+    this.preventDefault(event); // Prevents the form submission
 
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -920,5 +966,18 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     this.initPcForm();
 
     //this.customerCodeControl.reset('');
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
   }
 }

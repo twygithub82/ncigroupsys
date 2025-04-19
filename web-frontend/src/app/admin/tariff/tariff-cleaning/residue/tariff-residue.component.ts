@@ -295,15 +295,11 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-
         if (this.tariffResidueDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
 
         this.handleSaveSuccess(result);
-        //this.search();
-        // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-
       }
     });
   }
@@ -409,7 +405,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
         //if(result.selectedValue>0)
         //{
         this.handleSaveSuccess(result);
-        //this.search();
         if (this.tariffResidueDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
@@ -474,30 +469,36 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
     const where: any = {
       and: []
     };
-
-    if (this.pcForm!.value["description"]) {
-      // if(!where.and) where.and=[];
-      const description: Text = this.pcForm!.value["description"];
-      where.and.push({ description: { contains: description } });
+    const tariff_residue: any = {
+      tariff_residue: {
+        delete_dt: {
+          eq: null
+        }
+      }
     }
+    where.and.push(tariff_residue);
 
-    if (this.pcForm!.value["min_cost"]) {
-      // if(!where.and) where.and=[];
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.and.push({ cost: { gte: minCost } });
-    }
+    // if (this.pcForm!.value["description"]) {
+    //   // if(!where.and) where.and=[];
+    //   const description: Text = this.pcForm!.value["description"];
+    //   where.and.push({ description: { contains: description } });
+    // }
 
-    if (this.pcForm!.value["max_cost"]) {
-      //if(!where.and) where.and=[];
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.and.push({ cost: { ngte: maxCost } });
-    }
+    // if (this.pcForm!.value["min_cost"]) {
+    //   // if(!where.and) where.and=[];
+    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
+    //   where.and.push({ cost: { gte: minCost } });
+    // }
+
+    // if (this.pcForm!.value["max_cost"]) {
+    //   //if(!where.and) where.and=[];
+    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+    //   where.and.push({ cost: { ngte: maxCost } });
+    // }
     this.lastSearchCriteria = where;
     // this.subs.sink = this.tariffResidueDS.SearchTariffResidue(where, this.lastOrderBy, this.pageSize).subscribe(data => {
     //   this.tariffResidueItems = data;
@@ -512,7 +513,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     //   if (!this.hasPreviousPage)
     //     this.previous_endCursor = undefined;
     // });
-    this.subs.sink = this.tariffResidueDS.SearchTariffResidueWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    this.subs.sink = this.tariffResidueDS.SearchTariffResidueWithCount(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.tariffResidueItems = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.tariffResidueDS.pageInfo?.endCursor;
@@ -725,7 +726,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     this.initTcForm();
   }
 
-  async cancelItem(row: TariffResidueItem) {
+  cancelItem(row: TariffResidueItem) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -741,16 +742,13 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       direction: tempDirection
     });
     dialogRef.afterClosed().subscribe(result => {
-
       if (result.action == "confirmed") {
         this.deleteTariffAndPackageResidue(row.guid!);
       }
-
     });
   }
 
   deleteTariffAndPackageResidue(tariffResidueGuid: string) {
-
     this.tariffResidueDS.deleteTariffResidue([tariffResidueGuid]).subscribe(d => {
       let count = d.data.deleteTariffResidue;
       if (count > 0) {
