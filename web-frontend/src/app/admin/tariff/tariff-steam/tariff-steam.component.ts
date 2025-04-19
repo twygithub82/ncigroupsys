@@ -89,6 +89,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     'cost',
     'labour',
     'lastUpdate',
+    'actions',
   ];
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-STEAM'
@@ -109,7 +110,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { temp_max: "DESC" };
+  lastOrderBy: any = { tariff_steaming: { temp_max: "DESC" } };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -250,9 +251,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
   initTcForm() {
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
-      // customer_code: this.customerCodeControl,
-      // cleaning_category:this.categoryControl,
-      //  description : [''],
       min_cost: [''],
       max_cost: [''],
       min_labour: [''],
@@ -277,8 +275,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
-    //  rows.push(row);
+
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '600px',
       height: 'auto',
@@ -287,17 +284,14 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
         langText: this.langText,
         selectedItem: null
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
         if (this.tariffSteamDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
-
       }
     });
   }
@@ -309,6 +303,38 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
+  }
+
+  cancelItem(row: TariffSteamingItem) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '500px',
+      data: {
+        headerText: this.translatedLangText.ARE_U_SURE_DELETE,
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.action == "confirmed") {
+        this.deleteTariffCleaningAndPackageCleaning(row.guid!);
+      }
+    });
+  }
+
+  deleteTariffCleaningAndPackageCleaning(tariffSteamingGuid: string) {
+    this.tariffSteamDS.deleteTariffSteaming([tariffSteamingGuid]).subscribe(d => {
+      let count = d.data.deleteTariffSteaming;
+      if (count > 0) {
+        this.handleSaveSuccess(count);
+        this.search();
+      }
+    });
   }
 
   preventDefault(event: Event) {
@@ -323,7 +349,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     return this.displayDate(updatedt);
 
   }
-
 
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
@@ -379,7 +404,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
         //if(result.selectedValue>0)
         //{
         this.handleSaveSuccess(result);
-        //this.search();
         if (this.tariffSteamDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
@@ -391,7 +415,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
 
 
   deleteItem(row: TariffSteamingItem) {
-
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
     //   tempDirection = 'rtl';
@@ -451,8 +474,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
     const where: any = {
       and: []
@@ -484,7 +505,20 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
 
     }
     this.lastSearchCriteria = where;
-    this.subs.sink = this.tariffSteamDS.SearchTariffSteam(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    // this.subs.sink = this.tariffSteamDS.SearchTariffSteam(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    //   this.tariffSteamItems = data;
+    //   this.previous_endCursor = undefined;
+    //   this.endCursor = this.tariffSteamDS.pageInfo?.endCursor;
+    //   this.startCursor = this.tariffSteamDS.pageInfo?.startCursor;
+    //   this.hasNextPage = this.tariffSteamDS.pageInfo?.hasNextPage ?? false;
+    //   this.hasPreviousPage = this.tariffSteamDS.pageInfo?.hasPreviousPage ?? false;
+    //   this.pageIndex = 0;
+    //   this.paginator.pageIndex = 0;
+    //   this.selection.clear();
+    //   if (!this.hasPreviousPage)
+    //     this.previous_endCursor = undefined;
+    // });
+    this.subs.sink = this.tariffSteamDS.SearchTariffSteamWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.tariffSteamItems = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.tariffSteamDS.pageInfo?.endCursor;
@@ -536,24 +570,17 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
         before = this.startCursor;
       }
       else if (pageIndex == this.pageIndex) {
-
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
-
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.tariffSteamDS.SearchTariffSteam(where, order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.tariffSteamDS.SearchTariffSteamWithCount(where, order, first, after, last, before).subscribe(data => {
       this.tariffSteamItems = data;
       this.endCursor = this.tariffSteamDS.pageInfo?.endCursor;
       this.startCursor = this.tariffSteamDS.pageInfo?.startCursor;
@@ -605,19 +632,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
   }
   public loadData() {
     this.search();
-    // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-    //  // this.customer_companyList1 = data
-    // });
-
-    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-    //   if(this.clnCatDS.totalCount>0)
-    //   {
-    //     this.cleaning_categoryList=data;
-    //   }
-
-    // });
-
-
   }
   showNotification(
     colorName: string,
