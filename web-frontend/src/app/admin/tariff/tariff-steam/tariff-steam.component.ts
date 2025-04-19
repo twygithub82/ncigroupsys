@@ -710,9 +710,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.initTcForm();
-
-    //this.customerCodeControl.reset('');
-
   }
 
   roundUpToDecimal(value: number, decimalPlaces: number): number {
