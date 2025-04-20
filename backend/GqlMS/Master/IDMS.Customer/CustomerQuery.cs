@@ -1,6 +1,8 @@
 ﻿using HotChocolate;
 using HotChocolate.Types;
 using IDMS.EstimateTemplate.GqlTypes;
+using IDMS.Models;
+using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using IDMS.Models.Master.GqlTypes.DB;
 using IDMS.Models.Shared;
@@ -25,6 +27,39 @@ namespace IDMS.Customer.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 return context.customer_company.Where(d => d.delete_dt == null || d.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<CustomerCompanyResult?> QueryCustomerCompanyWithCount([Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, ApplicationMasterDBContext context)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var result = context.customer_company
+                                                    .Where(cc => cc.delete_dt == null)
+                                                    .Select(cc => new CustomerCompanyResult
+                                                    {
+                                                        customer_company = cc,
+                                                        sot_count = context.Set<storing_order_tank>()
+                                                            .Count(sot => sot.owner_guid == cc.guid && sot.delete_dt == null),
+                                                        so_count = context.storing_order
+                                                            .Count(so => so.customer_company_guid == cc.guid && so.delete_dt == null),
+                                                        tank_info_count = context.Set<tank_info>()
+                                                            .Count(t => t.owner_guid == cc.guid && t.delete_dt == null)
+                                                    })
+                                                    .AsQueryable();
+                return result;
+
             }
             catch (Exception ex)
             {
