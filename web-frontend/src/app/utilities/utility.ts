@@ -1,11 +1,10 @@
 import { TranslateService } from "@ngx-translate/core";
+import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
+import { customerInfo } from 'environments/environment';
+import { jsPDF } from 'jspdf';
+import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
-import { jsPDF } from 'jspdf';
-import { customerInfo } from 'environments/environment';
-import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
-import { UntypedFormControl } from "@angular/forms";
-
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -585,6 +584,22 @@ export class Utility {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/[^a-zA-Z]/g, '');
     form?.setValue(input.value, { emitEvent: false });
+  }
+
+  static getCountryCodes(orderBy: 'country' | 'code' = 'country') {
+    const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
+    return getCountries()
+      .map(countryISO => ({
+        country: displayNames.of(countryISO),
+        code: `+${getCountryCallingCode(countryISO)}`,
+        iso: countryISO.toLowerCase(),
+        flagUrl: Utility.getFlagUrl(countryISO.toLowerCase())
+      }))
+      .sort((a, b) => {
+        return orderBy === 'code'
+          ? parseInt(a.code) - parseInt(b.code)
+          : (a.country || '').localeCompare(b.country || '');
+      });
   }
 
   static getFlagUrl(iso: string): string {
