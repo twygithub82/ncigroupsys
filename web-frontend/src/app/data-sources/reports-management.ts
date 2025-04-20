@@ -313,6 +313,38 @@ export class MonthlyProcessData {
     } 
 }
 
+export class OrderTrackingItem
+{
+  cancel_date?:number;
+  cancel_remarks?:string;
+  customer_code?:string;
+  customer_name?:string;
+  eir_date?:number;
+  eir_no?:string;
+  last_cargo?:string;
+  order_date?:number;
+  order_no?:string;
+  purpose?:string;
+  release_date?:number;
+  status?:string;
+  tank_no?:string;
+  constructor(item: Partial<OrderTrackingItem> = {}) {
+      this.cancel_date=item.cancel_date;
+      this.cancel_remarks=item.cancel_remarks;
+      this.customer_code=item.customer_code;
+      this.customer_name=item.customer_name;
+      this.eir_date=item.eir_date;
+      this.eir_no=item.eir_no;
+      this.last_cargo=item.last_cargo;
+      this.order_date=item.order_date;
+      this.order_no=item.order_no;
+      this.purpose=item.purpose;
+      this.release_date=item.release_date;
+      this.status=item.status;
+      this.tank_no=item.tank_no;
+  }
+}
+
 export class WeeklyPerformmanceItem
 {
       average_gate_count?:number;
@@ -824,6 +856,7 @@ export class InventoryAnalyzer {
   }
 
 
+  
 }
 
 
@@ -1165,6 +1198,35 @@ export const GET_MANAGEMENT_REPORT_WEEKLY_PERFORMANCE_REPORT = gql`
     
   }
 `
+export const GET_MANAGEMENT_REPORT_ORDER_TRACKING_REPORT = gql`
+  query queryOrderTracking($orderTrackingRequest:OrderTrackingRequestInput!,$order:[OrderTrackingResultSortInput!],$first:Int,$after:String,$last:Int,$before:String) {
+    resultList:  queryOrderTracking(orderTrackingRequest:$orderTrackingRequest,first:$first,after:$after,last:$last,before:$before,order:$order) {
+    totalCount
+    nodes {
+      cancel_date
+      cancel_remarks
+      customer_code
+      customer_name
+      eir_date
+      eir_no
+      last_cargo
+      order_date
+      order_no
+      purpose
+      release_date
+      status
+      tank_no
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+  }
+    
+  }
+`
 
 export class ManagementReportDS extends BaseDataSource<any> {
 
@@ -1284,6 +1346,30 @@ export class ManagementReportDS extends BaseDataSource<any> {
         catchError((error: ApolloError) => {
           console.error('GraphQL Error:', error);
           return of([] as ManagementReportYearlyRevenueItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList);
+          return resultList.nodes;
+        })
+      );
+  }
+  
+  searchManagementReportOrderTrackingReport(orderTrackingRequest:any,order?:any,first?:any,after?:any,last?:any,before?:any): Observable<OrderTrackingItem[]> {
+    this.loadingSubject.next(true);
+   // var first=this.first;
+    return this.apollo
+      .query<any>({
+        query: GET_MANAGEMENT_REPORT_ORDER_TRACKING_REPORT,
+        variables: { orderTrackingRequest,first,after,last,before,order },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as OrderTrackingItem[]); // Return an empty array on error
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {

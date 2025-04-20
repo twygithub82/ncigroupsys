@@ -166,7 +166,8 @@
         "GROUP-EDIT": "Edit Group",
         "MONTHLY-REPORTS": "Monthly Reports",
         "YEARLY-REPORTS": "Yearly Reports",
-        "PERFORMANCE-REPORTS":"Performance Reports"
+        "PERFORMANCE-REPORTS":"Performance Reports",
+        "ORDER-TRACK-REPORTS":"Order Track Reports"
       }
     },
     "NEW": {
@@ -1182,8 +1183,18 @@
     "NO-OF-GATE-IN":"No. of Gate-In",
     "NO-OF-GATE-OUT":"No. of Gate-Out",
     "TOTAL-IN-OUT":"Total In and Out",
-    "AVERAGE-IN-OUT":"Average In and Out"
-    "ARE-YOU-SURE-TO-PUBLISH": "Are you sure to publish?"
+    "AVERAGE-IN-OUT":"Average In and Out",
+    "ARE-YOU-SURE-TO-PUBLISH": "Are you sure to publish?",
+    "ORDER-TRACK":"Order Track",
+    "RELEASE-ORDER":"Release Order",
+    "STORING-ORDER":"Storing Order",
+    "STORING-ORDER-NO":"Storing Order No",
+    "RELEASE-ORDER-NO":"Release Order No",
+    "STORING-ORDER-TRACKING-REPORT":"Storing Order Tracking Report",
+    "RELEASE-ORDER-TRACKING-REPORT":"Release Order Tracking Report",
+    "CANCEL-DATE":"Cancel Date",
+    "CANCEL-REMARK":"Cancel Remarks"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
