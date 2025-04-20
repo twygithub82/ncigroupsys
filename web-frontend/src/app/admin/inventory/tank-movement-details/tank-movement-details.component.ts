@@ -1939,7 +1939,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '');
   }
 
-  canRollbackResidueCompleted(row: RepairItem) {
+  canRollbackResidueCompleted(row: ResidueItem) {
     return Utility.isTankInYard(this.sot?.tank_status_cv) && row.status_cv === 'COMPLETED';
   }
 
@@ -1961,11 +1961,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
-      width: '1000px',
+      width: '500px',
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: row.estimate_no,
+        messageText: `${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
@@ -1982,7 +1982,53 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         }
         console.log(residueJobOrder);
         this.residueDS.rollbackCompletedResidue([residueJobOrder]).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue)
+          this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_residue(this.sot_guid!);
+        });
+      }
+    });
+  }
+
+  canRollbackCleaningCompleted(row?: InGateCleaningItem) {
+    return Utility.isTankInYard(this.sot?.tank_status_cv) && row?.status_cv === 'COMPLETED';
+  }
+
+  onRollbackCleaningJobs(event: Event, row?: InGateCleaningItem) {
+    this.preventDefault(event);
+
+    const distinctJobOrders = new JobOrderGO(row?.job_order);
+    
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      width: '500px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        messageText: this.translatedLangText.CLEANING,
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const jobOrder = {
+          guid: row?.guid,
+          remarks: result.remarks,
+          sot_guid: row?.sot_guid,
+          sot_status: this.sot?.tank_status_cv,
+          job_order: distinctJobOrders
+        }
+        console.log(jobOrder);
+        this.cleaningDS.rollbackCompletedCleaning(jobOrder).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_cleaning(this.sot_guid!);
         });
       }
     });
@@ -2005,7 +2051,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       width: '500px',
       data: {
         action: 'rollback',
-        messageText: row.estimate_no,
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        messageText: `${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection

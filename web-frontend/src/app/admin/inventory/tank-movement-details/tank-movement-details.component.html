@@ -1084,6 +1084,10 @@
                                   <button mat-menu-item class="text-danger"
                                     (click)="updatePurposeDialog($event, 'cleaning', 'remove')">{{translatedLangText.REMOVE}}</button>
                                   }
+                                  @if (canRollbackCleaningCompleted(cleaningItem?.[0])) {
+                                  <button mat-menu-item class=""
+                                    (click)="onRollbackCleaningJobs($event, cleaningItem?.[0])">{{translatedLangText.ROLLBACK}}</button>
+                                  }
                                 </mat-menu>
                                 }
                                 <div class="row m-t-10 contact-details-field">
