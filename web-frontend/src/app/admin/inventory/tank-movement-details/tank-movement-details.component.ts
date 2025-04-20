@@ -76,7 +76,7 @@ import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { OverwriteDepotCostFormDialogComponent } from './overwrite-depot-cost-form-dialog/overwrite-depot-cost-form-dialog.component';
 import { OverwriteCleaningApprovalFormDialogComponent } from './overwrite-clean-appr-form-dialog/overwrite-clean-appr-form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { RepairConfirmationFormDialogComponent } from './repair-confirmation-form-dialog/repair-confirmation-form-dialog.component';
+import { ConfirmationRemarksFormDialogComponent } from './confirmation-remarks-form-dialog/confirmation-remarks-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -1931,6 +1931,62 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '');
   }
 
+  // onRollbackResidueJobs(event: Event) {
+  //   this.preventDefault(event);
+
+  //   const distinctJobOrders = this.deList
+  //     .filter((item, index, self) =>
+  //       index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+  //         (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+  //           t.job_order?.team?.description === item?.job_order?.team?.description))
+  //     )
+  //     .filter(item => item.job_order !== null && item.job_order !== undefined)
+  //     .map(item => new JobOrderGO(item.job_order!));
+
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+  //     width: '1000px',
+  //     data: {
+  //       action: 'rollback',
+  //       dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+  //       item: [this.residueItem],
+  //       translatedLangText: this.translatedLangText
+  //     },
+  //     direction: tempDirection
+  //   });
+  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result?.action === 'confirmed') {
+  //       const reList = result.item.map((item: any) => {
+  //         const residueJobOrder = {
+  //           estimate_no: item?.estimate_no,
+  //           guid: item?.guid,
+  //           remarks: item.remarks,
+  //           sot_guid: item.sot_guid,
+  //           sot_status: this.residueItem?.storing_order_tank?.tank_status_cv,
+  //           job_order: distinctJobOrders
+  //         }
+  //         return residueJobOrder
+  //       });
+  //       console.log(reList);
+  //       if (this.residueItem?.status_cv == "COMPLETED") {
+  //         this.residueDS.rollbackCompletedResidue(reList).subscribe(result => {
+  //           this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue)
+  //         });
+  //       }
+  //       else if (this.residueItem?.status_cv == "JOB_IN_PROGRESS") {
+  //         this.jobOrderDS.rollbackJobInProgressResidue(reList).subscribe(result => {
+  //           this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
+  //         });
+  //       }
+  //     }
+  //   });
+  // }
+
   canRollbackRepairQC(row: RepairItem) {
     return Utility.isTankInYard(this.sot?.tank_status_cv) && this.repairDS.canRollbackQC(row);
   }
@@ -1944,7 +2000,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(RepairConfirmationFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
       width: '500px',
       data: {
         action: 'rollback',
@@ -1995,7 +2051,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(RepairConfirmationFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
       width: '500px',
       data: {
         action: 'overwrite',

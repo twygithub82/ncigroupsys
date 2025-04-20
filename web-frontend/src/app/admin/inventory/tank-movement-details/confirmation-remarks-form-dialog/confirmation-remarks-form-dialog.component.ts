@@ -31,9 +31,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-repair-confirmation-form-dialog',
-  templateUrl: './repair-confirmation-form-dialog.component.html',
-  styleUrls: ['./repair-confirmation-form-dialog.component.scss'],
+  selector: 'app-confirmation-remarks-form-dialog',
+  templateUrl: './confirmation-remarks-form-dialog.component.html',
+  styleUrls: ['./confirmation-remarks-form-dialog.component.scss'],
   providers: [provideNgxMask()],
   standalone: true,
   imports: [
@@ -58,7 +58,7 @@ export interface DialogData {
     MatCardModule,
   ],
 })
-export class RepairConfirmationFormDialogComponent {
+export class ConfirmationRemarksFormDialogComponent {
   action?: string;
   dialogTitle?: string;
   confirmationForm: UntypedFormGroup;
@@ -67,7 +67,7 @@ export class RepairConfirmationFormDialogComponent {
   startDateQC = new Date();
 
   constructor(
-    public dialogRef: MatDialogRef<RepairConfirmationFormDialogComponent>,
+    public dialogRef: MatDialogRef<ConfirmationRemarksFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
 

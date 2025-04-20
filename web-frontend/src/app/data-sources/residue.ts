@@ -976,7 +976,6 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
-
   rollbackCompletedResidue(residueJobOrder: any[]): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_COMPLETED_RESIDUE,
