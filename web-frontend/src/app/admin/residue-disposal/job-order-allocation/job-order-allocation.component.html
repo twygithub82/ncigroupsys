@@ -411,7 +411,6 @@
                 <button mat-flat-button color="primary"
                   (click)="save()">{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
                 }
-
                 @if(canRollBack())
                 {
                 <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"

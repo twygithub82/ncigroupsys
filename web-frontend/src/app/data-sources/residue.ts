@@ -1,15 +1,12 @@
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { SchedulingItem } from './scheduling';
-import { TariffRepairItem } from './tariff-repair';
-import { UserItem } from './user';
+import { BillingItem } from './billing';
 import { CustomerCompanyItem } from './customer-company';
 import { ResiduePartItem } from './residue-part';
-import { BillingItem } from './billing';
+import { StoringOrderTankItem } from './storing-order-tank';
 
 export class ResidueGO {
   public estimate_no?: string;
@@ -33,15 +30,6 @@ export class ResidueGO {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-
-  // public aspnetusers_guid?: string;
-  // public estimate_no?: string;
-  // public labour_cost_discount?: number;
-  // public material_cost_discount?: number;
-  // public labour_cost?: number;
-  // public total_cost?: number;
-  // public owner_enable?: boolean;
-  // public total_hour?: number;
   public customer_billing_guid?: string;
   public owner_billing_guid?: string;
 
