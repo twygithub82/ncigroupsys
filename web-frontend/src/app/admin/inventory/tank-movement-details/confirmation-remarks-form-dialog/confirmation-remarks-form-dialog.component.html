@@ -4,11 +4,13 @@
   </div>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <form class="register-form" [formGroup]="confirmationForm" #formDirective="ngForm">
+      @if (data.messageText) {
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-          <p>{{data.translatedLangText.ESTIMATE_NO}}: {{data.messageText}}</p>
+          <p>{{data.messageText}}</p>
         </div>
       </div>
+      }
       <mat-card [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-grey': false}" matRipple>
         <mat-card-content>
           <div class="row">

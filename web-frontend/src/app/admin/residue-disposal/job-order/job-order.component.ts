@@ -42,6 +42,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
+import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
   selector: 'app-job-order',
@@ -83,7 +84,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     'customer',
     'estimate_no',
     'approved_dt',
-    'status_cv'
+    'status_cv',
+    'action'
   ];
 
   displayedColumnsJobOrder = [
@@ -149,6 +151,9 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     METHOD: "COMMON-FORM.METHOD",
     RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
+    UNASSIGNED:'COMMON-FORM.UNASSIGN',
+    CONFIRM_TEAM_UNASSIGN:"COMMON-FORM.CONFIRM-TEAM-UNASSIGN",
+    ROLLBACK_SUCCESS:"COMMON-FORM.ROLLBACK-SUCCESS",
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
@@ -674,4 +679,53 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   onTabChange(index: number) {
     this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
   }
+
+  ConfirmUnassignTeam(event: Event, row:ResidueItem)
+  {
+    this.stopEventTrigger(event);
+    this.ConfirmUnassignDialog(event,row);
+  }
+
+  ConfirmUnassignDialog(event: Event, row:ResidueItem) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.UnassignEstimate(row);
+      }
+    });
+  }
+
+  UnassignEstimate( row:ResidueItem)
+  {
+    this.subs.sink = this.residueDS.rollbackAssigneddResidue ([row.guid!])
+    .subscribe((result:any) => {
+      if(result.data.rollbackAssignedResidue)
+      {
+        this.handleRollbackSuccess(result.data.rollbackAssignedResidue);
+      }
+    });
+
+  }
+
+   handleRollbackSuccess(count: any) {
+      if ((count ?? 0) > 0) {
+        let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        this.refreshTable();
+      }
+    }
 }

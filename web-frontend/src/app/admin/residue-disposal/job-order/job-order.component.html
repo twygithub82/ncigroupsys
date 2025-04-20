@@ -111,6 +111,20 @@
                           class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}}
                       </mat-cell>
                     </ng-container>
+                    <ng-container matColumnDef="action">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row" class="">
+                        @if(row?.status_cv=="ASSIGNED")
+                        {
+                          <button mat-menu-item   (click)="ConfirmUnassignTeam($event,row)" [matTooltip]="translatedLangText.UNASSIGNED">
+                            <mat-icon>remove_circle_outline</mat-icon>
+                          </button>
+                        }
+                        <!-- <span
+                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}} -->
+                      </mat-cell>
+                    </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
                       (click)="this.AllocationResidueDisposalEstimate($event,row)" [style.cursor]="'pointer'" matRipple>

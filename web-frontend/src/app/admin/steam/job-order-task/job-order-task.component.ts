@@ -1,58 +1,47 @@
+import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, Subscription, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink,Router } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { MatCardModule } from '@angular/material/card';
-import { RepairDS, RepairItem } from 'app/data-sources/repair';
-import { MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { StoringOrderDS } from 'app/data-sources/storing-order';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { RepairPartItem } from 'app/data-sources/repair-part';
+import { Utility } from 'app/utilities/utility';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { Observable, Subscription } from 'rxjs';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 //import { ResidueDS, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
-import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 //import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
@@ -74,7 +63,6 @@ import { SteamPartItem } from 'app/data-sources/steam-part';
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -130,10 +118,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
-    YET_START:"COMMON-FORM.YET-START",
-    STARTED:"COMMON-FORM.STARTED",
-    YET_COMPLETE:"COMMON-FORM.YET-COMPLETE",
-    STEAM_HEAT_TYPE:"COMMON-FORM.STEAM-HEAT-TYPE",
+    YET_START: "COMMON-FORM.YET-START",
+    STARTED: "COMMON-FORM.STARTED",
+    YET_COMPLETE: "COMMON-FORM.YET-COMPLETE",
+    STEAM_HEAT_TYPE: "COMMON-FORM.STEAM-HEAT-TYPE",
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
@@ -147,7 +135,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   repairDS: RepairDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
-  steamDs:SteamDS;
+  steamDs: SteamDS;
 
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
@@ -178,7 +166,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private router:Router
+    private router: Router
   ) {
     super();
     this.translateLangText();
@@ -192,7 +180,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairDS = new RepairDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
-    this.steamDs= new SteamDS(this.apollo);
+    this.steamDs = new SteamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -258,15 +246,15 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   onFilterJobOrder() {
     const where: any = {
       job_type_cv: { eq: "STEAM" }
-      
+
     };
 
-   // where.steaming_part={all:{ tariff_steaming_guid: { eq: null } }};
-   where.steaming_part = {
-    all: { tariff_steaming_guid: { eq: null } },
-    some: { guid: { neq: null } } // Ensure there's at least one steaming_part
-  };
-    
+    // where.steaming_part={all:{ tariff_steaming_guid: { eq: null } }};
+    where.steaming_part = {
+      all: { tariff_steaming_guid: { eq: null } },
+      some: { guid: { neq: null } } // Ensure there's at least one steaming_part
+    };
+
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
       where.or = [
         { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } },
@@ -292,10 +280,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
-        data=data.filter(data=>data.steaming_part?.length);
-        this.jobOrderList = data.filter(data=>data.delete_dt===null||data.delete_dt===0);
+        data = data.filter(data => data.steaming_part?.length);
+        this.jobOrderList = data.filter(data => data.delete_dt === null || data.delete_dt === 0);
         this.jobOrderList.forEach(jo => {
-          jo.time_table=jo.time_table?.filter(data=>data.delete_dt===null||data.delete_dt===0);
+          jo.time_table = jo.time_table?.filter(data => data.delete_dt === null || data.delete_dt === 0);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
@@ -396,9 +384,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 
-  canToggleJob(jobOrderItem:JobOrderItem | undefined) {
+  canToggleJob(jobOrderItem: JobOrderItem | undefined) {
     var retval
-    retval= (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid===null);
+    retval = (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid === null);
     return retval;
   }
   canStartJob(jobOrderItem: JobOrderItem | undefined) {
@@ -439,21 +427,21 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       );
       this.ttDS.startJobTimer(param, firstValidRepairPart?.steaming_guid!).subscribe(result => {
         console.log(result)
-         if ((result?.data?.startJobTimer ?? 0) > 0) {
-              const firstJobPart = jobOrderItem?.steaming_part?.[0];
-              if (firstJobPart?.steaming?.status_cv === 'ASSIGNED') {
-                const steamStatusReq: SteamStatusRequest = new SteamStatusRequest({
-                  guid: firstJobPart!.steaming.guid,
-                  sot_guid: jobOrderItem?.sot_guid,
-                  action: "IN_PROGRESS",
-                  
-                });
-                console.log(steamStatusReq);
-                this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
-                  console.log(result);
-                });
-              }
-            }
+        if ((result?.data?.startJobTimer ?? 0) > 0) {
+          const firstJobPart = jobOrderItem?.steaming_part?.[0];
+          if (firstJobPart?.steaming?.status_cv === 'ASSIGNED') {
+            const steamStatusReq: SteamStatusRequest = new SteamStatusRequest({
+              guid: firstJobPart!.steaming.guid,
+              sot_guid: jobOrderItem?.sot_guid,
+              action: "IN_PROGRESS",
+
+            });
+            console.log(steamStatusReq);
+            this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
+              console.log(result);
+            });
+          }
+        }
       });
     } else {
       const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time && !x?.delete_dt);
@@ -465,7 +453,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {
           console.log(result);
-          this.completeJob(event,jobOrderItem);
+          this.completeJob(event, jobOrderItem);
         });
       }
     }
@@ -482,9 +470,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     const param = [newParam];
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
-      if(result.data.completeJobOrder>0)
-      {
-        var item : SteamPartItem = new SteamPartItem(jobOrderItem.steaming_part![0]!);
+      if (result.data.completeJobOrder > 0) {
+        var item: SteamPartItem = new SteamPartItem(jobOrderItem.steaming_part![0]!);
         this.UpdateSteamStatusCompleted(item.steaming_guid!);
       }
       //console.log(result)
@@ -552,20 +539,23 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     };
 
     where.and.push({
-      steaming_part: { all:{ or:[
-        { 
-        job_order: { 
-          status_cv: { eq: 'COMPLETED' } }
-         } ,
-         {
-          approve_part:{eq:false}
-         },
-         {delete_dt:{neq:0}},
-         {delete_dt:{neq:null}},
-      ]
+      steaming_part: {
+        all: {
+          or: [
+            {
+              job_order: {
+                status_cv: { eq: 'COMPLETED' }
+              }
+            },
+            {
+              approve_part: { eq: false }
+            },
+            { delete_dt: { neq: 0 } },
+            { delete_dt: { neq: null } },
+          ]
         }
-    }
-  });
+      }
+    });
 
     where.and.push({
       guid: { eq: steam_guid }
@@ -623,21 +613,18 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
-  startJobTask(event: Event, jobOrderItem: JobOrderItem)
-  {
+  startJobTask(event: Event, jobOrderItem: JobOrderItem) {
     this.preventDefault(event);  // Prevents the form submission
-    if(this.canToggleJob(jobOrderItem))
-    {
+    if (this.canToggleJob(jobOrderItem)) {
       this.router.navigate(['/admin/steam/job-order/task', jobOrderItem.guid, jobOrderItem.steaming_part?.[0]?.steaming_guid]);
     }
-    else
-    {
+    else {
 
       this.router.navigate(['/admin/steam/job-order/monitor', jobOrderItem.guid, jobOrderItem.steaming_part?.[0]?.steaming_guid]);
     }
 
   }
 
-  
+
 
 }
