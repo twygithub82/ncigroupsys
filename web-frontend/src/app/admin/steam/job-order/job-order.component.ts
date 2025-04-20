@@ -158,6 +158,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     STEAM_HEAT_TYPE: "COMMON-FORM.STEAM-HEAT-TYPE",
     REPAIR: 'COMMON-FORM.REPAIR',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   filterSteamForm?: UntypedFormGroup;
@@ -175,7 +176,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED',
+    //'COMPLETED',
     'ASSIGNED',
     'PARTIAL_ASSIGNED'
   ]
@@ -263,7 +264,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   initSearchForm() {
     this.filterSteamForm = this.fb.group({
       filterSteam: [''],
-      status_cv: [['APPROVED', 'ASSIGNED']],
+      status_cv: [''],
       customer: ['']
     });
     this.filterJobOrderForm = this.fb.group({

@@ -123,7 +123,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     CONFIRM: 'COMMON-FORM.CONFIRM',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES'
+    SO_NOTES: 'COMMON-FORM.SO-NOTES',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   searchForm?: UntypedFormGroup;

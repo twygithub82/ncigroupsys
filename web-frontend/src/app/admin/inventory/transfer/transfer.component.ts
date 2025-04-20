@@ -533,7 +533,8 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
       job_no: '',
       purpose: '',
       tank_status_cv: '',
-      eir_status_cv: ''
+      eir_status_cv: '',
+      last_cargo: ''
     });
     this.customerCodeControl.reset('');
   }

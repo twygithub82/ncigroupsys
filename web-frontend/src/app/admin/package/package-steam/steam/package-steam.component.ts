@@ -200,7 +200,11 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     MAX_TEMP: 'COMMON-FORM.MAX-TEMP',
     MIN_TEMP: 'COMMON-FORM.MIN-TEMP',
     QTY: 'COMMON-FORM.QTY',
-    LABOUR: 'COMMON-FORM.LABOUR$'
+    LABOUR: 'COMMON-FORM.LABOUR$',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   constructor(

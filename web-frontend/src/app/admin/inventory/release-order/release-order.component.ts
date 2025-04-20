@@ -129,6 +129,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   searchForm?: UntypedFormGroup;
