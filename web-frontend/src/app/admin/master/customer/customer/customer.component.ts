@@ -295,7 +295,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      default_profile: [''],
+      default_profile: [{ guid: '', unit_type: '--Select--' }],
       phone: [''],
       fax_no: [''],
       email: [''],
@@ -487,7 +487,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       where.guid = { eq: customerCode.guid };
     }
 
-    if (this.pcForm!.get("default_profile")?.value) {
+    if (this.pcForm!.get("default_profile")?.value?.guid) {
       const tankSearch: any = {};
       tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
       where.tank = tankSearch;
@@ -618,7 +618,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 50).subscribe(data => {
     });
     this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
-      this.unit_typeList = data
+      this.unit_typeList = [{ guid: '', unit_type: '--Select--' }, ...data]
     });
   }
   showNotification(
