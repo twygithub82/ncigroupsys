@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿    using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using IDMS.Models.Tariff;
+using IDMS.Models.Inventory;
 
 namespace IDMS.Models.Shared
 {
@@ -26,6 +27,7 @@ namespace IDMS.Models.Shared
         public bool? gate_out { get; set; }
         public bool? iso_format { get; set; }
         public tariff_depot? tariff_depot { get; set; }
+        public IEnumerable<storing_order_tank>? sot { get; set; }
 
     }
 }
