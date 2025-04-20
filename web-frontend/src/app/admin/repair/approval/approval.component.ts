@@ -239,8 +239,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       eir_dt_end: [''],
       eir_no: [''],
       repair_option_cv: [''],
-      est_dt_start: [''],
-      est_dt_end: [''],
+      est_dt: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
       est_status_cv: ['']
@@ -464,8 +463,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       where.status_cv = { in: this.availableProcessStatus }
     }
 
-    if (this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) {
-      where.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value, true) };
+    if (this.searchForm!.get('est_dt')?.value) {
+      where.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt')?.value, true) };
     }
 
     if (this.searchForm!.get('approval_dt_start')?.value && this.searchForm!.get('approval_dt_end')?.value) {
