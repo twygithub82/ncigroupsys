@@ -253,19 +253,18 @@
                 </mat-form-field>
               </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="fill">
+                <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-                  <input matInput [formControl]="newQtyType" [matAutocomplete]="unitCode" required="true">
-                  <mat-autocomplete #unitCode="matAutocomplete" [displayWith]="displayUnitTypeFn">
+                  <mat-select [formControl]="newQtyType" required>
                     @for (cc of unitTypeCvList; track cc) {
                     <mat-option [value]="cc">
                       {{cc.description}}
                     </mat-option>
                     }
-                  </mat-autocomplete>
+                  </mat-select>
                   @if (newQtyType.hasError('required')) {
                   <mat-error>
-                    {{this.translatedLangText.UNIT_TYPE}} {{this.translatedLangText.SO_REQUIRED}}
+                    {{translatedLangText.UNIT_TYPE}} {{translatedLangText.SO_REQUIRED}}
                   </mat-error>
                   }
                 </mat-form-field>
@@ -436,21 +435,27 @@
                       class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="cost">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.COST}}
                     </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span
                         class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateResidueItemCost(row))}}
                     </mat-cell>
-                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label"> </span>{{this.parse2Decimal( getTotalCost()) }}
                     </mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="actions">
-                    <mat-header-cell class="pr-0" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matHeaderCellDef>
+                    <mat-header-cell class="pr-0"
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matHeaderCellDef>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let row;" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end'">
+                    <mat-cell *matCellDef="let row;"
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end'">
                       @if (residueDS.canAmend(this.residueItem!)) {
                       @if (!row.delete_dt){
                       <button mat-icon-button (click)="handleDelete($event, row, row.index)">
@@ -464,7 +469,8 @@
                       }
                       }
                     </mat-cell>
-                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"

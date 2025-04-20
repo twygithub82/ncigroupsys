@@ -1369,7 +1369,8 @@
                                                 <mat-icon>undo</mat-icon>
                                                 <span>{{translatedLangText.OVERWRITE_QC}}</span>
                                               </button>
-                                              } @if (canRollbackRepairQC(row)) {
+                                              }
+                                              @if (canRollbackRepairQC(row)) {
                                               <button mat-menu-item (click)="onRollbackRepairQC($event, row)">
                                                 <mat-icon>undo</mat-icon>
                                                 <span>{{translatedLangText.ROLLBACK}}</span>
