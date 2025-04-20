@@ -776,6 +776,13 @@ export const ROLLBACK_COMPLETED_RESIDUE = gql`
   mutation rollbackCompletedResidue($residueJobOrder: [ResJobOrderRequestInput!]!) {
     rollbackCompletedResidue(residueJobOrder: $residueJobOrder)
   }
+
+`
+
+export const ROLLBACK_ASSIGNED_RESIDUE = gql`
+  mutation rollbackAssignedResidue($residueGuid: [String!]) {
+    rollbackAssignedResidue(residueGuid: $residueGuid)
+  }
 `
 
 export const APPROVE_RESIDUE_EST = gql`
@@ -982,6 +989,15 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       mutation: ROLLBACK_COMPLETED_RESIDUE,
       variables: {
         residueJobOrder
+      }
+    });
+  }
+
+  rollbackAssigneddResidue(residueGuid: string[]): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_ASSIGNED_RESIDUE,
+      variables: {
+        residueGuid
       }
     });
   }

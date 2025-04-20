@@ -632,6 +632,7 @@
     "CONFIRM-REMOVE-INVOICES": "Would like to remove the selected invoice(s)?",
     "CONFIRM-INVALID-ESTIMATE": "Fail to update the existing invoice due to invalid estimate added",
     "CONFIRM-INVALID-INVOICE": "Failed to update the invoice number because the new invoice number is duplicated.",
+    "CONFIRM-TEAM-UNASSIGN": "Would like to unassign the selected job?",
     "MARK-DAMAGE": "Mark Damaged",
     "FILL-IN-REMARKS": "Fill in Remarks",
     "LEFT-REMARKS": "Left Remarks",
@@ -1194,7 +1195,8 @@
     "STORING-ORDER-TRACKING-REPORT":"Storing Order Tracking Report",
     "RELEASE-ORDER-TRACKING-REPORT":"Release Order Tracking Report",
     "CANCEL-DATE":"Cancel Date",
-    "CANCEL-REMARK":"Cancel Remarks"
+    "CANCEL-REMARK":"Cancel Remarks",
+    "UNASSIGN":"Unassign"
     
   },
   "CLEAN-PROCEDURES": {
