@@ -186,7 +186,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'ASSIGNED',
+    //'ASSIGNED',
     //'NO_ACTION',
     //'CANCELED'
   ]
