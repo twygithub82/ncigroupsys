@@ -48,7 +48,6 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 
 @Component({
   selector: 'app-customer-new',
@@ -267,15 +266,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
-
-    const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
-    this.countryCodes = getCountries().map(countryISO => ({
-      country: displayNames.of(countryISO),
-      code: `+${getCountryCallingCode(countryISO)}`,
-      iso: countryISO.toLowerCase(),
-      flagUrl: Utility.getFlagUrl(countryISO.toLowerCase())// `https://flagcdn.com/24x18/${countryISO.toLowerCase()}.png`
-    }));
-    this.countryCodesFiltered = this.countryCodes;
+    
+    this.countryCodes = Utility.getCountryCodes();
   }
 
   ngAfterViewInit(): void {
@@ -402,7 +394,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         this.PatchCustomerCompanyData();
       }
       else {
-        this.countryCodesFiltered = this.countryCodes.filter((country: any) =>
+        this.countryCodesFiltered = this.countryCodes?.filter((country: any) =>
           country.code.toLowerCase().includes(this.selectedCustomerCmp?.country_code?.toLowerCase()) || country.country.toLowerCase().includes(this.selectedCustomerCmp?.country_code?.toLowerCase())
         );
         const contactPerson = this.selectedCustomerCmp?.cc_contact_person?.filter(value => value.delete_dt == null);
@@ -412,7 +404,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           customer_code: this.selectedCustomerCmp?.code,
           customer_name: this.selectedCustomerCmp?.name,
           customer_type: this.getCustomerTypeCvObject(this.selectedCustomerCmp?.type_cv!),
-          country_code: this.countryCodesFiltered[0],
+          country_code: this.countryCodesFiltered?.[0],
           phone: this.selectedCustomerCmp?.phone,
           email: this.selectedCustomerCmp?.email,
           web: this.selectedCustomerCmp?.website,
@@ -447,7 +439,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
 
   public loadData() {
-
     this.initializeFilterCustomerCompany();
 
     this.customer_guid = this.route.snapshot.paramMap.get('id');
@@ -468,7 +459,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         })
       }
     });
-
 
     this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
       this.tankItemList = data;
@@ -494,10 +484,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.cvDS.connectAlias('customerTypeCv').subscribe(data => {
       this.customerTypeCvList = data;
       this.customerTypeCvList = this.customerTypeCvList
-        // .filter(data => data.code_val !== "BRANCH") // Filters out items where data.value is not "branch"
         .map(data => {
-          // You can apply a transformation here if needed
-          return data;  // Or transform data in some way
+          return data;
         });
       if (this.customerTypeCvList.length > 0)
         this.PatchSelectedRowValue();

@@ -19,7 +19,7 @@
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
+        <div class="card p-0">
           <div class="header">
             <h2>
               {{translatedLangText.TANK_SUMMARY_DETAILS}}
@@ -55,8 +55,8 @@
                   }
                 </div>
               </div>
-              <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+              <div class="row justify-content-center">
+                <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                   <div class="row">
                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.TANK_NO}}:</span>
@@ -105,7 +105,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                   <div class="row">
                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.EIR_NO}}:</span>
@@ -165,7 +165,7 @@
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card bg-opacity-0 border-0">
+        <div class="card bg-opacity-0 border-0 p-0">
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <mat-accordion multi>
@@ -178,7 +178,8 @@
                             {{translatedLangText.TANK_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections" (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
+                          (click)="$event.stopPropagation()">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -193,8 +194,8 @@
                     }
                     @if (!(igDS.loading$ | async)) {
                     <mat-card-content>
-                      <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="row justify-content-center">
+                        <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                           <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                               <span>{{translatedLangText.UNIT_TYPE}}:</span>
@@ -267,7 +268,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                        <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                           <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                               <span>{{translatedLangText.MANUFACTURER_DOM}}:</span>
@@ -339,7 +340,8 @@
                             {{translatedLangText.GATE_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections" (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
+                          (click)="$event.stopPropagation()">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -359,7 +361,8 @@
                           <table class="table table-striped table-hover m-b-0">
                             <thead>
                               <tr>
-                                <th class="d-none d-md-table-cell font-bold table-col-2">{{translatedLangText.DESCRIPTION}}</th>
+                                <th class="d-none d-md-table-cell font-bold table-col-2">
+                                  {{translatedLangText.DESCRIPTION}}</th>
                                 <th class="font-bold table-col-5">{{translatedLangText.IN_GATE}}</th>
                                 <th class="font-bold table-col-5">{{translatedLangText.OUT_GATE}}</th>
                               </tr>
@@ -435,7 +438,8 @@
                             {{translatedLangText.PURPOSE}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections" (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
+                          (click)="$event.stopPropagation()">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -985,8 +989,8 @@
                                             class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
                                         </mat-cell>
                                       </ng-container>
-                                      <mat-header-row *matHeaderRowDef="displayedColumnsRepair"></mat-header-row>
-                                      <mat-row *matRowDef="let row; columns: displayedColumnsRepair;"
+                                      <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
+                                      <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
                                         [style.cursor]="'pointer'" matRipple>
                                       </mat-row>
                                     </table>
@@ -1327,11 +1331,11 @@
                                         </ng-container>
                                         <ng-container matColumnDef="qc_dt">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.QC_DATE}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label">{{translatedLangText.QC_DATE}}:</span>
                                             <span>{{displayDate(repairDS.getRepairJobQcDt(row)) ?? "-"}}</span>
                                           </mat-cell>
@@ -1347,60 +1351,35 @@
                                               class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
                                           </mat-cell>
                                         </ng-container>
-                                        <!-- <ng-container matColumnDef="actions">
+                                        <ng-container matColumnDef="actions">
                                           <mat-header-cell
                                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                                             *matHeaderCellDef>
                                           </mat-header-cell>
                                           <mat-cell *matCellDef="let row; let i=index;"
                                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
-                                            @if (hasMenuItems(row)) {
-                                            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                                            @if (canRollbackRepairQC(row)) {
+                                            <button mat-icon-button [matMenuTriggerFor]="menu"
+                                              (click)="stopEventTrigger($event)">
                                               <mat-icon>more_vert</mat-icon>
                                             </button>
                                             <mat-menu #menu="matMenu">
-                                              @if (soDS.canAdd(storingOrderItem)) {
-                                              <button mat-menu-item (click)="handleDuplicateRow($event, row)">
-                                                <mat-icon>add_to_photos</mat-icon>
-                                                <span>{{translatedLangText.DUPLICATE}}</span>
-                                              </button>
-                                              }
-                                              @if (sotDS.canAddRemove(row)) {
-                                              <button mat-menu-item (click)="handleDelete($event, row, i)">
-                                                <mat-icon>delete_forever</mat-icon>
-                                                <span>{{translatedLangText.DELETE}}</span>
-                                              </button>
-                                              }
-                                              @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
-                                              <button mat-menu-item (click)="cancelItem($event, row)">
-                                                <mat-icon>cancel</mat-icon>
-                                                <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
-                                                  ""}}{{translatedLangText.CANCEL}}</span>
-                                              </button>
-                                              }
-                                              @if (!row.actions.includes('rollback') && sotDS.canRollbackStatus(row)) {
-                                              <button mat-menu-item (click)="rollbackItem($event, row)">
+                                              @if (canRollbackRepairQC(row)) {
+                                              <button mat-menu-item (click)="onOverwriteQC($event, row)">
                                                 <mat-icon>undo</mat-icon>
-                                                <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
-                                                  ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
+                                                <span>{{translatedLangText.OVERWRITE_QC}}</span>
                                               </button>
                                               }
-                                              @if (row.actions.includes('cancel')) {
-                                              <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
+                                              @if (canRollbackRepairQC(row)) {
+                                              <button mat-menu-item (click)="onRollbackRepairQC($event, row)">
                                                 <mat-icon>undo</mat-icon>
-                                                <span>{{translatedLangText.UNDO}} {{translatedLangText.CANCEL}}</span>
-                                              </button>
-                                              }
-                                              @if (row.actions.includes('rollback')) {
-                                              <button mat-menu-item (click)="undoAction($event, row, 'rollback')">
-                                                <mat-icon>undo</mat-icon>
-                                                <span>{{translatedLangText.UNDO}} {{translatedLangText.ROLLBACK_STATUS}}</span>
+                                                <span>{{translatedLangText.ROLLBACK}}</span>
                                               </button>
                                               }
                                             </mat-menu>
                                             }
                                           </mat-cell>
-                                        </ng-container> -->
+                                        </ng-container>
                                         <mat-header-row *matHeaderRowDef="displayedColumnsRepair"></mat-header-row>
                                         <mat-row *matRowDef="let row; columns: displayedColumnsRepair;"
                                           (click)="repairDialog($event, row)" [style.cursor]="'pointer'" matRipple>
@@ -1458,7 +1437,8 @@
                             {{translatedLangText.DEPOT_COST_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections" (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
+                          (click)="$event.stopPropagation()">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -1653,7 +1633,8 @@
                             {{translatedLangText.BOOKING_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections" (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
+                          (click)="$event.stopPropagation()">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -1845,7 +1826,8 @@
                     }
                   </div>
                 </mat-expansion-panel>
-                <mat-expansion-panel [expanded]="verifySection('survey_details')" (click)="setSection('survey_details')">
+                <mat-expansion-panel [expanded]="verifySection('survey_details')"
+                  (click)="setSection('survey_details')">
                   <mat-expansion-panel-header class="ps-0">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
@@ -1854,7 +1836,8 @@
                             {{translatedLangText.SURVEY_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections" (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
+                          (click)="$event.stopPropagation()">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -1978,7 +1961,8 @@
                             {{translatedLangText.TRANSFER_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections" (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
+                          (click)="$event.stopPropagation()">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>

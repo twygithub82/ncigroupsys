@@ -8,11 +8,13 @@
             </mat-panel-title>
             <mat-panel-description>
               <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                <button mat-mini-fab color="primary" (click)="addCall($event)" (click)="$event.stopPropagation()">
+                <button mat-mini-fab color="primary" (click)="addCall($event)" (click)="$event.stopPropagation()"
+                  matTooltip={{translatedLangText.ADD}}>
                   <mat-icon class="col-white">add</mat-icon>
                 </button>
               </div>
-              <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+              <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
+                matTooltip={{translatedLangText.EXPORT}}>
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                   (click)="$event.stopPropagation()" />
               </div>
@@ -40,23 +42,14 @@
                     }
                   </mat-form-field>
                 </div>
-                <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-                    <mat-select formControlName="customer_code" multiple>
-                      <mat-option *ngFor="let cc of custCompDS.connect() | async" [value]="cc">
-                        <ng-container *ngIf="cc !== null">
-                          {{ custCompDS.displayName(cc) }}
-                        </ng-container>
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div> -->
-
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.COUNTRY}}</mat-label>
-                    <input matInput formControlName="country" type="text">
+                    <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
+                    <mat-select formControlName="country">
+                      @for (country of countryCodes; track country) {
+                      <mat-option [value]="country.country">{{country.country}}</mat-option>
+                      }
+                    </mat-select>
                   </mat-form-field>
                 </div>
                 <!--TODO-->
@@ -70,19 +63,14 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-                <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.CONTACT_PERSON }}</mat-label>
-                    <input matInput formControlName="contact_person" type="text">
-                  </mat-form-field>
-                </div> -->
                 <div
-                  class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                  <button mat-mini-fab color="primary" (click)="search()">
+                  class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
+                  <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                     <mat-icon>search</mat-icon>
                   </button>
-                  <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
-                    {{translatedLangText.CLEAR_ALL}}
+                  <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                    matTooltip={{translatedLangText.CLEAR_ALL}}>
+                    <mat-icon>clear_all</mat-icon>
                   </button>
                 </div>
               </div>
@@ -96,10 +84,10 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.CUSTOMER_CODE
+                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg'">
+                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">
                 <span class="mobile-label">{{this.translatedLangText.CODE }}:</span>{{row.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer_name">
@@ -133,31 +121,24 @@
                 {{this.displayLastUpdated(row)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-1_5-xl'" *matHeaderCellDef
+              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl'" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-1_5-xl'" *matCellDef="let row"
+              <mat-cell [ngClass]="'tbl-col-width-per-3-xl'" *matCellDef="let row"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{row.tank?.unit_type}}</mat-cell>
             </ng-container>
-            <!-- actions -->
-
             <ng-container matColumnDef="actions">
               <mat-header-cell
                 [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row; let i=index;"
                 [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-
-                <!-- @if(CanDelete(row)) -->
-
                 <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
                   [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
                   <mat-icon>delete_forever</mat-icon>
                 </button>
-
-
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

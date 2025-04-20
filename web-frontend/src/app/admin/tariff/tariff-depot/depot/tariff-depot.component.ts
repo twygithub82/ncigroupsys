@@ -203,6 +203,9 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     VIEW: 'COMMON-FORM.VIEW',
     ASSIGNED: 'COMMON-FORM.ASSIGNED',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
   }
 
   constructor(

@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,30 +26,22 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { MatDividerModule } from '@angular/material/divider';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { TankDS, TankItem } from 'app/data-sources/tank';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { MessageDialogComponent } from 'app/shared/components/message-dialog/message-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { TankDS, TankItem } from 'app/data-sources/tank';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -84,8 +77,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   displayedColumns = [
     'customer_code',
     'customer_name',
-    //'mobile',
-    //'email',
     'category',
     'last_update_dt',
     'actions'
@@ -99,6 +90,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   storageCalCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
   CodeValuesDS?: CodeValuesDS;
+  countryCodes: any = [];
+  countryCodesFiltered: any = [];
 
   ccDS: CustomerCompanyDS;
   custCompDS: CustomerCompanyDS;
@@ -221,7 +214,11 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     CODE: 'COMMON-FORM.CODE',
     DEFAULT_PROFILE: 'COMMON-FORM.DEFAULT-PROFILE',
     CUSTOMER_ASSIGNED: 'COMMON-FORM.CUSTOMER-ASSIGNED',
-    WARNING: 'COMMON-FORM.WARNING'
+    WARNING: 'COMMON-FORM.WARNING',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   constructor(
@@ -251,6 +248,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.countryCodes = Utility.getCountryCodes();
     this.loadData();
     this.translateLangText();
     this.initializeFilterCustomerCompany();
@@ -305,7 +303,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       contact_person: [''],
       mobile_no: [''],
       description: this.descriptionControl,
-      handled_item_cv: this.handledItemControl
+      handled_item_cv: this.handledItemControl,
     });
   }
 

@@ -1374,10 +1374,10 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
             this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
           });
         }
-
       }
     });
   }
+
   onAbort(event: Event) {
     this.preventDefault(event);
     console.log(this.residueItem)

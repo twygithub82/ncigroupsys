@@ -55,9 +55,12 @@
                       <input matInput formControlName="max_cost" type="number">
                     </mat-form-field>
                   </div> -->
-                  <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto justify-content-end">
-                    <button mat-mini-fab color="primary" (click)="search()">
+                  <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto justify-content-end pe-4">
+                    <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
+                    </button>
+                    <button  mat-mini-fab class="m-l-5 bg-dark-gold"  matTooltip={{translatedLangText.CLEAR_ALL}}>
+                      <mat-icon>clear_all</mat-icon>
                     </button>
                   </div>
                 </div>

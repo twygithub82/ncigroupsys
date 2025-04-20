@@ -121,7 +121,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     MIN_DURATION: "COMMON-FORM.MIN-DURATION",
     MAX_DURATION: "COMMON-FORM.MAX-DURATION",
     CLEANING_FORMULA: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
-    DURATION: "COMMON-FORM.DURATION-MIN"
+    DURATION: "COMMON-FORM.DURATION-MIN",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);

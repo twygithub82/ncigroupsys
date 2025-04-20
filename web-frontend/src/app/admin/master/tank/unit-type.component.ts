@@ -249,8 +249,10 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     GATE_OUT: 'COMMON-FORM.GATE-OUT',
     ISO_FORMAT: 'COMMON-FORM.CHECK-DIGIT',
     SAVE: 'COMMON-FORM.SAVE',
-
-
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   constructor(
