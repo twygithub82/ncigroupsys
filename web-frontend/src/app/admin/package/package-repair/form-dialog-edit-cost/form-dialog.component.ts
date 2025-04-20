@@ -207,7 +207,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     EXCEED: "COMMON-FORM.EXCEEDED",
     CUSTOMER_EXCEED: "COMMON-FORM.CUSTOMER-EXCEED",
     ONE_CONDITION: "COMMON-FORM.ENTER-ATLEAST-ONE-CONDITION",
-    NO_VALUE_CHNAGE: "COMMON-FORM.NO-VALUE-CHNAGE"
+    NO_VALUE_CHNAGE: "COMMON-FORM.NO-VALUE-CHNAGE",
+    CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED'
   };
   unit_type_control = new UntypedFormControl();
 
@@ -554,21 +555,22 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     var maxCustomerAllowed: number = 10;
     var msg: String = "";
 
-    if (CustomerGuids?.length! > maxCustomerAllowed) {
-      msg = `${this.translatedLangText.CUSTOMER_EXCEED} ${CustomerGuids?.length!}/${maxCustomerAllowed}`;
-    }
-    else if (CustomerGuids?.length == 0) {
-      retval = (trfRepairItem.group_name_cv?.trim() != "");
-      if (!retval) retval = (trfRepairItem.subgroup_name_cv?.trim() != "" && trfRepairItem.subgroup_name_cv != undefined);
-      if (!retval) retval = (trfRepairItem.part_name?.trim() != "" && trfRepairItem.part_name != undefined);
-      if (!retval) retval = (trfRepairItem.dimension?.trim() != "" && trfRepairItem.dimension != undefined);
-      if (!retval) retval = (trfRepairItem.guid?.trim() != "" && trfRepairItem.guid != undefined);
+    // if (CustomerGuids?.length! > maxCustomerAllowed) {
+    //   msg = `${this.translatedLangText.CUSTOMER_EXCEED} ${CustomerGuids?.length!}/${maxCustomerAllowed}`;
+    // }
+    // else if (CustomerGuids?.length == 0) {
+    //   retval = (trfRepairItem.group_name_cv?.trim() != "");
+    //   if (!retval) retval = (trfRepairItem.subgroup_name_cv?.trim() != "" && trfRepairItem.subgroup_name_cv != undefined);
+    //   if (!retval) retval = (trfRepairItem.part_name?.trim() != "" && trfRepairItem.part_name != undefined);
+    //   if (!retval) retval = (trfRepairItem.dimension?.trim() != "" && trfRepairItem.dimension != undefined);
+    //   if (!retval) retval = (trfRepairItem.guid?.trim() != "" && trfRepairItem.guid != undefined);
 
-      if (!retval)
-        msg = `${this.translatedLangText.ONE_CONDITION}`;
+    //   if (!retval)
+    //     msg = `${this.translatedLangText.ONE_CONDITION}`;
 
-    }
-    else if (trfRepairItem.labour_hour == 1 && trfRepairItem.material_cost == 1) {
+    // }
+    // else 
+    if (trfRepairItem.labour_hour == 1 && trfRepairItem.material_cost == 1) {
       msg = `${this.translatedLangText.NO_VALUE_CHNAGE}`;
     }
     else {
