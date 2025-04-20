@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using HotChocolate.Types;
 using IDMS.Models.Inventory;
 using IDMS.Models.Package;
 using IDMS.Models.Parameter;
@@ -45,7 +46,7 @@ namespace IDMS.Models.Tariff
 
         [UseFiltering]
         [GraphQLName("storing_order_tank")]
-        public IEnumerable<storing_order_tank>? sot { get; set; }
+        public virtual IEnumerable<storing_order_tank>? sot { get; set; }
 
     }
 }

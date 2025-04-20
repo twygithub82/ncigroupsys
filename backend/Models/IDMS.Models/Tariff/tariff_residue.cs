@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Package;
+using IDMS.Models.Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Tariff
 {
-    public class tariff_residue:Dates
+    public class tariff_residue : Dates
     {
         [Key]
         public string guid { get; set; }
@@ -21,5 +22,7 @@ namespace IDMS.Models.Tariff
 
         [UseFiltering]
         public IEnumerable<package_residue>? package_residue { get; set; }
+        [UseFiltering]
+        public IEnumerable<residue_part>? residue_part { get; set; }
     }
 }
