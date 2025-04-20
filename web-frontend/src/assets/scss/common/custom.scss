@@ -1865,4 +1865,8 @@ $grid-breakpoints: (
 
 mat-panel-description .mat-mdc-mini-fab {
   box-shadow: none;
+
+  &:hover {
+    box-shadow: none;
+  }
 }
