@@ -30,7 +30,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
@@ -419,7 +419,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   initializeValueChanges() {
-    this.filterJobOrderForm!.get('customer')!.valueChanges.pipe(
+    this.customerCodeControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
