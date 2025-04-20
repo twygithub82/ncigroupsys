@@ -40,7 +40,7 @@ namespace IDMS.Residue.GqlTypes
                 newResidue.allocate_by = residue.allocate_by;
                 newResidue.allocate_dt = residue.allocate_dt;
                 newResidue.est_cost = residue.est_cost;
-                newResidue.total_cost = residue.total_cost; 
+                newResidue.total_cost = residue.total_cost;
                 newResidue.create_by = user;
                 newResidue.create_dt = currentDateTime;
 
@@ -168,7 +168,7 @@ namespace IDMS.Residue.GqlTypes
                     approveResidue.bill_to_guid = residue.bill_to_guid;
                     approveResidue.job_no = residue.job_no;
                     approveResidue.remarks = residue.remarks;
-                    approveResidue.est_cost = residue.est_cost; 
+                    approveResidue.est_cost = residue.est_cost;
                     approveResidue.total_cost = residue.total_cost;
 
                     //Only change when first time approve
@@ -602,6 +602,100 @@ namespace IDMS.Residue.GqlTypes
                         tt.update_by = user;
                         tt.update_dt = currentDateTime;
                     }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        //public async Task<int> RollbackAssignedResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        //    [Service] IConfiguration config, List<ResJobOrderRequest> residueJobOrder)
+        //{
+        //    try
+        //    {
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
+
+        //        if (residueJobOrder == null)
+        //            throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+
+        //        foreach (var item in residueJobOrder)
+        //        {
+        //            //Residue handling
+        //            var rollbackResidue = await context.residue.FindAsync(item.guid);
+        //            if (rollbackResidue == null)
+        //                throw new GraphQLException(new Error($"Residue estimate not found", "ERROR"));
+
+        //            rollbackResidue.update_by = user;
+        //            rollbackResidue.update_dt = currentDateTime;
+        //            rollbackResidue.status_cv = CurrentServiceStatus.APPROVED;
+
+        //            if (!string.IsNullOrEmpty(item.remarks))
+        //                rollbackResidue.remarks = item.remarks;
+
+        //            //job_orders handling
+        //            var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
+        //            var jobGuidString = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+
+        //            string sql = "";
+        //            if (!string.IsNullOrEmpty(jobRemark))
+        //            {
+        //                sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
+        //                        $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+        //            }
+        //            else
+        //            {
+        //                sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
+        //                        $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+        //            }
+        //            context.Database.ExecuteSqlRaw(sql);
+        //        }
+
+        //        var res = await context.SaveChangesAsync();
+        //        return res;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+        //    }
+        //}
+
+        public async Task<int> RollbackAssignedResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+           [Service] IConfiguration config, List<string>? residueGuid)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in residueGuid)
+                {
+                    //Residue handling
+                    var rollbackResidue = await context.residue
+                        .Include(r => r.residue_part)
+                            .ThenInclude(rp => rp.job_order)
+                        .Where(r => r.guid == item).FirstOrDefaultAsync();
+
+                    if (rollbackResidue == null)
+                        throw new GraphQLException(new Error($"Residue estimate not found", "ERROR"));
+
+                    rollbackResidue.update_by = user;
+                    rollbackResidue.update_dt = currentDateTime;
+                    rollbackResidue.status_cv = CurrentServiceStatus.APPROVED;
+
+                    var residueParts = rollbackResidue.residue_part;
+                    var jobGuidString = string.Join(",", residueParts.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+
+                    string sql = "";
+                    sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                   
+                    context.Database.ExecuteSqlRaw(sql);
                 }
 
                 var res = await context.SaveChangesAsync();

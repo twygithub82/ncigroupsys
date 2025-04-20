@@ -705,6 +705,48 @@ namespace IDMS.Steaming.GqlTypes
             }
         }
 
+        //public async Task<int> RollbackAssignedSteaming(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        //    [Service] IConfiguration config, List<string>? steamingGuid)
+        //{
+        //    try
+        //    {
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
+
+        //        foreach (var item in steamingGuid)
+        //        {
+        //            //Residue handling
+        //            var rollbackSteam = await context.steaming
+        //                .Include(r => r.steaming_part)
+        //                    .ThenInclude(rp => rp.job_order)
+        //                .Where(r => r.guid == item).FirstOrDefaultAsync();
+
+        //            if (rollbackSteam == null)
+        //                throw new GraphQLException(new Error($"Residue estimate not found", "ERROR"));
+
+        //            rollbackSteam.update_by = user;
+        //            rollbackSteam.update_dt = currentDateTime;
+        //            rollbackSteam.status_cv = CurrentServiceStatus.APPROVED;
+
+        //            var steamingParts = rollbackSteam.steaming_part;
+        //            var jobGuidString = string.Join(",", steamingParts.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+
+        //            string sql = "";
+        //            sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
+        //                    $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+
+        //            context.Database.ExecuteSqlRaw(sql);
+        //        }
+
+        //        var res = await context.SaveChangesAsync();
+        //        return res;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+        //    }
+        //}
+
         private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, List<string> processGuidList)
         {
             //First check if still have other steaming estimate havnt completed
