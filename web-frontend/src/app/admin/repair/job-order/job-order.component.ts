@@ -147,7 +147,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     QC: 'COMMON-FORM.QC',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE'
+    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   selectedTabIndex = 0;

@@ -165,7 +165,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     PROCESS: "COMMON-FORM.PROCESS",
     QC: 'COMMON-FORM.QC',
-    BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW"
+    BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   filterCleanForm?: UntypedFormGroup;
@@ -186,8 +187,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     'APPROVED',
     'JOB_IN_PROGRESS',
     'ASSIGNED',
-    'NO_ACTION',
-    'CANCELED'
+    //'NO_ACTION',
+    //'CANCELED'
   ]
 
   cleanMethodList: CleaningMethodItem[] = [];
@@ -760,7 +761,12 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   resetForm() {
     this.filterCleanForm?.patchValue({
       filterRepair: '',
-      cleanMethod: ''
+      cleanMethod: '',
+      status_cv: '',
+      customer: '',
+      filterClean: '',
+      eir_dt_start: '',
+      eir_dt_end: ''
     });
   }
 

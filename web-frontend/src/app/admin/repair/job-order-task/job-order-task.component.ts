@@ -119,7 +119,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
-    TEAM: 'COMMON-FORM.TEAM'
+    TEAM: 'COMMON-FORM.TEAM',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   availableJobStatus: string[] = [
@@ -179,7 +180,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
+    //this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -363,7 +364,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       filterJobOrder: '',
       jobStatusCv: '',
       allocate_dt_start: '',
-      allocate_dt_end: ''
+      allocate_dt_end: '',
+      teamList: ''
     });
     this.customerCodeControl.reset();
   }

@@ -42,8 +42,11 @@
           [class.selected-toggle-btn]="isSelectedJobStatus(codeValue.code_val!)">{{codeValue.description}}</mat-button-toggle>
         }
       </mat-button-toggle-group> -->
-      <button mat-mini-fab color="primary" class="mt-4">
+      <button mat-mini-fab color="primary" matTooltip={{translatedLangText.SEARCH}}>
         <mat-icon>search</mat-icon>
+      </button>
+      <button mat-mini-fab class="m-l-5 bg-dark-gold"  (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+        <mat-icon>clear_all</mat-icon>
       </button>
     </div>
   </div>

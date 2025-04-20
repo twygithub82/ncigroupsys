@@ -143,7 +143,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     COPY: 'COMMON-FORM.COPY',
     NO_OF_PARTS: 'COMMON-FORM.NO-OF-PARTS',
     REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
-    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
+    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   availableProcessStatus: string[] = [
@@ -737,10 +738,11 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       tank_no: '',
       job_no: '',
       purpose: '',
-      eta_dt_start: '',
-      eta_dt_end: '',
+      eir_dt_start: '',
+      eir_dt_end: '',
       est_status_cv: '',
-      repair_option_cv: ''
+      repair_option_cv: '',
+      est_dt: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

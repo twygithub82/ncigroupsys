@@ -122,6 +122,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
     COMPLETE_DATE: 'COMMON-FORM.COMPLETE-DATE',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -175,7 +176,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
+    //this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -345,6 +346,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.filterJobOrderForm?.patchValue({
       filterJobOrder: '',
       jobStatusCv: ['COMPLETED'],
+      filterRepair:'',
       repairOptionCv: [''],
       complete_dt_start: '',
       complete_dt_end: ''

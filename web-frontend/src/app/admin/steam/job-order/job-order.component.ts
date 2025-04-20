@@ -618,6 +618,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   resetForm() {
     this.filterSteamForm?.patchValue({
       filterSteam: '',
+      status_cv: '',
+      customer:''
     });
   }
 
