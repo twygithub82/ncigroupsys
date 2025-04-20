@@ -113,7 +113,7 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-STEAMING'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.PACKAGE.TEXT', route: '/admin/package/package-steaming' }
+    { text: 'MENUITEMS.PACKAGE.TEXT', route: '/admin/package/package-steam' }
   ]
 
   translatedLangText: any = {};

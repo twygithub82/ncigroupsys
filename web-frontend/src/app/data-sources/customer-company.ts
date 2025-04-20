@@ -1,15 +1,13 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { CurrencyItem } from './currency';
 import { ContactPersonItem } from './contact-person';
-import { StoringOrderTankItem } from './storing-order-tank';
+import { CurrencyItem } from './currency';
 import { StoringOrderItem } from './storing-order';
+import { StoringOrderTankItem } from './storing-order-tank';
 
 export class CustomerCompanyGO {
   public guid?: string;
@@ -91,13 +89,13 @@ export interface CustomerCompanyResult {
 }
 
 export const UPDATE_CUSTOMER_COMPANY = gql`
-    mutation updateCustomerCompany($customer: CustomerRequestInput!,$contactPersons:[customer_company_contact_personInput],$billingBranches:[BillingBranchRequestInput]) {
+  mutation updateCustomerCompany($customer: CustomerRequestInput!,$contactPersons:[customer_company_contact_personInput],$billingBranches:[BillingBranchRequestInput]) {
     updateCustomerCompany(customer: $customer,contactPersons:$contactPersons,billingBranches:$billingBranches)
   }
 `
 
 export const DELETE_CUSTOMER_COMPANY = gql`
-    mutation deleteCustomerCompany($customerGuids: [String!]!) {
+  mutation deleteCustomerCompany($customerGuids: [String!]!) {
     deleteCustomerCompany(customerGuids: $customerGuids)
   }
 `
@@ -538,7 +536,6 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
         return of(0); // Return an empty array on error
       }),
     );
-
   }
 
   UpdateCustomerCompany(customer: any, contactPersons: any, billingBranches: any): Observable<any> {
@@ -555,9 +552,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
         return of(0); // Return an empty array on error
       }),
     );
-
   }
-
 
   DeleteCustomerCompany(customerGuids: any): Observable<any> {
     return this.apollo.mutate({
@@ -571,7 +566,6 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
         return of(0); // Return an empty array on error
       }),
     );
-
   }
 
   CanDeleteCustomerCompany(guid: any): Observable<any> {
