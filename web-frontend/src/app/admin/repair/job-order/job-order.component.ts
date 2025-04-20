@@ -210,7 +210,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.customerCodeControl = new UntypedFormControl('', [AutocompleteSelectionValidator(this.customer_companyList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -343,6 +343,13 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       where.or = [
         { storing_order_tank: { tank_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } },
         { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
+      ];
+    }
+
+    if (this.customerCodeControl?.value) {
+      const customer = this.customerCodeControl?.value;
+      where.or = [
+        { storing_order_tank: { storing_order: { customer_company_guid: { contains: customer.guid } } } }
       ];
     }
 
@@ -483,7 +490,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   initializeValueChanges() {
-    this.filterRepairForm!.get('customer')!.valueChanges.pipe(
+    this.customerCodeControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -495,6 +502,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
+          this.updateValidatorsCustomer(this.customer_companyList);
         });
       })
     ).subscribe();
@@ -539,7 +547,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   updateValidators(validOptions: any[]) {
     this.lastCargoControl.setValidators([
-      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
+  }
+
+  updateValidatorsCustomer(validOptions: any[]) {
+    this.customerCodeControl.setValidators([
       AutocompleteSelectionValidator(validOptions)
     ]);
   }

@@ -180,7 +180,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     super();
     this.translateLangText();
     this.initSearchForm();
-    //this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
+    this.customerCodeControl = new UntypedFormControl('', [AutocompleteSelectionValidator(this.customer_companyList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -268,6 +268,13 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       where.or = [
         { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } },
         { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
+      ];
+    }
+
+    if (this.customerCodeControl?.value) {
+      const customer = this.customerCodeControl?.value;
+      where.or = [
+        { storing_order_tank: { storing_order: { customer_company_guid: { contains: customer.guid } } }}
       ];
     }
 
@@ -449,7 +456,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   initializeValueChanges() {
-    this.filterJobOrderForm!.get('customer')!.valueChanges.pipe(
+    this.customerCodeControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -461,6 +468,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
+          this.updateValidators(this.customer_companyList);
         });
       })
     ).subscribe();
@@ -666,5 +674,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
 
     this.jobOrderSubscriptions.push(subscription);
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.customerCodeControl.setValidators([
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 }
