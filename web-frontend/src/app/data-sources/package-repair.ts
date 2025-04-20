@@ -171,6 +171,12 @@ export const UPDATE_PACKAGE_REPAIRS = gql`
   }
 `;
 
+export const UPDATE_PACKAGE_REPAIRS_BY_PERCENTAGE = gql`
+  mutation updatePackageRepair_ByPercentage($package_repair_guid: [String!]!,$material_cost_percentage:Float!,$labour_hour_percentage:Float!) {
+    updatePackageRepair_ByPercentage(package_repair_guid: $package_repair_guid,material_cost_percentage:$material_cost_percentage,labour_hour_percentage:$labour_hour_percentage)
+  }
+`;
+
 export const UPDATE_PACKAGE_REPAIR = gql`
   mutation updatePackageRepair($td: package_repairInput!) {
     updatePackageRepair(updatePackageRepair: $td)
@@ -273,6 +279,22 @@ export class PackageRepairDS extends BaseDataSource<PackageRepairItem> {
         material_cost,
         labour_hour,
         remarks
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  updatePackageRepairsByPercentage(package_repair_guid: any, material_cost_percentage: any, labour_hour_percentage: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_PACKAGE_REPAIRS_BY_PERCENTAGE,
+      variables: {
+        package_repair_guid,
+        material_cost_percentage,
+        labour_hour_percentage
       }
     }).pipe(
       catchError((error: ApolloError) => {

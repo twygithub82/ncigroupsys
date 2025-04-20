@@ -1,6 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -88,7 +88,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   action: string;
   index?: number;
   dialogTitle?: string;
-
+  minMaterialCost: number = -20;
+  maxMaterialCost: number = 20;
   //packageDepotItems?: PackageDepotItem[]=[];
   //packageDepotDS?:PackageDepotDS;
   packRepairDS?: PackageRepairDS;
@@ -196,6 +197,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     DIMENSION: "COMMON-FORM.DIMENSION",
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    CANNOT_EXCEED: "COMMON-FORM.CANNOT-EXCEED",
+    CANNOT_SMALLER: "COMMON-FORM.CANNOT-SMALLER",
+    SMALLER_THAN: "COMMON-FORM.SMALLER-THAN",
+     CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED'
   };
 
 
@@ -221,6 +226,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
+
+    if(this.selectedItems.length>1)
+    {
+      this.EnableValidator('material_cost');
+      this.EnableValidator('labour_hour');
+    }
   }
 
   createPackageRepair(): UntypedFormGroup {
@@ -302,15 +313,20 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
+EnableValidator(path: string) {
+    this.pcForm.get(path)?.setValidators([
+      Validators.min(this.minMaterialCost),
+      Validators.max(this.maxMaterialCost),
+      Validators.required  // If you have a required validator
+    ]);
+    this.pcForm.get(path)?.updateValueAndValidity();  // Revalidate the control
+  }
 
-
-  // selectClassNo(value:string):void{
-  //   const returnDialog: DialogData = {
-  //     selectedValue:value
-  //   }
-  //   console.log('valid');
-  //   this.dialogRef.close(returnDialog);
-  // }
+  DisableValidator(path: string) {
+    this.pcForm.get(path)?.clearValidators();
+    this.pcForm.get(path)?.updateValueAndValidity();
+  }
+  
 
   canEdit() {
     return true;
@@ -336,23 +352,25 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         .map(cc => cc.guid)
         .filter((guid): guid is string => guid !== undefined);
 
-      var material_cost = -1;
-      if (this.pcForm!.value["material_cost"]) material_cost = Number(this.pcForm!.value["material_cost"]);
 
-      var labour_hour = -1;
-      if (this.pcForm!.value["labour_hour"]) labour_hour = Number(this.pcForm!.value["labour_hour"]);
 
-      var remarks = this.pcForm!.value["remarks"] || "";
-      if (pd_guids.length == 1) {
-        if (!remarks) {
-          remarks = "--";
-        }
-      }
-      this.packRepairDS?.updatePackageRepairs(pd_guids, material_cost, labour_hour, remarks).subscribe(result => {
-        if (result.data.updatePackageRepairs > 0) {
+
+       var material_cost = 1;
+       if (this.pcForm!.value["material_cost"]) material_cost = (Number(this.pcForm!.value['material_cost']) / 100) + 1;
+       var labour_hour = 1;
+       if (this.pcForm!.value["labour_hour"]) labour_hour = (Number(this.pcForm!.value["labour_hour"])/100)+1;
+
+      // var remarks = this.pcForm!.value["remarks"] || "";
+      // if (pd_guids.length == 1) {
+      //   if (!remarks) {
+      //     remarks = "--";
+      //   }
+      // }
+      this.packRepairDS?.updatePackageRepairsByPercentage(pd_guids, material_cost, labour_hour).subscribe(result => {
+        if (result.data.updatePackageRepair_ByPercentage > 0) {
 
           console.log('valid');
-          this.dialogRef.close(result.data.updatePackageRepairs);
+          this.dialogRef.close(result.data.updatePackageRepair_ByPercentage);
 
         }
       });
@@ -373,30 +391,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       });
     }
 
-    // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
-    // // tc.guid='';
-    // pdItem.lolo_cost =Number(this.pcForm.value['lolo_cost_cust']);
-    // pdItem.preinspection_cost =Number( this.pcForm.value['preinspection_cost_cust']);
-    // pdItem.free_storage =Number( this.pcForm.value['free_storage_days']);
-    // pdItem.storage_cost =Number( this.pcForm.value['storage_cost_cust']);
-    // pdItem.remarks = this.pcForm.value['remarks'];
-    // var storageCalValue;
-    // if(this.storageCalControl.value)
-    // {
-    //     const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-    //     storageCalValue = storage_calCv.code_val;
-    // }
-    // pdItem.storage_cal_cv = storageCalValue;
-    // this.packageDepotDS?.updatePackageDepot(pdItem).subscribe(result=>{
-    //   if(result.data.updatePackageDepot>0)
-    //   {
-
-    //             console.log('valid');
-    //             this.dialogRef.close(result.data.updatePackageDepot);
-
-    //   }
-    // });
-
+   
 
   }
 
@@ -412,6 +407,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  getMaterialCostLabel(){
+    var lbl = this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'(%)':'');
+    return lbl;
+  }
+
+  getLabourHourLabel(){
+    var lbl = this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
+    return lbl;
   }
 
 }
