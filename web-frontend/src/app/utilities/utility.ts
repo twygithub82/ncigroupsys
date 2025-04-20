@@ -1,11 +1,10 @@
 import { TranslateService } from "@ngx-translate/core";
+import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
+import { customerInfo } from 'environments/environment';
+import { jsPDF } from 'jspdf';
+import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
-import { jsPDF } from 'jspdf';
-import { customerInfo } from 'environments/environment';
-import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
-import { UntypedFormControl } from "@angular/forms";
-
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -587,6 +586,22 @@ export class Utility {
     form?.setValue(input.value, { emitEvent: false });
   }
 
+  static getCountryCodes(orderBy: 'country' | 'code' = 'country') {
+    const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
+    return getCountries()
+      .map(countryISO => ({
+        country: displayNames.of(countryISO),
+        code: `+${getCountryCallingCode(countryISO)}`,
+        iso: countryISO.toLowerCase(),
+        flagUrl: Utility.getFlagUrl(countryISO.toLowerCase())
+      }))
+      .sort((a, b) => {
+        return orderBy === 'code'
+          ? parseInt(a.code) - parseInt(b.code)
+          : (a.country || '').localeCompare(b.country || '');
+      });
+  }
+
   static getFlagUrl(iso: string): string {
     const knownUnavailable = ['ac', 'xk', 'eu', 'ta']; // unsupported emoji or flagcdn
     if (knownUnavailable.includes(iso.toLowerCase())) {
@@ -602,10 +617,10 @@ export class Utility {
 
   static isSameDate(date1: Date | number | undefined, date2: Date | number | undefined): boolean {
     if (!date1 || !date2) return false;
-  
+
     const d1 = typeof date1 === 'number' ? this.convertDate(date1) as Date : date1;
     const d2 = typeof date2 === 'number' ? this.convertDate(date2) as Date : date2;
-  
+
     return (
       d1.getFullYear() === d2.getFullYear() &&
       d1.getMonth() === d2.getMonth() &&
@@ -657,10 +672,10 @@ export class Utility {
     // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
   }
 
-  static DrawImageAtCenterPage(pdf: jsPDF, canvas: HTMLCanvasElement, pageWidth: number,  leftMargin: number, rightMargin: number, topPosition: number,maxChartWidth:number,imgQuality:number) {
-    let chartContentWidth =maxChartWidth;
-    
-    let startY:number=topPosition;
+  static DrawImageAtCenterPage(pdf: jsPDF, canvas: HTMLCanvasElement, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
+    let chartContentWidth = maxChartWidth;
+
+    let startY: number = topPosition;
 
     const imgData1 = canvas.toDataURL('image/jpeg', imgQuality);
     const aspectRatio = canvas.width / canvas.height;
@@ -677,8 +692,8 @@ export class Utility {
       chartContentWidth = imgHeight1 * aspectRatio;
     }
 
-    let startX=leftMargin+((pageWidth - leftMargin - rightMargin)/2)-(chartContentWidth/2);
-    
+    let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
+
     // Add the image to the PDF
     pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
 
@@ -988,69 +1003,73 @@ export class Utility {
     return !isNaN(num) && !isNaN(parseFloat(value));
   }
 
- /**
- * Get the date range (Monday-Sunday) for a given ISO week of the year.
- * @param year - Full year (e.g., 2025).
- * @param weekOfYear - ISO week number (1-53).
- * @returns Date range string (e.g., "30-Dec - 05-Jan") or null if invalid.
- */
-static getISOWeekRange(
-  year: number,
-  weekOfYear: number
-): string | null {
-  // Validate week number (ISO weeks range from 1 to 52 or 53)
-  if (weekOfYear < 1 || weekOfYear > 53) return null;
+  /**
+  * Get the date range (Monday-Sunday) for a given ISO week of the year.
+  * @param year - Full year (e.g., 2025).
+  * @param weekOfYear - ISO week number (1-53).
+  * @returns Date range string (e.g., "30-Dec - 05-Jan") or null if invalid.
+  */
+  static getISOWeekRange(
+    year: number,
+    weekOfYear: number
+  ): string | null {
+    // Validate week number (ISO weeks range from 1 to 52 or 53)
+    if (weekOfYear < 1 || weekOfYear > 53) return null;
 
-  // Get January 1st of the year
-  const janFirst = new Date(year, 0, 1);
-  const janFirstDay = janFirst.getDay() || 7; // Convert Sunday (0) to 7
+    // Get January 1st of the year
+    const janFirst = new Date(year, 0, 1);
+    const janFirstDay = janFirst.getDay() || 7; // Convert Sunday (0) to 7
 
-  // Calculate the first Thursday of the year (ISO week 1 starts here)
-  const firstThursday =
-    janFirstDay <= 4
-      ? new Date(year, 0, 1 + (4 - janFirstDay)) // Same week
-      : new Date(year, 0, 1 + (11 - janFirstDay)); // Next week
+    // Calculate the first Thursday of the year (ISO week 1 starts here)
+    const firstThursday =
+      janFirstDay <= 4
+        ? new Date(year, 0, 1 + (4 - janFirstDay)) // Same week
+        : new Date(year, 0, 1 + (11 - janFirstDay)); // Next week
 
-  // Calculate the start of the requested ISO week (Monday)
-  const weekStart = new Date(firstThursday);
-  weekStart.setDate(firstThursday.getDate() - 3 + (weekOfYear - 1) * 7);
+    // Calculate the start of the requested ISO week (Monday)
+    const weekStart = new Date(firstThursday);
+    weekStart.setDate(firstThursday.getDate() - 3 + (weekOfYear - 1) * 7);
 
-  // Calculate the end of the week (Sunday)
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
+    // Calculate the end of the week (Sunday)
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
 
-  // Format dates (e.g., "01-Jan")
-  const startStr = this.formatDate(weekStart);
-  const endStr = this.formatDate(weekEnd);
+    // Format dates (e.g., "01-Jan")
+    const startStr = this.formatDate(weekStart);
+    const endStr = this.formatDate(weekEnd);
 
-  return `${startStr} - ${endStr}`;
-}
+    return `${startStr} - ${endStr}`;
+  }
 
+  /**
+   * Helper: Format date as "DD-MMM" (e.g., "01-Jan").
+   */
+  static formatDate(date: Date): string {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    return `${day}-${month}`;
+  }
 
+  static extractYearFromMonthYear(monthYearStr: string): number | null {
+    // Split the string at " - " and get the second part (year)
+    const parts = monthYearStr.split(' - ');
 
-/**
- * Helper: Format date as "DD-MMM" (e.g., "01-Jan").
- */
-static formatDate(date: Date): string {
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = date.toLocaleString('default', { month: 'short' });
-  return `${day}-${month}`;
-}
+    if (parts.length !== 2) return null; // Invalid format
 
-static extractYearFromMonthYear(monthYearStr: string): number | null {
-  // Split the string at " - " and get the second part (year)
-  const parts = monthYearStr.split(' - ');
-  
-  if (parts.length !== 2) return null; // Invalid format
+    const yearStr = parts[1].trim();
+    const year = parseInt(yearStr, 10);
 
-  const yearStr = parts[1].trim();
-  const year = parseInt(yearStr, 10);
+    // Validate (e.g., 2025 is a valid year, "ABC" is not)
+    return !isNaN(year) && year > 0 ? year : null;
+  }
 
-  // Validate (e.g., 2025 is a valid year, "ABC" is not)
-  return !isNaN(year) && year > 0 ? year : null;
-}
+  static isTankInYard(tank_status_cv?: string) {
+    return TANK_STATUS_IN_YARD.includes(tank_status_cv || '');
+  }
 
-
+  static isTankReleased(tank_status_cv?: string) {
+    return TANK_STATUS_POST_IN_YARD.includes(tank_status_cv || '');
+  }
 }
 
 export const TANK_STATUS_PRE_IN_YARD = [

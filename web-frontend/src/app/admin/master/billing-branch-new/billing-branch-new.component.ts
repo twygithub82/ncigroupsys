@@ -48,7 +48,6 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 
 @Component({
   selector: 'app-billing-branch-new',
@@ -303,13 +302,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.tDS = new TankDS(this.apollo);
     this.curDS = new CurrencyDS(this.apollo);
 
-    const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
-    this.countryCodes = getCountries().map(countryISO => ({
-      country: displayNames.of(countryISO),
-      code: `+${getCountryCallingCode(countryISO)}`,
-      iso: countryISO.toLowerCase(),
-      flagUrl: Utility.getFlagUrl(countryISO.toLowerCase())// `https://flagcdn.com/24x18/${countryISO.toLowerCase()}.png`
-    }));
+    this.countryCodes = Utility.getCountryCodes();
     this.countryCodesFiltered = this.countryCodes;
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;

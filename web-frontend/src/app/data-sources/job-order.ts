@@ -445,7 +445,10 @@ const GET_STARTED_JOB_ORDER = gql`
               guid
               description
             }
-          }  
+          }
+          residue {
+            status_cv
+          }
         }
         steaming_part {
           steaming {

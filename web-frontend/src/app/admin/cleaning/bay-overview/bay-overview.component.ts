@@ -215,7 +215,6 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   ngOnInit() {
     this.initializeValueChanges();
     this.QueryBays();
-    //this.loadData();
   }
 
   triggerRefresh() {
@@ -632,18 +631,21 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       and: []
     };
     where.and.push({ team: { guid: { in: teamGuids } } });
-    where.and.push({ job_type_cv: { eq: 'CLEANING' } });
+    where.and.push({ job_type_cv: { in: ['CLEANING', 'RESIDUE'] } });
     where.and.push({ status_cv: { in: ['JOB_IN_PROGRESS', 'PENDING', 'ASSIGNED'] } });
     where.and.push({ delete_dt: { eq: null } });
 
     this.joDS?.searchStartedJobOrder(where).subscribe(data => {
       if (data?.length) {
+        console.log(data)
         data.forEach(d => {
           this.teamList?.forEach(team => {
-            if (team.guid === d.team?.guid) {
+            if (team.guid === d.team?.guid && d.job_type_cv === 'CLEANING') {
+              const foundIncomplete = d.storing_order_tank?.residue?.filter(x => ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED', 'ASSIGNED', ''].includes(x.status_cv || ''));
               team.jobOrderItem = d;
               team.isOccupied = true;
               team.isEditable = false;
+              team.foundIncomplete = (foundIncomplete?.length || 0) > 0;
             }
           });
         });

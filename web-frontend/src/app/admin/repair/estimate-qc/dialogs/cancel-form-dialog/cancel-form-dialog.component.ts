@@ -50,8 +50,6 @@ export class CancelFormDialogComponent {
   last_qc_dt?: number;
   last_remarks?: string;
   startDateQC = new Date();
-
-  lastCargoControl = new UntypedFormControl();
   constructor(
     public dialogRef: MatDialogRef<CancelFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,

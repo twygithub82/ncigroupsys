@@ -41,7 +41,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { InGateCleaningDS, InGateCleaningGO, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { InGateSurveyDS, InGateSurveyGO, InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { JobOrderDS } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderGO, RepJobOrderRequest } from 'app/data-sources/job-order';
 import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
 import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-survey';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
@@ -76,6 +76,7 @@ import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { OverwriteDepotCostFormDialogComponent } from './overwrite-depot-cost-form-dialog/overwrite-depot-cost-form-dialog.component';
 import { OverwriteCleaningApprovalFormDialogComponent } from './overwrite-clean-appr-form-dialog/overwrite-clean-appr-form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ConfirmationRemarksFormDialogComponent } from './confirmation-remarks-form-dialog/confirmation-remarks-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -116,7 +117,6 @@ import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumnsSteaming = [
     'estimate_no',
-    // 'actions',
     'degree_celsius',
     'estimate_date',
     'approve_dt',
@@ -141,7 +141,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'approve_dt',
     'allocation_dt',
     'qc_dt',
-    'status_cv'
+    'status_cv',
+    'actions',
   ];
 
   displayedColumnsBooking = [
@@ -424,6 +425,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     JOB_ALLOCATION: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_COMPLETION: 'COMMON-FORM.JOB-COMPLETION',
     BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
+    ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    ROLLBACK: 'COMMON-FORM.ROLLBACK',
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
   }
 
   sot_guid: string | null | undefined;
@@ -797,106 +802,20 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
-      this.subs.sink = this.sotDS.getStoringOrderTankForMovementByID(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`sot: `, data)
-          this.sot = data[0];
-          this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
-          this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
-          // this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
-          //   console.log(`packageDepot: `, data)
-          //   this.pdItem = data[0];
-          // });
-          this.tiDS.getTankInfoForMovement(this.sot?.tank_no!).subscribe(data => {
-            console.log(`tankInfo: `, data)
-            this.tiItem = data[0];
-            this.last_test_desc = this.getLastTest();
-            this.next_test_desc = this.getNextTest();
-          });
-          // if (this.sot?.in_gate?.length) {
-          //   this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
-          // }
-        }
-      });
-      this.subs.sink = this.igsDS.getInGateSurveyByIDForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`igs: `, data)
-          this.igs = data[0];
-        }
-      });
-      this.subs.sink = this.igDS.getInGateByIDForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`ig: `, data)
-          this.ig = data[0];
-        }
-      });
-      this.subs.sink = this.ogsDS.getOutGateSurveyByIDForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`ogs: `, data)
-          this.ogs = data[0];
-        }
-      });
-      this.subs.sink = this.ogDS.getOutGateByIDForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`og: `, data)
-          this.og = data[0];
-        }
-      });
-      this.subs.sink = this.steamDS.getSteamForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`steam: `, data)
-          this.steamItem = data;
-        }
-      });
-      this.subs.sink = this.residueDS.getResidueForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`residue: `, data)
-          this.residueItem = data;
-        }
-      });
-      this.subs.sink = this.cleaningDS.getCleaningForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`cleaning: `, data)
-          this.cleaningItem = data;
-        }
-      });
-      this.subs.sink = this.repairDS.getRepairForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`repair: `, data);
-          this.repairItem = data;
-          this.displayColumnChanged();
-        }
-      });
-      this.subs.sink = this.bkDS.getBookingForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`booking: `, data);
-          this.bookingList = data;
-        }
-      });
-      this.subs.sink = this.schedulingDS.getSchedulingForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`scheduling: `, data);
-          this.schedulingList = data;
-        }
-      });
-      this.subs.sink = this.surveyDS.searchSurveyDetailForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`survey: `, data);
-          this.surveyList = data;
-        }
-      });
-      this.subs.sink = this.transferDS.getTransferBySotIDForMovement(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`transfer: `, data);
-          this.transferList = data;
-        }
-      });
-      this.subs.sink = this.tdDS.SearchTariffDepot({}, null, 100).subscribe(data => {
-        if (data.length > 0) {
-          console.log(`tariffDepot: `, data)
-          this.tariffDepotList = data;
-        }
-      });
+      this.loadDataHandling_sot(this.sot_guid);
+      this.loadDataHandling_igs(this.sot_guid);
+      this.loadDataHandling_ig(this.sot_guid);
+      this.loadDataHandling_ogs(this.sot_guid);
+      this.loadDataHandling_og(this.sot_guid);
+      this.loadDataHandling_steam(this.sot_guid);
+      this.loadDataHandling_residue(this.sot_guid);
+      this.loadDataHandling_cleaning(this.sot_guid);
+      this.loadDataHandling_repair(this.sot_guid);
+      this.loadDataHandling_booking(this.sot_guid);
+      this.loadDataHandling_scheduling(this.sot_guid);
+      this.loadDataHandling_surveyDetail(this.sot_guid);
+      this.loadDataHandling_transfer(this.sot_guid);
+      this.loadDataHandling_tariffDepot();
     }
   }
 
@@ -1813,20 +1732,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         'approve_dt',
         'allocation_dt',
         'qc_dt',
-        'status_cv'
+        'status_cv',
+        'actions'
       ];
     } else {
       this.displayedColumnsRepair = [
         'tank_no',
         'customer',
         'estimate_no',
-        'status_cv'
+        'status_cv',
+        'actions'
       ];
     }
-  }
-
-  preventDefault(event: Event) {
-    event.preventDefault(); // Prevents the form submission
   }
 
   verifySection(expectedSection: string) {
@@ -2014,7 +1931,325 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '');
   }
 
+  // onRollbackResidueJobs(event: Event) {
+  //   this.preventDefault(event);
+
+  //   const distinctJobOrders = this.deList
+  //     .filter((item, index, self) =>
+  //       index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+  //         (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+  //           t.job_order?.team?.description === item?.job_order?.team?.description))
+  //     )
+  //     .filter(item => item.job_order !== null && item.job_order !== undefined)
+  //     .map(item => new JobOrderGO(item.job_order!));
+
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+  //     width: '1000px',
+  //     data: {
+  //       action: 'rollback',
+  //       dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+  //       item: [this.residueItem],
+  //       translatedLangText: this.translatedLangText
+  //     },
+  //     direction: tempDirection
+  //   });
+  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result?.action === 'confirmed') {
+  //       const reList = result.item.map((item: any) => {
+  //         const residueJobOrder = {
+  //           estimate_no: item?.estimate_no,
+  //           guid: item?.guid,
+  //           remarks: item.remarks,
+  //           sot_guid: item.sot_guid,
+  //           sot_status: this.residueItem?.storing_order_tank?.tank_status_cv,
+  //           job_order: distinctJobOrders
+  //         }
+  //         return residueJobOrder
+  //       });
+  //       console.log(reList);
+  //       if (this.residueItem?.status_cv == "COMPLETED") {
+  //         this.residueDS.rollbackCompletedResidue(reList).subscribe(result => {
+  //           this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue)
+  //         });
+  //       }
+  //       else if (this.residueItem?.status_cv == "JOB_IN_PROGRESS") {
+  //         this.jobOrderDS.rollbackJobInProgressResidue(reList).subscribe(result => {
+  //           this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
+  //         });
+  //       }
+  //     }
+  //   });
+  // }
+
+  canRollbackRepairQC(row: RepairItem) {
+    return Utility.isTankInYard(this.sot?.tank_status_cv) && this.repairDS.canRollbackQC(row);
+  }
+
+  onRollbackRepairQC(event: Event, row: RepairItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      width: '500px',
+      data: {
+        action: 'rollback',
+        messageText: row.estimate_no,
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const distinctJobOrders = row?.repair_part?.filter((item, index, self) =>
+          index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+            (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+              t.job_order?.team?.description === item?.job_order?.team?.description))
+        )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO(item.job_order!));
+
+        const repJobOrder = new RepJobOrderRequest({
+          guid: row?.guid,
+          sot_guid: row?.sot_guid,
+          estimate_no: row?.estimate_no,
+          remarks: result.remarks,
+          job_order: distinctJobOrders,
+          sot_status: this.sot?.tank_status_cv
+        });
+
+        console.log(repJobOrder)
+        this.repairDS.rollbackQCRepair([repJobOrder]).subscribe(result => {
+          console.log(result)
+          if ((result?.data?.rollbackQCRepair ?? 0) > 0) {
+            this.handleSaveSuccess(result?.data?.rollbackQCRepair);
+            this.loadDataHandling_sot(this.sot_guid!);
+            this.loadDataHandling_repair(this.sot_guid!);
+          }
+        });
+      }
+    });
+  }
+
+  onOverwriteQC(event: Event, row: RepairItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      width: '500px',
+      data: {
+        action: 'overwrite',
+        messageText: row.estimate_no,
+        translatedLangText: this.translatedLangText,
+        last_qc_dt: row.repair_part?.filter(x => x.approve_part)?.[0]?.job_order?.qc_dt,
+        last_remarks: row?.remarks,
+      },
+      direction: tempDirection
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const distinctJobOrders = row.repair_part?.filter((item, index, self) =>
+          index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+            (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+              t.job_order?.team?.description === item?.job_order?.team?.description))
+        )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO({ ...item.job_order!, qc_dt: Utility.convertDate(result.qc_dt) as number }));
+
+        const repJobOrder = new RepJobOrderRequest({
+          guid: row?.guid,
+          sot_guid: row?.sot_guid,
+          estimate_no: row?.estimate_no,
+          remarks: result.remarks,
+          job_order: distinctJobOrders,
+          sot_status: this.sot?.tank_status_cv
+        });
+
+        console.log(repJobOrder)
+        this.repairDS.overwriteQCRepair([repJobOrder]).subscribe(result => {
+          console.log(result)
+          if ((result?.data?.overwriteQCRepair ?? 0) > 0) {
+            this.handleSaveSuccess(result?.data?.overwriteQCRepair);
+            this.loadDataHandling_repair(this.sot_guid!);
+          }
+        });
+      }
+    });
+  }
+
   isAutoApproveSteaming(row: any) {
     return BusinessLogicUtil.isAutoApproveSteaming(row);
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
+
+  loadDataHandling_sot(sot_guid: string) {
+    this.subs.sink = this.sotDS.getStoringOrderTankForMovementByID(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`sot: `, data)
+        this.sot = data[0];
+        this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
+        this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
+        // this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
+        //   console.log(`packageDepot: `, data)
+        //   this.pdItem = data[0];
+        // });
+        this.tiDS.getTankInfoForMovement(this.sot?.tank_no!).subscribe(data => {
+          console.log(`tankInfo: `, data)
+          this.tiItem = data[0];
+          this.last_test_desc = this.getLastTest();
+          this.next_test_desc = this.getNextTest();
+        });
+        // if (this.sot?.in_gate?.length) {
+        //   this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
+        // }
+      }
+    });
+  }
+
+  loadDataHandling_igs(sot_guid: string) {
+    this.subs.sink = this.igsDS.getInGateSurveyByIDForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`igs: `, data)
+        this.igs = data[0];
+      }
+    });
+  }
+
+  loadDataHandling_ig(sot_guid: string) {
+    this.subs.sink = this.igDS.getInGateByIDForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`ig: `, data)
+        this.ig = data[0];
+      }
+    });
+  }
+
+  loadDataHandling_ogs(sot_guid: string) {
+    this.subs.sink = this.ogsDS.getOutGateSurveyByIDForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`ogs: `, data)
+        this.ogs = data[0];
+      }
+    });
+  }
+
+  loadDataHandling_og(sot_guid: string) {
+    this.subs.sink = this.ogDS.getOutGateByIDForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`og: `, data)
+        this.og = data[0];
+      }
+    });
+  }
+
+  loadDataHandling_steam(sot_guid: string) {
+    this.subs.sink = this.steamDS.getSteamForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`steam: `, data)
+        this.steamItem = data;
+      }
+    });
+  }
+
+  loadDataHandling_residue(sot_guid: string) {
+    this.subs.sink = this.residueDS.getResidueForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`residue: `, data)
+        this.residueItem = data;
+      }
+    });
+  }
+
+  loadDataHandling_cleaning(sot_guid: string) {
+    this.subs.sink = this.cleaningDS.getCleaningForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`cleaning: `, data)
+        this.cleaningItem = data;
+      }
+    });
+  }
+
+  loadDataHandling_repair(sot_guid: string) {
+    this.subs.sink = this.repairDS.getRepairForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`repair: `, data);
+        this.repairItem = data;
+        this.displayColumnChanged();
+      }
+    });
+  }
+
+  loadDataHandling_booking(sot_guid: string) {
+    this.subs.sink = this.bkDS.getBookingForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`booking: `, data);
+        this.bookingList = data;
+      }
+    });
+  }
+
+  loadDataHandling_scheduling(sot_guid: string) {
+    this.subs.sink = this.schedulingDS.getSchedulingForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`scheduling: `, data);
+        this.schedulingList = data;
+      }
+    });
+  }
+
+  loadDataHandling_surveyDetail(sot_guid: string) {
+    this.subs.sink = this.surveyDS.searchSurveyDetailForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`survey: `, data);
+        this.surveyList = data;
+      }
+    });
+  }
+
+  loadDataHandling_transfer(sot_guid: string) {
+    this.subs.sink = this.transferDS.getTransferBySotIDForMovement(sot_guid).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`transfer: `, data);
+        this.transferList = data;
+      }
+    });
+  }
+
+  loadDataHandling_tariffDepot() {
+    this.subs.sink = this.tdDS.SearchTariffDepot({}, null, 100).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`tariffDepot: `, data)
+        this.tariffDepotList = data;
+      }
+    });
   }
 }

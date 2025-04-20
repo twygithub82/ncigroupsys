@@ -385,24 +385,11 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     return Utility.convertEpochToDateStr(input);
   }
 
-  displayTankPurpose() {
-    let purposes: any[] = [];
-    if (this.storingOrderTankItem?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (this.storingOrderTankItem?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (this.storingOrderTankItem?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (this.storingOrderTankItem?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(this.storingOrderTankItem?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
+  displayTankPurpose(sot: StoringOrderTankItem) {
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
   }
 
-  getPurposeOptionDescription(codeValType: string): string | undefined {
+  getPurposeOptionDescription(codeValType?: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
   }
 
