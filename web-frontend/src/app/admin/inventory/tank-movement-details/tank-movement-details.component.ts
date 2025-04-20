@@ -123,7 +123,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'begin_dt',
     'complete_dt',
     'status_cv',
-    'bill'
+    'bill',
+    'actions'
   ];
 
   displayedColumnsResidue = [
@@ -430,6 +431,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
   }
 
   sot_guid: string | null | undefined;
@@ -1937,6 +1939,56 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   canOverwriteCleaningApproval() {
     const allowOverwriteStatus = ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS'];
     return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '');
+  }
+
+  canRollbackSteamingCompleted(row: SteamItem) {
+    return Utility.isTankInYard(this.sot?.tank_status_cv) && row.status_cv === 'COMPLETED';
+  }
+
+  onRollbackSteamingJobs(event: Event, row: SteamItem) {
+    this.preventDefault(event);
+
+    const distinctJobOrders = row.steaming_part?.filter((item, index, self) =>
+      index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+        (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+          t.job_order?.team?.description === item?.job_order?.team?.description))
+    )
+      .filter(item => item.job_order !== null && item.job_order !== undefined)
+      .map(item => new JobOrderGO(item.job_order!));
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      width: '500px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        messageText: `${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const steamingJobOrder = {
+          guid: row?.guid,
+          remarks: result.remarks,
+          sot_guid: row.sot_guid,
+          sot_status: this.sot?.tank_status_cv,
+          job_order: distinctJobOrders
+        }
+        console.log(steamingJobOrder);
+        this.steamDS.rollbackCompletedSteaming([steamingJobOrder]).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_steam(this.sot_guid!);
+        });
+      }
+    });
   }
 
   canRollbackResidueCompleted(row: ResidueItem) {
