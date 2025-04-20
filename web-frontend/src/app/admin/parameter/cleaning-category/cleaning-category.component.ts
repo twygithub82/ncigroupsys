@@ -113,6 +113,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     LAST_UPDATED: 'COMMON-FORM.LAST-UPDATED',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);

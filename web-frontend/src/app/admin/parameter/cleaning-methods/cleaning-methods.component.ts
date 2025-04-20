@@ -122,7 +122,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
     PROCESS_NAME: "COMMON-FORM.PROCESS-NAME",
-    PROCESS_DESCRIPTION: "COMMON-FORM.DESCRIPTION"
+    PROCESS_DESCRIPTION: "COMMON-FORM.DESCRIPTION",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);

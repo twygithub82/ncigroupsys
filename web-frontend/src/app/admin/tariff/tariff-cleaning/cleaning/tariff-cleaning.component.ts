@@ -124,7 +124,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     ARE_U_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     DELETE: 'COMMON-FORM.DELETE',
-
+    SEARCH: "COMMON-FORM.SEARCH"
   }
 
   searchForm?: UntypedFormGroup;

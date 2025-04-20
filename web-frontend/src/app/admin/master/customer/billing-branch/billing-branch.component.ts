@@ -235,6 +235,10 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     SAME: "COMMON-FORM.SAME",
     MAIN_CUSTOMER: "COMMON-FORM.MAIN-CUSTOMER",
     DEFAULT_PROFILE: 'COMMON-FORM.DEFAULT-PROFILE',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   constructor(
