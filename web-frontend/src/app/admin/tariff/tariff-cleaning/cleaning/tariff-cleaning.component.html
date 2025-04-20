@@ -216,7 +216,7 @@
               <mat-cell *matCellDef="let row; let i=index;"
                 [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 @if (!row.tank_count) {
-                <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
+                <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.tariff_cleaning)"
                   [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-danger">
                   <mat-icon>delete_forever</mat-icon>
                 </button>
@@ -224,7 +224,7 @@
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)" [style.cursor]="'pointer'"
+            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_cleaning)" [style.cursor]="'pointer'"
               matRipple>
               <!-- [routerLink]="['/admin/tariff/tariff-cleaning/edit', row.guid]" [style.cursor]="'pointer'" matRipple> -->
             </mat-row>
