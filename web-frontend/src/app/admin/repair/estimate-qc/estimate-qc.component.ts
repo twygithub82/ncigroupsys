@@ -537,15 +537,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
         translatedLangText: this.translatedLangText,
         last_qc_dt: this.repList?.[0]?.job_order?.qc_dt,
         last_remarks: this.repairItem?.remarks,
-        populateData: {
-          groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: this.subgroupNameCvList,
-          yesnoCvList: this.yesnoCvList,
-          partLocationCvList: this.partLocationCvList,
-          damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList,
-          unitTypeCvList: this.unitTypeCvList
-        }
       },
       direction: tempDirection
     });
@@ -597,15 +588,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
         translatedLangText: this.translatedLangText,
         last_qc_dt: this.repList?.[0]?.job_order?.qc_dt,
         last_remarks: this.repairItem?.remarks,
-        populateData: {
-          groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: this.subgroupNameCvList,
-          yesnoCvList: this.yesnoCvList,
-          partLocationCvList: this.partLocationCvList,
-          damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList,
-          unitTypeCvList: this.unitTypeCvList
-        }
       },
       direction: tempDirection
     });
