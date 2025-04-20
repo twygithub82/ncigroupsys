@@ -496,7 +496,7 @@ export const GET_RESIDUE_EST_JOB_ORDER = gql`
           tariff_residue_guid
           update_by
           update_dt
-         job_order {
+          job_order {
             team {
               create_by
               create_dt

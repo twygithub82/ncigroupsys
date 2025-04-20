@@ -432,7 +432,6 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
           if (this.residue_guid) {
-
             this.residueDS.getResidueIDForJobOrder(this.residue_guid, this.job_order_guid!).subscribe(residue => {
               if (residue?.length) {
                 this.residueItem = residue[0];
