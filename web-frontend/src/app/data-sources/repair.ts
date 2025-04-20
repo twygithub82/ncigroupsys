@@ -1531,7 +1531,6 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     super();
   }
 
-
   searchRepairWithBilling(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
 

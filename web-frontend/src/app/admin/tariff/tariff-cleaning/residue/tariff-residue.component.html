@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <div class="card">
+    <div class="card p-0">
       <mat-accordion>
         <mat-expansion-panel [disabled]="true" hideToggle>
           <mat-expansion-panel-header>
@@ -39,7 +39,8 @@
                     <input matInput formControlName="max_cost" type="number">
                   </mat-form-field>
                 </div> -->
-                <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                <div
+                  class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()">
                     <mat-icon>search</mat-icon>
                   </button>
@@ -65,58 +66,50 @@
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                  (change)="$event ? selection.toggle(row.tariff_residue) : null"
+                  [checked]="selection.isSelected(row.tariff_residue)" [ngClass]="'tbl-checkbox'">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
             <!-- ID Column -->
-            <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
-              <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="img">
-              <mat-header-cell mat-header-cell *matHeaderCellDef>{{PROCEDURE_NAME | translate}}</mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row"><span class="mobile-label">{{PROCEDURE_NAME | translate}}:</span>
-                <img [src]="row.img" />
-              </mat-cell>
-            </ng-container>
             <ng-container matColumnDef="fName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DESCRIPTION
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_residue)">
                 <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
-                  }}:</span>{{row.description}}</mat-cell>
+                  }}:</span>{{row.tariff_residue?.description}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.COST }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_residue)">
+                <span class="mobile-label">{{this.translatedLangText.COST
+                  }}:</span>{{parse2Decimal(row.tariff_residue?.cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="email">
               <mat-header-cell *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_residue)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
-                {{this.displayLastUpdated(row)}}</mat-cell>
+                {{this.displayLastUpdated(row.tariff_residue)}}</mat-cell>
             </ng-container>
-            <!-- actions -->
             <ng-container matColumnDef="actions">
               <mat-header-cell
                 [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row; let i=index;"
                 [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-               
-                <button mat-icon-button  (click)="$event.stopPropagation()" (click)="cancelItem(row)"
-                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                @if (!row.tank_count) {
+                <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.tariff_residue)"
+                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-danger">
                   <mat-icon>delete_forever</mat-icon>
                 </button>
+                }
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)" [style.cursor]="'pointer'"
-              matRipple>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_residue)"
+              [style.cursor]="'pointer'" matRipple>
             </mat-row>
           </table>
         </div>

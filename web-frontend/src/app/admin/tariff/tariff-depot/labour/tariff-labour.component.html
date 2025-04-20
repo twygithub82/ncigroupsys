@@ -1,69 +1,66 @@
-
-
-    <div class="row">
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <mat-accordion>
-            <mat-expansion-panel expanded="true" disabled="true">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                </mat-panel-title>
-                <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.EDIT">
-                    <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
-                      <mat-icon class="col-white">edit</mat-icon>
-                    </button>
-                  </div>
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
-                  <div class="row justify-content-center">
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-11 mb-1">
-                      <div class="card shadow">
-                        <div class="tbl-title" style="margin: 10px 20px;">
-                          <h4>{{ translatedLangText.COST_DETAILS}}</h4>
-                        </div>
-                        <div class="row justify-content-center">
-                          <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
-                            <mat-form-field class="example-full-width">
-                              <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                              <input matInput formControlName="description" type="text" readonly>
-                            </mat-form-field>
-                          </div>
-                        </div>
-                        <div class="row justify-content-center">
-                          <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
-                            <mat-form-field class="example-full-width">
-                              <mat-label>{{translatedLangText.COST}}</mat-label>
-                              <input matInput formControlName="cost" type="number" readonly>
-                            </mat-form-field>
-                          </div>
-                        </div>
-                        <div class="row justify-content-center">
-                          <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
-                            <mat-form-field class="example-full-width">
-                              <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                              <input matInput formControlName="remarks" type="text" readonly>
-                            </mat-form-field>
-                          </div>
-                        </div>
-                        <div class="row justify-content-center">
-                          <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
-                            <mat-form-field class="example-full-width">
-                              <mat-label>{{translatedLangText.LAST_UPDATED}}</mat-label>
-                              <input matInput formControlName="lastUpdated" type="text" readonly>
-                            </mat-form-field>
-                          </div>
-                        </div>
+<div class="row">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="card p-0">
+      <mat-accordion>
+        <mat-expansion-panel expanded="true" disabled="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+            </mat-panel-title>
+            <mat-panel-description>
+              <div class="m-l-" [matTooltip]="translatedLangText.EDIT">
+                <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                  <mat-icon class="col-white">edit</mat-icon>
+                </button>
+              </div>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
+              <div class="row justify-content-center">
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-11 mb-1">
+                  <div class="card shadow">
+                    <div class="tbl-title" style="margin: 10px 20px;">
+                      <h4>{{ translatedLangText.COST_DETAILS}}</h4>
+                    </div>
+                    <div class="row justify-content-center">
+                      <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
+                          <input matInput formControlName="description" type="text" readonly>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row justify-content-center">
+                      <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.COST}}</mat-label>
+                          <input matInput formControlName="cost" type="number" readonly>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row justify-content-center">
+                      <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                          <input matInput formControlName="remarks" type="text" readonly>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row justify-content-center">
+                      <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.LAST_UPDATED}}</mat-label>
+                          <input matInput formControlName="lastUpdated" type="text" readonly>
+                        </mat-form-field>
                       </div>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
-            </mat-expansion-panel>
-          </mat-accordion>
-        </div>
-      </div>
+            </form>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
     </div>
-  
+  </div>
+</div>

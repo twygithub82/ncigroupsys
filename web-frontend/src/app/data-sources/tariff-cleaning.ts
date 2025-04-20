@@ -214,8 +214,8 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD = gql`
         un_no
         update_by
         update_dt
-       cleaning_category {
-           cost
+        cleaning_category {
+          cost
           create_by
           create_dt
           delete_dt
@@ -226,27 +226,25 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD = gql`
           update_dt
         }
         cleaning_method {
-           create_by
-        create_dt
-        delete_dt
-        description
-        guid
-        name
-        update_by
-        update_dt
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          update_by
+          update_dt
         }
-        }
-      
+      }
       pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
       }
       totalCount
     }
   }
- 
 `;
 
 export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
@@ -297,6 +295,70 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
           sequence
           update_by
           update_dt
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION_WITH_COUNT = gql`
+  query queryTariffCleaningWithCount($where: TariffCleaningResultFilterInput, $order: [TariffCleaningResultSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    lastCargo: queryTariffCleaningWithCount(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        tank_count
+        tariff_cleaning {
+          alias
+          ban_type_cv
+          cargo
+          class_cv
+          cleaning_category_guid
+          cleaning_method_guid
+          create_by
+          create_dt
+          delete_dt
+          depot_note
+          description
+          flash_point
+          guid
+          hazard_level_cv
+          in_gate_alert
+          msds_guid
+          nature_cv
+          open_on_gate_cv
+          remarks
+          un_no
+          update_by
+          update_dt
+          cleaning_category {
+            cost
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            name
+            sequence
+            update_by
+            update_dt
+          }
+          cleaning_method {
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            name
+            sequence
+            update_by
+            update_dt
+          }
         }
       }
       pageInfo {
@@ -365,6 +427,34 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     return this.apollo
       .query<any>({
         query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(lastCargo.nodes);
+          this.pageInfo = lastCargo.pageInfo;
+          this.totalCount = lastCargo.totalCount;
+          return lastCargo.nodes;
+        })
+      );
+  }
+
+  SearchTariffResidueWithCount(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
+    this.loadingSubject.next(true);
+    if (!last)
+      if (!first)
+        first = 10;
+    return this.apollo
+      .query<any>({
+        query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION_WITH_COUNT,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

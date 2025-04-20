@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { CodeValuesDS } from './code-values';
+
 export class TariffRepairItem {
   public guid?: string;
   public alias?: string;
@@ -116,6 +116,47 @@ export const GET_TARIFF_REPAIR_QUERY = gql`
   }
 `;
 
+export const GET_TARIFF_REPAIR_QUERY_WITH_COUNT = gql`
+  query queryTariffRepairWithCount($where: TariffRepairResultFilterInput, $order:[TariffRepairResultSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    tariffRepairResult : queryTariffRepairWithCount(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        tank_count
+        tariff_repair {
+          alias
+          create_by
+          create_dt
+          delete_dt
+          dimension
+          group_name_cv
+          guid
+          height_diameter
+          height_diameter_unit_cv
+          labour_hour
+          length
+          length_unit_cv
+          material_cost
+          part_name
+          remarks
+          subgroup_name_cv
+          thickness
+          thickness_unit_cv
+          update_by
+          update_dt
+          width_diameter
+          width_diameter_unit_cv
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const GET_DISTINCT_PART_NAME = gql`
   query queryDistinctPartName($groupName: String, $subgroupName: String, $part_name: String) {
     resultList : queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName, part_name: $part_name)
@@ -167,6 +208,12 @@ export const UPDATE_TARIFF_REPAIRS = gql`
     subgroup_name_cv:$subgroup_name_cv,dimension:$dimension,height_diameter:$height_diameter,height_diameter_unit_cv:$height_diameter_unit_cv,width_diameter:$width_diameter,
     width_diameter_unit_cv:$width_diameter_unit_cv,labour_hour:$labour_hour,length:$length,length_unit_cv:$length_unit_cv,
     material_cost:$material_cost,part_name:$part_name,alias:$alias,thickness:$thickness,thickness_unit_cv:$thickness_unit_cv,remarks:$remarks)
+  }
+`;
+
+export const DELETE_TARIFF_REPAIR = gql`
+  mutation deleteTariffRepair($deleteTariffRepair_guids: [String!]!) {
+    deleteTariffRepair(deleteTariffRepair_guids: $deleteTariffRepair_guids)
   }
 `;
 
@@ -297,6 +344,34 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
   }
 
+  SearchTariffRepairWithCount(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffRepairItem[]> {
+    this.loadingSubject.next(true);
+    if (!last)
+      if (!first)
+        first = 10;
+    return this.apollo
+      .query<any>({
+        query: GET_TARIFF_REPAIR_QUERY_WITH_COUNT,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffRepairItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const tariffRepairResult = result.tariffRepairResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(tariffRepairResult.nodes);
+          this.pageInfo = tariffRepairResult.pageInfo;
+          this.totalCount = tariffRepairResult.totalCount;
+          return tariffRepairResult.nodes;
+        })
+      );
+  }
+
   addNewTariffRepair(td: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_TARIFF_REPAIR,
@@ -370,6 +445,20 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
         guid,
         material_cost_percentage,
         labour_hour_percentage
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  deleteTariffRepair(deleteTariffRepair_guids: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_TARIFF_REPAIR,
+      variables: {
+        deleteTariffRepair_guids
       }
     }).pipe(
       catchError((error: ApolloError) => {

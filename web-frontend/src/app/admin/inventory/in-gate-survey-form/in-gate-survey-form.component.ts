@@ -1577,7 +1577,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       });
       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
         if (result?.confirmed) {
-          //this.onPublish();
+          this.onPublish();
         }
       });
     } else {

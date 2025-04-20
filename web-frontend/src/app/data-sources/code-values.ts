@@ -92,8 +92,6 @@ export const GET_ALL_CLASS_NO = gql`
 }
 `;
 
-
-
 export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
   private itemsSubjects = new Map<string, BehaviorSubject<CodeValuesItem[]>>();
   private itemsSubject = new BehaviorSubject<CodeValuesItem[]>([]);
@@ -234,6 +232,4 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
     }
     return undefined;
   }
-
-
 }

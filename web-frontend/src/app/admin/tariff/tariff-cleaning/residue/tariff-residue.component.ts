@@ -105,9 +105,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   customerCodeControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
 
-  // ccDS: CustomerCompanyDS;
-  // clnCatDS:CleaningCategoryDS;
-  // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   tariffResidueDS: TariffResidueDS;
 
   tariffResidueItems: TariffResidueItem[] = [];
@@ -120,7 +117,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { description: "ASC" };
+  lastOrderBy: any = { tariff_residue: { description: "ASC" } };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -264,7 +261,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       description: [''],
       min_cost: [''],
       max_cost: ['']
-
     });
   }
 
@@ -299,15 +295,11 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-
         if (this.tariffResidueDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
 
         this.handleSaveSuccess(result);
-        //this.search();
-        // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-
       }
     });
   }
@@ -319,7 +311,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-
 
     // const dialogRef = this.dialog.open(FormDialogComponent, {
     //   data: {
@@ -414,16 +405,13 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
         //if(result.selectedValue>0)
         //{
         this.handleSaveSuccess(result);
-        //this.search();
         if (this.tariffResidueDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
         //}
       }
     });
-
   }
-
 
   deleteItem(row: any) {
     // this.id = row.id;
@@ -456,9 +444,11 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     //   }
     // });
   }
+
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -479,33 +469,51 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
     const where: any = {
       and: []
     };
-
-
-    if (this.pcForm!.value["description"]) {
-      // if(!where.and) where.and=[];
-      const description: Text = this.pcForm!.value["description"];
-      where.and.push({ description: { contains: description } });
+    const tariff_residue: any = {
+      tariff_residue: {
+        delete_dt: {
+          eq: null
+        }
+      }
     }
+    where.and.push(tariff_residue);
 
-    if (this.pcForm!.value["min_cost"]) {
-      // if(!where.and) where.and=[];
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.and.push({ cost: { gte: minCost } });
-    }
+    // if (this.pcForm!.value["description"]) {
+    //   // if(!where.and) where.and=[];
+    //   const description: Text = this.pcForm!.value["description"];
+    //   where.and.push({ description: { contains: description } });
+    // }
 
-    if (this.pcForm!.value["max_cost"]) {
-      //if(!where.and) where.and=[];
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.and.push({ cost: { ngte: maxCost } });
-    }
+    // if (this.pcForm!.value["min_cost"]) {
+    //   // if(!where.and) where.and=[];
+    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
+    //   where.and.push({ cost: { gte: minCost } });
+    // }
+
+    // if (this.pcForm!.value["max_cost"]) {
+    //   //if(!where.and) where.and=[];
+    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+    //   where.and.push({ cost: { ngte: maxCost } });
+    // }
     this.lastSearchCriteria = where;
-    this.subs.sink = this.tariffResidueDS.SearchTariffResidue(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    // this.subs.sink = this.tariffResidueDS.SearchTariffResidue(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    //   this.tariffResidueItems = data;
+    //   this.previous_endCursor = undefined;
+    //   this.endCursor = this.tariffResidueDS.pageInfo?.endCursor;
+    //   this.startCursor = this.tariffResidueDS.pageInfo?.startCursor;
+    //   this.hasNextPage = this.tariffResidueDS.pageInfo?.hasNextPage ?? false;
+    //   this.hasPreviousPage = this.tariffResidueDS.pageInfo?.hasPreviousPage ?? false;
+    //   this.pageIndex = 0;
+    //   this.paginator.pageIndex = 0;
+    //   this.selection.clear();
+    //   if (!this.hasPreviousPage)
+    //     this.previous_endCursor = undefined;
+    // });
+    this.subs.sink = this.tariffResidueDS.SearchTariffResidueWithCount(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.tariffResidueItems = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.tariffResidueDS.pageInfo?.endCursor;
@@ -519,6 +527,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
         this.previous_endCursor = undefined;
     });
   }
+
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
@@ -637,8 +646,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     //   }
 
     // });
-
-
   }
   showNotification(
     colorName: string,
@@ -717,47 +724,31 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.initTcForm();
-
-    //this.customerCodeControl.reset('');
-
   }
 
-  async cancelItem(row: TariffResidueItem) {
-    // this.id = row.id;
-
-    var cargoAssigned: boolean = await this.TariffResidueAssigned(row.guid!);
-    if (cargoAssigned) {
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
+  cancelItem(row: TariffResidueItem) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '500px',
+      data: {
+        headerText: this.translatedLangText.ARE_U_SURE_DELETE,
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.action == "confirmed") {
+        this.deleteTariffAndPackageResidue(row.guid!);
       }
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        width: '500px',
-        data: {
-          headerText: this.translatedLangText.WARNING,
-          messageText: [this.translatedLangText.TARIFF_RESIDUE_ASSIGNED, this.translatedLangText.ARE_U_SURE_DELETE],
-          act: "warn"
-        },
-        direction: tempDirection
-      });
-      dialogRef.afterClosed().subscribe(result => {
-
-        if (result.action == "confirmed") {
-          this.deleteTariffAndPackageResidue(row.guid!);
-        }
-
-      });
-    }
-    else {
-      this.deleteTariffAndPackageResidue(row.guid!);
-    }
-
+    });
   }
 
   deleteTariffAndPackageResidue(tariffResidueGuid: string) {
-
     this.tariffResidueDS.deleteTariffResidue([tariffResidueGuid]).subscribe(d => {
       let count = d.data.deleteTariffResidue;
       if (count > 0) {
@@ -789,5 +780,8 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
 }
 

@@ -334,26 +334,16 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   initializeValueChanges() {
-
-
-    //this.newDesc.valueChanges
-    // this.residueEstForm?.get('desc')?.valueChanges.pipe(
     this.newDesc.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-        // var desc_value = this.residueEstForm?.get("desc")?.value;
         var desc_value: any = this.newDesc.value;
         this.displayPackResidueList = this.packResidueList.filter(data => data.tariff_residue?.description && data.tariff_residue?.description.includes(desc_value!));
         if (!desc_value) this.displayPackResidueList = [...this.packResidueList];
         else if (typeof desc_value === 'object' && this.updateSelectedItem === undefined) {
           this.newUnitPrice.setValue(desc_value?.cost?.toFixed(2));
-          // this.residueEstForm?.patchValue({
-
-          //    unit_price: desc_value?.cost.toFixed(2)
-          // });
         }
-
       })
     ).subscribe();
   }

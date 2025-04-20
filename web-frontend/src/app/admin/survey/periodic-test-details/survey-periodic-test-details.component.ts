@@ -81,7 +81,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     'survey_dt',
     'status_cv',
     'remarks',
-    'action'
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY-DETAILS'

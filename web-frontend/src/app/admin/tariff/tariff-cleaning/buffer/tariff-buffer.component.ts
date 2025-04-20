@@ -72,14 +72,9 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
 export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    // 'select',
-    // 'img',
     'fName',
     'lName',
     'email',
-    //  'gender',
-    // 'bDate',
-    // 'mobile',
     'actions',
   ];
 
@@ -103,22 +98,15 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   customerCodeControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
 
-  // ccDS: CustomerCompanyDS;
-  // clnCatDS:CleaningCategoryDS;
-  // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   tariffBufferDS: TariffBufferDS;
   sotDS: StoringOrderTankDS;
 
   tariffBufferItems: TariffBufferItem[] = [];
 
-  // custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
-  // customer_companyList1?: CustomerCompanyItem[];
-  // cleaning_categoryList?: CleaningCategoryItem[];
-
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { buffer_type: "ASC" };
+  lastOrderBy: any = { tariff_buffer: { buffer_type: "ASC" } };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -199,13 +187,6 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
@@ -217,8 +198,6 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     TARIFF_BUFFER_ASSIGNED: 'COMMON-FORM.TARIFF-BUFFER-ASSIGNED',
     ARE_U_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
-
-
   }
 
   constructor(
@@ -275,15 +254,12 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
   }
   addCall() {
-    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
-    //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '600px',
       height: 'auto',
@@ -292,7 +268,6 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
         langText: this.langText,
         selectedItem: null
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -301,9 +276,6 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
         if (this.tariffBufferDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
-        //this.search();
-        // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-
       }
     });
   }
@@ -374,19 +346,13 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-        //if(result.selectedValue>0)
-        //{
         this.handleSaveSuccess(result);
-        //this.search();
         if (this.tariffBufferDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         }
-        //}
       }
     });
-
   }
-
 
   deleteItem(row: any) {
     // this.id = row.id;
@@ -442,8 +408,6 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-
-
   search() {
     const where: any = {};
 
@@ -465,7 +429,20 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    // this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    //   this.tariffBufferItems = data;
+    //   this.previous_endCursor = undefined;
+    //   this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
+    //   this.startCursor = this.tariffBufferDS.pageInfo?.startCursor;
+    //   this.hasNextPage = this.tariffBufferDS.pageInfo?.hasNextPage ?? false;
+    //   this.hasPreviousPage = this.tariffBufferDS.pageInfo?.hasPreviousPage ?? false;
+    //   this.pageIndex = 0;
+    //   this.paginator.pageIndex = 0;
+    //   this.selection.clear();
+    //   if (!this.hasPreviousPage)
+    //     this.previous_endCursor = undefined;
+    // });
+    this.subs.sink = this.tariffBufferDS.SearchTariffBufferWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.tariffBufferItems = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
@@ -479,13 +456,13 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
         this.previous_endCursor = undefined;
     });
   }
+
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
       });
     }
   }
@@ -534,7 +511,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where, order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.tariffBufferDS.SearchTariffBufferWithCount(where, order, first, after, last, before).subscribe(data => {
       this.tariffBufferItems = data;
       this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
       this.startCursor = this.tariffBufferDS.pageInfo?.startCursor;
@@ -566,39 +543,8 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     this.searchCriteriaService.setCriteria(sCriteria);
   }
 
-  removeSelectedRows() {
-    // const totalSelect = this.selection.selected.length;
-    // this.selection.selected.forEach((item) => {
-    //   const index: number = this.dataSource.renderedData.findIndex(
-    //     (d) => d === item
-    //   );
-    //   // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
-    //   this.exampleDatabase?.dataChange.value.splice(index, 1);
-    //   this.refreshTable();
-    //   this.selection = new SelectionModel<AdvanceTable>(true, []);
-    // });
-    // this.showNotification(
-    //   'snackbar-danger',
-    //   totalSelect + ' Record Delete Successfully...!!!',
-    //   'bottom',
-    //   'center'
-    // );
-  }
   public loadData() {
     this.search();
-    // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-    //  // this.customer_companyList1 = data
-    // });
-
-    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-    //   if(this.clnCatDS.totalCount>0)
-    //   {
-    //     this.cleaning_categoryList=data;
-    //   }
-
-    // });
-
-
   }
   showNotification(
     colorName: string,
@@ -677,49 +623,33 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.initTcForm();
-
     this.customerCodeControl.reset('');
-
   }
 
-
-
-  async cancelItem(row: TariffBufferItem) {
-    // this.id = row.id;
-
-    var cargoAssigned: boolean = await this.TariffBufferAssigned(row.guid!);
-    if (cargoAssigned) {
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
+  cancelItem(event: Event, row: TariffBufferItem) {
+    event.stopPropagation();
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '500px',
+      data: {
+        headerText: this.translatedLangText.ARE_U_SURE_DELETE,
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.action == "confirmed") {
+        this.deleteTariffAndPackageBuffer(row.guid!);
       }
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        width: '500px',
-        data: {
-          headerText: this.translatedLangText.WARNING,
-          messageText: [this.translatedLangText.TARIFF_BUFFER_ASSIGNED, this.translatedLangText.ARE_U_SURE_DELETE],
-          act: "warn"
-        },
-        direction: tempDirection
-      });
-      dialogRef.afterClosed().subscribe(result => {
-
-        if (result.action == "confirmed") {
-          this.deleteTariffAndPackageBuffer(row.guid!);
-        }
-
-      });
-    }
-    else {
-      this.deleteTariffAndPackageBuffer(row.guid!);
-    }
-
+    });
   }
 
   deleteTariffAndPackageBuffer(tariffBufferGuid: string) {
-
     this.tariffBufferDS.deleteTariffBuffer([tariffBufferGuid]).subscribe(d => {
       let count = d.data.deleteTariffBuffer;
       if (count > 0) {
@@ -730,26 +660,4 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       }
     });
   }
-
-  async TariffBufferAssigned(tariffBufferGuid: string): Promise<boolean> {
-    let retval: boolean = false;
-    var where: any = {};
-
-    where = {
-      and: [{ in_gate: { some: { in_gate_survey: { tank_comp_guid: { eq: tariffBufferGuid } } } } },
-      { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
-    };
-
-    try {
-      // Use firstValueFrom to convert Observable to Promise
-      const result = await firstValueFrom(this.sotDS.searchStoringOrderTanks(where, {}, 1));
-      retval = (result.length > 0)
-    } catch (error) {
-      console.error("Error fetching tariff buffer guid:", error);
-    }
-
-    return retval;
-  }
-
-
 }

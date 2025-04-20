@@ -1347,6 +1347,60 @@
                                               class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
                                           </mat-cell>
                                         </ng-container>
+                                        <!-- <ng-container matColumnDef="actions">
+                                          <mat-header-cell
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                                            *matHeaderCellDef>
+                                          </mat-header-cell>
+                                          <mat-cell *matCellDef="let row; let i=index;"
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
+                                            @if (hasMenuItems(row)) {
+                                            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                                              <mat-icon>more_vert</mat-icon>
+                                            </button>
+                                            <mat-menu #menu="matMenu">
+                                              @if (soDS.canAdd(storingOrderItem)) {
+                                              <button mat-menu-item (click)="handleDuplicateRow($event, row)">
+                                                <mat-icon>add_to_photos</mat-icon>
+                                                <span>{{translatedLangText.DUPLICATE}}</span>
+                                              </button>
+                                              }
+                                              @if (sotDS.canAddRemove(row)) {
+                                              <button mat-menu-item (click)="handleDelete($event, row, i)">
+                                                <mat-icon>delete_forever</mat-icon>
+                                                <span>{{translatedLangText.DELETE}}</span>
+                                              </button>
+                                              }
+                                              @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
+                                              <button mat-menu-item (click)="cancelItem($event, row)">
+                                                <mat-icon>cancel</mat-icon>
+                                                <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                                                  ""}}{{translatedLangText.CANCEL}}</span>
+                                              </button>
+                                              }
+                                              @if (!row.actions.includes('rollback') && sotDS.canRollbackStatus(row)) {
+                                              <button mat-menu-item (click)="rollbackItem($event, row)">
+                                                <mat-icon>undo</mat-icon>
+                                                <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                                                  ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
+                                              </button>
+                                              }
+                                              @if (row.actions.includes('cancel')) {
+                                              <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
+                                                <mat-icon>undo</mat-icon>
+                                                <span>{{translatedLangText.UNDO}} {{translatedLangText.CANCEL}}</span>
+                                              </button>
+                                              }
+                                              @if (row.actions.includes('rollback')) {
+                                              <button mat-menu-item (click)="undoAction($event, row, 'rollback')">
+                                                <mat-icon>undo</mat-icon>
+                                                <span>{{translatedLangText.UNDO}} {{translatedLangText.ROLLBACK_STATUS}}</span>
+                                              </button>
+                                              }
+                                            </mat-menu>
+                                            }
+                                          </mat-cell>
+                                        </ng-container> -->
                                         <mat-header-row *matHeaderRowDef="displayedColumnsRepair"></mat-header-row>
                                         <mat-row *matRowDef="let row; columns: displayedColumnsRepair;"
                                           (click)="repairDialog($event, row)" [style.cursor]="'pointer'" matRipple>
