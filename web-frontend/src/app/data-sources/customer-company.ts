@@ -191,6 +191,7 @@ export const SEARCH_COMPANY_QUERY = gql`
     }
   }
 `;
+
 export const SEARCH_COMPANY_QUERY_WITH_SO_SOT = gql`
   query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
     companyList: queryCustomerCompany(where: $where, order: $order,first: $first, after: $after, last: $last, before: $before) {
@@ -272,6 +273,94 @@ export const SEARCH_COMPANY_QUERY_WITH_SO_SOT = gql`
     }
   }
 `;
+
+export const SEARCH_CUSTOMER_COMPANY_WITH_COUNT = gql`
+  query queryCustomerCompanyWithCount($where: CustomerCompanyResultFilterInput, $order: [CustomerCompanyResultSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    companyList: queryCustomerCompanyWithCount(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        customer_company {
+          address_line1
+          address_line2
+          agreement_due_dt
+          city
+          code
+          country
+          create_by
+          create_dt
+          delete_dt
+          effective_dt
+          def_tank_guid
+          email
+          guid
+          name
+          country_code
+          phone
+          postal
+          type_cv
+          update_by
+          update_dt
+          website
+          main_customer_guid
+          remarks
+          cc_contact_person {
+            create_by
+            create_dt
+            customer_guid
+            delete_dt
+            department
+            did
+            email
+            email_alert
+            guid
+            job_title
+            name
+            phone
+            title_cv
+            update_by
+            update_dt
+          }
+          currency_guid
+          currency {
+            create_by
+            create_dt
+            currency_code
+            currency_name
+            delete_dt
+            guid
+            is_active
+            rate
+            sequence
+            update_by
+            update_dt
+          }
+          storing_orders{
+            guid
+            so_no
+          }
+          storing_order_tank{
+            guid
+            tank_no
+          }
+          tank {
+            guid
+            unit_type
+          }
+        }
+        so_count
+        sot_count
+        tank_info_count
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const GET_COMPANY_AND_BRANCH = gql`
   query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!]) {
     resultList: queryCustomerCompany(where: $where, order: $order) {
@@ -396,6 +485,36 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     return this.apollo
       .query<any>({
         query: SEARCH_COMPANY_QUERY_WITH_SO_SOT,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CustomerCompanyItem[]); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          const list = result.companyList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(list.nodes);
+          this.pageInfo = list.pageInfo;
+          this.totalCount = list.totalCount;
+          return list.nodes;
+        })
+      );
+  }
+
+  searchCustomerCompanyWithCount(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
+    this.loadingSubject.next(true);
+    if (!last)
+      if (!first)
+        first = 10;
+    return this.apollo
+      .query<any>({
+        query: SEARCH_CUSTOMER_COMPANY_WITH_COUNT,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
