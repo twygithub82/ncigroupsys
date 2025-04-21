@@ -21,6 +21,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
+import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CleaningStepItem } from 'app/data-sources/cleaning-steps';
@@ -96,6 +97,7 @@ export class FormDialogComponent {
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
+  cleanCategoryList?:CleaningCategoryItem[];
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
@@ -104,6 +106,7 @@ export class FormDialogComponent {
   //  catDS :CleaningCategoryDS;
   mthDS: CleaningMethodDS;
   fmlDS: CleaningFormulaDS;
+  catDS: CleaningCategoryDS;
   cleanFormulaList: CleaningFormulaItem[] = [];
   updatedMethodFormulaLinkList: CleaningStepItem[] = [];
   existingMethodFormulaLinkList: CleaningStepItem[] = [];
@@ -201,6 +204,7 @@ export class FormDialogComponent {
     CLEANING_STEPS: "COMMON-FORM.CLEANING-STEPS",
     NO_CLEANING_STEPS: "COMMON-FORM.NO-CLEANING-STEPS",
     PROCESS_NAME: "COMMON-FORM.PROCESS-NAME",
+    CATEGORY:"COMMON-FORM.CATEGORY"
   };
 
 
@@ -218,15 +222,34 @@ export class FormDialogComponent {
   ) {
     // Set the defaults
 
+    
     this.selectedItem = data.selectedItem;
     this.updatedMethodFormulaLinkList = JSON.parse(JSON.stringify(this.selectedItem.cleaning_method_formula || []));
-    this.pcForm = this.createCleaningCategory();
     this.mthDS = new CleaningMethodDS(this.apollo);
     this.fmlDS = new CleaningFormulaDS(this.apollo);
+    this.catDS=new CleaningCategoryDS(this.apollo);
     this.action = data.action!;
+    this.pcForm = this.createCleaningCategory();
     this.translateLangText();
+    this.loadData();
     this.initializeValueChanges();
 
+  }
+
+  loadData()
+  {
+     const where:any={ or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]};
+
+     this.catDS.search(where,{ sequence: 'ASC'},100).subscribe(data=>{
+      this.cleanCategoryList=data;
+
+      if(this.selectedItem.cleaning_category)
+        {
+          this.pcForm.patchValue({
+            category:data.find(c=>c.guid==this.selectedItem.cleaning_category?.guid)
+          });
+        }
+     });
   }
 
   initializeValueChanges() {
@@ -261,7 +284,8 @@ export class FormDialogComponent {
       description: this.selectedItem.description,
       selected_formulas: this.selectedItem,
       formula: this.cleanFormulaControl,
-      remarks: ['']
+      remarks: [''],
+      category:['']
     });
   }
 
@@ -308,9 +332,14 @@ export class FormDialogComponent {
     if (!this.pcForm?.valid) return;
 
     let cc: CleaningMethodItem = new CleaningMethodItem(this.selectedItem);
+    delete cc.cleaning_category;
     // tc.guid='';
     cc.name = this.pcForm.value['name'];
     cc.description = this.pcForm.value['description'];
+    if( this.pcForm.value['category'])
+    {
+      cc.category_guid= this.pcForm.value['category'].guid;
+    }
 
 
     const where: any = {};

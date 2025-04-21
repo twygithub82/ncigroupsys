@@ -36,6 +36,21 @@
                 <input matInput formControlName="description" type="text">
               </mat-form-field>
             </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{ translatedLangText.CATEGORY }}</mat-label>
+                <mat-select formControlName="category" required>
+                  <mat-option *ngFor="let category of cleanCategoryList" [value]="category">
+                    {{ category.description }}
+                  </mat-option>
+                </mat-select>
+                @if (pcForm.get('category')?.hasError('required')) {
+                  <mat-error>
+                    {{translatedLangText.CATEGORY}} {{translatedLangText.CARGO_REQUIRED}}
+                  </mat-error>
+                  }
+              </mat-form-field>
+            </div>
             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.CLEANING_FORMULA}}</mat-label>

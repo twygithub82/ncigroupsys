@@ -9,6 +9,7 @@ import { CLEANING_METHOD_FRAGMENT } from './fragments';
 import { BaseDataSource } from './base-ds';
 import { CleaningFormulaItem } from './cleaning-formulas';
 import { CleaningStepItem } from './cleaning-steps';
+import { CleaningCategoryItem } from './cleaning-category';
 
 
 export const ADD_CLEANING_METHOD = gql`
@@ -27,6 +28,7 @@ export const GET_CLEANING_METHOD_QUERY = gql`
   query queryCleaningMethod($where:cleaning_methodFilterInput , $order:[cleaning_methodSortInput!],$first:Int) 
   {queryCleaningMethod(where: $where , order: $order,first:$first) {
     nodes {
+       category_guid
        create_by
         create_dt
         delete_dt
@@ -59,6 +61,18 @@ export const SEARCH_CLEANING_METHOD_QUERY = gql`
         name
         update_by
         update_dt
+        cleaning_category {
+          cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          sequence
+          update_by
+          update_dt
+        }
         cleaning_method_formula (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]})
         {
           delete_dt
@@ -129,6 +143,8 @@ export class CleaningMethodItem {
   public update_by?: string;
   public delete_dt?: number;
   public cleaning_method_formula?: CleaningStepItem[];
+  public category_guid?:string;
+  public cleaning_category?:CleaningCategoryItem;
 
   constructor(item: Partial<CleaningMethodItem> = {}) {
     this.guid = item.guid;
@@ -141,6 +157,8 @@ export class CleaningMethodItem {
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
     this.cleaning_method_formula = item.cleaning_method_formula;
+    this.category_guid=item.category_guid;
+    this.cleaning_category=item.cleaning_category;
   }
 }
 

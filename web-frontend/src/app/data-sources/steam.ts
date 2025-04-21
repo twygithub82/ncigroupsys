@@ -916,7 +916,11 @@ export const ROLLBACK_STEAM_EST = gql`
     rollbackSteaming(steaming: $steam)
   }
 `
-
+export const ROLLBACK_ASSIGNED_STEAM= gql`
+  mutation rollbackAssignedSteaming($steamingGuid: [String!]) {
+    rollbackAssignedSteaming(steamingGuid: $steamingGuid)
+  }
+`
 
 export const APPROVE_STEAM_EST = gql`
   mutation ApproveSteaming($steam: steamingInput!) {
@@ -1130,6 +1134,15 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     });
   }
 
+  rollbackAssignedSteam(steam: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_ASSIGNED_STEAM,
+      variables: {
+        steam
+      }
+    });
+  }
+
 
   recordSteamingTemp(steamingTemp: any, action: string, requiredTemp: number): Observable<any> {
     return this.apollo.mutate({
@@ -1172,7 +1185,10 @@ export class SteamDS extends BaseDataSource<SteamItem> {
 
   canSave(re: SteamItem): boolean {
     const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
-    return validStatus.includes(re?.status_cv!);
+    var allowSave : boolean=validStatus.includes(re?.status_cv!);
+  
+    return allowSave;
+    
   }
 
   canApprove(re: SteamItem): boolean {

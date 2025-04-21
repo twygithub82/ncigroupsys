@@ -44,6 +44,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
   selector: 'app-job-order',
@@ -87,7 +88,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     'estimate_no',
     'approved_dt',
     'status_cv',
-    'actions'
+    'actions',
+    'unassign'
   ];
 
   displayedColumnsJobOrder = [
@@ -159,6 +161,9 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     STEAM_HEAT_TYPE: "COMMON-FORM.STEAM-HEAT-TYPE",
     REPAIR: 'COMMON-FORM.REPAIR',
     SEARCH: 'COMMON-FORM.SEARCH',
+    UNASSIGNED:'COMMON-FORM.UNASSIGN',
+    CONFIRM_TEAM_UNASSIGN:"COMMON-FORM.CONFIRM-TEAM-UNASSIGN",
+    ROLLBACK_SUCCESS:"COMMON-FORM.ROLLBACK-SUCCESS"
   }
 
   filterSteamForm?: UntypedFormGroup;
@@ -768,4 +773,53 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   onTabChange(index: number) {
     this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
   }
+
+   ConfirmUnassignTeam(event: Event, row:SteamItem)
+    {
+      this.stopEventTrigger(event);
+      this.ConfirmUnassignDialog(event,row);
+    }
+  
+    ConfirmUnassignDialog(event: Event, row:SteamItem) {
+      event.preventDefault(); // Prevents the form submission
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+          action: 'new',
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result.action === 'confirmed') {
+          this.UnassignEstimate(row);
+        }
+      });
+    }
+  
+    UnassignEstimate( row:SteamItem)
+    {
+      this.subs.sink = this.steamDs.rollbackAssignedSteam([row.guid!])
+      .subscribe((result:any) => {
+        if(result.data.rollbackAssignedResidue)
+        {
+          this.handleRollbackSuccess(result.data.rollbackAssignedResidue);
+        }
+      });
+  
+    }
+  
+     handleRollbackSuccess(count: any) {
+        if ((count ?? 0) > 0) {
+          let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+          ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+          this.refreshTable();
+        }
+      }
 }

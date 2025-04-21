@@ -38,7 +38,7 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderDS } from 'app/data-sources/storing-order';
 import { ClassNoItem, TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject,startWith, debounceTime, firstValueFrom, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { MessageDialogComponent } from '@shared/components/message-dialog/message-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
@@ -268,6 +268,32 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   }
 
+   initializeValueChanges() {
+      this.tcForm!.get('method')!.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        tap(value => {
+          var searchCriteria = '';
+          if (typeof value === 'string') {
+            searchCriteria = value;
+          } else {
+            searchCriteria = value.description;
+          }
+          if(searchCriteria==='') return;
+          var mth =  this.cMethodList.find(m=>m.guid===searchCriteria);
+
+          this.tcForm?.patchValue({
+            category:mth?.category_guid
+          });
+          // this.fmlDS.search({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
+          //   this.cleanFormulaList = data
+          //   this.updateValidators(this.cleanFormulaControl, this.cleanFormulaList);
+          // });
+        })
+      ).subscribe();
+  
+    }
+  
 
   initTcForm() {
     this.tcForm = this.fb.group({
@@ -392,7 +418,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
             this.tariffCleaningItem = data[0];
             this.populatetcForm(this.tariffCleaningItem);
             this.QueryAllFilesInGroup(this.tariffCleaningItem.guid!);
-
+            this.initializeValueChanges();
             this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
 
               if (value && !value.startsWith(this.prefix) && value != '-') {
@@ -411,8 +437,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         });
 
       }
-
-
+    }
+    else
+    {
+      this.initializeValueChanges();
     }
 
 
