@@ -356,15 +356,15 @@
                     }
                     @if (!(igDS.loading$ | async) && !(ogDS.loading$ | async)) {
                     <mat-card-content>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                      <div class="row justify-content-center">
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                           <table class="table table-striped table-hover m-b-0">
                             <thead>
                               <tr>
-                                <th class="d-none d-md-table-cell font-bold table-col-2">
+                                <th class="d-none d-md-table-cell font-bold table-col-4">
                                   {{translatedLangText.DESCRIPTION}}</th>
-                                <th class="font-bold table-col-5">{{translatedLangText.IN_GATE}}</th>
-                                <th class="font-bold table-col-5">{{translatedLangText.OUT_GATE}}</th>
+                                <th class="font-bold table-col-4">{{translatedLangText.IN_GATE}}</th>
+                                <th class="font-bold table-col-4">{{translatedLangText.OUT_GATE}}</th>
                               </tr>
                             </thead>
                             <tbody>

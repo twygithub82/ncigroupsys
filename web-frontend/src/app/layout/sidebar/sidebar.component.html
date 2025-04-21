@@ -35,7 +35,8 @@
             <div class="header">{{sidebarItem.title | translate}}</div>
             }
             @if (!sidebarItem.groupTitle;) {
-            <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null" [ngClass]="[sidebarItem.class]"
+            <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
+              [queryParams]="sidebarItem.queryParams || {}" [ngClass]="[sidebarItem.class]"
               (click)="callToggleMenu($event, sidebarItem.submenu.length)" class="menu-top">
               @if (sidebarItem.iconType == 'feather') {
               <i-feather [name]="sidebarItem.icon" class="sidebarIcon"></i-feather>
@@ -59,6 +60,7 @@
               @for (sidebarSubItem1 of sidebarItem.submenu; track sidebarSubItem1) {
               <li [routerLinkActive]="sidebarSubItem1.submenu.length > 0 ? '' : 'active'">
                 <a [routerLink]="sidebarSubItem1.submenu.length > 0 ? null : [sidebarSubItem1.path]"
+                  [queryParams]="sidebarSubItem1.queryParams || {}"
                   (click)="callToggleMenu($event,sidebarSubItem1.submenu.length)" [ngClass]="[sidebarSubItem1.class]">
                   {{sidebarSubItem1.title | translate}}
                 </a>
@@ -68,6 +70,7 @@
                   @for (sidebarSubItem2 of sidebarSubItem1.submenu; track sidebarSubItem2) {
                   <li [routerLinkActive]="sidebarSubItem2.submenu.length > 0 ? '' : 'active'">
                     <a [routerLink]="sidebarSubItem2.submenu.length > 0 ? null : [sidebarSubItem2.path]"
+                      [queryParams]="sidebarSubItem2.queryParams || {}"
                       (click)="callToggleMenu($event,sidebarSubItem2.submenu.length)"
                       [ngClass]="[sidebarSubItem2.class]">
                       {{sidebarSubItem2.title | translate}}
@@ -78,6 +81,7 @@
                       @for (sidebarSubItem3 of sidebarSubItem2.submenu; track sidebarSubItem3) {
                       <li [routerLinkActive]="sidebarSubItem3.submenu.length > 0 ? '' : 'active'">
                         <a [routerLink]="sidebarSubItem3.submenu.length > 0 ? null : [sidebarSubItem3.path]"
+                          [queryParams]="sidebarSubItem3.queryParams || {}"
                           (click)="callToggleMenu($event,sidebarSubItem3.submenu.length)"
                           [ngClass]="[sidebarSubItem3.class]">
                           {{sidebarSubItem3.title | translate}}

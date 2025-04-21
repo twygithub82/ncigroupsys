@@ -14,11 +14,13 @@
                 </mat-panel-title>
                 <mat-panel-description>
                   <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                    <button mat-mini-fab color="primary" (click)="addNew()" (click)="$event.stopPropagation()" matTooltip={{translatedLangText.ADD}}>
+                    <button mat-mini-fab color="primary" (click)="addNew()" (click)="$event.stopPropagation()"
+                      matTooltip={{translatedLangText.ADD}}>
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
-                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT" matTooltip={{translatedLangText.EXPORT}}>
+                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
+                    matTooltip={{translatedLangText.EXPORT}}>
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
                   </div>
@@ -45,7 +47,8 @@
                       <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                         <mat-icon>search</mat-icon>
                       </button>
-                      <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                      <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                        matTooltip={{translatedLangText.CLEAR_ALL}}>
                         <mat-icon>clear_all</mat-icon>
                       </button>
                     </div>
@@ -58,32 +61,15 @@
             <div class="responsive_table">
               <table mat-table [dataSource]="unitTypeItems" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                <!-- Checkbox Column -->
-                <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
-                    <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-cell>
-                </ng-container>
-
                 <ng-container matColumnDef="unittype">
-                  <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.UNIT_TYPE}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.UNIT_TYPE}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.UNIT_TYPE
                       }}:</span>{{row.unit_type}}</mat-cell>
                 </ng-container>
-
                 <ng-container matColumnDef="gatein">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
-                    mat-sort-header>{{this.translatedLangText.GATE_IN}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.GATE_IN}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.GATE_IN}}:</span>
@@ -96,8 +82,8 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="gateout">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
-                    mat-sort-header>{{this.translatedLangText.GATE_OUT}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.GATE_OUT}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.GATE_OUT}}:</span>
@@ -110,8 +96,8 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lifton">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
-                    mat-sort-header>{{this.translatedLangText.LIFT_ON}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LIFT_ON}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.LIFT_ON}}:</span>
@@ -124,8 +110,8 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="liftoff">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
-                    mat-sort-header>{{this.translatedLangText.LIFT_OFF}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LIFT_OFF}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.LIFT_OFF}}:</span>
@@ -138,8 +124,8 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="preinspect">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
-                    mat-sort-header>{{this.translatedLangText.PREINSPECT}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.PREINSPECT}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.PREINSPECT}}:</span>
@@ -152,8 +138,8 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="isoformat">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'d-flex justify-content-center'"
-                    mat-sort-header>{{this.translatedLangText.ISO_FORMAT}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.ISO_FORMAT}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.ISO_FORMAT}}:</span>
@@ -166,8 +152,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lastUpdate">
-                  <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED_DT}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>
