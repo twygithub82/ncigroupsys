@@ -312,16 +312,13 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '700px',
+      width: '70vw',
+      height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
         selectedItems: this.selection.selected
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -343,17 +340,13 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-
-      width: '700px',
+      width: '70vw',
+      height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
         selectedItems: rows
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {

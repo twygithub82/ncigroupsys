@@ -21,7 +21,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-company-category';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -33,12 +33,8 @@ import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageResidueItem[];
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 
@@ -75,15 +71,10 @@ export interface DialogData {
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'fName',
     'lName',
     'email',
     'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
   ];
 
   action: string;
@@ -93,6 +84,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   packageResidueItems?: PackageResidueItem[] = [];
   packageResidueDS?: PackageResidueDS;
   CodeValuesDS?: CodeValuesDS;
+  ccDS?: CustomerCompanyDS;
 
   storageCalCvList: CodeValuesItem[] = [];
 
@@ -186,13 +178,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     COST: "COMMON-FORM.COST",
-
   };
-
-
   selectedItems: PackageResidueItem[];
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -208,6 +195,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.pcForm = this.createPackageResidue();
     this.packageResidueDS = new PackageResidueDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();

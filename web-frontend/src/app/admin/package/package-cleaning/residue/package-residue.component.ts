@@ -315,8 +315,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '720px',
-      height: 'auto',
+      width: '70vw',
+      height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -350,9 +350,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageResidueItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-
-      width: '720px',
-      height: 'auto',
+      width: '70vw',
+      height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
