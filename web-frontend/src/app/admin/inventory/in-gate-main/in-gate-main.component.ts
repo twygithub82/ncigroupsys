@@ -65,7 +65,7 @@ import { InGateComponent } from './in-gate/in-gate.component';
 export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: 0 } }
   ]
 
   translatedLangText: any = {};

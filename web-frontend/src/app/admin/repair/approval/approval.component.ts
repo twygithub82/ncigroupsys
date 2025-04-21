@@ -142,7 +142,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
-    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
+    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
 
@@ -644,8 +645,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       eir_dt_end: '',
       eir_no: '',
       repair_option_cv: '',
-      est_dt_start: '',
-      est_dt_end: '',
+      est_dt: '',
       approval_dt_start: '',
       approval_dt_end: '',
       est_status_cv: ''

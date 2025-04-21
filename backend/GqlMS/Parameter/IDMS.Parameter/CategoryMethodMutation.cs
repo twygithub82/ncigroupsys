@@ -28,6 +28,7 @@ namespace IDMS.Models.Parameter.GqlTypes
 
                 var newCleanMthd = new cleaning_method();
                 newCleanMthd.guid = NewCleanMethod.guid;
+                newCleanMthd.category_guid = NewCleanMethod.category_guid;
                 newCleanMthd.description = NewCleanMethod.description;
                 newCleanMthd.name = NewCleanMethod.name;
                 newCleanMthd.sequence = maxSequence ?? 0 + 1;
@@ -83,6 +84,7 @@ namespace IDMS.Models.Parameter.GqlTypes
 
                 dbCleanMethod.description = UpdateCleanMethod.description;
                 dbCleanMethod.name = UpdateCleanMethod.name;
+                dbCleanMethod.category_guid = UpdateCleanMethod.category_guid;
                 dbCleanMethod.update_by = user;
                 dbCleanMethod.update_dt = currentDateTime;
 

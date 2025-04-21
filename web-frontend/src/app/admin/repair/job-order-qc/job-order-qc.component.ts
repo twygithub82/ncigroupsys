@@ -30,7 +30,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
@@ -122,6 +122,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
     COMPLETE_DATE: 'COMMON-FORM.COMPLETE-DATE',
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -175,7 +176,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
+    this.customerCodeControl = new UntypedFormControl('', [AutocompleteSelectionValidator(this.customer_companyList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -252,6 +253,13 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       where.or = [
         { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } },
         { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } } }
+      ];
+    }
+
+    if (this.customerCodeControl?.value) {
+      const customer = this.customerCodeControl?.value;
+      where.or = [
+        { storing_order_tank: { storing_order: { customer_company_guid: { contains: customer.guid } } } }
       ];
     }
 
@@ -345,44 +353,45 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.filterJobOrderForm?.patchValue({
       filterJobOrder: '',
       jobStatusCv: ['COMPLETED'],
+      filterRepair:'',
       repairOptionCv: [''],
       complete_dt_start: '',
       complete_dt_end: ''
     });
     this.customerCodeControl.reset();
   }
-  
-    onPageEvent(event: PageEvent) {
-      const { pageIndex, pageSize } = event;
-      let first: number | undefined = undefined;
-      let after: string | undefined = undefined;
-      let last: number | undefined = undefined;
-      let before: string | undefined = undefined;
-  
-      // Check if the page size has changed
-      if (this.pageSizeJobOrder !== pageSize) {
-        // Reset pagination if page size has changed
-        this.pageIndexJobOrder = 0;
+
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSizeJobOrder !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndexJobOrder = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
+        // Navigate forward
+        this.lastCursorDirection = 'forward';
         first = pageSize;
-        after = undefined;
-        last = undefined;
-        before = undefined;
-      } else {
-        if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
-          // Navigate forward
-          this.lastCursorDirection = 'forward';
-          first = pageSize;
-          after = this.endCursorJobOrder;
-        } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
-          // Navigate backward
-          this.lastCursorDirection = 'backward';
-          last = pageSize;
-          before = this.startCursorJobOrder;
-        }
+        after = this.endCursorJobOrder;
+      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
+        // Navigate backward
+        this.lastCursorDirection = 'backward';
+        last = pageSize;
+        before = this.startCursorJobOrder;
       }
-  
-      this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
     }
+
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
+  }
 
   triggerCurrentSearch() {
     let first: number | undefined = undefined;
@@ -417,7 +426,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   initializeValueChanges() {
-    this.filterJobOrderForm!.get('customer')!.valueChanges.pipe(
+    this.customerCodeControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -429,17 +438,10 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
+          this.updateValidators(this.customer_companyList);
         });
       })
     ).subscribe();
-
-    // this.filterJobOrderForm?.get('jobStatusCv')?.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     this.onFilter();
-    //   })
-    // ).subscribe();
   }
 
   translateLangText() {
@@ -499,6 +501,12 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
 
   isStarted(jobOrderItem: JobOrderItem | undefined) {
     return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.customerCodeControl.setValidators([
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 
   // private subscribeToJobOrderEvent(

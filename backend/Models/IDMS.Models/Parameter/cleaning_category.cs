@@ -26,6 +26,8 @@ namespace IDMS.Models.Parameter
         public double? cost { get; set; }
         public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
 
+        [UseFiltering]
+        public virtual IEnumerable<cleaning_method>? cleaning_method { get; set; }  
     }
 
     public class EntityClass_CleaningCategoryWithCustomerCompanyAndCleaningCategory: cleaning_category

@@ -169,7 +169,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        
+
         public async Task<int> DeletePackageDepot(ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeletePackageDepot_guids)
         {
@@ -638,6 +638,95 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
+        public async Task<int> UpdatePackageRepair_ByPercentage(ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] package_repair_guid, double material_cost_percentage, double labour_hour_percentage)
+        {
+            int retval = 0;
+            bool isAll = true;
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    var currentDateTime = DateTime.Now.ToEpochTime();
+
+                    var dbPackRepairs = await context.package_repair.Where(i => package_repair_guid.Contains(i.guid) && 
+                                                                            i.delete_dt == null || i.delete_dt == 0).ToListAsync();
+                    //if (customer_company_guids?.Length > 0)
+                    //{
+                    //    dbPackRepairs = dbPackRepairs.Where(t => customer_company_guids.Contains(t.customer_company_guid)).ToList();
+                    //    isAll = false;
+                    //}
+
+                    //if (!string.IsNullOrEmpty(tariff_repair_guid))
+                    //{
+                    //    dbPackRepairs = dbPackRepairs.Where(t => package_repair_guid.Contains(t.guid)).ToList();
+                    //    isAll = false;
+                    //}
+                    //else
+                    //{
+                    //}
+
+                    //if (isAll)
+                    //{
+                    //    retval = await context.package_repair.ExecuteUpdateAsync(s => s
+                    //      .SetProperty(e => e.update_dt, currentDateTime)
+                    //      .SetProperty(e => e.update_by, uid)
+                    //      .SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
+                    //      .SetProperty(e => e.labour_hour, e => (Math.Ceiling(Convert.ToDouble((e.labour_hour ?? 0) * labour_hour_percentage) * 4) / 4))
+                    //       );
+                    //}
+                    //else
+                    //{
+                    //    var guids = dbPackRepairs.Select(p => p.guid).ToList();
+                    //    string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
+
+                    //    //var st = "labour_hour = CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0";
+                    //    //string yy = "material_cost = ROUND(material_cost * {material_cost_percentage}, 2), ";
+
+                    //    string sql = $"UPDATE package_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
+                    //                 $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
+                    //                 $"update_dt = {currentDateTime}, update_by = '{uid}' " +
+                    //                 $"WHERE guid IN ({guidList})";
+
+                    //    // Execute the raw SQL command
+                    //    retval = await context.Database.ExecuteSqlRawAsync(sql);
+                    //}
+
+                    if(dbPackRepairs != null && dbPackRepairs.Count > 0)
+                    {
+                        var guids = dbPackRepairs.Select(p => p.guid).ToList();
+                        string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
+
+                        string sql = $"UPDATE package_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
+                                     $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
+                                     $"update_dt = {currentDateTime}, update_by = '{uid}' " +
+                                     $"WHERE guid IN ({guidList})";
+
+                        // Execute the raw SQL command
+                        retval = await context.Database.ExecuteSqlRawAsync(sql);
+
+                        // Commit the transaction if all operations succeed
+                        await transaction.CommitAsync();
+                    }
+                    else
+                        throw new GraphQLException(new Error("No Package Repair Found", "NOT FOUND"));
+                }
+                catch (Exception ex)
+                {
+                    // Rollback the transaction if any errors occur
+                    await transaction.RollbackAsync();
+
+                    // Handle or log the exception
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                    //throw; // Re-throw if necessary
+                }
+                return retval;
+            }
+        }
+
+
         public async Task<int> UpdatePackageRepair_MaterialCost(ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
             int? length, string? tariff_repair_guid, string[]? customer_company_guids, double material_cost_percentage, double labour_hour_percentage)
@@ -661,6 +750,7 @@ namespace IDMS.Models.Package.GqlTypes
                         dbPackRepairs = dbPackRepairs.Where(t => customer_company_guids.Contains(t.customer_company_guid)).ToList();
                         isAll = false;
                     }
+
                     if (!string.IsNullOrEmpty(tariff_repair_guid))
                     {
                         dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.guid == tariff_repair_guid).ToList();
@@ -1091,7 +1181,7 @@ namespace IDMS.Models.Package.GqlTypes
                 dbTSteamingExclusive.update_by = uid;
                 dbTSteamingExclusive.update_dt = currentDateTime;
 
-                if(string.IsNullOrEmpty(UpdateSteamingExclusive.package_steaming.guid))
+                if (string.IsNullOrEmpty(UpdateSteamingExclusive.package_steaming.guid))
                     throw new GraphQLException(new Error("The package steaming guid cannot be null", "Error"));
 
                 var updatePackageSteam = new package_steaming() { guid = UpdateSteamingExclusive.package_steaming.guid };

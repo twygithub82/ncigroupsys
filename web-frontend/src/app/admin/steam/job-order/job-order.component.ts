@@ -405,10 +405,17 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
         neq: 'PENDING'
       }
     });
+
     if (this.filterSteamForm!.get('status_cv')?.value?.length) {
       where.and.push({
         status_cv: {
           in: this.filterSteamForm!.get('status_cv')?.value
+        }
+      });
+    } else {
+      where.and.push({
+        status_cv: {
+          in: this.availableProcessStatus
         }
       });
     }
@@ -623,6 +630,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   resetForm() {
     this.filterSteamForm?.patchValue({
       filterSteam: '',
+      status_cv: '',
+      customer:''
     });
   }
 

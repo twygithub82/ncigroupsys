@@ -131,7 +131,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     YET_START:"COMMON-FORM.YET-START",
     STARTED:"COMMON-FORM.STARTED",
     YET_COMPLETE:"COMMON-FORM.YET-COMPLETE",
-    
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -185,7 +185,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
+   // this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -461,6 +461,37 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         });
       }
     }
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.filterJobOrderForm?.patchValue({
+      filterJobOrder: '',
+      customer: '',
+      jobStatusCv: ''
+    });
   }
 
   completeJob(event: Event, jobOrderItem: JobOrderItem) {

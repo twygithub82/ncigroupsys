@@ -1,6 +1,8 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate.Data;
+using IDMS.Models.Inventory;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
+using IDMS.Models.Service;
 using IDMS.Models.Shared;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +14,37 @@ namespace IDMS.Models.Tariff.GqlTypes
 {
     public class TariffQuery
     {
+
+        #region Original
+        // [Authorize]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<tariff_cleaning?> QueryTariffCleaning(ApplicationTariffDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<tariff_cleaning> query = null;
+            try
+            {
+
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.tariff_cleaning.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                      //.Include(tc=>tc.sot)
+                      .Include(tc => tc.cleaning_method)
+                      .Include(tc => tc.cleaning_category)
+                      .Where(tc => (tc.cleaning_method.delete_dt == null || tc.cleaning_method.delete_dt == 0) &&
+                       (tc.cleaning_category.delete_dt == null || tc.cleaning_category.delete_dt == 0));
+            }
+            catch
+            {
+                throw;
+            }
+
+            return query;
+        }
+
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection()]
@@ -37,36 +70,6 @@ namespace IDMS.Models.Tariff.GqlTypes
             return query;
 
         }
-
-        // [Authorize]
-        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        [UseProjection()]
-        [UseFiltering()]
-        [UseSorting]
-        public IQueryable<tariff_cleaning?> QueryTariffCleaning(ApplicationTariffDBContext context,
-            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
-        {
-
-            IQueryable<tariff_cleaning> query = null;
-            try
-            {
-
-                GqlUtils.IsAuthorize(config, httpContextAccessor);
-                query = context.tariff_cleaning.Where(i => i.delete_dt == null || i.delete_dt == 0)
-                      .Include(tc => tc.cleaning_method)
-                      .Include(tc => tc.cleaning_category)
-                      .Where(tc => (tc.cleaning_method.delete_dt == null || tc.cleaning_method.delete_dt == 0) &&
-                       (tc.cleaning_category.delete_dt == null || tc.cleaning_category.delete_dt == 0));
-            }
-            catch
-            {
-                throw;
-            }
-
-            return query;
-
-        }
-
 
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
@@ -127,7 +130,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseFiltering()]
         [UseSorting]
         public IQueryable<tariff_buffer?> QueryTariffBuffer(ApplicationTariffDBContext context,
-            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+          [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
             IQueryable<tariff_buffer> query = null;
@@ -144,7 +147,6 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
 
             return query;
-
         }
 
 
@@ -199,6 +201,197 @@ namespace IDMS.Models.Tariff.GqlTypes
 
         }
 
+        #endregion
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<TariffCleaningResult?> QueryTariffCleaningWithCount(ApplicationTariffDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<tariff_cleaning> query = null;
+            try
+            {
+
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var result = context.tariff_cleaning
+                                     .Include(tc => tc.sot) // Ensure the 'sot' navigation property is loaded
+                                     .Where(tc => tc.delete_dt == null || tc.delete_dt == 0)
+                                     .Select(tc => new TariffCleaningResult
+                                     {
+                                         tariff_cleaning = tc,
+                                         tank_count = tc.sot.Count()
+                                     })
+                                     .AsQueryable();
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+
+        // [Authorize]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<TariffResidueResult?> QueryTariffResidueWithCount(ApplicationTariffDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<tariff_residue> query = null;
+            try
+            {
+                List<string> invalidStatus = new List<string>() { "CANCELED", "NO_ACTION" };
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var result = context.tariff_residue
+                                     .Include(tr => tr.residue_part)
+                                     .ThenInclude(rp => rp.residue)
+                                     .Where(tr => tr.delete_dt == null || tr.delete_dt == 0)
+                                     .Select(tr => new TariffResidueResult
+                                     {
+                                         tariff_residue = tr,
+                                         tank_count = tr.residue_part.Count(rp => 
+                                                                            rp.residue != null && rp.residue.delete_dt == null 
+                                                                            && !invalidStatus.Contains(rp.residue.status_cv)
+                                                                            && rp.delete_dt == null)
+                                     })
+                                     .AsQueryable();
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        // [Authorize]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<TariffSteamingResult?> QueryTariffSteamingWithCount(ApplicationTariffDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                List<string> invalidStatus = new List<string>() { "CANCELED", "NO_ACTION" };
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var result = context.tariff_steaming
+                                     .Include(tr => tr.steaming_part)
+                                     .ThenInclude(rp => rp.steaming)
+                                     .Where(tr => tr.delete_dt == null || tr.delete_dt == 0)
+                                     .Select(tr => new TariffSteamingResult
+                                     {
+                                         tariff_steaming = tr,
+                                         tank_count = tr.steaming_part.Count(rp => 
+                                                                             rp.steaming != null && rp.steaming.delete_dt == null 
+                                                                             && !invalidStatus.Contains(rp.steaming.status_cv)
+                                                                             && rp.delete_dt == null)
+                                     })
+                                     .AsQueryable();
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        // [Authorize]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<TariffRepairResult?> QueryTariffRepairWithCount(ApplicationTariffDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                List<string> invalidStatus = new List<string>() { "CANCELED", "NO_ACTION" };
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var result = context.tariff_repair
+                                     .Include(tr => tr.repair_part)
+                                     .ThenInclude(rp => rp.repair)
+                                     .Where(tr => tr.delete_dt == null || tr.delete_dt == 0)
+                                     .Select(tr => new TariffRepairResult
+                                     {
+                                         tariff_repair = tr,
+                                         tank_count = tr.repair_part.Count(rp => rp.repair != null && rp.repair.delete_dt == null
+                                                                          && !invalidStatus.Contains(rp.repair.status_cv)
+                                                                          && rp.delete_dt == null)
+                                     })
+                                     .AsQueryable();
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        // [Authorize]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<TariffDepotResult?> QueryTariffDepotWithCount(ApplicationTariffDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var result = context.tariff_depot.Where(td=>td.delete_dt == null || td.delete_dt == 0)
+                                    .Select(td => new TariffDepotResult
+                                    {
+                                        tariff_depot = td,
+                                        tank_count = td.tanks
+                                            .Where(tk => tk.delete_dt == null)
+                                            .SelectMany(tk => tk.sot)
+                                            .Count(sot => sot.delete_dt == null)
+                                    })
+                                    .AsQueryable();
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<TariffBufferResult?> QueryTariffBufferWithCount(ApplicationTariffDBContext context,
+           [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var result = context.tariff_buffer
+                                      .Where(tb => tb.delete_dt == null || tb.delete_dt == 0)
+                                      .Select(tb => new TariffBufferResult
+                                      {
+                                          tariff_buffer = tb,
+                                          tank_count = tb.in_gate_survey
+                                              .Where(igs => igs.delete_dt == null && igs.in_gate != null && igs.in_gate.delete_dt == null)
+                                              .Count()
+                                      })
+                                      .AsQueryable();
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection()]
         [UseFiltering()]
@@ -221,7 +414,6 @@ namespace IDMS.Models.Tariff.GqlTypes
         }
 
 
-        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
@@ -286,7 +478,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 {
                     query = query.Where(tr => tr.subgroup_name_cv == null || tr.group_name_cv == "");
                 }
-                else if(subgroupName != "")
+                else if (subgroupName != "")
                 {
                     query = query.Where(tr => tr.subgroup_name_cv.ToLower() == subgroupName.ToLower());
                 }
@@ -377,39 +569,6 @@ namespace IDMS.Models.Tariff.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
-
-        //[UseProjection()]
-        //[UseFiltering()]
-        //[UseSorting]
-        //public IQueryable<tariff_repair?> QueryDistinctValue(ApplicationTariffDBContext context, [Service] IConfiguration config,
-        //    [Service] IHttpContextAccessor httpContextAccessor, string? partName)
-        //{
-        //    try
-        //    {
-        //        GqlUtils.IsAuthorize(config, httpContextAccessor);
-
-        //        //var query = context.tariff_repair.AsQueryable();
-
-        //        // Apply filters conditionally
-        //        //if (!string.IsNullOrEmpty(partName))
-        //        //{
-        //        //    query = query.Where(tr => tr.part_name == partName);
-        //        //}
-
-        //        // Select distinct part names
-        //        var distinctDimension = context.tariff_repair;
-        //        //distinctDimension.Distinct();
-
-        //        return distinctDimension;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-        //    }
-
-
-        //}
 
     }
 }

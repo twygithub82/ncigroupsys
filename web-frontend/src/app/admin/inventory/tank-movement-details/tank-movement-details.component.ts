@@ -123,7 +123,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'begin_dt',
     'complete_dt',
     'status_cv',
-    'bill'
+    'bill',
+    'actions'
   ];
 
   displayedColumnsResidue = [
@@ -132,7 +133,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'approve_dt',
     'allocation_dt',
     'qc_dt',
-    'status_cv'
+    'status_cv',
+    'actions'
   ];
 
   displayedColumnsRepair = [
@@ -429,6 +431,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
   }
 
   sot_guid: string | null | undefined;
@@ -858,6 +861,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    }
+  }
+
+  handleRollbackSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
     }
   }
@@ -1931,61 +1941,150 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '');
   }
 
-  // onRollbackResidueJobs(event: Event) {
-  //   this.preventDefault(event);
+  canRollbackSteamingCompleted(row: SteamItem) {
+    return Utility.isTankInYard(this.sot?.tank_status_cv) && row.status_cv === 'COMPLETED';
+  }
 
-  //   const distinctJobOrders = this.deList
-  //     .filter((item, index, self) =>
-  //       index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
-  //         (t.job_order?.team?.guid === item?.job_order?.team_guid ||
-  //           t.job_order?.team?.description === item?.job_order?.team?.description))
-  //     )
-  //     .filter(item => item.job_order !== null && item.job_order !== undefined)
-  //     .map(item => new JobOrderGO(item.job_order!));
+  onRollbackSteamingJobs(event: Event, row: SteamItem) {
+    this.preventDefault(event);
 
-  //   let tempDirection: Direction;
-  //   if (localStorage.getItem('isRtl') === 'true') {
-  //     tempDirection = 'rtl';
-  //   } else {
-  //     tempDirection = 'ltr';
-  //   }
-  //   const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-  //     width: '1000px',
-  //     data: {
-  //       action: 'rollback',
-  //       dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-  //       item: [this.residueItem],
-  //       translatedLangText: this.translatedLangText
-  //     },
-  //     direction: tempDirection
-  //   });
-  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-  //     if (result?.action === 'confirmed') {
-  //       const reList = result.item.map((item: any) => {
-  //         const residueJobOrder = {
-  //           estimate_no: item?.estimate_no,
-  //           guid: item?.guid,
-  //           remarks: item.remarks,
-  //           sot_guid: item.sot_guid,
-  //           sot_status: this.residueItem?.storing_order_tank?.tank_status_cv,
-  //           job_order: distinctJobOrders
-  //         }
-  //         return residueJobOrder
-  //       });
-  //       console.log(reList);
-  //       if (this.residueItem?.status_cv == "COMPLETED") {
-  //         this.residueDS.rollbackCompletedResidue(reList).subscribe(result => {
-  //           this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue)
-  //         });
-  //       }
-  //       else if (this.residueItem?.status_cv == "JOB_IN_PROGRESS") {
-  //         this.jobOrderDS.rollbackJobInProgressResidue(reList).subscribe(result => {
-  //           this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
-  //         });
-  //       }
-  //     }
-  //   });
-  // }
+    const distinctJobOrders = row.steaming_part?.filter((item, index, self) =>
+      index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+        (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+          t.job_order?.team?.description === item?.job_order?.team?.description))
+    )
+      .filter(item => item.job_order !== null && item.job_order !== undefined)
+      .map(item => new JobOrderGO(item.job_order!));
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      width: '500px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        messageText: `${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const steamingJobOrder = {
+          guid: row?.guid,
+          remarks: result.remarks,
+          sot_guid: row.sot_guid,
+          sot_status: this.sot?.tank_status_cv,
+          job_order: distinctJobOrders
+        }
+        console.log(steamingJobOrder);
+        this.steamDS.rollbackCompletedSteaming([steamingJobOrder]).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_steam(this.sot_guid!);
+        });
+      }
+    });
+  }
+
+  canRollbackResidueCompleted(row: ResidueItem) {
+    return Utility.isTankInYard(this.sot?.tank_status_cv) && row.status_cv === 'COMPLETED';
+  }
+
+  onRollbackResidueJobs(event: Event, row: ResidueItem) {
+    this.preventDefault(event);
+
+    const distinctJobOrders = row.residue_part?.filter((item, index, self) =>
+      index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+        (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+          t.job_order?.team?.description === item?.job_order?.team?.description))
+    )
+      .filter(item => item.job_order !== null && item.job_order !== undefined)
+      .map(item => new JobOrderGO(item.job_order!));
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      width: '500px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        messageText: `${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const residueJobOrder = {
+          estimate_no: row?.estimate_no,
+          guid: row?.guid,
+          remarks: result.remarks,
+          sot_guid: row.sot_guid,
+          sot_status: this.sot?.tank_status_cv,
+          job_order: distinctJobOrders
+        }
+        console.log(residueJobOrder);
+        this.residueDS.rollbackCompletedResidue([residueJobOrder]).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_residue(this.sot_guid!);
+        });
+      }
+    });
+  }
+
+  canRollbackCleaningCompleted(row?: InGateCleaningItem) {
+    return Utility.isTankInYard(this.sot?.tank_status_cv) && row?.status_cv === 'COMPLETED';
+  }
+
+  onRollbackCleaningJobs(event: Event, row?: InGateCleaningItem) {
+    this.preventDefault(event);
+
+    const distinctJobOrders = new JobOrderGO(row?.job_order);
+    
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      width: '500px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        messageText: this.translatedLangText.CLEANING,
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const jobOrder = {
+          guid: row?.guid,
+          remarks: result.remarks,
+          sot_guid: row?.sot_guid,
+          sot_status: this.sot?.tank_status_cv,
+          job_order: distinctJobOrders
+        }
+        console.log(jobOrder);
+        this.cleaningDS.rollbackCompletedCleaning(jobOrder).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_cleaning(this.sot_guid!);
+        });
+      }
+    });
+  }
 
   canRollbackRepairQC(row: RepairItem) {
     return Utility.isTankInYard(this.sot?.tank_status_cv) && this.repairDS.canRollbackQC(row);
@@ -2004,14 +2103,15 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       width: '500px',
       data: {
         action: 'rollback',
-        messageText: row.estimate_no,
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        messageText: `${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result?.action === 'confirmed') {
         const distinctJobOrders = row?.repair_part?.filter((item, index, self) =>
           index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
             (t.job_order?.team?.guid === item?.job_order?.team_guid ||
@@ -2033,7 +2133,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.repairDS.rollbackQCRepair([repJobOrder]).subscribe(result => {
           console.log(result)
           if ((result?.data?.rollbackQCRepair ?? 0) > 0) {
-            this.handleSaveSuccess(result?.data?.rollbackQCRepair);
+            this.handleRollbackSuccess(result?.data?.rollbackQCRepair);
             this.loadDataHandling_sot(this.sot_guid!);
             this.loadDataHandling_repair(this.sot_guid!);
           }
@@ -2064,7 +2164,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result?.action === 'confirmed') {
         const distinctJobOrders = row.repair_part?.filter((item, index, self) =>
           index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
             (t.job_order?.team?.guid === item?.job_order?.team_guid ||

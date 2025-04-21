@@ -744,6 +744,49 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
+
+        public async Task<int> RollbackAssignedRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<string>? repairGuid)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in repairGuid)
+                {
+                    //Residue handling
+                    var rollbackRepair = await context.repair
+                        .Include(r => r.repair_part)
+                            .ThenInclude(rp => rp.job_order)
+                        .Where(r => r.guid == item).FirstOrDefaultAsync();
+
+                    if (rollbackRepair == null)
+                        throw new GraphQLException(new Error($"Residue estimate not found", "ERROR"));
+
+                    rollbackRepair.update_by = user;
+                    rollbackRepair.update_dt = currentDateTime;
+                    rollbackRepair.status_cv = CurrentServiceStatus.APPROVED;
+
+                    var repairParts = rollbackRepair.repair_part;
+                    var jobGuidString = string.Join(",", repairParts.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+
+                    string sql = "";
+                    sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+
+                    context.Database.ExecuteSqlRaw(sql);
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
         private async Task UpdateRepairDamageCode(ApplicationServiceDBContext context, string user, long currentDateTime,
                                           repair_part repairPart, IEnumerable<rp_damage_repair>? rpDamageRepair = null)
         {

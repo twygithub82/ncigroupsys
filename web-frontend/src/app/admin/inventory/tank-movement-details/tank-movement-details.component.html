@@ -646,16 +646,6 @@
                                             }
                                           </mat-cell>
                                         </ng-container>
-                                        <ng-container matColumnDef="actions">
-                                          <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            <mat-icon>more_horiz</mat-icon>
-                                          </mat-header-cell>
-                                          <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            <span class="mobile-tab-label"><mat-icon>more_horiz</mat-icon>:</span>
-                                          </mat-cell>
-                                        </ng-container>
                                         <ng-container matColumnDef="degree_celsius">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
                                             [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -692,11 +682,11 @@
                                         </ng-container>
                                         <ng-container matColumnDef="begin_dt">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.BEGIN_DATE}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label">{{translatedLangText.BEGIN_DATE}}:</span>
                                             <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
                                           </mat-cell>
@@ -725,11 +715,11 @@
                                         </ng-container>
                                         <ng-container matColumnDef="bill">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.BILL}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label">{{translatedLangText.BILL}}:</span>
                                             @if (row?.customer_billing_guid) {
                                             <mat-icon
@@ -738,6 +728,29 @@
                                             @else {
                                             <mat-icon
                                               class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
+                                            }
+                                          </mat-cell>
+                                        </ng-container>
+                                        <ng-container matColumnDef="actions">
+                                          <mat-header-cell
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                                            *matHeaderCellDef>
+                                          </mat-header-cell>
+                                          <mat-cell *matCellDef="let row; let i=index;"
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
+                                            @if (canRollbackSteamingCompleted(row)) {
+                                            <button mat-icon-button [matMenuTriggerFor]="menu"
+                                              (click)="stopEventTrigger($event)">
+                                              <mat-icon>more_vert</mat-icon>
+                                            </button>
+                                            <mat-menu #menu="matMenu">
+                                              @if (canRollbackSteamingCompleted(row)) {
+                                              <button mat-menu-item (click)="onRollbackSteamingJobs($event, row)">
+                                                <mat-icon>undo</mat-icon>
+                                                <span>{{translatedLangText.ROLLBACK}}</span>
+                                              </button>
+                                              }
+                                            </mat-menu>
                                             }
                                           </mat-cell>
                                         </ng-container>
@@ -935,11 +948,11 @@
                                       </ng-container>
                                       <ng-container matColumnDef="estimate_date">
                                         <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                           {{translatedLangText.ESTIMATE_DATE}}
                                         </mat-header-cell>
                                         <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                           <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_DATE}}:</span>
                                           <span>{{displayDate(row.create_dt) ?? "-"}}</span>
                                         </mat-cell>
@@ -958,23 +971,23 @@
                                       </ng-container>
                                       <ng-container matColumnDef="allocation_dt">
                                         <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                           {{translatedLangText.ALLOCATION_DATE}}
                                         </mat-header-cell>
                                         <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                           <span class="mobile-tab-label">{{translatedLangText.ALLOCATION_DATE}}:</span>
                                           <span>{{displayDate(row.allocate_dt) ?? "-"}}</span>
                                         </mat-cell>
                                       </ng-container>
                                       <ng-container matColumnDef="qc_dt">
                                         <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          {{translatedLangText.QC_DATE}}
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.COMPLETED_DATE}}
                                         </mat-header-cell>
                                         <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          <span class="mobile-tab-label">{{translatedLangText.QC_DATE}}:</span>
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span class="mobile-tab-label">{{translatedLangText.COMPLETED_DATE}}:</span>
                                           <span>{{displayDate(row.complete_dt) ?? "-"}}</span>
                                         </mat-cell>
                                       </ng-container>
@@ -987,6 +1000,29 @@
                                           [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                           <span
                                             class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="actions">
+                                        <mat-header-cell
+                                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                                          *matHeaderCellDef>
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let row; let i=index;"
+                                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
+                                          @if (canRollbackResidueCompleted(row)) {
+                                          <button mat-icon-button [matMenuTriggerFor]="menu"
+                                            (click)="stopEventTrigger($event)">
+                                            <mat-icon>more_vert</mat-icon>
+                                          </button>
+                                          <mat-menu #menu="matMenu">
+                                            @if (canRollbackResidueCompleted(row)) {
+                                            <button mat-menu-item (click)="onRollbackResidueJobs($event, row)">
+                                              <mat-icon>undo</mat-icon>
+                                              <span>{{translatedLangText.ROLLBACK}}</span>
+                                            </button>
+                                            }
+                                          </mat-menu>
+                                          }
                                         </mat-cell>
                                       </ng-container>
                                       <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
@@ -1060,6 +1096,10 @@
                                   @if (canRemoveCleanPurpose()) {
                                   <button mat-menu-item class="text-danger"
                                     (click)="updatePurposeDialog($event, 'cleaning', 'remove')">{{translatedLangText.REMOVE}}</button>
+                                  }
+                                  @if (canRollbackCleaningCompleted(cleaningItem?.[0])) {
+                                  <button mat-menu-item class=""
+                                    (click)="onRollbackCleaningJobs($event, cleaningItem?.[0])">{{translatedLangText.ROLLBACK}}</button>
                                   }
                                 </mat-menu>
                                 }

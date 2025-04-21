@@ -153,7 +153,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     UNASSIGNED:'COMMON-FORM.UNASSIGN',
     CONFIRM_TEAM_UNASSIGN:"COMMON-FORM.CONFIRM-TEAM-UNASSIGN",
-    ROLLBACK_SUCCESS:"COMMON-FORM.ROLLBACK-SUCCESS"
+    ROLLBACK_SUCCESS:"COMMON-FORM.ROLLBACK-SUCCESS",
+    SEARCH: 'COMMON-FORM.SEARCH',
   }
 
   filterResidueForm?: UntypedFormGroup;
@@ -613,6 +614,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   resetForm() {
     this.filterResidueForm?.patchValue({
       filterResidue: '',
+      status_cv: '',
+      customer: ''
     });
   }
 
