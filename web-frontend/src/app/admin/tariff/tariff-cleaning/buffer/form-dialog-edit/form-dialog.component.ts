@@ -305,7 +305,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     }
 
     this.subs.sink = this.trfBufferDS.SearchTariffBuffer(where).subscribe(data => {
-
       let update = true;
       if (data.length > 0) {
         var queriedRec = data[0];
@@ -313,7 +312,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
           update = false;
           this.pcForm?.get('buffer_type')?.setErrors({ existed: true });
         }
-
       }
       if (update) {
         var td = new TariffBufferItem(this.selectedItem);
@@ -323,7 +321,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         // td.package_buffer=new PackageBufferItem();
         this.trfBufferDS.updateTariffBuffer(td).subscribe(result => {
           this.handleSaveSuccess(result?.data?.updateTariffBuffer);
-
         });
         // let conditions:any[] = [];
         // let unit_types:TankItem[]=[];

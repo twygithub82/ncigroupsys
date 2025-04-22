@@ -21,7 +21,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { PackageBufferItem } from 'app/data-sources/package-buffer';
 import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer';
@@ -31,19 +30,14 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: TariffDepotItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 interface Condition {
   guid: { eq: string };
   tariff_depot_guid: { eq: null };
 }
-
 
 @Component({
   selector: 'app-tariff-buffer-form-dialog',
@@ -77,26 +71,16 @@ interface Condition {
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'fName',
     'lName',
     'email',
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
   ];
 
   action: string;
   index?: number;
   dialogTitle?: string;
 
-
   trfBufferDS: TariffBufferDS;
-
-
-
 
   startDate = new Date();
   pcForm: UntypedFormGroup;
@@ -217,18 +201,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     // Set the defaults
     super();
     this.selectedItem = data.selectedItem;
-
     this.trfBufferDS = new TariffBufferDS(this.apollo);
-
     this.pcForm = this.createTariffBuffer();
-    // this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
-    //this.tcDS = new TariffCleaningDS(this.apollo);
-    //this.sotDS = new StoringOrderTankDS(this.apollo);
-    //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    // this.catDS= new CleaningCategoryDS(this.apollo);
-
-
-
     this.action = data.action!;
     this.translateLangText();
     this.loadData()

@@ -43,8 +43,15 @@
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.BUFFER_TYPE }}</mat-label>
-                    <input matInput formControlName="profile_name" type="text">
+                    <mat-label>{{translatedLangText.BUFFER_TYPE}}</mat-label>
+                    <mat-select formControlName="profile_name">
+                      <mat-option [value]="''">{{translatedLangText.ALL}}</mat-option>
+                      @for (buffer of bufferList; track buffer) {
+                      <mat-option [value]="buffer.buffer_type">
+                        {{buffer.buffer_type}}
+                      </mat-option>
+                      }
+                    </mat-select>
                   </mat-form-field>
                 </div>
                 <!--TODO-->
