@@ -44,7 +44,6 @@
                     }
                   </mat-form-field>
                 </div>
-
                 <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CARGO_CATEGORY}}</mat-label>
@@ -57,7 +56,6 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-                <!--TODO-->
                 <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_COST}}</mat-label>
@@ -95,11 +93,6 @@
                   [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                 </mat-checkbox>
               </mat-cell>
-            </ng-container>
-            <!-- ID Column -->
-            <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
-              <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="fName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
