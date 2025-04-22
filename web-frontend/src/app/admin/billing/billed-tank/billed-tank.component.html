@@ -116,14 +116,11 @@
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                    <button mat-mini-fab color="primary" (click)="search()">
+                    <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
-                    <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                      <mat-icon>cached</mat-icon>
-                    </button> -->
-                    <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
-                      {{translatedLangText.CLEAR_ALL}}
+                    <button  mat-mini-fab class="m-l-5 bg-dark-gold"  (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                      <mat-icon>clear_all</mat-icon>
                     </button>
                   </div>
                 </div>
