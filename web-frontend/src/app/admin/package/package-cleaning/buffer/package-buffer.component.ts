@@ -39,6 +39,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 @Component({
   selector: 'app-package-buffer',
@@ -69,16 +70,14 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    PreventNonNumericDirective
   ]
-
 })
-
 
 export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    //'customer_code',
     'customer_name',
     'buffer_type',
     'customer_cost',
@@ -398,7 +397,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.pcForm!.value["customer_cost"]) {
       const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
-      where.cost = { lte: selectedCost }
+      where.cost = { eq: selectedCost }
     }
 
     if (this.pcForm?.get('profile_name')?.value) {

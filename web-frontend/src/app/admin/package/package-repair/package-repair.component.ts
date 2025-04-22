@@ -43,6 +43,8 @@ import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dial
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs';
+import { easeQuad } from 'd3';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 @Component({
   selector: 'app-package-repair',
@@ -74,6 +76,7 @@ import { debounceTime, startWith, tap } from 'rxjs';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    PreventNonNumericDirective
   ]
 })
 
@@ -109,7 +112,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
   partNameControl = new UntypedFormControl();
-  handledItemControl = new UntypedFormControl();
 
   lengthItems: TariffRepairLengthItem[] = [];
   dimensionItems: string[] = [];
@@ -292,7 +294,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       sub_group_name_cv: this.subGroupNameControl,
       labour_hour: [''],
       material_cost: [''],
-      handled_item_cv: this.handledItemControl
+      handled_item_cv: ['']
     });
   }
 
@@ -496,7 +498,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     // Handling material_cost
     if (this.pcForm!.value["material_cost"]) {
       const selectedCost: number = Number(this.pcForm!.value["material_cost"]);
-      where.material_cost = { lte: selectedCost }
+      where.material_cost = { eq: selectedCost }
     }
     // if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
     //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
@@ -595,7 +597,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     // // Handling labour_hour
     if (this.pcForm!.value["labour_hour"]) {
       const selectedHour: number = Number(this.pcForm!.value["labour_hour"]);
-      where.labour_hour = { lte: selectedHour }
+      where.labour_hour = { eq: selectedHour }
     }
     // if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
     //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
@@ -908,7 +910,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.subGroupNameControl.reset('');
     this.pcForm?.get('labour_hour')?.reset('');
     this.pcForm?.get('material_cost')?.reset('');
-    this.handledItemControl.reset('');
+    this.pcForm?.get('handled_item_cv')?.reset('');
   }
 
   initializeValueChange() {
