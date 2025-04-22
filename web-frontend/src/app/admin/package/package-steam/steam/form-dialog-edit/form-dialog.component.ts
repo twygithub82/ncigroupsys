@@ -21,7 +21,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
@@ -29,19 +28,13 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: TariffResidueItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 interface Condition {
   guid: { eq: string };
   tariff_depot_guid: { eq: null };
 }
-
-
 
 @Component({
   selector: 'app-tariff-residue-form-dialog',
@@ -204,8 +197,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
 
   selectedItem: TariffResidueItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit>,
@@ -220,12 +211,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     this.selectedItem = data.selectedItem;
     this.trfResidueDS = new TariffResidueDS(this.apollo);
     this.pcForm = this.createTariffResidue();
-
     this.action = data.action!;
     this.translateLangText();
-
-
-
   }
 
   createTariffResidue(): UntypedFormGroup {
@@ -238,21 +225,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-
   GetButtonCaption() {
-    // if(this.pcForm!.value['action']== "view")
-    //   {
-    //     return this.translatedLangText.CLOSE ;      
-    //   }
-    //   else
-    //   {
     return this.translatedLangText.CANCEL;
-    // }
   }
+
   GetTitle() {
-
     return this.translatedLangText.EDIT + " " + this.translatedLangText.TARIFF_RESIDUE;
-
   }
 
   translateLangText() {
@@ -261,22 +239,14 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-
   canEdit() {
     return true;
   }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-
       console.log('valid');
       this.dialogRef.close(count);
-      // let successMsg = this.langText.SAVE_SUCCESS;
-      // this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-      //   successMsg = res;
-      //   ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-
-      // });
     }
   }
 
@@ -290,7 +260,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     }
 
     this.subs.sink = this.trfResidueDS.SearchTariffResidue(where).subscribe(data => {
-
       let update = true;
       if (data.length > 0) {
         var queriedRec = data[0];
@@ -298,7 +267,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
           update = false;
           this.pcForm?.get('description')?.setErrors({ existed: true });
         }
-
       }
       if (update) {
         var updatedTD = new TariffResidueItem(this.selectedItem);
@@ -307,17 +275,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         updatedTD.remarks = this.pcForm!.value['remarks'];
         this.trfResidueDS.updateTariffResidue(updatedTD).subscribe(result => {
           this.handleSaveSuccess(result?.data?.updateTariffResidue);
-
         });
-
       }
-    }
-    );
-
-
-
-
-
+    });
   }
 
   save() {
