@@ -455,19 +455,15 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.subs.sink = this.cleanDS.search(this.lastSearchCriteriaClean, this.lastOrderByClean, first, after, last, before)
       .subscribe(data => {
         this.clnEstList = data;
+        console.log(data)
         this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
         this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
         this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndexClean = pageIndex;
         this.paginator.pageIndex = this.pageIndexClean;
-        //this.selection.clear();
         if (!this.hasPreviousPageClean)
           this.previous_endCursorClean = undefined;
-        // this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
-        // this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
-        // this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
-        // this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSizeClean = pageSize;
@@ -484,19 +480,13 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndexJobOrder = pageIndex;
         this.paginator.pageIndex = this.pageIndexJobOrder;
-        //this.selection.clear();
         if (!this.hasPreviousPageJobOrder)
           this.previous_endCursorJobOrder = undefined;
-        // this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
-        // this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
-        // this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
-        // this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSizeJobOrder = pageSize;
     this.pageIndexJobOrder = pageIndex;
   }
-
 
   onPageEventClean(event: PageEvent) {
     const { pageIndex, pageSize, previousPageIndex } = event;
@@ -515,7 +505,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       last = undefined;
       before = undefined;
     } else {
-      //if (pageIndex > this.pageIndex && this.hasNextPage) {
       if (pageIndex > this.pageIndexClean) {
         // Navigate forward
         first = pageSize;
@@ -524,15 +513,9 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         // Navigate backward
         last = pageSize;
         before = this.startCursorClean;
-      }
-      else if (pageIndex == this.pageIndexClean) {
-
+      } else if (pageIndex == this.pageIndexClean) {
         first = pageSize;
         after = this.previous_endCursorClean;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
 
@@ -565,7 +548,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         before = this.startCursorClean;
       }
     }
-
     this.performSearchClean(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
@@ -586,7 +568,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       last = undefined;
       before = undefined;
     } else {
-      //if (pageIndex > this.pageIndex && this.hasNextPage) {
       if (pageIndex > this.pageIndexJobOrder) {
         // Navigate forward
         first = pageSize;
@@ -595,18 +576,11 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         // Navigate backward
         last = pageSize;
         before = this.startCursorJobOrder;
-      }
-      else if (pageIndex == this.pageIndexJobOrder) {
-
+      } else if (pageIndex == this.pageIndexJobOrder) {
         first = pageSize;
         after = this.previous_endCursorJobOrder;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
-
     this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
@@ -640,15 +614,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
-  // mergeCriteria(criteria: any) {
-  //   return {
-  //     and: [
-  //       { delete_dt: { eq: null } },
-  //       criteria
-  //     ]
-  //   };
-  // }
-
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -673,7 +638,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       })
     ).subscribe();
 
-
     this.filterCleanForm!.get('cleanMethod')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -692,8 +656,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     ).subscribe();
   }
 
-
-
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -705,18 +667,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   calculateNetCost(repair: RepairItem): any {
-    // const total = this.repairDS.getTotal(repair?.repair_part)
-    // const labourDiscount = repair.labour_cost_discount;
-    // const matDiscount = repair.material_cost_discount;
-
-    // const total_hour = total.hour;
-    // const total_labour_cost = this.repairDS.getTotalLabourCost(total_hour, repair?.labour_cost);
-    // const total_mat_cost = total.total_mat_cost;
-    // const total_cost = repair?.total_cost;
-    // const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
-    // const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
-    // const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
-    // return net_cost.toFixed(2);
     return undefined;
   }
 
@@ -810,9 +760,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     var rows: InGateCleaningItem[] = [];
     rows.push(row);
 
-
     const dialogRef = this.dialog.open(FormDialogComponent, {
-
       width: '1000px',
       data: {
         action: action,
@@ -822,18 +770,15 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       position: {
         top: '50px'  // Adjust this value to move the dialog down from the top of the screen
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         if (result > 0) {
-
           this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
         }
       }
     });
-
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
@@ -862,7 +807,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
           if (result.data.stopJobTimer) {
             this.completeJob(jobOrderItem)
           }
-
         });
       }
     }
@@ -920,8 +864,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   UpdateCleaningStatusCompleted(clean_guid: string) {
-
-
     const where: any = {
       and: []
     };
@@ -933,7 +875,6 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     where.and.push({
       guid: { eq: clean_guid }
     });
-
 
     this.subs.sink = this.cleanDS.search(where)
       .subscribe(data => {
@@ -949,17 +890,10 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
             if (result.data.updateCleaning > 0) {
               this.onFilterCleaning();
             }
-
-
           });
-          //  this.clnDS.
         }
       });
   }
-
-  // isStarted(jobOrderItem: JobOrderItem | undefined) {
-  //   return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-  // }
 
   isStarted(cleanItem: InGateCleaningItem | undefined) {
 
@@ -1016,5 +950,10 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     if (event.index === 1) {
       this.bayOverviewComponent.RefreshContent();
     }
+  }
+
+  anyResidueIncomplete(row: InGateCleaningItem) {
+    const foundIncomplete = row.storing_order_tank?.residue?.filter(x => ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED', 'ASSIGNED', ''].includes(x.status_cv || ''));
+    return (foundIncomplete?.length || 0) > 0;
   }
 }

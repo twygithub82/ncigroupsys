@@ -273,9 +273,7 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
           cleaning{
             guid
           }
-          time_table(
-          where: { start_time: { neq: null }, stop_time: { eq: null } }
-          ) {
+          time_table(where: { start_time: { neq: null }, stop_time: { eq: null } }) {
             create_by
             create_dt
             delete_dt
@@ -337,8 +335,11 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
           unit_type_guid
           update_by
           update_dt
-          repair{
+          repair {
             guid
+            status_cv
+          }
+          residue {
             status_cv
           }
           storing_order {
@@ -366,8 +367,8 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
               type_cv
               update_by
               update_dt
-              }
             }
+          }
           in_gate {
             eir_dt
             eir_no
@@ -621,7 +622,6 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
         })
       );
   }
-
 
   search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<InGateCleaningItem[]> {
     this.loadingSubject.next(true);
