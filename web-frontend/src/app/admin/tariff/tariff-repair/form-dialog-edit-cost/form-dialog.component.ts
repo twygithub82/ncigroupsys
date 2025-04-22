@@ -87,15 +87,9 @@ interface Condition {
 })
 export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'fName',
     'lName',
     'email',
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
   ];
 
   UpdateInProgress: boolean = false;
@@ -132,15 +126,11 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
 
   partNameControl = new UntypedFormControl();
-  groupNameControl = new UntypedFormControl();
-  subGroupNameControl = new UntypedFormControl();
   lengthControl = new UntypedFormControl();
   dimensionControl = new UntypedFormControl();
   widthDiadmeterUnitControl = new UntypedFormControl();
   thicknessUnitControl = new UntypedFormControl();
 
-  //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -212,13 +202,6 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
@@ -250,7 +233,6 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
     LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
-
     TEST_TYPE: "COMMON-FORM.TEST-TYPE",
     DIMENSION: "COMMON-FORM.DIMENSION",
     HEIGHT_DIAMETER: "COMMON-FORM.HEIGHT-DIAMETER",
@@ -267,11 +249,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     NO_VALUE_CHNAGE: "COMMON-FORM.NO-VALUE-CHNAGE"
   };
   unit_type_control = new UntypedFormControl();
-
   selectedItems: TariffRepairItem[];
-
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
@@ -292,35 +270,14 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
-
-    // if(this.selectedItems.length==1)
-    // {
-    //   var rec = this.selectedItems[0];
-    //   this.pcForm.patchValue({
-    //     group_name_cv: this.groupNameControl ,
-    //     sub_group_name_cv:this.subGroupNameControl,
-    //     part_name:rec.part_name,
-    //     height_diameter:rec.dimension,
-    //     height_diameter_unit_cv:this.dimensionUnitControl,
-    //     width_diameter:rec.width_diameter,
-    //     width_diameter_unit_cv: this.widthDiadmeterUnitControl,
-    //     thickness:rec.width_diameter,
-    //     thickness_unit_cv:this.thicknessUnitControl,
-    //     length:rec.length,
-    //     length_unit_cv:this.lengthUnitControl,
-    //     labour_hour:rec.labour_hour,
-    //     material_cost:rec.material_cost,
-    //   });
-    //}
-
   }
 
   createTarifRepair(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
       action: this.action,
-      group_name_cv: this.groupNameControl,
-      sub_group_name_cv: this.subGroupNameControl,
+      group_name_cv: [''],
+      sub_group_name_cv: [''],
       part_name: this.partNameControl,
       dimension: this.dimensionControl,
       length: this.lengthControl,
@@ -330,21 +287,12 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-
   GetButtonCaption() {
-    // if(this.pcForm!.value['action']== "view")
-    //   {
-    //     return this.translatedLangText.CLOSE ;      
-    //   }
-    //   else
-    //   {
     return this.translatedLangText.CANCEL;
-    // }
   }
+
   GetTitle() {
-
     return this.translatedLangText.EDIT + " " + this.translatedLangText.MATERIAL_COST;
-
   }
 
   translateLangText() {
@@ -354,10 +302,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   public loadData() {
-
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
-      //{ alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
       { alias: 'unitType', codeValType: 'UNIT_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
@@ -365,40 +311,29 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       this.groupNameCvList = data;
       const subqueries: any[] = [];
       data.map(d => {
-
         if (d.child_code) {
           let q = { alias: d.child_code, codeValType: d.child_code };
           const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
           if (!hasMatch) {
             subqueries.push(q);
-
           }
         }
       });
       if (subqueries.length > 0) {
-
-
         this.cvDS.getCodeValuesByType(subqueries)
         subqueries.map(s => {
           this.cvDS.connectAlias(s.alias).subscribe(data => {
             this.allSubGroupNameCvList.push(...data);
-
           });
-
         });
-
       }
-
-      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
-
-
-
 
     this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
       console.log('Selected value:', value);
       var aliasName = value.child_code;
       if (aliasName === undefined) return;
+      const subGroupForm = this.pcForm?.get('group_name_cv');
       const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
       this.cvDS.getCodeValuesByType(subqueries);
       this.cvDS.connectAlias(aliasName).subscribe(data => {
@@ -406,11 +341,9 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
         if (this.selectedItems.length == 1) {
           var rec = this.selectedItems[0];
           var subgroupNameCodeValue = this.GetCodeValue(rec.subgroup_name_cv!, this.subGroupNameCvList);
-          this.subGroupNameControl.setValue(subgroupNameCodeValue);
-
+          subGroupForm?.setValue(subgroupNameCodeValue);
         }
         this.partNameControl.reset('');
-
         const groupName = this.pcForm?.get('group_name_cv')?.value;
         this.trfRepairDS.searchDistinctPartName(groupName.code_val, '').subscribe(data => {
           this.partNameControl.reset('');
@@ -418,9 +351,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
           this.partNameFilteredList = data
           this.updateValidators(this.partNameControl, this.partNameList);
         });
-
       });
-      // Handle value changes here
     });
     this.pcForm?.get('sub_group_name_cv')!.valueChanges.pipe(
       startWith(''),
@@ -439,7 +370,6 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       })
     ).subscribe();
 
-
     this.partNameControl.valueChanges.subscribe(value => {
       if (!this.valueChangesDisabled) {
         this.handleValueChange(value);
@@ -451,7 +381,6 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       debounceTime(300),
       tap(value => {
         if (value) {
-
           const partName = this.partNameControl.value;
           this.trfRepairDS.searchDistinctLength(partName, value).subscribe(data => {
             this.lengthList = data;
@@ -476,7 +405,6 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
         }
       })
     ).subscribe();
-
   }
 
   handleValueChange(value: any) {
@@ -591,69 +519,15 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       if (result.action == "confirmed") {
         this.updateTariffRepair();
       }
-      // else
-      // {
-      //   this.onNoClick();
-      // }
-
     });
   }
 
-
   update() {
-
-
-
     this.DisableValidator('material_cost_percentage');
     this.DisableValidator('labour_hour_percentage');
     if (!this.pcForm?.valid) return;
     this.UpdateInProgress = true;
-    // var confirmMessage :string="";
-    // var mCostPercentage =this.pcForm.get('material_cost_percentage')?.value;
-    // var lHourPercentage =this.pcForm.get('labour_hour_percentage')?.value;
-
-
-    // if(mCostPercentage>this.maxMaterialCost)
-    // {
-    //   confirmMessage = `${this.translatedLangText.MATERIAL_COST} ${this.translatedLangText.EXCEED} ${this.maxMaterialCost}`;
-    // }
-    // else if(mCostPercentage<this.minMaterialCost)
-    // {
-    //   confirmMessage = `${this.translatedLangText.MATERIAL_COST} ${this.translatedLangText.SMALLER_THAN} ${this.minMaterialCost}`;
-    // }
-
-    // if(lHourPercentage>this.maxMaterialCost)
-    //   {
-    //     if(confirmMessage.trim()!="")
-    //       confirmMessage+="<br>";
-
-    //     confirmMessage += `${this.translatedLangText.LABOUR_HOUR} ${this.translatedLangText.EXCEED} ${this.maxMaterialCost}`;
-    //   }
-    //   else if(lHourPercentage<this.minMaterialCost)
-    //   {
-    //     if(confirmMessage.trim()!="")
-    //       confirmMessage+="<br>";
-
-    //     confirmMessage += `${this.translatedLangText.LABOUR_HOUR} ${this.translatedLangText.SMALLER_THAN} ${this.minMaterialCost}`;
-    //   }
-
-    // if(confirmMessage.trim()!="")
-    // {
-    //   this.ConfirmItem(confirmMessage);
-    // }
-    // else
-    // {
     this.updateTariffRepair();
-    // }
-
-
-
-
-
-
-
-
-
   }
 
   updateTariffRepair() {
@@ -672,12 +546,9 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     }
     trfRepairItem.dimension = String(this.pcForm!.value['dimension'] || '');
     trfRepairItem.length = Number(this.pcForm!.value['length'] || -1);
-   
-    //if (this.selectedTariffRepair) trfRepairItem.guid = this.selectedTariffRepair?.guid;
-    //var material_cost_percentage=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
 
     if (this.checkCondition(trfRepairItem)) {
-      this.trfRepairDS.updateTariffRepairs_MaterialCost(trfRepairItem.group_name_cv, trfRepairItem.subgroup_name_cv,
+      this.trfRepairDS.updateTariffRepairs_MaterialCost([trfRepairItem.group_name_cv], [trfRepairItem.subgroup_name_cv],
         trfRepairItem.part_name, trfRepairItem.dimension, trfRepairItem.length, [], trfRepairItem.material_cost, trfRepairItem.labour_hour).subscribe(result => {
           this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
           this.EnableValidator('material_cost_percentage');
@@ -748,7 +619,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     retval = true;
     if (!retval)
       msg = `${this.translatedLangText.ONE_CONDITION}`;
-     
+
     if (trfRepairItem.labour_hour == 1 && trfRepairItem.material_cost == 1 && retval) {
       msg = `${this.translatedLangText.NO_VALUE_CHNAGE}`;
       retval = false;
