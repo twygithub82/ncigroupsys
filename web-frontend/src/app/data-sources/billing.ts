@@ -151,6 +151,69 @@ export class BillingItem extends BillingGo {
   }
 }
 
+export class BillingItemStorageDetail extends BillingGo {
+  public customer_company?: CustomerCompanyItem;
+  public currency?: CurrencyItem;
+  public repair_customer?: RepairItem[];
+  public repair_owner?: RepairItem[];
+  public residue?: ResidueItem[];
+  public steaming?: SteamItem[];
+  public cleaning?: InGateCleaningItem[];
+  public gateio_billing_sot?: BillingSOTItem[];
+  public preinsp_billing_sot?: BillingSOTItem[];
+  public storage_billing_sot?: BillingSOTItem[];
+  public lolo_billing_sot?: BillingSOTItem[];
+  public storage_detail?:BillingStorageDetail[];
+
+  constructor(item: Partial<BillingItemStorageDetail> = {}) {
+    super(item);
+    this.customer_company = item.customer_company;
+    this.currency = item.customer_company;
+    this.residue = item.residue;
+    this.steaming = item.steaming;
+    this.cleaning = item.cleaning;
+    this.repair_customer = item.repair_customer;
+    this.repair_owner = item.repair_owner;
+    this.storage_detail=item.storage_detail;
+  }
+}
+
+export class BillingStorageDetail {
+  public billing_guid?:string;
+  public create_by?:string;
+  public create_dt?:number;
+  public delete_dt?:number;
+  public end_dt?:number;
+  public guid?:string;
+  public remaining_free_storage?:number;
+  public remarks?:string;
+  public sot_guid?:string;
+  public start_dt?:number;
+  public state_cv?:string;
+  public total_cost?:number;
+  public update_by?:string;
+  public update_dt?:number;
+  constructor(item: Partial<BillingStorageDetail> = {}) {
+    
+    this.billing_guid = item.billing_guid;
+    this.create_by = item.create_by;
+    this.create_dt = item.create_dt;
+    this.delete_dt = item.delete_dt;
+    this.end_dt = item.end_dt;
+    this.guid = item.guid;
+    this.remaining_free_storage = item.remaining_free_storage;
+    this.remarks=item.remarks;
+    this.sot_guid=item.sot_guid;
+    this.start_dt=item.start_dt;
+    this.state_cv=item.state_cv;
+    this.total_cost=item.total_cost;
+    this.update_by=item.update_by;
+    this.update_dt=item.update_dt;
+    
+  }
+
+}
+
 export class BillingSOTGo {
   public free_storage?: number;
   public gate_in?: boolean;
@@ -220,7 +283,7 @@ export class BillingSOTItem extends BillingSOTGo {
   public gateio_billing?: BillingItem;
   public lolo_billing?: BillingItem;
   public preinsp_billing?: BillingItem;
-  public storage_billing?: BillingItem[];
+  public storage_billing?: BillingItemStorageDetail;
   public storing_order_tank?: StoringOrderTankItem;
   public tariff_depot?: TariffDepotItem;
 
@@ -280,6 +343,22 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
         startCursor
       }
        nodes {
+        storage_detail {
+            billing_guid
+            create_by
+            create_dt
+            delete_dt
+            end_dt
+            guid
+            remaining_free_storage
+            remarks
+            sot_guid
+            start_dt
+            state_cv
+            total_cost
+            update_by
+            update_dt
+          }
          storage_billing_sot {
             delete_dt
             free_storage
@@ -738,6 +817,22 @@ const SEARCH_BILLING_SOT_QUERY = gql`
           status_cv
           update_by
           update_dt
+          storage_detail {
+            billing_guid
+            create_by
+            create_dt
+            delete_dt
+            end_dt
+            guid
+            remaining_free_storage
+            remarks
+            sot_guid
+            start_dt
+            state_cv
+            total_cost
+            update_by
+            update_dt
+          }
         }
       }
     }

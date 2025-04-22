@@ -5,6 +5,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardContent, MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -70,7 +71,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatCardContent,
+    MatCardModule
   ]
 })
 export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -135,6 +138,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     COST: 'COMMON-FORM.COST',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
     DELETE: 'COMMON-FORM.DELETE'
+  
   }
 
   invForm?: UntypedFormGroup;
@@ -170,6 +174,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   yardCvList: CodeValuesItem[] = [];
   depotCvList: CodeValuesItem[] = [];
   maxManuDOMDt: Date = new Date();
+  minManuDOMDt:Date = new Date();
 
   pageIndex = 0;
   pageSize = 10;
@@ -194,6 +199,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     private translate: TranslateService
   ) {
     super();
+    this.minManuDOMDt.setMonth(this.minManuDOMDt.getMonth()-1);
     this.translateLangText();
     this.initSearchForm();
     this.initInvoiceForm();
@@ -224,6 +230,8 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       inv_no: [''],
       inv_dt: ['']
     })
+    const today = new Date().toISOString().substring(0, 10);
+    this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 
@@ -866,7 +874,39 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     this.invoiceTotalCostControl.setValue('0.00');
     const totalCost = this.selection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
+
       var itm: any = s;
+
+      if(!itm.storage_billing)
+      {
+        let packDepotItm: PackageDepotItem = new PackageDepotItem();
+        packDepotItm.storage_cal_cv = itm.storage_cal_cv;
+        let cutOffDt: Date = new Date(this.invoiceDateControl.value!);
+        cutOffDt.setHours(23);
+        cutOffDt.setMinutes(59);
+        cutOffDt.setSeconds(59);
+        
+        let daysDifference: number = Number(this.pdDS.getStorageDays(itm.storing_order_tank!, packDepotItm, 0,(cutOffDt.getTime()/1000)));
+        let freeStorage=itm.free_storage;
+        let remainFreeDays=freeStorage-daysDifference;
+        let startDt= new Date(this.invoiceDateControl.value!);
+        startDt.setDate(-1*daysDifference);
+
+        itm.currentStorageBilling={};
+        itm.currentStorageBilling.start_dt= startDt.getTime();
+        itm.currentStorageBilling.end_dt=cutOffDt.getTime();
+        itm.currentStorageBilling.remaining_free_storage = (remainFreeDays>0?remainFreeDays:0);
+        itm.currentStorageBilling.total_cost= (remainFreeDays>0?0:Math.abs(remainFreeDays)*itm.storage_cost);
+        itm.currentStorageBilling.billing_guid='';
+        itm.currentStorageBilling.sot_guid=itm.storing_order_tank?.guid;
+        itm.currentStorageBilling.state_cv="STORAGE_START";
+
+      }
+      else
+      {
+
+      }
+
       return accumulator + itm.total_cost;
       //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
     }, 0); // Initialize accumulator to 0
@@ -975,4 +1015,10 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     return validStatus.includes(residue!.status_cv!);
 
   }
+
+
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
 }

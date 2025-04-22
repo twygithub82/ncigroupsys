@@ -302,10 +302,15 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     return undefined;
   }
 
-  getStorageDays(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem, free_storage: number = 0): number | undefined {
+  getStorageDays(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem, free_storage: number = 0, cut_off_date:number=0): number | undefined {
     sotItem.out_gate = sotItem.out_gate?.filter(outGate => outGate.delete_dt == 0 || outGate.delete_dt == null);
     var currentDateOut: Date = new Date();
 
+    if(cut_off_date>0)
+    {
+      currentDateOut = new Date(cut_off_date * 1000);
+    }
+    
     if (sotItem?.out_gate?.[0]?.eir_dt) {
       const createDtOutSeconds = sotItem.out_gate[0].eir_dt;
       currentDateOut = new Date(createDtOutSeconds * 1000);
