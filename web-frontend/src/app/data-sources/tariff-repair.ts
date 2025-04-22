@@ -159,19 +159,19 @@ export const GET_TARIFF_REPAIR_QUERY_WITH_COUNT = gql`
 
 export const GET_DISTINCT_PART_NAME = gql`
   query queryDistinctPartName($groupName: String, $subgroupName: String, $part_name: String) {
-    resultList : queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName, part_name: $part_name)
+    resultList: queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName, part_name: $part_name)
   }
 `;
 
 export const GET_DISTINCT_DIMENSION = gql`
   query queryDistinctDimension($partName: String) {
-    resultList : queryDistinctDimension(partName: $partName)
+    resultList: queryDistinctDimension(partName: $partName)
   }
 `;
 
 export const GET_DISTINCT_LENGTH = gql`
   query queryDistinctLength($partName: String, $dimension: String) {
-    resultList : queryDistinctLength(partName: $partName, dimension: $dimension) {
+    resultList: queryDistinctLength(partName: $partName, dimension: $dimension) {
       length
       length_unit_cv
     }

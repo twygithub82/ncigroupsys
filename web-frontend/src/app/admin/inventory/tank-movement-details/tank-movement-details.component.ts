@@ -1942,7 +1942,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackSteamingCompleted(row: SteamItem) {
-    return Utility.isTankInYard(this.sot?.tank_status_cv) && row.status_cv === 'COMPLETED';
+    return (this.sot?.tank_status_cv === 'STEAMING' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
   }
 
   onRollbackSteamingJobs(event: Event, row: SteamItem) {
@@ -1992,7 +1992,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackResidueCompleted(row: ResidueItem) {
-    return Utility.isTankInYard(this.sot?.tank_status_cv) && row.status_cv === 'COMPLETED';
+    return this.sot?.tank_status_cv === "CLEANING" && row.status_cv === 'COMPLETED' && this.cleaningItem?.[0]?.status_cv === 'APPROVED';
   }
 
   onRollbackResidueJobs(event: Event, row: ResidueItem) {
@@ -2043,7 +2043,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackCleaningCompleted(row?: InGateCleaningItem) {
-    return Utility.isTankInYard(this.sot?.tank_status_cv) && row?.status_cv === 'COMPLETED';
+    return (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.repairItem?.length)) && row?.status_cv === 'COMPLETED';
   }
 
   onRollbackCleaningJobs(event: Event, row?: InGateCleaningItem) {
@@ -2087,7 +2087,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackRepairQC(row: RepairItem) {
-    return Utility.isTankInYard(this.sot?.tank_status_cv) && this.repairDS.canRollbackQC(row);
+    return (this.sot?.tank_status_cv === "REPAIR" || this.sot?.tank_status_cv === "STORAGE") && this.repairDS.canRollbackQC(row);
   }
 
   onRollbackRepairQC(event: Event, row: RepairItem) {
