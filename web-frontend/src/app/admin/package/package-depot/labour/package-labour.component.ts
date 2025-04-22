@@ -94,7 +94,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList1?: CustomerCompanyItem[];
-  customer_companyList?:CustomerCompanyItem[];
+  customer_companyList?: CustomerCompanyItem[];
   cleaning_categoryList?: CleaningCategoryItem[];
   pack_labourList?: PackageLabourItem[];
 
@@ -413,17 +413,12 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
 
     if (this.customerCodeControl.value) {
-      //if (this.customerCodeControl.value.length > 0) 
-      {
-       // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        //var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
-      }
+      where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
     }
 
-    if (this.plForm!.value["customer_cost"]){
+    if (this.plForm!.value["customer_cost"]) {
       const selectedCost: number = Number(this.plForm!.value["customer_cost"]);
-      where.cost = {lte: selectedCost};
+      where.cost = { eq: selectedCost };
     }
 
     // if (this.plForm!.value["min_cost"] && this.plForm!.value["max_cost"]) {
