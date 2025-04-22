@@ -19,9 +19,6 @@ export class TariffBufferItem {
   public package_buffer?: PackageBufferItem;
 
   constructor(item: Partial<TariffBufferItem> = {}) {
-    //Object.assign(this, { guid: '', ...item });
-
-    // {
     this.guid = item.guid;
     if (!this.guid) this.guid = '';
     this.buffer_type = item.buffer_type;
@@ -94,12 +91,36 @@ export const GET_TARIFF_BUFFER_QUERY_WITH_COUNT = gql`
   }
 `;
 
+export const GET_TARIFF_BUFFER_FOR_SELECT = gql`
+  query queryTariffBuffer($where: tariff_bufferFilterInput, $order:[tariff_bufferSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    tariffBufferResult : queryTariffBuffer(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        buffer_type
+        cost
+        create_by
+        create_dt
+        delete_dt
+        guid
+        remarks
+        update_by
+        update_dt
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const UPDATE_TARIFF_BUFFER = gql`
    mutation updateTariffBuffer($td: tariff_bufferInput!) {
     updateTariffBuffer(updateTariffBuffer: $td)
   }
 `;
-
 
 export const DELETE_TARIFF_BUFFER = gql`
    mutation deleteTariffBuffer($deleteTariffBuffer_guids: [String!]!) {
@@ -112,9 +133,6 @@ export const ADD_TARIFF_BUFFER = gql`
     addTariffBuffer(newTariffBuffer: $td)
   }
 `;
-
-
-
 
 export class TariffBufferDS extends BaseDataSource<TariffBufferItem> {
   constructor(private apollo: Apollo) {
@@ -157,6 +175,34 @@ export class TariffBufferDS extends BaseDataSource<TariffBufferItem> {
     return this.apollo
       .query<any>({
         query: GET_TARIFF_BUFFER_QUERY_WITH_COUNT,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffBufferItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const tariffBufferResult = result.tariffBufferResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(tariffBufferResult.nodes);
+          this.pageInfo = tariffBufferResult.pageInfo;
+          this.totalCount = tariffBufferResult.totalCount;
+          return tariffBufferResult.nodes;
+        })
+      );
+  }
+
+  QueryTariffBufferForSelect(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffBufferItem[]> {
+    this.loadingSubject.next(true);
+    if (!last)
+      if (!first)
+        first = 10;
+    return this.apollo
+      .query<any>({
+        query: GET_TARIFF_BUFFER_FOR_SELECT,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

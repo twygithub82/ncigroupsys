@@ -40,6 +40,7 @@ import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer';
 
 @Component({
   selector: 'app-package-buffer',
@@ -94,16 +95,16 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
   ccDS: CustomerCompanyDS;
 
+  tariffBuffDS: TariffBufferDS;
   packBuffDS: PackageBufferDS;
-  // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
 
-  // packDepotItems:PackageDepotItem[]=[];
   packBufferItems: PackageBufferItem[] = []
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   cleaning_categoryList?: CleaningCategoryItem[];
+  bufferList?: TariffBufferItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -215,6 +216,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    ALL: 'COMMON-FORM.ALL',
   }
 
   constructor(
@@ -229,6 +231,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.tariffBuffDS = new TariffBufferDS(this.apollo)
     this.packBuffDS = new PackageBufferDS(this.apollo)
     this.custCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
@@ -271,8 +274,6 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
         });
       })
     ).subscribe();
-
-
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -282,6 +283,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   refresh() {
     this.loadData();
   }
+
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -289,8 +291,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-
   }
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -387,12 +389,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
 
     if (this.customerCodeControl.value) {
-      //if (this.customerCodeControl.value.length > 0) 
-      {
-        // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        //var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
-      }
+      where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
     }
 
     if (this.pcForm!.value["customer_cost"]) {
@@ -402,7 +399,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.pcForm?.get('profile_name')?.value) {
       const tariffBuffer: any = {}
-      tariffBuffer.buffer_type = { contains: this.pcForm?.get('profile_name')?.value }
+      tariffBuffer.buffer_type = { eq: this.pcForm?.get('profile_name')?.value }
       where.tariff_buffer = tariffBuffer;
     }
 
@@ -558,6 +555,10 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   }
   public loadData() {
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+    });
+
+    this.subs.sink = this.tariffBuffDS.QueryTariffBufferForSelect({}, null, 100).subscribe(data => {
+      this.bufferList = data;
     });
   }
   showNotification(
