@@ -123,7 +123,8 @@ export class FormDialogComponent {
 
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
-      reference: [this.booking?.reference],
+      reference: [''],
+      edit_reference: [this.booking?.reference],
       book_type_cv: [this.booking?.book_type_cv],
       booking_dt: [Utility.convertDateMoment(this.booking?.booking_dt)],
       test_class_cv: [this.booking?.test_class_cv]
@@ -140,7 +141,7 @@ export class FormDialogComponent {
           sot_guid: item.guid,
           book_type_cv: this.bookingForm.get('book_type_cv')?.value,
           booking_dt: Utility.convertDate(bookDt),
-          reference: this.bookingForm.get('reference')?.value || item.reference,
+          reference: this.bookingForm.get('reference')?.value || ((this.action === 'edit') ? this.bookingForm.get('edit_reference')?.value : item.reference),
           test_class_cv: this.bookingForm.get('test_class_cv')?.value,
           status_cv: this.booking?.status_cv
         }
