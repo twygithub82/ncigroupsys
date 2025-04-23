@@ -174,7 +174,7 @@
                       <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
                         class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkDisable(row)">
                       </mat-checkbox>
-                      <div class="me-3">
+                      <div class="w-xl-18 w-lg-33">
                         <span class="font-bold">{{row.tank_no}}</span>
                         @if (checkBooking(filterDeleted(row.booking || []))){
                         <div [ngClass]="'badge badge-solid-green ms-1'"><span>

@@ -265,6 +265,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
+    this.search();
   }
 
   /** Whether the number of selected elements matches the total number of rows. */

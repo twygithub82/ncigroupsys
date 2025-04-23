@@ -304,6 +304,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       this.testClassCvList = addDefaultSelectOption(data, 'All');
       this.testClassCvListNewBooking = addDefaultSelectOption(data);
     });
+    this.search();
   }
 
   showNotification(
