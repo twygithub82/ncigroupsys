@@ -83,15 +83,9 @@ interface Condition {
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'fName',
     'lName',
     'email',
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
   ];
 
   action: string;
@@ -111,8 +105,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
-  //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -224,8 +216,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
 
   selectedItem: ExclusiveSteamingItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
@@ -244,33 +234,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.ccDS = new CustomerCompanyDS(this.apollo);
 
     this.pcForm = this.createExclusiveSteam();
-    // this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
-    //this.tcDS = new TariffCleaningDS(this.apollo);
-    //this.sotDS = new StoringOrderTankDS(this.apollo);
-    //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    // this.catDS= new CleaningCategoryDS(this.apollo);
-
 
     this.tnkItems = [];
     this.action = data.action!;
     this.translateLangText();
     this.InitValueChanges()
     if (this.action === "edit") this.patchExclusiveSteam(data.selectedItem);
-    // this.sotExistedList = data.sotExistedList;
-    // if (this.action === 'edit') {
-    //   this.dialogTitle = 'Edit ' + data.item.tank_no;
-    //   this.storingOrderTank = data.item;
-    // } else {
-    //   this.dialogTitle = 'New Record';
-    //   this.storingOrderTank = new StoringOrderTankItem();
-    // }
-    // this.index = data.index;
-    // this.storingOrderTankForm = this.createStorigOrderTankForm();
-    // this.initializeValueChange();
-
-    // if (this.storingOrderTank?.tariff_cleaning) {
-    //   this.lastCargoControl.setValue(this.storingOrderTank?.tariff_cleaning);
-    // }
   }
 
   patchExclusiveSteam(row: ExclusiveSteamingItem) {
@@ -280,7 +249,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       min_temp: row.temp_min,
       max_temp: row.temp_max === 9999 ? "" : row.temp_max,
       labour: row.package_steaming?.labour,
-      last_cargo: row.tariff_cleaning,
+      last_cargo: [row.tariff_cleaning],
       customer_code: row.package_steaming?.customer_company,
       // qty:[''],
       cost: row.package_steaming?.cost?.toFixed(2),
@@ -295,18 +264,15 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       min_temp: ['', [Validators.required]],
       max_temp: [''],
       labour: [''],
-      // qty:[''],
       cost: [''],
       remarks: [''],
       customer_code: [''],
       last_cargo: ['']
-
     },
       { validators: tempRangeValidator });
   }
 
   public InitValueChanges() {
-
     this.pcForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -324,37 +290,13 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     ).subscribe();
 
     var searchCriteria = '';
-    this.subs.sink = this.trfCleanDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+    this.subs.sink = this.trfCleanDS.getAllTariffCleaning({ or: [{ cargo: { contains: searchCriteria } }], delete_dt: { eq: null } }, 1000).subscribe(data => {
       this.last_cargoList = data
+      if (this.action === "edit") {
+        const found = this.last_cargoList?.filter(x => x.guid === this.data.selectedItem?.tariff_cleaning?.guid);
+        this.pcForm?.get('last_cargo')?.setValue(found);
+      }
     });
-
-    // this.pcForm!.get('last_cargo')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     var searchCriteria = '';
-    //     if (typeof value === 'string') {
-    //       searchCriteria = value;
-    //     } else {
-    //       searchCriteria = value.cargo;
-    //     }
-    //     this.subs.sink = this.trfCleanDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-    //       this.last_cargoList = data
-    //     });
-    //   })
-    // ).subscribe();
-    // this.pcForm.get("cost")?.valueChanges.subscribe(data=>{
-    //   this.pcForm.patchValue({
-    //     cost: this.pcForm.get("cost")?.value.toFixed(2)
-    //   });
-    // });
-
-    // this.pcForm.get("labour")?.valueChanges.subscribe(data=>{
-    //   this.pcForm.patchValue({
-    //     labour: this.pcForm.get("labour")?.value.toFixed(2)
-    //   });
-    // });
-
   }
   displayLastCargoFn(lc: TariffCleaningItem): string {
     return lc ? `${lc.cargo}` : '';

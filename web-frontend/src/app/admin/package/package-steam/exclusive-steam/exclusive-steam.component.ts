@@ -296,7 +296,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
+        this.search();
         // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
       }
     });
@@ -364,15 +364,12 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   editCall(row: ExclusiveSteamingItem) {
-    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
-    //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '600px',
       height: 'auto',
@@ -381,14 +378,12 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
         langText: this.langText,
         selectedItem: row
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
         this.search();
-        // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
       }
     });
 

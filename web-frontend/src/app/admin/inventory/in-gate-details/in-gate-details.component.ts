@@ -439,7 +439,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   onInGateFormSubmit() {
     if (this.inGateForm?.valid) {
       console.log('Valid inGateForm', this.inGateForm?.value);
-      this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.get('haulier')?.value;
+      this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.get('haulier')?.value?.toUpperCase();
       this.storingOrderTankItem!.owner_guid = this.inGateForm.get('owner_guid')?.value;
       this.storingOrderTankItem!.job_no = this.inGateForm.get('job_no')?.value;
       this.storingOrderTankItem!.last_cargo_guid = this.inGateForm.get('last_cargo_guid')?.value;
@@ -451,7 +451,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         eir_no: this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.eir_no,
         eir_dt: Utility.convertDate(this.inGateForm.get('eir_dt')?.value) as number,
         so_tank_guid: this.storingOrderTankItem?.guid,
-        driver_name: this.inGateForm.get('driver_name')?.value,
+        driver_name: this.inGateForm.get('driver_name')?.value?.toUpperCase(),
         vehicle_no: this.inGateForm.get('vehicle_no')?.value?.toUpperCase(),
         remarks: this.inGateForm.get('remarks')?.value,
         tank: sot,

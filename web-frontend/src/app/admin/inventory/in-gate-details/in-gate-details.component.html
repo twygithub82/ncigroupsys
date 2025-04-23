@@ -180,7 +180,7 @@
                               <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.HAULIER}}</mat-label>
-                                  <input matInput formControlName="haulier" required>
+                                  <input matInput formControlName="haulier" class="text-uppercase" required>
                                   @if (inGateForm?.get('haulier')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
@@ -224,7 +224,7 @@
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
-                                  <input matInput formControlName="driver_name" required>
+                                  <input matInput formControlName="driver_name" class="text-uppercase" required>
                                   @if (inGateForm?.get('driver_name')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
