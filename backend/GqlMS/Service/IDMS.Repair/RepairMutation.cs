@@ -769,7 +769,7 @@ namespace IDMS.Repair.GqlTypes
                     rollbackRepair.status_cv = CurrentServiceStatus.APPROVED;
 
                     var repairParts = rollbackRepair.repair_part;
-                    var jobGuidString = string.Join(",", repairParts.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    var jobGuidString = string.Join(",", repairParts.Select(j => j.job_order_guid).Distinct().ToList().Select(g => $"'{g}'"));
 
                     string sql = "";
                     sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
