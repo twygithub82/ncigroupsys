@@ -78,8 +78,8 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
     'eir_dt',
     'last_cargo',
     'purpose',
+    'tank_status_cv',
     'yard_cv',
-    'tank_status_cv'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TRANSFER'
