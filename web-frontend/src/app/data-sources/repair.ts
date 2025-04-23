@@ -1920,8 +1920,8 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canRollbackStatus(re: RepairItem | undefined, rp: RepairPartItem[]): boolean {
-    return (re?.status_cv === 'APPROVED' || re?.status_cv === 'PENDING');
-    // return (re?.status_cv === 'NO_ACTION' || re?.status_cv === 'APPROVED' || re?.status_cv === 'PENDING');
+    // return (re?.status_cv === 'APPROVED' || re?.status_cv === 'PENDING');
+    return (re?.status_cv === 'NO_ACTION' || re?.status_cv === 'APPROVED' || re?.status_cv === 'PENDING');
   }
 
   canAssign(re: RepairItem | undefined): boolean {

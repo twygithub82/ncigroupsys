@@ -85,8 +85,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     'customer',
     'estimate_no',
     'allocate_dt',
-    'team',
     'status_cv',
+    'team',
     'actions'
   ];
 
