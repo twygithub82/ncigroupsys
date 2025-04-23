@@ -524,7 +524,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       where.steaming.some.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt']), lte: Utility.convertDate(this.searchForm!.value['est_dt'], true) };
     }
 
-    if (this.searchForm!.value['est_status_cv'] !== undefined && this.searchForm!.value['est_status_cv'].length > 0) {
+    if (this.searchForm!.value['est_status_cv'].length) {
       if (!where.steaming) where.steaming = {};
       if (!where.steaming.some) where.steaming.some = {};
       where.steaming.some.status_cv = { in: this.searchForm!.value['est_status_cv'] };
@@ -910,7 +910,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   canApprove(steamItem: SteamItem) {
-
     return this.steamDS.canApprove(steamItem!) && !steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
   }
 
