@@ -1,5 +1,6 @@
 @use 'sass:math';
 @import '/src/assets/scss/common/_variables.scss';
+@import '/src/assets/scss/theme/theme-color-variables.scss';
 
 .header .header-button {
   margin-right: auto;
@@ -1863,10 +1864,96 @@ $grid-breakpoints: (
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-mat-panel-description .mat-mdc-mini-fab {
-  box-shadow: none;
+.mat-mdc-mini-fab {
+  box-shadow: none !important;
 
   &:hover {
-    box-shadow: none;
+    box-shadow: none !important;
   }
+}
+
+// .tlx-mdc-tab-group .mat-mdc-tab {
+//   background-color: $theme-gold-purple-legal-bg;
+//   margin: 0 1px;
+//   border-radius: 6px 6px 0 0;
+//   color: $theme-gold-purple-nav-anchor;
+//   font-weight: 600;
+//   transition: background-color 0.3s;
+// }
+
+// .tlx-mdc-tab-group .mat-mdc-tab.mdc-tab--active {
+//   background-color: $theme-gold-purple;
+//   color: white !important;
+// }
+
+// .tlx-mdc-tab-group .mat-mdc-tab .mdc-tab__ripple {
+//   display: none; // optional: remove ripple
+// }
+
+// // Optional: hide underline indicator
+// // .tlx-mdc-tab-group .mat-mdc-tab .mdc-tab-indicator {
+// //   display: none;
+// // }
+
+// .tlx-mdc-tab-group .mat-mdc-tab-group .mat-mdc-tab-header {
+//   background-color: $theme-gold-purple-bar !important;
+// }
+
+// .tlx-mdc-tab-group .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+//   color: white !important;
+// }
+
+// .tlx-card {
+//   background-color: #fff;
+//   .header {
+//     background-color: #fff;
+//     h2 {
+//       color: #000;
+//     }
+//   }
+// }
+
+// .mat-expansion-panel-header:not([aria-disabled="true"]) {
+//   background-color: $theme-gold-purple-legal-bg;
+
+//   &:hover,
+//   &:focus {
+//     background-color: $theme-gold-purple-navbar-brand_hover !important;
+//   }
+
+//   &.mat-expanded {
+//     background-color: $theme-gold-purple;
+
+//     .header h2 {
+//       color: white;
+//     }
+
+//     &:hover,
+//     &:focus {
+//       background-color: $theme-gold-purple-navbar-brand_hover !important;
+//     }
+//   }
+// }
+
+// .mat-expansion-panel-content:not([aria-disabled="true"]) {
+//   background-color: #fff;
+// }
+
+// .mat-accordion:not([aria-disabled="true"]) {
+//   background-color: #fff;
+
+//   & .mat-expansion-panel.bg-light-grey {
+//     background-color: $theme-gold-purple-menu-list-active !important;
+//   }
+// }
+
+.mat-expansion-panel-spacing {
+  margin: 0 !important;
+}
+
+.relative-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
 }

@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -36,7 +36,6 @@ import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 

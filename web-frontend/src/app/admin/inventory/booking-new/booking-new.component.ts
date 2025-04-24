@@ -555,9 +555,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
-      this.sotSelection.clear();
-      this.selectedCompany = "";
-      this.selectedItemsPerPage = {};
       this.updatePageSelection();
     });
   }
@@ -565,6 +562,10 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
+        this.sotSelection.clear();
+        this.selectedCompany = "";
+        this.selectedItemsPerPage = {};
+        
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;

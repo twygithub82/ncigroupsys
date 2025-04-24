@@ -1774,6 +1774,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.section = section;
   }
 
+  expandAll(event: MouseEvent, currentSection: string): void {
+    const isExpanded = this.verifySection(currentSection);
+    
+    // Stop propagation ONLY if panel is currently expanded to prevent it from collapsing
+    if (isExpanded) {
+      event.stopPropagation();
+    }
+  
+    // Delay section update so that Angular finishes handling expansion toggle first
+    setTimeout(() => this.setSection('all'), 0);
+  }
+
   private subscribeToPurposeChangeEvent(
     subscribeFn: (guid: string) => Observable<any>,
     sot_guid: string
@@ -2060,7 +2072,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.preventDefault(event);
 
     const distinctJobOrders = new JobOrderGO(row?.job_order);
-    
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
