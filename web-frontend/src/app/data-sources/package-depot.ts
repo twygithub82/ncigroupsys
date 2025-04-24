@@ -310,7 +310,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     {
       currentDateOut = new Date(cut_off_date * 1000);
     }
-    
+
     if (sotItem?.out_gate?.[0]?.eir_dt) {
       const createDtOutSeconds = sotItem.out_gate[0].eir_dt;
       currentDateOut = new Date(createDtOutSeconds * 1000);
@@ -322,7 +322,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
         const createDtInSeconds = sotItem.in_gate[0].eir_dt;
         const createDate = new Date(createDtInSeconds * 1000);
         const differenceInMs = currentDateOut.getTime() - createDate.getTime();
-        const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+        const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;//Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
 
         return differenceInDays;
       }
@@ -335,7 +335,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
         const createDtInSeconds = sotItem.cleaning[0].complete_dt;
         const createDate = new Date(createDtInSeconds * 1000);
         const differenceInMs = currentDateOut.getTime() - createDate.getTime();
-        const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+        const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
 
         return differenceInDays;
       }
@@ -360,7 +360,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
           const createDtInSeconds = Number(Utility.convertDate(latestCompleteDate));
           const createDate = new Date(createDtInSeconds * 1000);
           const differenceInMs = currentDateOut.getTime() - createDate.getTime();
-          const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+          const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
 
           return differenceInDays;
         }

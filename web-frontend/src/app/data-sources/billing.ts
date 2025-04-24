@@ -193,6 +193,7 @@ export class BillingStorageDetail {
   public total_cost?:number;
   public update_by?:string;
   public update_dt?:number;
+  public billing?:BillingItem;
   constructor(item: Partial<BillingStorageDetail> = {}) {
     
     this.billing_guid = item.billing_guid;
@@ -209,6 +210,7 @@ export class BillingStorageDetail {
     this.total_cost=item.total_cost;
     this.update_by=item.update_by;
     this.update_dt=item.update_dt;
+    this.billing=item.billing;
     
   }
 
@@ -329,6 +331,19 @@ export class BillingEstimateRequest {
   public billing_party?: string;
   public process_guid?: string;
   public process_type?: string;
+}
+
+export class StorageDetailRequest {
+  public action?: string;
+  public end_dt?: number;
+  public guid?: string;
+  public remaining_free_storage?: number;
+  public remarks?:string;
+  public sot_guid?:string;
+  public start_dt?:number;
+  public state_cv?:string;
+  public total_cost?:number;
+
 }
 
 
@@ -832,6 +847,12 @@ const SEARCH_BILLING_SOT_QUERY = gql`
             total_cost
             update_by
             update_dt
+            billing {
+              invoice_dt
+              invoice_due
+              invoice_no
+              guid
+            }
           }
         }
       }
@@ -1119,14 +1140,14 @@ const SEARCH_CLEANING_BILLING_QUERY = gql`
 `;
 
 export const ADD_BILLING = gql`
-  mutation addBilling($newBilling: billingInput!,$billingEstimateRequests:[BillingEstimateRequestInput!]!) {
-    addBilling(newBilling: $newBilling,billingEstimateRequests:$billingEstimateRequests)
+  mutation addBilling($newBilling: billingInput!,$billingEstimateRequests:[BillingEstimateRequestInput!]!,$storageDetail:[StorageDetailRequestInput!]) {
+    addBilling(newBilling: $newBilling,billingEstimateRequests:$billingEstimateRequests,storageDetail:$storageDetail)
   }
 `;
 
 export const UPDATE_BILLING = gql`
-  mutation updateBilling($updateBilling: billingInput,$billingEstimateRequests:[BillingEstimateRequestInput!]!) {
-    updateBilling(updateBilling: $updateBilling,billingEstimateRequests:$billingEstimateRequests)
+  mutation updateBilling($updateBilling: billingInput,$billingEstimateRequests:[BillingEstimateRequestInput!]!,$storageDetail:[StorageDetailRequestInput!]) {
+    updateBilling(updateBilling: $updateBilling,billingEstimateRequests:$billingEstimateRequests,storageDetail:$storageDetail)
   }
 `;
 
@@ -1322,22 +1343,24 @@ export class BillingDS extends BaseDataSource<BillingItem> {
       );
   }
 
-  addBilling(newBilling: any, billingEstimateRequests: any): Observable<any> {
+  addBilling(newBilling: any, billingEstimateRequests: any,storageDetail:any=null): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_BILLING,
       variables: {
         newBilling,
-        billingEstimateRequests
+        billingEstimateRequests,
+        storageDetail
       }
     });
   }
 
-  _updateBilling(updateBilling: any, billingEstimateRequests: any): Observable<any> {
+  _updateBilling(updateBilling: any, billingEstimateRequests: any,storageDetail:any=null): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_BILLING,
       variables: {
         updateBilling,
-        billingEstimateRequests
+        billingEstimateRequests,
+        storageDetail
       }
     });
   }

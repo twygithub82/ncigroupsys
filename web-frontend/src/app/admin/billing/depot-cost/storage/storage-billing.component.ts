@@ -29,7 +29,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
-import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, BillingSOTItem } from 'app/data-sources/billing';
+import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, BillingSOTItem, BillingStorageDetail, StorageDetailRequest } from 'app/data-sources/billing';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
@@ -78,17 +78,22 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 })
 export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'select',
-    'tank_no',
-    'customer',
-    'eir_no',
-    'eir_dt',
-    //'last_cargo',
-    //'purpose',
-    'cost',
-    'tank_status_cv',
-    'invoice_no',
-    'invoice_date',
+    "invoice_dt",
+    "invoice_no",
+    "cutoff_dt",
+    "total_cost",
+    "action"
+    // 'select',
+    // 'tank_no',
+    // 'customer',
+    // 'eir_no',
+    // 'eir_dt',
+    // //'last_cargo',
+    // //'purpose',
+    // 'cost',
+    // 'tank_status_cv',
+    // 'invoice_no',
+    // 'invoice_date',
     //  'invoiced',
     // 'action'
   ];
@@ -184,7 +189,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  selection = new GuidSelectionModel<ResidueItem>(true, []);
+  selection = new GuidSelectionModel<any>(true, []);
   //selection = new SelectionModel<InGateCleaningItem>(true, []);
   invoiceNoControl = new FormControl('', [Validators.required]);
   invoiceDateControl = new FormControl('', [Validators.required]);
@@ -589,6 +594,10 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     ]);
   }
 
+  displayNumber(value:number)
+  {
+    return Utility.formatNumberDisplay(value);
+  }
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
 
@@ -689,7 +698,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-  delete(event: Event) {
+  delete_invoice(event: Event,row:BillingStorageDetail) {
 
     event.preventDefault(); // Prevents the form submission
 
@@ -708,24 +717,67 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        const guids = this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
-        this.RemoveEstimatesFromInvoice(event, guids!);
+        const guids:string[] = [row.guid!];
+        const proGuids:string[]=[row.billing?.guid!];
+        this.RemoveEstimatesFromInvoice(event,proGuids, row);
       }
     });
   }
-  RemoveEstimatesFromInvoice(event: Event, processGuid: string[]) {
-    var updateBilling: any = null;
-    let billingEstimateRequests: BillingEstimateRequest[] = [];
-    processGuid.forEach(g => {
-      var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
-      billingEstReq.action = "CANCEL";
-      billingEstReq.billing_party = this.billingParty;
-      billingEstReq.process_guid = g;
-      billingEstReq.process_type = this.processType;
-      billingEstimateRequests.push(billingEstReq);
-    });
 
-    this.billDS._updateBilling(updateBilling, billingEstimateRequests).subscribe(result => {
+  // delete(event: Event) {
+
+  //   event.preventDefault(); // Prevents the form submission
+
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+  //     data: {
+  //       headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+  //       action: 'delete',
+  //     },
+  //     direction: tempDirection
+  //   });
+  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result.action === 'confirmed') {
+  //       const guids = this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
+  //       this.RemoveEstimatesFromInvoice(event, guids!);
+  //     }
+  //   });
+  // }
+  RemoveEstimatesFromInvoice(event: Event, processGuid:string[],row:BillingStorageDetail) {
+    var updateBilling: any = null;
+    let billingStorageDetailRequests: StorageDetailRequest[] = [];
+    let billingEstReqs:BillingEstimateRequest[]=[];
+
+    processGuid.forEach(g=>{
+    var billingEstReq:BillingEstimateRequest= new BillingEstimateRequest();
+
+    billingEstReq.action="CANCEL";
+    billingEstReq.process_guid=g;
+    billingEstReq.process_type=this.processType;
+    billingEstReq.billing_party=this.billingParty;
+    billingEstReqs.push(billingEstReq);
+
+    }); 
+   // storageDetailGuid.forEach(g => {
+      var billingstoDetail: StorageDetailRequest = new StorageDetailRequest();
+      billingstoDetail.action = "CANCEL";
+      billingstoDetail.guid = row.guid;
+      billingstoDetail.sot_guid=row.sot_guid;
+      billingstoDetail.start_dt=row.start_dt;
+      billingstoDetail.end_dt=row.end_dt;
+      billingstoDetail.total_cost=row.total_cost;
+      billingstoDetail.remaining_free_storage=row.remaining_free_storage;
+      billingstoDetail.remarks=row.remarks;
+      billingstoDetail.state_cv=row.state_cv;
+      billingStorageDetailRequests.push(billingstoDetail);
+    //});
+
+    this.billDS._updateBilling(updateBilling, null,billingStorageDetailRequests).subscribe(result => {
       if (result.data.updateBilling) {
         this.handleSaveSuccess(result.data.updateBilling);
         this.onCancel(event);
@@ -831,6 +883,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
+    var billingStorageDetailReqs: StorageDetailRequest[]=[];
     this.selection.selected.map(c => {
       var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
 
@@ -839,8 +892,9 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       billingEstReq.process_guid = c.guid;
       billingEstReq.process_type = this.processType;
       billingEstimateRequests.push(billingEstReq);
+      billingStorageDetailReqs.push(c.currentStorageBilling as StorageDetailRequest);
     });
-    this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {
+    this.billDS.addBilling(newBilling, billingEstimateRequests,billingStorageDetailReqs).subscribe(result => {
       if (result.data.addBilling) {
         this.handleSaveSuccess(result.data.addBilling);
         this.onCancel(event);
@@ -867,7 +921,8 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   onCancel(event: Event) {
     event.stopPropagation();
     this.invoiceNoControl.reset('');
-    this.invoiceDateControl.reset('');
+    const today = new Date().toISOString().substring(0, 10);
+    this.invoiceDateControl.setValue(today);
   }
 
   calculateTotalCost() {
@@ -892,14 +947,16 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         let startDt= new Date(this.invoiceDateControl.value!);
         startDt.setDate(-1*daysDifference);
 
-        itm.currentStorageBilling={};
-        itm.currentStorageBilling.start_dt= startDt.getTime();
-        itm.currentStorageBilling.end_dt=cutOffDt.getTime();
+        itm.currentStorageBilling=new StorageDetailRequest();
+        itm.currentStorageBilling.start_dt= Utility.convertDate(startDt);
+        itm.currentStorageBilling.end_dt=Utility.convertDate(cutOffDt);
         itm.currentStorageBilling.remaining_free_storage = (remainFreeDays>0?remainFreeDays:0);
         itm.currentStorageBilling.total_cost= (remainFreeDays>0?0:Math.abs(remainFreeDays)*itm.storage_cost);
-        itm.currentStorageBilling.billing_guid='';
+        itm.currentStorageBilling.action='NEW';
         itm.currentStorageBilling.sot_guid=itm.storing_order_tank?.guid;
-        itm.currentStorageBilling.state_cv="STORAGE_START";
+        itm.currentStorageBilling.state_cv= itm.tank_status_cv=="RELEASED"?"START_END":"START";
+        itm.currentStorageBilling.remarks='';
+        itm.currentStorageBilling.guid='';
 
       }
       else
@@ -907,7 +964,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
       }
 
-      return accumulator + itm.total_cost;
+      return accumulator +  itm.currentStorageBilling.total_cost;
       //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
     }, 0); // Initialize accumulator to 0
     this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
@@ -1019,6 +1076,11 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  ConvertEpochToDate(dt:number)
+  {
+    return Utility.convertEpochToDateStr(dt);
   }
 
 }

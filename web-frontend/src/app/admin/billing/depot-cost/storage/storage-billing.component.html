@@ -197,10 +197,10 @@
                 <mat-icon>
                   close
                 </mat-icon>
-                {{translatedLangText.CANCEL}}
+                {{translatedLangText.CLEAR_ALL}}
               </button>
               <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5"
-                (click)="delete($event)">
+                 hidden>
                 <mat-icon>
                   delete_forever
                 </mat-icon>
@@ -286,91 +286,54 @@
                           matTooltip={{sotRow.storing_order_tank?.storing_order?.customer_company?.name}}>{{sotRow.storing_order_tank?.storing_order?.customer_company?.code}}</span>
                       </mat-cell>
                     </ng-container>
-                    <!-- <ng-container matColumnDef="customer_type">
+                    <ng-container matColumnDef="invoice_dt">
                       <mat-header-cell *matHeaderCellDef
-                        mat-sort-header>{{translatedLangText.CUSTOMER_TYPE}}</mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                        mat-sort-header>{{translatedLangText.INVOICE_DATE}}</mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let stoDetailRow" class="">
                         <span
-                          class="mobile-label">{{translatedLangText.CUSTOMER_TYPE}}:</span>{{DisplayCustomerType(sotRow)}}
-                      </mat-cell>
-                    </ng-container> -->
-                    <!-- <ng-container matColumnDef="estimate_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.ESTIMATE_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let detailRow" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.estimate_no}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="job_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.JOB_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
-                        <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>{{repairRow.job_no}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="net_cost">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>
-                        {{translatedLangText.NET_COST}}
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let repairRow">
-                        <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
-                        <span>$</span><span class="ms-3">{{repairRow.net_cost}}</span>
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="status_cv">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.STATUS}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(repairRow.status_cv)}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="remarks">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.REMARKS}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
-                        <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{repairRow.remarks}}
+                          class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span>{{ConvertEpochToDate(stoDetailRow.billing.invoice_dt)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="invoice_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.INVOICE_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        @if(row.invoiced)
-                        {
-                        <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span> {{getInvoiceNo(row)}}
-                        }
-                        @else
-                        {
-                        <span class="mobile-label">{{translatedLangText.INVOICE_NO}}: </span> -
-                        }
-
+                      <mat-header-cell *matHeaderCellDef
+                        mat-sort-header>{{translatedLangText.INVOICE_NO}}</mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let stoDetailRow" class="">
+                        <span
+                          class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span>{{stoDetailRow.billing.invoice_no}}
                       </mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="invoice_date">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.INVOICE_DATE}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        @if(row.invoiced)
-                        {
-                        <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{getInvoiceDate(row)}}
-                        }
-                        @else
-                        {
-                        <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}: </span> -
-                        }
-
+                    <ng-container matColumnDef="cutoff_dt">
+                      <mat-header-cell *matHeaderCellDef
+                        mat-sort-header>{{translatedLangText.CUTOFF_DATE}}</mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let stoDetailRow" class="">
+                        <span
+                          class="mobile-label">{{translatedLangText.CUTOFF_DATE}}:</span>{{ConvertEpochToDate(stoDetailRow.end_dt)}}
                       </mat-cell>
-                    </ng-container> -->
+                    </ng-container>
+                    <ng-container matColumnDef="total_cost">
+                      <mat-header-cell *matHeaderCellDef
+                        mat-sort-header>{{translatedLangText.TOTAL_COST}}</mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let stoDetailRow" class="">
+                        <span
+                          class="mobile-label">{{translatedLangText.TOTAL_COST}}:</span>{{displayNumber(stoDetailRow.total_cost)}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="action">
+                      <mat-header-cell
+                        [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        *matHeaderCellDef></mat-header-cell>
+                      <mat-cell *matCellDef="let row; let i=index;"
+                        [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        
+                        <button mat-icon-button (click)="$event.stopPropagation()" (click)="delete_invoice($event,row)"
+                          [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-danger">
+                          <mat-icon>delete_forever</mat-icon>
+                        </button>
+                        
+                      </mat-cell>
+                    </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'"
+                    <mat-row *matRowDef="let storageDetRow; columns: displayedColumns;" [style.cursor]="'pointer'"
                       matRipple>
                     </mat-row>
                   </table>
