@@ -19,7 +19,7 @@
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card p-0">
+        <div class="card p-0 tlx-card">
           <div class="header">
             <h2>
               {{translatedLangText.TANK_SUMMARY_DETAILS}}
@@ -34,8 +34,8 @@
             }
             @if (!(igDS.loading$ | async)) {
             <mat-card-content>
-              <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 d-flex justify-content-end ms-auto">
+              <div class="position-relative">
+                <div class="relative-menu">
                   @if (!(cvDS.loading$ | async) && (canOverwriteLastCargo() || canOverwriteCleanStatus())) {
                   <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
                     [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
@@ -54,104 +54,104 @@
                   </mat-menu>
                   }
                 </div>
-              </div>
-              <div class="row justify-content-center">
-                <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.TANK_NO}}:</span>
+                <div class="row justify-content-center">
+                  <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.TANK_NO}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{sot?.tank_no}}</div>
+                      </div>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{sot?.tank_no}}</div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.CUSTOMER}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          {{ccDS.displayName(sot?.storing_order?.customer_company)}}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CUSTOMER}}:</span>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.LAST_CARGO}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{sot?.tariff_cleaning?.cargo}}
+                        </div>
+                      </div>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{ccDS.displayName(sot?.storing_order?.customer_company)}}
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.OWNER}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          {{ccDS.displayName(sot?.customer_company)}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.CLEAN_STATUS}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          {{getCleanStatusDescription(sot?.clean_status_cv)}}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_CARGO}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{sot?.tariff_cleaning?.cargo}}
+                  <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.EIR_NO}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          {{igDS.getInGateItem(sot?.in_gate)?.eir_no || "-"}}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.OWNER}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{ccDS.displayName(sot?.customer_company)}}
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.EIR_DATE}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          {{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt) || "-"}}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CLEAN_STATUS}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{getCleanStatusDescription(sot?.clean_status_cv)}}
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.PURPOSE}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          {{displayTankPurpose(sot!)}}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_NO}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{igDS.getInGateItem(sot?.in_gate)?.eir_no || "-"}}
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.LAST_TEST}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          {{last_test_desc || '-'}}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_DATE}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt) || "-"}}
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.CURRENT_STATUS}}:</span>
                       </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.PURPOSE}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{displayTankPurpose(sot!)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_TEST}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{last_test_desc || '-'}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CURRENT_STATUS}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{getTankStatusDescription(sot?.tank_status_cv)}}
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{getTankStatusDescription(sot?.tank_status_cv)}}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -178,8 +178,8 @@
                             {{translatedLangText.TANK_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
-                          (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="expandAll($event, 'tank_details')"
+                          matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -340,8 +340,8 @@
                             {{translatedLangText.GATE_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
-                          (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="expandAll($event, 'gate_details')"
+                          matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -438,8 +438,8 @@
                             {{translatedLangText.PURPOSE}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
-                          (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="expandAll($event, 'purpose_details')"
+                          matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -449,7 +449,7 @@
                     <mat-card-content>
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                          <mat-tab-group dynamicHeight>
+                          <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight>
                             <mat-tab>
                               <ng-template mat-tab-label>
                                 <span [ngClass]="'m-r-10 d-flex align-items-center'">
@@ -1477,8 +1477,8 @@
                             {{translatedLangText.DEPOT_COST_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
-                          (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="expandAll($event, 'depot_cost_details')"
+                          matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -1673,14 +1673,14 @@
                             {{translatedLangText.BOOKING_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
-                          (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="expandAll($event, 'booking_details')"
+                          matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
                     </mat-panel-title>
                   </mat-expansion-panel-header>
-                  <div class="body p-l-0 p-r-0">
+                  <div class="body p-l-0 p-t-0 p-r-0">
                     @if ((bkDS.loading$ | async) || (schedulingDS.loading$ | async)) {
                     <div class="tbl-spinner">
                       <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
@@ -1691,7 +1691,7 @@
                     <mat-card-content>
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                          <mat-tab-group dynamicHeight>
+                          <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight>
                             <mat-tab>
                               <ng-template mat-tab-label>
                                 <span [ngClass]="'m-r-10 d-flex align-items-center'">
@@ -1876,8 +1876,8 @@
                             {{translatedLangText.SURVEY_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
-                          (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="expandAll($event, 'survey_details')"
+                          matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -2012,8 +2012,8 @@
                             {{translatedLangText.TRANSFER_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="setSection('all')" matTooltip="Expand All Sections"
-                          (click)="$event.stopPropagation()">
+                        <button mat-icon-button (click)="expandAll($event, 'transfer_details')"
+                          matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>

@@ -23,12 +23,12 @@
                       <mat-icon class="col-white">refresh</mat-icon>
                     </button>
                   </div> -->
-                  <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
+                  <!-- <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
                     <button mat-mini-fab color="warn" (click)="cancelSelectedRows(roSelection.selected)"
                       [disabled]="canCancelSelectedRows()">
                       <mat-icon class="col-white">cancel</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                   <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />

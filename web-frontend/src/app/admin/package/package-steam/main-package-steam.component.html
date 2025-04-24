@@ -8,14 +8,13 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <div class="body overflow-auto">
-            <mat-tab-group dynamicHeight (selectedTabChange)="onTabSelected($event)">
+            <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.PACKAGE_STEAMING">
                 <app-package-steam></app-package-steam>
               </mat-tab>
               <mat-tab [label]="translatedLangText.PACKAGE_EXCLUSIVE">
                 <app-exclusive-steam></app-exclusive-steam>
               </mat-tab>
-              
             </mat-tab-group>
           </div>
         </div>

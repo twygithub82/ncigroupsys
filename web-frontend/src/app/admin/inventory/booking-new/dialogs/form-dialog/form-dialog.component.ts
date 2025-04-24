@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -83,7 +83,7 @@ export class FormDialogComponent {
   referenceTitle?: string;
   bookingForm: UntypedFormGroup;
   storingOrderTank: StoringOrderTankItem[];
-  booking?: BookingItem;
+  booking: BookingItem = new BookingItem();
   startDateToday = new Date();
   existingBookTypeCvs: (BookingItem | undefined)[] | undefined = [];
 
@@ -91,7 +91,7 @@ export class FormDialogComponent {
   ccDS: CustomerCompanyDS;
   bkDS: BookingDS;
   igDS: InGateDS;
-  lastCargoControl: UntypedFormControl;;
+  dataSource: AbstractControl[] = [];
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -116,45 +116,49 @@ export class FormDialogComponent {
     this.existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
       (tank.booking || []).filter(booking => booking.delete_dt === null).map(booking => booking)
     );
-    this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
     this.bookingForm = this.createStorigOrderTankForm();
     this.initializeValueChange();
   }
 
   createStorigOrderTankForm(): UntypedFormGroup {
-    return this.fb.group({
+    this.bookingForm = this.fb.group({
       reference: [''],
-      edit_reference: [this.booking?.reference],
       book_type_cv: [this.booking?.book_type_cv],
       booking_dt: [Utility.convertDateMoment(this.booking?.booking_dt)],
-      test_class_cv: [this.booking?.test_class_cv]
+      test_class_cv: [this.booking?.test_class_cv],
+      sotList: this.fb.array(this.storingOrderTank.map(tank => this.createTankRowForm(tank)))
     });
+    
+    this.dataSource = [...this.sotList().controls];
+    return this.bookingForm;
+  }
+
+  createTankRowForm(tank: any): UntypedFormGroup {
+    return this.fb.group({
+      sot: [tank],
+      reference: [tank.reference || this.booking?.reference || '']
+    });
+  }
+
+  sotList(): UntypedFormArray {
+    return this.bookingForm.get('sotList') as UntypedFormArray;
   }
 
   submit() {
     if (this.bookingForm?.valid) {
-      const sotList: any = [...this.storingOrderTank];
       const bookDt = this.bookingForm.get('booking_dt')?.value?.clone();
-      const selectedIds = sotList.map((item: any) => {
+      const selectedIds = this.sotList().controls.map((group: any) => {
+        const sot = group.get('sot')?.value; // full tank object
         return {
           guid: this.booking?.guid,
-          sot_guid: item.guid,
+          sot_guid: sot?.guid,  // safely get the guid from tank object
           book_type_cv: this.bookingForm.get('book_type_cv')?.value,
           booking_dt: Utility.convertDate(bookDt),
-          reference: this.bookingForm.get('reference')?.value || ((this.action === 'edit') ? this.bookingForm.get('edit_reference')?.value : item.reference),
+          reference: group.get('reference')?.value,
           test_class_cv: this.bookingForm.get('test_class_cv')?.value,
           status_cv: this.booking?.status_cv
-        }
+        };
       });
-      // var booking: any = {
-      //   guid: this.booking?.guid,
-      //   sot_guid: selectedIds,
-      //   book_type_cv: this.bookingForm.get('book_type_cv')?.value,
-      //   booking_dt: Utility.convertDate(this.bookingForm.get('booking_dt')?.value),
-      //   reference: this.bookingForm.get('reference')?.value,
-      //   test_class_cv: this.bookingForm.get('test_class_cv')?.value,
-      //   status_cv: this.booking?.status_cv
-      // }
       const withGuid = selectedIds.filter((item: any) => item.guid);
       const withoutGuid = selectedIds.filter((item: any) => !item.guid);
       console.log(selectedIds);
@@ -167,7 +171,7 @@ export class FormDialogComponent {
           this.dialogRef.close(returnDialog);
         });
       }
-      
+
       if (withoutGuid.length > 0) {
         for (const i of withoutGuid) {
           this.bkDS.addBooking(i).subscribe(result => {
@@ -271,16 +275,11 @@ export class FormDialogComponent {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData.yardCvList);
   }
 
-  updateValidators(validOptions: any[]) {
-    this.lastCargoControl.setValidators([
-      Validators.required,
-      AutocompleteSelectionValidator(validOptions)
-    ]);
-  }
-
-  removeSot(event: Event, index: number) {
+  removeSot(event: Event, index: number): void {
     event.stopPropagation();
-    this.storingOrderTank.splice(index, 1);
-    this.storingOrderTank = [...this.storingOrderTank];
+  
+    // Remove from the FormArray
+    this.sotList().removeAt(index);
+    this.dataSource = [...this.sotList().controls];
   }
 }
