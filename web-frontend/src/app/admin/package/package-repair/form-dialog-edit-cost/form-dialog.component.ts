@@ -25,7 +25,6 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
 import { Direction } from '@angular/cdk/bidi';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
@@ -41,12 +40,8 @@ import { ConfirmDialogComponent } from './confirm/confirm.component';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: TariffRepairItem[];
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 interface Condition {
   guid: { eq: string };
@@ -208,7 +203,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     CUSTOMER_EXCEED: "COMMON-FORM.CUSTOMER-EXCEED",
     ONE_CONDITION: "COMMON-FORM.ENTER-ATLEAST-ONE-CONDITION",
     NO_VALUE_CHNAGE: "COMMON-FORM.NO-VALUE-CHNAGE",
-    CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED'
+    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED'
   };
   unit_type_control = new UntypedFormControl();
 
@@ -256,14 +251,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   GetButtonCaption() {
-    // if(this.pcForm!.value['action']== "view")
-    //   {
-    //     return this.translatedLangText.CLOSE ;      
-    //   }
-    //   else
-    //   {
     return this.translatedLangText.CANCEL;
-    // }
   }
 
   GetTitle() {
@@ -278,13 +266,10 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
 
   public loadData() {
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
-      // this.customer_companyList1 = data
     });
 
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
-      //{ alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
-      // { alias: 'unitType', codeValType: 'UNIT_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
@@ -312,27 +297,33 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
       console.log('Selected value:', value);
       var aliasName = value.child_code;
-      if (aliasName === undefined) return;
-      const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
-      this.cvDS.getCodeValuesByType(subqueries);
-      this.cvDS.connectAlias(aliasName).subscribe(data => {
-        this.subGroupNameCvList = data;
-        if (this.selectedItems.length == 1) {
-          var rec = this.selectedItems[0];
-          var subgroupNameCodeValue = this.GetCodeValue(rec.tariff_repair?.subgroup_name_cv!, this.subGroupNameCvList);
-          this.subGroupNameControl.setValue(subgroupNameCodeValue);
-        }
+      if (aliasName) {
+        const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
+        this.cvDS.getCodeValuesByType(subqueries);
+        this.cvDS.connectAlias(aliasName).subscribe(data => {
+          this.subGroupNameCvList = data;
+          if (this.selectedItems.length == 1) {
+            var rec = this.selectedItems[0];
+            var subgroupNameCodeValue = this.GetCodeValue(rec.tariff_repair?.subgroup_name_cv!, this.subGroupNameCvList);
+            this.subGroupNameControl.setValue(subgroupNameCodeValue);
+          }
 
-        const groupName = this.pcForm?.get('group_name_cv')?.value;
-        this.trDS.searchDistinctPartName(groupName.code_val, '').subscribe(data => {
+          const groupName = this.pcForm?.get('group_name_cv')?.value;
+          this.trDS.searchDistinctPartName(groupName.code_val, '').subscribe(data => {
+            this.partNameControl.reset('');
+            this.partNameList = data || [];
+            this.partNameFilteredList = data || [];
+            this.updateValidators(this.partNameControl, this.partNameList);
+          });
+        });
+      } else {
+        this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
           this.partNameControl.reset('');
           this.partNameList = data || [];
           this.partNameFilteredList = data || [];
           this.updateValidators(this.partNameControl, this.partNameList);
         });
-
-      });
-      // Handle value changes here
+      }
     });
 
     this.pcForm?.get('sub_group_name_cv')!.valueChanges.pipe(

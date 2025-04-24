@@ -252,7 +252,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       eir_status_cv: [''],
       yard_cv: [''],
       invoiced:[''],
-      depot_status_cv:['IN_YARD']
+      depot_status_cv:['']
     });
   }
 

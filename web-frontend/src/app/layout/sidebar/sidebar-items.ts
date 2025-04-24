@@ -176,7 +176,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        submenu: []
+        submenu: [],
       },
       {
         path: "admin/master/estimate-template",

@@ -187,13 +187,13 @@
                         <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
                         {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
                       </div>
-                      <div class="w-xl-20 w-lg-50">
-                        <span class="font-bold">{{translatedLangText.REPAIR_TYPE}}:</span>
-                        {{getRepairOptionDescription(row.purpose_repair_cv)}}
-                      </div>
-                      <div class="">
+                      <div class="w-xl-13 w-lg-50">
                         <span class="font-bold">{{translatedLangText.STATUS}}:</span>
                         {{getTankStatusDescription(row.tank_status_cv)}}
+                      </div>
+                      <div class="">
+                        <span class="font-bold">{{translatedLangText.REPAIR_TYPE}}:</span>
+                        {{getRepairOptionDescription(row.purpose_repair_cv)}}
                       </div>
                       <div class="m-l-">
                         @if (copiedRepair) {

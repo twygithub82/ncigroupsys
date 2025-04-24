@@ -10,127 +10,136 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <div class="row">
-      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-        <div class="booking-tbl responsive_table">
-          <table mat-table [dataSource]="storingOrderTank" matSort
-            class="mat-cell advance-table striped-rows hover-highlight dark-header">
-            <!-- ID Column -->
-            <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-              <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="tank_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
-                {{data.translatedLangText.TANK_NO}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
-                <span class="mobile-label">{{data.translatedLangText.TANK_NO}}:</span>{{row.tank_no}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="customer_code">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                {{data.translatedLangText.CUSTOMER}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
-                <span class="mobile-label">{{data.translatedLangText.CUSTOMER}}:</span>{{
-                ccDS.displayName(row.storing_order?.customer_company)}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="eir_no">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl'">
-                {{data.translatedLangText.EIR_NO}}
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
-                <span
-                  class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_no}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="eir_dt">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
-                {{data.translatedLangText.EIR_DATE}}
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
-                <span
-                  class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="capacity">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
-                {{data.translatedLangText.CAPACITY}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
-                <span
-                  class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="tare_weight">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
-                {{data.translatedLangText.TARE_WEIGHT}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
-                <span
-                  class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="tank_status">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
-                {{data.translatedLangText.STATUS}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
-                <span
-                  class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.tank_status_cv)}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="yard">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
-                {{data.translatedLangText.YARD}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                <span
-                  class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(igDS.getInGateItem(row.in_gate)?.yard_cv)}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="reference">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                {{data.translatedLangText.REFERENCE}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
-                <span class="mobile-label">{{data.translatedLangText.REFERENCE}}:</span>
-                <tlx-form-field customClass="mat-table-form-txt-40px">
-                  <mat-form-field>
-                    <input tlxFormInput matInput [(ngModel)]="row.reference">
-                  </mat-form-field>
-                </tlx-form-field>
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="action">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row; let i=index;"
-                [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl'">
-                <button mat-icon-button color="warn" (click)="removeSot($event, i)"
-                  [disabled]="storingOrderTank.length <= 1" [matTooltip]="data.translatedLangText.CANCEL"
-                  class="tbl-action-btn">
-                  <mat-icon>cancel</mat-icon>
-                </button>
-              </mat-cell>
-            </ng-container>
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
-            </mat-row>
-          </table>
-        </div>
-        <!-- No result -->
-        @if (!storingOrderTank.length) {
-        <mat-divider></mat-divider>
-        <div class="no-results m-l-20 pt-3" [style.display]="storingOrderTank.length === 0 ? '' : 'none'">
-          <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
-        </div>
-        }
-      </div>
-    </div>
     <form class="register-form mt-3" [formGroup]="bookingForm" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <div class="booking-tbl responsive_table">
+            <table mat-table [dataSource]="storingOrderTank" matSort
+              class="mat-cell advance-table striped-rows hover-highlight dark-header">
+              <!-- ID Column -->
+              <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="tank_no">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
+                  {{data.translatedLangText.TANK_NO}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                  <span class="mobile-label">{{data.translatedLangText.TANK_NO}}:</span>{{row.tank_no}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="customer_code">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  {{data.translatedLangText.CUSTOMER}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" class="">
+                  <span class="mobile-label">{{data.translatedLangText.CUSTOMER}}:</span>{{
+                  ccDS.displayName(row.storing_order?.customer_company)}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="eir_no">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl'">
+                  {{data.translatedLangText.EIR_NO}}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                  <span
+                    class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_no}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="eir_dt">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                  {{data.translatedLangText.EIR_DATE}}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                  <span
+                    class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="capacity">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                  {{data.translatedLangText.CAPACITY}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                  <span
+                    class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="tare_weight">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                  {{data.translatedLangText.TARE_WEIGHT}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                  <span
+                    class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="tank_status">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
+                  {{data.translatedLangText.STATUS}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                  <span
+                    class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.tank_status_cv)}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="yard">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
+                  {{data.translatedLangText.YARD}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
+                  <span
+                    class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(igDS.getInGateItem(row.in_gate)?.yard_cv)}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="reference">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  {{data.translatedLangText.REFERENCE}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                  <span class="mobile-label">{{data.translatedLangText.REFERENCE}}:</span>
+                  @if (action === 'edit') {
+                  <tlx-form-field customClass="mat-table-form-txt-40px">
+                    <mat-form-field>
+                      <input tlxFormInput matInput formControlName="edit_reference">
+                    </mat-form-field>
+                  </tlx-form-field>
+                  }
+                  @else {
+                  <tlx-form-field customClass="mat-table-form-txt-40px">
+                    <mat-form-field>
+                      <input tlxFormInput matInput [(ngModel)]="booking!.reference">
+                    </mat-form-field>
+                  </tlx-form-field>
+                  }
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="action">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row; let i=index;"
+                  [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl'">
+                  <button mat-icon-button color="warn" (click)="removeSot($event, i)"
+                    [disabled]="storingOrderTank.length <= 1" [matTooltip]="data.translatedLangText.CANCEL"
+                    class="tbl-action-btn">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
+              </mat-row>
+            </table>
+          </div>
+          <!-- No result -->
+          @if (!storingOrderTank.length) {
+          <mat-divider></mat-divider>
+          <div class="no-results m-l-20 pt-3" [style.display]="storingOrderTank.length === 0 ? '' : 'none'">
+            <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
+          </div>
+          }
+        </div>
+      </div>
       <h5>{{data.translatedLangText.BOOKING_DETAILS}}</h5>
       <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">

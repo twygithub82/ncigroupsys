@@ -164,6 +164,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   depotCvList: CodeValuesItem[] = [];
   invoiceTypeCvList: CodeValuesItem[] = [];
 
+
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -227,7 +228,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       eir_status_cv: [''],
       yard_cv: [''],
       invoice_no: [''],
-      depot_status_cv: ['IN_YARD'],
+      depot_status_cv: [''],
       currency: [''],
 
     });
@@ -306,7 +307,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     this.cvDS.connectAlias('depotCv').subscribe(data => {
       this.depotCvList = addDefaultSelectOption(data, 'All');
     });
-    this.cvDS.connectAlias('invoiceTypeCvList').subscribe(data => {
+    this.cvDS.connectAlias('invoiceTypeCv').subscribe(data => {
       this.invoiceTypeCvList = addDefaultSelectOption(data, 'All');
     });
     this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
@@ -925,8 +926,9 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       purpose: '',
       tank_status_cv: '',
       eir_status_cv: '',
-      depot_status_cv: 'IN_YARD',
+      depot_status_cv: '',
       currency: '',
+      invoice_type_cv: ''
     });
     this.customerCodeControl.reset('');
     this.branchCodeControl.reset('');

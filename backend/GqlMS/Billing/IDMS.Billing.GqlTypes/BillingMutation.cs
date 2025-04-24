@@ -17,7 +17,7 @@ namespace IDMS.Billing.GqlTypes
     public class BillingMutation
     {
         public async Task<int> AddBilling(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, billing newBilling, List<BillingEstimateRequest> billingEstimateRequests)
+            [Service] IConfiguration config, billing newBilling, List<BillingEstimateRequest> billingEstimateRequests, StorageDetailRequest? storageDetail)
         {
             try
             {
@@ -40,6 +40,10 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 await EstimateHandling(context, user, currentDateTime, billingEstimateRequests);
+
+                if (storageDetail != null)
+                    await StorageDetailHandling(context, user, currentDateTime, newBill.guid, storageDetail);
+
                 var res = await context.SaveChangesAsync();
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
@@ -53,7 +57,7 @@ namespace IDMS.Billing.GqlTypes
         }
 
         public async Task<int> UpdateBilling(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, billing? updateBilling, List<BillingEstimateRequest> billingEstimateRequests)
+            [Service] IConfiguration config, billing? updateBilling, List<BillingEstimateRequest> billingEstimateRequests, StorageDetailRequest storageDetail)
         {
             try
             {
@@ -95,6 +99,9 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 await EstimateHandling(context, user, currentDateTime, billingEstimateList);
+                if (storageDetail != null)
+                    await StorageDetailHandling(context, user, currentDateTime, updateBilling.guid, storageDetail);
+
                 var res = await context.SaveChangesAsync();
 
                 //TODO
@@ -211,7 +218,7 @@ namespace IDMS.Billing.GqlTypes
                             prevRepairProcessID = item.process_guid;
                         }
 
-                        if(repair != null)
+                        if (repair != null)
                         {
                             repair.update_by = user;
                             repair.update_dt = currentDateTime;
@@ -261,6 +268,59 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
+        private async Task StorageDetailHandling(ApplicationBillingDBContext context, string user, long currentDateTime, string billingGuid, StorageDetailRequest storageDetail)
+        {
+            if (storageDetail.action.EqualsIgnore(ObjectAction.NEW))
+            {
+                var newSD = new storage_detail();
+                newSD.guid = Util.GenerateGUID();
+                newSD.create_by = user;
+                newSD.create_dt = currentDateTime;
+
+                newSD.billing_guid = billingGuid;
+                newSD.sot_guid = storageDetail.sot_guid;
+                newSD.start_dt = storageDetail.start_dt;
+                newSD.end_dt = storageDetail.end_dt;
+                newSD.state_cv = storageDetail.state_cv;
+                newSD.total_cost = storageDetail.total_cost;
+                newSD.remaining_free_storage = storageDetail.remaining_free_storage;
+                newSD.remarks = storageDetail.remarks;
+
+                context.storage_detail.Add(newSD);
+            }
+            else if (storageDetail.action.EqualsIgnore(ObjectAction.EDIT))
+            {
+                if (string.IsNullOrEmpty(storageDetail.guid))
+                    throw new GraphQLException(new Error($"Storage details guid cannot be null or empty", "ERROR"));
+
+                var updateSD = await context.storage_detail.FindAsync(storageDetail.guid);
+                if (updateSD != null)
+                {
+                    updateSD.update_by = user;
+                    updateSD.update_dt = currentDateTime;
+                    updateSD.billing_guid = billingGuid;
+                    updateSD.sot_guid = storageDetail.sot_guid;
+                    updateSD.start_dt = storageDetail.start_dt;
+                    updateSD.end_dt = storageDetail.end_dt;
+                    updateSD.state_cv = storageDetail.state_cv;
+                    updateSD.total_cost = storageDetail.total_cost;
+                    updateSD.remaining_free_storage = storageDetail.remaining_free_storage;
+                    updateSD.remarks = storageDetail.remarks;
+                }
+            }
+            else if (storageDetail.action.EqualsIgnore(ObjectAction.CANCEL))
+            {
+                if (string.IsNullOrEmpty(storageDetail.guid))
+                    throw new GraphQLException(new Error($"Storage details guid cannot be null or empty", "ERROR"));
+
+                var deleteSD = new storage_detail() { guid = storageDetail.guid };
+                context.Attach(deleteSD);
+                deleteSD.update_by = user;
+                deleteSD.update_dt = currentDateTime;
+                deleteSD.delete_dt = currentDateTime;
+            }
+        }
+
         public async Task<int> UpdateBillingSOT(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, billing_sot updateBillingSOT)
         {
@@ -276,7 +336,7 @@ namespace IDMS.Billing.GqlTypes
                 //context.billing_sot.Attach(updateBS);
 
                 var updateBS = await context.billing_sot.FindAsync(updateBillingSOT.guid);
-                if(updateBS != null)
+                if (updateBS != null)
                 {
                     updateBS.update_by = user;
                     updateBS.update_dt = currentDateTime;
@@ -364,10 +424,10 @@ namespace IDMS.Billing.GqlTypes
                     newSD.create_by = user;
                     newSD.create_dt = currentDateTime;
                     newSD.state_cv = storageDetails.state_cv;
-                    newSD.total_cost = storageDetails.total_cost;   
+                    newSD.total_cost = storageDetails.total_cost;
                     newSD.remaining_free_storage = storageDetails.remaining_free_storage;
 
-                    await context.AddAsync(newSD);    
+                    await context.AddAsync(newSD);
                 }
                 else
                 {

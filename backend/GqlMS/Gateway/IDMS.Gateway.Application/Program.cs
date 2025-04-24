@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using static HotChocolate.ErrorCodes;
 
 var builder = WebApplication.CreateBuilder(args);
+//Dictionary<string, string> localSDL = new Dictionary<string, string>();
 
 builder.Services.AddCors(options =>
 {
@@ -34,9 +35,6 @@ ConfigureServices(builder.Services, builder.Configuration);
 //server = builder.Services.AddGraphQLServer();
 //server.AddLocalSchema("local");
 
-
-
-
 var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseAuthorization();
@@ -51,7 +49,6 @@ app.UseRouting()
           {
               endpoints.MapGraphQL();
           });
-
 app.Run();
 
 
@@ -79,7 +76,6 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
                 httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "")
             );
         });
-
         // services.AddHttpClient(service.Key.ToLower(), client => client.BaseAddress = new Uri(service.Value));
     }
 
@@ -90,15 +86,15 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
         {
             //Task.Run(() => server.AddRemoteSchema(service.Key.ToLower()));
             server.AddRemoteSchema(service.Key.ToLower());
-            
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-        
     }
-    //server.AddLocalSchema("local");
+
+    //localSDL.Add("local", "https://tlxidmsstorage.blob.core.windows.net/files/config/schema.graphql");
+    //server.AddRemoteSchemaFromFile("SDL", "schema.graphql");
     server.InitializeOnStartup(keepWarm: true);
 
     // Add other services and configurations as needed

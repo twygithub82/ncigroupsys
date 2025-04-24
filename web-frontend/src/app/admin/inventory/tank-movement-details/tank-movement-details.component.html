@@ -356,15 +356,15 @@
                     }
                     @if (!(igDS.loading$ | async) && !(ogDS.loading$ | async)) {
                     <mat-card-content>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                      <div class="row justify-content-center">
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                           <table class="table table-striped table-hover m-b-0">
                             <thead>
                               <tr>
-                                <th class="d-none d-md-table-cell font-bold table-col-2">
+                                <th class="d-none d-md-table-cell font-bold table-col-4">
                                   {{translatedLangText.DESCRIPTION}}</th>
-                                <th class="font-bold table-col-5">{{translatedLangText.IN_GATE}}</th>
-                                <th class="font-bold table-col-5">{{translatedLangText.OUT_GATE}}</th>
+                                <th class="font-bold table-col-4">{{translatedLangText.IN_GATE}}</th>
+                                <th class="font-bold table-col-4">{{translatedLangText.OUT_GATE}}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -1901,26 +1901,37 @@
                                 <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                               </ng-container>
-                              <ng-container matColumnDef="surveyor">
+                              <ng-container matColumnDef="survey_type">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
                                   [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.SURVEYOR}}
+                                  {{translatedLangText.SURVEY_TYPE}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{row.test_class_cv}}
+                                    class="mobile-tab-label">{{translatedLangText.SURVEY_TYPE}}:</span>{{getSurveyTypeDescription(row.survey_type_cv)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="survey_dt">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   {{translatedLangText.SURVEY_DATE}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span class="mobile-tab-label">{{translatedLangText.SURVEY_DATE}}:</span>
                                   <span>{{displayDate(row?.survey_dt) ?? "-"}}</span>
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="surveyor">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.SURVEYOR}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span
+                                    class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{row.test_class_cv}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="status_cv">
@@ -1945,11 +1956,11 @@
                               </ng-container>
                               <ng-container matColumnDef="remarks">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   {{translatedLangText.REMARKS}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span class="mobile-tab-label">{{translatedLangText.REMARKS}}:</span>
                                   <span>{{row.remarks ?? "-"}}</span>
                                 </mat-cell>

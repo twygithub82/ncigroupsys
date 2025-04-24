@@ -303,9 +303,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       survey_type_cv: { neq: 'PERIODIC_TEST' }
     }
     this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "DESC" }).subscribe(data => {
-      if (data.length > 0) {
-        this.surveyDetailItem = data;
-      }
+      this.surveyDetailItem = data;
     });
   }
 

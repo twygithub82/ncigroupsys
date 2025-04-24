@@ -174,7 +174,7 @@
                       <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
                         class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkDisable(row)">
                       </mat-checkbox>
-                      <div class="me-3">
+                      <div class="w-xl-18 w-lg-33">
                         <span class="font-bold">{{row.tank_no}}</span>
                         @if (checkBooking(filterDeleted(row.booking || []))){
                         <div [ngClass]="'badge badge-solid-green ms-1'"><span>
@@ -229,11 +229,11 @@
                         </ng-container>
                         <ng-container matColumnDef="book_type_cv">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.BOOKING_TYPE}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let bookingRow"
-                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookTypeDescription(bookingRow?.book_type_cv)}}
                           </mat-cell>
@@ -248,11 +248,11 @@
                         </ng-container>
                         <ng-container matColumnDef="surveyor">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.SURVEYOR}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let bookingRow"
-                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-label">{{translatedLangText.SURVEYOR}}:</span>{{bookingRow?.test_class_cv}}
                           </mat-cell>

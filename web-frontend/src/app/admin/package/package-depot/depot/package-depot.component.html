@@ -12,7 +12,8 @@
                   <mat-icon class="col-white">edit</mat-icon>
                 </button>
               </div>
-              <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT" matTooltip={{translatedLangText.EXPORT}}>
+              <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
+                matTooltip={{translatedLangText.EXPORT}}>
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                   (click)="$event.stopPropagation()" />
               </div>
@@ -88,7 +89,8 @@
                   <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                     <mat-icon>search</mat-icon>
                   </button>
-                  <button  mat-mini-fab class="m-l-5 bg-dark-gold"  (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                  <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                    matTooltip={{translatedLangText.CLEAR_ALL}}>
                     <mat-icon>clear_all</mat-icon>
                   </button>
                 </div>
@@ -104,22 +106,26 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <mat-checkbox (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
                   [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                 </mat-checkbox>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
                   [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="profile">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PROFILE_NAME
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.PROFILE_NAME
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
                   }}:</span>{{row.tariff_depot.profile_name}}</mat-cell>
             </ng-container>
@@ -138,44 +144,56 @@
                   }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="preinspection_cost">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PREINSPECTION_COST
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.PREINSPECTION_COST
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.PREINSPECTION_COST }}:</span>
                 {{row.preinspection_cost.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lolo_cost">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LOLO_COST
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LOLO_COST
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.LOLO_COST }}:</span>
                 {{row.lolo_cost.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="gate_surcharge">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.GATE_SURCHARGE_COST
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.GATE_SURCHARGE_COST
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.GATE_SURCHARGE_COST }}:</span>
                 {{row.gate_in_cost.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="storage_cost">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STORAGE_COST
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.STORAGE_COST
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.STORAGE_COST}}:</span>
                 {{row.storage_cost.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="free_days">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.FREE_DAYS
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.FREE_DAYS
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.FREE_DAYS}}:</span>
                 {{row.free_storage.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_update">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
                 {{this.displayLastUpdated(row)}}</mat-cell>
             </ng-container>
@@ -213,7 +231,6 @@
           </mat-progress-spinner>
         </div>
         }
-
         <mat-paginator #paginator [length]="packDepotDS.totalCount" [pageIndex]="0" [pageSize]="10"
           [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
         </mat-paginator>

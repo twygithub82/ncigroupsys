@@ -38,6 +38,7 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 @Component({
   selector: 'app-package-cleaning',
@@ -69,8 +70,8 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    PreventNonNumericDirective
   ]
-
 })
 export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
@@ -445,7 +446,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.pcForm!.value["customer_cost"]) {
       const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
-      where.adjusted_price = { lte: selectedCost }
+      where.adjusted_price = { eq: selectedCost }
     }
 
     // if (this.pcForm!.value["min_cost"]) {

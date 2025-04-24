@@ -39,6 +39,7 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 //import { TankDS, TankItem } from 'app/data-sources/tank';
 
 @Component({
@@ -69,10 +70,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     ReactiveFormsModule,
     FormsModule,
     MatAutocompleteModule,
-    MatDividerModule,
+    MatDividerModule
   ]
 })
-
 
 export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
@@ -235,7 +235,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.custCompDS = new CustomerCompanyDS(this.apollo);
     this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
-    //this.tankDS = new TankDS(this.apollo);
     this.initializeFilterCustomerCompany();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -250,23 +249,23 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
-   initializeFilterCustomerCompany() {
-      this.pcForm!.get('customer_code')!.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        tap(value => {
-          var searchCriteria = '';
-          if (typeof value === 'string') {
-            searchCriteria = value;
-          } else {
-            searchCriteria = value.code;
-          }
-          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-            this.customer_companyList = data
-          });
-        })
-      ).subscribe();
-    }
+  initializeFilterCustomerCompany() {
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+  }
 
   initPcForm() {
     this.pcForm = this.fb.group({
@@ -313,7 +312,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '700px',
+      width: '70vw',
+      height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -340,7 +340,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '700px',
+      width: '70vw',
+      height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -385,11 +386,11 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
-   
+
     if (this.customerCodeControl.value) {
       //if (this.customerCodeControl.value.length > 0) 
       {
-       // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
+        // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
         //var guids = customerCodes.map(cc => cc.guid);
         where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
       }
@@ -526,7 +527,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       // this.customer_companyList1 = data
     });
 
-    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({}, { profile_name: 'ASC' }).subscribe(data => { 
+    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({}, { profile_name: 'ASC' }).subscribe(data => {
       this.profile_nameList = data
     });
 

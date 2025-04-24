@@ -163,11 +163,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   ];
 
   displayedColumnsSurveyDetail = [
-    'surveyor',
+    'survey_type',
     'survey_dt',
+    'surveyor',
     'status_cv',
     'remarks',
-    'update_by',
   ];
 
   displayedColumnsTransfer = [
@@ -432,6 +432,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     CONFIRM: 'COMMON-FORM.CONFIRM',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE'
   }
 
   sot_guid: string | null | undefined;
@@ -520,6 +521,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tankCompTypeCvList: CodeValuesItem[] = [];
   valveBrandCvList: CodeValuesItem[] = [];
   tankSideCvList: CodeValuesItem[] = [];
+  surveyTypeCvList: CodeValuesItem[] = [];
 
   storageCalCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
@@ -700,6 +702,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      { alias: 'surveyTypeCv', codeValType: 'SURVEY_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -800,6 +803,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
+    });
+    this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
+      this.surveyTypeCvList = data;
     });
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
@@ -914,6 +920,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getYardDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
+  }
+
+  getSurveyTypeDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.surveyTypeCvList);
   }
 
   translateLangText() {
@@ -1942,7 +1952,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackSteamingCompleted(row: SteamItem) {
-    return Utility.isTankInYard(this.sot?.tank_status_cv) && row.status_cv === 'COMPLETED';
+    return (this.sot?.tank_status_cv === 'STEAMING' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
   }
 
   onRollbackSteamingJobs(event: Event, row: SteamItem) {
@@ -1992,7 +2002,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackResidueCompleted(row: ResidueItem) {
-    return Utility.isTankInYard(this.sot?.tank_status_cv) && row.status_cv === 'COMPLETED';
+    return this.sot?.tank_status_cv === "CLEANING" && row.status_cv === 'COMPLETED' && this.cleaningItem?.[0]?.status_cv === 'APPROVED';
   }
 
   onRollbackResidueJobs(event: Event, row: ResidueItem) {
@@ -2043,7 +2053,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackCleaningCompleted(row?: InGateCleaningItem) {
-    return Utility.isTankInYard(this.sot?.tank_status_cv) && row?.status_cv === 'COMPLETED';
+    return (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.repairItem?.length)) && row?.status_cv === 'COMPLETED';
   }
 
   onRollbackCleaningJobs(event: Event, row?: InGateCleaningItem) {
@@ -2087,7 +2097,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackRepairQC(row: RepairItem) {
-    return Utility.isTankInYard(this.sot?.tank_status_cv) && this.repairDS.canRollbackQC(row);
+    return (this.sot?.tank_status_cv === "REPAIR" || this.sot?.tank_status_cv === "STORAGE") && this.repairDS.canRollbackQC(row);
   }
 
   onRollbackRepairQC(event: Event, row: RepairItem) {

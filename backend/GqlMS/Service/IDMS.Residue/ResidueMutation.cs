@@ -689,7 +689,7 @@ namespace IDMS.Residue.GqlTypes
                     rollbackResidue.status_cv = CurrentServiceStatus.APPROVED;
 
                     var residueParts = rollbackResidue.residue_part;
-                    var jobGuidString = string.Join(",", residueParts.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    var jobGuidString = string.Join(",", residueParts.Select(j => j.job_order_guid).Distinct().ToList().Select(g => $"'{g}'"));
 
                     string sql = "";
                     sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +

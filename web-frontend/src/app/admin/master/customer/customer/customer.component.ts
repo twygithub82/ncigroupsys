@@ -102,13 +102,14 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   unit_typeList: TankItem[] = []
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
-  customer_companyList: CustomerCompanyItem[] = [];
+  customer_companyFilterList: CustomerCompanyItem[] = [];
+  customer_companyResultList: CustomerCompanyItem[] = [];
   cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { code: "ASC" };
+  lastOrderBy: any = { customer_company: { code: "ASC" } };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -227,11 +228,9 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
-
   ) {
     super();
     this.initPcForm();
@@ -274,7 +273,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   initializeFilterCustomerCompany() {
-    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+    this.customerCodeControl.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -285,7 +284,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
           searchCriteria = value.code;
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
+          this.customer_companyFilterList = data
         });
       })
     ).subscribe();
@@ -322,14 +321,13 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     } else {
       tempDirection = 'ltr';
     }
-
   }
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
   }
-
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
@@ -359,11 +357,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-        //if(result.selectedValue>0)
-        // {
         this.handleSaveSuccess(result);
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        //}
       }
     });
   }
@@ -409,51 +404,16 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         }
       }
     });
-    // this.preventDefault(event);  // Prevents the form submission
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // var rows :PackageResidueItem[] =[] ;
-    // rows.push(row);
-    // const dialogRef = this.dialog.open(FormDialogComponent,{
-
-    //   width: '720px',
-    //   height:'auto',
-    //   data: {
-    //     action: 'update',
-    //     langText: this.langText,
-    //     selectedItems:rows
-    //   },
-    //   position: {
-    //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-    //   }
-
-    // });
-
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //      //if (result) {
-    //       if(result>0)
-    //         {
-    //           this.handleSaveSuccess(result);
-    //           //this.search();
-    //           this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-    //         }
-    //   //}
-    //   });
-
   }
-
-
 
   deleteItem(row: any) {
 
   }
+
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -479,18 +439,28 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       return;
     }
     const where: any = {
-      type_cv: { neq: "SURVEYOR" }
-
+      and: [
+        {
+          customer_company: {
+            type_cv: { neq: "SURVEYOR" },
+            delete_dt: { eq: null }
+          }
+        }
+      ]
     };
     if (this.customerCodeControl.value) {
       const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
-      where.guid = { eq: customerCode.guid };
+      // where.guid = { eq: customerCode.guid };
+      const customer_company: any = { guid: { eq: customerCode.guid } }
+      where.and.push({ customer_company: customer_company })
     }
 
     if (this.pcForm!.get("default_profile")?.value?.guid) {
       const tankSearch: any = {};
       tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
-      where.tank = tankSearch;
+      // where.tank = tankSearch;
+      const customer_company: any = { tank: { guid: { eq: this.pcForm!.get("default_profile")?.value?.guid } } }
+      where.and.push({ customer_company: customer_company })
     }
 
     if (this.pcForm!.value["country"]) {
@@ -502,9 +472,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.ccDS.searchWithSOT(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.customer_companyList = data;
-      // data[0].storage_cal_cv
+    this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+      this.customer_companyResultList = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.ccDS.pageInfo?.endCursor;
       this.startCursor = this.ccDS.pageInfo?.startCursor;
@@ -570,17 +539,25 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number, previousPageIndex?: number) {
     if (where === null || where === undefined) {
       where = {}
     }
-    where.type_cv = { neq: "SURVEYOR" };
+    // where = {
+    //   and: [
+    //     {
+    //       customer_company: {
+    //         type_cv: { neq: "SURVEYOR" },
+    //         delete_dt: { eq: null }
+    //       }
+    //     }
+    //   ]
+    // };
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.ccDS.searchWithSOT(this.ccDS.addDeleteDtCriteria(where), order, first, after, last, before).subscribe(data => {
-      this.customer_companyList = data;
+    this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(where, order, first, after, last, before).subscribe(data => {
+      this.customer_companyResultList = data;
       this.endCursor = this.ccDS.pageInfo?.endCursor;
       this.startCursor = this.ccDS.pageInfo?.startCursor;
       this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;

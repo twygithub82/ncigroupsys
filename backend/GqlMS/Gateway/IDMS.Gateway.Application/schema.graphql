@@ -1400,7 +1400,7 @@ type job_order {
   repair_part(where: repair_partFilterInput): [repair_part]
   residue_part(where: residue_partFilterInput): [residue_part]
   cleaning(where: cleaningFilterInput): [cleaning]
-  steaming_temp(where: steaming_tempFilterInput): [steaming_temp]
+  steaming_temp(where: steaming_tempFilterInput, order: [steaming_tempSortInput!]): [steaming_temp]
   steaming_part(where: steaming_partFilterInput): [steaming_part]
   delete_dt: Long
   create_dt: Long
@@ -1932,6 +1932,7 @@ type storing_order_tank {
   storing_order: storing_order
   tariff_cleaning: tariff_cleaning
   customer_company: customer_company
+  tank_info: tank_info
   tank(where: tankFilterInput): tank
   in_gate(where: in_gateFilterInput): [in_gate!]
   out_gate(where: out_gateFilterInput): [out_gate!]
@@ -2006,6 +2007,7 @@ type tank_info {
   tank(where: tankFilterInput): tank
   customer_company(where: customer_companyFilterInput): customer_company
   tariff_buffer(where: tariff_bufferFilterInput): tariff_buffer
+  storing_order_tank(where: storing_order_tankFilterInput): [storing_order_tank]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -4532,6 +4534,22 @@ input steaming_tempInput {
   update_by: String
 }
 
+input steaming_tempSortInput {
+  guid: SortEnumType
+  job_order_guid: SortEnumType
+  meter_temp: SortEnumType
+  top_temp: SortEnumType
+  bottom_temp: SortEnumType
+  remarks: SortEnumType
+  report_dt: SortEnumType
+  job_order: job_orderSortInput
+  delete_dt: SortEnumType
+  create_dt: SortEnumType
+  update_dt: SortEnumType
+  create_by: SortEnumType
+  update_by: SortEnumType
+}
+
 input storing_orderFilterInput {
   and: [storing_orderFilterInput!]
   or: [storing_orderFilterInput!]
@@ -4623,6 +4641,7 @@ input storing_order_tankFilterInput {
   storing_order: storing_orderFilterInput
   tariff_cleaning: tariff_cleaningFilterInput
   customer_company: customer_companyFilterInput
+  tank_info: tank_infoFilterInput
   tank: tankFilterInput
   in_gate: ListFilterInputTypeOfin_gateFilterInput
   out_gate: ListFilterInputTypeOfout_gateFilterInput
@@ -4680,6 +4699,7 @@ input storing_order_tankInput {
   storing_order: storing_orderInput
   tariff_cleaning: tariff_cleaningInput
   customer_company: customer_companyInput
+  tank_info: tank_infoInput
   tank: tankInput
   in_gate: [in_gateInput!]
   out_gate: [out_gateInput!]
@@ -4737,6 +4757,7 @@ input storing_order_tankSortInput {
   storing_order: storing_orderSortInput
   tariff_cleaning: tariff_cleaningSortInput
   customer_company: customer_companySortInput
+  tank_info: tank_infoSortInput
   tank: tankSortInput
   delete_dt: SortEnumType
   create_dt: SortEnumType
@@ -4848,6 +4869,7 @@ input tank_infoFilterInput {
   tank: tankFilterInput
   customer_company: customer_companyFilterInput
   tariff_buffer: tariff_bufferFilterInput
+  storing_order_tank: ListFilterInputTypeOfstoring_order_tankFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -4879,11 +4901,43 @@ input tank_infoInput {
   tank: tankInput
   customer_company: customer_companyInput
   tariff_buffer: tariff_bufferInput
+  storing_order_tank: [storing_order_tankInput]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
   create_by: String
   update_by: String
+}
+
+input tank_infoSortInput {
+  guid: SortEnumType
+  tank_no: SortEnumType
+  owner_guid: SortEnumType
+  unit_type_guid: SortEnumType
+  tank_comp_guid: SortEnumType
+  manufacturer_cv: SortEnumType
+  dom_dt: SortEnumType
+  cladding_cv: SortEnumType
+  max_weight_cv: SortEnumType
+  height_cv: SortEnumType
+  walkway_cv: SortEnumType
+  capacity: SortEnumType
+  tare_weight: SortEnumType
+  last_test_cv: SortEnumType
+  next_test_cv: SortEnumType
+  test_dt: SortEnumType
+  test_class_cv: SortEnumType
+  last_notify_dt: SortEnumType
+  last_release_dt: SortEnumType
+  yard_cv: SortEnumType
+  tank: tankSortInput
+  customer_company: customer_companySortInput
+  tariff_buffer: tariff_bufferSortInput
+  delete_dt: SortEnumType
+  create_dt: SortEnumType
+  update_dt: SortEnumType
+  create_by: SortEnumType
+  update_by: SortEnumType
 }
 
 input tariff_bufferFilterInput {
@@ -4914,6 +4968,18 @@ input tariff_bufferInput {
   update_dt: Long
   create_by: String
   update_by: String
+}
+
+input tariff_bufferSortInput {
+  guid: SortEnumType
+  buffer_type: SortEnumType
+  cost: SortEnumType
+  remarks: SortEnumType
+  delete_dt: SortEnumType
+  create_dt: SortEnumType
+  update_dt: SortEnumType
+  create_by: SortEnumType
+  update_by: SortEnumType
 }
 
 input tariff_cleaningFilterInput {
@@ -6551,49 +6617,6 @@ input survey_detailSortInput {
   update_by: SortEnumType
 }
 
-input tank_infoSortInput {
-  guid: SortEnumType
-  tank_no: SortEnumType
-  owner_guid: SortEnumType
-  unit_type_guid: SortEnumType
-  tank_comp_guid: SortEnumType
-  manufacturer_cv: SortEnumType
-  dom_dt: SortEnumType
-  cladding_cv: SortEnumType
-  max_weight_cv: SortEnumType
-  height_cv: SortEnumType
-  walkway_cv: SortEnumType
-  capacity: SortEnumType
-  tare_weight: SortEnumType
-  last_test_cv: SortEnumType
-  next_test_cv: SortEnumType
-  test_dt: SortEnumType
-  test_class_cv: SortEnumType
-  last_notify_dt: SortEnumType
-  last_release_dt: SortEnumType
-  yard_cv: SortEnumType
-  tank: tankSortInput
-  customer_company: customer_companySortInput
-  tariff_buffer: tariff_bufferSortInput
-  delete_dt: SortEnumType
-  create_dt: SortEnumType
-  update_dt: SortEnumType
-  create_by: SortEnumType
-  update_by: SortEnumType
-}
-
-input tariff_bufferSortInput {
-  guid: SortEnumType
-  buffer_type: SortEnumType
-  cost: SortEnumType
-  remarks: SortEnumType
-  delete_dt: SortEnumType
-  create_dt: SortEnumType
-  update_dt: SortEnumType
-  create_by: SortEnumType
-  update_by: SortEnumType
-}
-
 """A connection to a list of items."""
 type QueryContactPersonConnection {
   """Information to aid in pagination."""
@@ -7651,22 +7674,6 @@ input residueSortInput {
   customer_company: customer_companySortInput
   storing_order_tank: storing_order_tankSortInput
   customer_billing: billingSortInput
-  delete_dt: SortEnumType
-  create_dt: SortEnumType
-  update_dt: SortEnumType
-  create_by: SortEnumType
-  update_by: SortEnumType
-}
-
-input steaming_tempSortInput {
-  guid: SortEnumType
-  job_order_guid: SortEnumType
-  meter_temp: SortEnumType
-  top_temp: SortEnumType
-  bottom_temp: SortEnumType
-  remarks: SortEnumType
-  report_dt: SortEnumType
-  job_order: job_orderSortInput
   delete_dt: SortEnumType
   create_dt: SortEnumType
   update_dt: SortEnumType

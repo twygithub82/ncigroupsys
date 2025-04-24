@@ -304,6 +304,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       this.testClassCvList = addDefaultSelectOption(data, 'All');
       this.testClassCvListNewBooking = addDefaultSelectOption(data);
     });
+    this.search();
   }
 
   showNotification(
@@ -554,6 +555,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+      this.sotSelection.clear();
+      this.selectedCompany = "";
+      this.selectedItemsPerPage = {};
       this.updatePageSelection();
     });
   }

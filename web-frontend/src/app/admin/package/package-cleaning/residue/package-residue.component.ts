@@ -39,6 +39,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 
 @Component({
   selector: 'app-package-residue',
@@ -69,8 +70,8 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    PreventNonNumericDirective
   ]
-
 })
 
 export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
@@ -315,8 +316,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '720px',
-      height: 'auto',
+      width: '70vw',
+      height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -350,9 +351,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageResidueItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-
-      width: '720px',
-      height: 'auto',
+      width: '70vw',
+      height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -418,7 +418,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.pcForm!.value["customer_cost"]) {
       const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
-      where.cost = { lte: selectedCost }
+      where.cost = { eq: selectedCost }
     }
 
     if (this.pcForm!.get("residue_disposal")?.value) {

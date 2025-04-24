@@ -464,6 +464,10 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
       } else {
         const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey;
         surveyDetail = {
+          sot_guid: this.sotItem?.guid,
+          status_cv: '',
+          survey_type_cv: '',
+          survey_dt: 0,
           test_class_cv: igs?.test_class_cv
         };
         periodicTest = {

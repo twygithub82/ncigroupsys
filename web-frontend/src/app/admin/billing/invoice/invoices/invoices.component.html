@@ -69,18 +69,13 @@
                   <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill" required>
                       <mat-label>{{translatedLangText.INVOICE_TYPE }}</mat-label>
-                       <mat-select  formControlName="currency" >
-                        <mat-option *ngFor="let cc of currencyList" [value]="cc">
-                          <ng-container *ngIf="cc !== null">
-                            {{cc.currency_code }}
-                          </ng-container>
-                        </mat-option>
-                    </mat-select>
-                    @if (searchForm?.get('codeValue')?.hasError('required') ) {
-                      <mat-error>
-                        {{translatedLangText.BILLING_CURRENCY }} {{translatedLangText.IS_REQUIRED}}
-                      </mat-error>
-                      }
+                       <mat-select  formControlName="invoice_type_cv" >
+                        @for (codeValue of invoiceTypeCvList; track codeValue) {
+                          <mat-option [value]="codeValue.code_val">
+                            {{codeValue.description}}
+                          </mat-option>
+                          }
+                      </mat-select>
                     </mat-form-field>
                   </div>
                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>

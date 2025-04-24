@@ -292,8 +292,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '1000px',
-      height: 'auto',
+      width: '80vw',
+      height: '90vh',
       data: {
         action: 'duplicate',
         langText: this.langText,
@@ -322,8 +322,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '1000px',
-      height: 'auto',
+      width: '80vw',
+      height: '90vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -360,19 +360,19 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
     return retval;
   }
+
   displayLastUpdated(r: TariffLabourItem) {
     var updatedt = r.update_dt;
     if (updatedt === null) {
       updatedt = r.create_dt;
     }
     return this.displayDate(updatedt);
-
   }
-
 
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
+
   adjustCost() {
     // if(this.selection.selected.length==0) return;
     let tempDirection: Direction;
@@ -382,7 +382,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: '1000px',
+      width: '80vw',
+      height: '90vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -407,7 +408,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '1000px',
+      width: '80vw',
+      height: '90vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -435,7 +437,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: TariffRepairItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '1000px',
+      width: '80vw',
+      height: '90vh',
       data: {
         action: 'edit',
         langText: this.langText,

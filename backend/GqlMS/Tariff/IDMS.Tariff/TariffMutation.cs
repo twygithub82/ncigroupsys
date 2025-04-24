@@ -874,7 +874,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
 
         public async Task<int> UpdateTariffRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
+            [Service] IHttpContextAccessor httpContextAccessor, List<string>? group_name_cv, List<string>? subgroup_name_cv, string? part_name, string? dimension,
             int? length, List<string?>? guid, double material_cost_percentage, double labour_hour_percentage) // double labor_hour_percentage
         {
             int retval = 0;
@@ -895,16 +895,29 @@ namespace IDMS.Models.Tariff.GqlTypes
                     }
                     else
                     {
-                        if (!string.IsNullOrEmpty(group_name_cv))
+                        //if (!string.IsNullOrEmpty(group_name_cv))
+                        //{
+                        //    dbTariffRepairs = dbTariffRepairs.Where(t => t.group_name_cv == group_name_cv).ToArray();
+                        //    isAll = false;
+                        //}
+                        if (group_name_cv != null && group_name_cv.Any())
                         {
-                            dbTariffRepairs = dbTariffRepairs.Where(t => t.group_name_cv == group_name_cv).ToArray();
+                            dbTariffRepairs = dbTariffRepairs.Where(t => group_name_cv.Contains(t.group_name_cv)).ToArray();
                             isAll = false;
                         }
-                        if (!string.IsNullOrEmpty(subgroup_name_cv))
+
+                        //if (!string.IsNullOrEmpty(subgroup_name_cv))
+                        //{
+                        //    dbTariffRepairs = dbTariffRepairs.Where(t => subgroup_name_cv.EqualsIgnore(t.subgroup_name_cv ?? "")).ToArray();
+                        //    isAll = false;
+                        //}
+
+                        if (subgroup_name_cv != null && subgroup_name_cv.Any())
                         {
-                            dbTariffRepairs = dbTariffRepairs.Where(t => subgroup_name_cv.EqualsIgnore(t.subgroup_name_cv ?? "")).ToArray();
+                            dbTariffRepairs = dbTariffRepairs.Where(t => subgroup_name_cv.Contains(t.subgroup_name_cv)).ToArray();
                             isAll = false;
                         }
+
                         if (!string.IsNullOrEmpty(part_name))
                         {
                             dbTariffRepairs = dbTariffRepairs.Where(t => part_name.EqualsIgnore(t.part_name ?? "")).ToArray();

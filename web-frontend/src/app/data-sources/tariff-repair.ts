@@ -159,19 +159,19 @@ export const GET_TARIFF_REPAIR_QUERY_WITH_COUNT = gql`
 
 export const GET_DISTINCT_PART_NAME = gql`
   query queryDistinctPartName($groupName: String, $subgroupName: String, $part_name: String) {
-    resultList : queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName, part_name: $part_name)
+    resultList: queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName, part_name: $part_name)
   }
 `;
 
 export const GET_DISTINCT_DIMENSION = gql`
   query queryDistinctDimension($partName: String) {
-    resultList : queryDistinctDimension(partName: $partName)
+    resultList: queryDistinctDimension(partName: $partName)
   }
 `;
 
 export const GET_DISTINCT_LENGTH = gql`
   query queryDistinctLength($partName: String, $dimension: String) {
-    resultList : queryDistinctLength(partName: $partName, dimension: $dimension) {
+    resultList: queryDistinctLength(partName: $partName, dimension: $dimension) {
       length
       length_unit_cv
     }
@@ -191,14 +191,13 @@ export const UPDATE_TARIFF_REPAIR = gql`
 `;
 
 export const UPDATE_TARIFF_REPAIRS_MATERIAL_COST = gql`
-  mutation updateTariffRepair_MaterialCost($group_name_cv:String,$subgroup_name_cv:String,
-    $part_name:String,$dimension:String,$length:Int,$guid:[String],$material_cost_percentage:Float!,$labour_hour_percentage:Float!) {
-    updateTariffRepair_MaterialCost(group_name_cv:$group_name_cv,subgroup_name_cv:$subgroup_name_cv,
-    part_name:$part_name,dimension:$dimension,length:$length,guid:$guid,material_cost_percentage:$material_cost_percentage,
-    labour_hour_percentage:$labour_hour_percentage)
+  mutation updateTariffRepair_MaterialCost($group_name_cv: [String!], $subgroup_name_cv: [String!],
+    $part_name: String,$dimension: String, $length: Int, $guid: [String], $material_cost_percentage: Float!, $labour_hour_percentage: Float!) {
+    updateTariffRepair_MaterialCost(group_name_cv: $group_name_cv, subgroup_name_cv: $subgroup_name_cv,
+    part_name: $part_name, dimension: $dimension, length: $length, guid: $guid, material_cost_percentage: $material_cost_percentage,
+    labour_hour_percentage: $labour_hour_percentage)
   }
 `;
-
 
 export const UPDATE_TARIFF_REPAIRS = gql`
   mutation updateTariffRepairs($updatedTariffRepair_guids: [String!]!,$group_name_cv:String!,$subgroup_name_cv:String!,

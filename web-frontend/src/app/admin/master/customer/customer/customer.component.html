@@ -26,10 +26,9 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
-                      [matAutocomplete]="customerCode">
+                    <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                      @for (cc of customer_companyList; track cc) {
+                      @for (cc of customer_companyFilterList; track cc) {
                       <mat-option [value]="cc">
                         {{ccDS.displayName(cc)}}
                       </mat-option>
@@ -46,6 +45,7 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
                     <mat-select formControlName="country">
+                      <mat-option [value]="">{{'--Select--'}}</mat-option>
                       @for (country of countryCodes; track country) {
                       <mat-option [value]="country.country">{{country.country}}</mat-option>
                       }
@@ -80,23 +80,23 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="customer_companyList" matSort
+          <table mat-table [dataSource]="customer_companyResultList" matSort
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef mat-sort-header
                 [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">
-                <span class="mobile-label">{{this.translatedLangText.CODE }}:</span>{{row.code}}</mat-cell>
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">
+                <span class="mobile-label">{{this.translatedLangText.CODE
+                  }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer_name">
               <mat-header-cell [ngClass]="''" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="''" *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell [ngClass]="''" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
-                  }}:</span>{{row.name}}</mat-cell>
+                  }}:</span>{{row.customer_company?.name}}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="mobile">
               <mat-header-cell *matHeaderCellDef mat-sort-header
@@ -115,19 +115,17 @@
               <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl'" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-2-xl'" *matCellDef="let row"
-                (contextmenu)="onContextMenu($event, row)">
+              <mat-cell [ngClass]="'tbl-col-width-per-2-xl'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
-                {{this.displayLastUpdated(row)}}</mat-cell>
+                {{this.displayLastUpdated(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
               <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl'" *matHeaderCellDef
                 mat-sort-header>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-3-xl'" *matCellDef="let row"
-                (contextmenu)="onContextMenu($event, row)">
+              <mat-cell [ngClass]="'tbl-col-width-per-3-xl'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
-                {{row.tank?.unit_type}}</mat-cell>
+                {{row.customer_company?.tank?.unit_type}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="actions">
               <mat-header-cell
@@ -135,22 +133,24 @@
                 *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row; let i=index;"
                 [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
-                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                @if (!row.so_count && !row.sot_count && !row.tank_info_count) {
+                <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.customer_company)"
+                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-danger">
                   <mat-icon>delete_forever</mat-icon>
                 </button>
+                }
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)" [style.cursor]="'pointer'"
-              matRipple>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.customer_company)"
+              [style.cursor]="'pointer'" matRipple>
             </mat-row>
           </table>
         </div>
         <!-- Loading spinner -->
-        @if (!(ccDS.loading$ | async) && !customer_companyList.length) {
+        @if (!(ccDS.loading$ | async) && !customer_companyResultList.length) {
         <mat-divider></mat-divider>
-        <div class="no-results m-l-20 pt-3" [style.display]="customer_companyList.length === 0 ? '' : 'none'">
+        <div class="no-results m-l-20 pt-3" [style.display]="customer_companyResultList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
