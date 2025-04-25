@@ -59,6 +59,12 @@
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+                      <input matInput formControlName="tank_no">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
                         formControlName="last_cargo">
@@ -74,30 +80,6 @@
                         {{translatedLangText.INVALID_SELECTION}}
                       </mat-error>
                       }
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.STATUS}}</mat-label>
-                      <mat-select formControlName="so_status">
-                        @for (codeValue of soStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-                      <input matInput formControlName="tank_no">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                      <input matInput formControlName="job_no">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -121,6 +103,18 @@
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
                       <mat-date-range-picker #eta_picker></mat-date-range-picker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.STATUS}}</mat-label>
+                      <mat-select formControlName="so_status">
+                        @for (codeValue of soStatusCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
                     </mat-form-field>
                   </div>
                   <div
@@ -226,11 +220,11 @@
                 <ng-container matColumnDef="waiting_status">
                   <mat-header-cell *matHeaderCellDef mat-sort-header
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-                    {{translatedLangText.WAITING}}
+                    {{translatedLangText.OUTSTANDING}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-                    <span class="mobile-label">{{translatedLangText.WAITING}}:</span>
+                    <span class="mobile-label">{{translatedLangText.OUTSTANDING}}:</span>
                     {{soDS.getWaitingStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="cancel_status">

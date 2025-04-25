@@ -266,7 +266,12 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       const sotSearch: any = {};
 
       if (this.searchForm!.get('tank_no')?.value) {
-        sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+        const tankNo = this.searchForm!.get('tank_no')?.value;
+        const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
+        sotSearch.or = [
+          { tank_no: { contains: tankNo } },
+          { tank_no: { contains: formattedTankNo } }
+        ]
       }
 
       if (this.searchForm!.get('tank_status_cv')?.value) {

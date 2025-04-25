@@ -450,6 +450,15 @@ export class Utility {
     return `${ownerCode} ${serialNumber}-${checkDigit}`;
   }
 
+  static formatTankNumberForSearch(tankNumber: string): string {
+    if (!tankNumber) return '';
+
+    const serialNumber = tankNumber.slice(0, -1); // everything except last char
+    const checkDigit = tankNumber.slice(-1); // last char
+
+    return `${serialNumber}-${checkDigit}`;
+  }
+
   static addYearsToEpoch(epochTime: number, yearCount: number): number {
     // Convert epoch time from seconds to milliseconds (JavaScript uses milliseconds)
     const epochMilliseconds = epochTime * 1000;

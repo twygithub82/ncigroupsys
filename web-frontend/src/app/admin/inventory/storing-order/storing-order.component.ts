@@ -78,10 +78,10 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     'customer_code',
     'no_of_tanks',
     'status',
-    'so_notes',
     'waiting_status',
     'accept_status',
     'cancel_status',
+    'so_notes',
     'actions'
   ];
 
@@ -117,7 +117,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     ACCEPTED: 'COMMON-FORM.ACCEPTED',
-    WAITING: 'COMMON-FORM.WAITING',
+    OUTSTANDING: 'COMMON-FORM.OUTSTANDING',
     CANCELED: 'COMMON-FORM.CANCELED',
     TANKS: 'COMMON-FORM.TANKS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
@@ -371,7 +371,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   search() {
     const where: any = {};
-  
+
     const soNo = this.searchForm?.get('so_no')?.value;
     const soStatus = this.searchForm?.get('so_status')?.value;
     const customerCode = this.searchForm?.get('customer_code')?.value;
@@ -381,41 +381,45 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     const etaEnd = this.searchForm?.get('eta_dt_end')?.value;
     const lastCargo = this.searchForm?.get('last_cargo')?.value;
     const purpose = this.searchForm?.get('purpose')?.value;
-  
+
     if (soNo) {
       where.so_no = { contains: soNo };
     }
-  
+
     if (soStatus) {
       where.status_cv = { contains: soStatus };
     }
-  
+
     if (customerCode) {
       where.customer_company = { code: { contains: customerCode.code } };
     }
-  
+
     if (tankNo || jobNo || (etaStart && etaEnd) || lastCargo || purpose) {
       const sotSome: any = {};
-  
+
       if (lastCargo) {
         where.last_cargo_guid = { contains: lastCargo.guid };
       }
-  
+
       if (tankNo) {
-        sotSome.tank_no = { contains: tankNo };
+        const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
+        sotSome.or = [
+          { tank_no: { contains: tankNo } },
+          { tank_no: { contains: formattedTankNo } }
+        ];
       }
-  
+
       if (jobNo) {
         sotSome.job_no = { contains: jobNo };
       }
-  
+
       if (etaStart && etaEnd) {
         sotSome.eta_dt = {
           gte: Utility.convertDate(etaStart),
           lte: Utility.convertDate(etaEnd)
         };
       }
-  
+
       if (purpose) {
         if (purpose.includes('STORAGE')) {
           sotSome.purpose_storage = { eq: true };
@@ -426,7 +430,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         if (purpose.includes('STEAM')) {
           sotSome.purpose_steam = { eq: true };
         }
-  
+
         const repairPurposes = [];
         if (purpose.includes('REPAIR')) {
           repairPurposes.push('REPAIR');
@@ -434,17 +438,17 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         if (purpose.includes('OFFHIRE')) {
           repairPurposes.push('OFFHIRE');
         }
-  
+
         if (repairPurposes.length > 0) {
           sotSome.purpose_repair_cv = { in: repairPurposes };
         }
       }
-  
+
       if (Object.keys(sotSome).length > 0) {
         where.storing_order_tank = { some: sotSome };
       }
     }
-  
+
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();

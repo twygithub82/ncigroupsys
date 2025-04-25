@@ -306,7 +306,11 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     };
 
     if (this.searchForm!.get('tank_no')?.value) {
-      where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      const tankNo = this.searchForm!.get('tank_no')?.value;
+      where.or = [
+        { tank_no: { contains: tankNo } },
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+      ];
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {
