@@ -302,45 +302,30 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     return undefined;
   }
 
-  getStorageDays(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem, free_storage: number = 0, cut_off_date:number=0): number | undefined {
-    sotItem.out_gate = sotItem.out_gate?.filter(outGate => outGate.delete_dt == 0 || outGate.delete_dt == null);
-    var currentDateOut: Date = new Date();
-
-    if(cut_off_date>0)
-    {
-      currentDateOut = new Date(cut_off_date * 1000);
-    }
-
-    if (sotItem?.out_gate?.[0]?.eir_dt) {
-      const createDtOutSeconds = sotItem.out_gate[0].eir_dt;
-      currentDateOut = new Date(createDtOutSeconds * 1000);
-    }
-
+  getStorageStartDate(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem) :Date
+  {
     if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
       sotItem.in_gate = sotItem.in_gate?.filter(inGate => inGate.delete_dt == 0 || inGate.delete_dt == null);
       if (sotItem?.in_gate?.[0]?.eir_dt) {
         const createDtInSeconds = sotItem.in_gate[0].eir_dt;
         const createDate = new Date(createDtInSeconds * 1000);
-        const differenceInMs = currentDateOut.getTime() - createDate.getTime();
-        const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;//Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
-
-        return differenceInDays;
+       
+        return createDate;
       }
       else {
-        return 0;
+        return new Date();
       }
     } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {
       sotItem.cleaning = sotItem.cleaning?.filter(clean => clean.delete_dt == 0 || clean.delete_dt == null);
       if (sotItem?.cleaning?.[0]?.complete_dt) {
         const createDtInSeconds = sotItem.cleaning[0].complete_dt;
         const createDate = new Date(createDtInSeconds * 1000);
-        const differenceInMs = currentDateOut.getTime() - createDate.getTime();
-        const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+       
 
-        return differenceInDays;
+        return createDate;
       }
       else {
-        return 0;
+        return new Date();
       }
     } else if (pdItem?.storage_cal_cv === 'AFTER_AV_DATE') {
       if (sotItem?.repair) {
@@ -359,22 +344,102 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
         if (latestCompleteDate != new Date(0)) {
           const createDtInSeconds = Number(Utility.convertDate(latestCompleteDate));
           const createDate = new Date(createDtInSeconds * 1000);
-          const differenceInMs = currentDateOut.getTime() - createDate.getTime();
-          const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+          
 
-          return differenceInDays;
+          return createDate;
         }
         else {
-          return 0;
+          return new Date();
         }
       }
       else {
-        return 0;
+        return new Date();
       }
 
     } else if (pdItem?.storage_cal_cv === 'NO_STORAGE') {
-      return 0;
+      return new Date();
     }
-    return undefined;
+    return new Date();
+
+  }
+  getStorageDays(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem, free_storage: number = 0, cut_off_date:number=0): number | undefined {
+    sotItem.out_gate = sotItem.out_gate?.filter(outGate => outGate.delete_dt == 0 || outGate.delete_dt == null);
+    var currentDateOut: Date = new Date();
+
+    if(cut_off_date>0)
+    {
+      currentDateOut = new Date(cut_off_date * 1000);
+    }
+
+    if (sotItem?.out_gate?.[0]?.eir_dt) {
+      const createDtOutSeconds = sotItem.out_gate[0].eir_dt;
+      currentDateOut = new Date(createDtOutSeconds * 1000);
+    }
+
+        const createDate = this.getStorageStartDate(sotItem,pdItem);
+        const differenceInMs = currentDateOut.getTime() - createDate.getTime();
+        const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;//Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+
+        return (differenceInDays>0?differenceInDays:0);
+    // if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
+    //   sotItem.in_gate = sotItem.in_gate?.filter(inGate => inGate.delete_dt == 0 || inGate.delete_dt == null);
+    //   if (sotItem?.in_gate?.[0]?.eir_dt) {
+    //     const createDtInSeconds = sotItem.in_gate[0].eir_dt;
+    //     const createDate = new Date(createDtInSeconds * 1000);
+    //     const differenceInMs = currentDateOut.getTime() - createDate.getTime();
+    //     const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;//Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+
+    //     return differenceInDays;
+    //   }
+    //   else {
+    //     return 0;
+    //   }
+    // } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {
+    //   sotItem.cleaning = sotItem.cleaning?.filter(clean => clean.delete_dt == 0 || clean.delete_dt == null);
+    //   if (sotItem?.cleaning?.[0]?.complete_dt) {
+    //     const createDtInSeconds = sotItem.cleaning[0].complete_dt;
+    //     const createDate = new Date(createDtInSeconds * 1000);
+    //     const differenceInMs = currentDateOut.getTime() - createDate.getTime();
+    //     const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+
+    //     return differenceInDays;
+    //   }
+    //   else {
+    //     return 0;
+    //   }
+    // } else if (pdItem?.storage_cal_cv === 'AFTER_AV_DATE') {
+    //   if (sotItem?.repair) {
+    //     sotItem.repair = sotItem.repair?.filter(repair => repair.delete_dt == 0 || repair.delete_dt == null);
+    //     let qcCompletedList = sotItem?.repair?.[0]?.repair_part?.filter(rp =>
+    //       rp.job_order?.status_cv === "QC_COMPLETED"
+    //     );
+
+    //     const latestCompleteDate = qcCompletedList
+    //       ?.map(rp => new Date(rp.job_order?.complete_dt!)) // Extract and convert `complete_dt` to Date objects
+    //       ?.reduce((latest, current) =>
+    //         current > latest ? current : latest,
+    //         new Date(0) // Start with epoch as the baseline
+    //       );
+
+    //     if (latestCompleteDate != new Date(0)) {
+    //       const createDtInSeconds = Number(Utility.convertDate(latestCompleteDate));
+    //       const createDate = new Date(createDtInSeconds * 1000);
+    //       const differenceInMs = currentDateOut.getTime() - createDate.getTime();
+    //       const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+
+    //       return differenceInDays;
+    //     }
+    //     else {
+    //       return 0;
+    //     }
+    //   }
+    //   else {
+    //     return 0;
+    //   }
+
+    // } else if (pdItem?.storage_cal_cv === 'NO_STORAGE') {
+    //   return 0;
+    // }
+    //return undefined;
   }
 }

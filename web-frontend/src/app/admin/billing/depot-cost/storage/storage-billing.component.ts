@@ -296,21 +296,12 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       })
     ).subscribe();
 
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+    this.invoiceDateControl.valueChanges.pipe(
+    //this.searchForm!.get('cutoff_dt')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-        }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-          this.updateValidators(this.lastCargoControl, this.last_cargoList);
-
-        });
+        this.calculateTotalCost();
       })
     ).subscribe();
   }
@@ -415,7 +406,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     if (this.searchForm!.get('invoiced')?.value) {
-      where.storage_billing_guid = { neq: null };
+      where.storing_order_tank = {storage_detail:{any:true} };
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -493,12 +484,13 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     // this.selection.clear();
     this.subs.sink = this.billDS.searchBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.billSotList = data;
+        this.billSotList = this.filterSotBilling(data);
         this.endCursor = this.billDS.pageInfo?.endCursor;
         this.startCursor = this.billDS.pageInfo?.startCursor;
         this.hasNextPage = this.billDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.billDS.pageInfo?.hasPreviousPage ?? false;
         // this.calculateResidueTotalCost();
+
         this.checkInvoicedAndTotalCost();
         this.distinctCustomerCodes = [... new Set(this.billSotList.map(item => item.storing_order_tank?.storing_order?.customer_company?.code))];
       });
@@ -927,11 +919,13 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
   calculateTotalCost() {
     this.invoiceTotalCostControl.setValue('0.00');
+    var invalidItm:any[]=[];
     const totalCost = this.selection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
 
       var itm: any = s;
 
+      if(itm.storage_billing) itm.storage_billing.storage_detail=this.filterDeleted(itm.storage_billing.storage_detail);
       if(!itm.storage_billing)
       {
         let packDepotItm: PackageDepotItem = new PackageDepotItem();
@@ -941,12 +935,17 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         cutOffDt.setMinutes(59);
         cutOffDt.setSeconds(59);
         
+        let startDate =this.pdDS.getStorageStartDate(itm.storing_order_tank!, packDepotItm);
         let daysDifference: number = Number(this.pdDS.getStorageDays(itm.storing_order_tank!, packDepotItm, 0,(cutOffDt.getTime()/1000)));
         let freeStorage=itm.free_storage;
         let remainFreeDays=freeStorage-daysDifference;
-        let startDt= new Date(this.invoiceDateControl.value!);
-        startDt.setDate(-1*daysDifference);
-
+        let startDt= new Date(startDate);
+        //startDt.setDate(startDt.getDate()+(-1*(daysDifference+freeStorage)));
+        if(itm.storing_order_tank?.tank_status_cv==="RELEASED")
+        {
+          cutOffDt=new Date(startDt);
+          cutOffDt.setDate(cutOffDt.getDate()+daysDifference+freeStorage-1);
+        }
         itm.currentStorageBilling=new StorageDetailRequest();
         itm.currentStorageBilling.start_dt= Utility.convertDate(startDt);
         itm.currentStorageBilling.end_dt=Utility.convertDate(cutOffDt);
@@ -962,15 +961,135 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       else
       {
 
+        let packDepotItm: PackageDepotItem = new PackageDepotItem();
+        packDepotItm.storage_cal_cv = itm.storage_cal_cv;
+        let cutOffDt: Date = new Date(this.invoiceDateControl.value!);
+        cutOffDt.setHours(23);
+        cutOffDt.setMinutes(59);
+        cutOffDt.setSeconds(59);
+        
+        let startDt =this.pdDS.getStorageStartDate(itm.storing_order_tank!, packDepotItm);
+        let daysDifference: number = Number(this.pdDS.getStorageDays(itm.storing_order_tank!, packDepotItm, 0,(cutOffDt.getTime()/1000)));
+        let freeStorage=itm.free_storage;
+        let remainFreeDays=freeStorage-daysDifference;
+       // let startDt= new Date(this.invoiceDateControl.value!);
+       // startDt.setDate(startDt.getDate()+(-1*(daysDifference+freeStorage)));
+
+
+        var state = "BILLING"
+        if(itm.storing_order_tank?.tank_status_cv=="RELEASED")
+        {
+          if(itm.storing_order_tank?.storage_detail.length>0) state ="END";
+          else state="START_END";
+
+        }
+        else
+        {
+          if(itm.storing_order_tank?.storage_detail.length===0) state="START";
+        }
+
+      
+
+        if(itm.storing_order_tank?.storage_detail?.length>0 )
+        {
+            var storageDetails =  [...itm.storing_order_tank?.storage_detail || []].sort((a, b) => 
+              (b.end_dt || 0) - (a.end_dt || 0)
+            );
+
+            var lastStorageDetail =storageDetails[0]
+            if(["END","BILLING"].includes(state))
+              {
+                 startDt=new Date(lastStorageDetail.end_dt*1000);
+                 startDt.setDate(startDt.getDate() + 1);
+                 daysDifference=this.calculateDateDifference(startDt,cutOffDt);
+                 remainFreeDays=lastStorageDetail.remaining_free_storage-daysDifference;
+
+                 if((state==="END" || state==="START_END")&&itm.storing_order_tank?.out_gate.length>0)
+                 {
+                  cutOffDt = new Date(lastStorageDetail.end_dt*1000);
+                  cutOffDt.setHours(23);
+                  cutOffDt.setMinutes(59);
+                  cutOffDt.setSeconds(59);
+                   var outGate =itm.storing_order_tank?.out_gate[0];
+                   var outDt = new Date((outGate.eir_dt*1000)||0);
+                   outDt.setHours(23);
+                   outDt.setMinutes(59);
+                   outDt.setSeconds(59);
+                   if(cutOffDt.getTime()===outDt.getTime())
+                   {
+                    invalidItm.push(itm);
+                    return accumulator; 
+                   }
+                   cutOffDt = new Date(startDt);
+                   cutOffDt.setDate(startDt.getDate() + daysDifference-1);
+
+                 }
+
+              }
+        }
+        else if(["END","START_END"].includes(state))
+        {
+          if(itm.storing_order_tank?.out_gate.length>0)
+            {
+            
+              var outGate =itm.storing_order_tank?.out_gate[0];
+              var outDt = new Date((outGate.eir_dt*1000)||0);
+              outDt.setHours(23);
+              outDt.setMinutes(59);
+              outDt.setSeconds(59);
+              if(cutOffDt.getTime()===outDt.getTime())
+              {
+               invalidItm.push(itm);
+               return accumulator; 
+              }
+              daysDifference=this.calculateDateDifference(startDt,outDt);
+              cutOffDt = new Date(startDt);
+              cutOffDt.setDate(startDt.getDate() + daysDifference-1);
+
+            }
+
+        }
+
+        itm.currentStorageBilling=new StorageDetailRequest();
+        itm.currentStorageBilling.start_dt= Utility.convertDate(startDt);
+        itm.currentStorageBilling.end_dt=Utility.convertDate(cutOffDt);
+        itm.currentStorageBilling.remaining_free_storage = (remainFreeDays>0?remainFreeDays:0);
+        itm.currentStorageBilling.total_cost= (remainFreeDays>0?0:Math.abs(remainFreeDays)*itm.storage_cost);
+        itm.currentStorageBilling.action='NEW';
+        itm.currentStorageBilling.sot_guid=itm.storing_order_tank?.guid;
+        itm.currentStorageBilling.state_cv=state;
+        itm.currentStorageBilling.remarks='';
+        itm.currentStorageBilling.guid='';
+
       }
 
       return accumulator +  itm.currentStorageBilling.total_cost;
       //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
     }, 0); // Initialize accumulator to 0
     this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
+    if (invalidItm.length > 0) {
+      setTimeout(() => {
+        invalidItm.forEach(item => {
+          this.selection.toggle(item);
+        });
+        this.SelectFirstItem();
+      });
+    }
+
   }
 
-  toggleRow(row: ResidueItem) {
+  calculateThStorageDays(start_dt:number, end_dt:number)
+  {
+    const createDtInSeconds = start_dt;
+    const endDtInSeconds= end_dt*1000;
+    const createDate = new Date(createDtInSeconds * 1000);
+    const differenceInMs = endDtInSeconds - createDate.getTime();
+    const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));//Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
+
+    return differenceInDays;
+  }
+
+  toggleRow(row: any) {
 
     this.selection.toggle(row);
     this.SelectFirstItem();
@@ -990,6 +1109,14 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       if (row.storing_order_tank?.storing_order?.customer_company?.code != this.selectedEstimateItem.storing_order_tank?.storing_order?.customer_company?.code) {
         return true;
       }
+      else
+      {
+        return !this.allowToInvoiceStorage(row);
+
+      }
+    }
+    else{
+      return !this.allowToInvoiceStorage(row);
     }
     return false;
   }
@@ -1073,14 +1200,89 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
   }
 
+  filterSotBilling( data:BillingSOTItem[]):BillingSOTItem[]
+  {
+    var retval : BillingSOTItem[]= this.filterDeleted(data);
+
+    retval.forEach(r=>{
+
+       this.filterDeletedAndSotGuid(r,true);
+    });
+
+    return retval;
+
+  }
+
+
+  hasMatchingDetails(sotbill: BillingSOTItem): boolean {
+    return this.getMatchingDetails(sotbill).length > 0;
+  }
+  
+  getMatchingDetails(sotbill: BillingSOTItem): BillingStorageDetail[] {
+    return this.filterDeletedAndSotGuid(sotbill, false);
+  }
+  
+  filterDeletedAndSotGuid(sotbill: BillingSOTItem, mutateOriginal = false): BillingStorageDetail[] {
+    const filtered = sotbill.storage_billing?.storage_detail?.filter(
+      (row: BillingStorageDetail) => !row.delete_dt && row.sot_guid === sotbill.storing_order_tank?.guid
+    ) || [];
+    
+    if (mutateOriginal && sotbill.storage_billing) {
+      sotbill.storage_billing.storage_detail = filtered;
+    }
+    
+    return filtered;
+  }
 
   filterDeleted(resultList: any[] | undefined): any {
+
     return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 
   ConvertEpochToDate(dt:number)
   {
     return Utility.convertEpochToDateStr(dt);
+  }
+ 
+  calculateDateDifference(startDate: Date, endDate: Date): number {
+    // Calculate time difference in milliseconds
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    
+    // Convert milliseconds to days
+    const dayDiff = timeDiff / (1000 * 3600 * 24);
+    
+    return Math.round(dayDiff); // or Math.floor() depending on your needs
+  }
+
+  allowToInvoiceStorage(sotRow:BillingSOTItem)
+  {
+    if(sotRow.storing_order_tank?.tank_status_cv==="RELEASED")
+    {
+      if((sotRow.storing_order_tank?.storage_detail?.length||0)>0 )
+        {
+            var storageDetails =  [...sotRow.storing_order_tank?.storage_detail || []].sort((a, b) => 
+              (b.end_dt || 0) - (a.end_dt || 0)
+            );
+
+            var lastStorageDetail =storageDetails[0];
+            var cutOffDt = new Date(lastStorageDetail?.end_dt!*1000);
+            cutOffDt.setHours(23);
+            cutOffDt.setMinutes(59);
+            cutOffDt.setSeconds(59);
+             var outGate =sotRow.storing_order_tank?.out_gate?.[0];
+             var outDt = new Date(((outGate?.eir_dt||0)*1000)||0);
+             outDt.setHours(23);
+             outDt.setMinutes(59);
+             outDt.setSeconds(59);
+            return !(cutOffDt.getTime()===outDt.getTime());
+
+        }
+        return true;
+    }
+    else
+    {
+      return true;
+    }
   }
 
 }

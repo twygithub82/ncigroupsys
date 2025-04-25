@@ -248,9 +248,11 @@
                 <div class="row">
                 </div>
                 <mat-divider></mat-divider>
-                @if ((filterDeleted(sotRow.storage_billing?.storage_detail||[])?.length ?? 0) > 0) {
+                
+                @if ((sotRow.storing_order_tank?.storage_detail?.length||0)>0) {
+                
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="filterDeleted(sotRow.storage_billing?.storage_detail || [])" matSort
+                  <table mat-table [dataSource]="sotRow.storing_order_tank?.storage_detail||[]" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="select">
                       <mat-header-cell *matHeaderCellDef
@@ -347,20 +349,20 @@
         </mat-accordion>
         }
         <!-- No result -->
-        @if (!(sotDS.loading$ | async) && !billSotList.length) {
+        @if (!(billDS.loading$ | async) && !billSotList.length) {
         <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
         <!-- Loading spinner -->
-        @if (sotDS.loading$ | async) {
+        @if (billDS.loading$ | async) {
         <div class="tbl-spinner">
           <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
           </mat-progress-spinner>
         </div>
         }
-        <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
+        <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="0" [pageSize]="10"
           [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
       </div>

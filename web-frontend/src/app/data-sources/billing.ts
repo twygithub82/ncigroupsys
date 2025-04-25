@@ -733,6 +733,28 @@ const SEARCH_BILLING_SOT_QUERY = gql`
           tank_no
           tank_status_cv
           unit_type_guid
+          storage_detail (where: { delete_dt: { eq: null } }) {
+            billing_guid
+            create_by
+            create_dt
+            delete_dt
+            end_dt
+            guid
+            remaining_free_storage
+            remarks
+            sot_guid
+            start_dt
+            state_cv
+            total_cost
+            update_by
+            update_dt
+            billing {
+              invoice_dt
+              invoice_due
+              invoice_no
+              guid
+            }
+          }
           repair{
             repair_part
             {
@@ -766,6 +788,8 @@ const SEARCH_BILLING_SOT_QUERY = gql`
           }
           out_gate{
             guid
+            eir_no
+            eir_dt
             out_gate_survey{
               guid
               create_dt
@@ -832,28 +856,6 @@ const SEARCH_BILLING_SOT_QUERY = gql`
           status_cv
           update_by
           update_dt
-          storage_detail {
-            billing_guid
-            create_by
-            create_dt
-            delete_dt
-            end_dt
-            guid
-            remaining_free_storage
-            remarks
-            sot_guid
-            start_dt
-            state_cv
-            total_cost
-            update_by
-            update_dt
-            billing {
-              invoice_dt
-              invoice_due
-              invoice_no
-              guid
-            }
-          }
         }
       }
     }
@@ -1146,7 +1148,7 @@ export const ADD_BILLING = gql`
 `;
 
 export const UPDATE_BILLING = gql`
-  mutation updateBilling($updateBilling: billingInput,$billingEstimateRequests:[BillingEstimateRequestInput!]!,$storageDetail:[StorageDetailRequestInput!]) {
+  mutation updateBilling($updateBilling: billingInput,$billingEstimateRequests:[BillingEstimateRequestInput],$storageDetail:[StorageDetailRequestInput!]) {
     updateBilling(updateBilling: $updateBilling,billingEstimateRequests:$billingEstimateRequests,storageDetail:$storageDetail)
   }
 `;

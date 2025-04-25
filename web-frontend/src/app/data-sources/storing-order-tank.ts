@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { BillingSOTItem } from './billing';
+import { BillingSOTItem, BillingStorageDetail, StorageDetailRequest } from './billing';
 import { BookingItem } from './booking';
 import { CustomerCompanyItem } from './customer-company';
 import { InGateItem } from './in-gate';
@@ -131,6 +131,8 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public actions?: string[] = [];
   public billing_sot?: BillingSOTItem;
   public tank_info?: TankInfoItem;
+  public storage_detail?:BillingStorageDetail[]
+
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
     super(item);
