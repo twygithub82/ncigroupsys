@@ -495,7 +495,12 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
       const sotSome: any = {};
 
       if (this.searchForm!.get('tank_no')?.value) {
-        sotSome.tank_no = { contains: this.searchForm!.get('tank_no')?.value?.trim() };
+        const tankNo = this.searchForm!.get('tank_no')?.value
+        const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
+        sotSome.or = [
+          { tank_no: { contains: tankNo } },
+          { tank_no: { contains: formattedTankNo } }
+        ];
       }
 
       if (this.searchForm!.get('job_no')?.value) {
