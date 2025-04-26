@@ -14,3 +14,46 @@
   white-space: nowrap; /* Prevents wrapping */
   text-overflow: ellipsis; /* Adds "..." if text is too long */
 }
+
+
+$bg: #4b2e83;
+$fg: lighten($bg,20%);
+$borderWidth: 3px;
+
+body {
+  background: $bg;
+ // font-family: roboto;
+}
+
+input[type=radio] {
+  position: absolute;
+  visibility: hidden;
+  display: none;
+}
+
+label {
+  color: lighten($bg, 30%);
+  display: inline-block;
+  cursor: pointer;
+ // font-weight: bold;
+  padding: 0px 20px; // Increased padding for better centering
+  text-align: center; // Center text horizontally
+  line-height: 1.5; // Better vertical alignment
+  transition: all 0.3s ease; // Smooth transition
+}
+
+input[type=radio]:checked + label{
+  color: lighten($bg,60%);
+  background: $fg;
+}
+
+label + input[type=radio] + label {
+  border-left: solid $borderWidth $fg;
+}
+.radio-group {
+  border: solid $borderWidth $fg;
+  display: inline-block;
+  margin: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+}

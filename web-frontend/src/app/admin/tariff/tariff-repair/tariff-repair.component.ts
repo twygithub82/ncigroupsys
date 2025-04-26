@@ -812,6 +812,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
+      if (this.groupNameCvList) {
+        this.groupNameCvList = [...this.groupNameCvList].sort((a, b) => a.description!.localeCompare(b.description!));
+      }
       const subqueries: any[] = [];
       data.map(d => {
 

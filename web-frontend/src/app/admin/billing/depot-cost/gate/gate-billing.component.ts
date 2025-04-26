@@ -5,6 +5,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardContent, MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -32,6 +33,7 @@ import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, Bi
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { OutGateDS } from 'app/data-sources/out-gate';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -69,22 +71,18 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatCardContent,
+    MatCardModule
   ]
 })
 export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'select',
-    'tank_no',
-    'customer',
-    'eir_no',
-    'eir_dt',
-    //'last_cargo',
-    //'purpose',
-    'cost',
-    'tank_status_cv',
-    'invoice_no',
-    'invoice_date',
+    "invoice_dt",
+    "invoice_no",
+    "bill_type",
+    "total_cost",
+    "action"
     //  'invoiced',
     // 'action'
   ];
@@ -133,7 +131,10 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     CONFIRM_INVALID_ESTIMATE: 'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
     COST: 'COMMON-FORM.COST',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
-    DELETE: 'COMMON-FORM.DELETE'
+    DELETE: 'COMMON-FORM.DELETE',
+    GATE_IN:'COMMON-FORM.GATE-IN',
+    GATE_OUT:'COMMON-FORM.GATE-OUT',
+    INVOICE_TYPE:'COMMON-FORM.INVOICE-TYPE'
   }
 
   invForm?: UntypedFormGroup;
@@ -146,18 +147,19 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
+  ogDS: OutGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   //clnDS:InGateCleaningDS;
   resDS: ResidueDS;
   billDS: BillingDS;
-  processType: string = "GATE";
+  processType: string = "GATE_IN";
   billingParty: string = "CUSTOMER";
   maxManuDOMDt: Date = new Date();
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: BillingSOTItem;
-  billSotList: BillingSOTItem[] = [];
+  billSotList: any[] = [];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
@@ -168,6 +170,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
   depotCvList: CodeValuesItem[] = [];
+  invoiceTypeCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -177,11 +180,12 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  selection = new GuidSelectionModel<ResidueItem>(true, []);
+  selection = new GuidSelectionModel<any>(true, []);
   //selection = new SelectionModel<InGateCleaningItem>(true, []);
   invoiceNoControl = new FormControl('', [Validators.required]);
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
+  invoiceTypeControl = new FormControl(this.processType);
 
   constructor(
     public httpClient: HttpClient,
@@ -198,6 +202,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
+    this.ogDS = new OutGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     //this.clnDS= new InGateCleaningDS(this.apollo);
@@ -219,8 +224,11 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   initInvoiceForm() {
     this.invForm = this.fb.group({
       inv_no: [''],
-      inv_dt: ['']
+      inv_dt: [''],
+      
     })
+    const today = new Date().toISOString().substring(0, 10);
+    this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 
@@ -246,7 +254,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       eir_status_cv: [''],
       yard_cv: [''],
       invoiced: [''],
-      depot_status_cv: ['']
+      depot_status_cv: [''],
     });
   }
 
@@ -300,31 +308,23 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
   public loadData() {
     const queries = [
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'yardCv', codeValType: 'YARD' },
-      { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
+      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
+       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      // { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'invoiceTypeCv', codeValType: 'INVOICE_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
-    });
-    this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
-      this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
-    });
-    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-      this.tankStatusCvListDisplay = data;
-      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
-    });
-    this.cvDS.connectAlias('yardCv').subscribe(data => {
-      this.yardCvList = addDefaultSelectOption(data, 'All');
-    });
-    this.cvDS.connectAlias('depotCv').subscribe(data => {
-      this.depotCvList = addDefaultSelectOption(data, 'All');
-    });
+   
+     this.cvDS.connectAlias('invoiceTypeCv').subscribe(data => {
+         this.invoiceTypeCvList = data;
+       });
+       this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+        this.tankStatusCvList = data;
+      });
     this.search();
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -376,6 +376,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.selection.clear();
     this.calculateTotalCost();
 
+    where.and=[{gate_in:{eq:true}},{gate_out:{eq:true}}];
     //where.status_cv={in:['COMPLETED','APPROVED']};
     where.guid = { neq: null };
     if (this.searchForm!.get('tank_no')?.value) {
@@ -479,7 +480,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     // this.selection.clear();
     this.subs.sink = this.billDS.searchBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.billSotList = data;
+        this.billSotList = this.transformBillSotList(data);
         this.endCursor = this.billDS.pageInfo?.endCursor;
         this.startCursor = this.billDS.pageInfo?.startCursor;
         this.hasNextPage = this.billDS.pageInfo?.hasNextPage ?? false;
@@ -560,7 +561,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
   displayDate(input: number | undefined): string | undefined {
@@ -623,7 +624,8 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       inv_no: '',
       yard_cv: [''],
       invoiced: null,
-      depot_status_cv: ''
+      depot_status_cv: '',
+      invoice_type:'GATE_IN'
     });
 
     this.customerCodeControl.reset('');
@@ -683,29 +685,29 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
   delete(event: Event) {
 
-    event.preventDefault(); // Prevents the form submission
+    // event.preventDefault(); // Prevents the form submission
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
-        action: 'delete',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        const guids = this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
-        this.RemoveEstimatesFromInvoice(event, guids!);
-      }
-    });
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+    //     action: 'delete',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     const guids = this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
+    //     this.RemoveEstimatesFromInvoice(event, guids!);
+    //   }
+    // });
   }
-  RemoveEstimatesFromInvoice(event: Event, processGuid: string[]) {
+  RemoveEstimatesFromInvoice(event: Event, processGuid: string[],billType:string) {
     var updateBilling: any = null;
     let billingEstimateRequests: BillingEstimateRequest[] = [];
     processGuid.forEach(g => {
@@ -713,7 +715,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       billingEstReq.action = "CANCEL";
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = g;
-      billingEstReq.process_type = this.processType;
+      billingEstReq.process_type = billType;
       billingEstimateRequests.push(billingEstReq);
     });
 
@@ -860,19 +862,50 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
   onCancel(event: Event) {
     event.stopPropagation();
+    this.processType="GATE_IN";
     this.invoiceNoControl.reset('');
-    this.invoiceDateControl.reset('');
+    const today = new Date().toISOString().substring(0, 10);
+    this.invoiceDateControl.setValue(today);
+    this.invoiceTypeControl.setValue(this.processType);
+    
   }
 
   calculateTotalCost() {
+    var invalidItm :any[]=[];
     this.invoiceTotalCostControl.setValue('0.00');
     const totalCost = this.selection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
       var itm: any = s;
-      return accumulator + itm.total_cost;
+      if(this.processType==="GATE_IN")
+      {
+        if(s.gin_billing)
+        {
+          invalidItm.push(s);
+          return accumulator;
+        }
+        return accumulator + s.gate_in_cost;
+      }
+      else
+      {
+        if(s.gout_billing)
+          {
+            invalidItm.push(s);
+            return accumulator;
+          }
+          return accumulator + s.gate_out_cost;
+      }
+     // return accumulator + itm.total_cost;
       //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
     }, 0); // Initialize accumulator to 0
     this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
+    if (invalidItm.length > 0) {
+      setTimeout(() => {
+        invalidItm.forEach(item => {
+          this.selection.toggle(item);
+        });
+        this.SelectFirstItem();
+      });
+    }
   }
 
   toggleRow(row: ResidueItem) {
@@ -895,13 +928,30 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       if (row.storing_order_tank?.storing_order?.customer_company?.code != this.selectedEstimateItem.storing_order_tank?.storing_order?.customer_company?.code) {
         return true;
       }
+    
     }
+    else
+    {
+      if(this.processType==="GATE_IN")
+      {
+        return (row.gin_billing);
+      }
+      else
+      {
+        return (row.gout_billing);
+      }
+    }
+
     return false;
   }
 
   MasterCheckBoxDisable() {
     if (this.distinctCustomerCodes?.length) {
       return this.distinctCustomerCodes.length > 1;
+    }
+    else
+    {
+
     }
 
     return false;
@@ -973,4 +1023,166 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     return validStatus.includes(residue!.status_cv!);
 
   }
+
+  transformBillSotList(originalList: BillingSOTItem[]): any[] {
+    var transformedList:any[] = [];
+    
+    originalList.forEach(item => {
+      
+       
+     
+        var billing_types:string[]=[];
+        if(item.gin_billing)
+        {
+          billing_types.push("GATE_IN");
+        }
+
+        if(item.gout_billing)
+        {
+          billing_types.push("GATE_OUT");
+        }
+
+        transformedList.push({
+          ...item,
+          billing_types: billing_types,
+        });
+     
+    });
+    
+    return transformedList;
+  }
+
+  DisplayEirNo(billing_type:string,row:any)
+  {
+      if(billing_type=="GATE_IN")
+      {
+        return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no
+      }
+      else
+      {
+        return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_no
+      }
+  }
+
+  DisplayEirDate(billing_type:string,row:any)
+  {
+      if(billing_type=="GATE_IN")
+      {
+       return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt
+      }
+      else
+      {
+        return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_dt
+      }
+  }
+
+  DisplayInvoiceNo(billing_type:string,row:any)
+  {
+      if(billing_type=="GATE_IN")
+      {
+        if(row.gin_billing)
+          {
+            return  (row.gin_billing?.invoice_no||'-');
+          }
+          else
+          { return '-';}
+      }
+      else
+      {
+        if(row.gout_billing)
+          {
+            return (row.gout_billing?.invoice_no||'-');
+          }
+          else
+          { return '-';}
+      }
+  }
+  DisplayInvoiceDate(billing_type:string,row:any)
+  {
+      if(billing_type=="GATE_IN")
+      {
+        if(row.gin_billing)
+        {
+          return this.displayDate(row.gin_billing?.invoice_dt);
+        }
+        else
+        { return '-';}
+      }
+      else
+      {
+        if(row.gout_billing)
+          {
+            return this.displayDate(row.gout_billing?.invoice_dt);
+          }
+          else
+          { return '-';}
+      }
+  }
+  DisplayCost(billing_type:string,row:any)
+  {
+      if(billing_type=="GATE_IN")
+      {
+        if(row.gin_billing)
+        {
+          return this.displayNumber(row.gate_in_cost);
+        }
+        else
+        { return '-';}
+      }
+      else
+      {
+        if(row.gout_billing)
+          {
+            return this.displayNumber(row.gate_out_cost);
+          }
+          else
+          { return '-';}
+      }
+  }
+
+  displayNumber(value:number)
+  {
+    return Utility.formatNumberDisplay(value);
+  }
+
+  delete_invoice(event: Event,row:any,billType:string) {
+  
+      event.preventDefault(); // Prevents the form submission
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+          action: 'delete',
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result.action === 'confirmed') {
+          const guids:string[] = [row.guid!];
+          const proGuids:string[]=[row.guid!];
+          this.RemoveEstimatesFromInvoice(event,proGuids,billType);
+        }
+      });
+    }
+
+    ConvertEpochToDate(dt:number)
+    {
+      return Utility.convertEpochToDateStr(dt);
+    }
+
+    DisplayBillingType(billing_type:string)
+    {
+      return this.cvDS.getCodeDescription(billing_type, this.invoiceTypeCvList);
+    }
+
+    onInvoiceTypeChange(event: Event) {
+      this.processType = `${this.invoiceTypeControl.value}`;
+      this.calculateTotalCost();
+    }
 }

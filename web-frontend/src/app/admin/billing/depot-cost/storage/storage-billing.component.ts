@@ -833,27 +833,29 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     updateBilling.status_cv = billingItem.status_cv;
     updateBilling.invoice_no = `${this.invoiceNoControl.value}`;
 
-    let billingEstimateRequests: any = billingItem.residue?.map(cln => {
+    // let billingEstimateRequests: any = billingItem.residue?.map(cln => {
+    //   var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
+    //   billingEstReq.action = "";
+    //   billingEstReq.billing_party = this.billingParty;
+    //   billingEstReq.process_guid = cln.guid;
+    //   billingEstReq.process_type = this.processType;
+    //   return billingEstReq;
+    //   //return { ...cln, action:'' };
+    // });
+    //const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
+    //var billingEstimateRequests: BillingEstimateRequest[] = [];
+    var billingStorageDetailReqs: StorageDetailRequest[]=[];
+    this.selection.selected.map(c => {
       var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
-      billingEstReq.action = "";
-      billingEstReq.billing_party = this.billingParty;
-      billingEstReq.process_guid = cln.guid;
-      billingEstReq.process_type = this.processType;
-      return billingEstReq;
-      //return { ...cln, action:'' };
+
+      // billingEstReq.action = "NEW";
+      // billingEstReq.billing_party = this.billingParty;
+      // billingEstReq.process_guid = c.guid;
+      // billingEstReq.process_type = this.processType;
+      // billingEstimateRequests.push(billingEstReq);
+      billingStorageDetailReqs.push(c.currentStorageBilling as StorageDetailRequest);
     });
-    const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
-    this.selection.selected.forEach(cln => {
-      if (!existingGuids.has(cln.guid)) {
-        var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
-        billingEstReq.action = "NEW";
-        billingEstReq.billing_party = this.billingParty;
-        billingEstReq.process_guid = cln.guid;
-        billingEstReq.process_type = this.processType;
-        billingEstimateRequests.push(billingEstReq);
-      }
-    })
-    this.billDS._updateBilling(updateBilling, billingEstimateRequests).subscribe(result => {
+    this.billDS._updateBilling(updateBilling, null,billingStorageDetailReqs).subscribe(result => {
       if (result.data.updateBilling) {
         this.handleSaveSuccess(result.data.updateBilling);
         this.onCancel(event);
