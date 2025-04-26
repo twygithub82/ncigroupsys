@@ -56,7 +56,7 @@
 
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width">
-                          <mat-label>{{langText.OPEN_ON_GATE | translate}}</mat-label>
+                          <mat-label>{{langText.OPEN_AT_GATE | translate}}</mat-label>
                           <mat-select formControlName="open_gate" required>
                             @for (cn of openGateCvList; track cn) {
                             <mat-option [value]="cn.code_val">
@@ -67,7 +67,7 @@
 
                           @if (tcForm?.get('open_gate')?.hasError('required')) {
                           <mat-error>
-                            {{langText.OPEN_ON_GATE | translate}} {{langText.CARGO_REQUIRED | translate}}
+                            {{langText.OPEN_AT_GATE | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
                           }
                         </mat-form-field>
@@ -234,7 +234,7 @@
                     <div class="row">
                       <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                         <mat-label>{{translatedLangText.SDS_FILE }}</mat-label>
-                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button"
+                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button" class=""
                           [disabled]="!isFileSelectable">
                           <i class="material-icons">attach_file</i>
                         </button>

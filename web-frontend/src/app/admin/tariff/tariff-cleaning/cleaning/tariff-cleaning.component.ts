@@ -82,6 +82,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     'method',
     'flash_point',
     'category',
+    'ban_type',
     'actions'
   ];
 
@@ -430,7 +431,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.searchForm!.value['ban_type']) {
       const banType: CodeValuesItem = this.searchForm!.value['ban_type'];
-      tariff_cleaning.ban_type = { contains: banType.code_val };
+      tariff_cleaning.ban_type = { contains: 'Half_Ban' };
+      // tariff_cleaning.ban_type = { contains: banType.code_val };
     }
 
     if (this.searchForm!.value['method']) {
@@ -486,9 +488,14 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   displayCodeValueFn(cValue: CodeValuesItem): string {
-    return cValue && cValue.code_val ? `${cValue.code_val}` : '';
-    //return this.ccDS.displayName(cc);
+    //return cValue && cValue.code_val ? `${cValue.code_val}` : '';
+    return cValue && cValue.description ? `${cValue.description}` : '';
   }
+
+  getbanTypeDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.banTypeCvList);
+  }
+
 
   initializeFilterCustomerCompany() {
     this.searchForm!.get('customer_code')!.valueChanges.pipe(

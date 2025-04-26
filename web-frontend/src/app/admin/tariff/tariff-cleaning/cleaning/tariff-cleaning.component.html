@@ -85,7 +85,7 @@
                   <mat-select formControlName="category">
                     @for (cCat of cCategoryList; track cCat) {
                     <mat-option [value]="cCat">
-                      {{cCat.description}}
+                      {{cCat.name}}
                     </mat-option>
                     }
                   </mat-select>
@@ -108,7 +108,7 @@
                   <mat-autocomplete #ban_type="matAutocomplete" [displayWith]="displayCodeValueFn">
                     @for (bType of banTypeCvList; track bType) {
                     <mat-option [value]="bType">
-                      {{bType.code_val}}
+                      {{bType.description}}
                     </mat-option>
                     }
                   </mat-autocomplete>
@@ -181,6 +181,19 @@
                 {{row.tariff_cleaning?.cleaning_category?.name}}
               </mat-cell>
             </ng-container>
+
+            <ng-container matColumnDef="ban_type">
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                mat-sort-header>{{translatedLangText.CARGO_BAN_TYPE}}</mat-header-cell>
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                (contextmenu)="onContextMenu($event, row)">
+                <span class="mobile-label">{{translatedLangText.CARGO_BAN_TYPE }}:</span>
+                {{getbanTypeDescription(row.tariff_cleaning?.ban_type_cv)}}
+              </mat-cell>
+            </ng-container>
+
             <ng-container matColumnDef="method">
               <mat-header-cell *matHeaderCellDef
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
