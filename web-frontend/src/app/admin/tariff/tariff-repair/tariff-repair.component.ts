@@ -811,10 +811,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
-      this.groupNameCvList = data;
-      if (this.groupNameCvList) {
-        this.groupNameCvList = [...this.groupNameCvList].sort((a, b) => a.description!.localeCompare(b.description!));
-      }
+      this.groupNameCvList = this.sortByDescription(data);
       const subqueries: any[] = [];
       data.map(d => {
 
@@ -830,14 +827,14 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         this.cvDS.getCodeValuesByType(subqueries)
         subqueries.map(s => {
           this.cvDS.connectAlias(s.alias).subscribe(data => {
-            this.subGroupNameCvList.push(...data);
+            this.subGroupNameCvList.push(...this.sortByDescription(data));
           });
         });
       }
       // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('subGroupName').subscribe(data => {
-      this.subGroupNameCvList = data;
+      this.subGroupNameCvList = this.sortByDescription(data);
     });
     this.cvDS.connectAlias('handledItem').subscribe(data => {
       this.handledItemCvList = addDefaultSelectOption(data, 'All');
@@ -846,6 +843,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       this.unitTypeCvList = data;
     });
     this.search();
+  }
+
+  sortByDescription<T extends { description?: string }>(list: T[]): T[] {
+    return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
   }
 
   getTariffRepairAlias(row: TariffRepairItem) {
@@ -870,6 +871,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       panelClass: colorName,
     });
   }
+
+
 
   // export table data in excel file
   exportExcel() {

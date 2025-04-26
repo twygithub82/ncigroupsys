@@ -309,7 +309,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
           searchCriteria = value.unit_type;
         }
         this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, [{ unit_type: 'ASC' }]).subscribe(data => {
-          this.tankItemList = data
+          this.tankItemList = this.sortByDescription(data)
         });
       })
     ).subscribe();
@@ -318,6 +318,11 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
+
+  sortByDescription<T extends { description?: string }>(list: T[]): T[] {
+    return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
+  }
+
 
   adjustCost() {
     let tempDirection: Direction;

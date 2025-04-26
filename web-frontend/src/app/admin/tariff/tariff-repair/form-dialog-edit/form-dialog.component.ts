@@ -343,6 +343,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
+      if (this.groupNameCvList) {
+        this.groupNameCvList = [...this.groupNameCvList].sort((a, b) => a.description!.localeCompare(b.description!));
+      }
       const subqueries: any[] = [];
       data.map(d => {
         if (d?.child_code) {
@@ -370,7 +373,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     });
 
     this.cvDS.connectAlias('unitType').subscribe(data => {
-      this.unitTypeCvList = data;
+      this.unitTypeCvList = this.sortByDescription(data);
       if (this.selectedItems.length == 1) {
         var rec = this.selectedItems[0];
         this.lengthUnitControl.setValue(this.getUnitTypeCodeValue(rec.length_unit_cv!));
@@ -415,6 +418,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       console.log('valid');
       this.dialogRef.close(count);
     }
+  }
+
+  sortByDescription<T extends { description?: string }>(list: T[]): T[] {
+    return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
   }
 
   getGroupNameCodeValue(codeValue: String) {

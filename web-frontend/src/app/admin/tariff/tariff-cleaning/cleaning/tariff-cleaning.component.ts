@@ -282,13 +282,13 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.onPageEvent({ pageIndex: lastSrchCriteria.pageIndex, pageSize: this.pageSize, length: lastSrchCriteria.length })
     this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cCategoryDS.totalCount > 0) {
-        this.cCategoryList = data;
+        this.cCategoryList = this.sortByDescription(data);
       }
     });
 
     this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cMethodDS.totalCount > 0) {
-        this.cMethodList = data;
+        this.cMethodList = this.sortByDescription(data);
       }
     });
 
@@ -327,6 +327,10 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   // export table data in excel file
   exportExcel() {
 
+  }
+
+  sortByDescription<T extends { description?: string }>(list: T[]): T[] {
+    return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
   }
 
   // context menu
