@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -93,6 +93,8 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
 
   selectedTabIndex = 0;
 
+  @ViewChild('outGateComp') outGateComp?: OutGateComponent;
+  @ViewChild('outGateSurveyComp') outGateSurveyComp?: OutGateSurveyComponent;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -114,6 +116,11 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   onTabChange(index: number) {
+    if (index === 0) {
+      this.outGateComp?.resetForm(); // example: call a method inside InGateComponent
+    } else if (index === 1) {
+      this.outGateSurveyComp?.resetForm();
+    }
     this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
   }
 

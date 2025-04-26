@@ -1,6 +1,6 @@
 <div class="container">
   <div class="modalHeader">
-    <h3 mat-dialog-title>{{data.langText.ARE_YOU_SURE_CANCEL | translate}}</h3>
+    <h3 mat-dialog-title>{{data.langText.CANCEL | translate}}</h3>
   </div>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
@@ -16,16 +16,15 @@
           </mat-card-header>
           <mat-card-content>
             @for (sot of getStoringOrderTanksArray(so).controls; track sot) {
+            @if (sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER') {
             <div [class]="'row mb-1'">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
                 <mat-label>
                   {{data.langText.TANK_NO | translate}}: {{sot.get('tank_no')?.value}}
-                  @if (sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER') {
-                  <span class="badge bg-red">{{data.langText.TO_BE_CANCELED | translate}}</span>
-                  }
                 </mat-label>
               </div>
             </div>
+            }
             }
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">

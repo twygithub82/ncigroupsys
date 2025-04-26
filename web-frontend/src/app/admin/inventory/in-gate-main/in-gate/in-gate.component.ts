@@ -197,6 +197,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
 
   search() {
     const searchField = this.searchForm?.get('search_field')?.value?.trim();
+    const formattedTankNo = Utility.formatTankNumberForSearch(searchField);
     const where: any = {
       and: [
         { status_cv: { eq: "WAITING" } },
@@ -204,7 +205,8 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
           or: [
             { storing_order: { so_no: { contains: searchField } } },
             { tank_no: { contains: searchField } },
-            { job_no: { contains: searchField } }
+            { tank_no: { contains: formattedTankNo } },
+            { job_no: { contains: searchField } },
           ]
         }
       ]
@@ -267,6 +269,12 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
+    });
+  }
+
+  resetForm() {
+    this.searchForm?.patchValue({
+      search_field: '',
     });
   }
 }

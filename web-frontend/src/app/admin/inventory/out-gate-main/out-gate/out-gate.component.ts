@@ -1,6 +1,6 @@
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,7 +24,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Apollo } from 'apollo-angular';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { OutGateDS } from 'app/data-sources/out-gate';
@@ -152,7 +151,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
       search_field: [''],
     });
   }
-  
+
   refresh() {
     this.loadData();
   }
@@ -212,6 +211,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   search() {
     const searchField = this.searchForm?.get('search_field')?.value?.trim();
+    const formattedTankNo = Utility.formatTankNumberForSearch(searchField);
     const where: any = {
       and: [
         {
@@ -224,7 +224,9 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
           or: [
             { release_order_sot: { some: { release_order: { ro_no: { contains: searchField } } } } },
             // { storing_order: { so_no: { contains: searchField } } },
-            { tank_no: { contains: searchField } }, { job_no: { contains: searchField } }
+            { tank_no: { contains: searchField } },
+            { tank_no: { contains: formattedTankNo } },
+            { job_no: { contains: searchField } }
           ]
         }
       ]
@@ -287,6 +289,12 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
+    });
+  }
+
+  resetForm() {
+    this.searchForm?.patchValue({
+      search_field: '',
     });
   }
 }

@@ -2,6 +2,11 @@
 @import '/src/assets/scss/common/_variables.scss';
 @import '/src/assets/scss/theme/theme-color-variables.scss';
 
+@mixin apply-disabled-style($bg, $text) {
+  background-color: $bg !important;
+  color: $text !important;
+}
+
 .header .header-button {
   margin-right: auto;
   margin-left: unset;
@@ -1063,21 +1068,17 @@ $breakpoints: (
 }
 
 .dark-header .mat-mdc-header-cell {
-  background-color: #dcdcdc !important;
-  /* Darker gray for header */
+  background-color: lighten($theme-gold-purple-legal-bg, 5%) !important;
   color: #333;
-  /* Dark text color for better contrast */
 }
 
 /* Class for striped rows */
 .striped-rows .mdc-data-table__row:nth-child(odd) {
-  background-color: #ececec;
-  /* Slightly darker gray for odd rows */
+  background-color: lighten($theme-gold-purple-legal-bg, 10%);
 }
 
 .striped-rows .mdc-data-table__row:nth-child(even) {
   background-color: #ffffff;
-  /* White for even rows */
 }
 
 /* Class for mouseover effect */
@@ -1086,8 +1087,7 @@ $breakpoints: (
 }
 
 .hover-highlight .mdc-data-table__row:hover {
-  background-color: #d4d4d4;
-  /* Light gray color on hover */
+  background-color: lighten($theme-gold-purple-navbar-brand_hover, 5%);
 }
 
 /* Ensure text color remains legible */
@@ -1096,7 +1096,6 @@ $breakpoints: (
 .striped-rows .mdc-data-table__row:nth-child(even),
 .hover-highlight .mdc-data-table__row {
   color: #333;
-  /* Dark text color */
 }
 
 .link-button {
@@ -1879,6 +1878,10 @@ $grid-breakpoints: (
 //   color: $theme-gold-purple-nav-anchor;
 //   font-weight: 600;
 //   transition: background-color 0.3s;
+
+//   &[aria-disabled='true'] {
+//     @include apply-disabled-style($theme-gold-purple-menu-list-submenu, $theme-gold-purple-disabled-text);
+//   }
 // }
 
 // .tlx-mdc-tab-group .mat-mdc-tab.mdc-tab--active {
@@ -1887,13 +1890,8 @@ $grid-breakpoints: (
 // }
 
 // .tlx-mdc-tab-group .mat-mdc-tab .mdc-tab__ripple {
-//   display: none; // optional: remove ripple
+//   display: none;
 // }
-
-// // Optional: hide underline indicator
-// // .tlx-mdc-tab-group .mat-mdc-tab .mdc-tab-indicator {
-// //   display: none;
-// // }
 
 // .tlx-mdc-tab-group .mat-mdc-tab-group .mat-mdc-tab-header {
 //   background-color: $theme-gold-purple-bar !important;
@@ -1905,15 +1903,17 @@ $grid-breakpoints: (
 
 // .tlx-card {
 //   background-color: #fff;
+
 //   .header {
 //     background-color: #fff;
+
 //     h2 {
 //       color: #000;
 //     }
 //   }
 // }
 
-// .mat-expansion-panel-header:not([aria-disabled="true"]) {
+// .mat-expansion-panel-header {
 //   background-color: $theme-gold-purple-legal-bg;
 
 //   &:hover,
@@ -1935,16 +1935,22 @@ $grid-breakpoints: (
 //   }
 // }
 
-// .mat-expansion-panel-content:not([aria-disabled="true"]) {
+// .mat-expansion-panel-content {
 //   background-color: #fff;
 // }
 
-// .mat-accordion:not([aria-disabled="true"]) {
-//   background-color: #fff;
-
-//   & .mat-expansion-panel.bg-light-grey {
-//     background-color: $theme-gold-purple-menu-list-active !important;
+// .mat-accordion {
+//   .mat-expansion-panel {
+//     &[aria-disabled='true'], &.bg-light-grey {
+//       .mat-expansion-panel-header {
+//         @include apply-disabled-style($theme-gold-purple-disabled-menu, $theme-gold-purple-disabled-text);
+//       }
+//     }
 //   }
+// }
+
+// .mat-expansion-panel-spacing {
+//   margin: 0 !important;
 // }
 
 .mat-expansion-panel-spacing {
