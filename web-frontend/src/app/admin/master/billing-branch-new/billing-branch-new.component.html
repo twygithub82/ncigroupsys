@@ -334,7 +334,8 @@
                   @if (!repList.data.length) {
                   <mat-divider></mat-divider>
                   <div class="no-results m-l-20 pt-3" [style.display]="repList.data.length === 0 ? '' : 'none'">
-                    <h5 class="m-b-15">{{translatedLangText.NO_CONTACT_PERSON}}</h5>
+                    <!-- <h5 class="m-b-15">{{translatedLangText.NO_CONTACT_PERSON}}</h5> -->
+                    <h5 class="m-b-15">-</h5>
                   </div>
                   }
                 </div>
@@ -350,7 +351,7 @@
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2">
                   @if (isAnyItemEdited()) {
                   <button mat-flat-button color="primary">
                     {{translatedLangText.SAVE_AND_SUBMIT}}

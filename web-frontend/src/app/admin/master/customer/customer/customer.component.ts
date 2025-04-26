@@ -294,7 +294,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      default_profile: [{ guid: '', unit_type: '--Select--' }],
+      default_profile: [''],
       phone: [''],
       fax_no: [''],
       email: [''],
@@ -589,15 +589,17 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   removeSelectedRows() {
-
   }
+
   public loadData() {
     this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 50).subscribe(data => {
     });
-    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
-      this.unit_typeList = [{ guid: '', unit_type: '--Select--' }, ...data]
+    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC'}, 100).subscribe(data => {
+      // this.unit_typeList = [{ guid: '', unit_type: '--Select--' }, ...data]
+      this.unit_typeList = [...data]
     });
   }
+
   showNotification(
     colorName: string,
     text: string,

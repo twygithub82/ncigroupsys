@@ -102,16 +102,16 @@
                     row.tariff_steaming?.temp_max === 9999) ? "-" : roundUpToDecimal(row.tariff_steaming?.temp_max,2)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="cost">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
-                    <span class="mobile-label">{{this.translatedLangText.COST}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}:</span>
                     {{row.tariff_steaming?.cost?.toFixed(2)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="labour">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LABOUR
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.HOURLY_RATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
-                    <span class="mobile-label">{{this.translatedLangText.LABOUR }}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE }}:</span>
                     {{row.tariff_steaming?.labour?.toFixed(2)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="qty">

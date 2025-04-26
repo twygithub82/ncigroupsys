@@ -580,7 +580,6 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       if (this.clnCatDS.totalCount > 0) {
         this.cleaning_categoryList = data;
       }
-
     });
 
     this.custCompClnCatDS.queryDistinctClassNo().subscribe(data => {

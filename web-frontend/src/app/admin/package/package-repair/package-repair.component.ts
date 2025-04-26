@@ -752,7 +752,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('groupName').subscribe(data => {
-      this.groupNameCvList = data;
+      this.groupNameCvList = this.sortByDescription(data);
 
       const subqueries: any[] = [];
       data.map(d => {
@@ -769,14 +769,16 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       if (subqueries.length > 0) {
         this.CodeValuesDS?.getCodeValuesByType(subqueries)
         subqueries.map(s => {
-          this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
+          this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => 
+          {
+            data = this.sortByDescription(data)
             this.subGroupNameCvList.push(...data);
           });
         });
       }
     });
     this.CodeValuesDS?.connectAlias('subGroupName').subscribe(data => {
-      this.subGroupNameCvList = data;
+      this.subGroupNameCvList = this.sortByDescription(data);
     });
     this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
 
@@ -786,6 +788,10 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       this.unitTypeCvList = data;
     });
     this.search();
+  }
+
+  sortByDescription<T extends { description?: string }>(list: T[]): T[] {
+    return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
   }
 
   showNotification(
