@@ -399,7 +399,8 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       }
 
     if (this.searchForm!.get('invoiced')?.value) {
-      where.gateio_billing_guid = { neq: null };
+      where.gin_billing_guid = { neq: null };
+      where.gout_billing_guid = { neq: null };
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -910,7 +911,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.billSotList = this.billSotList?.map(res => {
 
       
-      return { ...res, invoiced: (res.gateio_billing_guid ? true : false), total_cost: (res.gate_in?(res.gate_in_cost || 0):0) + (res.gate_out?(res.gate_out_cost || 0):0) };
+      return { ...res, invoiced: ((res.gin_billing_guid||res.gout_billing_guid) ? true : false), total_cost: (res.gate_in?(res.gate_in_cost || 0):0) + (res.gate_out?(res.gate_out_cost || 0):0) };
       //return { ...res, invoiced: (res.gateio_billing_guid ? true : false), total_cost: (res.gate_in_cost || 0) + (res.gate_out_cost || 0) };
     });
   }

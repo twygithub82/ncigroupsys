@@ -401,10 +401,10 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       sot.steaming = sot.steaming?.filter(c => c.approve_dt != null);
       const billingSot = sot.billing_sot;
       if (billingSot &&
-        (billingSot.gateio_billing_guid == null ||
-          ((billingSot.lift_off || billingSot.lift_on) && billingSot.lolo_billing_guid == null) ||
-          (billingSot.preinsp_billing_guid == null && billingSot.preinspection) ||
-          billingSot.storage_billing_guid == null)) {
+        ((billingSot.gin_billing_guid == null) ||(billingSot.gout_billing_guid == null))||
+          ((billingSot?.lon_billing_guid!== null&& billingSot?.lift_on) || (billingSot?.loff_billing_guid== null&&billingSot?.lift_off) ) ||
+          (billingSot?.preinsp_billing_guid == null && billingSot?.preinspection) ||
+          (billingSot?.storage_billing_guid == null)) {
         sot.billing_sot = billingSot;
       } else {
         sot.billing_sot = undefined; // If conditions are not met, set it to null
@@ -573,7 +573,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const item: BillingSOTItem = sot.billing_sot!;
 
-    if (item && (item.delete_dt === null || item.delete_dt === 0) && item.gateio_billing_guid == null) {
+    if (item && (item.delete_dt === null || item.delete_dt === 0) && (item.gout_billing_guid == null&&item.gin_billing_guid == null)) {
       item.storing_order_tank = sot;
 
       let newItem = false;
@@ -632,7 +632,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const item = sot.billing_sot; // Single object instead of an array
 
-    if (item && (item.delete_dt === null || item.delete_dt === 0) && item.lolo_billing_guid == null) {
+    if (item && (item.delete_dt === null || item.delete_dt === 0) && (item.lon_billing_guid == null &&item.loff_billing_guid == null )) {
       item.storing_order_tank = sot;
 
       let newItem = false;

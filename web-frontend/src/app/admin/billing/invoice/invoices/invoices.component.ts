@@ -1209,8 +1209,12 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
     var sot_guids: string[] = [];
     if (b.cleaning?.length! > 0) this.calculateCleaningCost(b.cleaning!, repBillItems);
-    if (b.gateio_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gateio_billing_sot!, repBillItems);
-    if (b.lolo_billing_sot?.length! > 0) this.calculateLOLOCost(b.lolo_billing_sot!, repBillItems);
+    //if (b.gateio_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gateio_billing_sot!, repBillItems);
+    if (b.gin_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gin_billing_sot!, repBillItems);
+    if (b.gout_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gout_billing_sot!, repBillItems);
+    //if (b.lolo_billing_sot?.length! > 0) this.calculateLOLOCost(b.lolo_billing_sot!, repBillItems);
+    if (b.lon_billing_sot?.length! > 0) this.calculateLOLOCost(b.lon_billing_sot!, repBillItems);
+    if (b.loff_billing_sot?.length! > 0) this.calculateLOLOCost(b.loff_billing_sot!, repBillItems);
     if (b.preinsp_billing_sot?.length! > 0) this.calculatePreInspectionCost(b.preinsp_billing_sot!, repBillItems);
     if (b.repair_customer?.length! > 0) this.calculateRepairCost(b.repair_customer!, repBillItems);
     if (b.repair_owner?.length! > 0) this.calculateRepairCost(b.repair_owner!, repBillItems, 1);

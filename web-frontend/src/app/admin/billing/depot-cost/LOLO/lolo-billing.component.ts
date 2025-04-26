@@ -403,7 +403,8 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
     if(this.searchForm!.get('invoiced')?.value)
       {
-        where.lolo_billing_guid={neq: null};
+        where.lon_billing_guid = { neq: null };
+        where.loff_billing_guid = { neq: null };
       }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -932,7 +933,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
   {
     this.billSotList = this.billSotList?.map(res => {
             
-              return { ...res, invoiced: (res.lolo_billing_guid?true:false), total_cost:(res.lift_off?(res.lift_off_cost||0):0)+(res.lift_on?(res.lift_on_cost||0):0) };
+              return { ...res, invoiced: ((res.lon_billing_guid||res.loff_billing_guid)?true:false), total_cost:(res.lift_off?(res.lift_off_cost||0):0)+(res.lift_on?(res.lift_on_cost||0):0) };
         });
   }
 

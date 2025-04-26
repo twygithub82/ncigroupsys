@@ -134,10 +134,13 @@ export class BillingItem extends BillingGo {
   public residue?: ResidueItem[];
   public steaming?: SteamItem[];
   public cleaning?: InGateCleaningItem[];
-  public gateio_billing_sot?: BillingSOTItem[];
+   //public gateio_billing_sot?: BillingSOTItem[];
+   public gin_billing_sot?: BillingSOTItem[];
+   public gout_billing_sot?: BillingSOTItem[];
   public preinsp_billing_sot?: BillingSOTItem[];
   public storage_billing_sot?: BillingSOTItem[];
-  public lolo_billing_sot?: BillingSOTItem[];
+  public lon_billing_sot?: BillingSOTItem[];
+  public loff_billing_sot?: BillingSOTItem[];
 
   constructor(item: Partial<BillingItem> = {}) {
     super(item);
@@ -148,6 +151,10 @@ export class BillingItem extends BillingGo {
     this.cleaning = item.cleaning;
     this.repair_customer = item.repair_customer;
     this.repair_owner = item.repair_owner;
+    this.lon_billing_sot=item.lon_billing_sot;
+    this.loff_billing_sot=item.loff_billing_sot;
+    this.gin_billing_sot=item.gin_billing_sot;
+    this.gout_billing_sot=item.gout_billing_sot;
   }
 }
 
@@ -159,10 +166,13 @@ export class BillingItemStorageDetail extends BillingGo {
   public residue?: ResidueItem[];
   public steaming?: SteamItem[];
   public cleaning?: InGateCleaningItem[];
-  public gateio_billing_sot?: BillingSOTItem[];
+  //public gateio_billing_sot?: BillingSOTItem[];
+  public gin_billing_sot?: BillingSOTItem[];
+  public gout_billing_sot?: BillingSOTItem[];
   public preinsp_billing_sot?: BillingSOTItem[];
   public storage_billing_sot?: BillingSOTItem[];
-  public lolo_billing_sot?: BillingSOTItem[];
+  public lon_billing_sot?: BillingSOTItem[];
+  public loff_billing_sot?: BillingSOTItem[];
   public storage_detail?:BillingStorageDetail[];
 
   constructor(item: Partial<BillingItemStorageDetail> = {}) {
@@ -175,6 +185,10 @@ export class BillingItemStorageDetail extends BillingGo {
     this.repair_customer = item.repair_customer;
     this.repair_owner = item.repair_owner;
     this.storage_detail=item.storage_detail;
+    this.lon_billing_sot=item.lon_billing_sot;
+    this.loff_billing_sot=item.loff_billing_sot;
+    this.gin_billing_sot=item.gin_billing_sot;
+    this.gout_billing_sot=item.gout_billing_sot;
   }
 }
 
@@ -222,13 +236,15 @@ export class BillingSOTGo {
   public gate_in_cost?: number;
   public gate_out?: boolean;
   public gate_out_cost?: number;
-  public gateio_billing_guid?: string;
+  public gin_billing_guid?:string;
+  public gout_billing_guid?: string;
   public guid?: string;
   public lift_off?: boolean;
   public lift_off_cost?: number;
   public lift_on?: boolean;
   public lift_on_cost?: number;
-  public lolo_billing_guid?: string;
+  public lon_billing_guid?: string;
+  public loff_billing_guid?: string;
   public preinsp_billing_guid?: string;
   public preinspection?: boolean;
   public preinspection_cost?: number;
@@ -256,13 +272,15 @@ export class BillingSOTGo {
     this.gate_in_cost = item.gate_in_cost;
 
     this.gate_out_cost = item.gate_out_cost;
-    this.gateio_billing_guid = item.gateio_billing_guid;
+    this.gin_billing_guid = item.gin_billing_guid;
+    this.gout_billing_guid = item.gout_billing_guid;
     this.lift_off = item.lift_off;
     this.lift_off_cost = item.lift_off_cost;
 
     this.lift_on = item.lift_on;
     this.lift_on_cost = item.lift_on_cost;
-    this.lolo_billing_guid = item.lolo_billing_guid;
+    this.lon_billing_guid = item.lon_billing_guid;
+    this.loff_billing_guid = item.loff_billing_guid;
     this.preinsp_billing_guid = item.preinsp_billing_guid;
     this.preinspection = item.preinspection;
     this.preinspection_cost = item.preinspection_cost;
@@ -282,8 +300,10 @@ export class BillingSOTGo {
 }
 
 export class BillingSOTItem extends BillingSOTGo {
-  public gateio_billing?: BillingItem;
-  public lolo_billing?: BillingItem;
+  public gin_billing?: BillingItem;
+  public gout_billing?: BillingItem;
+  public lon_billing?: BillingItem;
+  public loff_billing?: BillingItem;
   public preinsp_billing?: BillingItem;
   public storage_billing?: BillingItemStorageDetail;
   public storing_order_tank?: StoringOrderTankItem;
@@ -291,8 +311,9 @@ export class BillingSOTItem extends BillingSOTGo {
 
   constructor(item: Partial<BillingSOTItem> = {}) {
     super(item);
-    this.gateio_billing = item.gateio_billing;
-    this.lolo_billing = item.lolo_billing;
+    this.gin_billing = item.gin_billing;
+    this.lon_billing = item.lon_billing;
+    this.loff_billing = item.loff_billing;
     this.preinsp_billing = item.preinsp_billing;
     this.storage_billing = item.storage_billing;
     this.storing_order_tank = item.storing_order_tank;
@@ -402,13 +423,13 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
               }
             }
           }
-         gateio_billing_sot {
+         gin_billing_sot {
             delete_dt
             gate_in
             gate_in_cost
             gate_out
             gate_out_cost
-            gateio_billing_guid
+            gin_billing_guid
             guid
             remarks
             sot_guid
@@ -431,7 +452,64 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 }
               }
           }
-          lolo_billing_sot {
+          gout_billing_sot {
+            delete_dt
+            gate_in
+            gate_in_cost
+            gate_out
+            gate_out_cost
+            gout_billing_guid
+            guid
+            remarks
+            sot_guid
+            tariff_depot_guid
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+                tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
+              }
+          }
+          lon_billing_sot {
+            delete_dt
+            guid
+            lift_off
+            lift_off_cost
+            lift_on
+            lift_on_cost
+            remarks
+            sot_guid
+            tariff_depot_guid
+            storing_order_tank {
+                estimate_cv
+                eta_dt
+                etr_dt
+                guid
+                job_no
+                tank_no
+                tariff_cleaning { cargo}
+                in_gate(where: { delete_dt: { eq: null } }) {
+                  delete_dt
+                  driver_name
+                  eir_dt
+                  eir_no
+                  eir_status_cv
+                  guid
+                }
+              }
+          }
+          loff_billing_sot {
             delete_dt
             guid
             lift_off
@@ -695,13 +773,15 @@ const SEARCH_BILLING_SOT_QUERY = gql`
         gate_in_cost
         gate_out
         gate_out_cost
-        gateio_billing_guid
+        gin_billing_guid
+        gout_billing_guid
         guid
         lift_off
         lift_off_cost
         lift_on
         lift_on_cost
-        lolo_billing_guid
+        lon_billing_guid
+        loff_billing_guid
         preinsp_billing_guid
         preinspection
         preinspection_cost
@@ -812,7 +892,7 @@ const SEARCH_BILLING_SOT_QUERY = gql`
           update_by
           update_dt
         }
-        gateio_billing {
+        gin_billing {
           bill_to_guid
           create_by
           create_dt
@@ -827,7 +907,37 @@ const SEARCH_BILLING_SOT_QUERY = gql`
           update_by
           update_dt
         }
-        lolo_billing {
+        gout_billing {
+          bill_to_guid
+          create_by
+          create_dt
+          currency_guid
+          delete_dt
+          guid
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          update_by
+          update_dt
+        }
+        lon_billing {
+          bill_to_guid
+          create_by
+          create_dt
+          currency_guid
+          delete_dt
+          guid
+          invoice_dt
+          invoice_due
+          invoice_no
+          remarks
+          status_cv
+          update_by
+          update_dt
+        }
+        loff_billing {
           bill_to_guid
           create_by
           create_dt
