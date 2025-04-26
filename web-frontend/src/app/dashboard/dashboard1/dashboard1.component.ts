@@ -37,6 +37,8 @@ import { GraphqlNotificationService } from '../../services/global-notification.s
 import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Utility } from 'app/utilities/utility';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-dashboard1',
   templateUrl: './dashboard1.component.html',
@@ -65,6 +67,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 
 export class Dashboard1Component implements OnInit {
+
+  translatedLangText: any = {};
+  langText = {
+    DASHBOARD: 'COMMON-FORM.DASHBOARD',
+  }
+  pageTitle = 'MENUITEMS.DASHBOARD.TEXT'
+  breadcrumsMiddleList = [
+  ]
+
   public areaChartOptions!: Partial<ChartOptions>;
   public barChartOptions!: Partial<ChartOptions>;
   public earningOptions!: Partial<ChartOptions>;
@@ -77,6 +88,7 @@ export class Dashboard1Component implements OnInit {
   sotDS: StoringOrderTankDS;
   constructor(
     private apollo: Apollo,
+    private translate: TranslateService
   ) {
     this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
     this.igDS = new InGateDS(this.apollo);
@@ -470,4 +482,10 @@ export class Dashboard1Component implements OnInit {
   //   task.done = !task.done;
   // }
   // TODO end
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
+  }
 }
