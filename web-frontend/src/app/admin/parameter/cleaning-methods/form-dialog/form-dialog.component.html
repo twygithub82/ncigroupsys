@@ -18,11 +18,11 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
                 <input matInput formControlName="name" type="text" required>
-                @if (pcForm.get('name')?.hasError('required')) {
+                <!-- @if (pcForm.get('name')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.PROCESS_NAME}} {{translatedLangText.CARGO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
                 @if (pcForm.get('name')?.hasError('existed')) {
                 <mat-error>
                   {{translatedLangText.PROCESS_NAME}}: {{translatedLangText.EXISTED}}
@@ -44,11 +44,11 @@
                     {{ category.description }}
                   </mat-option>
                 </mat-select>
-                @if (pcForm.get('category')?.hasError('required')) {
+                <!-- @if (pcForm.get('category')?.hasError('required')) {
                   <mat-error>
                     {{translatedLangText.CATEGORY}} {{translatedLangText.CARGO_REQUIRED}}
                   </mat-error>
-                  }
+                  } -->
               </mat-form-field>
             </div>
             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
