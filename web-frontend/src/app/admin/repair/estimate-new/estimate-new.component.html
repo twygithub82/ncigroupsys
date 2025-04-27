@@ -407,11 +407,11 @@
                           <mat-option [value]="user.id">{{user.userName}}</mat-option>
                           }
                         </mat-select>
-                        @if (repairForm?.get('surveyor_id')?.hasError('required')) {
+                        <!-- @if (repairForm?.get('surveyor_id')?.hasError('required')) {
                         <mat-error>
                           {{translatedLangText.SURVEYOR_NAME}} {{translatedLangText.SO_REQUIRED}}
                         </mat-error>
-                        }
+                        } -->
                       </mat-form-field>
                     </div>
                   </div>
@@ -793,7 +793,7 @@
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2">
                   @if (canExport()) {
                   <button mat-flat-button color="accent"
                     [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async)" class="m-r-5"
