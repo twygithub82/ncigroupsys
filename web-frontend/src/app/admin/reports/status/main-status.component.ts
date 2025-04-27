@@ -74,7 +74,7 @@ import { YardStatusReportComponent } from './yard/yard-status.component';
     MatCardModule,
     MatTabsModule,
     YardStatusReportComponent,
-    LocationStatusReportComponent
+    
   ]
 })
 export class MainStatusComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -107,7 +107,7 @@ export class MainStatusComponent extends UnsubscribeOnDestroyAdapter implements 
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.REPORTS.LIST.STATUS'
+  pageTitle = 'MENUITEMS.REPORTS.LIST.YARD-STATUS'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/status' }
   ]
