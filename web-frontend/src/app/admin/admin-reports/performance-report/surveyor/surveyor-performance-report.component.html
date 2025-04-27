@@ -97,11 +97,11 @@
                     }
                   </mat-select>
                 </mat-form-field>
-                @if ((searchFormSummary?.get('year')?.hasError('required') && searchFormSummary?.get('year')?.touched)) {
+                <!-- @if ((searchFormSummary?.get('year')?.hasError('required') && searchFormSummary?.get('year')?.touched)) {
                 <mat-error>
                   {{ translatedLangText.YEAR }} {{ translatedLangText.SO_REQUIRED }}
                 </mat-error>
-              }
+              } -->
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_summary()"
@@ -180,12 +180,12 @@
                   <mat-datepicker-toggle matSuffix [for]="est_picker"></mat-datepicker-toggle>
                   <mat-date-range-picker #est_picker></mat-date-range-picker>
                 </mat-form-field>
-                @if ((searchFormDetail?.get('est_dt_start')?.hasError('required') && searchFormDetail?.get('est_dt_start')?.touched) 
+                <!-- @if ((searchFormDetail?.get('est_dt_start')?.hasError('required') && searchFormDetail?.get('est_dt_start')?.touched) 
                 ||(searchFormDetail?.get('est_dt_end')?.hasError('required') && searchFormDetail?.get('est_dt_end')?.touched) ) {
                <mat-error>
                  {{ translatedLangText.CLEAN_DATE }} {{ translatedLangText.SO_REQUIRED }}
                </mat-error>
-             }
+             } -->
               </div>
               <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">

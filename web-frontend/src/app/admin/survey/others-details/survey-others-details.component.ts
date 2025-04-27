@@ -129,7 +129,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SELECT_ALL: "COMMON-FORM.SELECT-ALL",
     ACTION_DATE: "COMMON-FORM.ACTION-DATE",
     BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
-    SAVE_AND_SUBMIT: "COMMON-FORM.SAVE-AND-SUBMIT",
+    SAVE_AND_SUBMIT: "COMMON-FORM.SAVE",
     SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
@@ -265,11 +265,11 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.last_test_desc = this.getLastTest();
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
-      this.testClassCvList = data;
+      this.testClassCvList = this.sortByDescription(data);
       this.last_test_desc = this.getLastTest();
     });
     this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
-      this.surveyTypeCvList = data;
+      this.surveyTypeCvList = this.sortByDescription(data);
     });
     this.cvDS.connectAlias('surveyStatusCv').subscribe(data => {
       this.surveyStatusCvList = data;
@@ -305,6 +305,10 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "DESC" }).subscribe(data => {
       this.surveyDetailItem = data;
     });
+  }
+
+    sortByDescription<T extends { description?: string }>(list: T[]): T[] {
+    return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
   }
 
   showNotification(

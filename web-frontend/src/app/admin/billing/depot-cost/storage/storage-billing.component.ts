@@ -101,6 +101,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
+    CLEAR: 'COMMON-FORM.CLEAR',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',

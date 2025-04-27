@@ -73,11 +73,11 @@
                   </mat-date-range-input>
                   <mat-datepicker-toggle matSuffix [for]="transfer_picker"></mat-datepicker-toggle>
                   <mat-date-range-picker #transfer_picker></mat-date-range-picker>
-                  @if (searchForm?.get('trf_dt_start')?.hasError('required') ||(searchForm?.get('trf_dt_end')?.hasError('required'))) {
+                  <!-- @if (searchForm?.get('trf_dt_start')?.hasError('required') ||(searchForm?.get('trf_dt_end')?.hasError('required'))) {
                     <mat-error>
                       {{translatedLangText.TRANSFER_DATE }} {{translatedLangText.IS_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                 </mat-form-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">

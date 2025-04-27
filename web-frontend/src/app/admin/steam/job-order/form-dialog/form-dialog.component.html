@@ -51,9 +51,7 @@
                     </div>
                   </div>
                   <div class="spacer"></div>
-                  <div mat-dialog-actions class="align-right">
-
-
+                  <div mat-dialog-actions class="align-right m-r-55">
                     @if(canRollBack())
                     {
 
@@ -72,9 +70,12 @@
 
                     @if (canEdit() && !buttonViewOnly()) {
                     <button mat-flat-button color="primary" (click)="save()" [disabled]="!canSave()"
-                      class="m-r-5">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+                      class="m-r-5">{{translatedLangText.SAVE_AND_SUBMIT}}
+                      <mat-icon>
+                        save
+                      </mat-icon>
+                    </button>
                     }
-
 
                     <button mat-flat-button (click)="onNoClick()" tabindex="-1" class="m-r-5">
                       @if(canEdit()){

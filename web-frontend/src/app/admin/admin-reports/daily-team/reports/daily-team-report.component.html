@@ -68,11 +68,11 @@
                   <mat-datepicker-toggle matSuffix [for]="approved_picker"></mat-datepicker-toggle>
                   <mat-datepicker #approved_picker></mat-datepicker>
                 </mat-form-field>
-                @if (searchForm?.get('app_dt')?.hasError('required') && searchForm?.get('app_dt')?.touched) {
+                <!-- @if (searchForm?.get('app_dt')?.hasError('required') && searchForm?.get('app_dt')?.touched) {
                   <mat-error>
                     {{ translatedLangText.APPROVED_DATE }} {{ translatedLangText.SO_REQUIRED }}
                   </mat-error>
-                }
+                } -->
               </div>
               <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">

@@ -97,12 +97,12 @@
                   <mat-datepicker-toggle matSuffix [for]="allocation_picker"></mat-datepicker-toggle>
                   <mat-date-range-picker #allocation_picker></mat-date-range-picker>
                 </mat-form-field>
-                @if ((searchForm?.get('cln_dt_start')?.hasError('required') && searchForm?.get('cln_dt_start')?.touched) 
+                <!-- @if ((searchForm?.get('cln_dt_start')?.hasError('required') && searchForm?.get('cln_dt_start')?.touched) 
                    ||(searchForm?.get('cln_dt_end')?.hasError('required') && searchForm?.get('cln_dt_end')?.touched) ) {
                   <mat-error>
                     {{ translatedLangText.CLEAN_DATE }} {{ translatedLangText.SO_REQUIRED }}
                   </mat-error>
-                }
+                } -->
               </div>
               <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
