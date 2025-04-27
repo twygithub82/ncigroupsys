@@ -19,11 +19,11 @@
                   {{ t.description }}
                 </mat-option>
               </mat-select>
-              @if (pcForm.get('group_name_cv')?.hasError('required')) {
+              <!-- @if (pcForm.get('group_name_cv')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>
-              }
+              } -->
             </mat-form-field>
           </div>
           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
@@ -34,11 +34,11 @@
                   {{ t.description }}
                 </mat-option>
               </mat-select>
-              @if (pcForm.get('sub_group_name_cv')?.hasError('required')) {
+              <!-- @if (pcForm.get('sub_group_name_cv')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.SUB_GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>
-              }
+              } -->
             </mat-form-field>
           </div>
         </div>
@@ -47,11 +47,11 @@
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
               <input matInput formControlName="part_name" type="text" required>
-              @if (pcForm.get('part_name')?.hasError('required')) {
+              <!-- @if (pcForm.get('part_name')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>
-              }
+              } -->
               @if (pcForm.get('part_name')?.hasError('existed')) {
               <mat-error>
                 {{translatedLangText.PART_NAME }} {{translatedLangText.EXISTED }}
@@ -87,11 +87,11 @@
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
               <input matInput formControlName="height_diameter" type="number"  [required]="isRequired('height_diameter_unit_cv')">
-              @if (pcForm.get('height_diameter')?.hasError('required')) {
+              <!-- @if (pcForm.get('height_diameter')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.HEIGHT_DIAMETER }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
-                }
+                } -->
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
@@ -102,22 +102,22 @@
                   {{ t.description }}
                 </mat-option>
               </mat-select>
-              @if (pcForm.get('height_diameter_unit_cv')?.hasError('required')) {
+              <!-- @if (pcForm.get('height_diameter_unit_cv')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
-                }
+                } -->
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
               <input matInput formControlName="width_diameter" type="number" [required]="isRequired('width_diameter_unit_cv')">
-              @if (pcForm.get('width_diameter')?.hasError('required')) {
+              <!-- @if (pcForm.get('width_diameter')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.WIDTH_DIAMETER }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
-                }
+                } -->
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
@@ -128,11 +128,11 @@
                   {{ t.description }}
                 </mat-option>
               </mat-select>
-              @if (pcForm.get('width_diameter_unit_cv')?.hasError('required')) {
+              <!-- @if (pcForm.get('width_diameter_unit_cv')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
-                }
+                } -->
             </mat-form-field>
           </div>
         </div>
@@ -141,11 +141,11 @@
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
               <input matInput formControlName="thickness" type="number" [required]="isRequired('thickness_unit_cv')">
-              @if (pcForm.get('thickness')?.hasError('required')) {
+              <!-- @if (pcForm.get('thickness')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.THICKNESS }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
-                }
+                } -->
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
@@ -156,11 +156,11 @@
                   {{ t.description }}
                 </mat-option>
               </mat-select>
-                @if (pcForm.get('thickness_unit_cv')?.hasError('required')) {
+                <!-- @if (pcForm.get('thickness_unit_cv')?.hasError('required')) {
                   <mat-error>
                     {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                   </mat-error>
-                  }
+                  } -->
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
@@ -173,11 +173,11 @@
               {{translatedLangText.LENGTH }} {{translatedLangText.EXISTED }}
             </mat-error>
             }
-            @if (pcForm.get('length')?.hasError('required')) {
+            <!-- @if (pcForm.get('length')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.LENGTH }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>
-              }
+              } -->
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
@@ -192,11 +192,11 @@
                     {{translatedLangText.UNIT_TYPE }} {{translatedLangText.EXISTED }}
                   </mat-error>
                   }
-                @if (pcForm.get('length_unit_cv')?.hasError('required')) {
+                <!-- @if (pcForm.get('length_unit_cv')?.hasError('required')) {
                   <mat-error>
                     {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                   </mat-error>
-                  }
+                  } -->
             </mat-form-field>
           </div>
         </div>
