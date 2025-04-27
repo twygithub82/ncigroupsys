@@ -181,11 +181,11 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                                   <input matInput formControlName="haulier" class="text-uppercase" required>
-                                  @if (inGateForm?.get('haulier')?.hasError('required')) {
+                                  <!-- @if (inGateForm?.get('haulier')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
-                                  }
+                                  } -->
                                 </mat-form-field>
                               </div>
                               <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
@@ -201,11 +201,11 @@
                                     </mat-option>
                                     }
                                   </mat-autocomplete>
-                                  @if (inGateForm?.get('owner')?.hasError('required')) {
+                                  <!-- @if (inGateForm?.get('owner')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.CUSTOMER}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
-                                  }
+                                  } -->
                                 </mat-form-field>
                               </div>
                             </div>
@@ -214,22 +214,22 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
                                   <input matInput formControlName="vehicle_no" class="text-uppercase" required>
-                                  @if (inGateForm?.get('vehicle_no')?.hasError('required')) {
+                                  <!-- @if (inGateForm?.get('vehicle_no')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
-                                  }
+                                  } -->
                                 </mat-form-field>
                               </div>
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
                                   <input matInput formControlName="driver_name" class="text-uppercase" required>
-                                  @if (inGateForm?.get('driver_name')?.hasError('required')) {
+                                  <!-- @if (inGateForm?.get('driver_name')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
-                                  }
+                                  } -->
                                 </mat-form-field>
                               </div>
                             </div>
@@ -248,11 +248,11 @@
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
                                   </mat-select>
-                                  @if (inGateForm?.get('yard_cv')?.hasError('required')) {
+                                  <!-- @if (inGateForm?.get('yard_cv')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.YARD}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
-                                  }
+                                  } -->
                                 </mat-form-field>
                               </div>
                             </div>
@@ -287,11 +287,11 @@
                                     </mat-option>
                                     }
                                   </mat-autocomplete>
-                                  @if (lastCargoControl.get('last_cargo')?.hasError('required')) {
+                                  <!-- @if (lastCargoControl.get('last_cargo')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.LAST_CARGO}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
-                                  }
+                                  } -->
                                   @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
                                   <mat-error>
                                     {{translatedLangText.INVALID_SELECTION}}
@@ -302,7 +302,7 @@
                             </div>
                             <div class="row">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3 p-t-10">
-                                <label>{{translatedLangText.OPEN_ON_GATE}}:</label>
+                                <label>{{translatedLangText.OPEN_AT_GATE}}:</label>
                                 <mat-radio-group formControlName="open_on_gate">
                                   @for (codeValue of yesnoCvList; track codeValue) {
                                   <mat-radio-button [value]="codeValue.code_val" color="primary">
@@ -324,9 +324,6 @@
                             </button>
                           </div>
                           <div class="col-xl-6 col-lg-8 col-md-12 col-sm-12 align-right">
-                            <button mat-flat-button class="bg-light-gold m-r-10" (click)="resetDialog($event)">
-                              {{translatedLangText.CLEAR_ALL}}
-                            </button>
                             <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
                               [disabled]="(igDS.actionLoading$| async)">
                               <mat-icon>
@@ -338,9 +335,12 @@
                               </mat-icon>
                               {{translatedLangText.ACCEPT}}
                             </button>
-                            <!-- <button mat-flat-button color="primary">
-                              <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}
-                            </button> -->
+                              <button mat-flat-button class="bg-light-gold m-r-10" (click)="resetDialog($event)">
+                                {{translatedLangText.CLEAR_ALL}}
+                              </button>
+                              <!-- <button mat-flat-button color="primary">
+                                <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}
+                              </button> -->
                           </div>
                         </div>
                       </mat-card-content>

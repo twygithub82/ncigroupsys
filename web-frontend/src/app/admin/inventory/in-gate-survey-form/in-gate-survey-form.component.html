@@ -211,11 +211,11 @@
                                   }
                                   }
                                 </mat-select>
-                                @if (surveyForm?.get('tank_details.unit_type_guid')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.unit_type_guid')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.UNIT_TYPE}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -230,11 +230,11 @@
                                   </mat-option>
                                   }
                                 </mat-autocomplete>
-                                @if (surveyForm?.get('tank_details.owner')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.owner')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.CUSTOMER}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                           </div>
@@ -247,11 +247,11 @@
                                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                   }
                                 </mat-select>
-                                @if (surveyForm?.get('tank_details.manufacturer_cv')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.manufacturer_cv')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.MANUFACTURER}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -262,11 +262,11 @@
                                 <mat-datepicker-toggle matSuffix
                                   [for]="manufacturer_dom_picker"></mat-datepicker-toggle>
                                 <mat-datepicker #manufacturer_dom_picker [startAt]="maxManuDOMDt"></mat-datepicker>
-                                @if (surveyForm?.get('tank_details.dom_dt')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.dom_dt')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.DOM}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                           </div>
@@ -279,11 +279,11 @@
                                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                   }
                                 </mat-select>
-                                @if (surveyForm?.get('tank_details.cladding_cv')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.cladding_cv')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.CLADDING}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -292,11 +292,11 @@
                                 <input matInput formControlName="capacity" type="number"
                                   (wheel)="preventDefault($event)" min="0" required>
                                 <h6 class="color-icon p-t-15 p-r-5" matSuffix>L</h6>
-                                @if (surveyForm?.get('tank_details.capacity')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.capacity')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.CAPACITY}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -305,11 +305,11 @@
                                 <input matInput formControlName="tare_weight" type="number"
                                   (wheel)="preventDefault($event)" min="0" required>
                                 <h6 class="color-icon p-t-15 p-r-5" matSuffix>KG</h6>
-                                @if (surveyForm?.get('tank_details.tare_weight')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.tare_weight')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.TARE_WEIGHT}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                           </div>
@@ -322,11 +322,11 @@
                                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                   }
                                 </mat-select>
-                                @if (surveyForm?.get('tank_details.max_weight_cv')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.max_weight_cv')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.MAX_GROSS_WEIGHT}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -337,11 +337,11 @@
                                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                   }
                                 </mat-select>
-                                @if (surveyForm?.get('tank_details.height_cv')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.height_cv')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.TANK_HEIGHT}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -352,11 +352,11 @@
                                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                   }
                                 </mat-select>
-                                @if (surveyForm?.get('tank_details.walkway_cv')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.walkway_cv')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.WALKWAY}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -368,11 +368,11 @@
                                     [value]="buffer.tariff_buffer_guid">{{buffer.tariff_buffer?.buffer_type}}</mat-option>
                                   }
                                 </mat-select>
-                                @if (surveyForm?.get('tank_details.tank_comp_guid')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('tank_details.tank_comp_guid')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.COMPARTMENT_TYPE}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                           </div>
@@ -450,11 +450,11 @@
                                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                   }
                                 </mat-select>
-                                @if (surveyForm?.get('periodic_test.last_test_cv')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('periodic_test.last_test_cv')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.TEST_TYPE}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
@@ -466,11 +466,11 @@
                                   (yearSelected)="chosenYearHandler($event)"
                                   (monthSelected)="chosenMonthHandler($event, test_dt_picker)"
                                   panelClass="example-month-picker"></mat-datepicker>
-                                @if (surveyForm?.get('periodic_test.test_dt')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('periodic_test.test_dt')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.DATE}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
@@ -481,11 +481,11 @@
                                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                   }
                                 </mat-select>
-                                @if (surveyForm?.get('periodic_test.test_class_cv')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('periodic_test.test_class_cv')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.CLASS}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                           </div>
@@ -536,33 +536,33 @@
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
                                 <input matInput formControlName="vehicle_no" class="text-uppercase" required>
-                                @if (surveyForm?.get('in_gate_details.vehicle_no')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('in_gate_details.vehicle_no')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
                                 <input matInput formControlName="driver_name" required>
-                                @if (surveyForm?.get('in_gate_details.driver_name')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('in_gate_details.driver_name')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                                 <input matInput formControlName="haulier" required>
-                                @if (surveyForm?.get('in_gate_details.haulier')?.hasError('required')) {
+                                <!-- @if (surveyForm?.get('in_gate_details.haulier')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
-                                }
+                                } -->
                               </mat-form-field>
                             </div>
                           </div>

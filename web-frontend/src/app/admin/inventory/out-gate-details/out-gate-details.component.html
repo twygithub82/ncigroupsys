@@ -182,11 +182,11 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                                   <input matInput formControlName="haulier" required>
-                                  @if (outGateForm?.get('haulier')?.hasError('required')) {
+                                  <!-- @if (outGateForm?.get('haulier')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
-                                  }
+                                  } -->
                                 </mat-form-field>
                               </div>
                             </div>
@@ -195,22 +195,22 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
                                   <input matInput formControlName="vehicle_no" class="text-uppercase" required>
-                                  @if (outGateForm?.get('vehicle_no')?.hasError('required')) {
+                                  <!-- @if (outGateForm?.get('vehicle_no')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
-                                  }
+                                  } -->
                                 </mat-form-field>
                               </div>
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
                                   <input matInput formControlName="driver_name" required>
-                                  @if (outGateForm?.get('driver_name')?.hasError('required')) {
+                                  <!-- @if (outGateForm?.get('driver_name')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
-                                  }
+                                  } -->
                                 </mat-form-field>
                               </div>
                             </div>
@@ -342,9 +342,6 @@
                             </button>
                           </div>
                           <div class=" col-xl-6 col-lg-8 col-md-12 col-sm-12 align-right">
-                            <button mat-flat-button class="bg-light-gold m-r-10" (click)="resetDialog($event)">
-                              {{translatedLangText.CLEAR_ALL}}
-                            </button>
                             <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
                               [disabled]="(ogDS.actionLoading$| async)">
                               <mat-icon>
@@ -358,6 +355,9 @@
                             </button>
                             <button mat-flat-button color="primary">
                               <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}
+                            </button>
+                            <button mat-flat-button class="bg-light-gold m-l-10" (click)="resetDialog($event)">
+                              {{translatedLangText.CLEAR_ALL}}
                             </button>
                           </div>
                         </div>

@@ -132,7 +132,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     SELECT_ALL: "COMMON-FORM.SELECT-ALL",
     ACTION_DATE: "COMMON-FORM.ACTION-DATE",
     BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
-    SAVE_AND_SUBMIT: "COMMON-FORM.SAVE-AND-SUBMIT",
+    SAVE_AND_SUBMIT: "COMMON-FORM.SAVE",
     SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
@@ -291,8 +291,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       this.purposeOptionCvList = data;
     });
     this.cvDS.connectAlias('bookingTypeCv').subscribe(data => {
-      this.bookingTypeCvListNewBooking = data;
-      this.bookingTypeCvList = addDefaultSelectOption(data, 'All');
+      var sortedData = this.sortByDescription(data);
+      this.bookingTypeCvListNewBooking = sortedData;
+      this.bookingTypeCvList = addDefaultSelectOption(sortedData, 'All');
     });
     this.cvDS.connectAlias('bookingStatusCv').subscribe(data => {
       this.bookingStatusCvList = addDefaultSelectOption(data, 'All');
@@ -305,6 +306,10 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       this.testClassCvListNewBooking = addDefaultSelectOption(data);
     });
     this.search();
+  }
+
+  sortByDescription<T extends { description?: string }>(list: T[]): T[] {
+    return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
   }
 
   showNotification(

@@ -160,7 +160,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     OWNER: 'COMMON-FORM.OWNER',
-    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME'
+    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
+    OPEN_AT_GATE: 'COMMON-FORM.OPEN-AT-GATE',
   }
 
   inGateForm?: UntypedFormGroup;

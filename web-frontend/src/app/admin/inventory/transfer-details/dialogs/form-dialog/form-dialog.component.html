@@ -18,22 +18,22 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.HAULIER}}</mat-label>
                 <input matInput formControlName="haulier" required>
-                @if (transferForm.get('haulier')?.hasError('required')) {
+                <!-- @if (transferForm.get('haulier')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.HAULIER}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.VEHICLE_NO}}</mat-label>
                 <input matInput formControlName="vehicle_no" class="text-uppercase" required>
-                @if (transferForm.get('vehicle_no')?.hasError('required')) {
+                <!-- @if (transferForm.get('vehicle_no')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.VEHICLE_NO}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
           </div>
@@ -42,11 +42,11 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.DRIVER_NAME}}</mat-label>
                 <input matInput formControlName="driver_name" required>
-                @if (transferForm.get('driver_name')?.hasError('required')) {
+                <!-- @if (transferForm.get('driver_name')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.DRIVER_NAME}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
@@ -71,11 +71,11 @@
                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                   }
                 </mat-select>
-                @if (transferForm.get('location_to_cv')?.hasError('required')) {
+                <!-- @if (transferForm.get('location_to_cv')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.TRANSFER_LOCATION}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
           </div>
