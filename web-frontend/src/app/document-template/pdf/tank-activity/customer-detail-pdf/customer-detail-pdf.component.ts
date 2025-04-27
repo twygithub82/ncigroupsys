@@ -708,10 +708,13 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
 
 
-      lastTableFinalY += 8;
-      pdf.setFontSize(10);
-      pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      if(this.customerName==='')
+      {
+        lastTableFinalY += 8;
+        pdf.setFontSize(10);
+        pdf.setTextColor(0, 0, 0); // Black text
+        pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      }
       let startY = 0;
       if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
         lastTableFinalY += 5;

@@ -39,6 +39,7 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
 import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/charts/yard-chart-pdf.component';
 import { YardDetailInventoryPdfComponent } from 'app/document-template/pdf/status/yard/details/yard-detail-pdf.component';
 import { YardStatusDetailSummaryPdfComponent } from 'app/document-template/pdf/status/yard/summary-pdf/yard-summary-pdf.component';
@@ -151,7 +152,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
-    YARD_STATUS: 'COMMON-FORM.YARD-STATUS'
+    YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
+    YARD: 'COMMON-FORM.YARD'
   }
 
   invForm?: UntypedFormGroup;
@@ -184,6 +186,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   inventoryTypeCvList: CodeValuesItem[] = [];
+  yardCvList: CodeValuesItem[] = [];
 
   processType: string = "STEAMING";
   billingParty: string = "CUSTOMER";
@@ -202,6 +205,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   isGeneratingReport = false;
+  noCond: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -246,6 +250,13 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
+      eir_no: [''],
+      tank_no: [''],
+      eir_dt_start: [''],
+      eir_dt_end: [''],
+      inv_type: ['MASTER_IN'],
+      yard: ['']
+
       // last_cargo: this.lastCargoControl,
       // eir_no: [''],
       // tank_no: [''],
@@ -312,10 +323,14 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
+      { alias: 'yardCv', codeValType: 'YARD' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
       this.inventoryTypeCvList = data;
+    });
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      this.yardCvList = data || [];
     });
   }
 
@@ -350,6 +365,9 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
+  search_location_summary() {
+    this.search(4);
+  }
 
   search_summary() {
     this.search(1);
@@ -363,22 +381,72 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   search(report_type: number) {
+
     this.isGeneratingReport = true;
+    var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
 
-    where.or = [];
-    where.or.push({ tank_status_cv: { in: TANK_STATUS_IN_YARD } });
-    where.or.push({ status_cv: { eq: 'WAITING' } });
-    // where.tank_status_cv = {in:TANK_STATUS_IN_YARD }//{ neq: "RELEASED" };
-    // where.status_cv={eq:'WAITING'};
+    where.tank_status_cv = { in: TANK_STATUS_IN_YARD }; //{ neq: "RELEASED" };
+
     if (this.searchForm?.get('customer_code')?.value) {
-      // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_company = { code: { eq: this.searchForm?.get('customer_code')?.value.code } };
+      var cond: any = { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value?.guid } };
+
+      where.storing_order = cond;
+      cond_counter++;
     }
 
+
+    if (this.searchForm?.get('eir_no')?.value) {
+      var cond: any = { eir_no: { contains: this.searchForm!.get('eir_no')?.value } };
+      if (!where.in_gate) {
+        where.in_gate = {};
+        where.in_gate.some = {};
+        where.in_gate.some.and = [];
+      }
+      where.in_gate.some.and.push(cond);
+      cond_counter++;
+    }
+
+    if (this.searchForm?.get('yard')?.value) {
+      var yards: string[] = this.searchForm!.get('yard')?.value?.map((y: any) => y.code_val) || [];
+      where.tank_info = {
+        and: [
+          { yard_cv: { in: yards } }
+        ]
+      }
+      cond_counter++;
+    }
+
+    if (this.searchForm?.get('tank_no')?.value) {
+      where.tank_no = { eq: this.searchForm?.get('tank_no')?.value };
+      cond_counter++;
+    }
+
+    this.noCond = (cond_counter === 0);
+    if (this.noCond) {
+      this.isGeneratingReport = false;
+      return;
+    }
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
+
+    // this.isGeneratingReport = true;
+    // let queryType = 1;
+    // const where: any = {};
+
+    // where.or = [];
+    // where.or.push({ tank_status_cv: { in: TANK_STATUS_IN_YARD } });
+    // where.or.push({ status_cv: { eq: 'WAITING' } });
+    // // where.tank_status_cv = {in:TANK_STATUS_IN_YARD }//{ neq: "RELEASED" };
+    // // where.status_cv={eq:'WAITING'};
+    // if (this.searchForm?.get('customer_code')?.value) {
+    //   // if(!where.storing_order_tank) where.storing_order_tank={};
+    //   where.customer_company = { code: { eq: this.searchForm?.get('customer_code')?.value.code } };
+    // }
+
+    // this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
+    // this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number) {
@@ -389,7 +457,15 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.ProcessReportStatus(report_type!);
+        if(report_type===4)
+        {
+          this.ProcessReportLocationStatus();
+        }
+        else
+        {
+          this.ProcessReportStatus(report_type!);
+        }
+
         //this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
@@ -949,6 +1025,96 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
       this.isGeneratingReport = false;
     });
   }
+
+  ProcessReportLocationStatus() {
+    if (this.sotList.length === 0) {
+      this.isGeneratingReport = false;
+      return;
+    }
+
+    var repStatus: report_status[] = [];
+
+    this.sotList.map(s => {
+      if (s) {
+        var yard_cv = s.tank_info?.yard_cv||s.in_gate?.[0]?.yard_cv||undefined;
+        if (!yard_cv) return;
+        var repCust: report_status = repStatus.find(r => r.code === s.storing_order?.customer_company?.code) || new report_status();
+        let newCust = false;
+        if (!repCust.code) {
+          repCust.code = s.storing_order?.customer_company?.code;
+          repCust.customer = s.storing_order?.customer_company?.name;
+          repCust.yards = [];
+          newCust = true;
+        }
+        repCust.number_tank ??= 0;
+        repCust.number_tank += 1;
+        var yard: report_status_yard = repCust.yards?.find(y => y.code === yard_cv) || new report_status_yard();
+        let newYard = false;
+        if (!yard.code) {
+          yard.code = yard_cv;
+          yard.storing_order_tank = [];
+          newYard = true;
+        }
+        switch (s.tank_status_cv) {
+          case "STEAM":
+            yard.noTank_steam! += 1;
+            break;
+          case "OFFHIRE":
+          case "REPAIR":
+            yard.noTank_repair! += 1;
+            break;
+          case "CLEANING":
+            yard.noTank_clean! += 1;
+            break;
+          case "STORAGE":
+            yard.noTank_storage! += 1;
+            break;
+          case "IN_SURVEY":
+            yard.noTank_in_survey! += 1;
+            break;
+        }
+        yard.storing_order_tank?.push(s);
+        if (newYard) repCust.yards?.push(yard);
+        if (newCust) repStatus.push(repCust);
+      }
+    });
+
+    if (this.searchForm?.get('customer_code')?.value) {
+      repStatus = repStatus.filter(s => s.code == this.searchForm?.get('customer_code')?.value.code);
+    }
+    
+      this.onExportLocationStatusSummary(repStatus);
+    
+  }
+
+  onExportLocationStatusSummary(repStatus: report_status[]) {
+      //this.preventDefault(event);
+      let cut_off_dt = new Date();
+  
+      var yardsCv: CodeValuesItem[] = (this.searchForm?.get('yard')?.value || this.yardCvList);
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
+        width: reportPreviewWindowDimension.portrait_width_rate,
+        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+        maxHeight: reportPreviewWindowDimension.report_maxHeight,
+        data: {
+          report_summary_status: repStatus,
+          yards: yardsCv
+        },
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        this.isGeneratingReport = false;
+      });
+    }
 
 
 

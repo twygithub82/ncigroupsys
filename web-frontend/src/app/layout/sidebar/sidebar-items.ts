@@ -1156,7 +1156,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         path: "admin/reports/status",
-        title: "MENUITEMS.REPORTS.LIST.STATUS",
+        title: "MENUITEMS.REPORTS.LIST.YARD-STATUS",
         iconType: "",
         icon: "",
         class: "ml-menu",
