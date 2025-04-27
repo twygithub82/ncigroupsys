@@ -438,14 +438,27 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if (!where.gateio_billing) where.gateio_billing = {};
-      where.gateio_billing.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
+      if (!where.and) where.and = [];
+
+      var condInvDt = {};
+
+      condInvDt={storing_order_tank:{storage_detail:{some:{ billing: { invoice_dt: { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) } } }}}};
+      where.and.push(condInvDt);
+
+      //where.gateio_billing.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
     if (this.searchForm!.get('cutoff_dt')?.value) {
 
-      where.create_dt = { lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) };
+      if (!where.and) where.and = [];
+
+      var condInvDt = {};
+
+      condInvDt={storing_order_tank:{storage_detail:{some:{  end_dt: { gte: Utility.convertDate(this.searchForm!.value['cutoff_dt']), lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) } } }}};
+      where.and.push(condInvDt);
+
+      //where.create_dt = { lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
@@ -470,9 +483,14 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     if (this.searchForm!.get('inv_no')?.value) {
-      if (!where.storage_billing) where.storage_billing = {};
+      if (!where.and) where.and = [];
 
-      where.storage_billing.invoice_no = { contains: this.searchForm!.get('inv_no')?.value };
+      var condInvDt = {};
+
+      condInvDt={storing_order_tank:{storage_detail:{some:{ billing: { invoice_no:  { contains: this.searchForm!.get('inv_no')?.value } } }}}};
+      where.and.push(condInvDt);
+
+      //where.storage_billing.invoice_no = { contains: this.searchForm!.get('inv_no')?.value };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 

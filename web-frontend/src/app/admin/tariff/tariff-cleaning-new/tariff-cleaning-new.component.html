@@ -261,12 +261,13 @@
                         </p>
                         <button mat-raised-button color="primary" (click)="previewFile()" type="button">Preview</button>
                       </div>
-                      @if (this.selectedFileLoading | async) {
-                      <div class="tbl-spinner">
+                      <!-- @if (this.selectedFileLoading | async) { -->
+                      <div class="tbl-spinner" *ngIf="sdsFileLoading">
                         <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                         </mat-progress-spinner>
                       </div>
-                      }
+                      
+                      <!-- } -->
 
 
                     </div>

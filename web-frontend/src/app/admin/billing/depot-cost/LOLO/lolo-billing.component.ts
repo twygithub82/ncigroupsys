@@ -376,7 +376,9 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};
-    where.and=[{lift_on:{eq:true}},{lift_off:{eq:true}}];
+    where.and=[];
+    where.and.push({or:[{lift_on:{eq:true}},{lift_off:{eq:true}}]});
+    //where.and=[{lift_on:{eq:true}},{lift_off:{eq:true}}];
     if (this.searchForm!.get('tank_no')?.value) {
       if(!where.storing_order_tank) where.storing_order_tank={};
       if(!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no={};
@@ -399,8 +401,8 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
     if(this.searchForm!.get('invoiced')?.value)
       {
-        where.lon_billing_guid = { neq: null };
-        where.loff_billing_guid = { neq: null };
+        where.or = [{loff_billing_guid:{ neq: null }},{lon_billing_guid:{ neq: null }}];
+        
       }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -432,8 +434,12 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if(!where.gateio_billing) where.gateio_billing={};
-      where.gateio_billing.invoice_dt={gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'],true) };
+      if (!where.and) where.and = [];
+      var orCond=[];
+      orCond.push({lon_billing:{invoice_dt:{ gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end']) }}});
+      orCond.push({loff_billing:{invoice_dt:{ gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end']) }}});
+      where.and.push({or:orCond});
+     //where.gateio_billing.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
@@ -458,11 +464,14 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
     if (this.searchForm!.get('inv_no')?.value) {
-      if(!where.lolo_billing) where.lolo_billing={};
-      
-      where.lolo_billing.invoice_no={contains:this.searchForm!.get('inv_no')?.value} ;
+      if (!where.and) where.and = [];
+      var orCond=[];
+      orCond.push({lon_billing:{invoice_no : { contains: this.searchForm!.get('inv_no')?.value }}});
+      orCond.push({loff_billing:{invoice_no : { contains: this.searchForm!.get('inv_no')?.value }}});
+      where.and.push({or:orCond});
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
+
    
     this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);

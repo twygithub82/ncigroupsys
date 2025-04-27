@@ -805,7 +805,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
   async QueryAllFilesInGroup(groupguid: string) {
     this.sdsFileLoading = true;
-    this.selectedFileLoading.next(this.sdsFileLoading); // Set loading to true
+   // this.selectedFileLoading.next(this.sdsFileLoading); // Set loading to true
     let GroupGuid: string = groupguid;
     this.selectedFileLoading.subscribe(value => {
       if (value != this.sdsFileLoading) this.selectedFileLoading.next(this.sdsFileLoading);
@@ -842,10 +842,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       error: (error) => {
         console.error('Error retrieving files:', error);
         this.selectedFileLoading.next(false);
+        this.sdsFileLoading = false;
       },
       complete: () => {
         console.log('File retrieval process completed.');
         this.selectedFileLoading.next(false);
+        this.sdsFileLoading = false;
       }
     });
 
@@ -957,5 +959,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.trfCleaningSubmitting = false;
       this.submitForSaving.next(this.trfCleaningSubmitting);
     });
+  }
+
+  isLoadingSdsFile():Boolean
+  {
+    return this.sdsFileLoading;
   }
 }

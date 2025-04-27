@@ -376,7 +376,9 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.selection.clear();
     this.calculateTotalCost();
 
-    where.and=[{gate_in:{eq:true}},{gate_out:{eq:true}}];
+    where.and=[];
+    where.and.push({or:[{gate_in:{eq:true}},{gate_out:{eq:true}}]});
+   // where.or=[{gate_in:{eq:true}},{gate_out:{eq:true}}];
     //where.status_cv={in:['COMPLETED','APPROVED']};
     where.guid = { neq: null };
     if (this.searchForm!.get('tank_no')?.value) {
@@ -400,8 +402,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       }
 
     if (this.searchForm!.get('invoiced')?.value) {
-      where.gin_billing_guid = { neq: null };
-      where.gout_billing_guid = { neq: null };
+      where.or=[{gin_billing_guid : { neq: null }},{gout_billing_guid : { neq: null }}] ;
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -422,7 +423,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       where.storing_order_tank.in_gate = {
         some: {
           and: [
-            { eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+            { eir_dt: { eq: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
             { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }
           ]
         }
@@ -434,8 +435,12 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if (!where.gateio_billing) where.gateio_billing = {};
-      where.gateio_billing.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
+      if (!where.and) where.and = [];
+      var orCond=[];
+      orCond.push({gin_billing:{invoice_dt:{ gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end']) }}});
+      orCond.push({gout_billing:{invoice_dt:{ gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end']) }}});
+      where.and.push({or:orCond});
+     //where.gateio_billing.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
@@ -466,9 +471,11 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
     if (this.searchForm!.get('inv_no')?.value) {
-      if (!where.gateio_billing) where.gateio_billing = {};
-
-      where.gateio_billing.invoice_no = { contains: this.searchForm!.get('inv_no')?.value };
+      if (!where.and) where.and = [];
+      var orCond=[];
+      orCond.push({gin_billing:{invoice_no : { contains: this.searchForm!.get('inv_no')?.value }}});
+      orCond.push({gout_billing:{invoice_no : { contains: this.searchForm!.get('inv_no')?.value }}});
+      where.and.push({or:orCond});
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 

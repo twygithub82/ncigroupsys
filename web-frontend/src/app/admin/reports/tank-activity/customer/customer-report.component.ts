@@ -414,6 +414,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     //    queryType=2;
     // }
 
+    //where.tank_status_cv = this.availableProcessStatus.filter(s=>s!='');
     if (this.searchForm!.get('tank_status_cv')?.value) {
       where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
       cond_counter++;
@@ -438,10 +439,14 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     }
 
 
+    var customerNm:string='';
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
+      var cust=this.searchForm!.get('customer_code')?.value;
+      where.storing_order = { customer_company: { code: { eq: cust.code } } };
       cond_counter++;
+      
+      customerNm = this.ccDS.displayName(cust);
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
@@ -567,21 +572,29 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       return;
     }
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,customerNm);
 
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string , customerNm?:string) {
     // this.selection.clear();
+    var filterSpecificTankStatus=true;
     this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
+
         this.sotList = data;
+
+        if(filterSpecificTankStatus && this.sotList.length>0)
+        {
+          var availStatus = this.availableProcessStatus.filter(s=>s!="");
+          this.sotList = this.sotList.filter(sot=> availStatus.includes(sot.tank_status_cv!));
+        }
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
         report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
-        this.ProcessReportCustomerTankActivity(report_type!);
+        this.ProcessReportCustomerTankActivity(report_type!,customerNm!);
         // this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
@@ -760,7 +773,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
 
 
-  ProcessReportCustomerTankActivity(report_type: string) {
+  ProcessReportCustomerTankActivity(report_type: string,customerNm:string) {
     if (this.sotList.length === 0) {
       this.isGeneratingReport = false;
       return;
@@ -805,12 +818,12 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     });
 
 
-    this.onExportDetail(report_customer_tank_acts, report_type);
+    this.onExportDetail(report_customer_tank_acts, report_type,customerNm);
 
 
   }
 
-  onExportDetail(repCustomerTankActivity: report_customer_tank_activity[], report_type: string) {
+  onExportDetail(repCustomerTankActivity: report_customer_tank_activity[], report_type: string,customerNm:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -828,7 +841,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_customer_tank_activity: repCustomerTankActivity,
-        type: report_type
+        type: report_type,
+        customerName:customerNm
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

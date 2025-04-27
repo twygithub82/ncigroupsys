@@ -34,7 +34,7 @@ import autoTable, { Styles } from 'jspdf-autotable';
 export interface DialogData {
   report_customer_tank_activity: report_customer_tank_activity[],
   type: string,
-
+  customerName:string
 
   // repair_guid: string;
   // customer_company_guid: string;
@@ -316,7 +316,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   date: string = '';
   invType: string = '';
   queryType: number = 1;
-
+  customerName:string='';
 
 
   constructor(
@@ -335,7 +335,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-
+    
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -347,6 +347,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     await this.getCodeValuesData();
     this.report_customer_tank_activity = this.data.report_customer_tank_activity;
     this.invType = this.data.type;
+    this.customerName=   this.data.customerName;
     this.onDownloadClick();
   }
 
@@ -510,73 +511,73 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-  async exportToPDF_r2(fileName: string = 'document.pdf') {
-    const pageWidth = 297; // A4 width in mm (landscape)
-    const pageHeight = 210; // A4 height in mm (landscape)
-    const leftMargin = 10; // Left margin
-    const rightMargin = 10; // Right margin
-    const topMargin = 20; // Top margin for header
-    const bottomMargin = 20; // Bottom margin for footer
-    const contentWidth = pageWidth - leftMargin - rightMargin; // Usable width
-    const maxContentHeight = pageHeight - topMargin - bottomMargin; // Usable height
+  // async exportToPDF_r2(fileName: string = 'document.pdf') {
+  //   const pageWidth = 297; // A4 width in mm (landscape)
+  //   const pageHeight = 210; // A4 height in mm (landscape)
+  //   const leftMargin = 10; // Left margin
+  //   const rightMargin = 10; // Right margin
+  //   const topMargin = 20; // Top margin for header
+  //   const bottomMargin = 20; // Bottom margin for footer
+  //   const contentWidth = pageWidth - leftMargin - rightMargin; // Usable width
+  //   const maxContentHeight = pageHeight - topMargin - bottomMargin; // Usable height
 
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
+  //   this.generatingPdfLoadingSubject.next(true);
+  //   this.generatingPdfProgress = 0;
 
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-    let totalPages = 1;
+  //   const pdf = new jsPDF('l', 'mm', 'a4');
+  //   const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+  //   let pageNumber = 1;
+  //   let totalPages = 1;
 
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 7;
-    // Store page positions for later text update
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
+  //   let tableHeaderHeight = 12;
+  //   let tableRowHeight = 7;
+  //   // Store page positions for later text update
+  //   const pagePositions: { page: number; x: number; y: number }[] = [];
+  //   const progressValue = 100 / cardElements.length;
 
-    const reportTitle = this.GetReportTitle(); // Set your report title here
+  //   const reportTitle = this.GetReportTitle(); // Set your report title here
 
-    // Add header to the first page
-    this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+  //   // Add header to the first page
+  //   this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
 
-    let currentY = topMargin; // Start Y position after the header
+  //   let currentY = topMargin; // Start Y position after the header
 
-    for (let i = 0; i < cardElements.length; i++) {
-      const card = cardElements[i];
+  //   for (let i = 0; i < cardElements.length; i++) {
+  //     const card = cardElements[i];
 
-      // Convert card to image (JPEG format)
-      const canvas = await html2canvas(card, { scale: this.scale });
+  //     // Convert card to image (JPEG format)
+  //     const canvas = await html2canvas(card, { scale: this.scale });
 
-      const tableHeaderHeight_canvas = (tableHeaderHeight * canvas.width) / contentWidth;;
-      const tableRowHeight_canvas = (tableRowHeight * canvas.width) / contentWidth;;
-      const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
-      const canvasEachRow = await this.CopyCanvas(canvas, 0, tableHeaderHeight_canvas, canvas.width, tableRowHeight_canvas);
-      const imgHeaderHeight = tableHeaderHeight;//(canvasTHeader.height * contentWidth) / canvasTHeader.width; 
-      const imgRowHeight = tableRowHeight //(canvasEachRow.height * contentWidth) / canvasEachRow.width; 
-      const imgHeight = (canvasTHeader.height * contentWidth) / canvasTHeader.width;
-      var imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
-      pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeaderHeight);
-      currentY += imgHeight + 15;
-      imgData = canvasEachRow.toDataURL('image/jpeg', this.imageQuality);
-      pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgRowHeight);
-      pdf.addPage();
+  //     const tableHeaderHeight_canvas = (tableHeaderHeight * canvas.width) / contentWidth;;
+  //     const tableRowHeight_canvas = (tableRowHeight * canvas.width) / contentWidth;;
+  //     const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
+  //     const canvasEachRow = await this.CopyCanvas(canvas, 0, tableHeaderHeight_canvas, canvas.width, tableRowHeight_canvas);
+  //     const imgHeaderHeight = tableHeaderHeight;//(canvasTHeader.height * contentWidth) / canvasTHeader.width; 
+  //     const imgRowHeight = tableRowHeight //(canvasEachRow.height * contentWidth) / canvasEachRow.width; 
+  //     const imgHeight = (canvasTHeader.height * contentWidth) / canvasTHeader.width;
+  //     var imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
+  //     pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeaderHeight);
+  //     currentY += imgHeight + 15;
+  //     imgData = canvasEachRow.toDataURL('image/jpeg', this.imageQuality);
+  //     pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgRowHeight);
+  //     pdf.addPage();
 
-    }
+  //   }
 
-    // Add page numbers in a second pass
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 }); // Add last page number
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setPage(page);
-      pdf.setFontSize(10);
-      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-    });
+  //   // Add page numbers in a second pass
+  //   pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 }); // Add last page number
+  //   pagePositions.forEach(({ page, x, y }) => {
+  //     pdf.setPage(page);
+  //     pdf.setFontSize(10);
+  //     pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+  //   });
 
-    // Save the PDF
-    this.generatingPdfProgress = 100;
-    pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-  }
+  //   // Save the PDF
+  //   this.generatingPdfProgress = 100;
+  //   pdf.save(fileName);
+  //   this.generatingPdfProgress = 0;
+  //   this.generatingPdfLoadingSubject.next(false);
+  // }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
@@ -1341,7 +1342,12 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.CUSTOMER_REPORT}`
+    var repTitle =`${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.CUSTOMER_REPORT}`;
+    if(this.customerName)
+    {
+      repTitle+= ` - ${this.customerName}`;
+    }
+    return repTitle;
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
