@@ -9,8 +9,9 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["GlobalMQ.csproj", "."]
-RUN dotnet restore "./GlobalMQ.csproj"
+#COPY ["GlobalMQ.csproj", "."]
+#RUN dotnet restore "./GlobalMQ.csproj"
+
 COPY . .
 COPY ["./ReleaseDll/.","."]
 WORKDIR "/src/."

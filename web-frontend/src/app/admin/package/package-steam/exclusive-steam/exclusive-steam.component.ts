@@ -371,7 +371,8 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '600px',
+      //width: '600px',
+      width: '65vw',
       height: 'auto',
       data: {
         action: 'edit',

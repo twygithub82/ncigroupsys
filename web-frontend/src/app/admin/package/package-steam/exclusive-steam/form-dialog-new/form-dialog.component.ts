@@ -433,7 +433,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     where.and.push({ package_steaming: { customer_company_guid: { eq: custGuid } } });
     where.and.push({ or: [{ package_steaming: { delete_dt: { eq: null } } }, { package_steaming: { delete_dt: { eq: 0 } } }] });
-    where.and.push({ tariff_cleaning_guid: { eq: lastCargoGuid } });
+
+    if (this.pcForm?.value['last_cargo'].length > 0) {
+      var lastCargoGuids: string[] = this.pcForm.value['last_cargo'].map((cargo: { guid: string }) => cargo.guid);
+      where.and.push({ tariff_cleaning_guid: { in: lastCargoGuids } });
+    }
+    //where.and.push({ tariff_cleaning_guid: { eq: lastCargoGuid } });
 
     let tempCond: any = { or: [] };
     tempCond.or.push({ and: [{ temp_min: { lte: minTemp } }, { temp_max: { gte: minTemp } }] })

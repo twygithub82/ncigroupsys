@@ -22,6 +22,14 @@ namespace IDMS.Billing.GqlTypes
         public const string CUSTOMER = "CUSTOMER";
     }
 
+    public class  BillingType: ProcessType
+    {
+        public const string L_OFF = "LIFT_OFF";
+        public const string L_ON = "LIFT_ON";
+        public const string G_IN = "GATE_IN";
+        public const string G_OUT = "GATE_OUT";
+    }
+
     public class ProcessType
     {
         public const string CLEANING = "CLEANING";

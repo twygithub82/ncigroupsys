@@ -17,7 +17,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
         #region Original
         // [Authorize]
-        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10, MaxPageSize = 10000)]
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]

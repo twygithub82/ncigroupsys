@@ -9,12 +9,11 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["GlobalMQ.csproj", "GlobalMQ/"]
-COPY ["IDMS.Models/IDMS.Models.csproj", "IDMS.Models/"]
-#COPY ["./ReleaseDll/.","."]
-RUN dotnet restore "./GloablMQ/GlobalMQ.csproj"
+COPY ["GlobalMQ.csproj", "."]
+RUN dotnet restore "./GlobalMQ.csproj"
 COPY . .
-WORKDIR "/src/GlobalMQ"
+COPY ["./ReleaseDll/.","."]
+WORKDIR "/src/."
 RUN dotnet build "./GlobalMQ.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

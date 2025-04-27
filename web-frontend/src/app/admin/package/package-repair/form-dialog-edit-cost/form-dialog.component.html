@@ -146,18 +146,17 @@
             </div>
           </div>
         </div>
-
       </div>
 
       <div class="row">
-        <div mat-dialog-actions class="mb-1 align-right">
+        <div mat-dialog-actions class="mb-1 align-right pt-3">
           @if (canEdit()) {
           <button mat-flat-button color="primary" (click)="update()">
             <ng-container *ngIf="!(this.UpdateInProgress); else loading">
               <mat-icon>save</mat-icon>
               {{translatedLangText.SAVE_AND_SUBMIT}}
             </ng-container>
-            <ng-template #loading>
+            <ng-template #loading>  
               <mat-icon class="spinner">autorenew</mat-icon>
             </ng-template>
           </button>

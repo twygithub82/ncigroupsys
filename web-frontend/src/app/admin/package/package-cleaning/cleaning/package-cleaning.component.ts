@@ -358,9 +358,9 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '900px',
+      width: '65vw',
       data: {
-        action: 'new',
+        action: 'update',
         langText: this.langText,
         selectedItems: rows
       }

@@ -360,8 +360,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: '80vw',
-      height: '80vh',
+      width: '65vw',
+      //height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -390,8 +390,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '80vw',
-      height: '80vh',
+      width: '65vw',
+      //height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -422,8 +422,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageRepairItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '80vw',
-      height: '80vh',
+      width: '65vw',
+      //height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
