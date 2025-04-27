@@ -2,7 +2,7 @@
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h3>{{this.translatedLangText.EDIT}} {{this.translatedLangText.PACKAGE_DEPOT}} </h3>
+        <h3>{{this.translatedLangText.EDIT}} {{this.translatedLangText.PACKAGE_RESIDUE}} </h3>
       </div>
     </div>
   </div>
@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.COST}}</mat-label>
+                    <mat-label>{{translatedLangText.PACKAGE_CLEANING_UPDATED_COST}}</mat-label>
                     <input matInput formControlName="cost_cust" type="number"
                       [required]="this.selectedItems.length===1">
                     <!-- @if (pcForm.get('cost_cust')?.hasError('required')) {
@@ -57,14 +57,14 @@
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
                           }}:</span>{{row.customer_company.name}}</mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="email">
+                    <ng-container matColumnDef="description">
                       <mat-header-cell *matHeaderCellDef>{{translatedLangText.DESCRIPTION
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.DESCRIPTION
                           }}:</span>{{row.tariff_residue?.description}}</mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="gender">
+                    <ng-container matColumnDef="customerCost">
                       <mat-header-cell *matHeaderCellDef
                       [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CUSTOMER_COST
                         }}</mat-header-cell>
@@ -72,6 +72,13 @@
                       [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.COST
                           }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="tariffCost">
+                      <mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.TARIFF_COST}} $</span>{{row.tariff_residue?.cost.toFixed(2)}}</mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>

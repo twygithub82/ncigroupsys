@@ -123,7 +123,7 @@
         "PACKAGE-BUFFER": "Buffer Cleaning",
         "PACKAGE-RESIDUE": "Residue Disposal",
         "PACKAGE-CLEANING-NEW": "New Package Cleaning",
-        "PACKAGE-CLEANING-EDIT": "Edit Package Cleaning"
+        "PACKAGE-CLEANING-EDIT": "Edit Cleaning"
       }
     },
     "CLEANING-MANAGEMENT": {

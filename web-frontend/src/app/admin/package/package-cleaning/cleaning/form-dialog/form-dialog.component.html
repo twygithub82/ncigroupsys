@@ -16,7 +16,7 @@
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{translatedLangText.CUSTOMER_COST}}</mat-label>
+                <mat-label>{{translatedLangText.PACKAGE_CLEANING_UPDATED_COST}}</mat-label>
                 <input matInput formControlName="adjusted_cost" type="number" required>
                 <!-- @if (pcForm.get('adjusted_cost')?.hasError('required')) {
                 <mat-error>
@@ -75,10 +75,9 @@
                           {{row.adjusted_price.toFixed(2)}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="cost">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.STANDARD_COST
-                          }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TARIFF_COST}} $ </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                          <span class="mobile-label">{{translatedLangText.STANDARD_COST }}:</span>
+                          <span class="mobile-label">{{translatedLangText.TARIFF_COST}} $</span>
                           {{row.cleaning_category.cost.toFixed(2)}}</mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
