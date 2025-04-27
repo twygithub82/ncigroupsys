@@ -27,11 +27,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
                     <input matInput formControlName="template_name" required>
-                    @if (tempForm?.get('template_name')?.hasError('required')) {
+                    <!-- @if (tempForm?.get('template_name')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
-                      }
+                      } -->
                     @if (tempForm?.get('template_name')?.hasError('existed')) {
                         <mat-error>
                           {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.EXISTED}}

@@ -38,11 +38,11 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
-                    @if (roForm?.get('customer_code')?.hasError('required')) {
+                    <!-- @if (roForm?.get('customer_code')?.hasError('required')) {
                     <mat-error>
                       {{translatedLangText.CUSTOMER}} {{translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
@@ -58,11 +58,11 @@
                       required>
                     <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
                     <mat-datepicker #release_dt_picker [startAt]="startDateRO"></mat-datepicker>
-                    @if (roForm?.get('release_dt')?.hasError('required')) {
+                    <!-- @if (roForm?.get('release_dt')?.hasError('required')) {
                     <mat-error>
                       {{translatedLangText.RELEASE_ORDER_DATE}} {{translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
@@ -150,11 +150,11 @@
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                               <input matInput formControlName="release_job_no" required>
-                              @if (row.get('release_job_no')?.hasError('required')) {
+                              <!-- @if (row.get('release_job_no')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.JOB_NO}} {{translatedLangText.SO_REQUIRED}}
                               </mat-error>
-                              }
+                              } -->
                             </mat-form-field>
                           </div>
                           @if (checkMenuItems(row)) {

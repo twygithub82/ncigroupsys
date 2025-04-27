@@ -25,29 +25,29 @@ export const UPDATE_CLEANING_METHOD = gql`
   `;
 
 export const GET_CLEANING_METHOD_QUERY = gql`
-  query queryCleaningMethod($where:cleaning_methodFilterInput , $order:[cleaning_methodSortInput!],$first:Int) 
-  {queryCleaningMethod(where: $where , order: $order,first:$first) {
-    nodes {
-       category_guid
-       create_by
-        create_dt
-        delete_dt
-        description
-        guid
-        name
-        update_by
-        update_dt
-     }
-         totalCount
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
+  query queryCleaningMethod($where:cleaning_methodFilterInput , $order:[cleaning_methodSortInput!],$first:Int) {
+    queryCleaningMethod(where: $where , order: $order,first:$first) {
+      nodes {
+        category_guid
+        create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          update_by
+          update_dt
       }
+          totalCount
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+    }
   }
-}
-  `;
+`;
 
 export const SEARCH_CLEANING_METHOD_QUERY = gql`
   query queryCleaningMethod($where: cleaning_methodFilterInput , $order:[cleaning_methodSortInput!], $first: Int, $after: String, $last: Int, $before: String){

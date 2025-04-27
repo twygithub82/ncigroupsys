@@ -309,7 +309,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
           searchCriteria = value.unit_type;
         }
         this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, [{ unit_type: 'ASC' }]).subscribe(data => {
-          this.tankItemList = data
+          this.tankItemList = data;
         });
       })
     ).subscribe();

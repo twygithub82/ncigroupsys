@@ -18,7 +18,7 @@
                  <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BUFFER_TYPE }}</mat-label>
                     <input matInput formControlName="buffer_type" type="text" required >
-                    @if (pcForm.get('buffer_type')?.hasError('required')) {
+                    <!-- @if (pcForm.get('buffer_type')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.BUFFER_TYPE }} {{langText.CARGO_REQUIRED | translate}}
                       </mat-error>
@@ -27,7 +27,7 @@
                         <mat-error>
                           {{translatedLangText.BUFFER_TYPE }}: {{langText.EXISTED | translate}}
                         </mat-error>
-                        }
+                        } -->
                   </mat-form-field> 
                 </div>
           </div>
@@ -36,11 +36,11 @@
                  <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.COST }}</mat-label>
                     <input matInput formControlName="cost" type="number" required >
-                    @if (pcForm.get('cost')?.hasError('required')) {
+                    <!-- @if (pcForm.get('cost')?.hasError('required')) {
                       <mat-error>
                         {{langText.COST }} {{langText.CARGO_REQUIRED | translate}}
                       </mat-error>
-                      }
+                      } -->
                   </mat-form-field> 
                 </div>
           </div>

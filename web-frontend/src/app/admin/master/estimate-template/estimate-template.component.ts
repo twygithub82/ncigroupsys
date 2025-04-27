@@ -30,7 +30,8 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+// import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstPartItem } from 'app/data-sources/master-template';
@@ -85,6 +86,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
   customerCodeControl = new UntypedFormControl();
   templateNameControl = new UntypedFormControl();
+  // template_type_cv = new UntypedFormControl();
   CodeValuesDS?: CodeValuesDS;
   masterEstTempDS: MasterEstimateTemplateDS;
   ccDS: CustomerCompanyDS;
@@ -92,6 +94,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
   masterTemplateItem: MasterTemplateItem[] = [];
   masterTempItemOnly: MasterTemplateItem[] = [];
+  templateTypeItemCvList: CodeValuesItem[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
@@ -235,7 +238,8 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     this.mtForm = this.fb.group({
       customer_code: this.customerCodeControl,
       template_name: this.templateNameControl,
-      part_name: ['']
+      part_name: [''],
+      template_type_cv: ['']
     });
   }
 
@@ -381,6 +385,11 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
+    if(this.mtForm?.get('template_type_cv')?.value){
+      const template_type = this.mtForm?.get('template_type_cv')?.value;
+      where.type_cv = { eq: template_type };
+    }
+
     if (this.mtForm?.get('part_name')?.value) {
       const partNameValue = this.mtForm.get('part_name')?.value;
       where.template_est_part = {
@@ -497,7 +506,14 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     });
     this.masterEstTempDS.SearchEstimateTemplateOnly({}, { template_name: 'ASC' }).subscribe(data => {
       this.masterTempItemOnly = data;
-    })
+    });
+    const queries = [
+      { alias: 'templateType', codeValType: 'EST_TEMPLATE_TYPE' }
+    ];
+    this.CodeValuesDS?.getCodeValuesByType(queries);
+    this.CodeValuesDS?.connectAlias('templateType').subscribe(data => {
+      this.templateTypeItemCvList = addDefaultSelectOption(data, 'All');
+    });
   }
   showNotification(
     colorName: string,
@@ -606,7 +622,8 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.initMtForm();
-    this.customerCodeControl.reset();
-    this.templateNameControl.reset();
+    this.customerCodeControl.reset('');
+    this.templateNameControl.reset('');
+    //this.template_type_cv.reset('');
   }
 }

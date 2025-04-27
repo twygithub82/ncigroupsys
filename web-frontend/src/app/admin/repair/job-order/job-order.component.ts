@@ -340,9 +340,17 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     };
 
     if (this.filterRepairForm!.get('filterRepair')?.value) {
+      const tankNo = this.filterRepairForm!.get('filterRepair')?.value;
       where.or = [
-        { storing_order_tank: { tank_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } },
-        { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
+        {
+          storing_order_tank: {
+            or: [
+              { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+              { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+            ]
+          }
+        },
+        // { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
       ];
     }
 
@@ -356,7 +364,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     if (this.filterRepairForm!.get('status_cv')?.value) {
       where.status_cv = { in: this.filterRepairForm!.get('status_cv')?.value };
     }
-    else{
+    else {
       where.status_cv = {
         in: this.availableProcessStatus
       };

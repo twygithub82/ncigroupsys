@@ -224,11 +224,11 @@
                     </mat-option>
                     }
                   </mat-autocomplete>
-                  @if (newDesc.hasError('required')) {
+                  <!-- @if (newDesc.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.SO_REQUIRED}}
                   </mat-error>
-                  }
+                  } -->
                   @if (newDesc.hasError('duplicated')) {
                   <mat-error>
                     {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.EXISTED}}
@@ -240,11 +240,11 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
                   <input matInput [formControl]="newQty" type="number" required="true">
-                  @if (newQty.hasError('required')) {
+                  <!-- @if (newQty.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
                   </mat-error>
-                  }
+                  } -->
                 </mat-form-field>
 
               </div>
@@ -252,11 +252,11 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.HOUR}}</mat-label>
                   <input matInput [formControl]="newHour" type="number" required>
-                  @if (newHour.hasError('required')) {
+                  <!-- @if (newHour.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.HOUR}} {{this.translatedLangText.SO_REQUIRED}}
                   </mat-error>
-                  }
+                  } -->
                 </mat-form-field>
 
               </div>
@@ -264,11 +264,11 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UNIT_PRICE}}</mat-label>
                   <input matInput [formControl]="newUnitPrice" type="number" required="true">
-                  @if (newUnitPrice.hasError('required')) {
+                  <!-- @if (newUnitPrice.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
                   </mat-error>
-                  }
+                  } -->
                 </mat-form-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">

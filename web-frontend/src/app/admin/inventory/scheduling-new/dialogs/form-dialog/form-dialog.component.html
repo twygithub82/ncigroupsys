@@ -25,11 +25,11 @@
                   </mat-option>
                   }
                 </mat-select>
-                @if (schedulingForm.get('book_type_cv')?.hasError('required')) {
+                <!-- @if (schedulingForm.get('book_type_cv')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
                 @if (schedulingForm.get('book_type_cv')?.hasError('existed')) {
                 <mat-error>
                   {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
@@ -45,11 +45,11 @@
                   [min]="startDateToday">
                 <mat-datepicker-toggle matSuffix [for]="scheduling_dt_picker"></mat-datepicker-toggle>
                 <mat-datepicker #scheduling_dt_picker></mat-datepicker>
-                @if (schedulingForm.get('scheduling_dt')?.hasError('required')) {
+                <!-- @if (schedulingForm.get('scheduling_dt')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.SCHEDULING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             }
@@ -76,11 +76,11 @@
                         [min]="getStartDate(row.get('scheduling_dt')?.value)" required>
                       <mat-datepicker-toggle matSuffix [for]="scheduling_dt_picker"></mat-datepicker-toggle>
                       <mat-datepicker #scheduling_dt_picker></mat-datepicker>
-                      @if (row.get('scheduling_dt')?.hasError('required')) {
+                      <!-- @if (row.get('scheduling_dt')?.hasError('required')) {
                       <mat-error>
                         {{data.translatedLangText.SCHEDULING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
                       </mat-error>
-                      }
+                      } -->
                       @if (row.get('scheduling_dt')?.hasError('existed')) {
                       <mat-error>
                         {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}

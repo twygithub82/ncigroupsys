@@ -307,7 +307,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
 
   public loadData() {
     this.onFilterResidue();
-    this.onFilterJobOrder();
 
     const queries = [
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
@@ -403,8 +402,12 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     }
 
     if (this.filterResidueForm!.get('filterResidue')?.value) {
+      const tankNo = this.filterResidueForm!.get('filterResidue')?.value;
       where.and.push({
-        storing_order_tank: { tank_no: { contains: this.filterResidueForm!.get('filterResidue')?.value } }
+        storing_order_tank: { or: [ 
+          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        ] }
       });
     }
 
@@ -417,24 +420,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
 
     this.lastSearchCriteriaResidue = this.residueDS.addDeleteDtCriteria(where);
     this.performSearchClean(this.pageSizeResidue, this.pageIndexResidue, this.pageSizeResidue, undefined, undefined, undefined, () => { });
-  }
-
-  onFilterJobOrder() {
-    const where: any = {
-      job_type_cv: { eq: "RESIDUE" }
-    };
-
-    // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
-    //   where.so_no = { contains: this.filterRepairForm!.get('filterJobOrder')?.value };
-    // }
-
-    // TODO:: Get login user team
-    // if (false) {
-    //   where.team_guid = { eq: "" }
-    // }
-
-    this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
   performSearchClean(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {

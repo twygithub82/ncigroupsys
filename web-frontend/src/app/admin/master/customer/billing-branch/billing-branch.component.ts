@@ -627,8 +627,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
         });
       })
     ).subscribe();
-
-
   }
 
   public loadData() {
@@ -637,8 +635,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = this.custCompDS.search(cond, { code: 'ASC' }, 100).subscribe(data => {
       this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
     });
-    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
-      this.unit_typeList = data
+    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC'}, 100).subscribe(data => {
+      this.unit_typeList = data;
     });
   }
 

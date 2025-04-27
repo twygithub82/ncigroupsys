@@ -31,11 +31,11 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
                   <input matInput formControlName="remarks">
-                  @if (so?.get('remarks')?.hasError('required')) {
+                  <!-- @if (so?.get('remarks')?.hasError('required')) {
                   <mat-error>
                     {{data.langText.REMARKS | translate}} {{data.langText.SO_REQUIRED | translate}}
                   </mat-error>
-                  }
+                  } -->
                 </mat-form-field>
               </div>
             </div>

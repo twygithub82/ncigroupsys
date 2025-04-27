@@ -131,7 +131,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     SELECT_ALL: "COMMON-FORM.SELECT-ALL",
     ACTION_DATE: "COMMON-FORM.ACTION-DATE",
     BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
-    SAVE_AND_SUBMIT: "COMMON-FORM.SAVE-AND-SUBMIT",
+    SAVE_AND_SUBMIT: "COMMON-FORM.SAVE",
     SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
@@ -409,10 +409,9 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
-      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
       where.or = [
-        { tank_no: { contains: tankNo } },
-        { tank_no: { contains: formattedTankNo } }
+        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
       ]
     }
 

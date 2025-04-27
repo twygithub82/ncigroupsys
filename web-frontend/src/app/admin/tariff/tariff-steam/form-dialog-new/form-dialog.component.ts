@@ -214,6 +214,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     TEMP_RANGE_ERROR: 'COMMON-FORM.TEMP-RANGE-ERROR',
     TEMP_RANGE_OVERLAPS_ERROR: 'COMMON-FORM.TEMP-RANGE-OVERLAPS-ERROR',
     TARIFF_STEAM: 'MENUITEMS.TARIFF.LIST.TARIFF-STEAM',
+    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
+    HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
   };
   unit_type_control = new UntypedFormControl();
 

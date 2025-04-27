@@ -402,10 +402,9 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       }
 
       if (tankNo) {
-        const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
         sotSome.or = [
-          { tank_no: { contains: tankNo } },
-          { tank_no: { contains: formattedTankNo } }
+          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
         ];
       }
 

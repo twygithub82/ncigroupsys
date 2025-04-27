@@ -26,11 +26,11 @@
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.CARGO_NAME | translate}}</mat-label>
                           <input matInput formControlName="cargo_name" required>
-                          @if (tcForm?.get('cargo_name')?.hasError('required')) {
+                          <!-- @if (tcForm?.get('cargo_name')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_NAME | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
-                          }
+                          } -->
                         </mat-form-field>
                       </div>
 
@@ -64,12 +64,12 @@
                             </mat-option>
                             }
                           </mat-select>
-
+                        <!-- 
                           @if (tcForm?.get('open_gate')?.hasError('required')) {
                           <mat-error>
                             {{langText.OPEN_AT_GATE | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
-                          }
+                          } -->
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
@@ -82,11 +82,11 @@
                             </mat-option>
                             }
                           </mat-select>
-                          @if (tcForm?.get('method')?.hasError('required')) {
+                          <!-- @if (tcForm?.get('method')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_METHOD | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
-                          }
+                          } -->
 
                         </mat-form-field>
                       </div>
@@ -101,11 +101,11 @@
                             </mat-option>
                             }
                           </mat-select>
-                          @if (tcForm?.get('category')?.hasError('required')) {
+                          <!-- @if (tcForm?.get('category')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_CATEGORY | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
-                          }
+                          } -->
                         </mat-form-field>
 
 
@@ -149,11 +149,11 @@
                             }
                           </mat-select>
 
-                          @if (tcForm?.get('hazard_level')?.hasError('required')) {
+                          <!-- @if (tcForm?.get('hazard_level')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_HAZARD_LEVEL | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
-                          }
+                          } -->
                         </mat-form-field>
                       </div>
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
@@ -166,11 +166,11 @@
                             </mat-option>
                             }
                           </mat-select>
-                          @if (tcForm?.get('nature')?.hasError('required')) {
+                          <!-- @if (tcForm?.get('nature')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_NATURE | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
-                          }
+                          } -->
                         </mat-form-field>
                       </div>
 
@@ -182,32 +182,32 @@
                           <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
                           <input matInput formControlName="un_no" required [maxLength]="6" (blur)="onUnNoBlur()"
                             [ngStyle]="{ 'color': this.newUNNo ? '#FF8C00' : 'black' }">
-                          @if (tcForm?.get('un_no')?.hasError('required')) {
+                          <!-- @if (tcForm?.get('un_no')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_UN_NO | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
-                          }
-                          @if (tcForm?.get('un_no')?.hasError('existed')) {
+                          } -->
+                          <!-- @if (tcForm?.get('un_no')?.hasError('existed')) {
                           <mat-error>
                             {{langText.CARGO_UN_NO | translate}}: {{langText.EXISTED | translate}}
                           </mat-error>
-                          }
-                          @if (tcForm?.get('un_no')?.hasError('invalidCharacter')) {
+                          } -->
+                          <!-- @if (tcForm?.get('un_no')?.hasError('invalidCharacter')) {
                           <mat-error>
                             {{langText.CARGO_UN_NO | translate}}: {{langText.INVALID | translate}}
                           </mat-error>
-                          }
+                          } -->
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CARGO_FLASH_POINT }}</mat-label>
                           <input matInput formControlName="flash_point" required type="number">
-                          @if (tcForm?.get('flash_point')?.hasError('required')) {
+                          <!-- @if (tcForm?.get('flash_point')?.hasError('required')) {
                           <mat-error>
                             {{translatedLangText.CARGO_FLASH_POINT }} {{translatedLangText.CARGO_REQUIRED }}
                           </mat-error>
-                          }
+                          } -->
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
@@ -223,11 +223,11 @@
                             </mat-option>
                             }
                           </mat-autocomplete>
-                          @if (tcForm?.get('class_no')?.hasError('required')) {
+                          <!-- @if (tcForm?.get('class_no')?.hasError('required')) {
                           <mat-error>
                             {{this.translatedLangText.PART_NAME}} {{this.translatedLangText.SO_REQUIRED}}
                           </mat-error>
-                          }
+                          } -->
                         </mat-form-field>
                       </div>
                     </div>
@@ -244,11 +244,11 @@
 
                       </div>
 
-                      @if (tcForm?.get('file_size')?.hasError('required')) {
+                      <!-- @if (tcForm?.get('file_size')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.SDS_FILE }} {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
-                      }
+                      } -->
                       @if (tcForm?.get('file_size')?.hasError('error')) {
                       <mat-error>
                         {{translatedLangText.ATTACHMENT_TOO_BIG }}
@@ -289,11 +289,11 @@
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.CARGO_ALERT }}</mat-label>
                           <input matInput formControlName="in_gate_alert" class="text-uppercase" required>
-                          @if (tcForm?.get('in_gate_alert')?.hasError('required')) {
+                          <!-- @if (tcForm?.get('in_gate_alert')?.hasError('required')) {
                           <mat-error>
                             {{translatedLangText.CARGO_ALERT }} {{translatedLangText.CARGO_REQUIRED }}
                           </mat-error>
-                          }
+                          } -->
                         </mat-form-field>
                       </div>
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">

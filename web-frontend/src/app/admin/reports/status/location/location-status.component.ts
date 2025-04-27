@@ -337,7 +337,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     }
   }
 
-
   search_summary() {
     this.search(1);
   }
@@ -375,7 +374,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
 
     if (this.searchForm?.get('yard')?.value) {
       var yards: string[] = this.searchForm!.get('yard')?.value?.map((y: any) => y.code_val) || [];
-
       where.tank_info = {
         and: [
           { yard_cv: { in: yards } }
@@ -383,7 +381,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       }
       cond_counter++;
     }
-
 
     if (this.searchForm?.get('tank_no')?.value) {
       where.tank_no = { eq: this.searchForm?.get('tank_no')?.value };
@@ -587,10 +584,8 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       if (result.data.updateBilling) {
         this.handleSaveSuccess(result.data.updateBilling);
         this.onCancel(event);
-        //  this.search();
       }
     })
-
   }
 
   handleSaveSuccess(count: any) {
@@ -602,11 +597,9 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
         //this.router.navigate(['/admin/master/estimate-template']);
 
         // Navigate to the route and pass the JSON object
-
       });
     }
   }
-
 
   onCancel(event: Event) {
     event.stopPropagation();
@@ -614,13 +607,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
     this.invoiceDateControl.reset('');
   }
 
-
-
-
-
-
   getCustomerLabourPackage(custGuid: string) {
-
     const customer_company_guid = custGuid;
     const where = {
       and: [
@@ -707,8 +694,6 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   onExportDetail(repStatus: report_status[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
-
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -759,7 +744,4 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
       this.isGeneratingReport = false;
     });
   }
-
-
-
 }

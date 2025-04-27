@@ -18,11 +18,11 @@
                 <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DESCRIPTION | translate}}</mat-label>
                     <input matInput formControlName="description" type="text" required>
-                    @if (pcForm.get('description')?.hasError('required')) {
+                    <!-- @if (pcForm.get('description')?.hasError('required')) {
                       <mat-error>
                         {{langText.DESCRIPTION | translate}} {{langText.CARGO_REQUIRED | translate}}
                       </mat-error>
-                      }
+                      } -->
                       @if (pcForm.get('description')?.hasError('existed')) {
                         <mat-error>
                           {{langText.DESCRIPTION | translate}}: {{langText.EXISTED | translate}}
@@ -34,11 +34,11 @@
               <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.DURATION}}</mat-label>
                   <input matInput formControlName="duration" type="number" required>
-                  @if (pcForm.get('duration')?.hasError('required')) {
+                  <!-- @if (pcForm.get('duration')?.hasError('required')) {
                     <mat-error>
                       {{langText.DURATION | translate}} {{langText.CARGO_REQUIRED | translate}}
                     </mat-error>
-                    }
+                    } -->
                 </mat-form-field>
             </div>
           

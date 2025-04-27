@@ -145,11 +145,11 @@
               </mat-option>
               }
             </mat-select>
-            @if (bookingForm.get('book_type_cv')?.hasError('required')) {
+            <!-- @if (bookingForm.get('book_type_cv')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
-            }
+            } -->
             @if (bookingForm.get('book_type_cv')?.hasError('existed')) {
             <mat-error>
               {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
@@ -164,11 +164,11 @@
               required>
             <mat-datepicker-toggle matSuffix [for]="booking_dt_picker"></mat-datepicker-toggle>
             <mat-datepicker #booking_dt_picker></mat-datepicker>
-            @if (bookingForm.get('booking_dt')?.hasError('required')) {
+            <!-- @if (bookingForm.get('booking_dt')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.BOOKING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
-            }
+            } -->
           </mat-form-field>
         </div>
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">

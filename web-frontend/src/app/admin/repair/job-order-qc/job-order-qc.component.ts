@@ -250,9 +250,13 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     const where: any = {};
 
     if (this.filterJobOrderForm!.get('filterRepair')?.value) {
+      const tankNo = this.filterJobOrderForm!.get('filterRepair')?.value;
       where.or = [
-        { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } },
-        { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } } }
+        { storing_order_tank: { or: [
+          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        ] } },
+        // { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } } }
       ];
     }
 
@@ -353,7 +357,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.filterJobOrderForm?.patchValue({
       filterJobOrder: '',
       jobStatusCv: ['COMPLETED'],
-      filterRepair:'',
+      filterRepair: '',
       repairOptionCv: [''],
       complete_dt_start: '',
       complete_dt_end: ''

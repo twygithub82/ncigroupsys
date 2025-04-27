@@ -324,7 +324,13 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     };
 
     if (this.searchForm!.get('tank_no')?.value) {
-      where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      const tankNo = this.searchForm!.get('tank_no')?.value;
+      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
+      where.storing_order_tank.or = [
+        { tank_no: { contains: tankNo } },
+        { tank_no: { contains: formattedTankNo } }
+      ]
+      // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
@@ -337,8 +343,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
         where.status_cv = { in: this.searchForm!.value['approval_status'] };
       }
     }
-    else{
-      where.status_cv =  {
+    else {
+      where.status_cv = {
         in: this.availableProcessStatus
       };
     }

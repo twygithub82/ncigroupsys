@@ -144,7 +144,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     INVOICE_DETAILS: 'COMMON-FORM.INVOICE-DETAILS',
     TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
-    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    SAVE: 'COMMON-FORM.SAVE',
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
@@ -455,7 +455,11 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     // where.bill_to_guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
-      where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      const tankNo = this.searchForm!.get('tank_no')?.value;
+      where.or = [
+        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+      ];
     }
 
     if (this.searchForm!.get('customer_code')?.value) {

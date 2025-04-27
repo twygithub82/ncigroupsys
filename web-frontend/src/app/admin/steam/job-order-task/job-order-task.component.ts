@@ -248,7 +248,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   onFilterJobOrder() {
     const where: any = {
       job_type_cv: { eq: "STEAM" }
-
     };
 
     // where.steaming_part={all:{ tariff_steaming_guid: { eq: null } }};
@@ -258,8 +257,16 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     };
 
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
+      const tankNo = this.filterJobOrderForm!.get('filterJobOrder')?.value;
       where.or = [
-        { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } },
+        {
+          storing_order_tank: {
+            or: [
+              { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+              { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+            ]
+          }
+        },
         { steaming_part: { some: { steaming: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
       ];
     }
@@ -611,7 +618,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.filterJobOrderForm?.patchValue({
       filterJobOrder: '',
       jobStatusCv: '',
-      customer:''
+      customer: ''
     });
   }
 

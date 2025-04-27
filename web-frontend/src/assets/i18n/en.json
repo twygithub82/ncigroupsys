@@ -1198,7 +1198,9 @@
     "CANCEL-REMARK": "Cancel Remarks",
     "UNASSIGN": "Unassign",
     "ALL": "All",
-    "OUTSTANDING": "Outstanding"
+    "OUTSTANDING": "Outstanding",
+    "FLAT-RATE": "Flat Rate $",
+    "HOURLY-RATE": "Hourly Rate $"
     
     
   },
