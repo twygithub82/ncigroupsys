@@ -428,7 +428,12 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       }
 
       if (this.searchForm!.get('tank_no')?.value) {
-        sotSome.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+        const tankNo = this.searchForm!.get('tank_no')?.value;
+        const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
+        sotSome.or = [
+          { tank_no: { contains: tankNo } },
+          { tank_no: { contains: formattedTankNo } }
+        ];
       }
 
       if (this.searchForm!.get('repair_option_cv')?.value?.length) {

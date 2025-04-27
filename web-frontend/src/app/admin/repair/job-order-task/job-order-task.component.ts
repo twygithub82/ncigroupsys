@@ -265,16 +265,21 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     };
 
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
+      const tankNo = this.filterJobOrderForm!.get('filterJobOrder')?.value;
+      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
       where.or = [
-        { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } },
-        { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
+        { storing_order_tank: { or: [
+          { tank_no: { contains: tankNo } },
+          { tank_no: { contains: formattedTankNo } }
+        ] } },
+        // { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
       ];
     }
 
     if (this.customerCodeControl?.value) {
       const customer = this.customerCodeControl?.value;
       where.or = [
-        { storing_order_tank: { storing_order: { customer_company_guid: { contains: customer.guid } } }}
+        { storing_order_tank: { storing_order: { customer_company_guid: { contains: customer.guid } } } }
       ];
     }
 
