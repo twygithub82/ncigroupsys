@@ -23,11 +23,11 @@
                       <mat-label>{{getMaterialCostLabel()}}</mat-label>
                       <input matInput formControlName="material_cost" type="number"
                         [required]="this.selectedItems.length===1">
-                      @if (pcForm.get('material_cost')?.hasError('required')) {
+                      <!-- @if (pcForm.get('material_cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.MATERIAL_COST }} {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
-                      }
+                      } -->
                       @if((this.selectedItems.length>1)&&pcForm.get('material_cost')?.hasError('min')){
                       <mat-error>
                         {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
@@ -45,11 +45,11 @@
                     <mat-form-field class="example-full-width">
                       <mat-label>{{getLabourHourLabel() }}</mat-label>
                       <input matInput formControlName="labour_hour" type="text">
-                      @if (pcForm.get('labour_hour')?.hasError('required')) {
+                      <!-- @if (pcForm.get('labour_hour')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.LABOUR_HOUR }} {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
-                      }
+                      } -->
                       @if(this.selectedItems.length>1&&pcForm.get('labour_hour')?.hasError('min')){
                       <mat-error>
                         {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
