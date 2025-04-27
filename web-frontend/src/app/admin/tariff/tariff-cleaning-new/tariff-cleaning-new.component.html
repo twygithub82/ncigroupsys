@@ -234,7 +234,7 @@
                     <div class="row">
                       <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                         <mat-label>{{translatedLangText.SDS_FILE }}</mat-label>
-                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button" class=""
+                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button" class="m-l-5"
                           [disabled]="!isFileSelectable">
                           <i class="material-icons">attach_file</i>
                         </button>
@@ -324,8 +324,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
 
               @if (!(submitForSaving | async)) {
-              <button mat-flat-button color="primary" class="m-r-5" type="submit">
-
+              <button mat-flat-button color="primary" type="submit">
                 <mat-icon>
                   save
                 </mat-icon>
