@@ -31,9 +31,14 @@ namespace IDMS.Models.DB
                .HasForeignKey(c => c.owner_billing_guid);
 
             modelBuilder.Entity<billing>()
-               .HasMany(b => b.lolo_billing_sot)
-               .WithOne(c => c.lolo_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.lolo_billing_guid);
+               .HasMany(b => b.loff_billing_sot)
+               .WithOne(c => c.loff_billing) // Assuming this is the correct navigation
+               .HasForeignKey(c => c.loff_billing_guid);
+
+            modelBuilder.Entity<billing>()
+               .HasMany(b => b.lon_billing_sot)
+               .WithOne(c => c.lon_billing) // Assuming this is the correct navigation
+               .HasForeignKey(c => c.lon_billing_guid);
 
             modelBuilder.Entity<billing>()
                .HasMany(b => b.preinsp_billing_sot)
@@ -46,9 +51,14 @@ namespace IDMS.Models.DB
                .HasForeignKey(c => c.storage_billing_guid);
 
             modelBuilder.Entity<billing>()
-               .HasMany(b => b.gateio_billing_sot)
-               .WithOne(c => c.gateio_billing) // Assuming this is the correct navigation
-               .HasForeignKey(c => c.gateio_billing_guid);
+               .HasMany(b => b.gin_billing_sot)
+               .WithOne(c => c.gin_billing) // Assuming this is the correct navigation
+               .HasForeignKey(c => c.gin_billing_guid);
+
+            modelBuilder.Entity<billing>()
+               .HasMany(b => b.gout_billing_sot)
+               .WithOne(c => c.gout_billing) // Assuming this is the correct navigation
+               .HasForeignKey(c => c.gout_billing_guid);
 
             modelBuilder.Entity<storing_order_tank>()
              .HasOne(s => s.tank_info)              // Sot has one TankInfo

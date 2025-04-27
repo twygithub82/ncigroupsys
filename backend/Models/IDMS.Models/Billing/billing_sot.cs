@@ -23,10 +23,12 @@ namespace IDMS.Models.Billing
         [ForeignKey("tariff_depot")]
         public string tariff_depot_guid { get; set; }
 
-        public string? lolo_billing_guid { get; set; }
+        public string? loff_billing_guid { get; set; }
+        public string? lon_billing_guid { get; set; }
         public string? preinsp_billing_guid { get; set; }
         public string? storage_billing_guid { get; set; }
-        public string? gateio_billing_guid { get; set; }
+        public string? gin_billing_guid { get; set; }
+        public string? gout_billing_guid { get; set; }
         public bool? preinspection { get; set; }
         public bool? lift_on { get; set; }
         public bool? lift_off { get; set; }
@@ -47,18 +49,18 @@ namespace IDMS.Models.Billing
         public storing_order_tank? storing_order_tank { get; set; }
         [UseFiltering]
         public tariff_depot? tariff_depot { get; set; }
-        //[UseFiltering]
-        //public billing? billing { get; set; }
-        //[UseFiltering]
-        //public billing? preinsp_billing { get; set; }
-        //[UseFiltering]
-        [ForeignKey("lolo_billing_guid")]
-        public billing? lolo_billing { get; set; }
+
+        [ForeignKey("lon_billing_guid")]
+        public virtual billing? lon_billing { get; set; }
+        [ForeignKey("loff_billing_guid")]
+        public virtual billing? loff_billing { get; set; }
         [ForeignKey("preinsp_billing_guid")]
-        public billing? preinsp_billing { get; set; }
+        public virtual billing? preinsp_billing { get; set; }
         [ForeignKey("storage_billing_guid")]
-        public billing? storage_billing { get; set; }
-        [ForeignKey("gateio_billing_guid")]
-        public billing? gateio_billing { get; set; }
+        public virtual billing? storage_billing { get; set; }
+        [ForeignKey("gin_billing_guid")]
+        public virtual billing? gin_billing { get; set; }
+        [ForeignKey("gout_billing_guid")]
+        public virtual billing? gout_billing { get; set; }
     }
 }
