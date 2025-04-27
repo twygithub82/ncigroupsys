@@ -462,10 +462,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
-      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
       where.or = [
-        { tank_no: { contains: tankNo } },
-        { tank_no: { contains: formattedTankNo } }
+        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
       ]
     }
 

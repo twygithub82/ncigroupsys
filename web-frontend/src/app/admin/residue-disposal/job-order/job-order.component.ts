@@ -403,11 +403,10 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
 
     if (this.filterResidueForm!.get('filterResidue')?.value) {
       const tankNo = this.filterResidueForm!.get('filterResidue')?.value;
-      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
       where.and.push({
         storing_order_tank: { or: [ 
-          { tank_no: { contains: tankNo } },
-          { tank_no: { contains: formattedTankNo } }
+          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
         ] }
       });
     }

@@ -211,7 +211,6 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   search() {
     const searchField = this.searchForm?.get('search_field')?.value?.trim();
-    const formattedTankNo = Utility.formatTankNumberForSearch(searchField);
     const where: any = {
       and: [
         {
@@ -224,8 +223,8 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
           or: [
             { release_order_sot: { some: { release_order: { ro_no: { contains: searchField } } } } },
             // { storing_order: { so_no: { contains: searchField } } },
-            { tank_no: { contains: searchField } },
-            { tank_no: { contains: formattedTankNo } },
+            { tank_no: { contains: Utility.formatContainerNumber(searchField) } },
+            { tank_no: { contains: Utility.formatTankNumberForSearch(searchField) } },
             { job_no: { contains: searchField } }
           ]
         }

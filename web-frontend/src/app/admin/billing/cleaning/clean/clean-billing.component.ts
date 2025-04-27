@@ -402,7 +402,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       // if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
       // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       where.storing_order_tank.or = [
-        { tank_no: { contains: tankNo } },
+        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
         { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
       ];
     }
