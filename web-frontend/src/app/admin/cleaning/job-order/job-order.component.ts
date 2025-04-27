@@ -400,8 +400,13 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     if (this.filterCleanForm!.get('filterClean')?.value) {
+      const tankNo = this.filterCleanForm!.get('filterClean')?.value;
+      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
       where.and.push({
-        storing_order_tank: { tank_no: { contains: this.filterCleanForm!.get('filterClean')?.value } }
+        storing_order_tank: { or: [ 
+          { tank_no: { contains: tankNo } },
+          { tank_no: { contains: formattedTankNo } }
+        ] }
       });
     }
 

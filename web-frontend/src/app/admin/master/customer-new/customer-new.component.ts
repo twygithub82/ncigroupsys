@@ -123,7 +123,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
-    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    SAVE: 'COMMON-FORM.SAVE',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
@@ -341,7 +341,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       address2: [''],
       postal_code: [''],
       city_name: [''],
-      country: ['SG'],
+      country: [''],
       remarks: [''],
       repList: []
     });
