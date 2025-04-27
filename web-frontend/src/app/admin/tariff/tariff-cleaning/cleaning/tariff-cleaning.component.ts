@@ -348,7 +348,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = after;
-    this.subs.sink = this.tcDS.SearchTariffResidueWithCount(where, order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.tcDS.SearchTariffCleaningWithCount(where, order, first, after, last, before).subscribe(data => {
       this.tcList = data;
       this.endCursor = this.tcDS.pageInfo?.endCursor;
       this.startCursor = this.tcDS.pageInfo?.startCursor;
@@ -435,8 +435,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.searchForm!.value['ban_type']) {
       const banType: CodeValuesItem = this.searchForm!.value['ban_type'];
-      tariff_cleaning.ban_type = { contains: 'Half_Ban' };
-      // tariff_cleaning.ban_type = { contains: banType.code_val };
+      //tariff_cleaning.ban_type = { contains: 'Half_Ban' };
+      tariff_cleaning.ban_type_cv = { contains: banType.code_val };
     }
 
     if (this.searchForm!.value['method']) {
@@ -469,7 +469,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     where = this.appendDeleteDt(where);
 
-    this.subs.sink = this.tcDS.SearchTariffResidueWithCount(where).subscribe(data => {
+    this.subs.sink = this.tcDS.SearchTariffCleaningWithCount(where).subscribe(data => {
       this.tcList = data;
       console.log(data)
     });
