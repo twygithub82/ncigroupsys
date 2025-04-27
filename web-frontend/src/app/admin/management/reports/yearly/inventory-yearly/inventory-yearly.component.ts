@@ -489,18 +489,19 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -508,7 +509,8 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchForm?.patchValue({
       year: thisYear,
-      month: thisMonth,
+      month_start: thisMonth,
+      month_end: thisMonth,
       inventory_type: 'ALL',
       report_type: this.reportTypeCvList.find(f => f.code_val == 'MONTH_WISE'),
     });

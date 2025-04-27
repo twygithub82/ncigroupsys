@@ -283,8 +283,8 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '600px',
-      height: 'auto',
+      width: '55vw',
+      //height: 'auto',
       data: {
         action: 'new',
         langText: this.langText,
@@ -340,7 +340,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '1000px',
+      width: '55vw',
       data: {
         action: 'edit',
         langText: this.langText,
@@ -372,7 +372,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       //width: '600px',
-      width: '65vw',
+      width: '55vw',
       height: 'auto',
       data: {
         action: 'edit',

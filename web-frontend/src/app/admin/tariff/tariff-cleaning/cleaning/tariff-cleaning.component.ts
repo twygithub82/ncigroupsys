@@ -554,22 +554,26 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_RESET,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
     this.searchForm?.patchValue({
+      cargo_name: '',
       class_no: '',
       method: '',
       category: '',
@@ -583,8 +587,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   editCall(row: TariffCleaningItem) {
-
-
     // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/tariff/tariff-cleaning/edit/' + row.guid], {
       state: {

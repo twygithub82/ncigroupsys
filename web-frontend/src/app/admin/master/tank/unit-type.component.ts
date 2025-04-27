@@ -333,17 +333,15 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '800px',
-
+      width: '50vw',
       data: {
         action: 'new',
         langText: this.langText,
         selectedItems: null
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
+      // position: {
+      //   top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      // }
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -383,16 +381,15 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
 
-      width: '800px',
-
+      width: '50vw',
       data: {
         action: 'update',
         langText: this.langText,
         selectedItem: row
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
+      // position: {
+      //   top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      // }
 
     });
 
@@ -704,18 +701,19 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_RESET,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {

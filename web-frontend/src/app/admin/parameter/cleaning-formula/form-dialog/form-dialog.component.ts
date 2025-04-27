@@ -94,7 +94,7 @@ export class FormDialogComponent {
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
-    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
@@ -155,7 +155,7 @@ export class FormDialogComponent {
       return this.translatedLangText.UPDATE;
     }
     else {
-      return this.translatedLangText.ADD;
+      return this.translatedLangText.SAVE_AND_SUBMIT;
     }
   }
 

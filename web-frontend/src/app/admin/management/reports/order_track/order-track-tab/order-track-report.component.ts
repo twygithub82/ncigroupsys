@@ -627,18 +627,19 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -652,8 +653,8 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       job_no: '',
       purpose: '',
       status_cv: '',
-      order_type: '',
-      order_no:'1'
+      order_type: '1',
+      order_no:''
     });
 
     this.customerCodeControl.reset('');

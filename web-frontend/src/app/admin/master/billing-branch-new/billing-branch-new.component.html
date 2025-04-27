@@ -200,6 +200,9 @@
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}
                   </button>
                   <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
+                    <mat-icon>
+                      close
+                    </mat-icon>
                     {{translatedLangText.CLEAR_ALL}}
                   </button>
                 </div>
@@ -354,6 +357,9 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2">
                   @if (isAnyItemEdited()) {
                   <button mat-flat-button color="primary">
+                    <mat-icon>
+                      save
+                    </mat-icon>
                     {{translatedLangText.SAVE_AND_SUBMIT}}
                   </button>
                   }
