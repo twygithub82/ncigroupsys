@@ -258,13 +258,12 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
       const tankNo = this.filterJobOrderForm!.get('filterJobOrder')?.value;
-      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
       where.or = [
         {
           storing_order_tank: {
             or: [
-              { tank_no: { contains: tankNo } },
-              { tank_no: { contains: formattedTankNo } }
+              { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+              { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
             ]
           }
         },

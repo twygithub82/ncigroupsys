@@ -503,9 +503,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     if (this.searchForm!.get('tank_no')?.value) {
       const or = [];
       const tankNo = this.searchForm!.get('tank_no')?.value;
-      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
-      or.push({ tank_no: { contains: tankNo } });
-      or.push({ tank_no: { contains: formattedTankNo } });
+      or.push({ tank_no: { contains: Utility.formatContainerNumber(tankNo) } });
+      or.push({ tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } });
       where.and = where.and || [];
       where.and.push({ or: or });
     }
