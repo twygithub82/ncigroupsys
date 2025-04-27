@@ -414,18 +414,11 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.search();
 
     const queries = [
-      //{ alias: 'reStatusCv', codeValType: 'REP_EST_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-    // this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-    //   this.processStatusCvList = addDefaultSelectOption(data, 'All');
-    // });
-    // this.cvDS.connectAlias('reStatusCv').subscribe(data => {
-    //   this.reStatusCvList = addDefaultSelectOption(data, 'All');
-    // });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
@@ -493,7 +486,12 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       where.tank_status_cv = { in: ['STEAM', 'STORAGE'] }
     }
     if (this.searchForm!.value['tank_no']) {
-      where.tank_no = { contains: this.searchForm!.value['tank_no'] };
+      const tankNo = this.searchForm!.get('tank_no')?.value
+      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo)
+      where.or = [
+        { tank_no: { contains: tankNo } },
+        { tank_no: { contains: formattedTankNo } }
+      ]
     }
 
     if (this.searchForm!.value['last_cargo']) {

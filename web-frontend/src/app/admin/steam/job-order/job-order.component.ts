@@ -161,9 +161,9 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     STEAM_HEAT_TYPE: "COMMON-FORM.STEAM-HEAT-TYPE",
     REPAIR: 'COMMON-FORM.REPAIR',
     SEARCH: 'COMMON-FORM.SEARCH',
-    UNASSIGNED:'COMMON-FORM.UNASSIGN',
-    CONFIRM_TEAM_UNASSIGN:"COMMON-FORM.CONFIRM-TEAM-UNASSIGN",
-    ROLLBACK_SUCCESS:"COMMON-FORM.ROLLBACK-SUCCESS"
+    UNASSIGNED: 'COMMON-FORM.UNASSIGN',
+    CONFIRM_TEAM_UNASSIGN: "COMMON-FORM.CONFIRM-TEAM-UNASSIGN",
+    ROLLBACK_SUCCESS: "COMMON-FORM.ROLLBACK-SUCCESS"
   }
 
   filterSteamForm?: UntypedFormGroup;
@@ -277,8 +277,6 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
-
-
   cancelItem(row: StoringOrderItem) {
     // this.id = row.id;
     this.cancelSelectedRows([row])
@@ -389,13 +387,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   onFilterSteam() {
-    // const where: any = {
-    //  and:[]
-    // };
-
     const where: any = {
       and: [
-        //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
         { storing_order_tank: { tank_status_cv: { in: ["STEAM"] } } }
       ]
     };
@@ -419,20 +412,15 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
         }
       });
     }
-    // or: [
-    //   { storing_order_tank: { tank_no: { contains: "" } } },
-    //   { estimate_no: { contains: "" } }
-    // ]
-
-    // if (this.filterSteamForm!.get('filterSteam')?.value) {
-    //   where.AND.push({
-    //     storing_order_tank: { tank_no: { contains: this.filterSteamForm!.get('filterSteam')?.value } }
-    //   });
-    // }
 
     if (this.filterSteamForm!.get('filterSteam')?.value) {
+      const tankNo = this.filterSteamForm!.get('filterSteam')?.value;
+      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
       where.and.push({
-        storing_order_tank: { tank_no: { contains: this.filterSteamForm!.get('filterSteam')?.value } }
+        storing_order_tank: { or: [ 
+          { tank_no: { contains: tankNo } },
+          { tank_no: { contains: formattedTankNo } }
+        ] }
       });
     }
 
@@ -631,7 +619,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     this.filterSteamForm?.patchValue({
       filterSteam: '',
       status_cv: '',
-      customer:''
+      customer: ''
     });
   }
 
@@ -783,52 +771,49 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
   }
 
-   ConfirmUnassignTeam(event: Event, row:SteamItem)
-    {
-      this.stopEventTrigger(event);
-      this.ConfirmUnassignDialog(event,row);
+  ConfirmUnassignTeam(event: Event, row: SteamItem) {
+    this.stopEventTrigger(event);
+    this.ConfirmUnassignDialog(event, row);
+  }
+
+  ConfirmUnassignDialog(event: Event, row: SteamItem) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-  
-    ConfirmUnassignDialog(event: Event, row:SteamItem) {
-      event.preventDefault(); // Prevents the form submission
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.UnassignEstimate(row);
       }
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
-          action: 'new',
-        },
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        if (result.action === 'confirmed') {
-          this.UnassignEstimate(row);
-        }
-      });
-    }
-  
-    UnassignEstimate( row:SteamItem)
-    {
-      this.subs.sink = this.steamDs.rollbackAssignedSteam([row.guid!])
-      .subscribe((result:any) => {
-        if(result.data.rollbackAssignedResidue)
-        {
+    });
+  }
+
+  UnassignEstimate(row: SteamItem) {
+    this.subs.sink = this.steamDs.rollbackAssignedSteam([row.guid!])
+      .subscribe((result: any) => {
+        if (result.data.rollbackAssignedResidue) {
           this.handleRollbackSuccess(result.data.rollbackAssignedResidue);
         }
       });
-  
+
+  }
+
+  handleRollbackSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.refreshTable();
     }
-  
-     handleRollbackSuccess(count: any) {
-        if ((count ?? 0) > 0) {
-          let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
-          ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-          this.refreshTable();
-        }
-      }
+  }
 }
