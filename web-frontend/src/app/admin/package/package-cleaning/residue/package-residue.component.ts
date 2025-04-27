@@ -351,16 +351,16 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageResidueItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '70vw',
-      height: '80vh',
+      width: '65vw',
+      //height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
         selectedItems: rows
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
+      // position: {
+      //   top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      // }
 
     });
 
