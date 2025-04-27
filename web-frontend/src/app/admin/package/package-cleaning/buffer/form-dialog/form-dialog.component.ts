@@ -72,10 +72,11 @@ export interface DialogData {
 })
 export class FormDialogComponent {
   displayedColumns = [
-    'mobile',
+    'profile',
     'fName',
     'lName',
-    'email',
+    'customerCost',
+    'tariffCost'
   ];
 
   action: string;
@@ -174,6 +175,7 @@ export class FormDialogComponent {
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    PACKAGE_CLEANING_UPDATED_COST: "COMMON-FORM.PACKAGE-CLEANING-UPDATE-COST",
     EDIT_PACKAGE_CLEANING: "MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING-EDIT",
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
     PACKAGE_LABOUR: "COMMON-FORM.PACKAGE-LABOUR",
@@ -182,6 +184,7 @@ export class FormDialogComponent {
     LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
     CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    TARIFF_COST: 'COMMON-FORM.TARIFF-COST',
   };
 
 
@@ -330,6 +333,7 @@ export class FormDialogComponent {
 
   }
 
+
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
@@ -342,6 +346,10 @@ export class FormDialogComponent {
   }
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  displayCustomerCompanyFn(code: string, name: string): string {
+    return code && name ? `${code} (${name})` : '';
   }
 
 }

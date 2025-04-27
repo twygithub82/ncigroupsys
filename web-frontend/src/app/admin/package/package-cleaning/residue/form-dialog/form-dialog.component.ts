@@ -73,8 +73,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     'fName',
     'lName',
-    'email',
-    'gender',
+    'description',
+    'customerCost',
+    'tariffCost'
   ];
 
   action: string;
@@ -157,11 +158,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    PACKAGE_CLEANING_UPDATED_COST: "COMMON-FORM.PACKAGE-CLEANING-UPDATE-COST",
     CUSTOMER_COMPANY: "COMMON-FORM.CUSTOMER-COMPANY",
     ALIAS_NAME: "COMMON-FORM.ALIAS-NAME",
     AGREEMENT_DUE_DATE: "COMMON-FORM.AGREEMENT-DUE-DATE",
     BILLING_PROFILE: "COMMON-FORM.BILLING-PROFILE",
-    PACKAGE_DEPOT: "MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
+    PACKAGE_RESIDUE: "MENUITEMS.PACKAGE.LIST.PACKAGE-RESIDUE",
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
@@ -178,6 +180,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     COST: "COMMON-FORM.COST",
+    TARIFF_COST: 'COMMON-FORM.TARIFF-COST',
   };
   selectedItems: PackageResidueItem[];
 
