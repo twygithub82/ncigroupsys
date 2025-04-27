@@ -17,7 +17,7 @@ namespace IDMS.Billing.GqlTypes
     public class BillingMutation
     {
         public async Task<int> AddBilling(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, billing newBilling, List<BillingEstimateRequest> billingEstimateRequests, StorageDetailRequest? storageDetail)
+            [Service] IConfiguration config, billing newBilling, List<BillingEstimateRequest> billingEstimateRequests, List<StorageDetailRequest>? storageDetail)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace IDMS.Billing.GqlTypes
         }
 
         public async Task<int> UpdateBilling(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, billing? updateBilling, List<BillingEstimateRequest> billingEstimateRequests, StorageDetailRequest storageDetail)
+            [Service] IConfiguration config, billing? updateBilling, List<BillingEstimateRequest?>? billingEstimateRequests, List<StorageDetailRequest?>? storageDetail)
         {
             try
             {
@@ -80,27 +80,31 @@ namespace IDMS.Billing.GqlTypes
                     updateBill.remarks = updateBilling.remarks;
                     updateBill.currency_guid = updateBilling.currency_guid;
                     updateBill.bill_to_guid = updateBilling.bill_to_guid;
+
+                    //currentBillingGuid = updateBilling.guid;
                 }
 
-
-                List<BillingEstimateRequest> billingEstimateList = new List<BillingEstimateRequest>();
-                foreach (var item in billingEstimateRequests)
+                if(billingEstimateRequests != null && billingEstimateRequests.Any())
                 {
-                    if (item.action.EqualsIgnore(ObjectAction.NEW) || item.action.EqualsIgnore(ObjectAction.EDIT))
+                    List<BillingEstimateRequest> billingEstimateList = new List<BillingEstimateRequest>();
+                    foreach (var item in billingEstimateRequests)
                     {
-                        item.billing_guid = updateBilling.guid;
-                        billingEstimateList.Add(item);
+                        if (item.action.EqualsIgnore(ObjectAction.NEW) || item.action.EqualsIgnore(ObjectAction.EDIT))
+                        {
+                            item.billing_guid = updateBilling.guid;
+                            billingEstimateList.Add(item);
+                        }
+                        else if (item.action.EqualsIgnore(ObjectAction.CANCEL))
+                        {
+                            item.billing_guid = null;
+                            billingEstimateList.Add(item);
+                        }
                     }
-                    else if (item.action.EqualsIgnore(ObjectAction.CANCEL))
-                    {
-                        item.billing_guid = null;
-                        billingEstimateList.Add(item);
-                    }
+                    await EstimateHandling(context, user, currentDateTime, billingEstimateList);
                 }
 
-                await EstimateHandling(context, user, currentDateTime, billingEstimateList);
                 if (storageDetail != null)
-                    await StorageDetailHandling(context, user, currentDateTime, updateBilling.guid, storageDetail);
+                    await StorageDetailHandling(context, user, currentDateTime, updateBilling?.guid, storageDetail);
 
                 var res = await context.SaveChangesAsync();
 
@@ -162,7 +166,7 @@ namespace IDMS.Billing.GqlTypes
             {
                 switch (item.process_type.ToUpper())
                 {
-                    case ProcessType.CLEANING:
+                    case BillingType.CLEANING:
                         var cleaning = new cleaning() { guid = item.process_guid };
                         context.Set<cleaning>().Attach(cleaning);
                         cleaning.update_by = user;
@@ -178,7 +182,7 @@ namespace IDMS.Billing.GqlTypes
                             context.Entry(cleaning).Property(p => p.customer_billing_guid).IsModified = true;
                         }
                         break;
-                    case ProcessType.STEAMING:
+                    case BillingType.STEAMING:
                         var steaming = new steaming() { guid = item.process_guid };
                         context.Set<steaming>().Attach(steaming);
                         steaming.update_by = user;
@@ -194,7 +198,7 @@ namespace IDMS.Billing.GqlTypes
                             context.Entry(steaming).Property(p => p.customer_billing_guid).IsModified = true;
                         }
                         break;
-                    case ProcessType.RESIDUE:
+                    case BillingType.RESIDUE:
                         var residue = new residue() { guid = item.process_guid };
                         context.Set<residue>().Attach(residue);
                         residue.update_by = user;
@@ -210,7 +214,7 @@ namespace IDMS.Billing.GqlTypes
                             context.Entry(residue).Property(p => p.customer_billing_guid).IsModified = true;
                         }
                         break;
-                    case ProcessType.REPAIR:
+                    case BillingType.REPAIR:
                         if (item.process_guid != prevRepairProcessID)
                         {
                             repair = new repair() { guid = item.process_guid };
@@ -243,22 +247,32 @@ namespace IDMS.Billing.GqlTypes
                         billingSot.update_by = user;
                         billingSot.update_dt = currentDateTime;
 
-                        if (processType.EqualsIgnore(ProcessType.LOLO))
+                        if (processType.EqualsIgnore(BillingType.L_OFF))
                         {
-                            billingSot.lolo_billing_guid = item.billing_guid;
-                            context.Entry(billingSot).Property(p => p.lolo_billing_guid).IsModified = true;
+                            billingSot.loff_billing_guid = item.billing_guid;
+                            context.Entry(billingSot).Property(p => p.loff_billing_guid).IsModified = true;
                         }
-                        else if (processType.EqualsIgnore(ProcessType.GATE))
+                        else if (processType.EqualsIgnore(BillingType.L_ON))
                         {
-                            billingSot.gateio_billing_guid = item.billing_guid;
-                            context.Entry(billingSot).Property(p => p.gateio_billing_guid).IsModified = true;
+                            billingSot.lon_billing_guid = item.billing_guid;
+                            context.Entry(billingSot).Property(p => p.lon_billing_guid).IsModified = true;
                         }
-                        else if (processType.EqualsIgnore(ProcessType.PREINSPECTION))
+                        else if (processType.EqualsIgnore(BillingType.G_IN))
+                        {
+                            billingSot.gin_billing_guid = item.billing_guid;
+                            context.Entry(billingSot).Property(p => p.gin_billing_guid).IsModified = true;
+                        }
+                        else if (processType.EqualsIgnore(BillingType.G_OUT))
+                        {
+                            billingSot.gout_billing_guid = item.billing_guid;
+                            context.Entry(billingSot).Property(p => p.gout_billing_guid).IsModified = true;
+                        }
+                        else if (processType.EqualsIgnore(BillingType.PREINSPECTION))
                         {
                             billingSot.preinsp_billing_guid = item.billing_guid;
                             context.Entry(billingSot).Property(p => p.preinsp_billing_guid).IsModified = true;
                         }
-                        else if (processType.EqualsIgnore(ProcessType.STORAGE))
+                        else if (processType.EqualsIgnore(BillingType.STORAGE))
                         {
                             billingSot.storage_billing_guid = item.billing_guid;
                             context.Entry(billingSot).Property(p => p.storage_billing_guid).IsModified = true;
@@ -268,56 +282,65 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        private async Task StorageDetailHandling(ApplicationBillingDBContext context, string user, long currentDateTime, string billingGuid, StorageDetailRequest storageDetail)
+        private async Task StorageDetailHandling(ApplicationBillingDBContext context, string user, long currentDateTime, string? billingGuid, List<StorageDetailRequest>? storageDetail)
         {
-            if (storageDetail.action.EqualsIgnore(ObjectAction.NEW))
+            foreach(var item in storageDetail)
             {
-                var newSD = new storage_detail();
-                newSD.guid = Util.GenerateGUID();
-                newSD.create_by = user;
-                newSD.create_dt = currentDateTime;
-
-                newSD.billing_guid = billingGuid;
-                newSD.sot_guid = storageDetail.sot_guid;
-                newSD.start_dt = storageDetail.start_dt;
-                newSD.end_dt = storageDetail.end_dt;
-                newSD.state_cv = storageDetail.state_cv;
-                newSD.total_cost = storageDetail.total_cost;
-                newSD.remaining_free_storage = storageDetail.remaining_free_storage;
-                newSD.remarks = storageDetail.remarks;
-
-                context.storage_detail.Add(newSD);
-            }
-            else if (storageDetail.action.EqualsIgnore(ObjectAction.EDIT))
-            {
-                if (string.IsNullOrEmpty(storageDetail.guid))
-                    throw new GraphQLException(new Error($"Storage details guid cannot be null or empty", "ERROR"));
-
-                var updateSD = await context.storage_detail.FindAsync(storageDetail.guid);
-                if (updateSD != null)
+                if (item.action.EqualsIgnore(ObjectAction.NEW))
                 {
-                    updateSD.update_by = user;
-                    updateSD.update_dt = currentDateTime;
-                    updateSD.billing_guid = billingGuid;
-                    updateSD.sot_guid = storageDetail.sot_guid;
-                    updateSD.start_dt = storageDetail.start_dt;
-                    updateSD.end_dt = storageDetail.end_dt;
-                    updateSD.state_cv = storageDetail.state_cv;
-                    updateSD.total_cost = storageDetail.total_cost;
-                    updateSD.remaining_free_storage = storageDetail.remaining_free_storage;
-                    updateSD.remarks = storageDetail.remarks;
-                }
-            }
-            else if (storageDetail.action.EqualsIgnore(ObjectAction.CANCEL))
-            {
-                if (string.IsNullOrEmpty(storageDetail.guid))
-                    throw new GraphQLException(new Error($"Storage details guid cannot be null or empty", "ERROR"));
+                    if (string.IsNullOrEmpty(billingGuid))
+                        throw new GraphQLException(new Error($"Billing guid cannot be null or empty", "ERROR"));
 
-                var deleteSD = new storage_detail() { guid = storageDetail.guid };
-                context.Attach(deleteSD);
-                deleteSD.update_by = user;
-                deleteSD.update_dt = currentDateTime;
-                deleteSD.delete_dt = currentDateTime;
+                    var newSD = new storage_detail();
+                    newSD.guid = Util.GenerateGUID();
+                    newSD.create_by = user;
+                    newSD.create_dt = currentDateTime;
+
+                    newSD.billing_guid = billingGuid;
+                    newSD.sot_guid = item.sot_guid;
+                    newSD.start_dt = item.start_dt;
+                    newSD.end_dt = item.end_dt;
+                    newSD.state_cv = item.state_cv;
+                    newSD.total_cost = item.total_cost;
+                    newSD.remaining_free_storage = item.remaining_free_storage;
+                    newSD.remarks = item.remarks;
+
+                    context.storage_detail.Add(newSD);
+                }
+                else if (item.action.EqualsIgnore(ObjectAction.EDIT))
+                {
+                    if (string.IsNullOrEmpty(item.guid))
+                        throw new GraphQLException(new Error($"Storage details guid cannot be null or empty", "ERROR"));
+
+                    if (string.IsNullOrEmpty(billingGuid))
+                        throw new GraphQLException(new Error($"Billing guid cannot be null or empty", "ERROR"));
+
+                    var updateSD = await context.storage_detail.FindAsync(item.guid);
+                    if (updateSD != null)
+                    {
+                        updateSD.update_by = user;
+                        updateSD.update_dt = currentDateTime;
+                        updateSD.billing_guid = billingGuid;
+                        updateSD.sot_guid = item.sot_guid;
+                        updateSD.start_dt = item.start_dt;
+                        updateSD.end_dt = item.end_dt;
+                        updateSD.state_cv = item.state_cv;
+                        updateSD.total_cost = item.total_cost;
+                        updateSD.remaining_free_storage = item.remaining_free_storage;
+                        updateSD.remarks = item.remarks;
+                    }
+                }
+                else if (item.action.EqualsIgnore(ObjectAction.CANCEL))
+                {
+                    if (string.IsNullOrEmpty(item.guid))
+                        throw new GraphQLException(new Error($"Storage details guid cannot be null or empty", "ERROR"));
+
+                    var deleteSD = new storage_detail() { guid = item.guid };
+                    context.Attach(deleteSD);
+                    deleteSD.update_by = user;
+                    deleteSD.update_dt = currentDateTime;
+                    deleteSD.delete_dt = currentDateTime;
+                }
             }
         }
 
