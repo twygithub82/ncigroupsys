@@ -9,7 +9,7 @@
           <h2>{{this.translatedLangText.TANK_STATUS}}</h2>
         </div>
         <div class="body">
-          <div style="height: 60vh">
+          <div style="height: 250px">
             <ngx-charts-bar-horizontal 
               [animations]="horizontalBarOptions.animations!" 
               [scheme]="horizontalBarOptions.colorScheme!"
@@ -18,7 +18,8 @@
               [legend]="horizontalBarOptions.showLegend!" [legendPosition]="horizontalBarOptions.legendPosition!"
               [showXAxisLabel]="horizontalBarOptions.showXAxisLabel!"
               [showYAxisLabel]="horizontalBarOptions.showYAxisLabel!"
-              [xAxisLabel]="horizontalBarOptions.hbarxAxisLabel!" [showDataLabel]="horizontalBarOptions.showDataLabel!">
+              [xAxisLabel]="horizontalBarOptions.hbarxAxisLabel!" [showDataLabel]="horizontalBarOptions.showDataLabel!"
+              [barPadding]="20">
             </ngx-charts-bar-horizontal>
           </div>
         </div>
@@ -32,7 +33,7 @@
         <div class="body">
           <div style="text-align:center">
             <apx-chart [series]="columnChartOptions.series!" [chart]="columnChartOptions.chart!"
-              [legend]="columnChartOptions.legend!" [grid]="columnChartOptions.grid!"
+              [legend]="columnChartOptions.legend!" [grid]="columnChartOptions.grid!" 
               [title]="columnChartOptions.title!" [xaxis]="columnChartOptions.xaxis!"></apx-chart>
           </div>
         </div>
