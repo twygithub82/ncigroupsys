@@ -68,6 +68,20 @@
     font-size: 16px;
   }
 }
+
+.modalHeader_r1 {
+  display: flex;
+  align-items: flex-start;
+  // justify-content: space-between;
+  padding: 0px 10px 0px 0px;
+  margin: 10px 10px 0px 10px;
+  .modal-about {
+    padding: 5px;
+    font-weight: 500;
+    font-size: 16px;
+  }
+}
+
 .modal-close-button {
   background-color: transparent !important;
   box-shadow: none !important;
