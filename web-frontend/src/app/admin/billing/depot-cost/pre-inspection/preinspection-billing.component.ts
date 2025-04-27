@@ -5,6 +5,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -71,7 +72,8 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatCardModule
   ]
 })
 export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -126,7 +128,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     INVOICE_DETAILS: 'COMMON-FORM.INVOICE-DETAILS',
     TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
-    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    SAVE: 'COMMON-FORM.SAVE',
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
@@ -381,22 +383,24 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     //where.status_cv={in:['COMPLETED','APPROVED']};
     where.preinspection = { eq: true };
     if (this.searchForm!.get('tank_no')?.value) {
+      const tankNo = this.searchForm!.get('tank_no')?.value;
       if (!where.storing_order_tank) where.storing_order_tank = {};
-      if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
-      where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      // if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
+      // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      where.storing_order_tank.or = [
+        { tank_no: { contains: tankNo } },
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+      ];
     }
 
     if (this.searchForm!.get('depot_status_cv')?.value) {
-      if(!where.storing_order_tank) where.storing_order_tank={};
-      if(!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv={};
-    var cond :any ={in: TANK_STATUS_POST_IN_YARD};
-    if (this.searchForm!.get('depot_status_cv')?.value!="RELEASED")
-    {
-      cond = {in: TANK_STATUS_IN_YARD};
-    }
-    
-
-      where.storing_order_tank.tank_status_cv=cond;
+      if (!where.storing_order_tank) where.storing_order_tank = {};
+      if (!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv = {};
+      var cond: any = { in: TANK_STATUS_POST_IN_YARD };
+      if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
+        cond = { in: TANK_STATUS_IN_YARD };
+      }
+      where.storing_order_tank.tank_status_cv = cond;
     }
 
     if (this.searchForm!.get('invoiced')?.value) {
