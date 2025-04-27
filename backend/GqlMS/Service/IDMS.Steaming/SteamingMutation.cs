@@ -235,13 +235,17 @@ namespace IDMS.Steaming.GqlTypes
                 {
                     if (item != null && !string.IsNullOrEmpty(item.guid))
                     {
-                        var rollbackSteaming = new steaming() { guid = item.guid };
+                        var rollbackSteaming = new steaming() { guid = item.guid }; 
                         context.steaming.Attach(rollbackSteaming);
 
                         rollbackSteaming.update_by = user;
                         rollbackSteaming.update_dt = currentDateTime;
-                        rollbackSteaming.status_cv = CurrentServiceStatus.PENDING;
                         rollbackSteaming.remarks = item.remarks;
+
+                        if (item.estimate_no.StartsWith("SE"))
+                            rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
+                        else
+                            rollbackSteaming.status_cv = CurrentServiceStatus.PENDING;
 
                         if (string.IsNullOrEmpty(item.customer_guid))
                             throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
@@ -250,7 +254,6 @@ namespace IDMS.Steaming.GqlTypes
                         var steamingPart = await context.steaming_part.Where(r => r.steaming_guid == item.guid &&
                                                                             (!string.IsNullOrEmpty(r.tariff_steaming_guid)) &&
                                                                             (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
-
                         if (item.is_approved)
                         {
                             foreach (var part in steamingPart)
