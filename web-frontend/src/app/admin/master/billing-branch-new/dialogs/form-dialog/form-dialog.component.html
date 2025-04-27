@@ -20,22 +20,22 @@
               <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
               }
             </mat-select>
-            @if (contactPersonForm?.get('title_cv')?.hasError('required')) {
+            <!-- @if (contactPersonForm?.get('title_cv')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.TITLE}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
-            }
+            } -->
           </mat-form-field>
         </div>
         <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.NAME}}</mat-label>
             <input matInput formControlName="name" required>
-            @if (contactPersonForm?.get('name')?.hasError('required')) {
+            <!-- @if (contactPersonForm?.get('name')?.hasError('required')) {
               <mat-error>
                 {{data.translatedLangText.NAME}} {{data.translatedLangText.SO_REQUIRED}}
               </mat-error>
-              }
+              } -->
           </mat-form-field>
         </div>
        
@@ -46,11 +46,11 @@
             <mat-label>{{data.translatedLangText.EMAIL}}</mat-label>
             <input matInput formControlName="email" required>
           
-              @if (contactPersonForm?.get('email')?.hasError('required')) {
+              <!-- @if (contactPersonForm?.get('email')?.hasError('required')) {
                 <mat-error>
                 {{data.translatedLangText.EMAIL}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-              }
+              } -->
 
               @if (contactPersonForm?.get('contact')?.hasError('email')) {
                 <mat-error>
@@ -65,11 +65,11 @@
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.CONTACT_NO}}</mat-label>
             <input matInput formControlName="phone" required >
-            @if (contactPersonForm?.get('phone')?.hasError('required')) {
+            <!-- @if (contactPersonForm?.get('phone')?.hasError('required')) {
               <mat-error>
               {{data.translatedLangText.CONTACT_NO}} {{data.translatedLangText.SO_REQUIRED}}
               </mat-error>
-            }
+            } -->
              
            
           </mat-form-field>
@@ -80,7 +80,7 @@
             <input matInput formControlName="did" required>
             <mat-error *ngIf="this.contactPersonForm?.get('did')?.invalid &&this.contactPersonForm?.get('did')?.touched">
               <span *ngIf="this.contactPersonForm?.get('did')?.errors?.['required']">
-                {{data.translatedLangText.DID}} {{data.translatedLangText.SO_REQUIRED}}
+                <!-- {{data.translatedLangText.DID}} {{data.translatedLangText.SO_REQUIRED}} -->
               </span>
              
             </mat-error>

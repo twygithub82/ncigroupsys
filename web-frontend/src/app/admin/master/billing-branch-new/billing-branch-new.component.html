@@ -27,11 +27,11 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
-                    @if (ccForm?.get('customer_code')?.hasError('required')) {
+                    <!-- @if (ccForm?.get('customer_code')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -39,11 +39,11 @@
                     <mat-label>{{translatedLangText.BRANCH_CODE }}</mat-label>
                     <input matInput formControlName="branch_code" class="text-uppercase" (input)="onAlphaOnly($event)"
                       maxlength="6" required>
-                    @if (ccForm?.get('branch_code')?.hasError('required')) {
+                    <!-- @if (ccForm?.get('branch_code')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                     @if (ccForm?.get('branch_code')?.hasError('existed')) {
                     <mat-error>
                       {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.EXISTED}}
@@ -69,11 +69,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BRANCH_NAME }}</mat-label>
                     <input matInput formControlName="branch_name" required>
-                    @if (ccForm?.get('branch_name')?.hasError('required')) {
+                    <!-- @if (ccForm?.get('branch_name')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.BRANCH_NAME}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 mb-0 p-r-0">
@@ -125,11 +125,11 @@
                         </ng-container>
                       </mat-option>
                     </mat-select>
-                    @if (ccForm?.get('currency')?.hasError('required')) {
+                    <!-- @if (ccForm?.get('currency')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.CONVERSION_CURRENCY}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -148,11 +148,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.ADDRESS_LINE1}}</mat-label>
                     <input matInput formControlName="address1" required>
-                    @if (ccForm?.get('address1')?.hasError('required')) {
+                    <!-- @if (ccForm?.get('address1')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.ADDRESS_LINE1}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -165,11 +165,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.POSTAL_CODE }}</mat-label>
                     <input matInput formControlName="postal_code" required maxlength="10">
-                    @if (ccForm?.get('postal_code')?.hasError('required')) {
+                    <!-- @if (ccForm?.get('postal_code')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.POSTAL_CODE}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
