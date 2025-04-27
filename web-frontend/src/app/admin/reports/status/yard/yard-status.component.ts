@@ -153,7 +153,9 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
-    YARD: 'COMMON-FORM.YARD'
+    YARD: 'COMMON-FORM.YARD',
+    LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS'
+
   }
 
   invForm?: UntypedFormGroup;

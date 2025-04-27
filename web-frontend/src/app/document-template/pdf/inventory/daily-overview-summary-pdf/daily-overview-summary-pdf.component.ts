@@ -1068,9 +1068,25 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
         },
       ],
       chart: {
-        type: 'bar',
+        type: 'line',
         height: 350,
         foreColor: '#9aa0ac',
+        toolbar: {
+          show: false,
+        },
+        dropShadow: {
+          enabled: false,
+          color: '#bbb',
+          top: 3,
+          left: 2,
+          blur: 3,
+          opacity: 1,
+        }
+        
+      },
+      stroke: {
+        width: 7,
+        curve: 'smooth',
       },
       plotOptions: {
         bar: {
@@ -1092,11 +1108,6 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
           fontSize: '12px',
           colors: ['#9aa0ac'],
         },
-      },
-      stroke: {
-        show: true,
-        width: 2,
-        colors: ['transparent'],
       },
       xaxis: {
         categories: [

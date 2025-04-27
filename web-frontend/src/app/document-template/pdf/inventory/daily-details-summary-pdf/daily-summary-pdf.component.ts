@@ -63,6 +63,7 @@ export type HorizontalBarOptions = {
 };
 
 export type ChartOptions = {
+  animations?: any;
   series?: ApexAxisChartSeries;
   series2?: ApexNonAxisChartSeries;
   chart?: ApexChart;
@@ -107,10 +108,13 @@ export interface DialogData {
     MatProgressBarModule,
     NgApexchartsModule,
     BarChartModule,
+    MatProgressBarModule,
+    NgApexchartsModule
   ],
 })
 export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
+  barChartOptions!: Partial<ChartOptions>;
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
     STATUS: 'COMMON-FORM.STATUS',
@@ -388,19 +392,29 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     this.invType = data.type;
     this.date = data.date;
 
+    this.processBarCharValue(this.report_inventory);
+
     this.loadData();
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
 
-    this.onDownloadClick();
+
+    //this.onDownloadClick();
 
   }
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
 
+  }
+
+  async ngAfterViewInit() {
+   
+    var delay = 2000;
+   setTimeout(() => { this.onDownloadClick(); }, delay);
+   
   }
 
   public loadData() {
@@ -811,7 +825,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     this.generatingPdfProgress = 0;
 
     const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    
     let pageNumber = 1;
 
     let reportTitleCompanyLogo = 32;
@@ -924,7 +938,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
           }
         }
 
@@ -1006,7 +1020,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
               }
             }
 
@@ -1015,6 +1029,13 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
       }
     }
+
+      pdf.addPage();
+
+      await this.AddOverviewSummary(pdf,topMargin,pageNumber,pageWidth,pageHeight,rightMargin,leftMargin,
+        minHeightBodyCell,minHeightHeaderCol,bottomMargin,pagePositions);
+
+
 
 
     const totalPages = pdf.getNumberOfPages();
@@ -1037,6 +1058,106 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     this.generatingPdfLoadingSubject.next(false);
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
+  }
+
+
+  async AddOverviewSummary(pdf:jsPDF,topMargin:number,pageNumber:number,
+    pageWidth:number,pageHeight:number,
+    rightMargin:number,leftMargin:number,
+    minHeightBodyCell:number,minHeightHeaderCol:number,
+    bottomMargin:number,pagePositions:any[])
+  {
+    const tablewidth=55;
+    const fontSz=6;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const chartContentWidth= contentWidth - tablewidth - 2;
+    const reportTitle = this.GetReportTitle();
+    const headers = [[
+      this.translatedLangText.DESCRIPTION,
+      this.translatedLangText.NO_OF_TANKS
+    ]];
+
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+    var gap = 8;
+
+    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 15;
+
+
+    const comStyles: any = {
+      0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: 'auto', minCellHeight: minHeightBodyCell },
+    };
+
+    const data: any[][] = [];
+    data.push([this.translatedLangText.OPENING_BALANCE, this.displayOpeningBalance()]);
+    data.push([this.translatedLangText.IN_GATE, this.displayTotalInGate()]);
+    data.push([this.translatedLangText.OUT_GATE, this.displayTotalOutGate()]);
+    data.push([this.translatedLangText.CLOSING_BALANCE, this.displayClosingBalance()]);
+
+
+    let startY = lastTableFinalY + 8;
+    let startX = pageWidth - rightMargin - tablewidth;
+    //Add table using autoTable plugin
+
+    // pdf.setFontSize(8);
+    // pdf.setTextColor(0, 0, 0); // Black text
+    // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
+    // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
+
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      margin: { left: startX },
+      theme: 'grid',
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'center', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+      },
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
+        // Capture the final Y position of the table
+        lastTableFinalY = data.cursor.y;
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+      },
+    });
+    if (cardElements.length > 0) {
+      const card = cardElements[0];
+      const canvas = await html2canvas(card, { scale: scale });
+      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+      const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
+      pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
+    }
+
   }
 
 
@@ -1528,8 +1649,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     });
 
     this.horizontalBarOptions.single = singleValues.filter((s: { name: string }) => s.name != "Offhire");
-
   }
+
   InitialDefaultData() {
     // pie chart
     this.pieChartOptions = {
@@ -1725,6 +1846,135 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         },
       ]
     };
+
+    this.barChartOptions = {
+      legend: {
+        offsetY: 10,
+        show: true,
+        position: 'bottom',
+        formatter: function (seriesName: string, opts?: any) {
+          return seriesName; // Return the series name as is
+        },
+        fontSize: '9px', // Adjust font size
+        width: 300, // Set a fixed width for the legend container
+        height: 50,
+        itemMargin: {
+          horizontal: 2, // Reduce horizontal spacing between legend items
+          vertical: 0,
+        },
+      },
+      animations: {
+        enabled: false,
+        easing: 'linear',
+        speed: 0,
+        animateGradually: {
+          enabled: false,
+          delay: 0
+        },
+        dynamicAnimation: {
+          enabled: false,
+          speed: 0
+        }
+      },
+      series: [
+        {
+          name: 'Net Profit',
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+        },
+        {
+          name: 'Revenue',
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+        },
+        {
+          name: 'Free Cash Flow',
+          data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+        },
+      ],
+      chart: {
+        type: 'bar',
+        
+        height: 350,
+        foreColor: '#9aa0ac',
+        toolbar: {
+          show: false,
+        },
+        dropShadow: {
+          enabled: false,
+          color: '#bbb',
+          top: 3,
+          left: 2,
+          blur: 3,
+          opacity: 1,
+        }
+        
+      },
+      stroke: {
+        width: 7,
+        curve: 'smooth',
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '5%',
+          borderRadius: 5,
+          dataLabels: {
+            position: 'top', // top, center, bottom
+          },
+        },
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val: number) {
+          return val; // Display the value as is
+        },
+        offsetY: -20, // Move the labels upward by 20 pixels
+        style: {
+          fontSize: '12px',
+          colors: ['#9aa0ac'],
+        },
+      },
+      xaxis: {
+        categories: [
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+        ],
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+
+          },
+        },
+      },
+      yaxis: {
+        title: {
+          text: '$ (thousands)',
+        },
+      },
+      grid: {
+        show: true,
+        borderColor: '#9aa0ac',
+        strokeDashArray: 1,
+      },
+      fill: {
+        opacity: 1,
+      },
+      tooltip: {
+        theme: 'dark',
+        marker: {
+          show: true,
+        },
+        x: {
+          show: true,
+        },
+      },
+    };
   }
 
   displayOpeningBalance() {
@@ -1776,4 +2026,105 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     return this.cvDS.getCodeDescription(yard, this.yardCvList) || '';;
   }
+
+  processBarCharValue(repInv: daily_inventory_summary[]) {
+    if (this.barChartOptions.xaxis) {
+      var categories: any = [
+      ];
+      var series: any = [];
+      var in_gate_tank_no: number[] = [];
+      var out_gate_tank_no: number[] = [];
+      var all_values: number[] = [];
+      repInv.map(c => {
+        categories.push(c.code)
+        in_gate_tank_no.push(c.in_gate_count || 0);
+        out_gate_tank_no.push(c.out_gate_count || 0);
+        all_values.push(c.in_gate_count || 0);
+        all_values.push(c.out_gate_count || 0);
+
+      });
+
+      const maxValue = Math.max(...all_values); // Find the maximum value in the data
+      const maxYAxisValue = maxValue * 1.1; // Add 10% to the maximum value
+
+      var series: any;
+      if (this.queryType == 3) {
+        series = [
+          {
+            name: this.translatedLangText.IN_GATE,
+            data: in_gate_tank_no
+          },
+          {
+            name: this.translatedLangText.OUT_GATE,
+            data: out_gate_tank_no
+          }
+        ];
+      } else if (this.queryType == 1) {
+        series = [
+          {
+            name: this.translatedLangText.IN_GATE,
+            data: in_gate_tank_no
+          },
+          {
+            name: this.translatedLangText.OUT_GATE,
+            data: []
+          }
+        ];
+      }
+      else {
+        series = [
+          {
+            name: this.translatedLangText.IN_GATE,
+            data: []
+          },
+          {
+            name: this.translatedLangText.OUT_GATE,
+            data: out_gate_tank_no
+          }
+        ];
+      }
+
+      this.barChartOptions.xaxis = {
+        type: 'category',
+        categories: categories,
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      };
+      //categories;
+
+      this.barChartOptions.yaxis = {
+       // max: maxYAxisValue,
+        min: 0,
+        max: function (max: number) {
+          return max * 1.2; // Increase max by 20%
+        },
+        title: {
+          text: `${this.translatedLangText.NO_OF_TANKS}`,
+        },
+        labels: {
+          align: 'right', // Align labels to the right
+          minWidth: 50,   // Set a minimum width for the labels
+          maxWidth: 100,  // Set a maximum width for the labels
+          offsetX: 10,    // Add horizontal offset to the labels
+          formatter: (value: number) => {
+            return value.toFixed(2); // Format the label to reduce its length
+          }
+        }
+      }
+      // if(series.length==1)
+      //    if(series[0].data.length==1)
+      //    {
+      //      series[0].data.push(0);
+      //    }
+      this.barChartOptions.series = series;
+      this.barChartOptions!.chart!.events = {
+
+       
+      }
+    }
+  }
+  
 }

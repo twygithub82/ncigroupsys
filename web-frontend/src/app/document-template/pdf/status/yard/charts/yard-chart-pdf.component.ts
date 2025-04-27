@@ -818,7 +818,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
 
       // Calculate scaled height based on available width
       let imgHeight1 = chartContentWidth / aspectRatio;
-
+      
       // Check if the scaled height exceeds the available page height
       const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
       if (imgHeight1 > maxPageHeight) {
@@ -1285,17 +1285,18 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
         // },
       },
       legend: {
-        offsetY: 10,
+        offsetY:10,
+        //offsetX: 10,
         show: true,
         position: 'bottom',
         formatter: function (seriesName: string, opts?: any) {
           return seriesName; // Return the series name as is
         },
-        fontSize: '16px', // Adjust font size
-        width: 500, // Set a fixed width for the legend container
-        height: 50,
+        fontSize: '12px', // Adjust font size
+        width: 800, // Set a fixed width for the legend container
+        height: 70,
         itemMargin: {
-          horizontal: 2, // Reduce horizontal spacing between legend items
+          horizontal: 20, // Reduce horizontal spacing between legend items
           vertical: 0,
         },
       },
