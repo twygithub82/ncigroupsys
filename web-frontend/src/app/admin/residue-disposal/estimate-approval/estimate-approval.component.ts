@@ -80,22 +80,11 @@ import { ResiduePartItem } from 'app/data-sources/residue-part';
   ]
 })
 export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  // displayedColumns = [
-  //   'tank_no',
-  //   'customer',
-  //   'eir_no',
-  //   'eir_dt',
-  //   'last_cargo',
-  //   'tank_status_cv'
-  // ];
-
   displayedColumns = [
-    // 'select',
     'estimate_no',
     'net_cost',
     'status_cv',
     'remarks',
-    //'approve_part',
     'actions'
   ];
 
@@ -161,7 +150,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     SEARCH: 'COMMON-FORM.SEARCH',
-
   }
 
   availableTankStatus: string[] = [
@@ -512,8 +500,14 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       where.tank_status_cv = { in: ['CLEANING', 'STORAGE'] }
     }
 
-    if (this.searchForm!.value['tank_no']) {
-      where.tank_no = { contains: this.searchForm!.value['tank_no'] };
+    if (this.searchForm!.get('tank_no')?.value) {
+      const or = [];
+      const tankNo = this.searchForm!.get('tank_no')?.value;
+      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
+      or.push({ tank_no: { contains: tankNo } });
+      or.push({ tank_no: { contains: formattedTankNo } });
+      where.and = where.and || [];
+      where.and.push({ or: or });
     }
 
     if (this.searchForm!.value['last_cargo']) {
@@ -589,29 +583,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       // if (!where.residue.some) where.residue.some = {};
       // where.residue.some.status_cv = { in: this.availableProcessStatus };
     }
-    // if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
-    //   let reSome: any = {};
-
-    //   if (this.searchForm!.value['part_name']) {
-    //     reSome = {
-    //       repair_est_part: {
-    //         some: {
-    //           tariff_repair: {
-    //             part_name: { contains: this.searchForm!.value['part_name'] }
-    //           }
-    //         }
-    //       }
-    //     };
-    //   }
-
-    //   if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
-    //     reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
-    //   }
-    //   where.repair_est = { some: reSome };
-    // }
-
-
-
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();
