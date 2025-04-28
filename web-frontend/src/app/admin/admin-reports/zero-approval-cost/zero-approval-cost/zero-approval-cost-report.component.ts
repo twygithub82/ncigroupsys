@@ -617,7 +617,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       month:'',
       year:'',
       depot_status_cv: 'ALL',
-      cost_type:['']
+      cost_type:''
       // cost_type:this.costTypeCvList.find(c=>c.code_val=='REPAIR'),
       
     });
