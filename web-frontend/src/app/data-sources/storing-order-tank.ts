@@ -4254,7 +4254,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
   isTankNoAvailableToAdd(tank_no: string): Observable<StoringOrderTankItem[]> {
-    this.loadingSubject.next(true);
+    this.actionLoadingSubject.next(true);
     let where: any = {
       and: [
         { tank_no: { eq: tank_no } },
@@ -4277,7 +4277,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       .pipe(
         map((result) => result.data),
         catchError(() => of({ soList: [] })),
-        finalize(() => this.loadingSubject.next(false)),
+        finalize(() => this.actionLoadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(sotList.nodes);
