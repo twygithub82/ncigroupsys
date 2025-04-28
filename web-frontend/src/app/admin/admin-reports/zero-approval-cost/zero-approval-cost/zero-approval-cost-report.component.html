@@ -95,9 +95,8 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.COST_TYPE}}</mat-label>
-                  <input matInput formControlName="cost_type" required
-                    [matAutocomplete]="costType">
-                  <mat-autocomplete #costType="matAutocomplete" [displayWith]="displayCostTypeFn" >
+                  <mat-select matInput formControlName="cost_type" required>
+                 
                     @for (cs of costTypeCvList; track cs) {
                     @if(filterCostType.includes(cs.code_val!))
                     {
@@ -106,7 +105,7 @@
                       </mat-option>
                       }
                    }
-                  </mat-autocomplete>
+                  </mat-select>
                 </mat-form-field>
               </div>
               <div
