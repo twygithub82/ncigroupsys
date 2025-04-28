@@ -37,7 +37,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { SearchCriteriaService } from 'app/services/search-criteria.service';
+import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-tank-movement',
@@ -153,7 +153,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchStateService: SearchCriteriaService
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -171,11 +171,6 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.searchStateService.searchCriteria$.subscribe(criteria => {
-      if (criteria) {
-        this.searchForm?.patchValue(criteria);
-      }
-    });
     this.initializeValueChanges();
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
@@ -255,7 +250,32 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
     });
-    this.search();
+
+    const savedCriteria = this.searchStateService.getCriteria('TankMovement');
+    const savedPagination = this.searchStateService.getPagination('TankMovement');
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+      
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
   showNotification(
     colorName: string,
@@ -301,7 +321,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {
       status_cv: { in: ['WAITING', 'ACCEPTED'] },
       in_gate: {
@@ -431,11 +451,24 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     // }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+  }
+
+  search() {
+    this.constructSearchCriteria();
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.searchStateService.setCriteria(this.searchForm?.value);
+    this.searchStateService.setCriteria('TankMovement', this.searchForm?.value);
+    this.searchStateService.setPagination('TankMovement', {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination('TankMovement'))
     this.subs.sink = this.sotDS.searchStoringOrderTankForMovement(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
