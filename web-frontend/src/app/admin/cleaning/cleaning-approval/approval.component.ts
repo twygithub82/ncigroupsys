@@ -325,10 +325,9 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
-      const formattedTankNo = Utility.formatTankNumberForSearch(tankNo);
       where.storing_order_tank.or = [
-        { tank_no: { contains: tankNo } },
-        { tank_no: { contains: formattedTankNo } }
+        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
       ]
       // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
@@ -457,26 +456,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
     this.resetForm();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
   resetForm() {
