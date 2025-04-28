@@ -366,30 +366,40 @@ namespace IDMS.Inventory.GqlTypes
             {
                 if (TankMovementStatus.validTankStatus.Contains(sot?.tank_status_cv))
                 {
-                    var ingateCleaning = new cleaning();
-                    ingateCleaning.guid = Util.GenerateGUID();
-                    ingateCleaning.create_by = "system";
-                    ingateCleaning.create_dt = currentDateTime;
-                    ingateCleaning.sot_guid = sot.guid;
-                    ingateCleaning.approve_dt = currentDateTime; //Change to this after daniel request //ingate_date;
-                    ingateCleaning.approve_by = "system";
-                    ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
-                    ingateCleaning.job_no = newJob_no; //sot?.job_no;
-                    var customerGuid = sot?.storing_order?.customer_company_guid;
-                    ingateCleaning.bill_to_guid = customerGuid;
+                    var cleaning = await context.cleaning.Where(c => c.sot_guid == sot.guid && c.delete_dt == null).FirstOrDefaultAsync();
+                    if (cleaning == null)
+                    {
+                        var ingateCleaning = new cleaning();
+                        ingateCleaning.guid = Util.GenerateGUID();
+                        ingateCleaning.create_by = "system";
+                        ingateCleaning.create_dt = currentDateTime;
+                        ingateCleaning.sot_guid = sot.guid;
+                        ingateCleaning.approve_dt = currentDateTime; //Change to this after daniel request //ingate_date;
+                        ingateCleaning.approve_by = "system";
+                        ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
+                        ingateCleaning.job_no = newJob_no; //sot?.job_no;
+                        var customerGuid = sot?.storing_order?.customer_company_guid;
+                        ingateCleaning.bill_to_guid = customerGuid;
 
-                    var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
-                    var adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
-                                   .Select(c => c.adjusted_price).FirstOrDefaultAsync() ?? 0;
-                    ingateCleaning.cleaning_cost = adjustedPrice;
+                        var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
+                        var adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
+                                       .Select(c => c.adjusted_price).FirstOrDefaultAsync() ?? 0;
+                        ingateCleaning.cleaning_cost = adjustedPrice;
 
-                    var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
-                                                       .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
-                    ingateCleaning.buffer_cost = bufferPrice;
-                    ingateCleaning.est_buffer_cost = bufferPrice;
-                    ingateCleaning.est_cleaning_cost = adjustedPrice;
+                        var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
+                                                           .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
+                        ingateCleaning.buffer_cost = bufferPrice;
+                        ingateCleaning.est_buffer_cost = bufferPrice;
+                        ingateCleaning.est_cleaning_cost = adjustedPrice;
 
-                    await context.AddAsync(ingateCleaning);
+                        await context.AddAsync(ingateCleaning);
+                    }
+                    else
+                    {
+                        cleaning.status_cv = CurrentServiceStatus.APPROVED;
+                        cleaning.update_by = user;
+                        cleaning.update_dt = currentDateTime;
+                    }
                 }
 
                 //Tank handling
@@ -434,6 +444,8 @@ namespace IDMS.Inventory.GqlTypes
 
                     var repTemp = sot?.required_temp;
                     bool isExclusive = false;
+                    bool isNew = true;
+                    string newSteamingGuid = "";
                     //First check whether have exclusive package cost
                     var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
                                 .Join(context.Set<steaming_exclusive>(), p => p.steaming_exclusive_guid, t => t.guid, (p, t) => new { p, t })
@@ -470,29 +482,46 @@ namespace IDMS.Inventory.GqlTypes
                     var defQty = 1;
                     var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
 
-                    //steaming handling
-                    var newSteam = new steaming();
-                    newSteam.guid = Util.GenerateGUID();
-                    newSteam.create_by = "system";
-                    newSteam.create_dt = currentDateTime;
-                    newSteam.sot_guid = sot.guid;
-                    newSteam.status_cv = CurrentServiceStatus.APPROVED;
-                    newSteam.job_no = newJob_no; //sot?.job_no;
-                    newSteam.bill_to_guid = customerGuid;
-                    newSteam.est_cost = totalCost;
-                    newSteam.total_cost = totalCost;
-                    newSteam.approve_dt = currentDateTime;//Change to this after daniel request //ingate_date;
-                    newSteam.approve_by = "system";
-                    newSteam.estimate_by = "system";
-                    newSteam.estimate_dt = ingate_date;
-                    await context.AddAsync(newSteam);
+                    var curSteaming = await context.steaming.Where(s => s.sot_guid == sot.guid && s.delete_dt == null).FirstOrDefaultAsync();
+                    if (curSteaming == null)
+                    {
+                        //steaming handling
+                        var newSteam = new steaming();
+                        newSteam.guid = Util.GenerateGUID();
+                        newSteam.create_by = "system";
+                        newSteam.create_dt = currentDateTime;
+                        newSteam.sot_guid = sot.guid;
+                        newSteam.status_cv = CurrentServiceStatus.APPROVED;
+                        newSteam.job_no = newJob_no; //sot?.job_no;
+                        newSteam.bill_to_guid = customerGuid;
+                        newSteam.est_cost = totalCost;
+                        newSteam.total_cost = totalCost;
+                        newSteam.approve_dt = currentDateTime;//Change to this after daniel request //ingate_date;
+                        newSteam.approve_by = "system";
+                        newSteam.estimate_by = "system";
+                        newSteam.estimate_dt = ingate_date;
+                        await context.AddAsync(newSteam);
+
+                        newSteamingGuid = newSteam.guid;
+                    }
+                    else
+                    {
+                        curSteaming.status_cv = CurrentServiceStatus.APPROVED;
+                        curSteaming.update_by = user;
+                        curSteaming.update_dt = currentDateTime;
+                        curSteaming.est_cost = totalCost;
+                        curSteaming.total_cost = totalCost;
+                        isNew = false;
+                    }
+
 
                     //steaming_part handling
                     var steamingPart = new steaming_part();
                     steamingPart.guid = Util.GenerateGUID();
                     steamingPart.create_by = "system";
                     steamingPart.create_dt = currentDateTime;
-                    steamingPart.steaming_guid = newSteam.guid;
+                    if (isNew)
+                        steamingPart.steaming_guid = newSteamingGuid;
                     if (isExclusive)
                         steamingPart.steaming_exclusive_guid = result?.steaming_guid;
                     else

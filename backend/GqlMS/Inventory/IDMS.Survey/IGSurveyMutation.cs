@@ -369,7 +369,7 @@ namespace IDMS.Survey.GqlTypes
             return retval;
         }
 
-        private async Task<int> AddSteaming(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date)
+        private async Task<int>AddSteaming(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date)
         {
             int retval = 0;
             try
