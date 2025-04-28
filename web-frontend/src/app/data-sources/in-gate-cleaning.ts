@@ -650,7 +650,7 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
 
   getCleaningForMovement(sot_guid?: any): Observable<InGateCleaningItem[]> {
     this.loadingSubject.next(true);
-    const where = this.addDeleteDtCriteria({ sot_guid: { eq: sot_guid }, status_cv: { in: ["APPROVED", "COMPLETED", "JOB_IN_PROGRESS"] } })
+    const where = this.addDeleteDtCriteria({ sot_guid: { eq: sot_guid }, status_cv: { in: ["NO_ACTION", "APPROVED", "COMPLETED", "JOB_IN_PROGRESS"] } })
     return this.apollo
       .query<any>({
         query: GET_IN_GATE_CLEANING_BY_SOT,

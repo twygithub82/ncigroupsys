@@ -135,11 +135,11 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   ]
 
   availableProcessStatus: string[] = [
-    'ASSIGNED',
+    // 'ASSIGNED',
     'APPROVED',
-    'JOB_IN_PROGRESS',
+    // 'JOB_IN_PROGRESS',
     //'COMPLETED',
-    'NO_ACTION',
+    // 'NO_ACTION',
     'KIV'
   ]
 
@@ -320,7 +320,10 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   search() {
     const where: any = {
-      storing_order_tank: { tank_status_cv: { in: ["CLEANING", "STORAGE"] },purpose_cleaning: { eq: true } }
+      storing_order_tank: {
+        tank_status_cv: { in: ["CLEANING", "STORAGE"] },
+        purpose_cleaning: { eq: true }
+      }
     };
 
     if (this.searchForm!.get('tank_no')?.value) {

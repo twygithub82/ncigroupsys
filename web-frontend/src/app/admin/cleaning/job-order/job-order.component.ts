@@ -389,7 +389,12 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   onFilterCleaning() {
     const where: any = {
       and: [
-        { storing_order_tank: { tank_status_cv: { in: ["CLEANING"] } } }
+        {
+          storing_order_tank: {
+            tank_status_cv: { in: ["CLEANING"] },
+            purpose_cleaning: { eq: true }
+          }
+        }
       ]
     };
 
@@ -402,10 +407,12 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.filterCleanForm!.get('filterClean')?.value) {
       const tankNo = this.filterCleanForm!.get('filterClean')?.value;
       where.and.push({
-        storing_order_tank: { or: [ 
-          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-        ] }
+        storing_order_tank: {
+          or: [
+            { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+            { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+          ]
+        }
       });
     }
 

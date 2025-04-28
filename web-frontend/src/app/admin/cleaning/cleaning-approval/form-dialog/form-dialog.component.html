@@ -71,10 +71,9 @@
           </div>
           <div class="card l-bg-{{this.getBackgroundColorFromNature()}}">
             <div class="row">
-              <div
-                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
                 <mat-icon class="me-2">error</mat-icon>
-                <mat-label >{{this.getNatureInGateAlert()}}</mat-label>
+                <mat-label>{{this.getNatureInGateAlert()}}</mat-label>
               </div>
             </div>
           </div>
@@ -384,7 +383,6 @@
         }
         @if(canRollBack())
         {
-
         <button mat-flat-button color="accent" (click)="onRollback($event)" class="m-r-5">
           <mat-icon>undo</mat-icon>
           <span>{{translatedLangText.ROLLBACK}}</span>

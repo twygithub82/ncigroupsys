@@ -1188,7 +1188,7 @@
     "NO-OF-GATE-OUT": "No. of Gate-Out",
     "TOTAL-IN-OUT": "Total In and Out",
     "AVERAGE-IN-OUT": "Average In and Out",
-    "ARE-YOU-SURE-TO-PUBLISH": "Are you sure to publish?",
+    "ARE-YOU-SURE-TO-PUBLISH": "Ready to publish?",
     "ORDER-TRACK": "Order Track",
     "RELEASE-ORDER": "Release Order",
     "STORING-ORDER": "Storing Order",
@@ -1203,8 +1203,7 @@
     "OUTSTANDING": "Outstanding",
     "FLAT-RATE": "Flat Rate $",
     "HOURLY-RATE": "Hourly Rate $",
-    "REPAIR-ESITMATE-DETAILS":"Repair Estimate Details"
-    
+    "REPAIR-ESITMATE-DETAILS": "Repair Estimate Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

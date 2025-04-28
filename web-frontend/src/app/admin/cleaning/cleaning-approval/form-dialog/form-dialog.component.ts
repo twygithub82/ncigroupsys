@@ -702,7 +702,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
         console.log(clnJobOrder)
         if (this.selectedItems[0]?.status_cv === "COMPLETED") {
-
           this.igCleanDS?.rollbackCompletedCleaning(clnJobOrder).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.rollbackCompletedCleaning);

@@ -1,22 +1,17 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { CurrencyItem } from './currency';
-import { ContactPersonItem } from './contact-person';
-import { TeamItem } from './teams';
-import { RepairPartItem } from './repair-part';
 import { InGateCleaningItem } from './in-gate-cleaning';
+import { RepairPartItem } from './repair-part';
 import { ResiduePartItem } from './residue-part';
-import { TimeTableItem } from './time-table';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { Utility } from 'app/utilities/utility';
-import { SteamPartItem } from './steam-part';
 import { SteamTemp } from './steam';
+import { SteamPartItem } from './steam-part';
+import { StoringOrderTankItem } from './storing-order-tank';
+import { TeamItem } from './teams';
+import { TimeTableItem } from './time-table';
 
 export class JobOrderGO {
   public guid?: string;

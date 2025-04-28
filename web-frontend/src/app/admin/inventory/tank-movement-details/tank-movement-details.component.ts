@@ -41,7 +41,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { InGateCleaningDS, InGateCleaningGO, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { InGateSurveyDS, InGateSurveyGO, InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { JobOrderDS, JobOrderGO, RepJobOrderRequest } from 'app/data-sources/job-order';
+import { ClnJobOrderRequest, JobOrderDS, JobOrderGO, RepJobOrderRequest } from 'app/data-sources/job-order';
 import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
 import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-survey';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
@@ -1776,12 +1776,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   expandAll(event: MouseEvent, currentSection: string): void {
     const isExpanded = this.verifySection(currentSection);
-    
+
     // Stop propagation ONLY if panel is currently expanded to prevent it from collapsing
     if (isExpanded) {
       event.stopPropagation();
     }
-  
+
     // Delay section update so that Angular finishes handling expansion toggle first
     setTimeout(() => this.setSection('all'), 0);
   }
@@ -2101,6 +2101,49 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(jobOrder);
         this.cleaningDS.rollbackCompletedCleaning(jobOrder).subscribe(result => {
           this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_cleaning(this.sot_guid!);
+        });
+      }
+    });
+  }
+
+  canRollbackCleaning(row?: InGateCleaningItem) {
+    return (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.repairItem?.length)) && row?.status_cv === 'NO_ACTION';
+  }
+
+  onRollbackCleaning(event: Event, row?: InGateCleaningItem) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      width: '500px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        messageText: this.translatedLangText.CLEANING,
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const distinctJobOrders: JobOrderGO = new JobOrderGO(row?.job_order);
+        const jobOrder = {
+          guid: row?.guid,
+          remarks: result.remarks,
+          sot_guid: row?.sot_guid,
+          sot_status: this.sot?.tank_status_cv,
+          job_order: [distinctJobOrders]
+        }
+        console.log(jobOrder);
+        this.joDS?.rollbackJobInProgressCleaning(jobOrder).subscribe(result => {
+          this.handleSaveSuccess(result?.data?.rollbackJobInProgressCleaning);
           this.loadDataHandling_sot(this.sot_guid!);
           this.loadDataHandling_cleaning(this.sot_guid!);
         });

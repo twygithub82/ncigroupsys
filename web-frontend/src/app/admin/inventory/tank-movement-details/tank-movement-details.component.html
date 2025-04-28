@@ -1081,7 +1081,7 @@
                                   <mat-icon>cancel</mat-icon>
                                 </button>
                                 } -->
-                                @if (canRemoveCleanPurpose() || canOverwriteCleaningApproval()) {
+                                @if (canOverwriteCleaningApproval() || canRollbackCleaningCompleted(cleaningItem?.[0]) || canRollbackCleaning(cleaningItem?.[0]) || canRemoveCleanPurpose()) {
                                 <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
                                   [disabled]="(cleaningDS.loading$ | async)"
                                   class="link-button position-absolute top-0 end-0 p-0">
@@ -1093,13 +1093,17 @@
                                   <button mat-menu-item
                                     (click)="overwriteCleaningApprovalDialog($event)">{{translatedLangText.OVERWRITE_APPROVAL}}</button>
                                   }
-                                  @if (canRemoveCleanPurpose()) {
-                                  <button mat-menu-item class="text-danger"
-                                    (click)="updatePurposeDialog($event, 'cleaning', 'remove')">{{translatedLangText.REMOVE}}</button>
-                                  }
                                   @if (canRollbackCleaningCompleted(cleaningItem?.[0])) {
                                   <button mat-menu-item class=""
                                     (click)="onRollbackCleaningJobs($event, cleaningItem?.[0])">{{translatedLangText.ROLLBACK}}</button>
+                                  }
+                                  @if (canRollbackCleaning(cleaningItem?.[0])) {
+                                  <button mat-menu-item class=""
+                                    (click)="onRollbackCleaning($event, cleaningItem?.[0])">{{translatedLangText.ROLLBACK}}</button>
+                                  }
+                                  @if (canRemoveCleanPurpose()) {
+                                  <button mat-menu-item class="text-danger"
+                                    (click)="updatePurposeDialog($event, 'cleaning', 'remove')">{{translatedLangText.REMOVE}}</button>
                                   }
                                 </mat-menu>
                                 }
