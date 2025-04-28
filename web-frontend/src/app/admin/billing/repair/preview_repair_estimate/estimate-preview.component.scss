@@ -1,0 +1,14 @@
+::ng-deep {
+  .multiline-tooltip {
+    white-space: pre-line;
+
+    .mdc-tooltip__surface {
+      max-width: unset;
+    }
+  }
+}
+
+.preview-content{
+  padding-top:15px;
+  padding-left: 15px;
+}

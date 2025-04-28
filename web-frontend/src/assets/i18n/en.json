@@ -1201,8 +1201,8 @@
     "ALL": "All",
     "OUTSTANDING": "Outstanding",
     "FLAT-RATE": "Flat Rate $",
-    "HOURLY-RATE": "Hourly Rate $"
-    
+    "HOURLY-RATE": "Hourly Rate $",
+    "REPAIR-ESITMATE-DETAILS":"Repair Estimate Details"
     
   },
   "CLEAN-PROCEDURES": {

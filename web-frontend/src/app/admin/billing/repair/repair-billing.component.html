@@ -390,7 +390,7 @@
                         </ng-container>
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                         <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                          [routerLink]="['/admin/repair/estimate/edit', sotRow.guid, repairRow.guid]" matRipple>
+                         (click)="showEstimateDetail($event, repairRow)" matRipple>
                         </mat-row>
                       </table>
                     </div>
