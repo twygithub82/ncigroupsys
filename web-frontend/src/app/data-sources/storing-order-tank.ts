@@ -2307,16 +2307,14 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
           depot_cost_remarks
           free_storage
           gate_in
-          gate_out
           gate_in_cost
+          gate_out
           gate_out_cost
-          gateio_billing_guid
           guid
           lift_off
           lift_off_cost
           lift_on
           lift_on_cost
-          lolo_billing_guid
           preinsp_billing_guid
           preinspection
           preinspection_cost
@@ -3460,26 +3458,29 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
           }
         }
         billing_sot {
+          create_by
+          create_dt
           delete_dt
+          depot_cost_remarks
           free_storage
           gate_in
-          gate_out
           gate_in_cost
+          gate_out
           gate_out_cost
-          gateio_billing_guid
           guid
           lift_off
           lift_off_cost
           lift_on
           lift_on_cost
-          lolo_billing_guid
           preinsp_billing_guid
           preinspection
           preinspection_cost
           remarks
+          sot_guid
           storage_billing_guid
           storage_cal_cv
           storage_cost
+          tariff_depot_guid
           update_by
           update_dt
         }
@@ -4253,7 +4254,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
   isTankNoAvailableToAdd(tank_no: string): Observable<StoringOrderTankItem[]> {
-    this.loadingSubject.next(true);
+    this.actionLoadingSubject.next(true);
     let where: any = {
       and: [
         { tank_no: { eq: tank_no } },
@@ -4276,7 +4277,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       .pipe(
         map((result) => result.data),
         catchError(() => of({ soList: [] })),
-        finalize(() => this.loadingSubject.next(false)),
+        finalize(() => this.actionLoadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(sotList.nodes);

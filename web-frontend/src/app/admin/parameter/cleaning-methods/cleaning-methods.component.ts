@@ -465,4 +465,23 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.resetForm();
+  }
+
+  resetForm() {
+    this.searchForm?.patchValue({
+      description: '',
+      name: ''
+    });
+  }
 }

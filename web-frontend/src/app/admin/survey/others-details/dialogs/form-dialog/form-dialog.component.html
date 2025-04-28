@@ -1,5 +1,5 @@
 <div class="addContainer">
-  <div class="modalHeader">
+  <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h3>{{dialogTitle}}</h3>
@@ -25,11 +25,11 @@
               }
               }
             </mat-select>
-            @if (surveyForm.get('survey_type_cv')?.hasError('required')) {
+            <!-- @if (surveyForm.get('survey_type_cv')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.SURVEY_TYPE}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
-            }
+            } -->
             @if (surveyForm.get('survey_type_cv')?.hasError('existed')) {
             <mat-error>
               {{data.translatedLangText.SURVEY_TYPE}} {{data.translatedLangText.EXISTED}}
@@ -55,11 +55,11 @@
               <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
               }
             </mat-select>
-            @if (surveyForm.get('test_class_cv')?.hasError('required')) {
+            <!-- @if (surveyForm.get('test_class_cv')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.SURVEYOR}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
-            }
+            } -->
           </mat-form-field>
         </div>
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
@@ -68,11 +68,11 @@
             <input matInput formControlName="survey_dt" [matDatepicker]="survey_dt_picker" [max]="maxDate" required>
             <mat-datepicker-toggle matSuffix [for]="survey_dt_picker"></mat-datepicker-toggle>
             <mat-datepicker #survey_dt_picker [startAt]="maxDate"></mat-datepicker>
-            @if (surveyForm.get('survey_dt')?.hasError('required')) {
+            <!-- @if (surveyForm.get('survey_dt')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.SURVEY_DATE}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
-            }
+            } -->
           </mat-form-field>
         </div>
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
@@ -85,11 +85,11 @@
               </mat-option>
               }
             </mat-select>
-            @if (surveyForm.get('status_cv')?.hasError('required')) {
+            <!-- @if (surveyForm.get('status_cv')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.STATUS}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
-            }
+            } -->
           </mat-form-field>
         </div>
         <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-0">
@@ -101,7 +101,11 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" (click)="submit()">{{data.translatedLangText.SAVE_AND_SUBMIT}}</button>
+        <button mat-flat-button color="primary" (click)="submit()">
+          <mat-icon>
+            save
+          </mat-icon>
+          {{data.translatedLangText.SAVE_AND_SUBMIT}}</button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>

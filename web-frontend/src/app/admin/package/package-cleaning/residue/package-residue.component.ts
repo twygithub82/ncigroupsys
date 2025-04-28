@@ -316,16 +316,16 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '70vw',
-      height: '80vh',
+      width: '55vw',
+      //height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
         selectedItems: this.selection.selected
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
+      // position: {
+      //   top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      // }
 
     });
 
@@ -351,7 +351,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageResidueItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '65vw',
+      width: '55vw',
       //height: '80vh',
       data: {
         action: 'update',
@@ -642,18 +642,19 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_RESET,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {

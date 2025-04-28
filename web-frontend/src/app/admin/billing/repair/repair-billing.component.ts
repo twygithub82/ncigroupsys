@@ -129,6 +129,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
+    CLEAR: 'COMMON-FORM.CLEAR',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     SEARCH: 'COMMON-FORM.SEARCH',
@@ -664,18 +665,19 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {

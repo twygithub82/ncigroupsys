@@ -113,6 +113,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    CLEAR: 'COMMON-FORM.CLEAR',
     RO_NO: 'COMMON-FORM.RO-NO',
     RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
     INVOICE_DATE: 'COMMON-FORM.INVOICE-DATE',
@@ -596,18 +597,19 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {

@@ -77,9 +77,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 })
 export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    // 'select',
     'tank_no',
-    //'tank_no_validity',
     'last_cargo',
     'job_no',
     'purpose_storage',

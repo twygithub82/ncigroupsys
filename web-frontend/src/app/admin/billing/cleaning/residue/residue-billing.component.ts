@@ -128,6 +128,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     INVOICE_DETAILS: 'COMMON-FORM.INVOICE-DETAILS',
     TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
     SAVE: 'COMMON-FORM.SAVE',
+    CLEAR: 'COMMON-FORM.CLEAR',
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
@@ -612,18 +613,19 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {

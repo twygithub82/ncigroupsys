@@ -72,12 +72,12 @@
                   <mat-datepicker-toggle matSuffix [for]="allocation_picker"></mat-datepicker-toggle>
                   <mat-date-range-picker #allocation_picker></mat-date-range-picker>
                 </mat-form-field>
-                @if ((searchForm?.get('stm_dt_start')?.hasError('required') && searchForm?.get('stm_dt_start')?.touched) 
+                <!-- @if ((searchForm?.get('stm_dt_start')?.hasError('required') && searchForm?.get('stm_dt_start')?.touched) 
                 ||(searchForm?.get('stm_dt_end')?.hasError('required') && searchForm?.get('stm_dt_end')?.touched) ) {
                <mat-error>
                  {{ translatedLangText.STEAM_DATE }} {{ translatedLangText.SO_REQUIRED }}
                </mat-error>
-             }
+                } -->
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"
@@ -114,11 +114,11 @@
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
                 <input matInput [formControl]="invoiceNoControl">
-                @if (this.invoiceNoControl.hasError('required')) {
+                <!-- @if (this.invoiceNoControl.hasError('required')) {
                 <mat-error>
                   {{this.translatedLangText.INVOICE_NO}} {{this.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">

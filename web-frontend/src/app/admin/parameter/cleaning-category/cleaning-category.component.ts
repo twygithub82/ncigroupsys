@@ -392,7 +392,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     var row = new CleaningCategoryItem();
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: '50vw',
       data: {
         action: 'new',
         langText: this.langText,
@@ -422,7 +422,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: '50vw',
       data: {
         action: 'new',
         langText: this.langText,
@@ -467,5 +467,27 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.resetForm();
+  }
+
+  resetForm() {
+    this.searchForm?.patchValue({
+      description: '',
+      name: ''
+    });
+    // this.categoryControl.reset();
+    // this.hazardLevelControl.reset();
+    // this.banTypeControl.reset();
   }
 }

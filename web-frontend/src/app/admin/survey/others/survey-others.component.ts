@@ -695,18 +695,19 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -721,6 +722,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
       survey_dt_start: '',
       survey_dt_end: '',
       certificate_cv: '',
+      depot_status_cv: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

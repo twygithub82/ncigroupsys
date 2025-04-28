@@ -96,6 +96,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
+    CLEAR: 'COMMON-FORM.CLEAR',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
@@ -592,18 +593,19 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {

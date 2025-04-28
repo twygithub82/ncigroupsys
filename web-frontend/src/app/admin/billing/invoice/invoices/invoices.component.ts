@@ -129,7 +129,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CONFIRM_REMOVE_INVOICES: 'COMMON-FORM.CONFIRM-REMOVE-INVOICES',
     BILLING_CURRENCY: 'COMMON-FORM.BILLING-CURRENCY',
-    IS_REQUIRED:'COMMON-FORM.IS-REQUIRED'
+    IS_REQUIRED:'COMMON-FORM.IS-REQUIRED',
+    EDIT: 'COMMON-FORM.EDIT',
+    DELETE: 'COMMON-FORM.DELETE',
+    EXPORT: 'COMMON-FORM.EXPORT'
   }
 
   distinctCustomerCodes: any;
@@ -899,18 +902,19 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {

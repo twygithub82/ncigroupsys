@@ -292,8 +292,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '80vw',
-      height: '90vh',
+      width: '65vw',
+      //height: '90vh',
       data: {
         action: 'duplicate',
         langText: this.langText,
@@ -322,8 +322,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '80vw',
-      height: '90vh',
+      width: '65vw',
+      //height: '90vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -382,8 +382,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: '80vw',
-      height: '90vh',
+      width: '65vw',
+      //height: '90vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -408,8 +408,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '80vw',
-      height: '90vh',
+      width: '65vw',
+      //height: '90vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -437,8 +437,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: TariffRepairItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '80vw',
-      height: '90vh',
+      width: '65vw',
+      //height: '90vh',
       data: {
         action: 'edit',
         langText: this.langText,
@@ -921,18 +921,19 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_RESET,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {

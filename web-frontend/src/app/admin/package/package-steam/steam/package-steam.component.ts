@@ -271,7 +271,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '600px',
+      width: '55vw',
       height: 'auto',
       data: {
         action: 'new',
@@ -329,7 +329,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '65vw',
+      width: '55vw',
       data: {
         action: 'edit',
         langText: this.langText,
@@ -361,7 +361,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     var selectedItems: PackageResidueItem[] = [];
     selectedItems.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '65vw',
+      width: '55vw',
       data: {
         action: 'edit',
         langText: this.langText,

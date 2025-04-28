@@ -356,8 +356,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     }
     var row = new CleaningMethodItem();
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '50wv',
-      maxWidth: '600px',
+      width: '50vw',
+      //maxWidth: '600px',
       data: {
         action: 'new',
         langText: this.langText,
@@ -382,8 +382,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '50wv',
-      maxWidth: '600px',
+      width: '50vw',
+      //maxWidth: '600px',
       data: {
         action: 'new',
         langText: this.langText,
@@ -418,4 +418,27 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.resetForm();
+  }
+
+  resetForm() {
+    this.searchForm?.patchValue({
+      description: '',
+    });
+    // this.categoryControl.reset();
+    // this.hazardLevelControl.reset();
+    // this.banTypeControl.reset();
+  }
+
+
 }
