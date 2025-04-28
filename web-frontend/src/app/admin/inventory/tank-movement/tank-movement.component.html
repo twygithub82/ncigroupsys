@@ -66,11 +66,11 @@
                         </mat-option>
                         }
                       </mat-autocomplete>
-                      @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
+                      <!-- @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
                       <mat-error>
                         {{translatedLangText.INVALID_SELECTION}}
                       </mat-error>
-                      }
+                      } -->
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -227,7 +227,7 @@
               </mat-progress-spinner>
             </div>
             }
-            <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
+            <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
               [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
             </mat-paginator>
           </div>
