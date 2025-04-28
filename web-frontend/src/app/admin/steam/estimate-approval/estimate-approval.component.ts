@@ -476,15 +476,18 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   search() {
     const where: any = {
-      //tank_status_cv: { in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
+      tank_status_cv: { in: ['CLEANING','STORAGE'] },
+      purpose_steam: { eq: true }
+
     };
 
-    if (this.searchForm!.value['tank_status']) {
-      where.tank_status_cv = { in: this.searchForm!.value['tank_status'] };
-    }
-    else {
-      where.tank_status_cv = { in: ['STEAM', 'STORAGE'] }
-    }
+    // if (this.searchForm!.value['tank_status']) {
+    //   where.tank_status_cv = { in: this.searchForm!.value['tank_status'] };
+    // }
+    // else {
+    //   where.tank_status_cv = { in: ['STEAM', 'STORAGE'] }
+    // }
+
     if (this.searchForm!.value['tank_no']) {
       const tankNo = this.searchForm!.get('tank_no')?.value
       where.or = [

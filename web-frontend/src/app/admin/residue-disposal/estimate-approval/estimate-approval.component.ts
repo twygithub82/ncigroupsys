@@ -490,15 +490,14 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
 
   search() {
     const where: any = {
-      // tank_status_cv: { in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
+      tank_status_cv: { in: ['CLEANING','STORAGE'] },
+      purpose_cleaning: { eq: true }
     };
 
     if (this.searchForm!.value['tank_status']) {
-      where.tank_status_cv = { in: this.searchForm!.value['tank_status'] };
+      where.tank_status_cv = { in: this.searchForm!.value['tank_status']};
     }
-    else {
-      where.tank_status_cv = { in: ['CLEANING', 'STORAGE'] }
-    }
+    
 
     if (this.searchForm!.get('tank_no')?.value) {
       const or = [];

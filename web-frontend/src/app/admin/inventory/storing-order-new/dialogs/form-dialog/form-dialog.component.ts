@@ -71,6 +71,7 @@ export class FormDialogComponent {
   valueChangesDisabled: boolean = false;
 
   isPreOrder = false;
+  isTankNoValidated = false;
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
@@ -141,7 +142,7 @@ export class FormDialogComponent {
   submit() {
     this.storingOrderTankForm.get('purpose')?.setErrors(null);
     this.storingOrderTankForm.get('required_temp')?.setErrors(null);
-    if (this.storingOrderTankForm?.valid) {
+    if (this.storingOrderTankForm?.valid && this.isTankNoValidated) {
       if (!this.validatePurpose() || !this.validateRequireTemp()) {
       } else {
         this.storingOrderTankForm.get('purpose')?.setErrors(null);
@@ -262,25 +263,36 @@ export class FormDialogComponent {
             } else {
               this.storingOrderTankForm.get('tank_no')?.setErrors(null);
 
-              this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe(data => {
-                if (data.length > 0) {
-                  const hasWaiting = data.some(item => item.status_cv === 'WAITING' || item.status_cv === 'ACCEPTED');
-                  if (hasWaiting) {
-                    const hasPreOrder = data.some(item => item.status_cv === 'PREORDER');
-                    if (hasPreOrder) {
-                      this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+              this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe({
+                next: (data) => {
+                  if (data.length > 0) {
+                    const hasWaiting = data.some(item => item.status_cv === 'WAITING' || item.status_cv === 'ACCEPTED');
+                    if (hasWaiting) {
+                      const hasPreOrder = data.some(item => item.status_cv === 'PREORDER');
+                      if (hasPreOrder) {
+                        this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+                        this.isTankNoValidated = false;
+                      } else {
+                        // Set PREORDER warning without blocking submission
+                        this.isPreOrder = true;
+                        this.isTankNoValidated = true;
+                      }
                     } else {
-                      // Set PREORDER warning without blocking submission
-                      this.isPreOrder = true;
+                      // Additional logic if needed when no WAITING status is found
+                      this.isTankNoValidated = true;
                     }
                   } else {
-                    // Additional logic if needed when no WAITING status is found
+                    this.isTankNoValidated = true;
                   }
+                },
+                error: (error) => {
+                  this.isTankNoValidated = false;
                 }
               });
             }
           } else {
             this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+            this.isTankNoValidated = true;
           }
         }
       }
@@ -335,7 +347,7 @@ export class FormDialogComponent {
             Validators.min(0)
           ]);
         }
-  
+
         // Handle based on current steam value
         if (purposeSteamControl!.value) {
           requiredTempControl!.enable();
@@ -363,7 +375,7 @@ export class FormDialogComponent {
     if (this.canEdit()) {
       if (this.storingOrderTankForm.get('purpose_cleaning')?.value || this.storingOrderTankForm.get('purpose_repair_cv')?.value) {
         this.storingOrderTankForm.get('purpose_storage')?.setValue(true);
-  
+
         this.storingOrderTankForm.get('required_temp')?.setValue('');
         this.storingOrderTankForm.get('required_temp')?.disable();
         this.storingOrderTankForm.get('purpose_steam')?.disable();

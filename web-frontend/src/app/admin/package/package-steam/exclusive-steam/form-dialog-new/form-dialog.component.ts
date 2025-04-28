@@ -468,7 +468,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         updsteam.package_steaming.labour = updsteam.labour;
         updsteam.package_steaming.remarks = updsteam.remarks;
         updsteam.package_steaming.customer_company_guid = custGuid;
-        updsteam.tariff_cleaning_guid = lastCargoGuid;
+        updsteam.tariff_cleaning_guid = lastCargoGuids[0];
         this.pckSteamExclusiveDS.updateExclusiveSteam(updsteam).subscribe(result => {
 
           this.handleSaveSuccess(result?.data?.updateSteamingExclusive);

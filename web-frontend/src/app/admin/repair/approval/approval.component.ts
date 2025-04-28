@@ -417,7 +417,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
   search() {
     const where: any = {
-      //status_cv: { in: ['PENDING', 'APPROVED'] }
+      //status_cv: { in: ['PENDING', 'APPROVED'] },
     };
 
     if (this.searchForm!.get('tank_no')?.value || (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) || this.searchForm!.get('repair_option_cv')?.value?.length || this.searchForm!.get('customer_code')?.value) {
@@ -437,6 +437,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
       if (this.searchForm!.get('repair_option_cv')?.value?.length) {
         sotSome.purpose_repair_cv = { in: this.searchForm!.get('repair_option_cv')?.value };
+      } else {
+        sotSome.purpose_repair_cv = { neq: null };
       }
 
       if (this.searchForm!.get('customer_code')?.value) {

@@ -44,6 +44,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import {RepairEstimatePreviewComponent} from './preview_repair_estimate/estimate-preview.component';
+
 
 @Component({
   selector: 'app-repair-billing',
@@ -161,7 +163,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     LESSEE: 'COMMON-FORM.LESSEE',
     OWNER: 'COMMON-FORM.OWNER',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
-    DELETE: 'COMMON-FORM.DELETE'
+    DELETE: 'COMMON-FORM.DELETE',
+    
   }
 
   invForm?: UntypedFormGroup;
@@ -239,6 +242,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     this.repDS = new RepairDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
     this.plDS = new PackageLabourDS(this.apollo);
+    this
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -1257,4 +1261,32 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     return '-';
   }
+
+  showEstimateDetail(event: Event, row:RepairItem){
+    this.preventDefault(event);  // Prevents the form submission
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+    //  const addSot = row ?? new RepairPartItem();
+     // addSot.repair_guid = addSot.repair_guid;
+      const dialogRef = this.dialog.open(RepairEstimatePreviewComponent, {
+        width: '90vw',
+        height: '90vh',
+        data: {
+          
+          repair_guid: row.guid,
+          sot_guid: row.sot_guid
+  
+        },
+        direction: tempDirection
+      });
+    
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+       
+      });
+  }
+  
 }
