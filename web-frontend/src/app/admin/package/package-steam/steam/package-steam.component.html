@@ -108,14 +108,14 @@
                   }}:</span>{{displayTempMax(row.tariff_steaming?.temp_max)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.COST}}:</span> {{row.cost?.toFixed(2)}}</mat-cell>
+                <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}</span> {{row.cost?.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="labour">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LABOUR }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.HOURLY_RATE }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.LABOUR }}:</span>
+                <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE}}</span>
                 {{row.labour?.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="qty">

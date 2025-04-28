@@ -33,7 +33,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
@@ -508,6 +508,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     return "";
   }
+  
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {

@@ -65,11 +65,11 @@ import { Utility } from 'app/utilities/utility';
 })
 export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
+    'so_no',
     'tank_no',
     'customer_code',
     'job_no',
-    'last_cargo',
-    'so_no',
+    'last_cargo'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
