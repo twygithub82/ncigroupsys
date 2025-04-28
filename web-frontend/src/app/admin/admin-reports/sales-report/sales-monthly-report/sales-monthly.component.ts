@@ -254,7 +254,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       customer_code: this.customerCodeControl,
       year: [`${thisYear}`],
       month: [`${thisMonth}`],
-      cost_type:['all']
+      cost_type:['ALL']
     });
   }
 
@@ -465,18 +465,19 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -485,6 +486,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     this.searchForm?.patchValue({
       year: thisYear,
       month: thisMonth,
+      cost_type: ['ALL']
     });
     this.customerCodeControl.reset('');
    

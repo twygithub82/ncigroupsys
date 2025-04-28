@@ -260,7 +260,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       month:`${thisMonth}`,
       year:`${thisYear}`,
       depot_status_cv: [''],
-      cost_type:['REPAIR'],
+      cost_type:[''],
     });
   }
 
@@ -595,18 +595,19 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -616,7 +617,8 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       month:'',
       year:'',
       depot_status_cv: 'ALL',
-      cost_type:this.costTypeCvList.find(c=>c.code_val=='REPAIR'),
+      cost_type:['']
+      // cost_type:this.costTypeCvList.find(c=>c.code_val=='REPAIR'),
       
     });
     this.customerCodeControl.reset('');

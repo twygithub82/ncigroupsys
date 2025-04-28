@@ -842,22 +842,30 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        if(report_type===1)
-        {
-          this.resetFormSummary();
-        }
-       
-      }
-    });
+
+    if(report_type===1)
+    {
+      this.resetFormSummary();
+    }
+    else{
+      this.resetFormDetail();
+    }
+    
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     if(report_type===1)
+    //     {
+    //       this.resetFormSummary();
+    //     }
+    //   }
+    // });
   }
 
   
@@ -872,6 +880,23 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       year:thisYear ,
     });
     this.customerCodeControlSummary.reset('');
+    this.noCond = false;
+  }
+
+  resetFormDetail() {
+    var thisYear = new Date().getFullYear().toString();
+    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    this.searchFormDetail?.patchValue({
+      repair_type: '',
+      tank_no:'',
+      eir_no: '',
+      est_dt_start:'',
+      est_dt_end:'',
+      surveyor: '',
+      year:thisYear,
+      est_status: ''
+    });
+    this.customerCodeControlDetail.reset('');
     this.noCond = false;
   }
 

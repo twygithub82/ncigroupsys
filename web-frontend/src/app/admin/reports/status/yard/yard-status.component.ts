@@ -571,28 +571,27 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
-    // this.searchForm?.patchValue({
-    //   eir_no: '',
-    //   tank_no: '',
-    //   eir_dt_start:'',
-    //   eir_dt_end:'',
-    //   inv_type: ['MASTER_IN']
-    // });
+    this.searchForm?.patchValue({
+      eir_no: '',
+      tank_no: '',
+      yard: ''
+    });
     this.customerCodeControl.reset('');
     // this.lastCargoControl.reset('');
   }

@@ -264,7 +264,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       tank_no: [''],
       svy_dt_start: [''],
       svy_dt_end: [''],
-      inv_type: ['MASTER_IN'],
+      inv_type: [''],
       yard: [''],
       reference: [''],
       svy_type: [''],
@@ -513,18 +513,19 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -532,8 +533,9 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       eir_no: '',
       tank_no: '',
       SVGUnitTypes_dt_start: '',
+      svy_dt_start: '',
       svy_dt_end: '',
-      inv_type: ['MASTER_IN'],
+      inv_type: [''],
       yard: '',
       reference: '',
       svy_type: '',

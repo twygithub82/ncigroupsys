@@ -292,11 +292,12 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
-      this.costTypeCvList = addDefaultSelectOption(data, 'All',"ALL");
-      var allType = this.costTypeCvList.find(c=>c.code_val=='ALL');
-      this.searchForm?.patchValue({
-        cost_type:allType
-      });
+      // this.costTypeCvList = addDefaultSelectOption(data, 'All',"ALL");
+      // var allType = this.costTypeCvList.find(c=>c.code_val=='ALL');
+      // this.searchForm?.patchValue({
+      //   cost_type:allType
+      // });
+      this.costTypeCvList = addDefaultSelectOption(data, 'All');
     });
     var thisYear = new Date().getFullYear();
     var startYear = thisYear-5;
@@ -465,18 +466,19 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -486,6 +488,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
       year: thisYear,
       month_start: thisMonth,
       month_end: thisMonth,
+      cost_type: ['ALL']
     });
     this.customerCodeControl.reset('');
    

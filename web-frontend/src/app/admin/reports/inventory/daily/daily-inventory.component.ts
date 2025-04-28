@@ -260,7 +260,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       inv_dt_start: [''],
       inv_dt_end: [''],
       inv_dt:[''],
-      inv_type: ['MASTER_IN']
+      inv_type: ['']
 
     });
   }
@@ -644,28 +644,27 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
     this.searchForm?.patchValue({
       eir_no: '',
       tank_no: '',
-      eir_dt:'',
-      eir_dt_start: '',
-      eir_dt_end: '',
-      inv_type: ['MASTER_IN']
+      inv_dt: '',
+      inv_type: ['']
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
