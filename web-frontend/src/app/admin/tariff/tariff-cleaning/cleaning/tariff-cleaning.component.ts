@@ -531,6 +531,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     this.resetForm();
+    this.search();
 
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
