@@ -196,11 +196,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     DIMENSION: "COMMON-FORM.DIMENSION",
-    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    TARIFF_COST: "COMMON-FORM.TARIFF-COST",
     CANNOT_EXCEED: "COMMON-FORM.CANNOT-EXCEED",
     CANNOT_SMALLER: "COMMON-FORM.CANNOT-SMALLER",
     SMALLER_THAN: "COMMON-FORM.SMALLER-THAN",
-     CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED'
+    CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED'
   };
 
 
@@ -410,12 +410,12 @@ EnableValidator(path: string) {
   }
 
   getMaterialCostLabel(){
-    var lbl = this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'(%)':'');
+    var lbl = this.translatedLangText.UPDATE + ' ' + this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'(%)':'');
     return lbl;
   }
 
   getLabourHourLabel(){
-    var lbl = this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
+    var lbl = this.translatedLangText.UPDATE + ' ' + this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
     return lbl;
   }
 

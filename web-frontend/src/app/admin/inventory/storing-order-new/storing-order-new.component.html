@@ -246,11 +246,11 @@
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
-                          {{translatedLangText.STATUS}}
+                          {{translatedLangText.PROCESS}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                          <span class="mobile-label">{{translatedLangText.PROCESS}}:</span>
                           <span
                             [matTooltip]="row.remarks ? ('Remarks: ' + row.remarks) : ''">{{getSoStatusDescription(row.status_cv)}}</span>
                         </mat-cell>
@@ -355,16 +355,16 @@
                   <span class="badge badge-solid-green">NEW</span>
                 </div>
                 <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-pink">PREORDER</span>
+                </div>
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
                   <span class="badge badge-solid-cyan">EDIT</span>
                 </div>
                 <div class="legend-item d-flex align-items-center me-4 mb-0">
-                  <span class="badge badge-solid-blue">ROLLBACK</span>
+                  <span class="badge badge-solid-blue">REINSTATE</span>
                 </div>
                 <div class="legend-item d-flex align-items-center me-4 mb-0">
                   <span class="badge badge-solid-orange">CANCEL</span>
-                </div>
-                <div class="legend-item d-flex align-items-center me-4 mb-0">
-                  <span class="badge badge-solid-pink">PREORDER</span>
                 </div>
               </div>
               <div class="row m-t-10">

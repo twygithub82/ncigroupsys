@@ -215,7 +215,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     TARIFF_RESIDUE_ASSIGNED: 'COMMON-FORM.TARIFF-RESIDUE-ASSIGNED',
     ARE_U_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
-
   }
 
   constructor(
@@ -226,7 +225,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
-
   ) {
     super();
     this.initTcForm();

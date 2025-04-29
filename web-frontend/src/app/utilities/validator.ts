@@ -5,7 +5,7 @@ export function AutocompleteSelectionValidator(validOptions: any[] | undefined):
     const value = control.value;
 
     // If the value is an empty string, do not perform validation
-    if (value === '') {
+    if (value === '' || value == null || value == undefined) {
       return null;
     }
 

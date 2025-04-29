@@ -333,7 +333,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
       this.costTypeCvList = data;
-      var allType = this.costTypeCvList.find(c=>c.code_val=='REPAIR');
+      var allType = this.costTypeCvList.find(c=>c.code_val=='CLEANING');
       this.searchForm?.patchValue({
         cost_type:allType
       });
@@ -617,8 +617,8 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       month:'',
       year:'',
       depot_status_cv: 'ALL',
-      cost_type:''
-      // cost_type:this.costTypeCvList.find(c=>c.code_val=='REPAIR'),
+      //cost_type:''
+      cost_type:this.costTypeCvList.find(c=>c.code_val=='CLEANING'),
       
     });
     this.customerCodeControl.reset('');

@@ -30,12 +30,12 @@
                       } -->
                       @if((this.selectedItems.length>1)&&pcForm.get('material_cost')?.hasError('min')){
                       <mat-error>
-                        {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
+                        {{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                       </mat-error>
                     }
                     @if((this.selectedItems.length>1)&&pcForm.get('material_cost')?.hasError('max')){
                       <mat-error>
-                        {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
+                        {{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
                       </mat-error>
                     }
                     </mat-form-field>
@@ -103,16 +103,16 @@
                     </ng-container>
                     <ng-container matColumnDef="gender">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.MATERIAL_COST
-                        }}</mat-header-cell>
+                        }} $</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.MATERIAL_COST
                           }}:</span>{{row.material_cost.toFixed(2)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="mobile">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.STANDARD_COST
-                        }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TARIFF_COST
+                        }} $</mat-header-cell>
                       <mat-cell *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.STANDARD_COST
+                        <span class="mobile-label">{{translatedLangText.TARIFF_COST
                           }}:</span>{{row.tariff_repair.material_cost.toFixed(2)}}</mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
