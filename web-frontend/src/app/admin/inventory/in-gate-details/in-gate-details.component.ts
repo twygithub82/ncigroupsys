@@ -305,6 +305,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
+      if (this.yardCvList.length > 0) {
+        this.inGateForm!.get('yard_cv')?.setValue(this.yardCvList[0].code_val);
+      }
     });
     this.cvDS.connectAlias('hazardLevelCv').subscribe(data => {
       this.hazardLevelCvList = data;

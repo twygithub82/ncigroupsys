@@ -118,6 +118,15 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     YARD: 'COMMON-FORM.YARD'
   }
 
+  availableProcessStatus: string[] = [
+    'CLEANING',
+    'STEAM',
+    'REPAIR',
+    'RESIDUE',
+    'STORAGE',
+    'RELEASED'
+  ]
+
   searchForm?: UntypedFormGroup;
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -380,7 +389,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       where.storing_order = soSearch;
     }
 
-    if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_status_cv')?.value || this.searchForm!.get('eir_status_cv')?.value || this.searchForm!.get('yard_cv')?.value) {
+    if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value || this.searchForm!.get('yard_cv')?.value) {
       const igSearch: any = {};
       if (this.searchForm!.get('eir_no')?.value) {
         igSearch.eir_no = { contains: this.searchForm!.get('eir_no')?.value };

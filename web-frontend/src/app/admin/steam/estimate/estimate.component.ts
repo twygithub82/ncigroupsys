@@ -169,8 +169,8 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     'COMPLETED',
     'PENDING',
     'NO_ACTION'
-
   ]
+  
   searchForm?: UntypedFormGroup;
 
   pckRepDS: PackageRepairDS;

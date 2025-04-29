@@ -37,9 +37,9 @@
               <div class="position-relative">
                 <div class="relative-menu">
                   @if (!(cvDS.loading$ | async) && (canOverwriteLastCargo() || canOverwriteCleanStatus())) {
-                  <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
+                  <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                     [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>edit</mat-icon>
                   </button>
 
                   <mat-menu #menu="matMenu">
@@ -127,6 +127,26 @@
                     </div>
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.LAST_TEST}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">
+                          {{last_test_desc || '-'}}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                        <span>{{translatedLangText.NEXT_TEST}}:</span>
+                      </div>
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                        <div class="contact-detail-info font-bold">{{next_test_desc || '-'}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                         <span>{{translatedLangText.PURPOSE}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
@@ -137,20 +157,19 @@
                     </div>
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{translatedLangText.LAST_TEST}}:</span>
+                        <span>{{translatedLangText.CURRENT_STATUS}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div class="contact-detail-info font-bold">
-                          {{last_test_desc || '-'}}
+                        <div class="contact-detail-info font-bold">{{getTankStatusDescription(sot?.tank_status_cv)}}
                         </div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{translatedLangText.CURRENT_STATUS}}:</span>
+                        <span>{{translatedLangText.YARD}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{getTankStatusDescription(sot?.tank_status_cv)}}
+                        <div class="contact-detail-info font-bold">{{getYardDescription(tiItem?.yard_cv)}}
                         </div>
                       </div>
                     </div>
@@ -224,7 +243,7 @@
                               </div>
                             </div>
                           </div>
-                          <div class="row">
+                          <!-- <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                               <span>{{translatedLangText.LAST_TEST}}:</span>
                             </div>
@@ -232,7 +251,7 @@
                               <div class="contact-detail-info font-bold">{{last_test_desc || '-'}}
                               </div>
                             </div>
-                          </div>
+                          </div> -->
                           <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                               <span>{{translatedLangText.BOTTOM_DIS_TYPE}}:</span>
@@ -297,7 +316,7 @@
                               </div>
                             </div>
                           </div>
-                          <div class="row">
+                          <!-- <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                               <span>{{translatedLangText.NEXT_TEST}}:</span>
                             </div>
@@ -305,7 +324,7 @@
                               <div class="contact-detail-info font-bold">{{next_test_desc || '-'}}
                               </div>
                             </div>
-                          </div>
+                          </div> -->
                           <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                               <span>{{translatedLangText.COMPARTMENT_TYPE}}:</span>
@@ -369,12 +388,12 @@
                             </thead>
                             <tbody>
                               <tr>
-                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.ORDER_NO}}</th>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.SO_RO}}</th>
                                 <td>{{sot?.storing_order?.so_no || "-"}}</td>
                                 <td>{{sot?.release_order_sot?.[0]?.release_order?.ro_no || "-"}}</td>
                               </tr>
                               <tr>
-                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.ORDER_DATE}}</th>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.SO_RO}} {{translatedLangText.DATE}}</th>
                                 <td>{{displayDate(sot?.storing_order?.create_dt) || "-"}}</td>
                                 <td>{{displayDate(sot?.release_order_sot?.[0]?.release_order?.create_dt) || "-"}}</td>
                               </tr>
@@ -415,11 +434,11 @@
                                 <td>{{displayDateTime(igs?.create_dt) || "-"}}</td>
                                 <td>{{displayDateTime(ogs?.create_dt) || "-"}}</td>
                               </tr>
-                              <tr>
+                              <!-- <tr>
                                 <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.UPDATE_DATE}}</th>
                                 <td>{{displayDateTime(igs?.update_dt) || displayDateTime(igs?.create_dt) || "-"}}</td>
                                 <td>{{displayDateTime(ogs?.update_dt) || displayDateTime(ogs?.create_dt) || "-"}}</td>
-                              </tr>
+                              </tr> -->
                             </tbody>
                           </table>
                         </div>
@@ -507,7 +526,7 @@
                                         </div>
                                       </div>
                                     </div>
-                                    <div class="row">
+                                    <!-- <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                         <span>{{translatedLangText.ETR_DATE}}:</span>
                                       </div>
@@ -516,12 +535,12 @@
                                           "-"}}
                                         </div>
                                       </div>
-                                    </div>
+                                    </div> -->
                                   </div>
                                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.STORAGE_CLOSE_DATE}}:</span>
+                                        <span>{{translatedLangText.RELEASE_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
@@ -747,7 +766,7 @@
                                               @if (canRollbackSteamingCompleted(row)) {
                                               <button mat-menu-item (click)="onRollbackSteamingJobs($event, row)">
                                                 <mat-icon>undo</mat-icon>
-                                                <span>{{translatedLangText.ROLLBACK}}</span>
+                                                <span>{{translatedLangText.REINSTATE}}</span>
                                               </button>
                                               }
                                             </mat-menu>
@@ -1018,7 +1037,7 @@
                                             @if (canRollbackResidueCompleted(row)) {
                                             <button mat-menu-item (click)="onRollbackResidueJobs($event, row)">
                                               <mat-icon>undo</mat-icon>
-                                              <span>{{translatedLangText.ROLLBACK}}</span>
+                                              <span>{{translatedLangText.REINSTATE}}</span>
                                             </button>
                                             }
                                           </mat-menu>
@@ -1082,10 +1101,10 @@
                                 </button>
                                 } -->
                                 @if (canOverwriteCleaningApproval() || canRollbackCleaningCompleted(cleaningItem?.[0]) || canRollbackCleaning(cleaningItem?.[0]) || canRemoveCleanPurpose()) {
-                                <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
+                                <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                                   [disabled]="(cleaningDS.loading$ | async)"
                                   class="link-button position-absolute top-0 end-0 p-0">
-                                  <mat-icon>menu</mat-icon>
+                                  <mat-icon>edit</mat-icon>
                                 </button>
 
                                 <mat-menu #menu="matMenu">
@@ -1095,11 +1114,11 @@
                                   }
                                   @if (canRollbackCleaningCompleted(cleaningItem?.[0])) {
                                   <button mat-menu-item class=""
-                                    (click)="onRollbackCleaningJobs($event, cleaningItem?.[0])">{{translatedLangText.ROLLBACK}}</button>
+                                    (click)="onRollbackCleaningJobs($event, cleaningItem?.[0])">{{translatedLangText.REINSTATE}}</button>
                                   }
                                   @if (canRollbackCleaning(cleaningItem?.[0])) {
                                   <button mat-menu-item class=""
-                                    (click)="onRollbackCleaning($event, cleaningItem?.[0])">{{translatedLangText.ROLLBACK}}</button>
+                                    (click)="onRollbackCleaning($event, cleaningItem?.[0])">{{translatedLangText.REINSTATE}}</button>
                                   }
                                   @if (canRemoveCleanPurpose()) {
                                   <button mat-menu-item class="text-danger"
@@ -1111,7 +1130,7 @@
                                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.QUOTATION_DATE}}:</span>
+                                        <span>{{translatedLangText.GATE_IN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
@@ -1161,7 +1180,7 @@
                                         </div>
                                       </div>
                                     </div>
-                                    <div class="row">
+                                    <!-- <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                         <span>{{translatedLangText.PROCESSING_DAYS}}:</span>
                                       </div>
@@ -1170,7 +1189,7 @@
                                           {{cleaningDS.getProcessingDate(cleaningItem?.[0]) || "-"}}
                                         </div>
                                       </div>
-                                    </div>
+                                    </div> -->
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                         <span>{{translatedLangText.BILL}}:</span>
@@ -1417,7 +1436,7 @@
                                               @if (canRollbackRepairQC(row)) {
                                               <button mat-menu-item (click)="onRollbackRepairQC($event, row)">
                                                 <mat-icon>undo</mat-icon>
-                                                <span>{{translatedLangText.ROLLBACK}}</span>
+                                                <span>{{translatedLangText.REINSTATE}}</span>
                                               </button>
                                               }
                                             </mat-menu>
@@ -1501,9 +1520,9 @@
                         <div
                           class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 d-flex justify-content-end ms-auto">
                           @if (canOverwriteJobNo() && canOverwriteDepotCost()) {
-                          <button mat-mini-fab color="accent" [matMenuTriggerFor]="menu"
+                          <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                             [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
-                            <mat-icon>menu</mat-icon>
+                            <mat-icon>edit</mat-icon>
                           </button>
 
                           <mat-menu #menu="matMenu">

@@ -191,6 +191,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     DETAILS: 'COMMON-FORM.DETAILS',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
+    SO_RO: 'COMMON-FORM.SO/RO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',
@@ -214,6 +215,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     OWNER: "COMMON-FORM.OWNER",
     CLEAN_STATUS: "COMMON-FORM.CLEAN-STATUS",
     CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
+    GATE_IN_DATE: "COMMON-FORM.GATE-IN-DATE",
     EIR_DATE_TIME: "COMMON-FORM.EIR-DATE-TIME",
     SURVEY_INFO: "COMMON-FORM.SURVEY-INFO",
     DATE_OF_INSPECTION: "COMMON-FORM.DATE-OF-INSPECTION",
@@ -242,7 +244,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     BOTTOM_DISCHARGE_TYPE: 'COMMON-FORM.BOTTOM-DISCHARGE-TYPE',
     COMPARTMENT_TYPE: 'COMMON-FORM.COMPARTMENT-TYPE',
     BACK: 'COMMON-FORM.BACK',
-    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE',
     BOTTOM_DIS_COMP: 'COMMON-FORM.BOTTOM-DIS-COMP',
     FOOT_VALVE: 'COMMON-FORM.FOOT-VALVE',
     BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
@@ -301,6 +303,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     CHECK_DIGIT: 'COMMON-FORM.CHECK-DIGIT',
     NOTES: 'COMMON-FORM.NOTES',
     RELEASE_NOTES: 'COMMON-FORM.RELEASE-NOTES',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
     GATE_DETAILS: 'COMMON-FORM.GATE-DETAILS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     ORDER_NO: 'COMMON-FORM.ORDER-NO',
@@ -400,6 +403,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     DAYS: 'COMMON-FORM.DAYS',
     TO_YARD: 'COMMON-FORM.TO-YARD',
     FROM_YARD: 'COMMON-FORM.FROM-YARD',
+    YARD: 'COMMON-FORM.YARD',
     OVERWRITE_JOB_NO: 'COMMON-FORM.OVERWRITE-JOB-NO',
     OVERWRITE_DEPOT_COST: 'COMMON-FORM.OVERWRITE-DEPOT-COST',
     OVERWRITE_LAST_CARGO: 'COMMON-FORM.OVERWRITE-LAST-CARGO',
@@ -429,6 +433,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
+    REINSTATE: 'COMMON-FORM.REINSTATE',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
@@ -918,9 +923,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.cvDS.getCodeDescription(codeValType, this.cleanStatusCvList);
   }
 
-  getYardDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
-  }
 
   getSurveyTypeDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.surveyTypeCvList);
@@ -1710,6 +1712,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  }
+
+  getYardDescription(codeValType: string | undefined): string | undefined {
+    var desc = this.cvDS.getCodeDescription(codeValType, this.yardCvList);
+    const parts = desc!.trim().split(/\s+/); // split by one or more spaces
+    return parts.length >= 2 ? parts[1] : "";
   }
 
   getWalkwayDescription(codeValType: string | undefined): string | undefined {

@@ -418,10 +418,10 @@
                           <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-lef">
                                   <span>{{translatedLangText.LAST_TEST}}:</span>
                                 </div>
-                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 align-lef">
                                   <div class="contact-detail-info font-bold">
                                     {{last_test_desc}}
                                   </div>
@@ -475,7 +475,7 @@
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                               <mat-form-field class="example-full-width">
-                                <mat-label>{{translatedLangText.CLASS}}</mat-label>
+                                <mat-label>{{translatedLangText.CLASS_BODIES}}</mat-label>
                                 <mat-select formControlName="test_class_cv" required>
                                   @for (codeValue of testClassCvList; track codeValue) {
                                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
@@ -524,14 +524,6 @@
                         @if (!(igDS.loading$ | async)) {
                         <mat-card-content>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                              <mat-form-field class="example-full-width">
-                                <mat-label>{{translatedLangText.IN_GATE_REMARKS}}</mat-label>
-                                <textarea matInput formControlName="in_gate_remarks"></textarea>
-                              </mat-form-field>
-                            </div>
-                          </div>
-                          <div class="row">
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
@@ -563,6 +555,14 @@
                                   {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
                                 } -->
+                              </mat-form-field>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                              <mat-form-field class="example-full-width">
+                                <mat-label>{{translatedLangText.IN_GATE_REMARKS}}</mat-label>
+                                <textarea matInput formControlName="in_gate_remarks"></textarea>
                               </mat-form-field>
                             </div>
                           </div>
@@ -1625,11 +1625,11 @@
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
                                     <input matInput formControlName="foot_valve_oth" />
-                                    @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
+                                    <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 }
@@ -1657,11 +1657,11 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getBottomFormGroup().get('btm_dis_valve_cv')?.hasError('required')) {
+                                    <!-- @if (getBottomFormGroup().get('btm_dis_valve_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.BOTTOM_DIS_VALVE}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 @if (displayOthers(getBottomFormGroup().get('btm_dis_valve_cv')?.value)) {
@@ -1669,11 +1669,11 @@
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
                                     <input matInput formControlName="btm_dis_valve_oth" />
-                                    @if (getBottomFormGroup().get('btm_dis_valve_oth')?.hasError('required')) {
+                                    <!-- @if (getBottomFormGroup().get('btm_dis_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 }
@@ -1701,11 +1701,11 @@
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
                                     <input matInput formControlName="btm_dis_valve_spec_oth" />
-                                    @if (getBottomFormGroup().get('btm_dis_valve_spec_oth')?.hasError('required')) {
+                                    <!-- @if (getBottomFormGroup().get('btm_dis_valve_spec_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 }
@@ -1717,11 +1717,11 @@
                                     <input matInput formControlName="thermometer" type="number"
                                       (wheel)="preventDefault($event)">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
-                                    @if (getBottomFormGroup().get('thermometer')?.hasError('required')) {
+                                    <!-- @if (getBottomFormGroup().get('thermometer')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.THERMOMETER}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
@@ -1732,11 +1732,11 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getBottomFormGroup().get('thermometer_cv')?.hasError('required')) {
+                                    <!-- @if (getBottomFormGroup().get('thermometer_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                               </div>
