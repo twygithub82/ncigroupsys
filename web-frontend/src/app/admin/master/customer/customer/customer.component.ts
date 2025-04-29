@@ -35,7 +35,7 @@ import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-c
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
-import { SearchCriteriaService } from 'app/services/search-criteria.service';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { MessageDialogComponent } from 'app/shared/components/message-dialog/message-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -81,46 +81,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     'last_update_dt',
     'actions'
   ];
-
-  customerCodeControl = new UntypedFormControl();
-  categoryControl = new UntypedFormControl();
-  descriptionControl = new UntypedFormControl();
-  handledItemControl = new UntypedFormControl();
-
-  storageCalCvList: CodeValuesItem[] = [];
-  handledItemCvList: CodeValuesItem[] = [];
-  CodeValuesDS?: CodeValuesDS;
-  countryCodes: any = [];
-  countryCodesFiltered: any = [];
-
-  ccDS: CustomerCompanyDS;
-  custCompDS: CustomerCompanyDS;
-  sotDS: StoringOrderTankDS;
-  tankDS: TankDS;
-
-  packResidueItems: PackageResidueItem[] = [];
-  unit_typeList: TankItem[] = []
-
-  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
-  customer_companyFilterList: CustomerCompanyItem[] = [];
-  customer_companyResultList: CustomerCompanyItem[] = [];
-  cleaning_categoryList?: CleaningCategoryItem[];
-
-  pageIndex = 0;
-  pageSize = 10;
-  lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company: { code: "ASC" } };
-  endCursor: string | undefined = undefined;
-  previous_endCursor: string | undefined = undefined;
-  startCursor: string | undefined = undefined;
-  hasNextPage = false;
-  hasPreviousPage = false;
-
-  searchField: string = "";
-  selection = new SelectionModel<PackageResidueItem>(true, []);
-
-  id?: number;
-  pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -222,6 +182,47 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
+  customerCodeControl = new UntypedFormControl();
+  categoryControl = new UntypedFormControl();
+  descriptionControl = new UntypedFormControl();
+  handledItemControl = new UntypedFormControl();
+
+  storageCalCvList: CodeValuesItem[] = [];
+  handledItemCvList: CodeValuesItem[] = [];
+  CodeValuesDS?: CodeValuesDS;
+  countryCodes: any = [];
+  countryCodesFiltered: any = [];
+
+  ccDS: CustomerCompanyDS;
+  custCompDS: CustomerCompanyDS;
+  sotDS: StoringOrderTankDS;
+  tankDS: TankDS;
+
+  packResidueItems: PackageResidueItem[] = [];
+  unit_typeList: TankItem[] = []
+
+  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
+  customer_companyFilterList: CustomerCompanyItem[] = [];
+  customer_companyResultList: CustomerCompanyItem[] = [];
+  cleaning_categoryList?: CleaningCategoryItem[];
+
+  pageStateType = 'Customer'
+  pageIndex = 0;
+  pageSize = 10;
+  lastSearchCriteria: any;
+  lastOrderBy: any = { customer_company: { code: "ASC" } };
+  endCursor: string | undefined = undefined;
+  previous_endCursor: string | undefined = undefined;
+  startCursor: string | undefined = undefined;
+  hasNextPage = false;
+  hasPreviousPage = false;
+
+  searchField: string = "";
+  selection = new SelectionModel<PackageResidueItem>(true, []);
+
+  id?: number;
+  pcForm?: UntypedFormGroup;
+
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -229,7 +230,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-    private searchCriteriaService: SearchCriteriaService,
+    private searchStateService: SearchStateService,
     private translate: TranslateService
   ) {
     super();
@@ -251,25 +252,25 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.loadData();
     this.translateLangText();
     this.initializeFilterCustomerCompany();
-    var state = history.state;
-    if (state.type == "customer-company") {
-      let showResult = state.pagination.showResult;
-      if (showResult) {
-        this.searchCriteriaService = state.pagination.where;
-        this.pageIndex = state.pagination.pageIndex;
-        this.pageSize = state.pagination.pageSize;
-        this.hasPreviousPage = state.pagination.hasPreviousPage;
-        this.startCursor = state.pagination.startCursor;
-        this.endCursor = state.pagination.endCursor;
-        this.previous_endCursor = state.pagination.previous_endCursor;
-        this.paginator.pageSize = this.pageSize;
-        this.paginator.pageIndex = this.pageIndex;
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      }
-    }
-    else {
-      this.search();
-    }
+    // var state = history.state;
+    // if (state.type == "customer-company") {
+    //   let showResult = state.pagination.showResult;
+    //   if (showResult) {
+    //     this.searchCriteriaService = state.pagination.where;
+    //     this.pageIndex = state.pagination.pageIndex;
+    //     this.pageSize = state.pagination.pageSize;
+    //     this.hasPreviousPage = state.pagination.hasPreviousPage;
+    //     this.startCursor = state.pagination.startCursor;
+    //     this.endCursor = state.pagination.endCursor;
+    //     this.previous_endCursor = state.pagination.previous_endCursor;
+    //     this.paginator.pageSize = this.pageSize;
+    //     this.paginator.pageIndex = this.pageIndex;
+    //     this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+    //   }
+    // }
+    // else {
+    //   this.search();
+    // }
   }
 
   initializeFilterCustomerCompany() {
@@ -283,7 +284,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }, { delete_dt: { eq: null } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyFilterList = data
         });
       })
@@ -434,15 +435,17 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       );
   }
 
-  search() {
-    if (this.pcForm?.invalid) {
-      return;
-    }
+  constructSearchCriteria() {
     const where: any = {
       and: [
         {
           customer_company: {
             type_cv: { neq: "SURVEYOR" },
+            delete_dt: { eq: null }
+          }
+        },
+        {
+          customer_company: {
             delete_dt: { eq: null }
           }
         }
@@ -464,27 +467,43 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.pcForm!.value["country"]) {
-      where.country = { eq: this.pcForm!.value["country"] };
-    }
-
-    if (this.pcForm!.value["contact_person"]) {
-      where.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
+      // where.country = { eq: this.pcForm!.value["country"] };
+      const customer_company: any = { country: { eq: this.pcForm!.value["country"] } }
+      where.and.push({ customer_company: customer_company })
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
       this.customer_companyResultList = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.ccDS.pageInfo?.endCursor;
       this.startCursor = this.ccDS.pageInfo?.startCursor;
       this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
       this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = 0;
       this.selection.clear();
       if (!this.hasPreviousPage)
         this.previous_endCursor = undefined;
     });
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
   }
 
   selectStorageCalculateCV_Description(valCode?: string): string {
@@ -538,66 +557,74 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       }
     }
 
-    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
-  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number, previousPageIndex?: number) {
-    if (where === null || where === undefined) {
-      where = {}
-    }
-    // where = {
-    //   and: [
-    //     {
-    //       customer_company: {
-    //         type_cv: { neq: "SURVEYOR" },
-    //         delete_dt: { eq: null }
-    //       }
-    //     }
-    //   ]
-    // };
-    this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(where, order, first, after, last, before).subscribe(data => {
-      this.customer_companyResultList = data;
-      this.endCursor = this.ccDS.pageInfo?.endCursor;
-      this.startCursor = this.ccDS.pageInfo?.startCursor;
-      this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = pageIndex;
-      this.paginator.pageIndex = this.pageIndex;
-      this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
-  }
-
-  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
-    const sCriteria: any = {};
-    sCriteria.where = where;
-    sCriteria.order = order;
-    sCriteria.first = first;
-    sCriteria.after = after;
-    sCriteria.last = last;
-    sCriteria.before = before;
-    sCriteria.pageIndex = pageIndex;
-    sCriteria.previousPageIndex = previousPageIndex;
-    sCriteria.length = length;
-    sCriteria.hasNextPage = hasNextPage;
-    sCriteria.hasPreviousPage = hasPreviousPage;
-
-    this.searchCriteriaService.setCriteria(sCriteria);
-  }
+  // searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number, previousPageIndex?: number) {
+  //   if (where === null || where === undefined) {
+  //     where = {}
+  //   }
+  //   // where = {
+  //   //   and: [
+  //   //     {
+  //   //       customer_company: {
+  //   //         type_cv: { neq: "SURVEYOR" },
+  //   //         delete_dt: { eq: null }
+  //   //       }
+  //   //     }
+  //   //   ]
+  //   // };
+  //   this.previous_endCursor = this.endCursor;
+  //   this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(where, order, first, after, last, before).subscribe(data => {
+  //     this.customer_companyResultList = data;
+  //     this.endCursor = this.ccDS.pageInfo?.endCursor;
+  //     this.startCursor = this.ccDS.pageInfo?.startCursor;
+  //     this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
+  //     this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
+  //     this.pageIndex = pageIndex;
+  //     this.paginator.pageIndex = this.pageIndex;
+  //     this.selection.clear();
+  //     if (!this.hasPreviousPage)
+  //       this.previous_endCursor = undefined;
+  //   });
+  // }
 
   removeSelectedRows() {
   }
 
   public loadData() {
-    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 50).subscribe(data => {
-    });
-    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC'}, 100).subscribe(data => {
+    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
       // this.unit_typeList = [{ guid: '', unit_type: '--Select--' }, ...data]
       this.unit_typeList = [...data]
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      console.log(savedCriteria)
+      this.pcForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      console.log(savedPagination)
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   showNotification(

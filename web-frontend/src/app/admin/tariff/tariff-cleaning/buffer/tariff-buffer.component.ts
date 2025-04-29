@@ -34,7 +34,6 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { firstValueFrom } from 'rxjs';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 
@@ -206,9 +205,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-    private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
-
   ) {
     super();
     this.initTcForm();
@@ -523,24 +520,6 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       if (!this.hasPreviousPage)
         this.previous_endCursor = undefined;
     });
-  }
-
-  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
-    const sCriteria: any = {};
-    sCriteria.where = where;
-    sCriteria.order = order;
-    sCriteria.first = first;
-    sCriteria.after = after;
-    sCriteria.last = last;
-    sCriteria.before = before;
-    sCriteria.pageIndex = pageIndex;
-    sCriteria.previousPageIndex = previousPageIndex;
-    sCriteria.length = length;
-    sCriteria.hasNextPage = hasNextPage;
-    sCriteria.hasPreviousPage = hasPreviousPage;
-
-    this.searchCriteriaService.setCriteria(sCriteria);
   }
 
   public loadData() {
