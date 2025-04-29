@@ -449,7 +449,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   search() {
     this.constructSearchCriteria();
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
