@@ -27,15 +27,13 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-// import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstPartItem } from 'app/data-sources/master-template';
-import { SearchCriteriaService } from 'app/services/search-criteria.service';
+import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -84,37 +82,6 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/estimate-template' }
   ]
 
-  customerCodeControl = new UntypedFormControl();
-  templateNameControl = new UntypedFormControl();
-  // template_type_cv = new UntypedFormControl();
-  CodeValuesDS?: CodeValuesDS;
-  masterEstTempDS: MasterEstimateTemplateDS;
-  ccDS: CustomerCompanyDS;
-  custCompDS: CustomerCompanyDS;
-
-  masterTemplateItem: MasterTemplateItem[] = [];
-  masterTempItemOnly: MasterTemplateItem[] = [];
-  templateTypeItemCvList: CodeValuesItem[] = [];
-
-  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
-  customer_companyList: CustomerCompanyItem[] = [];
-  cleaning_categoryList?: CleaningCategoryItem[];
-
-  pageIndex = 0;
-  pageSize = 10;
-  lastSearchCriteria: any;
-  lastOrderBy: any = { template_name: "ASC" };
-  endCursor: string | undefined = undefined;
-  previous_endCursor: string | undefined = undefined;
-  startCursor: string | undefined = undefined;
-  hasNextPage = false;
-  hasPreviousPage = false;
-
-  searchField: string = "";
-  selection = new SelectionModel<MasterTemplateItem>(true, []);
-
-  id?: number;
-  mtForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -186,6 +153,39 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
+  customerCodeControl = new UntypedFormControl();
+  templateNameControl = new UntypedFormControl();
+  // template_type_cv = new UntypedFormControl();
+  CodeValuesDS?: CodeValuesDS;
+  masterEstTempDS: MasterEstimateTemplateDS;
+  ccDS: CustomerCompanyDS;
+  custCompDS: CustomerCompanyDS;
+
+  masterTemplateItem: MasterTemplateItem[] = [];
+  masterTempItemOnly: MasterTemplateItem[] = [];
+  templateTypeItemCvList: CodeValuesItem[] = [];
+
+  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
+  customer_companyList: CustomerCompanyItem[] = [];
+  cleaning_categoryList?: CleaningCategoryItem[];
+
+  pageStateType = 'EstimateTemplate'
+  pageIndex = 0;
+  pageSize = 10;
+  lastSearchCriteria: any;
+  lastOrderBy: any = { template_name: "ASC" };
+  endCursor: string | undefined = undefined;
+  previous_endCursor: string | undefined = undefined;
+  startCursor: string | undefined = undefined;
+  hasNextPage = false;
+  hasPreviousPage = false;
+
+  searchField: string = "";
+  selection = new SelectionModel<MasterTemplateItem>(true, []);
+
+  id?: number;
+  mtForm?: UntypedFormGroup;
+
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -193,7 +193,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-    private searchCriteriaService: SearchCriteriaService,
+    private searchStateService: SearchStateService,
     private translate: TranslateService
   ) {
     super();
@@ -213,25 +213,25 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
     this.translateLangText();
     this.initializeFilterCustomerCompany();
-    var state = history.state;
-    if (state.type == "estimate-template") {
-      let showResult = state.pagination.showResult;
-      if (showResult) {
-        this.searchCriteriaService = state.pagination.where;
-        this.pageIndex = state.pagination.pageIndex;
-        this.pageSize = state.pagination.pageSize;
-        this.hasPreviousPage = state.pagination.hasPreviousPage;
-        this.startCursor = state.pagination.startCursor;
-        this.endCursor = state.pagination.endCursor;
-        this.previous_endCursor = state.pagination.previous_endCursor;
-        this.paginator.pageSize = this.pageSize;
-        this.paginator.pageIndex = this.pageIndex;
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      }
-    }
-    else {
-      this.search();
-    }
+    // var state = history.state;
+    // if (state.type == "estimate-template") {
+    //   let showResult = state.pagination.showResult;
+    //   if (showResult) {
+    //     this.searchCriteriaService = state.pagination.where;
+    //     this.pageIndex = state.pagination.pageIndex;
+    //     this.pageSize = state.pagination.pageSize;
+    //     this.hasPreviousPage = state.pagination.hasPreviousPage;
+    //     this.startCursor = state.pagination.startCursor;
+    //     this.endCursor = state.pagination.endCursor;
+    //     this.previous_endCursor = state.pagination.previous_endCursor;
+    //     this.paginator.pageSize = this.pageSize;
+    //     this.paginator.pageIndex = this.pageIndex;
+    //     this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+    //   }
+    // }
+    // else {
+    //   this.search();
+    // }
   }
 
   initMtForm() {
@@ -359,7 +359,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {};
     if (this.customerCodeControl.value) {
       {
@@ -385,7 +385,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    if(this.mtForm?.get('template_type_cv')?.value){
+    if (this.mtForm?.get('template_type_cv')?.value) {
       const template_type = this.mtForm?.get('template_type_cv')?.value;
       where.type_cv = { eq: template_type };
     }
@@ -401,19 +401,39 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.masterEstTempDS.SearchEstimateTemplate(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.masterTemplateItem = data;
-      this.previous_endCursor = undefined;
-      this.endCursor = this.masterEstTempDS.pageInfo?.endCursor;
-      this.startCursor = this.masterEstTempDS.pageInfo?.startCursor;
-      this.hasNextPage = this.masterEstTempDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.masterEstTempDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = 0;
-      this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.mtForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
     });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    this.subs.sink = this.masterEstTempDS.SearchEstimateTemplate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.masterTemplateItem = data;
+        this.previous_endCursor = undefined;
+        this.endCursor = this.masterEstTempDS.pageInfo?.endCursor;
+        this.startCursor = this.masterEstTempDS.pageInfo?.startCursor;
+        this.hasNextPage = this.masterEstTempDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.masterEstTempDS.pageInfo?.hasPreviousPage ?? false;
+        this.selection.clear();
+        if (!this.hasPreviousPage)
+          this.previous_endCursor = undefined;
+      });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
   }
 
   handleSaveSuccess(count: any) {
@@ -458,42 +478,8 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
         after = this.previous_endCursor;
       }
     }
-    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-  }
 
-  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number) {
-    this.previous_endCursor = after;
-    this.subs.sink = this.masterEstTempDS.SearchEstimateTemplate(where, order, first, after, last, before).subscribe(data => {
-      this.masterTemplateItem = data;
-      this.endCursor = this.masterEstTempDS.pageInfo?.endCursor;
-      this.startCursor = this.masterEstTempDS.pageInfo?.startCursor;
-      this.hasNextPage = this.masterEstTempDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.masterEstTempDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = pageIndex;
-      this.paginator.pageIndex = this.pageIndex;
-      this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
-  }
-
-  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
-    const sCriteria: any = {};
-    sCriteria.where = where;
-    sCriteria.order = order;
-    sCriteria.first = first;
-    sCriteria.after = after;
-    sCriteria.last = last;
-    sCriteria.before = before;
-    sCriteria.pageIndex = pageIndex;
-    sCriteria.previousPageIndex = previousPageIndex;
-    sCriteria.length = length;
-    sCriteria.hasNextPage = hasNextPage;
-    sCriteria.hasPreviousPage = hasPreviousPage;
-
-    this.searchCriteriaService.setCriteria(sCriteria);
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   removeSelectedRows() {
@@ -504,9 +490,11 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 50).subscribe(data => {
       // this.customer_companyList1 = data
     });
+
     this.masterEstTempDS.SearchEstimateTemplateOnly({}, { template_name: 'ASC' }).subscribe(data => {
       this.masterTempItemOnly = data;
     });
+
     const queries = [
       { alias: 'templateType', codeValType: 'EST_TEMPLATE_TYPE' }
     ];
@@ -514,6 +502,32 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     this.CodeValuesDS?.connectAlias('templateType').subscribe(data => {
       this.templateTypeItemCvList = addDefaultSelectOption(data, 'All');
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.mtForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
   showNotification(
     colorName: string,

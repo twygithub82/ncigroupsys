@@ -37,7 +37,7 @@ import { PackageDepotItem } from 'app/data-sources/package-depot';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffRepairDS, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
-import { SearchCriteriaService } from 'app/services/search-criteria.service';
+import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -96,52 +96,6 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     { text: 'MENUITEMS.MASTER.TEXT', route: '/admin/master/unit-type' }
   ]
 
-  minMaterialCost: number = -20;
-  maxMaterialCost: number = 20;
-
-  lengthItems: TariffRepairLengthItem[] = [];
-  dimensionItems: string[] = [];
-
-  groupNameCvList: CodeValuesItem[] = [];
-  subGroupNameCvList: CodeValuesItem[] = [];
-  handledItemCvList: CodeValuesItem[] = [];
-  unitTypeCvList: CodeValuesItem[] = [];
-
-  storageCalCvList: CodeValuesItem[] = [];
-  CodeValuesDS: CodeValuesDS;
-  // packDepotDS : PackageDepotDS;
-  trfRepairDS: TariffRepairDS;
-  packRepairDS: PackageRepairDS;
-  ccDS: CustomerCompanyDS;
-  tnkDS: TankDS;
-  //tariffDepotDS:TariffDepotDS;
-  // clnCatDS:CleaningCategoryDS;
-  custCompDS: CustomerCompanyDS;
-
-  //packDepotItems:PackageDepotItem[]=[];
-  packRepairItems: PackageRepairItem[] = [];
-
-  unitTypeItems: TankItem[] = [];
-  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
-  customer_companyList: CustomerCompanyItem[] = [];
-  cleaning_categoryList?: CleaningCategoryItem[];
-
-  pageIndex = 0;
-  pageSize = 10;
-  lastSearchCriteria: any;
-  lastOrderBy: any = { unit_type: "ASC" };
-  endCursor: string | undefined = undefined;
-  previous_endCursor: string | undefined = undefined;
-  startCursor: string | undefined = undefined;
-  hasNextPage = false;
-  hasPreviousPage = false;
-
-  searchField: string = "";
-  selection = new SelectionModel<PackageDepotItem>(true, []);
-
-  id?: number;
-  pcForm?: UntypedFormGroup;
-  tankList?: TankItem[] = [];
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -255,28 +209,71 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
+  minMaterialCost: number = -20;
+  maxMaterialCost: number = 20;
+
+  lengthItems: TariffRepairLengthItem[] = [];
+  dimensionItems: string[] = [];
+
+  groupNameCvList: CodeValuesItem[] = [];
+  subGroupNameCvList: CodeValuesItem[] = [];
+  handledItemCvList: CodeValuesItem[] = [];
+  unitTypeCvList: CodeValuesItem[] = [];
+
+  storageCalCvList: CodeValuesItem[] = [];
+  CodeValuesDS: CodeValuesDS;
+  // packDepotDS : PackageDepotDS;
+  trfRepairDS: TariffRepairDS;
+  packRepairDS: PackageRepairDS;
+  ccDS: CustomerCompanyDS;
+  tnkDS: TankDS;
+  tnkFilterDS: TankDS;
+  custCompDS: CustomerCompanyDS;
+
+  //packDepotItems:PackageDepotItem[]=[];
+  packRepairItems: PackageRepairItem[] = [];
+
+  unitTypeItems: TankItem[] = [];
+  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
+  customer_companyList: CustomerCompanyItem[] = [];
+  cleaning_categoryList?: CleaningCategoryItem[];
+
+  pageStateType = 'UnitType'
+  pageIndex = 0;
+  pageSize = 10;
+  lastSearchCriteria: any;
+  lastOrderBy: any = { unit_type: "ASC" };
+  endCursor: string | undefined = undefined;
+  previous_endCursor: string | undefined = undefined;
+  startCursor: string | undefined = undefined;
+  hasNextPage = false;
+  hasPreviousPage = false;
+
+  searchField: string = "";
+  selection = new SelectionModel<PackageDepotItem>(true, []);
+
+  id?: number;
+  pcForm?: UntypedFormGroup;
+  tankList?: TankItem[] = [];
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
-    private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
-
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.initPcForm();
-
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.packRepairDS = new PackageRepairDS(this.apollo);
-    //this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
-    // this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.tnkDS = new TankDS(this.apollo);
+    this.tnkFilterDS = new TankDS(this.apollo);
     this.initializeFilterTank();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -286,9 +283,9 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    // this.loadData();
+    this.loadData();
     this.translateLangText();
-    this.search();
+    // this.search();
   }
 
   initializeFilterTank() {
@@ -302,7 +299,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
         } else {
           searchCriteria = value.unit_type;
         }
-        this.subs.sink = this.tnkDS.search_r1({ or: [{ unit_type: { contains: searchCriteria } }] }, { unit_type: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.tnkFilterDS.search_r1({ or: [{ unit_type: { contains: searchCriteria } }] }, { unit_type: 'ASC' }).subscribe(data => {
           this.tankList = data
         });
       })
@@ -423,34 +420,48 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-  search() {
-
+  constructSearchCriteria() {
     const where: any = {};
     if (this.pcForm?.get("unit_type")?.value) {
-
       const tnk: TankItem = this.pcForm?.get("unit_type")?.value;
-      //var guids = customerCodes.map(cc => cc.guid);
       where.guid = { eq: tnk.guid };
-
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.tnkDS.search_r1(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.unitTypeItems = data;
-      // data[0].storage_cal_cv
-      this.previous_endCursor = undefined;
-      this.endCursor = this.tnkDS.pageInfo?.endCursor;
-      this.startCursor = this.tnkDS.pageInfo?.startCursor;
-      this.hasNextPage = this.tnkDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.tnkDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = 0;
-      this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
   }
 
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    this.subs.sink = this.tnkDS.search_r1(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.unitTypeItems = data;
+        this.previous_endCursor = undefined;
+        this.endCursor = this.tnkDS.pageInfo?.endCursor;
+        this.startCursor = this.tnkDS.pageInfo?.startCursor;
+        this.hasNextPage = this.tnkDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.tnkDS.pageInfo?.hasPreviousPage ?? false;
+        this.selection.clear();
+        if (!this.hasPreviousPage)
+          this.previous_endCursor = undefined;
+      });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
+  }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -496,113 +507,39 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
     //}
-  }
-
-  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number) {
-    if (this.pageIndex != pageIndex) this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.tnkDS.search_r1(where, order, first, after, last, before).subscribe(data => {
-      this.unitTypeItems = data;
-      this.endCursor = this.tnkDS.pageInfo?.endCursor;
-      this.startCursor = this.tnkDS.pageInfo?.startCursor;
-      this.hasNextPage = this.tnkDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.tnkDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = pageIndex;
-      this.paginator.pageIndex = this.pageIndex;
-      this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
-  }
-
-  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
-    const sCriteria: any = {};
-    sCriteria.where = where;
-    sCriteria.order = order;
-    sCriteria.first = first;
-    sCriteria.after = after;
-    sCriteria.last = last;
-    sCriteria.before = before;
-    sCriteria.pageIndex = pageIndex;
-    sCriteria.previousPageIndex = previousPageIndex;
-    sCriteria.length = length;
-    sCriteria.hasNextPage = hasNextPage;
-    sCriteria.hasPreviousPage = hasPreviousPage;
-
-    this.searchCriteriaService.setCriteria(sCriteria);
   }
 
   removeSelectedRows() {
 
   }
   public loadData() {
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    this.trfRepairDS.searchDistinctLength(undefined, undefined).subscribe(data => {
-      this.lengthItems = data;
-    });
+    if (savedCriteria) {
+      this.pcForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
 
-    this.trfRepairDS.searchDistinctDimension(undefined).subscribe(data => {
-      this.dimensionItems = data;
-    });
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
 
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-      // this.customer_companyList1 = data
-    });
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
 
-    // this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
-
-    // const queries = [
-    //   { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-
-    // ];
-    // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-    //   this.storageCalCvList=data;
-    // });
-    const queries = [
-      { alias: 'groupName', codeValType: 'GROUP_NAME' },
-      //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
-      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
-      { alias: 'unitType', codeValType: 'UNIT_TYPE' }
-    ];
-    this.CodeValuesDS?.getCodeValuesByType(queries);
-    this.CodeValuesDS?.connectAlias('groupName').subscribe(data => {
-      this.groupNameCvList = data;
-
-      const subqueries: any[] = [];
-      data.map(d => {
-
-        if (d.child_code) {
-          let q = { alias: d.child_code, codeValType: d.child_code };
-          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-          if (!hasMatch) {
-            subqueries.push(q);
-
-          }
-        }
-      });
-      if (subqueries.length > 0) {
-        this.CodeValuesDS?.getCodeValuesByType(subqueries)
-        subqueries.map(s => {
-          this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
-            this.subGroupNameCvList.push(...data);
-          });
-        });
-      }
-    });
-    this.CodeValuesDS?.connectAlias('subGroupName').subscribe(data => {
-      this.subGroupNameCvList = data;
-    });
-    this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
-
-      this.handledItemCvList = addDefaultSelectOption(data, 'All');
-    });
-    this.CodeValuesDS.connectAlias('unitType').subscribe(data => {
-      this.unitTypeCvList = data;
-    });
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   showNotification(
