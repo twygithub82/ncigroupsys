@@ -46,6 +46,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { ResidueDS, ResidueItem, ResiduePartRequest, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-estimate',
@@ -192,6 +193,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
 
   copiedResidueEst?: ResidueItem;
 
+  pageStateType = 'ResidueDisposalEstimateApproval'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -210,7 +212,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -223,7 +225,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.residueDS = new ResidueDS(this.apollo);
-    //this.repairEstDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -234,24 +235,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.loadData();
-    var state = history.state;
-
-    if (state.type == "residue-estimate") {
-      let showResult = state.pagination.showResult;
-      if (showResult) {
-        this.lastSearchCriteria = state.pagination.where;
-        this.pageIndex = state.pagination.pageIndex;
-        this.pageSize = state.pagination.pageSize;
-        this.hasPreviousPage = state.pagination.hasPreviousPage;
-        this.startCursor = state.pagination.startCursor;
-        this.endCursor = state.pagination.endCursor;
-        this.previous_endCursor = state.pagination.previous_endCursor;
-        this.paginator.pageSize = this.pageSize;
-        this.paginator.pageIndex = this.pageIndex;
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      }
-
-    }
   }
 
   refresh() {
@@ -418,21 +401,12 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   }
 
   public loadData() {
-    this.search();
-
     const queries = [
-      //{ alias: 'reStatusCv', codeValType: 'REP_EST_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-    // this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-    //   this.processStatusCvList = addDefaultSelectOption(data, 'All');
-    // });
-    // this.cvDS.connectAlias('reStatusCv').subscribe(data => {
-    //   this.reStatusCvList = addDefaultSelectOption(data, 'All');
-    // });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
@@ -442,6 +416,32 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   handleCancelSuccess(count: any) {
@@ -488,16 +488,15 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     }
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {
-      tank_status_cv: { in: ['CLEANING','STORAGE'] },
+      tank_status_cv: { in: ['CLEANING', 'STORAGE'] },
       purpose_cleaning: { eq: true }
     };
 
     if (this.searchForm!.value['tank_status']) {
-      where.tank_status_cv = { in: this.searchForm!.value['tank_status']};
+      where.tank_status_cv = { in: this.searchForm!.value['tank_status'] };
     }
-    
 
     if (this.searchForm!.get('tank_no')?.value) {
       const or = [];
@@ -513,7 +512,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
     }
 
-
     if (this.searchForm!.value['eir_no']) {
       if (!where.in_gate) where.in_gate = {};
       where.in_gate = { some: { eir_no: { contains: this.searchForm!.value['eir_no'] } } };
@@ -522,9 +520,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
       if (!where.in_gate) where.in_gate = {};
       where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) } } };
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
-
 
     if (this.searchForm!.value['customer_code']) {
       where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
@@ -582,12 +578,26 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       // where.residue.some.status_cv = { in: this.availableProcessStatus };
     }
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();
     });
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         var residueStatusFilter = this.searchForm!.value['est_status_cv'];
@@ -671,10 +681,10 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (value && typeof value === 'object') {
+          searchCriteria = value.cargo;
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -687,10 +697,10 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.cargo;
+        } else {
+          searchCriteria = value || '';
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
@@ -752,7 +762,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,

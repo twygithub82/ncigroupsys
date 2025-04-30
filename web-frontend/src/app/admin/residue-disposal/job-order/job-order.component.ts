@@ -43,6 +43,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
 import { ComponentUtil } from 'app/utilities/component-util';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-job-order',
@@ -151,9 +152,9 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     METHOD: "COMMON-FORM.METHOD",
     RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
-    UNASSIGNED:'COMMON-FORM.UNASSIGN',
-    CONFIRM_TEAM_UNASSIGN:"COMMON-FORM.CONFIRM-TEAM-UNASSIGN",
-    ROLLBACK_SUCCESS:"COMMON-FORM.ROLLBACK-SUCCESS",
+    UNASSIGNED: 'COMMON-FORM.UNASSIGN',
+    CONFIRM_TEAM_UNASSIGN: "COMMON-FORM.CONFIRM-TEAM-UNASSIGN",
+    ROLLBACK_SUCCESS: "COMMON-FORM.ROLLBACK-SUCCESS",
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
@@ -190,6 +191,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
+  pageStateType = 'ResidueDisposalJobAllocation'
   previous_endCursorResidue: string | undefined = undefined;
   pageIndexResidue = 0;
   pageSizeResidue = 10;
@@ -200,15 +202,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   hasNextPageResidue = false;
   hasPreviousPageResidue = false;
 
-  pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
-  lastSearchCriteriaJobOrder: any;
-  lastOrderByJobOrder: any = { job_order_no: "DESC" };
-  endCursorJobOrder: string | undefined = undefined;
-  startCursorJobOrder: string | undefined = undefined;
-  hasNextPageJobOrder = false;
-  hasPreviousPageJobOrder = false;
-
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -218,6 +211,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     private translate: TranslateService,
     private route: ActivatedRoute,
     private router: Router,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -306,8 +300,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   public loadData() {
-    this.onFilterResidue();
-
     const queries = [
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
@@ -327,6 +319,32 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.filterResidueForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndexResidue = savedPagination.pageIndex;
+      this.pageSizeResidue = savedPagination.pageSize;
+
+      this.performSearchClean(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.onFilterResidue();
+    }
   }
 
   showNotification(
@@ -373,7 +391,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     }
   }
 
-  onFilterResidue() {
+  constructSearchCriteria() {
     const where: any = {
       and: [
         //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
@@ -404,10 +422,12 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     if (this.filterResidueForm!.get('filterResidue')?.value) {
       const tankNo = this.filterResidueForm!.get('filterResidue')?.value;
       where.and.push({
-        storing_order_tank: { or: [ 
-          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-        ] }
+        storing_order_tank: {
+          or: [
+            { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+            { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+          ]
+        }
       });
     }
 
@@ -416,13 +436,25 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
         customer_company: { code: { eq: (this.filterResidueForm!.get('customer')?.value).code } }
       });
     }
-
-
     this.lastSearchCriteriaResidue = this.residueDS.addDeleteDtCriteria(where);
-    this.performSearchClean(this.pageSizeResidue, this.pageIndexResidue, this.pageSizeResidue, undefined, undefined, undefined, () => { });
+  }
+
+  onFilterResidue() {
+    this.constructSearchCriteria();
+    this.performSearchClean(this.pageSizeResidue, 0, this.pageSizeResidue, undefined, undefined, undefined, () => { });
   }
 
   performSearchClean(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.filterResidueForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.residueDS.search(this.lastSearchCriteriaResidue, this.lastOrderByResidue, first, after, last, before)
       .subscribe(data => {
         this.rsdEstList = data.map(re => {
@@ -436,20 +468,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
 
     this.pageSizeResidue = pageSize;
     this.pageIndexResidue = pageIndex;
-  }
-
-  performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.joDS.searchJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
-      .subscribe(data => {
-        this.jobOrderList = data;
-        this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
-        this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
-        this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
-      });
-
-    this.pageSizeJobOrder = pageSize;
-    this.pageIndexJobOrder = pageIndex;
   }
 
   onPageEventClean(event: PageEvent) {
@@ -482,45 +500,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     this.performSearchClean(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
-  onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-
-    // Check if the page size has changed
-    if (this.pageSizeJobOrder !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexJobOrder = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorJobOrder;
-      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorJobOrder;
-      }
-    }
-
-    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
-  }
-
-  // mergeCriteria(criteria: any) {
-  //   return {
-  //     and: [
-  //       { delete_dt: { eq: null } },
-  //       criteria
-  //     ]
-  //   };
-  // }
-
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -531,10 +510,10 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -583,7 +562,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.onFilterResidue();
+    this.onFilterResidue();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
@@ -667,13 +646,12 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
   }
 
-  ConfirmUnassignTeam(event: Event, row:ResidueItem)
-  {
+  ConfirmUnassignTeam(event: Event, row: ResidueItem) {
     this.stopEventTrigger(event);
-    this.ConfirmUnassignDialog(event,row);
+    this.ConfirmUnassignDialog(event, row);
   }
 
-  ConfirmUnassignDialog(event: Event, row:ResidueItem) {
+  ConfirmUnassignDialog(event: Event, row: ResidueItem) {
     event.preventDefault(); // Prevents the form submission
 
     let tempDirection: Direction;
@@ -696,23 +674,21 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
-  UnassignEstimate( row:ResidueItem)
-  {
-    this.subs.sink = this.residueDS.rollbackAssigneddResidue ([row.guid!])
-    .subscribe((result:any) => {
-      if(result.data.rollbackAssignedResidue)
-      {
-        this.handleRollbackSuccess(result.data.rollbackAssignedResidue);
-      }
-    });
+  UnassignEstimate(row: ResidueItem) {
+    this.subs.sink = this.residueDS.rollbackAssigneddResidue([row.guid!])
+      .subscribe((result: any) => {
+        if (result.data.rollbackAssignedResidue) {
+          this.handleRollbackSuccess(result.data.rollbackAssignedResidue);
+        }
+      });
 
   }
 
-   handleRollbackSuccess(count: any) {
-      if ((count ?? 0) > 0) {
-        let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        this.refreshTable();
-      }
+  handleRollbackSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.refreshTable();
     }
+  }
 }
