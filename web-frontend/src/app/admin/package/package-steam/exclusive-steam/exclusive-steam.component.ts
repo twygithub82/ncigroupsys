@@ -464,7 +464,6 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
    if(this.selectedCustomers.length > 0)
    {
       var custCodes = this.selectedCustomers.map(c => c.code);
-      const soSome: any = {};
       where.and.push({ package_steaming: { customer_company: { code: { in:custCodes } } } });
     }
 
@@ -625,9 +624,10 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-        });
+        this.searchCustomerCompanyList(searchCriteria);
+        // this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        //   this.customer_companyList = data
+        // });
       })
     ).subscribe();
 
@@ -642,10 +642,11 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
         } else {
           searchCriteria = valchanges.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data;
+        this.searchCustomerCompanyList(searchCriteria);
+        // this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        //   this.customer_companyList = data;
           
-        });
+        // });
       })
     ).subscribe();
 
@@ -768,16 +769,15 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
     }
 
     if (this.custInput) {
+      this.searchCustomerCompanyList('');
       this.custInput.nativeElement.value = '';
+      
     }
    // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
   }
   
-  isCustomerSelected(customer: any): boolean {
-    return this.selectedCustomers.some(c => c.id === customer.id);
-  }
   
   add(event: MatChipInputEvent): void {
     const input = event.input;
@@ -808,6 +808,16 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
   
   private updateFormControl(): void {
     this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
+  }
+
+  searchCustomerCompanyList(searchCriteria : string)
+  {
+    this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+      if(this.custInput?.nativeElement.value===searchCriteria)
+      {
+         this.customer_companyList = data;
+      }
+    });
   }
 }
 
