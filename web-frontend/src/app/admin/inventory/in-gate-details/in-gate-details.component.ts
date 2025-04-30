@@ -305,9 +305,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
-      if (this.yardCvList.length > 0) {
-        this.inGateForm!.get('yard_cv')?.setValue(this.yardCvList[0].code_val);
-      }
+      // if (this.yardCvList.length > 0) {
+      //   this.inGateForm!.get('yard_cv')?.setValue(this.yardCvList[0].code_val);
+      // }
     });
     this.cvDS.connectAlias('hazardLevelCv').subscribe(data => {
       this.hazardLevelCvList = data;
@@ -333,7 +333,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       last_cargo_guid: sot.last_cargo_guid,
       last_cargo: this.lastCargoControl,
       open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
-      yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv,
+      //yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv,
+      yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv || 'YARD_1',
       preinspection_cv: this.igDS.getInGateItem(sot.in_gate)?.preinspection_cv,
       lolo_cv: 'BOTH' // default BOTH
     });
