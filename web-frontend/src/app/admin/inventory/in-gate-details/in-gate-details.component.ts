@@ -333,7 +333,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       last_cargo_guid: sot.last_cargo_guid,
       last_cargo: this.lastCargoControl,
       open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
-      yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv,
+     //yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv,
       preinspection_cv: this.igDS.getInGateItem(sot.in_gate)?.preinspection_cv,
       lolo_cv: 'BOTH' // default BOTH
     });

@@ -425,8 +425,9 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
-    if (this.customerCodeControl.value) {
-      where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
+    if (this.selectedCustomers.length>0) {
+      var custGuids = this.selectedCustomers.map(c => c.guid);
+      where.customer_company_guid = { in:custGuids };
     }
 
     if (this.plForm!.value["customer_cost"]) {
@@ -679,6 +680,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     this.initPlForm();
 
     this.customerCodeControl.reset('');
+    this.selectedCustomers=[];
 
   }
 

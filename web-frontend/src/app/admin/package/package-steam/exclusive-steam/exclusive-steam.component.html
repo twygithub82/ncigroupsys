@@ -61,30 +61,13 @@
                     </mat-autocomplete>
                   </mat-form-field>
                 </div>
-                <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <input matInput formControlName="customer_code" [matAutocomplete]="customerCode">
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                      @for (cc of customer_companyList; track cc) {
-                      <mat-option [value]="cc">
-                        {{ccDS.displayName(cc)}}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                    @if (pcForm?.get('customer_code')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.CUSTOMER_CODE }} {{translatedLangText.CARGO_REQUIRED }}
-                    </mat-error>
-                    }
-                  </mat-form-field>
-                </div> -->
+               
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()" >
                     <mat-icon>search</mat-icon>
                   </button>
-                  <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)" >
-                    {{translatedLangText.CLEAR_ALL}}
+                  <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}} >
+                    <mat-icon>clear_all</mat-icon>
                   </button>
                   
                 </div>

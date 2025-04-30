@@ -398,12 +398,12 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
 
 
-    if (this.customerCodeControl.value) {
+    if (this.selectedCustomers.length>0) {
       //if (this.customerCodeControl.value.length > 0) 
-      {
+      
         var custGuids = this.selectedCustomers.map(c => c.guid);
         where.customer_company_guid = { in:custGuids };
-      }
+      
     }
 
     if (this.pcForm!.get("profile_name")?.value) {
@@ -632,6 +632,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   resetForm() {
     this.initPcForm();
     this.customerCodeControl.reset('');
+    this.selectedCustomers=[];
   }
 
   displayLastUpdated(r: any) {
