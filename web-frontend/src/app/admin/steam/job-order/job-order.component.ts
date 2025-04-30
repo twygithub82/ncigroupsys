@@ -45,6 +45,7 @@ import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-job-order',
@@ -198,6 +199,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
+  pageStateType = 'SteamJobAllocation'
   previous_endCursorSteam: string | undefined = undefined;
   pageIndexSteam = 0;
   pageSizeSteam = 10;
@@ -208,14 +210,6 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   hasNextPageSteam = false;
   hasPreviousPageSteam = false;
 
-  pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
-  lastSearchCriteriaJobOrder: any;
-  lastOrderByJobOrder: any = { job_order_no: "DESC" };
-  endCursorJobOrder: string | undefined = undefined;
-  startCursorJobOrder: string | undefined = undefined;
-  hasNextPageJobOrder = false;
-  hasPreviousPageJobOrder = false;
   isActiveTab = 0;
 
   constructor(
@@ -227,6 +221,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     private translate: TranslateService,
     private router: Router,
     private route: ActivatedRoute,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -318,9 +313,6 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   public loadData() {
-    this.onFilterSteam();
-    this.onFilterJobOrder();
-
     const queries = [
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
@@ -340,6 +332,32 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.filterSteamForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndexSteam = savedPagination.pageIndex;
+      this.pageSizeSteam = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.onFilterSteam();
+    }
   }
 
   showNotification(
@@ -386,7 +404,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     }
   }
 
-  onFilterSteam() {
+  constructSearchCriteria() {
     const where: any = {
       and: [
         { storing_order_tank: { tank_status_cv: { in: ["STEAM"] } } }
@@ -416,10 +434,12 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     if (this.filterSteamForm!.get('filterSteam')?.value) {
       const tankNo = this.filterSteamForm!.get('filterSteam')?.value;
       where.and.push({
-        storing_order_tank: { or: [ 
-          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-        ] }
+        storing_order_tank: {
+          or: [
+            { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+            { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+          ]
+        }
       });
     }
 
@@ -429,30 +449,25 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
       });
     }
 
-
     this.lastSearchCriteriaSteam = this.steamDs.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSizeSteam, this.pageIndexSteam, this.pageSizeSteam, undefined, undefined, undefined, () => { });
   }
 
-  onFilterJobOrder() {
-    const where: any = {
-      job_type_cv: { eq: "STEAM" }
-    };
-
-    // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
-    //   where.so_no = { contains: this.filterRepairForm!.get('filterJobOrder')?.value };
-    // }
-
-    // TODO:: Get login user team
-    // if (false) {
-    //   where.team_guid = { eq: "" }
-    // }
-
-    this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+  onFilterSteam() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSizeSteam, 0, this.pageSizeSteam, undefined, undefined, undefined, () => { });
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.filterSteamForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.steamDs.search(this.lastSearchCriteriaSteam, this.lastOrderBySteam, first, after, last, before)
       .subscribe(data => {
         this.rsdEstList = data.map(re => {
@@ -466,20 +481,6 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
 
     this.pageSizeSteam = pageSize;
     this.pageIndexSteam = pageIndex;
-  }
-
-  performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.joDS.searchJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
-      .subscribe(data => {
-        this.jobOrderList = data;
-        this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
-        this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
-        this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
-      });
-
-    this.pageSizeJobOrder = pageSize;
-    this.pageIndexJobOrder = pageIndex;
   }
 
   onPageEventSteam(event: PageEvent) {
@@ -511,45 +512,6 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
 
     this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
   }
-
-  onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-
-    // Check if the page size has changed
-    if (this.pageSizeJobOrder !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexJobOrder = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorJobOrder;
-      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorJobOrder;
-      }
-    }
-
-    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
-  }
-
-  // mergeCriteria(criteria: any) {
-  //   return {
-  //     and: [
-  //       { delete_dt: { eq: null } },
-  //       criteria
-  //     ]
-  //   };
-  // }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -601,7 +563,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.onFilterJobOrder();
+    this.onFilterSteam();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
@@ -673,7 +635,6 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
             previous_endCursor: this.previous_endCursorSteam,
 
             showResult: this.steamDs.totalCount > 0
-
           }
         }
       });
@@ -717,13 +678,11 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         if (result > 0) {
-
           var where: any = {
             guid: { eq: row.guid }
           };
 
           this.steamDs.search(where).subscribe(data => {
-
             if (data.length > 0) {
               if (row.status_cv === 'APPROVED') {
                 var steamParts: any = data[0].steaming_part;
@@ -731,7 +690,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
                 this.router.navigate(['/admin/steam/job-order/monitor', joborder_guid, row.guid]);
               }
               else {
-                this.onFilterJobOrder();
+                this.onFilterSteam();
               }
             }
           }

@@ -48,6 +48,7 @@ import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-estimate',
@@ -204,6 +205,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   copiedSteamEst?: SteamItem;
 
+  pageStateType = 'SteamEstimateApproval'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -224,7 +226,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -250,23 +252,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.loadData();
-    var state = history.state;
-
-    if (state.type == "steam-estimate") {
-      let showResult = state.pagination.showResult;
-      if (showResult) {
-        this.lastSearchCriteria = state.pagination.where;
-        this.pageIndex = state.pagination.pageIndex;
-        this.pageSize = state.pagination.pageSize;
-        this.hasPreviousPage = state.pagination.hasPreviousPage;
-        this.startCursor = state.pagination.startCursor;
-        this.endCursor = state.pagination.endCursor;
-        this.previous_endCursor = state.pagination.previous_endCursor;
-        this.paginator.pageSize = this.pageSize;
-        this.paginator.pageIndex = this.pageIndex;
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      }
-    }
   }
 
   refresh() {
@@ -411,8 +396,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   public loadData() {
-    this.search();
-
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
@@ -428,6 +411,32 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   handleCancelSuccess(count: any) {
@@ -474,11 +483,10 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {
-      tank_status_cv: { in: ['CLEANING','STORAGE'] },
+      tank_status_cv: { in: ['CLEANING', 'STORAGE'] },
       purpose_steam: { eq: true }
-
     };
 
     // if (this.searchForm!.value['tank_status']) {
@@ -497,9 +505,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
 
     if (this.searchForm!.value['last_cargo']) {
-
       if (!where.tariff_cleaning) where.tariff_cleaning = {};
-
       where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
     }
 
@@ -531,12 +537,26 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();
     });
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.sotDS.searchStoringOrderTanksSteamEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         if (data) {
@@ -738,7 +758,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
         this.resetForm();
-  this.search();
+        this.search();
       }
     });
   }
