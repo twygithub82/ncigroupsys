@@ -134,7 +134,8 @@
             <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
             <mat-icon>cached</mat-icon>
           </button> -->
-            <button mat-mini-fab class="m-l-5 bg-dark-gold"  (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+            <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+              matTooltip={{translatedLangText.CLEAR_ALL}}>
               <mat-icon>clear_all</mat-icon>
             </button>
           </div>
@@ -249,7 +250,7 @@
     </mat-progress-spinner>
   </div>
   }
-  <mat-paginator #paginator [length]="ogDS.totalCount" [pageIndex]="0" [pageSize]="10"
+  <mat-paginator #paginator [length]="ogDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
     [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
   </mat-paginator>
 </div>
