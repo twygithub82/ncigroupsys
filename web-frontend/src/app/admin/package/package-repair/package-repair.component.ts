@@ -787,7 +787,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.CodeValuesDS.connectAlias('unitType').subscribe(data => {
       this.unitTypeCvList = data;
     });
-    this.search();
+    //this.search();
   }
 
   sortByDescription<T extends { description?: string }>(list: T[]): T[] {

@@ -28,7 +28,7 @@
               <div class="row">
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-2">
                   <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
+                    <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <input matInput formControlName="customer_code" [matAutocomplete]="customerCode">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of customer_companyList; track cc) {
