@@ -601,6 +601,12 @@ export class Utility {
     form?.setValue(input.value, { emitEvent: false });
   }
 
+  static onAlphaNumericOnly(event: Event, form: any): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^a-zA-Z0-9]/g, ''); // Allow letters and digits only
+    form?.setValue(input.value, { emitEvent: false });
+  }
+
   static getCountryCodes(orderBy: 'country' | 'code' = 'country') {
     const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
     return getCountries()

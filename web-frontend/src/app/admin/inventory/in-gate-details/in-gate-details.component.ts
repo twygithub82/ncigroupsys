@@ -549,18 +549,19 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -589,5 +590,13 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  onAlphaOnly(event: Event): void {
+    Utility.onAlphaOnly(event, this.inGateForm?.get("driver_name")!);
+  }
+
+  onAlphaNumericOnly(event: Event): void{
+    Utility.onAlphaNumericOnly(event, this.inGateForm?.get("vehicle_no")!);
   }
 }
