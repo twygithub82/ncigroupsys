@@ -30,6 +30,7 @@ import { OutGateDS } from 'app/data-sources/out-gate';
 import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
 
 @Component({
@@ -101,7 +102,6 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   searchForm?: UntypedFormGroup;
-  searchField: string = "";
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
@@ -110,6 +110,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   sotList: StoringOrderTankItem[] = [];
 
+  pageStateType = 'OutGate'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -125,7 +126,8 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -157,12 +159,31 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   public loadData() {
-    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-    //   if (this.soDS.totalCount > 0) {
-    //     this.soList = data;
-    //   }
-    // });
-    this.search();
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   showNotification(
@@ -209,7 +230,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
     }
   }
 
-  search() {
+  constructSearchCriteria() {
     const searchField = this.searchForm?.get('search_field')?.value?.trim();
     const where: any = {
       and: [
@@ -231,10 +252,24 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
       ]
     };
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.sotDS.searchStoringOrderTanksOutGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;

@@ -41,6 +41,7 @@ import { StoringOrderDS } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -147,6 +148,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   customerCodeControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
 
+  pageStateType = 'ResidueDisposalJobOrder'
   pageIndexJobOrder = 0;
   pageSizeJobOrder = 10;
   lastSearchCriteriaJobOrder: any;
@@ -170,7 +172,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -206,8 +209,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   public loadData() {
-    this.onFilterJobOrder();
-
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -231,6 +232,32 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.filterJobOrderForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndexJobOrder = savedPagination.pageIndex;
+      this.pageSizeJobOrder = savedPagination.pageSize;
+
+      this.performSearchJobOrder(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.onFilterJobOrder();
+    }
   }
 
   showNotification(
@@ -247,7 +274,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
-  onFilterJobOrder() {
+  constructSearchCriteria() {
     const where: any = {
       job_type_cv: { eq: "RESIDUE" }
     };
@@ -255,10 +282,14 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
       const tankNo = this.filterJobOrderForm!.get('filterJobOrder')?.value;
       where.or = [
-        { storing_order_tank: { or: [
-          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-        ] } },
+        {
+          storing_order_tank: {
+            or: [
+              { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+              { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+            ]
+          }
+        },
         { residue_part: { some: { residue: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
       ];
     }
@@ -279,10 +310,23 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     // }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+  }
+
+  onFilterJobOrder() {
+    this.constructSearchCriteria();
+    this.performSearchJobOrder(this.pageSizeJobOrder, 0, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.filterJobOrderForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         this.jobOrderList = data;
@@ -338,10 +382,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -467,7 +511,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.onFilterJobOrder();
+    this.onFilterJobOrder();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,

@@ -39,6 +39,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-in-gate',
@@ -128,7 +129,6 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     APPROVED_COST: "COMMON-FORM.APPROVED-COST"
   }
 
-
   availableTankStatus: string[] = [
     'CLEANING',
     'STORAGE'
@@ -163,7 +163,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   lastCargoControl = new UntypedFormControl();
   last_cargoList?: TariffCleaningItem[];
 
-
+  pageStateType = 'CleaningApproval'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -180,7 +180,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -271,7 +272,32 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
-    this.search();
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.searchData(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   showNotification(
@@ -318,7 +344,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {
       storing_order_tank: {
         tank_status_cv: { in: ["CLEANING", "STORAGE"] },
@@ -370,14 +396,27 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       where.job_no = { contains: this.searchForm!.value['job_no'].code };
     }
     this.lastSearchCriteria = where;
-    this.searchData(this.lastSearchCriteria, this.lastOrderBy, this.pageSize, undefined, undefined, undefined, 0);
   }
 
-  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number) {
+  search() {
+    this.constructSearchCriteria();
+    this.searchData(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+  }
+
+  searchData(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.previous_endCursor = after;
-    this.subs.sink = this.igCleanDS.search(where, order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.igCleanDS.search(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
       this.inGateList = data;
-      //this.inGateList=data;
       this.endCursor = this.igCleanDS.pageInfo?.endCursor;
       this.startCursor = this.igCleanDS.pageInfo?.startCursor;
       this.hasNextPage = this.igCleanDS.pageInfo?.hasNextPage ?? false;
@@ -421,7 +460,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       }
     }
 
-    this.searchData(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before, pageIndex);
+    this.searchData(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {

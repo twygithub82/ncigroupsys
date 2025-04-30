@@ -47,6 +47,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 //import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-job-order-task',
@@ -150,6 +151,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   customerCodeControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
 
+  pageStateType = 'SteamJobOrder'
   pageIndexJobOrder = 0;
   pageSizeJobOrder = 10;
   lastSearchCriteriaJobOrder: any;
@@ -168,7 +170,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private router: Router
+    private router: Router,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -204,8 +207,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   public loadData() {
-    this.onFilterJobOrder();
-
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -229,6 +230,32 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.filterJobOrderForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndexJobOrder = savedPagination.pageIndex;
+      this.pageSizeJobOrder = savedPagination.pageSize;
+
+      this.performSearchJobOrder(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.onFilterJobOrder();
+    }
   }
 
   showNotification(
@@ -245,15 +272,14 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
-  onFilterJobOrder() {
+  constructSearchCriteria() {
     const where: any = {
       job_type_cv: { eq: "STEAM" }
     };
 
-    // where.steaming_part={all:{ tariff_steaming_guid: { eq: null } }};
     where.steaming_part = {
       all: { tariff_steaming_guid: { eq: null } },
-      some: { guid: { neq: null } } // Ensure there's at least one steaming_part
+      some: { guid: { neq: null } }
     };
 
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
@@ -283,13 +309,28 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     // }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+  }
+
+  onFilterJobOrder() {
+    this.constructSearchCriteria();
+    this.performSearchJobOrder(this.pageSizeJobOrder, 0, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.filterJobOrderForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         data = data.filter(data => data.steaming_part?.length);
+        console.log(data)
         this.jobOrderList = data.filter(data => data.delete_dt === null || data.delete_dt === 0);
         this.jobOrderList.forEach(jo => {
           jo.time_table = jo.time_table?.filter(data => data.delete_dt === null || data.delete_dt === 0);
@@ -343,10 +384,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
