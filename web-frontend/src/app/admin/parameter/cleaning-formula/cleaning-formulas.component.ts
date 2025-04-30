@@ -429,6 +429,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
     this.resetForm();
+  this.search();
   }
 
   resetForm() {

@@ -598,6 +598,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     this.resetForm();
+  this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,

@@ -706,6 +706,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
     this.resetForm();
+    this.onFilterCleaning();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,

@@ -879,6 +879,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     //   if (result.action === 'confirmed') {
     //     this.resetForm();
+  this.search();
     //   }
     // });
   }

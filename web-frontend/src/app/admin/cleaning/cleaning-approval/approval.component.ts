@@ -460,6 +460,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
     this.resetForm();
+    this.search();
   }
 
   resetForm() {

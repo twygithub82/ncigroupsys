@@ -738,6 +738,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
         this.resetForm();
+  this.search();
       }
     });
   }
