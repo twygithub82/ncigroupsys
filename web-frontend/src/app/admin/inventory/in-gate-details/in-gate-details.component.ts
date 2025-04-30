@@ -31,9 +31,8 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
@@ -243,7 +242,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       last_cargo: this.lastCargoControl,
       purpose_storage: [''],
       open_on_gate: [{ value: '', disabled: true }],
-      yard_cv: [''],
+      yard_cv: ['YARD_1'],
       preinspection_cv: ['YES'],
       lolo_cv: ['BOTH']
     });
@@ -333,7 +332,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       last_cargo_guid: sot.last_cargo_guid,
       last_cargo: this.lastCargoControl,
       open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
-      //yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv,
       yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv || 'YARD_1',
       preinspection_cv: this.igDS.getInGateItem(sot.in_gate)?.preinspection_cv,
       lolo_cv: 'BOTH' // default BOTH

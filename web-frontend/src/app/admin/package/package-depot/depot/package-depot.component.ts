@@ -4,7 +4,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -40,6 +40,9 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+
 //import { TankDS, TankItem } from 'app/data-sources/tank';
 
 @Component({
@@ -70,7 +73,8 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
     ReactiveFormsModule,
     FormsModule,
     MatAutocompleteModule,
-    MatDividerModule
+    MatDividerModule,
+    MatChipsModule
   ]
 })
 
@@ -124,6 +128,10 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
+  selectedCustomers: any[] = [];
+
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -217,6 +225,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
+  
+  @ViewChild('custInput', { static: true })
+  custInput?: ElementRef<HTMLInputElement>;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -249,6 +260,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
+  
+
   initializeFilterCustomerCompany() {
     this.pcForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
@@ -260,9 +273,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-        });
+        this.searchCustomerCompanyList(searchCriteria);
       })
     ).subscribe();
   }
@@ -387,13 +398,12 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
 
 
-    if (this.customerCodeControl.value) {
+    if (this.selectedCustomers.length>0) {
       //if (this.customerCodeControl.value.length > 0) 
-      {
-        // const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        //var guids = customerCodes.map(cc => cc.guid);
-        where.customer_company_guid = { eq: this.customerCodeControl.value.guid };
-      }
+      
+        var custGuids = this.selectedCustomers.map(c => c.guid);
+        where.customer_company_guid = { in:custGuids };
+      
     }
 
     if (this.pcForm!.get("profile_name")?.value) {
@@ -622,6 +632,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   resetForm() {
     this.initPcForm();
     this.customerCodeControl.reset('');
+    this.selectedCustomers=[];
   }
 
   displayLastUpdated(r: any) {
@@ -637,5 +648,65 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+      const customer = event.option.value;
+      const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
+      if (!(index >= 0)) {
+        this.selectedCustomers.push(customer);
+        
+      }
+  
+      if (this.custInput) {
+        this.searchCustomerCompanyList('');
+        this.custInput.nativeElement.value = '';
+        
+      }
+     // this.updateFormControl();
+      //this.customerCodeControl.setValue(null);
+      //this.pcForm?.patchValue({ customer_code: null });
+    }
+    
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    this.customerCodeControl.setValue(null);
+  }
+
+  remove(cust: any): void {
+    const index = this.selectedCustomers.findIndex(c=>c.code===cust.code);
+    if (index >= 0) {
+      this.selectedCustomers.splice(index, 1);
+      
+    }
+  }
+  
+  // displayCustomerCompanyFn(customer: any): string {
+  //   if (!customer) return '';
+  //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
+  // }
+  
+  private updateFormControl(): void {
+    this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
+  }
+
+  searchCustomerCompanyList(searchCriteria : string)
+  {
+    this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+      if(this.custInput?.nativeElement.value===searchCriteria)
+      {
+         this.customer_companyList = data;
+      }
+    });
+  }
+ 
 }
 

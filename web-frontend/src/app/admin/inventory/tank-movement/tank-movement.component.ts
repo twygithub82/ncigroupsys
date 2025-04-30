@@ -451,7 +451,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
 
   search() {
     this.constructSearchCriteria();
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {

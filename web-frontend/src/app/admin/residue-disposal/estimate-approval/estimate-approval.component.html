@@ -30,8 +30,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                      <input matInput [formControl]="customerCodeControl"
-                        [matAutocomplete]="customerCode">
+                      <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc">
@@ -44,8 +43,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                      <input matInput [formControl]="lastCargoControl"
-                        [matAutocomplete]="lastCargo">
+                      <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo">
                       <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
                         @for (tc of last_cargoList; track tc) {
                         <mat-option [value]="tc">
@@ -107,7 +105,8 @@
                     <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
-                    <button mat-mini-fab class="m-l-5 bg-dark-gold"  (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                      matTooltip={{translatedLangText.CLEAR_ALL}}>
                       <mat-icon>clear_all</mat-icon>
                     </button>
                   </div>
@@ -310,7 +309,7 @@
               </mat-progress-spinner>
             </div>
             }
-            <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
+            <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
               [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
             </mat-paginator>
           </div>

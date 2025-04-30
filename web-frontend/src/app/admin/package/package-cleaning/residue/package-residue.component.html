@@ -21,22 +21,28 @@
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
               <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-2">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <input matInput formControlName="customer_code" [matAutocomplete]="customerCode">
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                    <mat-chip-grid #chipGrid>
+                      @for (cust of selectedCustomers; track cust) {
+                        <mat-chip-row (removed)="remove(cust)">
+                          {{cust.code}}
+                          <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ cust.code">
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                        </mat-chip-row>
+                      }
+                    </mat-chip-grid>
+                    <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
+                     [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
+                    <mat-autocomplete #customerCode="matAutocomplete"  (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
                         {{ccDS.displayName(cc)}}
                       </mat-option>
                       }
                     </mat-autocomplete>
-                    @if (pcForm?.get('customer_code')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.CUSTOMER_CODE }} {{translatedLangText.CARGO_REQUIRED }}
-                    </mat-error>
-                    }
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">

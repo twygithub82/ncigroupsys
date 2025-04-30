@@ -35,6 +35,7 @@ import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -136,6 +137,7 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
 
+  pageStateType = 'OutGateSurvey'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -151,7 +153,8 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -198,10 +201,10 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -215,10 +218,10 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (value && typeof value === 'object') {
+          searchCriteria = value.code;
         } else {
-          searchCriteria = value.cargo;
+          searchCriteria = value || '';
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
@@ -244,7 +247,32 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
-    this.search();
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   showNotification(
@@ -291,7 +319,7 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
     }
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {
       tank: { release_order_sot: { some: { status_cv: { eq: "ACCEPTED" } } } }
     };
@@ -393,17 +421,31 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
     this.lastSearchCriteria = this.ogDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.ogDS.searchOutGateForSurvey(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.outGateList = data;
-        this.endCursor = this.igDS.pageInfo?.endCursor;
-        this.startCursor = this.igDS.pageInfo?.startCursor;
-        this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.ogDS.pageInfo?.endCursor;
+        this.startCursor = this.ogDS.pageInfo?.startCursor;
+        this.hasNextPage = this.ogDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.ogDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSize = pageSize;

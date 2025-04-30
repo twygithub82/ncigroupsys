@@ -34,6 +34,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -138,6 +139,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
 
+  pageStateType = 'Transfer'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -159,7 +161,8 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -205,10 +208,10 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (value && typeof value === 'object') {
+          searchCriteria = value.cargo;
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -222,10 +225,10 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.cargo;
+        } else {
+          searchCriteria = value || '';
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
@@ -256,7 +259,32 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
     });
-    this.search();
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
   showNotification(
     colorName: string,
@@ -302,7 +330,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
     }
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {
       tank_status_cv: { in: TANK_STATUS_IN_YARD }
     };
@@ -392,10 +420,24 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.sotDS.getStoringOrderTankForTransfer(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;

@@ -4,7 +4,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -39,6 +39,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 @Component({
   selector: 'app-package-steam',
   standalone: true,
@@ -68,6 +70,7 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatChipsModule
   ]
 })
 export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
@@ -105,6 +108,10 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   hasPreviousPage = false;
 
   selection = new SelectionModel<PackageSteamingItem>(true, []);
+
+  selectedCustomers: any[] = [];
+    
+  separatorKeysCodes: number[] = [ENTER, COMMA];
 
   id?: number;
   pcForm?: UntypedFormGroup;
@@ -209,6 +216,8 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
+  @ViewChild('custInput', { static: true })
+  custInput?: ElementRef<HTMLInputElement>;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -252,6 +261,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       max_labour: ['']
 
     });
+    this.selectedCustomers=[];
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -421,13 +431,18 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     };
 
     where.and.push({ steaming_exclusive_guid: { eq: null } });
-    if (this.pcForm!.get('customer_code')?.value) {
-      const soSome: any = {};
 
-
-      where.and.push({ customer_company: { code: { contains: this.pcForm!.value['customer_code'].code } } });
-
+    
+    if (this.selectedCustomers.length>0) {
+      var custCodes = this.selectedCustomers.map(c => c.code);
+      where.and.push({ customer_company: { code: { in: custCodes } } });
+      
     }
+
+    // if (this.pcForm!.get('customer_code')?.value) {
+    //   where.and.push({ customer_company: { code: { contains: this.pcForm!.value['customer_code'].code } } });
+
+    // }
 
     if (this.pcForm!.value["min_labour"]) {
 
@@ -586,9 +601,10 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-        });
+        this.searchCustomerCompanyList(searchCriteria);
+        // this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        //   this.customer_companyList = data
+        // });
       })
     ).subscribe();
   }
@@ -658,19 +674,20 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
+    this.resetForm();
   this.search();
-      }
-    });
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_RESET,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -682,5 +699,63 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     retval = (!tempMax || tempMax === 9999 ? '-' : tempMax);
     return retval;
   }
+  selected(event: MatAutocompleteSelectedEvent): void {
+            const customer = event.option.value;
+            const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
+            if (!(index >= 0)) {
+              this.selectedCustomers.push(customer);
+              
+            }
+        
+            if (this.custInput) {
+              this.searchCustomerCompanyList('');
+              this.custInput.nativeElement.value = '';
+              
+            }
+           // this.updateFormControl();
+            //this.customerCodeControl.setValue(null);
+            //this.pcForm?.patchValue({ customer_code: null });
+          }
+          
+        add(event: MatChipInputEvent): void {
+          const input = event.input;
+          const value = event.value;
+          // Add our fruit
+          if ((value || '').trim()) {
+            //this.fruits.push(value.trim());
+          }
+          // Reset the input value
+          if (input) {
+            input.value = '';
+          }
+          this.customerCodeControl.setValue(null);
+        }
+      
+        remove(cust: any): void {
+          const index = this.selectedCustomers.findIndex(c=>c.code===cust.code);
+          if (index >= 0) {
+            this.selectedCustomers.splice(index, 1);
+            
+          }
+        }
+        
+        // displayCustomerCompanyFn(customer: any): string {
+        //   if (!customer) return '';
+        //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
+        // }
+        
+        private updateFormControl(): void {
+         // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
+        }
+      
+        searchCustomerCompanyList(searchCriteria : string)
+        {
+          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+            if(this.custInput?.nativeElement.value===searchCriteria)
+            {
+               this.customer_companyList = data;
+            }
+          });
+        }
 }
 

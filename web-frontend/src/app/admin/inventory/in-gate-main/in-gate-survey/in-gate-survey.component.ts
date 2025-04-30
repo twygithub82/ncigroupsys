@@ -32,6 +32,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -122,6 +123,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
 
+  pageStateType = 'InGateSurvey'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -137,7 +139,8 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -172,10 +175,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -201,7 +204,32 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
-    this.search();
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
   showNotification(
     colorName: string,
@@ -247,7 +275,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {};
 
     if (this.searchForm!.get('eir_no')?.value) {
@@ -317,10 +345,24 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.igDS.searchInGateForSurvey(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.inGateList = data;
