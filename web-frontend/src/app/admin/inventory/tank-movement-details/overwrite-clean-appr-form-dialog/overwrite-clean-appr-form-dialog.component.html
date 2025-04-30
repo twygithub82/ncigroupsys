@@ -1,5 +1,5 @@
 <div class="addContainer">
-  <div class="modalHeader">
+  <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h3>{{dialogTitle}}</h3>
@@ -20,11 +20,11 @@
                 <input matInput formControlName="approve_dt" [matDatepicker]="approve_dt_picker" required>
                 <mat-datepicker-toggle matSuffix [for]="approve_dt_picker"></mat-datepicker-toggle>
                 <mat-datepicker #approve_dt_picker></mat-datepicker>
-                @if (overwriteForm.get('approve_dt')?.hasError('required')) {
+                <!-- @if (overwriteForm.get('approve_dt')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.APPROVED_DATE}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
@@ -35,11 +35,11 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.APPROVED_COST}}</mat-label>
                 <input matInput formControlName="cleaning_cost" type="number" required>
-                @if (overwriteForm.get('cleaning_cost')?.hasError('required')) {
+                <!-- @if (overwriteForm.get('cleaning_cost')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.APPROVED_COST}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
@@ -50,11 +50,11 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.APPROVED_BUFFER_CLEANING_COST}}</mat-label>
                 <input matInput formControlName="buffer_cost" type="number" required>
-                @if (overwriteForm.get('buffer_cost')?.hasError('required')) {
+                <!-- @if (overwriteForm.get('buffer_cost')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.APPROVED_DATE}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
@@ -65,11 +65,11 @@
                   <mat-option [value]="buffer.tariff_buffer_guid">{{buffer.tariff_buffer?.buffer_type}}</mat-option>
                   }
                 </mat-select>
-                @if (overwriteForm.get('tank_comp_guid')?.hasError('required')) {
+                <!-- @if (overwriteForm.get('tank_comp_guid')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.APPROVED_BUFFER_CLEANING_COST}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
           </div>
@@ -78,11 +78,11 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
                 <input matInput formControlName="overwrite_remarks" required>
-                @if (overwriteForm.get('overwrite_remarks')?.hasError('required')) {
+                <!-- @if (overwriteForm.get('overwrite_remarks')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">

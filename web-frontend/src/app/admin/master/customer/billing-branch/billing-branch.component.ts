@@ -27,27 +27,19 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Utility } from 'app/utilities/utility';
-// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-//import { Observable, Subscription } from 'rxjs';
-//import { TankDS, TankItem } from 'app/data-sources/tank';
-//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-//import { ComponentUtil } from 'app/utilities/component-util';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
-import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { TankDS, TankItem } from 'app/data-sources/tank';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-billing-branch',
@@ -80,66 +72,17 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
     MatDividerModule,
     MatProgressBarModule
   ]
-
 })
-
 
 export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    // 'select',
     'desc',
     'fName',
     'lName',
-    //'mobile',
-    // 'gender',
     'category',
     'bDate',
-
-    //'email',
-    // 'actions',
   ];
-
-  customerCodeControl = new UntypedFormControl();
-  categoryControl = new UntypedFormControl();
-  descriptionControl = new UntypedFormControl();
-  handledItemControl = new UntypedFormControl();
-
-  storageCalCvList: CodeValuesItem[] = [];
-  handledItemCvList: CodeValuesItem[] = [];
-  CodeValuesDS?: CodeValuesDS;
-  tankDS: TankDS;
-
-  ccDS: CustomerCompanyDS;
-  // tariffResidueDS:TariffResidueDS;
-  // packResidueDS:PackageResidueDS;
-  // clnCatDS:CleaningCategoryDS;
-  custCompDS: CustomerCompanyDS;
-
-  packResidueItems: PackageResidueItem[] = [];
-  unit_typeList: TankItem[] = []
-
-  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
-  customer_companyList: CustomerCompanyItem[] = [];
-  all_customer_companyList: CustomerCompanyItem[] = [];
-  all_branch_List: CustomerCompanyItem[] = [];
-  cleaning_categoryList?: CleaningCategoryItem[];
-
-  pageIndex = 0;
-  pageSize = 10;
-  lastSearchCriteria: any;
-  lastOrderBy: any = { code: "ASC" };
-  endCursor: string | undefined = undefined;
-  previous_endCursor: string | undefined = undefined;
-  startCursor: string | undefined = undefined;
-  hasNextPage = false;
-  hasPreviousPage = false;
-
-  searchField: string = "";
-  selection = new SelectionModel<PackageResidueItem>(true, []);
-
-  id?: number;
-  pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -241,6 +184,48 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
+  customerCodeControl = new UntypedFormControl();
+  categoryControl = new UntypedFormControl();
+  descriptionControl = new UntypedFormControl();
+  handledItemControl = new UntypedFormControl();
+
+  storageCalCvList: CodeValuesItem[] = [];
+  handledItemCvList: CodeValuesItem[] = [];
+  CodeValuesDS?: CodeValuesDS;
+  tankDS: TankDS;
+
+  ccDS: CustomerCompanyDS;
+  // tariffResidueDS:TariffResidueDS;
+  // packResidueDS:PackageResidueDS;
+  // clnCatDS:CleaningCategoryDS;
+  custCompDS: CustomerCompanyDS;
+
+  packResidueItems: PackageResidueItem[] = [];
+  unit_typeList: TankItem[] = []
+
+  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
+  customer_companyList: CustomerCompanyItem[] = [];
+  all_customer_companyList: CustomerCompanyItem[] = [];
+  all_branch_List: CustomerCompanyItem[] = [];
+  cleaning_categoryList?: CleaningCategoryItem[];
+
+  pageStateType = 'Branch'
+  pageIndex = 0;
+  pageSize = 10;
+  lastSearchCriteria: any;
+  lastOrderBy: any = { code: "ASC" };
+  endCursor: string | undefined = undefined;
+  previous_endCursor: string | undefined = undefined;
+  startCursor: string | undefined = undefined;
+  hasNextPage = false;
+  hasPreviousPage = false;
+
+  searchField: string = "";
+  selection = new SelectionModel<PackageResidueItem>(true, []);
+
+  id?: number;
+  pcForm?: UntypedFormGroup;
+
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -249,7 +234,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
-    private searchCriteriaService: SearchCriteriaService,
+    private searchStateService: SearchStateService,
     private translate: TranslateService
 
   ) {
@@ -270,26 +255,26 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
     this.translateLangText();
     this.initializeFilterCustomerCompany();
-    var state = history.state;
-    if (state.type == "billing-branch") {
-      let showResult = state.pagination.showResult;
-      if (showResult) {
-        this.searchCriteriaService = state.pagination.where;
-        this.pageIndex = state.pagination.pageIndex;
-        this.pageSize = state.pagination.pageSize;
-        this.hasPreviousPage = state.pagination.hasPreviousPage;
-        this.startCursor = state.pagination.startCursor;
-        this.endCursor = state.pagination.endCursor;
-        this.previous_endCursor = state.pagination.previous_endCursor;
-        this.paginator.pageSize = this.pageSize;
-        this.paginator.pageIndex = this.pageIndex;
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      }
+    // var state = history.state;
+    // if (state.type == "billing-branch") {
+    //   let showResult = state.pagination.showResult;
+    //   if (showResult) {
+    //     this.searchCriteriaService = state.pagination.where;
+    //     this.pageIndex = state.pagination.pageIndex;
+    //     this.pageSize = state.pagination.pageSize;
+    //     this.hasPreviousPage = state.pagination.hasPreviousPage;
+    //     this.startCursor = state.pagination.startCursor;
+    //     this.endCursor = state.pagination.endCursor;
+    //     this.previous_endCursor = state.pagination.previous_endCursor;
+    //     this.paginator.pageSize = this.pageSize;
+    //     this.paginator.pageIndex = this.pageIndex;
+    //     this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+    //   }
 
-    }
-    else {
-      this.search();
-    }
+    // }
+    // else {
+    //   this.search();
+    // }
   }
 
   initPcForm() {
@@ -438,13 +423,14 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {};
 
     where.and = [
       { main_customer_guid: { neq: null } },
       { main_customer_guid: { neq: "" } },
-      { type_cv: { in: ["BRANCH"] } }
+      { type_cv: { in: ["BRANCH"] } },
+      { delete_dt: { eq: null } }
     ];
     if (this.customerCodeControl.value) {
       const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
@@ -461,22 +447,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       where.tank = tankSearch;
     }
 
-    // if (this.pcForm!.value["fax_no"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
-    // }
-
-    // if (this.pcForm!.value["phone"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
-    // }
-
-
-    // if (this.pcForm!.value["email"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
-    // }
-
     if (this.pcForm!.value["country"]) {
       where.country = { contains: this.pcForm!.value["country"] };
     }
@@ -485,22 +455,39 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       where.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
     }
 
-
     this.lastSearchCriteria = where;
-    this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    this.subs.sink = this.ccDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.customer_companyList = data;
-      // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
       this.endCursor = this.ccDS.pageInfo?.endCursor;
       this.startCursor = this.ccDS.pageInfo?.startCursor;
       this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
       this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = 0;
       this.selection.clear();
       if (!this.hasPreviousPage)
         this.previous_endCursor = undefined;
     });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
   }
 
   selectStorageCalculateCV_Description(valCode?: string): string {
@@ -543,7 +530,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       last = undefined;
       before = undefined;
     } else {
-      //if (pageIndex > this.pageIndex && this.hasNextPage) {
       if (pageIndex > this.pageIndex) {
         // Navigate forward
         first = pageSize;
@@ -554,59 +540,30 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
         before = this.startCursor;
       }
       else if (pageIndex == this.pageIndex) {
-
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
 
-    if (this.lastSearchCriteria) {
-      this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    }
-    else {
-      this.search();
-    }
-    //}
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
-  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number) {
-    this.previous_endCursor = after;
-    this.subs.sink = this.ccDS.search(where, order, first, after, last, before).subscribe(data => {
-      this.customer_companyList = data;
-      this.endCursor = this.ccDS.pageInfo?.endCursor;
-      this.startCursor = this.ccDS.pageInfo?.startCursor;
-      this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = pageIndex;
-      this.paginator.pageIndex = this.pageIndex;
-      this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
-  }
-
-  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
-    const sCriteria: any = {};
-    sCriteria.where = where;
-    sCriteria.order = order;
-    sCriteria.first = first;
-    sCriteria.after = after;
-    sCriteria.last = last;
-    sCriteria.before = before;
-    sCriteria.pageIndex = pageIndex;
-    sCriteria.previousPageIndex = previousPageIndex;
-    sCriteria.length = length;
-    sCriteria.hasNextPage = hasNextPage;
-    sCriteria.hasPreviousPage = hasPreviousPage;
-
-    this.searchCriteriaService.setCriteria(sCriteria);
-  }
+  // searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+  //   previousPageIndex?: number) {
+  //   this.previous_endCursor = after;
+  //   this.subs.sink = this.ccDS.search(where, order, first, after, last, before).subscribe(data => {
+  //     this.customer_companyList = data;
+  //     this.endCursor = this.ccDS.pageInfo?.endCursor;
+  //     this.startCursor = this.ccDS.pageInfo?.startCursor;
+  //     this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
+  //     this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
+  //     this.pageIndex = pageIndex;
+  //     this.paginator.pageIndex = this.pageIndex;
+  //     this.selection.clear();
+  //     if (!this.hasPreviousPage)
+  //       this.previous_endCursor = undefined;
+  //   });
+  // }
 
   removeSelectedRows() {
   }
@@ -622,7 +579,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
         });
       })
@@ -635,9 +592,35 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = this.custCompDS.search(cond, { code: 'ASC' }, 100).subscribe(data => {
       this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
     });
-    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC'}, 100).subscribe(data => {
+    this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
       this.unit_typeList = data;
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.pcForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   showNotification(
@@ -716,6 +699,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     this.resetForm();
+  this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,

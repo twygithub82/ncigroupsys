@@ -479,6 +479,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
     this.resetForm();
+  this.search();
   }
 
   resetForm() {

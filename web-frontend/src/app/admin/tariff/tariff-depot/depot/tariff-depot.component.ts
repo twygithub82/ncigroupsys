@@ -31,7 +31,7 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
-import { SearchCriteriaService } from 'app/services/search-criteria.service';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -102,6 +102,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   tariffDepotItems: TariffDepotItem[] = [];
   tankItemList: TankItem[] = [];
 
+  pageStateType = 'TariffDepot'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -158,6 +159,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
     INVALID: 'COMMON-FORM.INVALID',
@@ -214,19 +216,14 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-    private searchCriteriaService: SearchCriteriaService,
+    private searchStateService: SearchStateService,
     private translate: TranslateService
-
   ) {
     super();
     this.initTdForm();
-
     this.tnkDS = new TankDS(this.apollo);
     this.tfDepotDS = new TariffDepotDS(this.apollo);
     this.initializeFilterValues();
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -380,7 +377,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     //      );
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {
       and: [
         {
@@ -393,24 +390,15 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       ]
     };
 
-    if (this.unit_type_control.value) {
-      if (this.unit_type_control.value.length > 0) {
-        const tnkItems: TankItem[] = this.unit_type_control.value;
-        var guids = tnkItems.map(t => t.guid);
-        // where.tanks = { some: { guid: { in: guids } } };
-        const tariff_depot: any = { tanks: { some: { guid: { in: guids } } } }
-        where.and.push({ tariff_depot: tariff_depot })
-      }
-    }
-
     if (this.tdForm!.get("description")?.value) {
       let desc = this.tdForm!.get("description")?.value;
       where.description = { contains: desc }
     }
 
-    if (this.tdForm!.get("unit_type")?.value) {
+    const unitType = this.tdForm!.get("unit_type")?.value;
+    if (unitType && typeof unitType === 'object') {
       const tankSome: any = {};
-      tankSome.unit_type = { contains: this.tdForm!.get("unit_type")?.value?.unit_type };
+      tankSome.unit_type = { contains: unitType?.unit_type };
       // where.tanks = { some: tankSome }
       const tariff_depot: any = { tanks: { some: tankSome } }
       where.and.push({ tariff_depot: tariff_depot })
@@ -424,7 +412,25 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.tfDepotDS.SearchTariffDepotWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.tdForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotWithCount(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.tariffDepotItems = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.tfDepotDS.pageInfo?.endCursor;
@@ -435,6 +441,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       this.paginator.pageIndex = 0;
     });
   }
+
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
@@ -497,42 +504,36 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
-    const sCriteria: any = {};
-    sCriteria.where = where;
-    sCriteria.order = order;
-    sCriteria.first = first;
-    sCriteria.after = after;
-    sCriteria.last = last;
-    sCriteria.before = before;
-    sCriteria.pageIndex = pageIndex;
-    sCriteria.previousPageIndex = previousPageIndex;
-    sCriteria.length = length;
-    sCriteria.hasNextPage = hasNextPage;
-    sCriteria.hasPreviousPage = hasPreviousPage;
-
-    this.searchCriteriaService.setCriteria(sCriteria);
-  }
-
   public loadData() {
     this.subs.sink = this.tnkDS.loadItems().subscribe(data => {
       this.tankItemList = data;
     });
-    this.search();
-  }
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.tdForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   // export table data in excel file
@@ -578,10 +579,8 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       if (result > 0) {
         this.handleSaveSuccess(result);
 
-        //this.search();
         if (this.tariffDepotItems.length > 0)
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-
       }
     });
   }
@@ -620,9 +619,9 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '500px',
+      width: '400px',
       data: {
-        headerText: this.translatedLangText.ARE_U_SURE_DELETE,
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         act: "warn"
       },
       direction: tempDirection
@@ -692,6 +691,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     this.resetForm();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,

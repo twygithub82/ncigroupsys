@@ -1,4 +1,3 @@
-import { Direction } from '@angular/cdk/bidi';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
@@ -26,7 +25,6 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -34,10 +32,10 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-tank-movement',
@@ -118,6 +116,15 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     YARD: 'COMMON-FORM.YARD'
   }
 
+  availableProcessStatus: string[] = [
+    'CLEANING',
+    'STEAM',
+    'REPAIR',
+    'RESIDUE',
+    'STORAGE',
+    'RELEASED'
+  ]
+
   searchForm?: UntypedFormGroup;
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -137,6 +144,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
 
+  pageStateType = 'TankMovement'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -145,6 +153,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  previous_endCursor: string | undefined = undefined;
 
   constructor(
     public httpClient: HttpClient,
@@ -251,8 +260,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       this.yardCvList = addDefaultSelectOption(data, 'All');
     });
 
-    const savedCriteria = this.searchStateService.getCriteria('TankMovement');
-    const savedPagination = this.searchStateService.getPagination('TankMovement');
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
     if (savedCriteria) {
       this.searchForm?.patchValue(savedCriteria);
@@ -276,19 +285,6 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     if (!savedCriteria && !savedPagination) {
       this.search();
     }
-  }
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
   }
 
   // export table data in excel file
@@ -380,7 +376,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       where.storing_order = soSearch;
     }
 
-    if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_status_cv')?.value || this.searchForm!.get('eir_status_cv')?.value || this.searchForm!.get('yard_cv')?.value) {
+    if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value || this.searchForm!.get('yard_cv')?.value) {
       const igSearch: any = {};
       if (this.searchForm!.get('eir_no')?.value) {
         igSearch.eir_no = { contains: this.searchForm!.get('eir_no')?.value };
@@ -459,8 +455,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.searchStateService.setCriteria('TankMovement', this.searchForm?.value);
-    this.searchStateService.setPagination('TankMovement', {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
       pageSize,
       pageIndex,
       first,
@@ -468,7 +464,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       last,
       before
     });
-    console.log(this.searchStateService.getPagination('TankMovement'))
+    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.sotDS.searchStoringOrderTankForMovement(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
@@ -506,6 +502,9 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         // Navigate backward
         last = pageSize;
         before = this.startCursor;
+      } else if (pageIndex == this.pageIndex) {
+        first = pageSize;
+        after = this.previous_endCursor;
       }
     }
 

@@ -340,6 +340,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     this.resetForm();
+    this.onFilter();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,

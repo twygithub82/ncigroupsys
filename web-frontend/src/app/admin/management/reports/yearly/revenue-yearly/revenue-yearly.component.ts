@@ -503,6 +503,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
        tempDirection = 'ltr';
      }
      this.resetForm();
+  
     //  const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //    data: {
     //      headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,

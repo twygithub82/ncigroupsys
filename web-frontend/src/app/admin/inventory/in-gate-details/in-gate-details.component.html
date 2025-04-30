@@ -213,7 +213,7 @@
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
-                                  <input matInput formControlName="vehicle_no" class="text-uppercase" required>
+                                  <input matInput formControlName="vehicle_no" class="text-uppercase" required (input)="onAlphaNumericOnly($event)">
                                   <!-- @if (inGateForm?.get('vehicle_no')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
@@ -224,7 +224,7 @@
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
-                                  <input matInput formControlName="driver_name" class="text-uppercase" required>
+                                  <input matInput formControlName="driver_name" class="text-uppercase" required (input)="onAlphaOnly($event)">
                                   <!-- @if (inGateForm?.get('driver_name')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}

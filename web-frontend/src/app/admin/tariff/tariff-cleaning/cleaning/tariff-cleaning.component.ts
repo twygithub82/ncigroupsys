@@ -40,6 +40,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-tariff-cleaning',
@@ -137,7 +138,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   cMethodDS: CleaningMethodDS;
   sotDS: StoringOrderTankDS;
 
-  previous_endCursor: string | undefined = undefined;
   soList: StoringOrderItem[] = [];
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
   soStatusCvList: CodeValuesItem[] = [];
@@ -156,14 +156,16 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   banTypeControl = new UntypedFormControl();
   hazardLevelControl = new UntypedFormControl();
 
+  pageStateType = 'TariffCleaning'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
+  lastOrderBy: any = { tariff_cleaning: { cargo: "DESC" } };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  private regex: RegExp = new RegExp(/^[0-9-]*$/);
+  previous_endCursor: string | undefined = undefined;
 
   constructor(
     private router: Router,
@@ -173,8 +175,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchCriteriaService: SearchCriteriaService
-
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -195,24 +196,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
-
-    var state = history.state;
-    if (state.type == "tariff-cleaning") {
-      let showResult = state.pagination.showResult;
-      if (showResult) {
-        this.searchCriteriaService = state.pagination.where;
-        this.pageIndex = state.pagination.pageIndex;
-        this.pageSize = state.pagination.pageSize;
-        this.hasPreviousPage = state.pagination.hasPreviousPage;
-        this.startCursor = state.pagination.startCursor;
-        this.endCursor = state.pagination.endCursor;
-        this.previous_endCursor = state.pagination.previous_endCursor;
-        this.paginator.pageSize = this.pageSize;
-        this.paginator.pageIndex = this.pageIndex;
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      }
-
-    }
   }
   refresh() {
     this.loadData();
@@ -260,26 +243,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   public loadData() {
-    let lastSrchCriteria = this.searchCriteriaService.getCriteria();
-    this.lastSearchCriteria = this.appendDeleteDt({});
-
-    if (lastSrchCriteria.pageIndex) {
-      this.pageIndex = lastSrchCriteria.pageIndex;
-      this.endCursor = lastSrchCriteria.after;
-      this.startCursor = lastSrchCriteria.before;
-      this.hasNextPage = lastSrchCriteria.hasNextPage;
-      this.hasPreviousPage = lastSrchCriteria.hasPreviousPage;
-    }
-    else {
-      lastSrchCriteria.pageIndex = 0;
-      lastSrchCriteria.length = 0;
-      this.endCursor = undefined;
-      this.startCursor = undefined;
-      this.hasNextPage = false;
-      this.hasPreviousPage = false;
-    }
-
-    this.onPageEvent({ pageIndex: lastSrchCriteria.pageIndex, pageSize: this.pageSize, length: lastSrchCriteria.length })
     this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cCategoryDS.totalCount > 0) {
         this.cCategoryList = data;
@@ -308,6 +271,56 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.cvDS.connectAlias('banTypeCv').subscribe(data => {
       this.banTypeCvList = data;
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    this.subs.sink = this.tcDS.SearchTariffCleaningWithCount(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.tcList = data;
+        this.endCursor = this.tcDS.pageInfo?.endCursor;
+        this.startCursor = this.tcDS.pageInfo?.startCursor;
+        this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
+      });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
   }
 
   showNotification(
@@ -345,23 +358,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
-  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number) {
-    this.previous_endCursor = after;
-    this.subs.sink = this.tcDS.SearchTariffCleaningWithCount(where, order, first, after, last, before).subscribe(data => {
-      this.tcList = data;
-      this.endCursor = this.tcDS.pageInfo?.endCursor;
-      this.startCursor = this.tcDS.pageInfo?.startCursor;
-      this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = pageIndex;
-      this.paginator.pageIndex = this.pageIndex;
-      //this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
-  }
-
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize, previousPageIndex } = event;
     let first: number | undefined = undefined;
@@ -373,7 +369,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
-      this.pageSize = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
@@ -394,28 +389,10 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
-  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
-    const sCriteria: any = {};
-    sCriteria.where = where;
-    sCriteria.order = order;
-    sCriteria.first = first;
-    sCriteria.after = after;
-    sCriteria.last = last;
-    sCriteria.before = before;
-    sCriteria.pageIndex = pageIndex;
-    sCriteria.previousPageIndex = previousPageIndex;
-    sCriteria.length = length;
-    sCriteria.hasNextPage = hasNextPage;
-    sCriteria.hasPreviousPage = hasPreviousPage;
-
-    this.searchCriteriaService.setCriteria(sCriteria);
-  }
-
-  search() {
+  constructSearchCriteria() {
     var where: any = {};
     const tariff_cleaning: any = {}
 
@@ -467,14 +444,13 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       where.tariff_cleaning = tariff_cleaning;
     }
 
-    where = this.appendDeleteDt(where);
-
-    this.subs.sink = this.tcDS.SearchTariffCleaningWithCount(where).subscribe(data => {
-      this.tcList = data;
-      console.log(data)
-    });
+    this.lastSearchCriteria = this.appendDeleteDt(where);
   }
 
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+  }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -555,6 +531,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     this.resetForm();
+    this.search();
 
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
@@ -642,7 +619,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '500px',
+      width: '15vw',
       data: {
         headerText: this.translatedLangText.ARE_U_SURE_DELETE,
         act: "warn"

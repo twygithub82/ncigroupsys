@@ -476,6 +476,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
     this.resetForm();
+  this.search();
   }
 
   resetForm() {
