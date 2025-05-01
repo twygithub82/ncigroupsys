@@ -14,7 +14,6 @@
       <div class="row justify-content-center">
         <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
           <div class="card">
-
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row">
@@ -29,47 +28,55 @@
                       } -->
 
                       @if (pcForm.get('unit_type')?.hasError('duplicated')) {
-                        <mat-error>
-                          {{translatedLangText.UNIT_TYPE }} {{translatedLangText.EXISTED }}
-                        </mat-error>
-                        }
+                      <mat-error>
+                        {{translatedLangText.UNIT_TYPE }} {{translatedLangText.EXISTED }}
+                      </mat-error>
+                      }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
-                    
-                      <!-- <mat-label>{{translatedLangText.GATE_IN }}</mat-label> -->
-                      <mat-slide-toggle formControlName="gate_in">{{translatedLangText.GATE_IN }}</mat-slide-toggle>
-                    
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center">
+                    <div class="row">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
+                        <!-- <mat-label>{{translatedLangText.GATE_IN }}</mat-label> -->
+                        <mat-slide-toggle formControlName="gate_in">{{translatedLangText.GATE_IN }}</mat-slide-toggle>
+                      </div>
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
+                        <!-- <mat-label>{{translatedLangText.GATE_OUT }}</mat-label> -->
+                        <mat-slide-toggle formControlName="gate_out">{{translatedLangText.GATE_OUT }}</mat-slide-toggle>
+                      </div>
+                    </div>
                   </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
-                    
-                      <!-- <mat-label>{{translatedLangText.GATE_OUT }}</mat-label> -->
-                      <mat-slide-toggle formControlName="gate_out">{{translatedLangText.GATE_OUT }}</mat-slide-toggle>
-                    
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center">
+                    <div class="row">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
+    
+                        <!-- <mat-label>{{translatedLangText.LIFT_ON }}</mat-label> -->
+                        <mat-slide-toggle formControlName="lift_on">{{translatedLangText.LIFT_ON }}</mat-slide-toggle>
+    
+                      </div>
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
+    
+                        <!-- <mat-label>{{translatedLangText.LIFT_OFF }}</mat-label> -->
+                        <mat-slide-toggle formControlName="lift_off">{{translatedLangText.LIFT_OFF }}</mat-slide-toggle>
+    
+                      </div>
+                    </div>
                   </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
-                    
-                      <!-- <mat-label>{{translatedLangText.LIFT_ON }}</mat-label> -->
-                      <mat-slide-toggle formControlName="lift_on">{{translatedLangText.LIFT_ON }}</mat-slide-toggle>
-                    
-                  </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
-                    
-                      <!-- <mat-label>{{translatedLangText.LIFT_OFF }}</mat-label> -->
-                      <mat-slide-toggle formControlName="lift_off">{{translatedLangText.LIFT_OFF }}</mat-slide-toggle>
-                    
-                  </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
-                    
-                      <!-- <mat-label>{{translatedLangText.PREINSPECT }}</mat-label> -->
-                      <mat-slide-toggle formControlName="preinspect">{{translatedLangText.PREINSPECT }}</mat-slide-toggle>
-                    
-                  </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
-                    
-                      <!-- <mat-label>{{translatedLangText.ISO_FORMAT }}</mat-label> -->
-                      <mat-slide-toggle formControlName="iso_format">{{translatedLangText.ISO_FORMAT }}</mat-slide-toggle>
-                    
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center">
+                    <div class="row">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
+    
+                        <!-- <mat-label>{{translatedLangText.PREINSPECT }}</mat-label> -->
+                        <mat-slide-toggle formControlName="preinspect">{{translatedLangText.PREINSPECT }}</mat-slide-toggle>
+    
+                      </div>
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
+    
+                        <!-- <mat-label>{{translatedLangText.ISO_FORMAT }}</mat-label> -->
+                        <mat-slide-toggle formControlName="iso_format">{{translatedLangText.ISO_FORMAT }}</mat-slide-toggle>
+    
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

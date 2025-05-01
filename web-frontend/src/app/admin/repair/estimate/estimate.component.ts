@@ -42,6 +42,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-estimate',
@@ -182,6 +183,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   copiedRepair?: RepairItem;
 
+  pageStateType = 'RepairEstimate'
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -201,7 +203,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -399,7 +402,31 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       this.repairOptionCvList = data;
     });
 
-    this.search();
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   handleCancelSuccess(count: any) {
@@ -447,8 +474,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
-  search() {
-    if (this.searchForm?.invalid) return;
+  constructSearchCriteria(): boolean {
+    if (this.searchForm?.invalid) return false;
 
     const where: any = {
       tank_status_cv: { in: ['REPAIR', 'STORAGE'] },
@@ -530,12 +557,26 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+    return true;
+  }
+
+  search() {
+    if (!this.constructSearchCriteria()) return;
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();
     });
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
     this.subs.sink = this.sotDS.searchStoringOrderTanksRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data.map(sot => {
@@ -639,10 +680,10 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -655,10 +696,10 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.cargo;
+        } else {
+          searchCriteria = value || '';
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
@@ -722,7 +763,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,

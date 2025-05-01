@@ -209,7 +209,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
       tap(value => {
         var searchCriteria = '';
         if (value && typeof value === 'object') {
-          searchCriteria = value.cargo;
+          searchCriteria = value.code;
         } else {
           searchCriteria = value || '';
         }

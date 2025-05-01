@@ -47,6 +47,7 @@ import { Observable, Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { JobOrderQCComponent } from "../../repair/job-order-qc/job-order-qc.component";
 import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-task.component";
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-job-order',
@@ -185,6 +186,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
+  pageStateType = 'RepairJobAllocation'
   pageIndexRepair = 0;
   pageSizeRepair = 10;
   lastSearchCriteriaRepair: any;
@@ -205,7 +207,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -264,8 +267,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   public loadData() {
-    this.onFilterRepair();
-
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -289,6 +290,32 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.filterRepairForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndexRepair = savedPagination.pageIndex;
+      this.pageSizeRepair = savedPagination.pageSize;
+
+      this.performSearchRepair(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.onFilterRepair();
+    }
   }
 
   showNotification(
@@ -335,7 +362,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     }
   }
 
-  onFilterRepair() {
+  constructSearchCriteria() {
     const where: any = {
     };
 
@@ -392,10 +419,23 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     this.lastSearchCriteriaRepair = this.repairDS.addDeleteDtCriteria(where);
-    this.performSearchRepair(this.pageSizeRepair, this.pageIndexRepair, this.pageSizeRepair, undefined, undefined, undefined, () => { });
+  }
+
+  onFilterRepair() {
+    this.constructSearchCriteria();
+    this.performSearchRepair(this.pageSizeRepair, 0, this.pageSizeRepair, undefined, undefined, undefined, () => { });
   }
 
   performSearchRepair(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.filterRepairForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
     this.subs.sink = this.repairDS.searchRepair(this.lastSearchCriteriaRepair, this.lastOrderByRepair, first, after, last, before)
       .subscribe(data => {
         this.repEstList = data.map(re => {
@@ -579,7 +619,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.onFilterRepair();
+    this.onFilterRepair();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
