@@ -1626,7 +1626,7 @@
                                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="foot_valve_oth" />
+                                    <input matInput formControlName="foot_valve_oth" (input)="onAlphaOnly($event)"/>
                                     <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1670,7 +1670,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="btm_dis_valve_oth" />
+                                    <input matInput formControlName="btm_dis_valve_oth" (input)="onAlphaOnly($event)" />
                                     <!-- @if (getBottomFormGroup().get('btm_dis_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1702,7 +1702,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="btm_dis_valve_spec_oth" />
+                                    <input matInput formControlName="btm_dis_valve_spec_oth" (input)="onAlphaOnly($event)" />
                                     <!-- @if (getBottomFormGroup().get('btm_dis_valve_spec_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1805,7 +1805,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="top_dis_valve_oth" />
+                                    <input matInput formControlName="top_dis_valve_oth" (input)="onAlphaOnly($event)" />
                                     <!-- @if (getTopFormGroup().get('top_dis_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1836,7 +1836,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="top_dis_valve_spec_oth" />
+                                    <input matInput formControlName="top_dis_valve_spec_oth" (input)="onAlphaOnly($event)" />
                                     <!-- @if (getTopFormGroup().get('top_dis_valve_spec_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1880,7 +1880,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_oth" />
+                                    <input matInput formControlName="airline_valve_oth" (input)="onAlphaOnly($event)"/>
                                     <!-- @if (getTopFormGroup().get('airline_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1939,7 +1939,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_conn_oth" />
+                                    <input matInput formControlName="airline_valve_conn_oth" (input)="onAlphaOnly($event)"/>
                                     <!-- @if (getTopFormGroup().get('airline_valve_conn_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1970,7 +1970,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_conn_spec_oth" />
+                                    <input matInput formControlName="airline_valve_conn_spec_oth" (input)="onAlphaOnly($event)"/>
                                     <!-- @if (getTopFormGroup().get('airline_valve_conn_spec_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -2013,27 +2013,23 @@
                                   </mat-radio-group>
                                 </div>
                               </div>
+                              <!--  -->
                               <div class="row">
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.MANLID_COVER}}</mat-label>
+                                    <mat-label>{{translatedLangText.BRAND}}</mat-label>
                                     <mat-select formControlName="manlid_cover_cv">
                                       @for (codeValue of manlidCoverCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    <!-- @if (getManlidFormGroup().get('manlid_cover_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.MANLID_COVER}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
                                   </mat-form-field>
                                 </div>
                                 @if (displayOthers(getManlidFormGroup().get('manlid_cover_cv')?.value)) {
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="manlid_cover_oth" />
+                                    <input matInput formControlName="manlid_cover_oth" (input)="onAlphaOnly($event)"/>
                                     <!-- @if (getManlidFormGroup().get('manlid_cover_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
