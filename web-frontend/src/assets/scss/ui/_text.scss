@@ -37,3 +37,27 @@
   color: #6c757d;
   margin-right: 10px;
 }
+
+.text-highlight-danger {
+  background-color: #dc3545;  // Bootstrap's strong 'danger' red
+  color: #fff;                // White text for contrast
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.text-border-danger {
+  border: 2px solid #dc3545;  // Strong red border
+  color: #dc3545;             // Match the text color to the border
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.text-border-danger i {
+  margin-right: 6px;  // Space between icon and text
+}
