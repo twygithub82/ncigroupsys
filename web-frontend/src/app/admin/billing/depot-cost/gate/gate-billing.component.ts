@@ -310,7 +310,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      // { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
       { alias: 'invoiceTypeCv', codeValType: 'INVOICE_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
@@ -320,6 +320,9 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
+    });
+    this.cvDS.connectAlias('depotCv').subscribe(data => {
+      this.depotCvList = addDefaultSelectOption(data, 'All');
     });
     this.search();
   }

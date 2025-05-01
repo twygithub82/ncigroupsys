@@ -293,7 +293,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.initializeFilterCustomerCompany();
     this.loadData();
     this.translateLangText();
-    this.search();
+    //this.search();
   }
 
   initPcForm() {
@@ -401,7 +401,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '55vw',
+      width: '65vw',
       //height: '80vh',
       data: {
         action: 'update',
@@ -909,7 +909,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
