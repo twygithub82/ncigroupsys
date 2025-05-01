@@ -1997,7 +1997,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: `${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
+        messageText: "",//`${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
@@ -2047,7 +2047,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: `${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
+        messageText: "",//`${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
@@ -2092,7 +2092,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: this.translatedLangText.CLEANING,
+        messageText: "",//this.translatedLangText.CLEANING,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
@@ -2134,7 +2134,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: this.translatedLangText.CLEANING,
+        messageText: "",//this.translatedLangText.CLEANING,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
@@ -2177,7 +2177,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: `${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
+        messageText: "", //`${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection

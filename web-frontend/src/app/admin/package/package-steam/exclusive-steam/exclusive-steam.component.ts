@@ -423,7 +423,7 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         headerText: this.translatedLangText.CONFIRM_DELETE,
-        messageText: [msgText, msgText1],
+        messageText: "",//[msgText, msgText1],
         action: 'new',
       },
       direction: tempDirection
