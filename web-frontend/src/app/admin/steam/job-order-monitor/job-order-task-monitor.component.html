@@ -360,7 +360,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.DELETE}}:</span>
-                          <button mat-menu-item class="pe-0 justify-content-end" (click)="stopEventTrigger($event)"
+                          <button mat-icon-button class="pe-0 justify-content-end" (click)="stopEventTrigger($event)"
                             (click)="deleteEstDetail($event,row)">
                             <mat-icon>delete_forever</mat-icon>
                           </button>

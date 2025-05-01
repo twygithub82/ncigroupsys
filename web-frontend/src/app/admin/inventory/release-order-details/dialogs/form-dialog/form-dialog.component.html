@@ -45,7 +45,7 @@
               </div>
               <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{data.translatedLangText.EIR_DATE}}:</span>
-                {{igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_dt}}
+                {{displayDate(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_dt)}}
               </div>
               <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>

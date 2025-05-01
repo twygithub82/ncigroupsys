@@ -464,7 +464,6 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       last,
       before
     });
-    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.sotDS.searchStoringOrderTankForMovement(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;

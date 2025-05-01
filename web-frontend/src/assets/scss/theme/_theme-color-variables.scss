@@ -155,3 +155,29 @@ $theme-gold-purple-menu-list-submenu: lighten($purple, 20%);
 $theme-gold-purple-active-color: darken($purple, 15%);
 $theme-gold-purple-disabled-text: darken(#717171, 15%);
 $theme-gold-purple-disabled-menu: darken(#c8c8c8, 15%);
+
+// Base Blue (soft pastel-like blue used in stripe rows)
+$blue-base: #b3cbff;
+$blue-primary: #5579f5;       // #91adff
+$blue-accent: #FFAA5B;                        // Slightly deeper blue for accent
+
+// Theme Derived Variables
+$theme-blue: $blue-primary;
+$theme-blue-legal-bg: lighten($blue-base, 10%);    // For panel/table backgrounds
+$theme-blue-bar: darken($blue-base, 15%);
+$theme-blue-navbar-brand: darken($blue-base, 25%);
+$theme-blue-navbar-brand_active: lighten($blue-base, 5%);
+$theme-blue-navbar-brand_hover: lighten($blue-base, 10%);
+$theme-blue-navbar-brand_focus: lighten($blue-base, 10%);
+$theme-blue-nav-anchor: $blue-accent;
+$theme-blue-nav-anchor_hover: lighten($blue-accent, 10%);
+$theme-blue-nav-anchor_focus: lighten($blue-accent, 5%);
+$theme-blue-nav-anchor-opened: darken($blue-accent, 10%);
+$theme-blue-nav-anchor-opened_hover: lighten($blue-accent, 5%);
+$theme-blue-nav-anchor-opened_focus: lighten($blue-accent, 10%);
+$theme-blue-menu-list-active: darken($blue-primary, 15%);
+$theme-blue-menu-list-toggled: lighten($blue-primary, 20%);
+$theme-blue-menu-list-submenu: lighten($blue-primary, 25%);
+$theme-blue-active-color: darken($blue-primary, 10%);
+$theme-blue-disabled-text: darken(#717171, 15%);
+$theme-blue-disabled-menu: darken(#c8c8c8, 15%);

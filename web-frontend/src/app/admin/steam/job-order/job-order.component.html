@@ -54,7 +54,8 @@
                       <button mat-mini-fab color="primary" matTooltip={{translatedLangText.SEARCH}}>
                         <mat-icon>search</mat-icon>
                       </button>
-                      <button mat-mini-fab class="m-l-5 bg-dark-gold"  (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                      <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                        matTooltip={{translatedLangText.CLEAR_ALL}}>
                         <mat-icon>clear_all</mat-icon>
                       </button>
                     </div>
@@ -120,13 +121,13 @@
                         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                         @if(canToggleJob(row))
                         {
-                        <button mat-menu-item (click)="stopEventTrigger($event)">
+                        <button mat-icon-button (click)="stopEventTrigger($event)">
                           <mat-icon>build</mat-icon>
                         </button>
                         }
                         @else
                         {
-                        <button mat-menu-item (click)="stopEventTrigger($event)">
+                        <button mat-icon-button (click)="stopEventTrigger($event)">
                           <mat-icon>whatshot</mat-icon>
                         </button>
                         }
@@ -138,9 +139,10 @@
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         @if(row?.status_cv=="ASSIGNED")
                         {
-                          <button mat-menu-item   (click)="ConfirmUnassignTeam($event,row)" [matTooltip]="translatedLangText.UNASSIGNED">
-                            <mat-icon>remove_circle_outline</mat-icon>
-                          </button>
+                        <button mat-icon-button (click)="ConfirmUnassignTeam($event,row)"
+                          [matTooltip]="translatedLangText.UNASSIGNED">
+                          <mat-icon>remove_circle_outline</mat-icon>
+                        </button>
                         }
                         <!-- <span
                           class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}} -->
@@ -166,8 +168,8 @@
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="steamDs.totalCount" [pageIndex]="pageIndexSteam" [pageSize]="pageSizeSteam"
-                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventSteam($event)">
+                <mat-paginator #paginator [length]="steamDs.totalCount" [pageIndex]="pageIndexSteam"
+                  [pageSize]="pageSizeSteam" [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventSteam($event)">
                 </mat-paginator>
                 <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
                   <div class="legend-item d-flex align-items-center me-4 mb-2">

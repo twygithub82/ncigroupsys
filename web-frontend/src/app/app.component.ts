@@ -5,7 +5,7 @@ import { PageLoaderComponent } from './layout/page-loader/page-loader.component'
 import { AuthService } from '@core/service/auth.service';
 import { Subscription, timer, fromEvent, merge } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, take } from 'rxjs/operators';
 import { RefreshTokenDialogComponent } from '@shared/components/refresh-token-dialog/refresh-token-dialog.component';
 import { refreshTokenWithin } from 'environments/environment';
 
@@ -44,7 +44,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.startAutoLogoutTimer();
-    this.detectUserActivity();
+    if (this.authService.currentUserName) {
+      this.detectUserActivity();
+    }
     this.authService.tokenRefreshed.subscribe(() => this.resetAutoLogoutTimer());
     this.authService.userLoggedOut.subscribe(() => {
       this.clearAllTimers();
@@ -52,7 +54,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.router.navigate(['/authentication/signin-staff']);
     });
     this.authService.userLoggedIn.subscribe(() => { // ✅ Resubscribe when user logs in
-      this.detectUserActivity(); 
+      this.userActivitySubscription?.unsubscribe();
+      this.detectUserActivity();
     });
   }
 
@@ -63,37 +66,38 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private detectUserActivity() {
     const activityEvents: Array<keyof DocumentEventMap> = ['mousemove', 'keydown', 'mousedown', 'touchstart'];
-  
+
     this.userActivitySubscription = merge(
       ...activityEvents.map(event => fromEvent<MouseEvent | KeyboardEvent | TouchEvent>(document, event))
     )
-      .pipe(debounceTime(500)) // Prevent excessive calls (wait 500ms before reacting)
+      .pipe(debounceTime(500))
       .subscribe(() => {
         const tokenExpiration = this.authService.getTokenExpiration();
         const now = Date.now();
-        const timeLeft = tokenExpiration ? tokenExpiration - now : 0; // Remaining token time in ms
-  
+        const timeLeft = tokenExpiration ? tokenExpiration - now : 0;
+
         const timeLeftCompare = refreshTokenWithin;
         if (timeLeft > timeLeftCompare) {
-          console.log(`User is active - ${timeLeft} > ${timeLeftCompare}...`);
+          console.log('No need to refresh token - time left:', timeLeft);
           return;
         }
+
         if (this.isRefreshing) {
-          console.log('Token is refreshing...');
+          console.log('Token refresh in progress, skipping user activity check');
           return;
         }
-  
-        console.log('User is active - start refresh token...');
-        this.isRefreshing = true; // Set flag to avoid duplicate requests
-  
-        this.authService.refreshToken().subscribe({
+
+        // Lock before making the request
+        this.isRefreshing = true;
+
+        this.authService.refreshToken().pipe(take(1)).subscribe({
           next: () => {
-            console.log('Token refreshed due to user activity');
-            this.isRefreshing = false; // Reset flag after successful refresh
+            console.log('✅ Token refreshed due to user activity');
+            this.isRefreshing = false;
           },
           error: () => {
-            console.error('Token refresh failed - Logging out user');
-            this.isRefreshing = false; // Reset flag on failure
+            console.error('❌ Token refresh failed - Logging out user');
+            this.isRefreshing = false;
             this.authService.logout();
           }
         });
@@ -102,7 +106,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private startAutoLogoutTimer() {
     const tokenExpiration = this.authService.getTokenExpiration();
-    if (!tokenExpiration) return;
+    if (!tokenExpiration || isNaN(tokenExpiration)) return;
 
     const now = Date.now();
     const expiresInMs = tokenExpiration - now;

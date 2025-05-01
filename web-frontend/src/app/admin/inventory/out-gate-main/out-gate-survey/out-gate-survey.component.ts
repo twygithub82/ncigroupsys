@@ -219,7 +219,7 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
       tap(value => {
         var searchCriteria = '';
         if (value && typeof value === 'object') {
-          searchCriteria = value.code;
+          searchCriteria = value.cargo;
         } else {
           searchCriteria = value || '';
         }

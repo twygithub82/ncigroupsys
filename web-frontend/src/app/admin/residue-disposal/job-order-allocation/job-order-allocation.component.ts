@@ -1299,13 +1299,12 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   }
 
   canSave(): boolean {
-    const validStatus = ['ASSIGNED','PENDING', 'APPROVED', 'PARTIAL_ASSIGNED', 'CANCELED', 'NO_ACTION']
+    const validStatus = ['ASSIGNED', 'PENDING', 'APPROVED', 'PARTIAL_ASSIGNED', 'CANCELED', 'NO_ACTION']
 
-    var allowSave : boolean=validStatus.includes(this.residueItem?.status_cv!);
-    if(this.deList?.length)
-    {
-        var itms = this.deList.filter(itm=>(itm.job_order?.status_cv=="PENDING" || itm.job_order==null||itm.job_order?.status_cv==null));
-        allowSave=itms.length>0;
+    var allowSave: boolean = validStatus.includes(this.residueItem?.status_cv!);
+    if (this.deList?.length) {
+      var itms = this.deList.filter(itm => (itm.job_order?.status_cv == "PENDING" || itm.job_order == null || itm.job_order?.status_cv == null));
+      allowSave = itms.length > 0;
     }
     return allowSave;
   }

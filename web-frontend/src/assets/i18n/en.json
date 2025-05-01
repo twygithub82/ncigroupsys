@@ -297,6 +297,13 @@
         "PERFORMANCE-REPORTS": "Performance Reports",
         "ZERO-APPROVAL-COST-REPORT": "Zero Approval Cost Report"
       }
+    },
+    "ACCOUNT": {
+      "TEXT": "Account",
+      "LIST": {
+        "CHANGE-PASSWORD": "Change Password",
+        "LOGOUT": "Logout"
+      }
     }
   },
   "LANDING-SIGNIN": {
@@ -1207,7 +1214,8 @@
     "OUTSTANDING": "Outstanding",
     "FLAT-RATE": "Flat Rate $",
     "HOURLY-RATE": "Hourly Rate $",
-    "REPAIR-ESITMATE-DETAILS": "Repair Estimate Details"
+    "REPAIR-ESITMATE-DETAILS": "Repair Estimate Details",
+    "ACCOUNT": "Account"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

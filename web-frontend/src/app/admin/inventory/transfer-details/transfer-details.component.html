@@ -153,7 +153,7 @@
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <div class="contact-detail-info">
                                   <span
-                                    [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv
+                                    [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv
                                     ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
                                 </div>
                               </div>
