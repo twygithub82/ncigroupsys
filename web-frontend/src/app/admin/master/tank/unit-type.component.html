@@ -167,7 +167,7 @@
                     @if(!row.tariff_depot_guid)
                     {
                     <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
-                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
                       <mat-icon>delete_forever</mat-icon>
                     </button>
                     }

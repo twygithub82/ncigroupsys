@@ -135,7 +135,7 @@
                 [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 @if (!row.so_count && !row.sot_count && !row.tank_info_count) {
                 <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.customer_company)"
-                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-dark">
+                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
                   <mat-icon>delete_forever</mat-icon>
                 </button>
                 }

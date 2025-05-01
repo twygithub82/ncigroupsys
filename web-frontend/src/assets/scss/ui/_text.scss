@@ -1,0 +1,39 @@
+﻿/*
+ *  Document   : _text.scss
+ *  Author     : RedStar Template
+ *  Description: This SCSS file for text utility classes
+ */
+
+// Add spacing between inline text elements (like in buttons)
+.example-text-row span,
+.example-text-row a {
+  margin-right: 8px;
+}
+
+// Remove text outline or highlight on focus (like buttons)
+.text:focus,
+.text.focus {
+  outline: none;
+}
+
+// Force spacing between text blocks
+.text-space {
+  margin-right: 10px !important;
+}
+
+// Bigger or highlighted text
+.big-text {
+  font-size: 1.25rem;  // Adjust as needed
+  font-weight: 500;
+}
+
+// Custom danger color (softer than default red)
+.text-custom-danger {
+  color: #f04b4b !important; // Crimson
+}
+
+// Muted text with spacing
+.text-muted-space {
+  color: #6c757d;
+  margin-right: 10px;
+}
