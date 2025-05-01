@@ -7,6 +7,12 @@
   color: $text !important;
 }
 
+.left-img {
+  img {
+    max-width: 80vh;
+  }
+}
+
 section.content {
   margin-top: 0px;
 

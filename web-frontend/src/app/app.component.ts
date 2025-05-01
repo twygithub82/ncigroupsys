@@ -44,7 +44,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.startAutoLogoutTimer();
-    this.detectUserActivity();
+    if (this.authService.currentUserName) {
+      this.detectUserActivity();
+    }
     this.authService.tokenRefreshed.subscribe(() => this.resetAutoLogoutTimer());
     this.authService.userLoggedOut.subscribe(() => {
       this.clearAllTimers();
