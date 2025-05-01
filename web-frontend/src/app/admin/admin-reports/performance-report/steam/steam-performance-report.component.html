@@ -128,11 +128,11 @@
                   [formControl]="invoiceDateControl">
                 <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
                 <mat-datepicker #invoice_date_picker></mat-datepicker>
-                @if (this.invoiceDateControl.hasError('required')) {
+                <!-- @if (this.invoiceDateControl.hasError('required')) {
                 <mat-error>
                   {{this.translatedLangText.INVOICE_DATE}} {{this.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">

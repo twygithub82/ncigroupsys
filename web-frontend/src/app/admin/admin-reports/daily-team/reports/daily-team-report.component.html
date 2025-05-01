@@ -183,11 +183,11 @@
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
                 <input matInput [formControl]="invoiceNoControl">
-                @if (this.invoiceNoControl.hasError('required')) {
+                <!-- @if (this.invoiceNoControl.hasError('required')) {
                 <mat-error>
                   {{this.translatedLangText.INVOICE_NO}} {{this.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">

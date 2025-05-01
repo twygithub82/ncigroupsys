@@ -226,7 +226,7 @@
                             [ngClass]="'tbl-col-width-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             @if (surveyDS.canDelete(row)) {
                             <button mat-icon-button color="warn"
-                              (click)="deleteSurveyDialog($event, row)" [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                              (click)="deleteSurveyDialog($event, row)" [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
                               <mat-icon>cancel</mat-icon>
                             </button>
                             }

@@ -8,9 +8,9 @@
     @if (this.getBackgroundColorFromNature()) {
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card l-bg-{{this.getBackgroundColorFromNature()}} pt-1 pb-1">
+        <div class="card l-bg-{{this.getBackgroundColorFromNature()}} pt-1 pb-1 cargo-nature">
           <div class="body">
-            <mat-card-content class="d-flex align-items-center text-white">
+            <mat-card-content class="d-flex align-items-center text-white font-bold">
               <mat-icon>error</mat-icon>
               <mat-label class="m-l-10">{{this.getNatureInGateAlert()}}</mat-label>
             </mat-card-content>
@@ -161,19 +161,17 @@
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <div class="row">
                           <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 align-right">
-                            <span>{{translatedLangText.DATE_OF_INSPECTION}}:</span>
                           </div>
                           <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5">
-                            <div class="contact-detail-info font-bold">{{displayDate(dateOfInspection)}}</div>
                           </div> -->
                         </div>
                       </div>
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <div class="row">
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 align-right">
+                          <div class="col-xl-10 col-lg-10 col-md-7 col-sm-7 col-xs-7 m-b-5 align-right">
                             <span>{{translatedLangText.DATE_OF_INSPECTION}}:</span>
                           </div>
-                          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-5 col-xs-5 m-b-5 align-left">
                             <div class="contact-detail-info font-bold">{{displayDate(dateOfInspection)}}</div>
                           </div>
                         </div>
@@ -420,24 +418,24 @@
                         @if (!(igDS.loading$ | async)) {
                         <mat-card-content>
                           <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-lef">
+                                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-5 col-xs-5 m-b-5 align-lef">
                                   <span>{{translatedLangText.LAST_TEST}}:</span>
                                 </div>
-                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 align-lef">
+                                <div class="col-xl-10 col-lg-10 col-md-7 col-sm-7 col-xs-7 m-b-5 align-lef">
                                   <div class="contact-detail-info font-bold">
                                     {{last_test_desc}}
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                                <div class="col-xl-1 col-lg-1 col-md-12 col-sm-5 col-xs-5 m-b-5 align-lef">
                                   <span>{{translatedLangText.NEXT_TEST}}:</span>
                                 </div>
-                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <div class="col-xl-11 col-lg-11 col-md-7 col-sm-7 col-xs-7 m-b-5 align-lef">
                                   <div class="contact-detail-info font-bold">
                                     {{next_test_desc}}
                                   </div>
@@ -571,22 +569,22 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-5 col-xs-5 m-b-5 align-lef">
                                   <span>{{translatedLangText.LAST_UPDATE_BY}}:</span>
                                 </div>
-                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <div class="col-xl-3 col-lg-3 col-md-7 col-sm-7 col-xs-7 m-b-5 align-lef">
                                   <div class="contact-detail-info font-bold">{{in_gate?.update_by}}</div>
                                 </div>
                               </div>
                             </div>
-                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-5 col-xs-5 m-b-5 align-lef">
                                   <span>{{translatedLangText.LAST_UPDATE_ON}}:</span>
                                 </div>
-                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <div class="col-xl-3 col-lg-3 col-md-7 col-sm-7 col-xs-7 m-b-5 align-lef">
                                   <div class="contact-detail-info font-bold">{{displayDateTime(in_gate?.update_dt)}}
                                   </div>
                                 </div>
@@ -1628,7 +1626,7 @@
                                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="foot_valve_oth" />
+                                    <input matInput formControlName="foot_valve_oth" (input)="onAlphaOnly($event)"/>
                                     <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1672,7 +1670,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="btm_dis_valve_oth" />
+                                    <input matInput formControlName="btm_dis_valve_oth" (input)="onAlphaOnly($event)" />
                                     <!-- @if (getBottomFormGroup().get('btm_dis_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1692,19 +1690,19 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getBottomFormGroup().get('btm_dis_valve_spec_cv')?.hasError('required')) {
+                                    <!-- @if (getBottomFormGroup().get('btm_dis_valve_spec_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.BOTTOM_DIS_VALVE}} {{translatedLangText.SPECIFICATION}}
                                       {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 @if (displayOthers(getBottomFormGroup().get('btm_dis_valve_spec_cv')?.value)) {
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="btm_dis_valve_spec_oth" />
+                                    <input matInput formControlName="btm_dis_valve_spec_oth" (input)="onAlphaOnly($event)" />
                                     <!-- @if (getBottomFormGroup().get('btm_dis_valve_spec_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1795,24 +1793,24 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getTopFormGroup().get('top_dis_valve_cv')?.hasError('required')) {
+                                    <!-- @if (getTopFormGroup().get('top_dis_valve_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.TOP_DIS_TOP_DIS_VALVECOMP}}
                                       {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('top_dis_valve_cv')?.value)) {
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="top_dis_valve_oth" />
-                                    @if (getTopFormGroup().get('top_dis_valve_oth')?.hasError('required')) {
+                                    <input matInput formControlName="top_dis_valve_oth" (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getTopFormGroup().get('top_dis_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 }
@@ -1827,23 +1825,23 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getTopFormGroup().get('top_dis_valve_spec_cv')?.hasError('required')) {
+                                    <!-- @if (getTopFormGroup().get('top_dis_valve_spec_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('top_dis_valve_spec_cv')?.value)) {
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="top_dis_valve_spec_oth" />
-                                    @if (getTopFormGroup().get('top_dis_valve_spec_oth')?.hasError('required')) {
+                                    <input matInput formControlName="top_dis_valve_spec_oth" (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getTopFormGroup().get('top_dis_valve_spec_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 }
@@ -1871,23 +1869,23 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getTopFormGroup().get('airline_valve_cv')?.hasError('required')) {
+                                    <!-- @if (getTopFormGroup().get('airline_valve_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.AIRLINE_VALVE}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('airline_valve_cv')?.value)) {
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_oth" />
-                                    @if (getTopFormGroup().get('airline_valve_oth')?.hasError('required')) {
+                                    <input matInput formControlName="airline_valve_oth" (input)="onAlphaOnly($event)"/>
+                                    <!-- @if (getTopFormGroup().get('airline_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 }
@@ -1899,11 +1897,11 @@
                                     <input matInput formControlName="airline_valve_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
-                                    @if (getTopFormGroup().get('airline_valve_pcs')?.hasError('required')) {
+                                    <!-- @if (getTopFormGroup().get('airline_valve_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
@@ -1912,11 +1910,11 @@
                                     <input matInput formControlName="airline_valve_dim" type="number"
                                       (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>inch</h6>
-                                    @if (getTopFormGroup().get('airline_valve_dim')?.hasError('required')) {
+                                    <!-- @if (getTopFormGroup().get('airline_valve_dim')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.DIAMITER}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                               </div>
@@ -1929,24 +1927,24 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getTopFormGroup().get('airline_valve_conn_cv')?.hasError('required')) {
+                                    <!-- @if (getTopFormGroup().get('airline_valve_conn_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.AIRLINE_VALVE_CONNECTIONS}}
                                       {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('airline_valve_conn_cv')?.value)) {
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_conn_oth" />
-                                    @if (getTopFormGroup().get('airline_valve_conn_oth')?.hasError('required')) {
+                                    <input matInput formControlName="airline_valve_conn_oth" (input)="onAlphaOnly($event)"/>
+                                    <!-- @if (getTopFormGroup().get('airline_valve_conn_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 }
@@ -1961,23 +1959,23 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getTopFormGroup().get('airline_valve_conn_spec_cv')?.hasError('required')) {
+                                    <!-- @if (getTopFormGroup().get('airline_valve_conn_spec_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('airline_valve_conn_spec_cv')?.value)) {
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_conn_spec_oth" />
-                                    @if (getTopFormGroup().get('airline_valve_conn_spec_oth')?.hasError('required')) {
+                                    <input matInput formControlName="airline_valve_conn_spec_oth" (input)="onAlphaOnly($event)"/>
+                                    <!-- @if (getTopFormGroup().get('airline_valve_conn_spec_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 }
@@ -2015,32 +2013,28 @@
                                   </mat-radio-group>
                                 </div>
                               </div>
+                              <!--  -->
                               <div class="row">
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.MANLID_COVER}}</mat-label>
+                                    <mat-label>{{translatedLangText.BRAND}}</mat-label>
                                     <mat-select formControlName="manlid_cover_cv">
                                       @for (codeValue of manlidCoverCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getManlidFormGroup().get('manlid_cover_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.MANLID_COVER}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    }
                                   </mat-form-field>
                                 </div>
                                 @if (displayOthers(getManlidFormGroup().get('manlid_cover_cv')?.value)) {
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="manlid_cover_oth" />
-                                    @if (getManlidFormGroup().get('manlid_cover_oth')?.hasError('required')) {
+                                    <input matInput formControlName="manlid_cover_oth" (input)="onAlphaOnly($event)"/>
+                                    <!-- @if (getManlidFormGroup().get('manlid_cover_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 }
@@ -2052,11 +2046,11 @@
                                     <input matInput formControlName="manlid_cover_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
-                                    @if (getManlidFormGroup().get('manlid_cover_pcs')?.hasError('required')) {
+                                    <!-- @if (getManlidFormGroup().get('manlid_cover_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
@@ -2065,11 +2059,11 @@
                                     <input matInput formControlName="manlid_cover_pts" type="number"
                                       (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pts</h6>
-                                    @if (getManlidFormGroup().get('manlid_cover_pts')?.hasError('required')) {
+                                    <!-- @if (getManlidFormGroup().get('manlid_cover_pts')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.VOLUME}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                               </div>
@@ -2082,11 +2076,11 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getManlidFormGroup().get('manlid_seal_cv')?.hasError('required')) {
+                                    <!-- @if (getManlidFormGroup().get('manlid_seal_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.MANLID_SEAL}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                               </div>
@@ -2099,11 +2093,11 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getManlidFormGroup().get('pv_type_cv')?.hasError('required')) {
+                                    <!-- @if (getManlidFormGroup().get('pv_type_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PV}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
@@ -2112,11 +2106,11 @@
                                     <input matInput formControlName="pv_type_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
-                                    @if (getManlidFormGroup().get('pv_type_pcs')?.hasError('required')) {
+                                    <!-- @if (getManlidFormGroup().get('pv_type_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
@@ -2127,11 +2121,11 @@
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    @if (getManlidFormGroup().get('pv_spec_cv')?.hasError('required')) {
+                                    <!-- @if (getManlidFormGroup().get('pv_spec_cv')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
@@ -2140,11 +2134,11 @@
                                     <input matInput formControlName="pv_spec_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
-                                    @if (getManlidFormGroup().get('pv_spec_pcs')?.hasError('required')) {
+                                    <!-- @if (getManlidFormGroup().get('pv_spec_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                               </div>
@@ -2162,11 +2156,11 @@
                                     <input matInput formControlName="buffer_plate" type="number"
                                       (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
-                                    @if (getManlidFormGroup().get('buffer_plate')?.hasError('required')) {
+                                    <!-- @if (getManlidFormGroup().get('buffer_plate')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.BUFFER_PLATE}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                               </div>
@@ -2177,11 +2171,11 @@
                                     <input matInput formControlName="residue" type="number"
                                       (wheel)="preventDefault($event)" min="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>KG</h6>
-                                    @if (getManlidFormGroup().get('residue')?.hasError('required')) {
+                                    <!-- @if (getManlidFormGroup().get('residue')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.RESIDUE}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
-                                    }
+                                    } -->
                                   </mat-form-field>
                                 </div>
                               </div>

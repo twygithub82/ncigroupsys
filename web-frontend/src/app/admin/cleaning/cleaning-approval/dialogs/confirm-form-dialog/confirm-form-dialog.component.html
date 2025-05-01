@@ -11,11 +11,11 @@
           <mat-form-field class="example-full-width">
             <mat-label>{{data.langText.REMARKS}}</mat-label>
             <textarea matInput formControlName="remarks"></textarea>
-            @if (pcForm.get('remarks')?.hasError('required')) {
+            <!-- @if (pcForm.get('remarks')?.hasError('required')) {
             <mat-error>
               {{data.langText.REMARKS}} {{data.langText.SO_REQUIRED}}
             </mat-error>
-            }
+            } -->
           </mat-form-field>
         </div>
       </div>

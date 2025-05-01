@@ -441,18 +441,18 @@ export class Utility {
 
   static formatContainerNumber(containerNumber: string): string {
     if (!containerNumber) return containerNumber;
-  
+
     // Remove spaces and dashes first
     const cleaned = containerNumber.replace(/\s|-/g, '').toUpperCase();
-  
+
     if (cleaned.length !== 11) {
       return containerNumber.toUpperCase();
     }
-  
+
     const ownerCode = cleaned.slice(0, 4);
     const serialNumber = cleaned.slice(4, 10);
     const checkDigit = cleaned.slice(10);
-  
+
     return `${ownerCode} ${serialNumber}-${checkDigit}`;
   }
 
@@ -590,6 +590,17 @@ export class Utility {
       case 'PARTIAL_ASSIGNED':
       case 'ASSIGNED':
         return 'badge badge-solid-purple';
+      default:
+        return '';
+    }
+  }
+
+  static getCleaningConditionBadgeClass(status: string | undefined): string {
+    switch (status) {
+      case 'CLEAN':
+        return 'font-bold badge badge-solid-green';
+      case 'DIRTY':
+        return 'font-bold badge badge-solid-red';
       default:
         return '';
     }

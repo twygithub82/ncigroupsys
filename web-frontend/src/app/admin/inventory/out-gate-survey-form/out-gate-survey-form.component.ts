@@ -2149,4 +2149,18 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   detectChanges() {
     this.cdr.markForCheck(); // Trigger change detection manually
   }
+
+  onAlphaOnly(event: Event): void {
+    Utility.onAlphaOnly(event, this.surveyForm?.get("foot_valve_oth")! || 
+                               this.surveyForm?.get("btm_dis_valve_oth")! || 
+                               this.surveyForm?.get("btm_dis_valve_spec_oth") || 
+                               this.surveyForm?.get("top_dis_valve_oth") || 
+                               this.surveyForm?.get("top_dis_valve_spec_oth") || 
+                               this.surveyForm?.get("airline_valve_oth") || 
+                               this.surveyForm?.get("airline_valve_conn_oth") ||
+                               this.surveyForm?.get("airline_valve_conn_spec_oth") ||
+                               this.surveyForm?.get("manlid_cover_oth")||
+                               this.surveyForm?.get("airline_valve_conn_oth")||
+                               this.surveyForm?.get("airline_valve_conn_oth"));
+  }
 }

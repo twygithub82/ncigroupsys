@@ -304,9 +304,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
-      if (this.yardCvList.length > 0) {
-        this.inGateForm!.get('yard_cv')?.setValue(this.yardCvList[0].code_val);
-      }
+      // if (this.yardCvList.length > 0) {
+      //   this.inGateForm!.get('yard_cv')?.setValue(this.yardCvList[0].code_val);
+      // }
     });
     this.cvDS.connectAlias('hazardLevelCv').subscribe(data => {
       this.hazardLevelCvList = data;
@@ -500,17 +500,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     return this.cvDS.getCodeDescription(codeValType, this.natureTypeCvList);
   }
 
-  cleanStatusColor(clean_status_cv?: string): string {
-    if (clean_status_cv === 'DIRTY') {
-      return "label bg-red";
-    }
-
-    if (clean_status_cv === 'CLEAN') {
-      return "label bg-green";
-    }
-    return "";
+  getCleaningConditionBadgeClass(status: string | undefined): string {
+    return Utility.getCleaningConditionBadgeClass(status);
   }
-  
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -595,7 +587,15 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     Utility.onAlphaOnly(event, this.inGateForm?.get("driver_name")!);
   }
 
-  onAlphaNumericOnly(event: Event): void{
-    Utility.onAlphaNumericOnly(event, this.inGateForm?.get("vehicle_no")!);
+  onAlphaNumericOnly(event: Event, controlName: string): void {
+    Utility.onAlphaNumericOnly(event, this.inGateForm?.get(controlName)!);
+  }
+
+  getBackgroundColorFromNature() {
+    return Utility.getBackgroundColorFromNature(this.storingOrderTankItem?.tariff_cleaning?.nature_cv?.toUpperCase());
+  }
+
+  getNatureInGateAlert() {
+    return `${this.storingOrderTankItem?.tariff_cleaning?.nature_cv} - ${this.storingOrderTankItem?.tariff_cleaning?.in_gate_alert}`;
   }
 }

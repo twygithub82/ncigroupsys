@@ -12,11 +12,11 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
                 <textarea matInput formControlName="remarks"></textarea>
-                @if (cancelForm.get('remarks')?.hasError('required')) {
+                <!-- @if (cancelForm.get('remarks')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
           </div>

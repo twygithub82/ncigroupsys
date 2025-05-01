@@ -391,15 +391,8 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
-  cleanStatusColor(clean_status_cv?: string): string {
-    if (clean_status_cv === 'DIRTY') {
-      return "label bg-red";
-    }
-
-    if (clean_status_cv === 'CLEAN') {
-      return "label bg-green";
-    }
-    return "";
+  getCleaningConditionBadgeClass(status: string | undefined): string {
+    return Utility.getCleaningConditionBadgeClass(status);
   }
 
   handleSaveSuccess(count: any) {

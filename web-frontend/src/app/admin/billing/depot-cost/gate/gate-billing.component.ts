@@ -310,18 +310,21 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     const queries = [
       // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      // { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
       { alias: 'invoiceTypeCv', codeValType: 'INVOICE_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-   
-     this.cvDS.connectAlias('invoiceTypeCv').subscribe(data => {
-         this.invoiceTypeCvList = data;
-       });
-       this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-        this.tankStatusCvList = data;
-      });
+
+    this.cvDS.connectAlias('invoiceTypeCv').subscribe(data => {
+      this.invoiceTypeCvList = data;
+    });
+    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvList = data;
+    });
+    this.cvDS.connectAlias('depotCv').subscribe(data => {
+      this.depotCvList = addDefaultSelectOption(data, 'All');
+    });
     this.search();
   }
 

@@ -8,7 +8,8 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <div class="body overflow-auto">
-            <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
+            <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight [(selectedIndex)]="selectedTabIndex"
+              (selectedIndexChange)="onTabChange($event)">
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
                 <form class="ms-0" [formGroup]="filterResidueForm!" (ngSubmit)="onFilterResidue()"
                   #formDirective="ngForm">
@@ -49,11 +50,14 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3 d-flex align-items-center ms-auto justify-content-end">
-                      <button mat-mini-fab color="primary" (click)="onFilterResidue()" matTooltip={{translatedLangText.SEARCH}}>
+                    <div
+                      class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3 d-flex align-items-center ms-auto justify-content-end">
+                      <button mat-mini-fab color="primary" (click)="onFilterResidue()"
+                        matTooltip={{translatedLangText.SEARCH}}>
                         <mat-icon>search</mat-icon>
                       </button>
-                      <button mat-mini-fab class="m-l-5 bg-dark-gold"  (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                      <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                        matTooltip={{translatedLangText.CLEAR_ALL}}>
                         <mat-icon>clear_all</mat-icon>
                       </button>
                     </div>
@@ -117,9 +121,10 @@
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         @if(row?.status_cv=="ASSIGNED")
                         {
-                          <button mat-menu-item   (click)="ConfirmUnassignTeam($event,row)" [matTooltip]="translatedLangText.UNASSIGNED">
-                            <mat-icon>remove_circle_outline</mat-icon>
-                          </button>
+                        <button mat-icon-button (click)="ConfirmUnassignTeam($event,row)"
+                          [matTooltip]="translatedLangText.UNASSIGNED">
+                          <mat-icon>remove_circle_outline</mat-icon>
+                        </button>
                         }
                         <!-- <span
                           class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}} -->
@@ -145,8 +150,8 @@
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="pageIndexResidue" [pageSize]="pageSizeResidue"
-                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventClean($event)">
+                <mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="pageIndexResidue"
+                  [pageSize]="pageSizeResidue" [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventClean($event)">
                 </mat-paginator>
               </mat-tab>
               <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">

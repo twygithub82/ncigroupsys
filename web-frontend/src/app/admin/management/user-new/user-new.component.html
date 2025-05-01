@@ -22,11 +22,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
                     <input matInput formControlName="customer_code" required>
-                    @if (ccForm?.get('customer_code')?.hasError('required')) {
+                    <!-- @if (ccForm?.get('customer_code')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
-                      }
+                      } -->
                     @if (ccForm?.get('customer_code')?.hasError('existed')) {
                         <mat-error>
                           {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.EXISTED}}
@@ -54,11 +54,11 @@
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CUSTOMER_NAME }}</mat-label>
                       <input matInput formControlName="customer_name" required >
-                      @if (ccForm?.get('customer_name')?.hasError('required')) {
+                      <!-- @if (ccForm?.get('customer_name')?.hasError('required')) {
                         <mat-error>
                           {{this.translatedLangText.CUSTOMER_NAME}} {{this.translatedLangText.SO_REQUIRED}}
                         </mat-error>
-                        }
+                        } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -108,12 +108,12 @@
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.EMAIL }}</mat-label>
                       <input matInput formControlName="email" required>
-                      @if (ccForm?.get('email')?.hasError('required')) {
+                      <!-- @if (ccForm?.get('email')?.hasError('required')) {
                         <mat-error>
                           {{this.translatedLangText.EMAIL}} {{this.translatedLangText.SO_REQUIRED}}
                         </mat-error>
                         }
-                        
+                         -->
                       @if (ccForm?.get('email')?.hasError('email')) {
                         <mat-error>
                         {{this.translatedLangText.EMAIL}} {{this.translatedLangText.INVALID_FORMAT}}
@@ -141,11 +141,11 @@
                            
                           </mat-option>
                         </mat-select>
-                        @if (ccForm?.get('currency')?.hasError('required')) {
+                        <!-- @if (ccForm?.get('currency')?.hasError('required')) {
                           <mat-error>
                             {{this.translatedLangText.CONVERSION_CURRENCY}} {{this.translatedLangText.SO_REQUIRED}}
                           </mat-error>
-                          }
+                          } -->
                   </mat-form-field>
                   
                 </div>
@@ -161,11 +161,11 @@
                            
                           </mat-option>
                         </mat-select>
-                        @if (ccForm?.get('default_profile')?.hasError('required')) {
+                        <!-- @if (ccForm?.get('default_profile')?.hasError('required')) {
                           <mat-error>
                             {{this.translatedLangText.DEFAULT_PROFILE}} {{this.translatedLangText.SO_REQUIRED}}
                           </mat-error>
-                          }
+                          } -->
                   </mat-form-field>
                   
                 </div>
@@ -175,11 +175,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.ADDRESS_LINE1}}</mat-label>
                     <input matInput formControlName="address1" required>
-                    @if (ccForm?.get('address1')?.hasError('required')) {
+                    <!-- @if (ccForm?.get('address1')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.ADDRESS_LINE1}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
-                      }
+                      } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -193,11 +193,11 @@
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.POSTAL_CODE }}</mat-label>
                       <input matInput formControlName="postal_code" required maxlength="10">
-                      @if (ccForm?.get('postal_code')?.hasError('required')) {
+                      <!-- @if (ccForm?.get('postal_code')?.hasError('required')) {
                         <mat-error>
                         {{this.translatedLangText.POSTAL_CODE}} {{this.translatedLangText.SO_REQUIRED}}
                         </mat-error>
-                      }
+                      } -->
                   </mat-form-field>
                   
                 </div>

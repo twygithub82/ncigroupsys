@@ -101,7 +101,7 @@
                 [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 @if (!row.tank_count) {
                 <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.tariff_residue)"
-                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-danger">
+                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
                   <mat-icon>delete_forever</mat-icon>
                 </button>
                 }
