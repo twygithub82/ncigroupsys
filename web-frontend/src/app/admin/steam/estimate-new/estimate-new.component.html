@@ -226,11 +226,11 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
-                    @if (steamEstForm?.get('desc')?.hasError('required')) {
+                    <!-- @if (steamEstForm?.get('desc')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
-                      }
+                      } -->
                       @if (steamEstForm?.get('desc')?.hasError('duplicated')) {
                         <mat-error>
                           {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.EXISTED}}
@@ -242,11 +242,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
                     <input matInput formControlName="qty" type="number" required="true">
-                    @if (steamEstForm?.get('qty')?.hasError('required')) {
+                    <!-- @if (steamEstForm?.get('qty')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
-                      }
+                      } -->
                   </mat-form-field>
                  
                 </div>
@@ -254,11 +254,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.HOUR}}</mat-label>
                     <input matInput formControlName="hour" type="number" required="true">
-                    @if (steamEstForm?.get('hour')?.hasError('required')) {
+                    <!-- @if (steamEstForm?.get('hour')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.HOUR}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
-                      }
+                      } -->
                   </mat-form-field>
                  
                 </div>
@@ -266,11 +266,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.UNIT_PRICE}}</mat-label>
                     <input matInput formControlName="unit_price" type="number" required="true">
-                    @if (steamEstForm?.get('unit_price')?.hasError('required')) {
+                    <!-- @if (steamEstForm?.get('unit_price')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
-                      }
+                      } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">

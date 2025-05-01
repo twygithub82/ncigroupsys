@@ -225,6 +225,8 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
+    HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
   }
 
   @ViewChild('custInput', { static: true })
@@ -272,8 +274,9 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
       min_cost: [''],
       max_cost: [''],
       min_labour: [''],
-      max_labour: ['']
-
+      max_labour: [''],
+      flat_rate: '',
+      hourly_rate: ''
     });
     this.selectedCustomers=[];
   }
@@ -718,7 +721,7 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,

@@ -234,44 +234,44 @@
                       required="true">
                     <mat-icon matSuffix [owlDateTimeTrigger]="date2" class="date-icon">today</mat-icon>
                     <owl-date-time #date2></owl-date-time>
-                    @if (steamForm?.get('time')?.hasError('required')) {
+                    <!-- @if (steamForm?.get('time')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.TIME}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.THERMOMETER}}(&deg;C)</mat-label>
                     <input matInput formControlName="thermometer" type="number" required="true">
-                    @if (steamForm?.get('thermometer')?.hasError('required')) {
+                    <!-- @if (steamForm?.get('thermometer')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.THERMOMETER}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.TOP_SIDE}}(&deg;C)</mat-label>
                     <input matInput formControlName="top" type="number" required="true">
-                    @if (steamForm?.get('top')?.hasError('required')) {
+                    <!-- @if (steamForm?.get('top')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.TOP_SIDE}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BOTTOM_SIDE}}(&deg;C)</mat-label>
                     <input matInput formControlName="bottom" type="number" required="true">
-                    @if (steamForm?.get('bottom')?.hasError('required')) {
+                    <!-- @if (steamForm?.get('bottom')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.BOTTOM_SIDE}} {{this.translatedLangText.SO_REQUIRED}}
                     </mat-error>
-                    }
+                    } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 mb-1">

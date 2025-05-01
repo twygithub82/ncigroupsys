@@ -595,7 +595,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     Utility.onAlphaOnly(event, this.inGateForm?.get("driver_name")!);
   }
 
-  onAlphaNumericOnly(event: Event): void{
-    Utility.onAlphaNumericOnly(event, this.inGateForm?.get("vehicle_no")!);
+  onAlphaNumericOnly(event: Event, controlName: string): void{
+    Utility.onAlphaNumericOnly(event, this.inGateForm?.get(controlName)!);
   }
 }
