@@ -2025,20 +2025,41 @@ $grid-breakpoints: (
 //   .container-fluid {
 //     background-color: #000 !important;
 //     color: #fff;
-  
+
 //     .header-icon svg,
 //     .fas,
 //     .m-r-5 {
 //       color: #fff !important;
 //     }
-  
+
 //     .mat-mdc-icon-button,
 //     .mat-mdc-button {
 //       color: #fff !important;
 //     }
-  
+
 //     .mat-mdc-menu-trigger {
 //       color: #fff !important;
 //     }
 //   }
 // }
+
+.card.cargo-nature {
+  border: 0px;
+  font-weight: 700;
+  font-size: 1.5rem;
+
+  .body {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .mat-icon {
+    font-size: 36px;
+    line-height: 36px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

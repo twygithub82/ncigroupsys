@@ -54,6 +54,7 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
   translatedLangText: any = {};
   langText = {
     SOFTWARE_NAME: 'SOFTWARE-NAME.TEXT',
+    ACCOUNT: 'COMMON-FORM.ACCOUNT',
     LOGOUT: 'COMMON-FORM.LOGOUT',
     CONFIRM_LOGOUT: 'COMMON-FORM.CONFIRM-LOGOUT',
   }
@@ -70,6 +71,8 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
   isHovered = false;
 
   envTest = environment.title;
+
+  name?: string;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -88,6 +91,7 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
         this.renderer.removeClass(this.document.body, 'overlay-open');
       }
     });
+    this.name = this.authService.currentUserName;
     this.translateLangText();
   }
   @HostListener('window:resize', ['$event'])

@@ -5,6 +5,16 @@
       <app-breadcrumb [title]="pageTitleNew" [items]="breadcrumsMiddleList"
         [active_item]="langText.DETAILS"></app-breadcrumb>
     </div>
+    @if (this.getBackgroundColorFromNature()) {
+    <div class="card l-bg-{{this.getBackgroundColorFromNature()}} pt-1 pb-1 cargo-nature">
+      <div class="body">
+        <mat-card-content class="d-flex align-items-center text-white font-bold">
+          <mat-icon>error</mat-icon>
+          <mat-label class="m-l-10">{{this.getNatureInGateAlert()}}</mat-label>
+        </mat-card-content>
+      </div>
+    </div>
+    }
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <form class="ms-0" [formGroup]="inGateForm!" (ngSubmit)="onInGateFormSubmit()" #formDirective="ngForm">
@@ -123,7 +133,8 @@
                                 <span>{{translatedLangText.PURPOSE}}:</span>
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                                <div class="contact-detail-info font-bold">{{displayTankPurpose(storingOrderTankItem!)}}</div>
+                                <div class="contact-detail-info font-bold">{{displayTankPurpose(storingOrderTankItem!)}}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -144,7 +155,7 @@
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <div class="contact-detail-info">
                                   <span
-                                    [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv
+                                    [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{storingOrderTankItem?.clean_status_cv
                                     ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
                                 </div>
                               </div>
@@ -180,7 +191,8 @@
                               <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.HAULIER}}</mat-label>
-                                  <input matInput formControlName="haulier" class="text-uppercase" required (input)="onAlphaNumericOnly($event, 'haulier')">
+                                  <input matInput formControlName="haulier" class="text-uppercase" required
+                                    (input)="onAlphaNumericOnly($event, 'haulier')">
                                   <!-- @if (inGateForm?.get('haulier')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
@@ -213,7 +225,8 @@
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
-                                  <input matInput formControlName="vehicle_no" class="text-uppercase" required (input)="onAlphaNumericOnly($event, 'vehicle_no')">
+                                  <input matInput formControlName="vehicle_no" class="text-uppercase" required
+                                    (input)="onAlphaNumericOnly($event, 'vehicle_no')">
                                   <!-- @if (inGateForm?.get('vehicle_no')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
@@ -224,7 +237,8 @@
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
-                                  <input matInput formControlName="driver_name" class="text-uppercase" required (input)="onAlphaOnly($event)">
+                                  <input matInput formControlName="driver_name" class="text-uppercase" required
+                                    (input)="onAlphaOnly($event)">
                                   <!-- @if (inGateForm?.get('driver_name')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
@@ -335,10 +349,10 @@
                               </mat-icon>
                               {{translatedLangText.ACCEPT}}
                             </button>
-                              <button mat-flat-button class="bg-light-gold m-r-10" (click)="resetDialog($event)">
-                                {{translatedLangText.CLEAR_ALL}}
-                              </button>
-                              <!-- <button mat-flat-button color="primary">
+                            <button mat-flat-button class="bg-light-gold m-r-10" (click)="resetDialog($event)">
+                              {{translatedLangText.CLEAR_ALL}}
+                            </button>
+                            <!-- <button mat-flat-button color="primary">
                                 <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}
                               </button> -->
                           </div>

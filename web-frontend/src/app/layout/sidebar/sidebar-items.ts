@@ -651,7 +651,7 @@ export const ROUTES: RouteInfo[] = [
     path: "admin/cleaning",
     title: "MENUITEMS.CLEANING.TEXT",
     iconType: "material",
-    icon: "opacity",
+    icon: "water_drop",
     class: "menu-toggle",
     groupTitle: false,
     badge: "",
@@ -1313,4 +1313,41 @@ export const ROUTES: RouteInfo[] = [
       }
     ].filter(item => item.visible !== false),
   },
+  // {
+  //   path: "account",
+  //   title: "MENUITEMS.ACCOUNT.TEXT",
+  //   iconType: "material",
+  //   icon: "account_circle",
+  //   class: "menu-toggle",
+  //   groupTitle: false,
+  //   badge: "",
+  //   badgeClass: "",
+  //   visible: true,
+  //   submenu: [
+  //     // {
+  //     //   path: "account/change-password",
+  //     //   title: "MENUITEMS.ACCOUNT.LIST.CHANGE-PASSWORD",
+  //     //   iconType: "",
+  //     //   icon: "",
+  //     //   class: "ml-menu",
+  //     //   groupTitle: false,
+  //     //   badge: "",
+  //     //   badgeClass: "",
+  //     //   submenu: [],
+  //     //   visible: true
+  //     // },
+  //     {
+  //       path: "account/logout",
+  //       title: "MENUITEMS.ACCOUNT.LIST.LOGOUT",
+  //       iconType: "",
+  //       icon: "",
+  //       class: "ml-menu",
+  //       groupTitle: false,
+  //       badge: "",
+  //       badgeClass: "",
+  //       submenu: [],
+  //       visible: true
+  //     },
+  //   ].filter(item => item.visible !== false),
+  // },
 ].filter(item => item.visible !== false);

@@ -299,7 +299,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     } else if (pdItem?.storage_cal_cv === 'NO_STORAGE') {
 
     }
-    return undefined;
+    return sotItem?.in_gate?.[0]?.eir_dt;
   }
 
   getStorageStartDate(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem) :Date

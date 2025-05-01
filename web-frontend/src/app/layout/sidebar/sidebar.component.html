@@ -61,7 +61,7 @@
               <li [routerLinkActive]="sidebarSubItem1.submenu.length > 0 ? '' : 'active'">
                 <a [routerLink]="sidebarSubItem1.submenu.length > 0 ? null : [sidebarSubItem1.path]"
                   [queryParams]="sidebarSubItem1.queryParams || {}"
-                  (click)="callToggleMenu($event,sidebarSubItem1.submenu.length)" [ngClass]="[sidebarSubItem1.class]">
+                  (click)="callToggleMenu($event, sidebarSubItem1.submenu.length)" [ngClass]="[sidebarSubItem1.class]">
                   {{sidebarSubItem1.title | translate}}
                 </a>
                 <!-- Second level menu -->
@@ -71,7 +71,7 @@
                   <li [routerLinkActive]="sidebarSubItem2.submenu.length > 0 ? '' : 'active'">
                     <a [routerLink]="sidebarSubItem2.submenu.length > 0 ? null : [sidebarSubItem2.path]"
                       [queryParams]="sidebarSubItem2.queryParams || {}"
-                      (click)="callToggleMenu($event,sidebarSubItem2.submenu.length)"
+                      (click)="callToggleMenu($event, sidebarSubItem2.submenu.length)"
                       [ngClass]="[sidebarSubItem2.class]">
                       {{sidebarSubItem2.title | translate}}
                     </a>
@@ -82,7 +82,7 @@
                       <li [routerLinkActive]="sidebarSubItem3.submenu.length > 0 ? '' : 'active'">
                         <a [routerLink]="sidebarSubItem3.submenu.length > 0 ? null : [sidebarSubItem3.path]"
                           [queryParams]="sidebarSubItem3.queryParams || {}"
-                          (click)="callToggleMenu($event,sidebarSubItem3.submenu.length)"
+                          (click)="callToggleMenu($event, sidebarSubItem3.submenu.length)"
                           [ngClass]="[sidebarSubItem3.class]">
                           {{sidebarSubItem3.title | translate}}
                         </a>
@@ -101,11 +101,24 @@
           </li>
           }
           <mat-divider></mat-divider>
-          <li class="logout-item">
-            <a (click)="logoutDialog($event)" class="menu-top mt-1 pt-1 mb-1 pb-1">
+          <li [routerLinkActive]="'active'">
+            <a  [ngClass]="['menu-toggle']" (click)="callToggleMenu($event, 1)"
+              class="menu-top">
+              <mat-icon class="sidebarIcon font-20">{{'account_circle'}}</mat-icon>
+              <span class="hide-menu">{{ translatedLangText.ACCOUNT }}
+              </span>
+            </a>
+            <ul class="ml-menu">
+              <li [routerLinkActive]="''">
+                <a (click)="logoutDialog($event)" [ngClass]="['ml-menu']">
+                  {{ translatedLangText.LOGOUT }}
+                </a>
+              </li>
+            </ul>
+            <!-- <a (click)="logoutDialog($event)" class="menu-top mt-1 pt-1 mb-1 pb-1">
               <mat-icon class="sidebarIcon font-20">logout</mat-icon>
               <span class="hide-menu">{{ translatedLangText.LOGOUT }}</span>
-            </a>
+            </a> -->
           </li>
         </ul>
       </ng-scrollbar>
