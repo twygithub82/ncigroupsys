@@ -982,11 +982,21 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+   @ViewChild('tariffBuffer') tariffBuffer!: TariffBufferComponent;
+     @ViewChild('tariffClean') tariffClean!: TariffCleaningComponent;
+     @ViewChild('tariffResidue') tariffResidue!: TariffResidueComponent;
+   
+ 
+   onTabSelected(event: MatTabChangeEvent): void {
+     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+     switch (event.index) {
+       
+       case 0:
+         this.tariffClean?.onTabFocused(); break;
+       case 1:
+          this.tariffBuffer?.onTabFocused(); break;
+       case 2:
+         this.tariffResidue?.onTabFocused(); break;
+     }
+   }
 }

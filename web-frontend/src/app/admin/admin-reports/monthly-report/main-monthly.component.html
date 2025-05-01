@@ -10,19 +10,19 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
                <mat-tab [label]="translatedLangText.STEAM_REPORT">
-                <app-steam-monthly></app-steam-monthly>
+                <app-steam-monthly #steamAdminReport></app-steam-monthly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.RESIDUE_REPORT">
-                <app-residue-monthly></app-residue-monthly>
+                <app-residue-monthly #residueAdminReport></app-residue-monthly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.REPAIR_REPORT">
-                <app-repair-monthly></app-repair-monthly>
+                <app-repair-monthly #repairAdminReport></app-repair-monthly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.CLEAN_REPORT">
-                <app-clean-monthly></app-clean-monthly>
+                <app-clean-monthly #cleanAdminReport></app-clean-monthly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.CUSTOMER_REPORT">
-                <app-customer-monthly></app-customer-monthly>
+                <app-customer-monthly #customerAdminReport></app-customer-monthly>
               </mat-tab>
               <!-- <mat-tab [label]="translatedLangText.CLEANING_INVENTORY">
                 <app-cleaning-inventory></app-cleaning-inventory>

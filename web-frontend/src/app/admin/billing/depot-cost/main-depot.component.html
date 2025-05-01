@@ -10,19 +10,19 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.IN_GATE_OUT_GATE">
-                <app-gate-billing></app-gate-billing>
+                <app-gate-billing #gateBilling></app-gate-billing>
               </mat-tab>
               <mat-tab [label]="translatedLangText.PRE_INSPECTION">
-                <app-preinspection-billing></app-preinspection-billing>
+                <app-preinspection-billing  #preinspectBilling></app-preinspection-billing>
               </mat-tab>
               <!-- <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
                 <app-job-order-task></app-job-order-task>
               </mat-tab> -->
               <mat-tab [label]="translatedLangText.LOLO">
-                <app-lolo-billing></app-lolo-billing>
+                <app-lolo-billing  #loloBilling></app-lolo-billing>
               </mat-tab>
               <mat-tab [label]="translatedLangText.STORAGE">
-                <app-storage-billing></app-storage-billing>
+                <app-storage-billing  #storageBilling></app-storage-billing>
               </mat-tab>
               
               <!-- <mat-tab>

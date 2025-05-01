@@ -618,8 +618,19 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
+    @ViewChild('cleanPerformRep') cleanPerformRep!: CleaningPerformanceReportComponent;
+    @ViewChild('steamPerformRep') steamPerformRep!: SteamPerformanceReportComponent;
+    @ViewChild('surveyorPerformRep') surveyorPerformRep!: SurveyorPerformanceReportComponent;
+    
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-   
+    switch (event.index) {
+      case 0:
+        this.cleanPerformRep?.onTabFocused(); break;
+      case 1:
+        this.steamPerformRep?.onTabFocused(); break;
+      case 2:
+          this.surveyorPerformRep?.onTabFocused(); break;
+    }
   }
 }

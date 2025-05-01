@@ -974,4 +974,9 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     return validStatus.includes(residue!.status_cv!);
 
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

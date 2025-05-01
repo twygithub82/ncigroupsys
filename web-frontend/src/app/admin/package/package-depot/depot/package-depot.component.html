@@ -46,35 +46,41 @@
                     </mat-autocomplete>
                   </mat-form-field>
                 </div>
-                <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-2">
+              
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                   <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <input matInput formControlName="customer_code" [matAutocomplete]="customerCode">
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                      @for (cc of customer_companyList; track cc) {
-                      <mat-option [value]="cc">
-                        {{ccDS.displayName(cc)}}
+                    <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
+                    <mat-chip-grid #chipProfile>
+                      @for (pro of selectedProfiles; track pro) {
+                        <mat-chip-row (removed)="removeSelectedProfile(pro)">
+                          {{pro.profile_name}}
+                          <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ pro.profile_name">
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                        </mat-chip-row>
+                      }
+                    </mat-chip-grid>
+                    <input #profileInput [formControl]="profileNameControl" [matAutocomplete]="profileName"
+                     [matChipInputFor]="chipProfile" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" >
+                    <mat-autocomplete #profileName="matAutocomplete"  (optionSelected)="selectedProfile($event)">
+                      @for (p of profile_nameList; track p) {
+                      <mat-option [value]="p">
+                        {{p.profile_name}}
                       </mat-option>
                       }
                     </mat-autocomplete>
-                    @if (pcForm?.get('customer_code')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.CUSTOMER_CODE }} {{translatedLangText.CARGO_REQUIRED }}
-                    </mat-error>
-                    }
                   </mat-form-field>
-                </div> -->
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                </div>
+                <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
-                    <!-- <input matInput formControlName="profile_name" type="text"> -->
                     <mat-select formControlName="profile_name">
                       @for (option of profile_nameList; track option) {
                       <mat-option [value]="option">{{option.profile_name}}</mat-option>
                       }
                     </mat-select>
                   </mat-form-field>
-                </div>
+                </div> -->
                 <div
                   class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
                   <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
@@ -101,13 +107,13 @@
                 [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <mat-checkbox (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" hidden>
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                <mat-checkbox (click)="$event.stopPropagation()" (change)="toggleEstimate(row)"
+                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'"  [hidden]="HideCheckBox(row)">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>

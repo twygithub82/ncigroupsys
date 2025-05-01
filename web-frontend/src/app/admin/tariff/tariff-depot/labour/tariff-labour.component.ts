@@ -586,4 +586,9 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
     }
     return null;
   }
+
+  onTabFocused() {
+    
+    this.search();
+  }
 }

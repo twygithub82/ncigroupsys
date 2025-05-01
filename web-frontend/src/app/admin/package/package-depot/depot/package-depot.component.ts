@@ -129,8 +129,10 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   selectedCustomers: any[] = [];
+  selectedProfiles: any[] = [];
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
+  selectedPackEst?:PackageDepotItem;
 
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -228,6 +230,10 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   
   @ViewChild('custInput', { static: true })
   custInput?: ElementRef<HTMLInputElement>;
+
+
+  @ViewChild('profileInput', { static: true })
+  profileInput?: ElementRef<HTMLInputElement>;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -276,13 +282,27 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
         this.searchCustomerCompanyList(searchCriteria);
       })
     ).subscribe();
+
+    this.pcForm!.get('profile_name')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.searchProfileNameList(searchCriteria);
+      })
+    ).subscribe();
   }
 
   initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      profile_name: [''],
+      profile_name: this.profileNameControl,
     });
   }
 
@@ -396,7 +416,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   search() {
     const where: any = {};
-
+    this.selectedPackEst=undefined;
 
     if (this.selectedCustomers.length>0) {
       //if (this.customerCodeControl.value.length > 0) 
@@ -407,8 +427,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if (this.pcForm!.get("profile_name")?.value) {
-      const tariffDepot: any = {};
-      tariffDepot.guid = { eq: this.pcForm!.get("profile_name")?.value?.guid };
+      
+      var tariffDepot:any={};
+      tariffDepot.guid = { in:  this.selectedProfiles.map(c => c.guid) };
       where.tariff_depot = tariffDepot;
     }
 
@@ -538,7 +559,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     });
 
     this.subs.sink = this.tariffDepotDS.SearchTariffDepot({}, { profile_name: 'ASC' }).subscribe(data => {
-      this.profile_nameList = data
+    //  this.profile_nameList = data
     });
 
     const queries = [
@@ -632,7 +653,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   resetForm() {
     this.initPcForm();
     this.customerCodeControl.reset('');
+    this.profileNameControl.reset('');
     this.selectedCustomers=[];
+    this.selectedProfiles=[];
   }
 
   displayLastUpdated(r: any) {
@@ -688,6 +711,34 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       
     }
   }
+
+
+  removeSelectedProfile(pro: any): void {
+    const index = this.selectedProfiles.findIndex(c => c.guid === pro.guid);
+    if (index >= 0) {
+      this.selectedProfiles.splice(index, 1);
+      
+    }
+  }
+  
+
+  selectedProfile(event: MatAutocompleteSelectedEvent): void {
+    const profile = event.option.value;
+    const index = this.selectedProfiles.findIndex(c => c.guid === profile.guid);
+    if (!(index >= 0)) {
+      this.selectedProfiles.push(profile);
+      
+    }
+
+    if (this.profileInput) {
+      this.searchCustomerCompanyList('');
+      this.profileInput.nativeElement.value = '';
+      
+    }
+   // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
   
   // displayCustomerCompanyFn(customer: any): string {
   //   if (!customer) return '';
@@ -700,12 +751,58 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   searchCustomerCompanyList(searchCriteria : string)
   {
+    searchCriteria= searchCriteria||'';
     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
       if(this.custInput?.nativeElement.value===searchCriteria)
       {
          this.customer_companyList = data;
       }
     });
+  }
+
+  searchProfileNameList(searchCriteria : string)
+  {
+
+    searchCriteria= searchCriteria||'';
+    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({profile_name:{contains:searchCriteria}}, { profile_name: 'ASC' }).subscribe(data => {
+      if(this.profileInput?.nativeElement.value===searchCriteria)
+        {
+            this.profile_nameList = data
+        }
+    });
+
+
+  }
+
+  toggleEstimate(row:PackageDepotItem)
+  {
+    
+    this.selection.toggle(row);
+    if(this.selection.selected.length==1)
+    {
+      this.selectedPackEst =row;
+    }
+    else if (this.selection.selected.length==0)
+    {
+      this.selectedPackEst =undefined;
+    }
+  }
+
+  HideCheckBox(row:PackageDepotItem):boolean
+  {
+    var retval :boolean =false;
+
+    if(this.selectedPackEst)
+    {
+      retval = !(this.selectedPackEst.tariff_depot?.guid=== row.tariff_depot?.guid);
+    }
+    return retval;
+
+  }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
   }
  
 }

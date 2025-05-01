@@ -782,5 +782,10 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   parse2Decimal(input: number | string | undefined) {
     return Utility.formatNumberDisplay(input);
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }
 

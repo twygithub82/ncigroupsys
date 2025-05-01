@@ -619,4 +619,7 @@ export class ResidueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
 }

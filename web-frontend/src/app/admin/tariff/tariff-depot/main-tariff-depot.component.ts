@@ -1015,11 +1015,20 @@ export class MainTariffDepotComponent extends UnsubscribeOnDestroyAdapter implem
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+   @ViewChild('tariffDepot') tariffDepot!: TariffDepotComponent;
+   @ViewChild('tariffLabour') tariffLabour!:TariffLabourComponent
+      
+    
+  
+    onTabSelected(event: MatTabChangeEvent): void {
+      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+      switch (event.index) {
+        
+        case 0:
+          this.tariffDepot?.onTabFocused(); break;
+        case 1:
+            this.tariffLabour?.onTabFocused(); break;
+       
+      }
+    }
 }

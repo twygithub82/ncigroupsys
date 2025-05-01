@@ -10,13 +10,13 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
                <mat-tab [label]="translatedLangText.CLEANER">
-                <app-cleaning-performance-report></app-cleaning-performance-report>
+                <app-cleaning-performance-report #cleanPerformRep></app-cleaning-performance-report>
               </mat-tab> 
               <mat-tab [label]="translatedLangText.STEAM">
-                <app-steam-performance-report></app-steam-performance-report>
+                <app-steam-performance-report #steamPerformRep></app-steam-performance-report>
               </mat-tab>
               <mat-tab [label]="translatedLangText.SURVEYOR">
-                <app-surveyor-performance-report></app-surveyor-performance-report>
+                <app-surveyor-performance-report #surveyorPerformRep></app-surveyor-performance-report>
               </mat-tab>
             </mat-tab-group>
           </div>

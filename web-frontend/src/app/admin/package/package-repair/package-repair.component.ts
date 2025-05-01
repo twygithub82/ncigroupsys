@@ -122,6 +122,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   partNameList: string[] = [];
   groupNameCvList: CodeValuesItem[] = [];
   subGroupNameCvList: CodeValuesItem[] = [];
+  allSubGroupNameCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
   unitTypeCvList: CodeValuesItem[] = [];
 
@@ -131,6 +132,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   packRepairDS: PackageRepairDS;
   ccDS: CustomerCompanyDS;
   custCompDS: CustomerCompanyDS;
+  
 
   packRepairItems: PackageRepairItem[] = [];
 
@@ -484,22 +486,22 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       where.customer_company_guid = { in:custGuids };
     }
 
-    if (this.groupNameControl.value) {
-      if (this.groupNameControl.value.length > 0) {
-        const cdValues: CodeValuesItem[] = this.groupNameControl.value;
-        var codes = cdValues.map(cc => cc);
+    if (this.groupNameControl.value?.code_val) {
+      
+        const cdValues: CodeValuesItem[] = [this.groupNameControl.value];
+        var codes = cdValues.map(cc => cc.code_val);
         where.tariff_repair = where.tariff_repair || {};
         where.tariff_repair.group_name_cv = { in: codes };
-      }
+      
     }
 
-    if (this.subGroupNameControl.value) {
-      if (this.subGroupNameControl.value.length > 0) {
-        const cdValues: CodeValuesItem[] = this.subGroupNameControl.value;
-        var codes = cdValues.map(cc => cc);
+    if (this.subGroupNameControl.value?.code_val) {
+      
+        const cdValues: CodeValuesItem[] = [this.subGroupNameControl.value];
+        var codes = cdValues.map(cc => cc.code_val);
         where.tariff_repair = where.tariff_repair || {};
         where.tariff_repair.subgroup_name_cv = { in: codes };
-      }
+      
     }
 
     if (this.pcForm!.value["part_name"]) {
@@ -643,6 +645,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
         this.previous_endCursor = undefined;
     });
   }
+
   selectStorageCalculateCV_Description(valCode?: string): string {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
     if (this.storageCalCvList.length > 0) {
@@ -785,14 +788,14 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
           this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => 
           {
             data = this.sortByDescription(data)
-            this.subGroupNameCvList.push(...data);
+            this.allSubGroupNameCvList.push(...data);
           });
         });
       }
     });
-    this.CodeValuesDS?.connectAlias('subGroupName').subscribe(data => {
-      this.subGroupNameCvList = this.sortByDescription(data);
-    });
+    // this.CodeValuesDS?.connectAlias('subGroupName').subscribe(data => {
+    //   this.subGroupNameCvList = this.sortByDescription(data);
+    // });
     this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
 
       this.handledItemCvList = addDefaultSelectOption(data, 'All');
@@ -936,13 +939,55 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   initializeValueChange() {
-    this.partNameControl.valueChanges.pipe(
+    // this.groupNameControl.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     this.trfRepairDS.searchDistinctPartName(undefined, undefined, value).subscribe(data => {
+    //       this.partNameList = data
+    //     });
+    //   })
+    // ).subscribe();
+
+    this.pcForm?.get('group_name_cv')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-        this.trfRepairDS.searchDistinctPartName(undefined, undefined, value).subscribe(data => {
-          this.partNameList = data
-        });
+        const subgroupName = this.pcForm?.get('sub_group_name_cv');
+        if (value) {
+        
+          if (value.child_code) {
+            this.subGroupNameCvList = this.allSubGroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
+            if ((this.subGroupNameCvList?.length ?? 0) > 1) {
+              this.subGroupNameCvList = addDefaultSelectOption(this.subGroupNameCvList, 'All', '');
+              subgroupName?.enable();
+            } else {
+              subgroupName?.disable();
+            }
+          } else {
+            subgroupName?.setValue('');
+            subgroupName?.disable();
+          }
+        } else {
+          subgroupName?.disable();
+        }
+      })
+    ).subscribe();
+
+   
+
+    this.pcForm?.get('sub_group_name_cv')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        const groupName = this.pcForm?.get('group_name_cv')?.value;
+        const partName = this.pcForm?.get('part_name');
+        if (groupName) {
+          this.trfRepairDS.searchDistinctPartName(groupName.code_val, value?.code_val || '').subscribe(data => {
+            this.partNameList = data;
+            partName?.setValue('');
+          });
+        }
       })
     ).subscribe();
   }

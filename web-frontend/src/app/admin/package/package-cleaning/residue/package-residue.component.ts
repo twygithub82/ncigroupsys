@@ -122,10 +122,11 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   searchField: string = "";
   selection = new SelectionModel<PackageResidueItem>(true, []);
 
-   selectedCustomers: any[] = [];
+  selectedCustomers: any[] = [];
     
-    separatorKeysCodes: number[] = [ENTER, COMMA];
+  separatorKeysCodes: number[] = [ENTER, COMMA];
 
+  selectedPackEst?:PackageResidueItem=undefined;
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
@@ -671,6 +672,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     this.initPcForm();
     this.customerCodeControl.reset('');
     this.selectedCustomers=[];
+    this.selectedPackEst=undefined;
   }
 
    selected(event: MatAutocompleteSelectedEvent): void {
@@ -678,7 +680,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
             const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
             if (!(index >= 0)) {
               this.selectedCustomers.push(customer);
-              
+              this.search();
             }
         
             if (this.custInput) {
@@ -709,7 +711,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
           const index = this.selectedCustomers.findIndex(c=>c.code===cust.code);
           if (index >= 0) {
             this.selectedCustomers.splice(index, 1);
-            
+            this.search();
           }
         }
         
@@ -725,6 +727,37 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
                this.customer_companyList = data;
             }
           });
+        }
+
+         toggleEstimate(row:PackageResidueItem)
+            {
+              
+              this.selection.toggle(row);
+              if(this.selection.selected.length==1)
+              {
+                this.selectedPackEst =row;
+              }
+              else if (this.selection.selected.length==0)
+              {
+                this.selectedPackEst =undefined;
+              }
+            }
+          
+            HideCheckBox(row:PackageResidueItem):boolean
+            {
+              var retval :boolean =false;
+          
+              if(this.selectedPackEst)
+              {
+                retval = !(this.selectedPackEst.tariff_residue_guid=== row.tariff_residue_guid);
+              }
+              return retval;
+          
+            }
+
+        onTabFocused() {
+          this.resetForm();
+          this.search();
         }
 
 

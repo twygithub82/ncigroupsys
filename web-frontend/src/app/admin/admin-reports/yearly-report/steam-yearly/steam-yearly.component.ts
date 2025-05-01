@@ -645,4 +645,7 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
 }

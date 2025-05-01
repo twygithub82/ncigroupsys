@@ -1057,6 +1057,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
   }
 
-
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 
 }

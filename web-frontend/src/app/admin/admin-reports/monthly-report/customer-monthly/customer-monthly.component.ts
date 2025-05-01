@@ -648,4 +648,7 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
 }

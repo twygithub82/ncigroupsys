@@ -259,6 +259,11 @@ export class MainPackageCleaningComponent extends UnsubscribeOnDestroyAdapter im
   @ViewChild(MatMenuTrigger)
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
+
+  @ViewChild('packClean') packClean!: PackageCleaningComponent;
+  @ViewChild('packBuffer') packBuffer!: PackageBufferComponent;
+  @ViewChild('packResidue') packResidue!: PackageResidueComponent;
+  
   ngOnInit() {
     // this.initializeFilterCustomerCompany();
     // this.loadData();
@@ -1008,11 +1013,17 @@ export class MainPackageCleaningComponent extends UnsubscribeOnDestroyAdapter im
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
+
+
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
+    switch (event.index) {
+      case 0:
+        this.packClean?.onTabFocused(); break;
+      case 1:
+        this.packBuffer?.onTabFocused(); break;
+      case 2:
+          this.packResidue?.onTabFocused(); break;
+    }
   }
 }

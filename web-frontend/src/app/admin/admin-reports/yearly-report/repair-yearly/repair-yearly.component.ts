@@ -646,4 +646,7 @@ export class RepairYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
  
    }
 
+   onTabFocused() {
+    this.resetForm();
+  }
 }

@@ -640,4 +640,9 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       }
     });
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

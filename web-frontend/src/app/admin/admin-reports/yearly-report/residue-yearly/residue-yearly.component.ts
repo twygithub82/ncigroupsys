@@ -645,4 +645,8 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
+
 }

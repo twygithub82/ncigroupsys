@@ -679,4 +679,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
 }

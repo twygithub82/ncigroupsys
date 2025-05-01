@@ -1052,6 +1052,9 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
      return bAllow;
 
   }
-
+  onTabFocused() {
+    this.resetFormSummary();
+    this.resetFormDetail();
+  }
 
 }

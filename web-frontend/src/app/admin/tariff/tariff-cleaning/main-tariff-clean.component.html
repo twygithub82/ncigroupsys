@@ -10,13 +10,13 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.TARIFF_CLEANING">
-                <app-tariff-cleaning></app-tariff-cleaning>
+                <app-tariff-cleaning #tariffClean></app-tariff-cleaning>
               </mat-tab>
               <mat-tab [label]="translatedLangText.TARIFF_BUFFER">
-                <app-tariff-buffer></app-tariff-buffer>
+                <app-tariff-buffer #tariffBuffer></app-tariff-buffer>
               </mat-tab>
               <mat-tab [label]="translatedLangText.TARIFF_RESIDUE">
-                <app-tariff-residue></app-tariff-residue>
+                <app-tariff-residue #tariffResidue></app-tariff-residue>
               </mat-tab>
             </mat-tab-group>
           </div>

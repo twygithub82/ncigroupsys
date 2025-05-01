@@ -232,6 +232,10 @@ export class MainPackageDepotComponent extends UnsubscribeOnDestroyAdapter imple
   @ViewChild(MatMenuTrigger)
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
+
+  @ViewChild('packageDepot') packageDepot!: PackageDepotComponent;
+  @ViewChild('packageLabour') packageLabour!: PackageLabourComponent;
+
   ngOnInit() {
   }
 
@@ -981,9 +985,11 @@ export class MainPackageDepotComponent extends UnsubscribeOnDestroyAdapter imple
 
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
+    switch (event.index) {
+      case 0:
+        this.packageDepot?.onTabFocused(); break;
+      case 1:
+        this.packageLabour?.onTabFocused(); break;
+    }
   }
 }

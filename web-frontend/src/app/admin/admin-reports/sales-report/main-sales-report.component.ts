@@ -804,11 +804,19 @@ export class MainSalesReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+  
+      @ViewChild('salesMonthlyRep') salesMonthlyRep!: SalesMonthlyAdminReportComponent;
+      @ViewChild('salesYearlyRep') salesYearlyRep!: SalesYearlyAdminReportComponent;
+      
+      
+    onTabSelected(event: MatTabChangeEvent): void {
+      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+      switch (event.index) {
+        case 0:
+          this.salesMonthlyRep?.onTabFocused(); break;
+        case 1:
+          this.salesYearlyRep?.onTabFocused(); break;
+       
+      }
+    }
 }

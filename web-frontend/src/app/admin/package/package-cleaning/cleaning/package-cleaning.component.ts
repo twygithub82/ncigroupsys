@@ -139,6 +139,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
+  selectedPackEst?:CustomerCompanyCleaningCategoryItem=undefined;
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
@@ -442,7 +443,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
   search() {
     const where: any = {};
-
+    this.selectedPackEst=undefined;
     
     if (this.selectedCustomers.length>0) {
       //if (this.customerCodeControl.value.length > 0) 
@@ -705,6 +706,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     this.customerCodeControl.reset('');
     this.categoryControl.reset();
     this.selectedCustomers=[];
+    this.selectedPackEst=undefined;
   }
 
   displayLastUpdated(r: any) {
@@ -739,39 +741,70 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
           //this.pcForm?.patchValue({ customer_code: null });
         }
         
-      add(event: MatChipInputEvent): void {
-        const input = event.input;
-        const value = event.value;
-        // Add our fruit
-        if ((value || '').trim()) {
-          //this.fruits.push(value.trim());
-        }
-        // Reset the input value
-        if (input) {
-          input.value = '';
-        }
-        this.customerCodeControl.setValue(null);
-      }
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    this.customerCodeControl.setValue(null);
+  }
+
+  remove(cust: any): void {
+    const index = this.selectedCustomers.findIndex(c=>c.code===cust.code);
+    if (index >= 0) {
+      this.selectedCustomers.splice(index, 1);
+      // this.search();
+    }
+  }
+  
+  private updateFormControl(): void {
+    // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
+  }
     
-      remove(cust: any): void {
-        const index = this.selectedCustomers.findIndex(c=>c.code===cust.code);
-        if (index >= 0) {
-          this.selectedCustomers.splice(index, 1);
-          
-        }
-      }
-      
-      private updateFormControl(): void {
-       // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
-      }
-    
-      searchCustomerCompanyList(searchCriteria : string)
+  searchCustomerCompanyList(searchCriteria : string)
+  {
+    this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+      if(this.custInput?.nativeElement.value===searchCriteria)
       {
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          if(this.custInput?.nativeElement.value===searchCriteria)
-          {
-             this.customer_companyList = data;
-          }
-        });
+          this.customer_companyList = data;
       }
+    });
+  }
+
+    toggleEstimate(row:CustomerCompanyCleaningCategoryItem)
+    {
+      
+      this.selection.toggle(row);
+      if(this.selection.selected.length==1)
+      {
+        this.selectedPackEst =row;
+      }
+      else if (this.selection.selected.length==0)
+      {
+        this.selectedPackEst =undefined;
+      }
+    }
+  
+    HideCheckBox(row:CustomerCompanyCleaningCategoryItem):boolean
+    {
+      var retval :boolean =false;
+  
+      if(this.selectedPackEst)
+      {
+        retval = !(this.selectedPackEst.cleaning_category?.guid=== row.cleaning_category?.guid);
+      }
+      return retval;
+  
+    }
+
+    onTabFocused() {
+      this.resetForm();
+      this.search();
+    }
 }

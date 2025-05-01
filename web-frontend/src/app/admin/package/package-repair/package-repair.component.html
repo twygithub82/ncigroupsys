@@ -58,6 +58,31 @@
                         </mat-autocomplete>
                       </mat-form-field>
                     </div>
+                   
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.GROUP}}</mat-label>
+                        <mat-select formControlName="group_name_cv" >
+                          @for (cn of groupNameCvList; track cn) {
+                          <mat-option [value]="cn">
+                            {{cn.description}}
+                          </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.SUB_GROUP}}</mat-label>
+                        <mat-select formControlName="sub_group_name_cv" >
+                          @for (cn of subGroupNameCvList; track cn) {
+                          <mat-option [value]="cn">
+                            {{cn.description}}
+                          </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
@@ -71,31 +96,6 @@
                         </mat-autocomplete>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.GROUP}}</mat-label>
-                        <mat-select formControlName="group_name_cv" multiple>
-                          @for (cn of groupNameCvList; track cn) {
-                          <mat-option [value]="cn.code_val">
-                            {{cn.description}}
-                          </mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.SUB_GROUP}}</mat-label>
-                        <mat-select formControlName="sub_group_name_cv" multiple>
-                          @for (cn of subGroupNameCvList; track cn) {
-                          <mat-option [value]="cn.code_val">
-                            {{cn.description}}
-                          </mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.LABOUR_HOUR}}</mat-label>

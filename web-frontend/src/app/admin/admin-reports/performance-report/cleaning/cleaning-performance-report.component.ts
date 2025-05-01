@@ -780,4 +780,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     return `${row.cargo||''}`;
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
 }

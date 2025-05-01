@@ -10,16 +10,16 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
                <mat-tab [label]="translatedLangText.STEAM_REPORT">
-                <app-steam-yearly></app-steam-yearly>
+                <app-steam-yearly #steamYearlyAdminRep></app-steam-yearly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.RESIDUE_REPORT">
-                <app-residue-yearly></app-residue-yearly>
+                <app-residue-yearly #residueYearlyAdminRep></app-residue-yearly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.REPAIR_REPORT">
-                <app-repair-yearly></app-repair-yearly>
+                <app-repair-yearly #repairYearlyAdminRep></app-repair-yearly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.CLEAN_REPORT">
-                <app-clean-yearly></app-clean-yearly>
+                <app-clean-yearly #cleanYearlyAdminRep></app-clean-yearly>
               </mat-tab>
               <!-- <mat-tab [label]="translatedLangText.CLEANING_INVENTORY">
                 <app-cleaning-inventory></app-cleaning-inventory>

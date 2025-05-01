@@ -807,11 +807,24 @@ export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements 
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+    @ViewChild('cleanYearlyAdminRep') cleanYearlyAdminRep!: CleanYearlyAdminReportComponent;
+     @ViewChild('steamYearlyAdminRep') steamYearlyAdminRep!: SteamYearlyAdminReportComponent;
+     @ViewChild('repairYearlyAdminRep') repairYearlyAdminRep!: RepairYearlyAdminReportComponent;
+     @ViewChild('residueYearlyAdminRep') residueYearlyAdminRep!: ResidueYearlyAdminReportComponent;
+     
+   onTabSelected(event: MatTabChangeEvent): void {
+     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+     switch (event.index) {
+      
+      case 0:
+         this.steamYearlyAdminRep?.onTabFocused(); break;
+      case 1:
+          this.residueYearlyAdminRep?.onTabFocused(); break;
+      case 2:
+           this.repairYearlyAdminRep?.onTabFocused(); break;
+      
+      case 3:
+            this.cleanYearlyAdminRep?.onTabFocused(); break;
+     }
+   }
 }

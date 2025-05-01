@@ -986,5 +986,9 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     })
   }
 
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 
 }

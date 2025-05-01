@@ -697,4 +697,8 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
+
 }

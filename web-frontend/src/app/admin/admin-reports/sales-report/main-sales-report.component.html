@@ -10,10 +10,10 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
                 <mat-tab [label]="translatedLangText.MONTHLY_SALES_REPORT">
-                <app-sales-monthly></app-sales-monthly>
+                <app-sales-monthly #salesMonthlyRep></app-sales-monthly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.YEARLY_SALES_REPORT">
-                <app-sales-yearly></app-sales-yearly>
+                <app-sales-yearly #salesYearlyRep></app-sales-yearly>
               </mat-tab>
               <!--<mat-tab [label]="translatedLangText.RESIDUE_REPORT">
                 <app-residue-yearly></app-residue-yearly>

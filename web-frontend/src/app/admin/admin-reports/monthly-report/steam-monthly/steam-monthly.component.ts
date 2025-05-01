@@ -618,4 +618,8 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
+
 }

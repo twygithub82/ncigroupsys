@@ -713,4 +713,9 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     });
     this.unit_type_control.reset();
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

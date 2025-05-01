@@ -1291,4 +1291,9 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
+
 }

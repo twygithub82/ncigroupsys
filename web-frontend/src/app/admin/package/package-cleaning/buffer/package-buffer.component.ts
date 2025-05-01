@@ -125,7 +125,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   selectedCustomers: any[] = [];
   
   separatorKeysCodes: number[] = [ENTER, COMMA];
-  
+  selectedPackEst?:PackageBufferItem=undefined;
+
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
@@ -659,6 +660,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     this.initPcForm();
     this.customerCodeControl.reset('');
     this.selectedCustomers=[];
+    this.selectedPackEst=undefined;
   }
 
   displayLastUpdated(r: any) {
@@ -680,7 +682,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
             const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
             if (!(index >= 0)) {
               this.selectedCustomers.push(customer);
-              
+              this.search();
             }
         
             if (this.custInput) {
@@ -711,7 +713,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
           const index = this.selectedCustomers.findIndex(c=>c.code===cust.code);
           if (index >= 0) {
             this.selectedCustomers.splice(index, 1);
-            
+            this.search();
           }
         }
         
@@ -732,6 +734,36 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
                this.customer_companyList = data;
             }
           });
+        }
+
+        toggleEstimate(row:PackageBufferItem)
+        {
+          
+          this.selection.toggle(row);
+          if(this.selection.selected.length==1)
+          {
+            this.selectedPackEst =row;
+          }
+          else if (this.selection.selected.length==0)
+          {
+            this.selectedPackEst =undefined;
+          }
+        }
+      
+        HideCheckBox(row:PackageBufferItem):boolean
+        {
+          var retval :boolean =false;
+      
+          if(this.selectedPackEst)
+          {
+            retval = !(this.selectedPackEst.tariff_buffer_guid=== row.tariff_buffer_guid);
+          }
+          return retval;
+      
+        }
+        onTabFocused() {
+          this.resetForm();
+          this.search();
         }
 }
 

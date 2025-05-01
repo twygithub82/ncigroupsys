@@ -9,14 +9,14 @@
         <div class="card">
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
-              <mat-tab [label]="translatedLangText.PACKAGE_CLEANING">
-                <app-package-cleaning></app-package-cleaning>
+              <mat-tab  [label]="translatedLangText.PACKAGE_CLEANING">
+                <app-package-cleaning #packClean></app-package-cleaning>
               </mat-tab>
               <mat-tab [label]="translatedLangText.PACKAGE_BUFFER">
-                <app-package-buffer></app-package-buffer>
+                <app-package-buffer  #packBuffer></app-package-buffer>
               </mat-tab>
-              <mat-tab [label]="translatedLangText.PACKAGE_RESIDUE">
-                <app-package-residue></app-package-residue>
+              <mat-tab  [label]="translatedLangText.PACKAGE_RESIDUE">
+                <app-package-residue #packResidue></app-package-residue>
               </mat-tab>
               <!-- <mat-tab [label]="translatedLangText.STEAM_BILLING">
                   <app-steam-billing></app-steam-billing>

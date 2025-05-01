@@ -757,5 +757,11 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
             }
           });
         }
+
+        onTabFocused() {
+          this.resetForm();
+          this.search();
+        }
+    
 }
 

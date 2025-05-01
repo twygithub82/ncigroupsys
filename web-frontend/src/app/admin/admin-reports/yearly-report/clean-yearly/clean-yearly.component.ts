@@ -647,4 +647,7 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
  
    }
 
+   onTabFocused() {
+    this.resetForm();
+  }
 }

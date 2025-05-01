@@ -10,10 +10,10 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.TARIFF_DEPOT">
-                <app-tariff-depot></app-tariff-depot>
+                <app-tariff-depot #tariffDepot></app-tariff-depot>
               </mat-tab>
               <mat-tab [label]="translatedLangText.TARIFF_LABOUR">
-                <app-tariff-labour></app-tariff-labour>
+                <app-tariff-labour #tariffLabour></app-tariff-labour>
               </mat-tab>
               <!-- <mat-tab [label]="translatedLangText.TARIFF_BUFFER">
                 <app-tariff-buffer></app-tariff-buffer>

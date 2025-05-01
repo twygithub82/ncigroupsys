@@ -10,16 +10,13 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.CLEANING_BILLING">
-                <app-clean-billing></app-clean-billing>
+                <app-clean-billing #cleanBilling></app-clean-billing>
               </mat-tab>
-              <!-- <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
-                <app-job-order-task></app-job-order-task>
-              </mat-tab> -->
               <mat-tab [label]="translatedLangText.STEAM_BILLING">
-                  <app-steam-billing></app-steam-billing>
+                  <app-steam-billing #steamBilling></app-steam-billing>
               </mat-tab>
               <mat-tab [label]="translatedLangText.RESIDUE_BILLING">
-                 <app-residue-billing></app-residue-billing>
+                 <app-residue-billing #residueBilling></app-residue-billing>
               </mat-tab>
               <!-- <mat-tab>
                 <ng-template mat-tab-label>

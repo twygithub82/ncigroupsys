@@ -995,11 +995,20 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
   }
   
+     @ViewChild('cleanBilling') cleanBilling!: CleanBillingComponent;
+     @ViewChild('steamBilling') steamBilling!: SteamBillingComponent;
+     @ViewChild('residueBilling') residueBilling!: ResidueBillingComponent;
+       
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
+    switch (event.index) {
+     
+     case 0:
+        this.cleanBilling?.onTabFocused(); break;
+     case 1:
+         this.steamBilling?.onTabFocused(); break;
+     case 2:
+          this.residueBilling?.onTabFocused(); break;
+    }
   }
 }

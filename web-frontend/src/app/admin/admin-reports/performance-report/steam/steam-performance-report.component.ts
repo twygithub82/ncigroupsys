@@ -742,4 +742,7 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     return `${row.cargo||''}`;
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
 }

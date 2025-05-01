@@ -773,6 +773,11 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     });
   }
 
+  isShowDeleteIcon(row:any):boolean
+  {
+    
+    return (!row.so_count && !row.sot_count && !row.tank_info_count);
+  }
   async CanDeleteCustomer(guid: string): Promise<boolean> {
     let retval: boolean = false;
 

@@ -1124,4 +1124,9 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
   DisplayBillingType(billing_type: string) {
     return this.cvDS.getCodeDescription(billing_type, this.invoiceTypeCvList);
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

@@ -619,4 +619,7 @@ export class RepairMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+  }
 }

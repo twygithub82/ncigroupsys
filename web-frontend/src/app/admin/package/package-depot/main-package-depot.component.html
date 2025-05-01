@@ -10,10 +10,10 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.PACKAGE_DEPOT">
-                <app-package-depot></app-package-depot>
+                <app-package-depot #packageDepot></app-package-depot>
               </mat-tab>
               <mat-tab [label]="translatedLangText.PACKAGE_LABOUR">
-                <app-package-labour></app-package-labour>
+                <app-package-labour #packageLabour></app-package-labour>
               </mat-tab>
             </mat-tab-group>
           </div>

@@ -1011,11 +1011,24 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+ 
+     @ViewChild('storageBilling') storageBilling!: StorageBillingComponent;
+      @ViewChild('loloBilling') loloBilling!: LOLOBillingComponent;
+      @ViewChild('preinspectBilling') preinspectBilling!: PreinspectionBillingComponent;
+      @ViewChild('gateBilling') gateBilling!: GateBillingComponent;
+      
+    onTabSelected(event: MatTabChangeEvent): void {
+      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+      switch (event.index) {
+       
+       case 0:
+          this.gateBilling?.onTabFocused(); break;
+       case 1:
+           this.preinspectBilling?.onTabFocused(); break;
+       case 2:
+            this.loloBilling?.onTabFocused(); break;
+       case 3:
+             this.storageBilling?.onTabFocused(); break;
+      }
+    }
 }

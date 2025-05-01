@@ -996,4 +996,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     return validStatus.includes(residue!.status_cv!);
 
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

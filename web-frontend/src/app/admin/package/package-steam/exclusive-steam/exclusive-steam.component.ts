@@ -821,5 +821,10 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
       }
     });
   }
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
+
 }
 

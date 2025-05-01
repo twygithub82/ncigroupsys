@@ -1009,11 +1009,17 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
+   @ViewChild('packageSteam') packageSteam!: PackageSteamComponent;
+    @ViewChild('packageExcSteam') packageExcSteam!: ExclusiveSteamComponent;
+  
+
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
+    switch (event.index) {
+      case 0:
+        this.packageSteam?.onTabFocused(); break;
+      case 1:
+        this.packageExcSteam?.onTabFocused(); break;
+    }
   }
 }

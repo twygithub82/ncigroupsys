@@ -694,4 +694,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
     return criteria;
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

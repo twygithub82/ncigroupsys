@@ -809,11 +809,26 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+ @ViewChild('steamAdminReport') steamAdminReport!: SteamMonthlyAdminReportComponent;
+ @ViewChild('residueAdminReport') residueAdminReport!: ResidueMonthlyAdminReportComponent;
+ @ViewChild('repairAdminReport') repairAdminReport!: RepairMonthlyAdminReportComponent;
+ @ViewChild('customerAdminReport') customerAdminReport!: CustomerMonthlyAdminReportComponent;
+ @ViewChild('cleanAdminReport') cleanAdminReport!: CleanMonthlyAdminReportComponent;
+     
+   onTabSelected(event: MatTabChangeEvent): void {
+     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+     switch (event.index) {
+       case 0:
+         this.steamAdminReport?.onTabFocused(); break;
+       case 1:
+         this.residueAdminReport?.onTabFocused(); break;
+       case 2:
+          this.repairAdminReport?.onTabFocused(); break;
+      case 3:
+          this.cleanAdminReport?.onTabFocused(); break;
+      case 4:
+          this.customerAdminReport?.onTabFocused(); break;
+      
+     }
+   }
 }
