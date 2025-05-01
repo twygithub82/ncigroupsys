@@ -21,6 +21,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { Utility } from 'app/utilities/utility';
 import { environment } from 'environments/environment';
 import { MatTooltip } from '@angular/material/tooltip';
+import { Direction } from '@angular/cdk/bidi';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-sidebar',
@@ -37,17 +42,20 @@ import { MatTooltip } from '@angular/material/tooltip';
     NgClass,
     TranslateModule,
     FeatherModule,
-    MatTooltip
+    MatTooltip,
+    MatDividerModule,
   ],
 })
-export class SidebarComponent implements OnInit, OnDestroy {
+export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnInit, OnDestroy {
   public sidebarItems!: RouteInfo[];
   public innerHeight?: number;
   public bodyTag!: HTMLElement;
 
   translatedLangText: any = {};
   langText = {
-    SOFTWARE_NAME: 'SOFTWARE-NAME.TEXT'
+    SOFTWARE_NAME: 'SOFTWARE-NAME.TEXT',
+    LOGOUT: 'COMMON-FORM.LOGOUT',
+    CONFIRM_LOGOUT: 'COMMON-FORM.CONFIRM-LOGOUT',
   }
 
   listMaxHeight?: string;
@@ -69,8 +77,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     public elementRef: ElementRef,
     private authService: AuthService,
     private router: Router,
+    public dialog: MatDialog,
     private translate: TranslateService
   ) {
+    super();
     this.elementRef.nativeElement.closest('body');
     this.routerObj = this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
@@ -116,7 +126,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.initLeftSidebar();
     this.bodyTag = this.document.body;
   }
-  ngOnDestroy() {
+  override ngOnDestroy() {
+    super.ngOnDestroy();
     this.routerObj.unsubscribe();
   }
   initLeftSidebar() {
@@ -185,9 +196,34 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.renderer.removeClass(this.document.body, 'side-closed-hover');
     }
   }
+
   logout() {
     this.authService.logout();
   }
+
+  logoutDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_LOGOUT,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.authService.logout();
+      }
+    });
+  }
+
   checkScreenSizeAndCollapse() {
     const screenWidth = window.innerWidth;
     if (screenWidth <= 1366) { // Tablet width or smaller

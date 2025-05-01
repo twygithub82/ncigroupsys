@@ -100,10 +100,23 @@
             }
           </li>
           }
+          <mat-divider></mat-divider>
+          <li class="logout-item">
+            <a (click)="logoutDialog($event)" class="menu-top mt-1 pt-1 mb-1 pb-1">
+              <mat-icon class="sidebarIcon font-20">logout</mat-icon>
+              <span class="hide-menu">{{ translatedLangText.LOGOUT }}</span>
+            </a>
+          </li>
         </ul>
       </ng-scrollbar>
     </div>
     <!-- #Menu -->
+    <!-- <div class="sidebar-footer mt-auto p-2 text-center">
+      <button mat-button (click)="logoutDialog($event)" class="logout-btn">
+        <mat-icon>logout</mat-icon>
+        <span class="hide-menu">Logout</span>
+      </button>
+    </div> -->
   </aside>
   <!-- #END# Left Sidebar -->
 </div>

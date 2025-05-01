@@ -177,7 +177,6 @@ export class HeaderComponent
 
   logout() {
     this.authService.logout();
-
   }
 
   logoutDialog(event: Event) {
