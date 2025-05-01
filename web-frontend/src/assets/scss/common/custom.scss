@@ -1068,13 +1068,14 @@ $breakpoints: (
 }
 
 .dark-header .mat-mdc-header-cell {
-  background-color: lighten($theme-gold-purple-legal-bg, 5%) !important;
+  background-color: #e0e0e0 !important;
   color: #333;
 }
 
 /* Class for striped rows */
 .striped-rows .mdc-data-table__row:nth-child(odd) {
-  background-color: lighten($theme-gold-purple-legal-bg, 10%);
+  background-color: #f5f5f5;
+  ;
 }
 
 .striped-rows .mdc-data-table__row:nth-child(even) {
@@ -1087,7 +1088,7 @@ $breakpoints: (
 }
 
 .hover-highlight .mdc-data-table__row:hover {
-  background-color: lighten($theme-gold-purple-navbar-brand_hover, 5%);
+  background-color: #c9c9c9;
 }
 
 /* Ensure text color remains legible */
@@ -1661,11 +1662,25 @@ $breakpoints: (
 
 .sidebar {
   width: 240px;
+  background-color: #f2ecf4
 }
 
 .sidebar .menu .list a span {
   // font-size: 1rem !important;
   margin-bottom: 5px;
+}
+
+.sidebar .menu .list li.active-top .menu-top {
+  background-color: #f2ecf4;
+}
+
+.sidebar .menu .list li.active .menu-top {
+  background-color: #f2ecf4;
+  border-radius: 5px;
+}
+
+.logo-white .navbar-header {
+  background-color: #f2ecf4 !important;
 }
 
 section.content {
