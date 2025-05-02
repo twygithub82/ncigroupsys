@@ -106,6 +106,11 @@ export const GET_SCHEDULING = gql`
               eir_no
               eir_dt
               yard_cv
+              delete_dt
+              in_gate_survey {
+                capacity
+                tare_weight
+              }
             }
             tariff_cleaning {
               cargo
