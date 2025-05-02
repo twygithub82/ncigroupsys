@@ -572,15 +572,16 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     //   this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE
     // ]];
 
+    const vAlign="bottom";
     const headers = [
       [
-        { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.EIR, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+        { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.EIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.FROM_YARD, rowSpan: 2, styles: { halign: 'center' } },
         { content: this.translatedLangText.TO_YARD, rowSpan: 2, styles: { halign: 'center' } },
-        { content: this.translatedLangText.TRANSFER, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+        { content: this.translatedLangText.TRANSFER, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
         //{ content: this.translatedLangText.STORAGE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       ],
       [

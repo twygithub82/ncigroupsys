@@ -528,12 +528,12 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     const reportTitle = this.GetReportTitle();
     const headers = [
       [
-        { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.EIR_DATE, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.ESTIMATE_TYPE, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.ESTIMATE_NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+        { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+        { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+        { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+        { content: this.translatedLangText.EIR_DATE, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+        { content: this.translatedLangText.ESTIMATE_TYPE, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+        { content: this.translatedLangText.ESTIMATE_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.ESTIMATED, colSpan: 2, styles: { halign: 'center' } },
         { content: this.translatedLangText.APPROVAL, colSpan: 2, styles: { halign: 'center' } },
        // { content: this.translatedLangText.STATUS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } }

@@ -554,19 +554,19 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
-
+    const vAlign ="bottom";
     const reportTitle = this.GetReportTitle();
     const headers = [
       [
-        { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.EIR_DATE, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.OWNER, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+        { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.EIR_DATE, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.OWNER, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.LAST_PERIODIC_TEST, colSpan: 3, styles: { halign: 'center' } },
         { content: this.translatedLangText.NEXT_PERIODIC_TEST, colSpan: 2, styles: { halign: 'center' } },
-        { content: this.translatedLangText.DUE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.DUE_TYPE, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+        { content: this.translatedLangText.DUE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.DUE_TYPE, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       ],
       [
         // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)

@@ -249,14 +249,17 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
  
   initSearchForm() {
-    var thisYear = new Date().getFullYear();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var date = new Date();
+    var thisYear = date.getFullYear().toString();
+    var thisMonth= date.toLocaleString("en-US",{month:"long"});
+    date.setMonth(date.getMonth() - 1);
+    var LastMonth = date.toLocaleString("en-US", { month: "long" });
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
       year: [`${thisYear}`],
       month_start: [`${thisMonth}`],
       month_end: [`${thisMonth}`],
-      cost_type:['ALL']
+      cost_type:['']
     });
   }
 
@@ -292,12 +295,12 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
-      // this.costTypeCvList = addDefaultSelectOption(data, 'All',"ALL");
-      // var allType = this.costTypeCvList.find(c=>c.code_val=='ALL');
-      // this.searchForm?.patchValue({
-      //   cost_type:allType
-      // });
-      this.costTypeCvList = addDefaultSelectOption(data, 'All');
+      this.costTypeCvList = addDefaultSelectOption(data, 'All',"ALL");
+      var allType = this.costTypeCvList.find(c=>c.code_val=='ALL');
+      this.searchForm?.patchValue({
+        cost_type:allType
+      });
+      //this.costTypeCvList = addDefaultSelectOption(data, 'All');
     });
     var thisYear = new Date().getFullYear();
     var startYear = thisYear-5;
@@ -482,13 +485,18 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
   resetForm() {
-    var thisYear = new Date().getFullYear().toString();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+
+    var date = new Date();
+     
+    var thisYear = date.getFullYear().toString();
+    var thisMonth= date.toLocaleString("en-US",{month:"long"});
+    date.setMonth(date.getMonth() - 1);
+    var LastMonth = date.toLocaleString("en-US", { month: "long" });
     this.searchForm?.patchValue({
       year: thisYear,
       month_start: thisMonth,
       month_end: thisMonth,
-      cost_type: ['ALL']
+      cost_type:  this.costTypeCvList.find(c=>c.code_val=='ALL')
     });
     this.customerCodeControl.reset('');
    
