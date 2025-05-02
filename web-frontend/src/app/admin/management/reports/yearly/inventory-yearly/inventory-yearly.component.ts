@@ -428,7 +428,20 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   }
 
 
-
+  ZeroTransaction(data:ManagementReportYearlyInventory):boolean
+  {
+     var retval:boolean = true;
+     if(data)
+     {
+      retval = (data.cleaning_yearly_inventory?.average_count==0)||
+               (data.depot_yearly_inventory?.average_count==0)||
+               (data.gate_in_inventory?.average_count==0)||
+               (data.gate_out_inventory?.average_count==0)||
+               (data.repair_yearly_inventory?.average_count==0)||
+               (data.steaming_yearly_inventory?.average_count==0)
+     }
+     return retval;
+  }
 
   performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string,invTypes?:string[]) {
 
@@ -436,8 +449,11 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     // {
     this.subs.sink = this.reportDS.searchManagementReportInventoryYearlyReport(this.lastSearchCriteria)
       .subscribe(data => {
+
         this.repData = data;
-        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!,invTypes!);
+     
+           this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!,invTypes!);
+        
       });
 
   }
@@ -547,14 +563,14 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
 
 
-    if (repData) {
+    if(!this.ZeroTransaction(this.repData)){
 
       this.onExportChart_r1(repData, date, customerName, report_type,invTypes);
 
 
     }
     else {
-      this.sotList = [];
+      this.repData = [];
       this.isGeneratingReport = false;
     }
 

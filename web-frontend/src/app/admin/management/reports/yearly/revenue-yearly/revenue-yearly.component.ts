@@ -453,7 +453,26 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
         this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!,invTypes!);
       });
 
+      
   }
+
+   ZeroTransaction(data:ManagementReportYearlyRevenueItem):boolean
+    {
+       var retval:boolean = true;
+       if(data)
+       {
+        retval = (data.cleaning_yearly_revenue?.average_count==0)||
+                 (data.gate_yearly_revenue?.average_count==0)||
+                 (data.lolo_yearly_revenue?.average_count==0)||
+                 (data.preinspection_yearly_revenue?.average_count==0)||
+                 (data.repair_yearly_revenue?.average_count==0)||
+                 (data.residue_yearly_revenue?.average_count==0)||
+                 (data.steam_yearly_revenue?.average_count==0)||
+                 (data.storage_yearly_revenue?.average_count==0)
+       }
+       return retval;
+    }
+
  
    onPageEvent(event: PageEvent) {
     
@@ -561,14 +580,14 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
    
    
    
-       if (repData) {
+       if (!this.ZeroTransaction(repData)) {
    
          this.onExportChart_r1(repData, date, customerName, report_type,invTypes);
    
    
        }
        else {
-         this.sotList = [];
+         this.repData = [];
          this.isGeneratingReport = false;
        }
    

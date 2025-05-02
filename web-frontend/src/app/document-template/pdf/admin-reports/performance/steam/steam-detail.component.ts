@@ -883,17 +883,17 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
 
     const reportTitle = this.GetReportTitle();
     const headers : CellInput[][]= [[
-      { content: this.translatedLangText.NO, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.COMPLETED_DATE, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } },  
-      { content: this.translatedLangText.TANK_NO, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } },  
-      { content: this.translatedLangText.EIR_NO, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } },  
-      { content: this.translatedLangText.CUSTOMER, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } },  
-      { content: this.translatedLangText.CARGO, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } },  
-      { content: this.translatedLangText.DURATION, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } },  
-      { content: `${this.translatedLangText.REQUIRED_TEMP} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } },  
-      { content: this.translatedLangText.STEAM_COST, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } },  
+      { content: this.translatedLangText.NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.TANK_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
+      { content: this.translatedLangText.EIR_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
+      { content: this.translatedLangText.CUSTOMER, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
+      { content: this.translatedLangText.CARGO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.COMPLETED_DATE, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },    
+      { content: this.translatedLangText.DURATION, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
+      { content: `${this.translatedLangText.REQUIRED_TEMP} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
+      { content: this.translatedLangText.STEAM_COST, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
       { content: this.translatedLangText.TEMPERATURE, colSpan: 6, styles: { halign: 'center', valign: 'middle' } },  
-      { content: this.translatedLangText.BAY, rowSpan: 3, styles: { halign: 'center', valign: 'middle' } }  
+      { content: this.translatedLangText.BAY, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } }  
     
     ],[ 
       { content: this.translatedLangText.THERMOMETER, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },  
@@ -914,8 +914,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
         1: { halign: 'center', valign: 'middle',  cellWidth: 18, minCellHeight: minHeightBodyCell },
         2: { halign: 'center', valign: 'middle',  cellWidth: 20,minCellHeight: minHeightBodyCell },
         3: { halign: 'center', valign: 'middle', cellWidth: 20,minCellHeight: minHeightBodyCell },
-        4: { halign: 'center', valign: 'middle', cellWidth: 18,minCellHeight: minHeightBodyCell },
-        5: { halign: 'left', valign: 'middle',  cellWidth: 40,minCellHeight: minHeightBodyCell },
+        4: { halign: 'left', cellWidth: 40,minCellHeight: minHeightBodyCell },
+        5: { halign: 'center', valign: 'middle',  cellWidth: 18,minCellHeight: minHeightBodyCell },
         6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -981,8 +981,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       for (let n = 0; n < this.repData.length; n++) {
         let itm = this.repData[n];
         data.push([
-          (n + 1).toString(),Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.tank_no || "", itm.eir_no || "",
-          itm.customer_code||'', itm.last_cargo || "", itm.duration || "", itm.require_temp || "",
+          (n + 1).toString(), itm.tank_no || "", itm.eir_no || "",
+          itm.customer_code||'', itm.last_cargo || "",Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.duration || "", itm.require_temp || "",
           Utility.formatNumberDisplay(itm.cost) || "", (itm.themometer?.begin_temp) || "",(itm.themometer?.close_temp) || "",
           (itm.top?.begin_temp) || "", (itm.top?.close_temp) || "",(itm.bottom?.begin_temp) || "", (itm.bottom?.close_temp) || "",
           itm.bay

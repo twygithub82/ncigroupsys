@@ -486,7 +486,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     this.searchForm?.patchValue({
       year: thisYear,
       month: thisMonth,
-      cost_type: ['ALL']
+      cost_type:  this.costTypeCvList.find(c=>c.code_val=='ALL')
     });
     this.customerCodeControl.reset('');
    

@@ -644,16 +644,17 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
+    var vAlign='bottom';
     const reportTitle = this.GetReportTitle();
     const headers =   [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
       { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
-      { content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }
+      { content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } }
     ],
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
@@ -717,11 +718,16 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
       Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     }
-    var idx = 0;
-    for (let n = 0; n < (this.repData?.cleaning_yearly_sales?.result_per_month?.length||0); n++) {
 
+    var idx = 0;
+    let itmValid=this.getValidItem();
+    if(itmValid)
+    {
+    for (let n = 0; n < (itmValid?.result_per_month?.length||0); n++) {
+
+     
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      let itm = this.repData?.cleaning_yearly_sales?.result_per_month?.[n];
+      let itm = itmValid?.result_per_month?.[n];
 
     
         data.push([
@@ -733,7 +739,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
           Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.result_per_month?.[n]?.count),      Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.result_per_month?.[n]?.cost || 0),
           Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.result_per_month?.[n]?.count ),        Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.result_per_month?.[n]?.cost ||0)
         ]);
-    }
+       }
+   }
 
     data.push([this.translatedLangText.TOTAL,"",
       Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_count), Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_cost),
@@ -866,6 +873,17 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
   }
 
  
+  getValidItem():any
+  {
+
+    if(this.repData?.cleaning_yearly_sales) return this.repData.cleaning_yearly_sales;
+    if(this.repData?.lolo_yearly_sales) return this.repData.lolo_yearly_sales;
+    if(this.repData?.preinspection_yearly_sales) return this.repData.preinspection_yearly_sales;
+    if(this.repData?.repair_yearly_sales) return this.repData.repair_yearly_sales;
+    if(this.repData?.residue_yearly_sales) return this.repData.residue_yearly_sales;
+    if(this.repData?.steaming_yearly_sales) return this.repData.steaming_yearly_sales;
+
+  }
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -1035,17 +1053,34 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       var residue_cost:number[]=this.repData?.residue_yearly_sales?.result_per_month? this.repData?.residue_yearly_sales?.result_per_month?.map(s=>s.cost??0):[];
       var repair_cost:number[]=this.repData?.repair_yearly_sales?.result_per_month? this.repData?.repair_yearly_sales?.result_per_month?.map(s=>s.cost??0):[];
 
-      series.push({name:this.translatedLangText.PREINSPECTION,data:preinspect_cost});
-      series.push({name:this.translatedLangText.LOLO,data:lolo_cost});
-      series.push({name:this.translatedLangText.STEAM,data:steaming_cost});
-      series.push({name:this.translatedLangText.RESIDUE,data:residue_cost});
-      series.push({name:this.translatedLangText.CLEANING,data:cleaning_cost});
-      series.push({name:this.translatedLangText.REPAIR,data:repair_cost});
+      const prepareData = (name: string, data: number[]) => {
+        if (data.length === 1) {
+          data.push(0);
+        }
+        series.push({ name, data });
+      };
 
-      for (var n=0 ; n<(this.repData?.cleaning_yearly_sales?.result_per_month?.length||0);n++)
+      prepareData(this.translatedLangText.PREINSPECTION, preinspect_cost);
+      prepareData(this.translatedLangText.LOLO, lolo_cost);
+      prepareData(this.translatedLangText.STEAM, steaming_cost);
+      prepareData(this.translatedLangText.RESIDUE, residue_cost);
+      prepareData(this.translatedLangText.CLEANING, cleaning_cost);
+      prepareData(this.translatedLangText.REPAIR, repair_cost);
+      // series.push({name:this.translatedLangText.PREINSPECTION,data:preinspect_cost});
+      // series.push({name:this.translatedLangText.LOLO,data:lolo_cost});
+      // series.push({name:this.translatedLangText.STEAM,data:steaming_cost});
+      // series.push({name:this.translatedLangText.RESIDUE,data:residue_cost});
+      // series.push({name:this.translatedLangText.CLEANING,data:cleaning_cost});
+      // series.push({name:this.translatedLangText.REPAIR,data:repair_cost});
+
+      var itmValid = this.getValidItem();
+      if(itmValid)
       {
-        categories.push(this.repData?.cleaning_yearly_sales?.result_per_month?.[n].month);
+      for (var n=0 ; n<(itmValid?.result_per_month?.length||0);n++)
+      {
+        categories.push(itmValid?.result_per_month?.[n].month);
       }
+     }
       
       this.barChartOptions.series=series;
 

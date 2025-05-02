@@ -626,9 +626,9 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.TANK_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.TANK_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
       { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
@@ -649,7 +649,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
       0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },

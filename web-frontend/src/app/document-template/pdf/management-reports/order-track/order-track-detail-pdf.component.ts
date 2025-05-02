@@ -608,6 +608,8 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      
       
     };
 

@@ -531,7 +531,7 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
     
    
 
-    if(repData)
+    if(repData?.length>0)
     {
       //if (report_type == 1) {
         this.onExportChart_r1(repData, date,customerName,invTypes);
@@ -539,7 +539,7 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
    }
    else
    {
-    this.sotList=[];
+    this.repData=[];
     this.isGeneratingReport=false;
    }
 

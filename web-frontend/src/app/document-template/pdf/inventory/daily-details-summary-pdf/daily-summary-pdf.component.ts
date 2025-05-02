@@ -981,6 +981,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           head: subHeaders,
           body: subData,
           startY: startY, // Start table at the current startY value
+          
           theme: 'grid',
           styles: {
             fontSize: fontSz,
@@ -1067,7 +1068,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     minHeightBodyCell:number,minHeightHeaderCol:number,
     bottomMargin:number,pagePositions:any[])
   {
-    const tablewidth=55;
+    const tablewidth=10;
     const fontSz=6;
     const contentWidth = pageWidth - leftMargin - rightMargin;
     const chartContentWidth= contentWidth - tablewidth - 2;
@@ -1103,7 +1104,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     const comStyles: any = {
       0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', cellWidth: 'auto', minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: 35, minCellHeight: minHeightBodyCell },
     };
 
     const data: any[][] = [];
@@ -1122,11 +1123,13 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
 
+    var bufferY :number=105;
+    var bufferX:number =65;
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
-      margin: { left: startX },
+      startY: startY +bufferY, // Start table at the current startY value
+      margin: { left: leftMargin+bufferX },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -1155,7 +1158,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       const canvas = await html2canvas(card, { scale: scale });
       let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
       const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
+      pdf.addImage(imgData, 'JPEG', leftMargin+5, startY, chartContentWidth, imgHeight);
     }
 
   }
@@ -1915,8 +1918,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: '5%',
-          borderRadius: 5,
+          columnWidth: '10%',
+          borderRadius: 3,
           dataLabels: {
             position: 'top', // top, center, bottom
           },

@@ -671,17 +671,18 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
     let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
     const reportTitle = this.GetReportTitle();
+    const vAlign ='bottom';
     const headers = [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       ...(showGateSurcharge?
-      [{ content: this.translatedLangText.IN_GATE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.OUT_GATE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.ON_DEPOT, rowSpan: 2,colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
-      ...(showSteamSurcharge? [{ content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
+      [{ content: this.translatedLangText.IN_GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.OUT_GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.ON_DEPOT, rowSpan: 2,colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
+      ...(showSteamSurcharge? [{ content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
       //{ content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
       ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: 'middle' }}]:[]),
+      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
 
     ],
     [

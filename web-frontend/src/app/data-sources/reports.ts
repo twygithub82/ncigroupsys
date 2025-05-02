@@ -338,7 +338,7 @@ export class AdminReportMonthlySalesReport{
   customer?:string;
   cleaning_monthly_sales?:MonthlySales;
   lolo_monthly_sales?:MonthlySales;
-  preinspaction_monthly_sales?:MonthlySales;
+  preinspection_monthly_sales?:MonthlySales;
   repair_monthly_sales?:MonthlySales;
   residue_monthly_sales?:MonthlySales;
   steaming_monthly_sales?:MonthlySales;
@@ -346,7 +346,7 @@ export class AdminReportMonthlySalesReport{
     this.customer=item.customer;
     this.cleaning_monthly_sales=item.cleaning_monthly_sales;
     this.lolo_monthly_sales=item.lolo_monthly_sales;
-    this.preinspaction_monthly_sales=item.preinspaction_monthly_sales;
+    this.preinspection_monthly_sales=item.preinspection_monthly_sales;
     this.repair_monthly_sales=item.repair_monthly_sales;
     this.residue_monthly_sales=item.residue_monthly_sales;
     this.steaming_monthly_sales=item.steaming_monthly_sales;

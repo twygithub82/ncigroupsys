@@ -498,7 +498,7 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
     
    
 
-    if(repData)
+    if(repData.customer_sales?.length||0>0)
     {
       
         this.onExportDetail(repData, date,customerName);
