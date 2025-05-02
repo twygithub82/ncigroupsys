@@ -41,9 +41,6 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
-
-// import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
-// import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
@@ -188,7 +185,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
   steamDS: SteamDS;
-  // repairEstDS: RepairDS;
 
   sotList: StoringOrderTankItem[] = [];
   reSelection = new SelectionModel<SteamItem>(true, []);
@@ -216,7 +212,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   hasPreviousPage = false;
   previous_endCursor: any;
   plDS: PackageLabourDS;
-
 
   constructor(
     private router: Router,
@@ -485,7 +480,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   constructSearchCriteria() {
     const where: any = {
-      tank_status_cv: { in: ['CLEANING', 'STORAGE'] },
+      tank_status_cv: { in: ['STEAM', 'STORAGE'] },
       purpose_steam: { eq: true }
     };
 

@@ -814,7 +814,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
   // }
 
   canCompleteJob() {
-    return this.joDS.canCompleteJob(this.jobOrderItem) && !this.isStarted()
+    return this.joDS.canCompleteJob(this.jobOrderItem)
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined) {
@@ -876,6 +876,24 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
 
   completeJob(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
+    if (this.isStarted()) {
+      const found = this.jobOrderItem?.time_table?.find(x => x?.start_time && !x?.stop_time);
+      if (found) {
+        const newParam = new TimeTableItem(found);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({ ...this.jobOrderItem });
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          this.completeJobOrder();
+        });
+      }
+    } else {
+      this.completeJobOrder();
+    }
+  }
+
+  completeJobOrder(): void {
     const newParam = new UpdateJobOrderRequest({
       guid: this.jobOrderItem?.guid,
       remarks: this.jobOrderItem?.remarks,
