@@ -33,7 +33,9 @@ export class ConfirmationDialogComponent {
   langText: any = {
     CANCEL: 'COMMON-FORM.CANCEL',
     CONFIRM: 'COMMON-FORM.CONFIRM',
-    ARE_YOU_SURE: 'COMMON-FORM.ARE-YOU-SURE'
+    ARE_YOU_SURE: 'COMMON-FORM.ARE-YOU-SURE',
+    DELETE: 'COMMON-FORM.DELETE',
+    CLOSE: 'COMMON-FORM.CLOSE',
   }
 
   constructor(
