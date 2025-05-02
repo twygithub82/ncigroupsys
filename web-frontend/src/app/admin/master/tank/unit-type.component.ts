@@ -86,6 +86,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     'lifton',
     'liftoff',
     'preinspect',
+    'flatRate',
     'isoformat',
     'lastUpdate',
     'actions'
@@ -207,6 +208,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    FLAT_RATE_ONLY:'COMMON-FORM.FLAT-RATE-ONLY',
   }
 
   minMaterialCost: number = -20;

@@ -207,7 +207,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     ISO_FORMAT:'COMMON-FORM.CHECK-DIGIT',
     SAVE:'COMMON-FORM.SAVE',
     FLAT_RATE_ONLY:'COMMON-FORM.FLAT-RATE-ONLY',
-    
   };
 
 
