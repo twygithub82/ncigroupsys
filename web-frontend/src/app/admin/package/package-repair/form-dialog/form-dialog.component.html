@@ -21,7 +21,7 @@
                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                       <mat-label>{{getMaterialCostLabel()}}</mat-label>
-                      <input matInput formControlName="material_cost" type="number"
+                      <input matInput formControlName="material_cost" type="number" min="0"
                         [required]="this.selectedItems.length===1">
                       <!-- @if (pcForm.get('material_cost')?.hasError('required')) {
                       <mat-error>

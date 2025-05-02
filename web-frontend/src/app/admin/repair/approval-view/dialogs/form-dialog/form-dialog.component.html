@@ -15,19 +15,19 @@
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.QTY}}</mat-label>
-            <input matInput formControlName="approve_qty" type="number" required>
+            <input matInput formControlName="approve_qty" type="number"  min="0" required>
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.HOUR}}</mat-label>
-            <input matInput formControlName="approve_hour" type="number" required>
+            <input matInput formControlName="approve_hour" type="number"  min="0" required>
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.MATERIAL_COST}}</mat-label>
-            <input matInput formControlName="approve_cost" type="number" required>
+            <input matInput formControlName="approve_cost" type="number" min="0" required>
           </mat-form-field>
         </div>
       </div>

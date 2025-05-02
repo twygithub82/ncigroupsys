@@ -34,7 +34,7 @@
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.APPROVED_COST}}</mat-label>
-                <input matInput formControlName="cleaning_cost" type="number" required>
+                <input matInput formControlName="cleaning_cost" type="number" min="0" required>
                 <!-- @if (overwriteForm.get('cleaning_cost')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.APPROVED_COST}} {{data.translatedLangText.SO_REQUIRED}}
@@ -49,7 +49,7 @@
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.APPROVED_BUFFER_CLEANING_COST}}</mat-label>
-                <input matInput formControlName="buffer_cost" type="number" required>
+                <input matInput formControlName="buffer_cost" type="number" min="0" required>
                 <!-- @if (overwriteForm.get('buffer_cost')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.APPROVED_DATE}} {{data.translatedLangText.SO_REQUIRED}}

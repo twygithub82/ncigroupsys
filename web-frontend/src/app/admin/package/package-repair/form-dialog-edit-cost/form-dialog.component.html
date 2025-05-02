@@ -115,7 +115,7 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} (%)</mat-label>
-                    <input matInput formControlName="material_cost_percentage" type="number" [min]="minMaterialCost"
+                    <input matInput formControlName="material_cost_percentage" type="number"  [min]="minMaterialCost"
                       [max]="maxMaterialCost">
                     <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')">
                       {{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%

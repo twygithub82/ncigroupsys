@@ -86,13 +86,13 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
-                      <input matInput formControlName="capacity" type="number" (wheel)="preventDefault($event)">
+                      <input matInput formControlName="capacity" type="number" min="0" (wheel)="preventDefault($event)">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
-                      <input matInput formControlName="tare_weight" type="number" (wheel)="preventDefault($event)">
+                      <input matInput formControlName="tare_weight" type="number" min="0" (wheel)="preventDefault($event)">
                     </mat-form-field>
                   </div>
                   <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
