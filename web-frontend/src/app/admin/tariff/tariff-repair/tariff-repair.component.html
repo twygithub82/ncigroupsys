@@ -160,8 +160,8 @@
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
                     <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? selection.toggle(row.tariff_repair) : null"
-                      [checked]="selection.isSelected(row.tariff_repair)" [ngClass]="'tbl-checkbox'">
+                      (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
