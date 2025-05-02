@@ -36,7 +36,7 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width" required>
                 <mat-label>{{translatedLangText.CATEGORY_COST | translate}}</mat-label>
-                <input matInput formControlName="adjusted_cost" type="number" required>
+                <input matInput formControlName="adjusted_cost" type="number" min="0" required>
                 <!-- @if (pcForm.get('adjusted_cost')?.hasError('required')) {
                 <mat-error>
                   {{langText.CATEGORY_COST | translate}} {{langText.CARGO_REQUIRED | translate}}

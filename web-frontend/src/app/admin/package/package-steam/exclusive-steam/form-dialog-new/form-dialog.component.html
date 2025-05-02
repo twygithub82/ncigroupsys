@@ -82,7 +82,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                  <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.COST }}</mat-label>
-                    <input matInput formControlName="cost" type="number" required >
+                    <input matInput formControlName="cost" type="number"  min="0" required >
                     <!-- @if (pcForm.get('cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.COST }} {{langText.CARGO_REQUIRED | translate}}
@@ -104,7 +104,7 @@
                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1" hidden>
                   <mat-form-field class="example-full-width">
                      <mat-label>{{translatedLangText.LABOUR }}</mat-label>
-                     <input matInput formControlName="labour" type="number">
+                     <input matInput formControlName="labour" type="number" min="0">
                      <!-- @if (pcForm.get('labour')?.hasError('required')) {
                        <mat-error>
                          {{translatedLangText.LABOUR }} {{translatedLangText.CARGO_REQUIRED | translate}}

@@ -239,7 +239,7 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
-                  <input matInput [formControl]="newQty" type="number" required="true">
+                  <input matInput [formControl]="newQty" type="number" min="0" required="true">
                   <!-- @if (newQty.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
@@ -251,7 +251,7 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.HOUR}}</mat-label>
-                  <input matInput [formControl]="newHour" type="number" required>
+                  <input matInput [formControl]="newHour" type="number" min="0" required>
                   <!-- @if (newHour.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.HOUR}} {{this.translatedLangText.SO_REQUIRED}}
@@ -263,7 +263,7 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UNIT_PRICE}}</mat-label>
-                  <input matInput [formControl]="newUnitPrice" type="number" required="true">
+                  <input matInput [formControl]="newUnitPrice" type="number"  min="0" required="true">
                   <!-- @if (newUnitPrice.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}

@@ -308,8 +308,8 @@
   },
   "LANDING-SIGNIN": {
     "WELCOME": "Welcome to",
-    "PORTAL": "portal",
-    "ADMIN": "admin",
+    "PORTAL": "Portal",
+    "ADMIN": "Admin",
     "SIGNUP": "Sign Up",
     "SIGNIN": "Sign in",
     "USERNAME": "Username",

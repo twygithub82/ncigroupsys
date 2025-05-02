@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -235,8 +235,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     }
 
     );
-
-
   }
 
   createTariffDepot(): UntypedFormGroup {
@@ -253,6 +251,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       gate_out_cost: this.selectedItem.gate_out_cost,
       unit_types: this.unit_type_control,
       last_updated: ['']
+
     });
   }
 

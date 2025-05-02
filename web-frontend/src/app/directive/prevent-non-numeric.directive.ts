@@ -12,10 +12,15 @@ export class PreventNonNumericDirective {
 
   @HostListener('keypress', ['$event'])
   onKeyPress(event: KeyboardEvent) {
-    if (this.restrictNonNumeric && (event.key === 'e' || event.key === 'E')) {
+    if (this.restrictNonNumeric && !/[\d]/.test(event.key)) {
       event.preventDefault();
     }
   }
+  // onKeyPress(event: KeyboardEvent) {
+  //   if (this.restrictNonNumeric && (event.key === 'e' || event.key === 'E')) {
+  //     event.preventDefault();
+  //   }
+  // }
 
   @HostListener('paste', ['$event'])
   onPaste(event: ClipboardEvent) {

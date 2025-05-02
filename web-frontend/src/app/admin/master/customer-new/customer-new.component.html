@@ -221,12 +221,12 @@
               </div>
               <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex justify-content-end ms-auto">
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                  <button mat-flat-button color="accent col-black" type="button" [ngClass]="'m-r-10'"
                     (click)="addContactPerson($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}
+                    <mat-icon class="col-black">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}
                   </button>
-                  <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
-                    <mat-icon>
+                  <button mat-flat-button class="m-l-10 bg-light-gold col-black" (click)="resetDialog($event)">
+                    <mat-icon class="col-black">
                       close
                     </mat-icon>
                     {{translatedLangText.CLEAR_ALL}}

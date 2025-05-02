@@ -246,7 +246,7 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
-                  <input matInput [formControl]="newQty" type="number" required="true">
+                  <input matInput [formControl]="newQty" type="number" min="0" required="true">
                   <mat-error *ngIf="newQty.hasError('required')">
                     <!-- {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}} -->
                   </mat-error>
@@ -272,7 +272,7 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UNIT_PRICE}}</mat-label>
-                  <input matInput [formControl]="newUnitPrice" type="number" required="true">
+                  <input matInput [formControl]="newUnitPrice" type="number" min="0" required="true">
                   <!-- @if (newUnitPrice.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}

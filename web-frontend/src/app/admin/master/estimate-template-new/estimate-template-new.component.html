@@ -390,7 +390,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_discount"
                                 [placeholder]="translatedLangText.MATERIAL_DISCOUNT"
-                                type="number" required>
+                                type="number" min="0" required>
                               <!-- @if (tempForm?.get('material_discount')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.MATERIAL_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
