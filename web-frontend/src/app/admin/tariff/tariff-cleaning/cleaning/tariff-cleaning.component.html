@@ -13,7 +13,7 @@
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
-                <button mat-mini-fab class="light-purple" color="" (click)="refresh()"
+                <button mat-mini-fab class="primary-light" color="" (click)="refresh()"
                   (click)="$event.stopPropagation()">
                   <mat-icon>refresh</mat-icon>
                 </button>
@@ -119,7 +119,7 @@
                 <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                   <mat-icon>search</mat-icon>
                 </button>
-                <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                <button mat-mini-fab class="m-l-5" color="accent" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>

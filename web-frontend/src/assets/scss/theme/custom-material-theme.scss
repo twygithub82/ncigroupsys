@@ -104,15 +104,15 @@ $custom-primary: mat.define-palette((50: lighten($blue-primary, 40%),
       700: darken($blue-primary, 20%),
       800: darken($blue-primary, 30%),
       900: darken($blue-primary, 40%),
-      A100: lighten($blue-primary, 50%),
-      A200: lighten($blue-primary, 40%),
-      A400: lighten($blue-primary, 30%),
-      A700: lighten($blue-primary, 20%),
+      A100: lighten($blue-primary, 40%),
+      A200: lighten($blue-primary, 30%),
+      A400: lighten($blue-primary, 20%),
+      A700: lighten($blue-primary, 10%),
       contrast: (50: #000000,
         100: #000000,
-        200: #000000,
-        300: #000000,
-        400: #000000,
+        200: #ffffff,
+        300: #ffffff,
+        400: #ffffff,
         500: #ffffff,
         600: #ffffff,
         700: #ffffff,
@@ -142,8 +142,8 @@ $custom-accent: mat.define-palette((50: lighten($blue-accent, 40%),
       contrast: (50: #000000,
         100: #000000,
         200: #000000,
-        300: #000000,
-        400: #000000,
+        300: #ffffff,
+        400: #ffffff,
         500: #ffffff,
         600: #ffffff,
         700: #ffffff,
@@ -178,9 +178,14 @@ button.secondary {
   color: mat.get-color-from-palette($custom-secondary, default-contrast);
 }
 
-button.light-purple {
-  background-color: mat.get-color-from-palette($custom-primary, A200);
-  color: mat.get-color-from-palette($custom-primary, A200-contrast);
+button.primary-light {
+  background-color: mat.get-color-from-palette($custom-primary, 300);
+  color: mat.get-color-from-palette($custom-primary, 300-contrast);
+}
+
+button.accent-light {
+  background-color: mat.get-color-from-palette($custom-accent, 400);
+  color: mat.get-color-from-palette($custom-accent, 400-contrast);
 }
 
 // Include the theme styles

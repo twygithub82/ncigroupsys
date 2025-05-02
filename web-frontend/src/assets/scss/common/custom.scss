@@ -1924,47 +1924,60 @@ $grid-breakpoints: (
 }
 
 .tlx-mdc-tab-group .mat-mdc-tab {
-  // background-color: $theme-gold-purple-legal-bg;
-  // margin: 0 1px;
+  background-color: $theme-blue-legal-bg;
+  margin: 0 1px;
   border-radius: 6px 6px 0 0;
   // color: $theme-gold-purple-nav-anchor;
   // font-weight: 600;
-  // transition: background-color 0.3s;
+  transition: none;
 
   // &[aria-disabled='true'] {
   //   @include apply-disabled-style($theme-gold-purple-menu-list-submenu, $theme-gold-purple-disabled-text);
   // }
 }
 
-.tlx-mdc-tab-group .mat-mdc-tab :hover {
-  // background-color: $theme-gold-purple-legal-bg;
-  // margin: 0 1px;
-  border-radius: 6px 6px 0 0;
-  // color: $theme-gold-purple-nav-anchor;
-  // font-weight: 600;
-  // transition: background-color 0.3s;
+.tlx-mdc-tab-group .mat-mdc-tab {
+  :hover,
+  :focus {
+    background-color: $theme-blue-legal-bg;
+    border-radius: 8px 8px 0 0;
+    // color: $theme-gold-purple-nav-anchor;
+    // font-weight: 600;
+    transition: none;
 
-  // &[aria-disabled='true'] {
-  //   @include apply-disabled-style($theme-gold-purple-menu-list-submenu, $theme-gold-purple-disabled-text);
-  // }
+    // &[aria-disabled='true'] {
+    //   @include apply-disabled-style($theme-gold-purple-menu-list-submenu, $theme-gold-purple-disabled-text);
+    // }
+  }
 }
 
 .tlx-mdc-tab-group .mat-mdc-tab.mdc-tab--active {
-  // background-color: $theme-gold-purple;
-  // color: white !important;
-  border-radius: 6px 6px 0 0;
+  background-color: $theme-blue-complement-bar;
+  border-radius: 8px 8px 0 0;
+
+  .mdc-tab__text-label {
+    color: white;
+    transition: none;
+  }
+}
+
+.tlx-mdc-tab-group .mat-mdc-tab.mdc-tab--active {
+  &:hover, &:focus, :hover, :focus {
+    background-color: $theme-blue-complement-bar;
+  
+    .mdc-tab__text-label {
+      transition: none;
+      color: white;
+    }
+  }
 }
 
 .tlx-mdc-tab-group .mat-mdc-tab .mdc-tab__ripple {
-  // display: none;
+  display: none;
 }
 
 .tlx-mdc-tab-group .mat-mdc-tab-group .mat-mdc-tab-header {
   // background-color: $theme-gold-purple-bar !important;
-}
-
-.tlx-mdc-tab-group .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-  // color: white !important;
 }
 
 // .tlx-card {
