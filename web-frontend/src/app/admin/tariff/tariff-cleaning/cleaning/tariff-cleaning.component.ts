@@ -619,7 +619,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '15vw',
+      //width: '15vw',
       data: {
         headerText: this.translatedLangText.ARE_U_SURE_DELETE,
         act: "warn"
