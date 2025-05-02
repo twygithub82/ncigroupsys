@@ -19,7 +19,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -129,4 +129,16 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
       this.translatedLangText = translations;
     });
   }
+
+   onTabSelected(event: MatTabChangeEvent): void {
+        console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+        switch (event.index) {
+         
+         case 0:
+            this.outGateComp?.onTabFocused(); break;
+         case 1:
+             this.outGateSurveyComp?.onTabFocused(); break;
+        
+        }
+      }
 }

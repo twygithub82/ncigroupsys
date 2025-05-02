@@ -475,4 +475,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.customerCodeControl.reset('');
   }
+
+  
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

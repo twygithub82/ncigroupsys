@@ -845,11 +845,19 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+  @ViewChild('tankActCustomerReport') tankActCustomerReport!: TankActivitiyCustomerReportComponent;
+         @ViewChild('tankActYardReport') tankActYardReport!: TankActivitiyYardReportComponent;
+         
+           
+      onTabSelected(event: MatTabChangeEvent): void {
+        console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+        switch (event.index) {
+         
+         case 0:
+            this.tankActCustomerReport?.onTabFocused(); break;
+         case 1:
+             this.tankActYardReport?.onTabFocused(); break;
+      
+        }
+      }
 }

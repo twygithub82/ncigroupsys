@@ -807,11 +807,19 @@ export class MainManagementYearlyComponent extends UnsubscribeOnDestroyAdapter i
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+   @ViewChild('inventoryYearlyReport') inventoryYearlyReport!: InventoryYearlyAdminReportComponent;
+       @ViewChild('revenueYearlyReport') revenueYearlyReport!: RevenueYearlyAdminReportComponent;
+       
+         
+    onTabSelected(event: MatTabChangeEvent): void {
+      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+      switch (event.index) {
+       
+       case 0:
+          this.inventoryYearlyReport?.onTabFocused(); break;
+       case 1:
+           this.revenueYearlyReport?.onTabFocused(); break;
+    
+      }
+    }
 }

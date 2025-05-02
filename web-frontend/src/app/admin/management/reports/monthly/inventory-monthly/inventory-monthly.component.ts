@@ -655,4 +655,9 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+    
+  }
+
 }

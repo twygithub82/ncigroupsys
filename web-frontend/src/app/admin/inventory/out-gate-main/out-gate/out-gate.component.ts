@@ -331,4 +331,9 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
       search_field: '',
     });
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

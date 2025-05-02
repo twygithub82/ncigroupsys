@@ -829,51 +829,11 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     this.preventDefault(event);  // Prevents the form submission
     var jobOrderItem = team.jobOrderItem;
     this.router.navigate(['/admin/steam/job-order/monitor', jobOrderItem.guid, jobOrderItem.steaming_part?.[0]?.steaming_guid]);
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   width: '800px',
-    //   height: '250px',
-    //   data: {
-    //     action: "EDIT",
-    //     item: team.jobOrderItem,
-    //     langText: this.translatedLangText,
-    //     confirmStatement:this.translatedLangText.ARE_SURE_COMPLETE,
-    //     index:-1
-
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
-
-
-    //   if (result?.action=="confirmed") {
-
-    //     //this.toggleJobState(event,true,team.jobOrderItem)
-
-    //   }
-
-    // });
+   
 
   }
 
-  // buttonViewOnly():boolean
-  // {
-  //   let bView:boolean=false;
-  //   let viewOnlyStatus:string[]=['JOB_IN_PROGRESS','COMPLETED','NO_ACTION','CANCELED'];
-  //   if(this.selectedItems?.length>0)
-  //   {
-  //      bView = viewOnlyStatus.includes(this.selectedItems[0]?.status_cv!);
-  //     //  if(bView && this.selectedItems[0]?.status_cv==="APPROVED" )
-  //     //  {
-  //     //   var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
-  //     //   bView=this.isTeamContainTheTank(tankNo);
-  //     //  }
-  //   }
-  //   return bView;
-  // }
+  onTabFocused() {
+    this.QueryBays();
+  }
 }

@@ -958,15 +958,27 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    if (event.index === 1) {
-      this.bayOverviewComponent.RefreshContent();
-    }
-  }
 
   anyResidueIncomplete(row: InGateCleaningItem) {
     const foundIncomplete = row.storing_order_tank?.residue?.filter(x => ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED', 'ASSIGNED', ''].includes(x.status_cv || ''));
     return (foundIncomplete?.length || 0) > 0;
+  }
+
+   onTabFocused() {
+        this.resetForm();
+        this.onFilterCleaning();
+      }
+    
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+      
+      case 0:
+        this.onTabFocused(); break;
+      case 1:
+        this.bayOverviewComponent.RefreshContent();
+      
+    
+    }
   }
 }

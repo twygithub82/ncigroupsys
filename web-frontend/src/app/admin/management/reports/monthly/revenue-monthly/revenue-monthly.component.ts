@@ -656,4 +656,9 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
  
    }
 
+   onTabFocused() {
+    this.resetForm();
+    
+  }
+
 }

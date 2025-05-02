@@ -840,11 +840,19 @@ export class MainInventoryComponent extends UnsubscribeOnDestroyAdapter implemen
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+  @ViewChild('cleanInventoryReport') cleanInventoryReport!: CleaningInventoryComponent;
+        @ViewChild('dailyInventoryReport') dailyInventoryReport!: DailyInventoryReportComponent;
+        
+          
+     onTabSelected(event: MatTabChangeEvent): void {
+       console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+       switch (event.index) {
+        
+        case 0:
+           this.cleanInventoryReport?.onTabFocused(); break;
+        case 1:
+            this.dailyInventoryReport?.onTabFocused(); break;
+     
+       }
+     }
 }

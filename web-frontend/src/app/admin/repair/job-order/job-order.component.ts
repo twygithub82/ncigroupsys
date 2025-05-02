@@ -24,7 +24,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -672,4 +672,27 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   onCountChange(count: number) {
     this.jobOrderStartedCount = count;
   }
+
+   onTabFocused() {
+      this.resetForm();
+      this.onFilterRepair();
+    }
+  
+       @ViewChild('repairJobOrderTask') repairJobOrderTask!: JobOrderTaskComponent;
+       @ViewChild('repairJobOrderQC') repairJobOrderQC!: JobOrderQCComponent;
+       
+             
+        onTabSelected(event: MatTabChangeEvent): void {
+          console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+          switch (event.index) {
+           
+           case 0:
+              this.onTabFocused(); break;
+           case 1:
+               this.repairJobOrderTask?.onTabFocused(); break;
+           case 2:
+                this.repairJobOrderQC?.onTabFocused(); break;
+         
+          }
+        }
 }

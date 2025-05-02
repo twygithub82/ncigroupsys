@@ -737,5 +737,10 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     }
     return undefined;
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }
 

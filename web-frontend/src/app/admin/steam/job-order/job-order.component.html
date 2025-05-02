@@ -9,8 +9,8 @@
         <div class="card">
           <div class="body overflow-auto">
             <mat-tab-group #tabGroup dynamicHeight [selectedIndex]="isActiveTab" [(selectedIndex)]="selectedTabIndex"
-              (selectedIndexChange)="onTabChange($event)">
-              <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
+              (selectedIndexChange)="onTabChange($event)"  (selectedTabChange)="onTabSelected($event)">
+              <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE" >
                 <form class="ms-0" [formGroup]="filterSteamForm!" (ngSubmit)="onFilterSteam()" #formDirective="ngForm">
                   <div class="row">
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
@@ -183,10 +183,10 @@
                 </div>
               </mat-tab>
               <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
-                <app-job-order-task></app-job-order-task>
+                <app-job-order-task #steamJobOrderTask></app-job-order-task>
               </mat-tab>
               <mat-tab [label]="translatedLangText.BAY_OVERVIEW">
-                <app-bay-overview></app-bay-overview>
+                <app-bay-overview #steamBayOverview></app-bay-overview>
               </mat-tab>
             </mat-tab-group>
           </div>

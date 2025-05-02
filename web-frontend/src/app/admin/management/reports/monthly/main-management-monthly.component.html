@@ -10,10 +10,10 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
                <mat-tab [label]="translatedLangText.INVENTORY_REPORT">
-                <app-inventory-monthly></app-inventory-monthly>
+                <app-inventory-monthly #inventoryMonthlyReport></app-inventory-monthly>
               </mat-tab>
               <mat-tab [label]="translatedLangText.REVENUE_REPORT">
-                <app-revenue-monthly></app-revenue-monthly>
+                <app-revenue-monthly #revenueMonthlyReport></app-revenue-monthly>
               </mat-tab>
               <!-- <mat-tab [label]="translatedLangText.MANHOUR_REPORT">
                 <app-manhour-monthly></app-manhour-monthly>

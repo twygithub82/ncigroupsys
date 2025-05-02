@@ -267,4 +267,13 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
       this.translatedLangText = translations;
     });
   }
+
+  resetForm()
+  {
+    this.searchField='';
+  }
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

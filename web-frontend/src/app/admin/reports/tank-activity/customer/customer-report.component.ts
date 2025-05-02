@@ -853,6 +853,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     });
   }
 
-
+  onTabFocused()
+  {
+    this.resetForm();
+  }
 
 }

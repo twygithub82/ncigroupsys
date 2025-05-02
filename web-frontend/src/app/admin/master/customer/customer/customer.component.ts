@@ -807,5 +807,10 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   //       return retval;
   //     }
 
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
+
 }
 

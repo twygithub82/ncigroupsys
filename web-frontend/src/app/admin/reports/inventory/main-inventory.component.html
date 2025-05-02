@@ -10,10 +10,10 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
                <mat-tab [label]="translatedLangText.DAILY_INVENTORY">
-                <app-daily-inventory></app-daily-inventory>
+                <app-daily-inventory #dailyInventoryReport></app-daily-inventory>
               </mat-tab>
               <mat-tab [label]="translatedLangText.CLEANING_INVENTORY">
-                <app-cleaning-inventory></app-cleaning-inventory>
+                <app-cleaning-inventory #cleanInventoryReport></app-cleaning-inventory>
               </mat-tab>
               <!-- <mat-tab [label]="translatedLangText.STEAM_BILLING">
                   <app-steam-billing></app-steam-billing>

@@ -903,6 +903,10 @@ onExportCustomerWise(repCln: cleaning_report_summary_item[],date:string) {
       this.isGeneratingReport=false;
     });
   }
-
+ 
+  onTabFocused()
+  {
+    this.resetForm();
+  }
 
 }

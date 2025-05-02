@@ -713,7 +713,10 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       this.isGeneratingReport=false;
     });
   }
-
+  onTabFocused()
+  {
+    this.resetForm();
+  }
 
 
 }

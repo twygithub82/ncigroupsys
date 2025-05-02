@@ -21,7 +21,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -148,4 +148,18 @@ export class MainCustomerComponent extends UnsubscribeOnDestroyAdapter implement
   onTabChange(index: number) {
     this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
   }
+
+   @ViewChild('customer') customer!: CustomerComponent;
+  @ViewChild('billBranch') billBranch!: BillingBranchComponent;
+   onTabSelected(event: MatTabChangeEvent): void {
+       console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+       switch (event.index) {
+         
+         case 0:
+           this.customer?.onTabFocused(); break;
+         case 1:
+            this.billBranch?.onTabFocused(); break;
+      
+       }
+     }
 }

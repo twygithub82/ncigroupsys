@@ -666,6 +666,8 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       inv_dt: '',
       inv_type: ['']
     });
+    this.searchForm?.get('inv_dt')?.markAsPristine();
+    this.searchForm?.get('inv_dt')?.markAsUntouched();
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
     this.noCond = false;
@@ -945,6 +947,9 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
      });
   }
 
-
+  onTabFocused()
+  {
+    this.resetForm();
+  }
 
 }

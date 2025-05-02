@@ -555,4 +555,8 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.customerCodeControl.reset('');
   }
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

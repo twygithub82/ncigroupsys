@@ -22,7 +22,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -691,4 +691,25 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
       this.refreshTable();
     }
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.onFilterResidue();
+  }
+
+     @ViewChild('residueJobOrderTask') residueJobOrderTask!: JobOrderTaskComponent;
+     
+           
+      onTabSelected(event: MatTabChangeEvent): void {
+        console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+        switch (event.index) {
+         
+         case 0:
+            this.onTabFocused(); break;
+         case 1:
+             this.residueJobOrderTask?.onTabFocused(); break;
+       
+        }
+      }
+
 }

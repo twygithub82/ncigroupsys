@@ -1381,4 +1381,6 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     var NoDel = this.deList.filter(d => d.approve_part == null || d.approve_part === true);
     return (NoDel.length);
   }
+
+  
 }

@@ -312,4 +312,10 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
       search_field: '',
     });
   }
+
+  
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
 }

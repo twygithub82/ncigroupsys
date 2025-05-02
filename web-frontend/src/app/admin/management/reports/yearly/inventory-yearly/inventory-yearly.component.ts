@@ -636,4 +636,8 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+    
+  }
 }

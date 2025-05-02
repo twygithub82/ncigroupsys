@@ -10,23 +10,11 @@
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.CUSTOMER_REPORT">
-                <app-customer-report></app-customer-report>
+                <app-customer-report #tankActCustomerReport></app-customer-report>
               </mat-tab>
               <mat-tab [label]="translatedLangText.YARD_REPORT">
-                <app-yard-report></app-yard-report>
+                <app-yard-report #tankActYardReport></app-yard-report>
               </mat-tab>
-              <!-- <mat-tab [label]="translatedLangText.STEAM_BILLING">
-                  <app-steam-billing></app-steam-billing>
-              </mat-tab>
-              <mat-tab [label]="translatedLangText.RESIDUE_BILLING">
-                 <app-residue-billing></app-residue-billing>
-              </mat-tab> -->
-              <!-- <mat-tab>
-                <ng-template mat-tab-label>
-                  <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
-                </ng-template>
-                <app-job-order-qc></app-job-order-qc>
-              </mat-tab> -->
             </mat-tab-group>
           </div>
         </div>

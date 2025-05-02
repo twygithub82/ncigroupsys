@@ -303,6 +303,18 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       };
     }
 
+    if (this.filterJobOrderForm!.get('customer')?.value) {
+      if(!where.and)where.and=[];
+      where.and.push({
+        storing_order_tank:{storing_order:{customer_company:{ code: { eq: (this.filterJobOrderForm!.get('customer')?.value).code } }}}
+      });
+    }
+
+    // if (this.filterJobOrderForm!.get('customer')?.value) {
+    //   where.status_cv = {
+    //     in: this.filterJobOrderForm!.get('customer')?.value
+    //   };
+    // }
     // TODO:: Get login user team
     // if (false) {
     //   where.team_guid = { eq: "" }
@@ -677,6 +689,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   }
 
+  onTabFocused() {
+    this.resetForm();
+    this.onFilterJobOrder();
+  }
 
 
 }

@@ -470,7 +470,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value?.code||'';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -686,5 +686,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.customerCodeControl.setValidators([
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  onTabFocused() {
+    this.resetForm();
+    this.onFilterJobOrder();
   }
 }

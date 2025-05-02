@@ -32,7 +32,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Utility } from 'app/utilities/utility';
 import { MatCardModule } from '@angular/material/card';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
@@ -46,6 +46,7 @@ import { JobOrderTaskComponent } from "../job-order-task/job-order-task.componen
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { debounceTime, startWith, tap } from 'rxjs';
 
 @Component({
   selector: 'app-job-order',
@@ -445,7 +446,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
 
     if (this.filterSteamForm!.get('customer')?.value) {
       where.and.push({
-        customer_company: { code: { eq: (this.filterSteamForm!.get('customer')?.value).code } }
+        storing_order_tank:{storing_order:{customer_company:{ code: { eq: (this.filterSteamForm!.get('customer')?.value).code } }}}
       });
     }
 
@@ -518,7 +519,22 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   initializeFilterCustomerCompany() {
-  }
+      this.filterSteamForm!.get('customer')!.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        tap(value => {
+          var searchCriteria = '';
+          if (value && typeof value === 'object') {
+            searchCriteria = value.code;
+          } else {
+            searchCriteria = value || '';
+          }
+          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+            this.customer_companyList = data
+          });
+        })
+      ).subscribe();
+    }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -564,18 +580,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     this.resetForm();
     this.onFilterSteam();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_RESET,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
+  
   }
 
   resetForm() {
@@ -776,4 +781,27 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
       this.refreshTable();
     }
   }
+
+  onTabFocused() {
+    this.resetForm();
+    this.onFilterSteam();
+  }
+
+
+    
+       @ViewChild('steamJobOrderTask') steamJobOrderTask!: JobOrderTaskComponent;
+       @ViewChild('steamBayOverview') steamBayOverview!: BayOverviewComponent;
+         
+    onTabSelected(event: MatTabChangeEvent): void {
+      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+      switch (event.index) {
+       
+       case 0:
+          this.onTabFocused(); break;
+       case 1:
+           this.steamJobOrderTask?.onTabFocused(); break;
+       case 2:
+            this.steamBayOverview?.onTabFocused(); break;
+      }
+    }
 }

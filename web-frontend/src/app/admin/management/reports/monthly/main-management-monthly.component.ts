@@ -808,11 +808,19 @@ export class MainManagementMonthlyComponent extends UnsubscribeOnDestroyAdapter 
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
+     @ViewChild('inventoryMonthlyReport') inventoryMonthlyReport!: InventoryMonthlyAdminReportComponent;
+     @ViewChild('revenueMonthlyReport') revenueMonthlyReport!: RevenueMonthlyAdminReportComponent;
+     
+       
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
+    switch (event.index) {
+     
+     case 0:
+        this.inventoryMonthlyReport?.onTabFocused(); break;
+     case 1:
+         this.revenueMonthlyReport?.onTabFocused(); break;
+  
+    }
   }
 }
