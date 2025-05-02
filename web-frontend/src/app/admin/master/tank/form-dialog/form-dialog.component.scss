@@ -67,3 +67,13 @@ td div img:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow on hover */
   }
 
+  .scaled-toggle {
+    transform: scale(1.2);  /* Adjust scale as needed */
+    transform-origin: left center;  /* Optional: align origin */
+    display: inline-block;
+    margin: 16px 0;
+  }
+
+  ::ng-deep .mat-mdc-dialog-content {
+    max-width: none;
+  }

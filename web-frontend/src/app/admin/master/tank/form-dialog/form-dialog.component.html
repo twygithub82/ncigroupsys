@@ -1,5 +1,5 @@
 <div class="addContainer">
-  <div class="modalHeader_r2">
+  <div class="modalHeader_r1">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h3>{{GetAction()}} {{this.translatedLangText.UNIT_TYPE}} </h3>
@@ -34,7 +34,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center scaled-toggle">
                     <div class="row">
                       <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
                         <!-- <mat-label>{{translatedLangText.GATE_IN }}</mat-label> -->
@@ -46,7 +46,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center scaled-toggle">
                     <div class="row">
                       <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
     
@@ -62,19 +62,24 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center scaled-toggle">
                     <div class="row">
                       <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
-    
                         <!-- <mat-label>{{translatedLangText.PREINSPECT }}</mat-label> -->
                         <mat-slide-toggle formControlName="preinspect">{{translatedLangText.PREINSPECT }}</mat-slide-toggle>
-    
                       </div>
                       <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
-    
                         <!-- <mat-label>{{translatedLangText.ISO_FORMAT }}</mat-label> -->
                         <mat-slide-toggle formControlName="iso_format">{{translatedLangText.ISO_FORMAT }}</mat-slide-toggle>
-    
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 justify-content-center scaled-toggle">
+                    <div class="row">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
+                        <mat-slide-toggle formControlName="flat-rate">{{translatedLangText.FLAT_RATE_ONLY}}</mat-slide-toggle>
+                      </div>
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1">
                       </div>
                     </div>
                   </div>

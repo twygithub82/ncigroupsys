@@ -1214,6 +1214,7 @@
     "OUTSTANDING": "Outstanding",
     "FLAT-RATE": "Flat Rate $",
     "HOURLY-RATE": "Hourly Rate $",
+    "FLAT-RATE-ONLY": "Flat Rate",
     "REPAIR-ESITMATE-DETAILS": "Repair Estimate Details",
     "ACCOUNT": "Account"
   },
