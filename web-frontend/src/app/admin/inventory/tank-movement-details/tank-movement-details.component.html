@@ -188,8 +188,8 @@
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <mat-accordion multi>
-                <mat-expansion-panel [expanded]="verifySection('tank_details')" (click)="setSection('tank_details')">
-                  <mat-expansion-panel-header class="ps-0">
+                <mat-expansion-panel [expanded]="verifySection(accordionSections.tank_details)">
+                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.tank_details)">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
@@ -197,7 +197,7 @@
                             {{translatedLangText.TANK_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="expandAll($event, 'tank_details')"
+                        <button mat-icon-button (click)="expandAll($event, accordionSections.tank_details)"
                           matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
@@ -350,8 +350,8 @@
                     }
                   </div>
                 </mat-expansion-panel>
-                <mat-expansion-panel [expanded]="verifySection('gate_details')" (click)="setSection('gate_details')">
-                  <mat-expansion-panel-header class="ps-0">
+                <mat-expansion-panel [expanded]="verifySection(accordionSections.gate_details)">
+                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.gate_details)">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
@@ -359,7 +359,7 @@
                             {{translatedLangText.GATE_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="expandAll($event, 'gate_details')"
+                        <button mat-icon-button (click)="expandAll($event, accordionSections.gate_details)"
                           matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
@@ -393,7 +393,8 @@
                                 <td>{{sot?.release_order_sot?.[0]?.release_order?.ro_no || "-"}}</td>
                               </tr>
                               <tr>
-                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.SO_RO}} {{translatedLangText.DATE}}</th>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.SO_RO}}
+                                  {{translatedLangText.DATE}}</th>
                                 <td>{{displayDate(sot?.storing_order?.create_dt) || "-"}}</td>
                                 <td>{{displayDate(sot?.release_order_sot?.[0]?.release_order?.create_dt) || "-"}}</td>
                               </tr>
@@ -447,9 +448,8 @@
                     }
                   </div>
                 </mat-expansion-panel>
-                <mat-expansion-panel [expanded]="verifySection('purpose_details')"
-                  (click)="setSection('purpose_details')">
-                  <mat-expansion-panel-header class="ps-0">
+                <mat-expansion-panel [expanded]="verifySection(accordionSections.purpose_details)">
+                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.purpose_details)">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
@@ -457,7 +457,7 @@
                             {{translatedLangText.PURPOSE}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="expandAll($event, 'purpose_details')"
+                        <button mat-icon-button (click)="expandAll($event, accordionSections.purpose_details)"
                           matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
@@ -1100,7 +1100,8 @@
                                   <mat-icon>cancel</mat-icon>
                                 </button>
                                 } -->
-                                @if (canOverwriteCleaningApproval() || canRollbackCleaningCompleted(cleaningItem?.[0]) || canRollbackCleaning(cleaningItem?.[0]) || canRemoveCleanPurpose()) {
+                                @if (canOverwriteCleaningApproval() || canRollbackCleaningCompleted(cleaningItem?.[0])
+                                || canRollbackCleaning(cleaningItem?.[0]) || canRemoveCleanPurpose()) {
                                 <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                                   [disabled]="(cleaningDS.loading$ | async)"
                                   class="link-button position-absolute top-0 end-0 p-0">
@@ -1490,9 +1491,8 @@
                     </mat-card-content>
                   </div>
                 </mat-expansion-panel>
-                <mat-expansion-panel [expanded]="verifySection('depot_cost_details')"
-                  (click)="setSection('depot_cost_details')">
-                  <mat-expansion-panel-header class="ps-0">
+                <mat-expansion-panel [expanded]="verifySection(accordionSections.depot_cost_details)">
+                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.depot_cost_details)">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
@@ -1500,7 +1500,7 @@
                             {{translatedLangText.DEPOT_COST_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="expandAll($event, 'depot_cost_details')"
+                        <button mat-icon-button (click)="expandAll($event, accordionSections.depot_cost_details)"
                           matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
@@ -1693,9 +1693,8 @@
                     }
                   </div>
                 </mat-expansion-panel>
-                <mat-expansion-panel [expanded]="verifySection('booking_details')"
-                  (click)="setSection('booking_details')">
-                  <mat-expansion-panel-header class="ps-0">
+                <mat-expansion-panel [expanded]="verifySection(accordionSections.booking_details)">
+                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.booking_details)">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
@@ -1703,7 +1702,7 @@
                             {{translatedLangText.BOOKING_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="expandAll($event, 'booking_details')"
+                        <button mat-icon-button (click)="expandAll($event, accordionSections.booking_details)"
                           matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
@@ -1896,9 +1895,8 @@
                     }
                   </div>
                 </mat-expansion-panel>
-                <mat-expansion-panel [expanded]="verifySection('survey_details')"
-                  (click)="setSection('survey_details')">
-                  <mat-expansion-panel-header class="ps-0">
+                <mat-expansion-panel [expanded]="verifySection(accordionSections.survey_details)">
+                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.survey_details)">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
@@ -1906,7 +1904,7 @@
                             {{translatedLangText.SURVEY_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="expandAll($event, 'survey_details')"
+                        <button mat-icon-button (click)="expandAll($event, accordionSections.survey_details)"
                           matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
@@ -2032,9 +2030,8 @@
                     }
                   </div>
                 </mat-expansion-panel>
-                <mat-expansion-panel [expanded]="verifySection('transfer_details')"
-                  (click)="setSection('transfer_details')">
-                  <mat-expansion-panel-header class="ps-0">
+                <mat-expansion-panel [expanded]="verifySection(accordionSections.transfer_details)">
+                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.transfer_details)">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
@@ -2042,7 +2039,7 @@
                             {{translatedLangText.TRANSFER_DETAILS}}
                           </h2>
                         </div>
-                        <button mat-icon-button (click)="expandAll($event, 'transfer_details')"
+                        <button mat-icon-button (click)="expandAll($event, accordionSections.transfer_details)"
                           matTooltip="Expand All Sections">
                           <mat-icon>unfold_more</mat-icon>
                         </button>

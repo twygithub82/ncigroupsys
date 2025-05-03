@@ -585,7 +585,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
 
-  section = "tank_details";
+  accordionSections = {
+    tank_details: "tank_details",
+    gate_details: "gate_details",
+    purpose_details: "purpose_details",
+    depot_cost_details: "depot_cost_details",
+    booking_details: "booking_details",
+    survey_details: "survey_details",
+    transfer_details: "transfer_details"
+  }
+  section = [this.accordionSections.tank_details];
 
   private _formBuilder = inject(FormBuilder);
 
@@ -1775,23 +1784,35 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   verifySection(expectedSection: string) {
-    return this.section === expectedSection || this.section === 'all';
+    return this.section.includes(expectedSection);
   }
 
   setSection(section: string) {
-    this.section = section;
+    const index = this.section.indexOf(section);
+    if (index > -1) {
+      this.section.splice(index, 1);
+    } else {
+      this.section.push(section);
+    }
+    console.log(this.section)
   }
 
   expandAll(event: MouseEvent, currentSection: string): void {
-    const isExpanded = this.verifySection(currentSection);
+    // const isExpanded = this.verifySection(currentSection);
 
-    // Stop propagation ONLY if panel is currently expanded to prevent it from collapsing
-    if (isExpanded) {
-      event.stopPropagation();
-    }
+    // // Stop propagation ONLY if panel is currently expanded to prevent it from collapsing
+    // if (isExpanded) {
+    //   event.stopPropagation();
+    // }
+    event.stopPropagation();
 
     // Delay section update so that Angular finishes handling expansion toggle first
-    setTimeout(() => this.setSection('all'), 0);
+    const allSections = Object.values(this.accordionSections);
+    allSections.forEach(x => {
+      if (!this.verifySection(x)) {
+        this.section.push(x);
+      }
+    })
   }
 
   private subscribeToPurposeChangeEvent(
