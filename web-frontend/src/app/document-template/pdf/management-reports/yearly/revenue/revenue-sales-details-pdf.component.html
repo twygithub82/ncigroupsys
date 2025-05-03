@@ -10,6 +10,15 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
     
           <div class="card">
+            <div >
+              <div class="chart-wrapper">
+                <div class="y-axis-label">{{getYAxisLabel()}}</div>
+                <canvas baseChart  [data]="lineChartData" [options]="lineChartOpts"
+                  type="line"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card1">
             <div class="body">
               <div  style="display: flex; justify-content: center;">
               <div style="width: 40vw">

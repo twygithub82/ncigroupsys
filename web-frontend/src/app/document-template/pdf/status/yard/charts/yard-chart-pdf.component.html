@@ -5,6 +5,16 @@
   <div class="row clearfix">
     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
       <div class="card">
+        <div class="chart-wrapper">
+          <div class="y-axis-label">{{getYAxisLabel()}}</div>
+          <canvas baseChart
+            [data]="barChartData"
+            [options]="barChartOptions"
+            [type]="barChartType">
+          </canvas>
+        </div>
+      </div>
+      <div class="card1">
         <div class="header">
           <h2>{{this.translatedLangText.TANK_STATUS}}</h2>
         </div>

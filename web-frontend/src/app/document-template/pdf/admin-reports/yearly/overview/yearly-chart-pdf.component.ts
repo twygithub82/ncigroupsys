@@ -1117,9 +1117,9 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
   
     this.lineChart2Options.xaxis={
       categories: months,
-      position: 'top',
+      position: 'bottom',
       labels: {
-        offsetY: -18,
+        offsetY: -2,
         style: {
           colors: '#9aa0ac',
         },
@@ -1141,11 +1141,8 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
             opacityTo: 0.5,
           },
         },
-      },
-      tooltip: {
-        enabled: true,
-        offsetY: -35,
-      },
+      }
+      
     }
       
     this.lineChart2Options.chart!.events = {
@@ -1167,7 +1164,7 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         },
       ],
       chart: {
-        height: 350,
+        height: 400,
         type: 'bar',
         foreColor: '#9aa0ac',
         toolbar: {
@@ -1177,7 +1174,8 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
       },
       plotOptions: {
         bar: {
-          columnWidth:'10%',
+          borderRadius: 4, // 👈 Adds curve to top corners
+          columnWidth:'15%',
           dataLabels: {
             position: 'top', // top, center, bottom
           },
@@ -1244,10 +1242,6 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
             },
           },
         },
-        tooltip: {
-          enabled: false,
-          offsetY: -35,
-        },
       },
       fill: {
         type: 'gradient',
@@ -1277,7 +1271,7 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
       },
       title: {
         text: this.translatedLangText.MONTH,
-        offsetY: 325,
+        offsetY: 380,
         align: 'center',
         style: {
           color: '#9aa0ac',
@@ -1286,10 +1280,10 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
       tooltip: {
         theme: 'dark',
         marker: {
-          show: true,
+          show: false,
         },
         x: {
-          show: true,
+          show: false,
         },
       },
     };

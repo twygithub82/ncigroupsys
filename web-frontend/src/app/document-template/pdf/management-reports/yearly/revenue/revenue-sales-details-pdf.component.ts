@@ -47,7 +47,8 @@ import {
   ApexResponsive,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 
 export interface DialogData {
   repData: ManagementReportYearlyRevenueItem,
@@ -75,7 +76,8 @@ interface SeriesItem {
     MatProgressSpinnerModule,
     MatCardModule,
     MatProgressBarModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    BaseChartDirective
   ],
 })
 export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -283,7 +285,8 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     PREINSPECTION:'COMMON-FORM.PREINSPECTION',
     ON_DEPOT:'COMMON-FORM.ON-DEPOT',
     OUT_GATE:'COMMON-FORM.OUT-GATE',
-    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL'
+    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
+    TEMPERATURE:'COMMON-FORM.TEMPERATURE'
     
   }
 
@@ -352,6 +355,85 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
   // invType:string='';
 
 
+    lineChartData: ChartConfiguration['data'] = {
+      datasets: [
+        {
+          label: 'Foods',
+          data: [0, 30, 10, 120, 50, 63, 10],
+          backgroundColor: 'transparent',
+          borderColor: '#9f78ff',
+          borderWidth: 2,
+          fill: false,
+          tension: 0.5,
+          pointStyle: 'circle',
+          pointRadius: 3,
+          pointBorderColor: 'transparent',
+          pointBackgroundColor: '#222222',
+        },
+        {
+          label: 'Electronics',
+          data: [0, 50, 40, 80, 40, 79, 120],
+          backgroundColor: 'transparent',
+          borderColor: '#f96332',
+          borderWidth: 2,
+          fill: false,
+          tension: 0.5,
+          pointStyle: 'circle',
+          pointRadius: 3,
+          pointBorderColor: 'transparent',
+          pointBackgroundColor: '#f96332',
+        },
+      ],
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    };
+  
+    lineChartOpts: ChartConfiguration['options'] = {
+      responsive: true,
+      animation: false, // 👈 disables all animations
+      elements: {
+        line: {
+          tension: 0.5,
+        },
+      },
+      scales: {
+        y: {
+          title: {
+            display: true,
+            text: '', // <- your label here
+            color: '#9aa0ac',
+            font: {
+              size: 14,
+            },
+          },
+          position: 'left',
+          ticks: {
+            color: '#9aa0ac', // Font Color
+          },
+        },
+        x: {
+          ticks: {
+            color: '#9aa0ac', // Font Color
+          },
+        },
+      },
+  
+      plugins: {
+        legend: {
+          display: true,
+          // 👇 Customize legend appearance
+          labels: {
+            font: {
+              size: 9, // Font size (default: 10)
+              family: "'Helvetica Neue', 'Arial', sans-serif", // Optional
+            },
+            padding: 9, // Space between legend items (default: 10)
+            boxWidth: 11, // Width of the color box (default: 12)
+            boxHeight: 11, // Height of the color box (default: 12)
+            // usePointStyle: true, // Uses pointStyle from dataset (e.g., circles)
+          },
+        },
+      },
+    };
 
   constructor(
     public dialogRef: MatDialogRef<RevenueYearlySalesReportDetailsPdfComponent>,
@@ -645,7 +727,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
   
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
  
   async exportToPDF_r1(fileName: string = 'document.pdf') {
@@ -750,7 +832,8 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     };
 
     let currentY = topMargin;
-    let scale = this.scale;
+    let scale = 2.5;
+    let imgQuality = 0.7;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
@@ -1029,14 +1112,179 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
 
     this.lineChartOptions.series=series;
 
-    if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
-    if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
-    if(!showStorageSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Storage"].includes(s.name));}
-    if(!showGateSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate"].includes(s.name));}
-    if(!showSteamSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steam"].includes(s.name));}
-    if(!showResidueSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Residue"].includes(s.name));}
-    if(!showCleanSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
-    if(!showRepairSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
+    
+    
+      
+
+     
+    
+
+    var colors =  [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
+      "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
+
+    this.lineChartData.datasets=[];
+    this.lineChartData.labels=[];
+    var ds=[];
+    var cats=[];
+    var indx=0;
+    if(showPreinspectSurcharge){
+      var lbl="Pre-inspection";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+    
+    }
+    if(showLoloSurcharge){
+      var lbl="LOLO";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+    }
+
+    if(showStorageSurcharge){
+      var lbl="Storage";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+      }
+    if(showGateSurcharge){
+      var lbl="Gate Surcharge";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+      }
+    if(showSteamSurcharge){
+      var lbl="Steam";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+      }
+    if(showResidueSurcharge){
+      var lbl="Residue";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+      }
+      if(showCleanSurcharge){
+        var lbl="Cleaning";
+        var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+        ds.push({
+          label:lbl,
+          data:s[0].data,
+          backgroundColor: 'transparent',
+          borderColor: colors[indx],
+          borderWidth: 2,
+          fill: false,
+          tension: 0.5,
+          pointStyle: 'circle',
+          pointRadius: 3,
+          pointBorderColor: 'transparent',
+          pointBackgroundColor: colors[indx++],
+        });
+        
+        }
+        if(showRepairSurcharge){
+          var lbl="Repair";
+          var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+          ds.push({
+            label:lbl,
+            data:s[0].data,
+            backgroundColor: 'transparent',
+            borderColor: colors[indx],
+            borderWidth: 2,
+            fill: false,
+            tension: 0.5,
+            pointStyle: 'circle',
+            pointRadius: 3,
+            pointBorderColor: 'transparent',
+            pointBackgroundColor: colors[indx++],
+          });
+          
+          }
+      this.lineChartData.datasets=ds;
+      this.lineChartData.labels=catgries;
+      this.chart?.data!=this.lineChartData;
+      this.chart?.update();
+
+    // if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
+    // if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
+    // if(!showStorageSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Storage"].includes(s.name));}
+    // if(!showGateSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate"].includes(s.name));}
+    // if(!showSteamSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steam"].includes(s.name));}
+    // if(!showResidueSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Residue"].includes(s.name));}
+    // if(!showCleanSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
+    // if(!showRepairSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
 
     
     this.pieChartOptions.labels=prcss;
@@ -1058,26 +1306,8 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     }
     const card1 = cardElements[i];
     const canvas1 = await html2canvas(card1, { scale: scale });
-    Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
-    // const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
-
-    // // Calculate aspect ratio
-    // const aspectRatio = canvas1.,width / canvas1.height;
-
-    // // Calculate scaled height based on available width
-    // let imgHeight1 = chartContentWidth / aspectRatio;
-
-    // // Check if the scaled height exceeds the available page height
-    // const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-    // if (imgHeight1 > maxPageHeight) {
-    //   // Adjust height to fit within the page
-    //   imgHeight1 = maxPageHeight;
-    //   // Recalculate width to maintain aspect ratio
-    //   chartContentWidth = imgHeight1 * aspectRatio;
-    // }
-
-    // // Add the image to the PDF
-    // pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+    Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
+   
   }
 
     const totalPages = pdf.getNumberOfPages();
@@ -1106,6 +1336,12 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
    // this.dialogRef.close();
   }
 
+
+  getYAxisLabel()
+ {
+    return `${this.translatedLangText.QTY}`;
+   //return ' ';
+ }
  
 
   async exportToPDF(fileName: string = 'document.pdf') {

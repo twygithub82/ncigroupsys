@@ -24,6 +24,8 @@ import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { report_status } from 'app/data-sources/reports';
+
+
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -38,8 +40,12 @@ import {
   ApexTooltip,
   ApexXAxis,
   ApexYAxis,
-  NgApexchartsModule
+  NgApexchartsModule,
+  
 } from 'ng-apexcharts';
+
+import { ChartConfiguration, ChartData, ChartType, LinearScaleOptions } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 
 export type HorizontalBarOptions = {
   showXAxis?: boolean;
@@ -100,6 +106,7 @@ export interface DialogData {
     MatProgressBarModule,
     NgApexchartsModule,
     BarChartModule,
+    BaseChartDirective
   ],
 })
 export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -343,6 +350,74 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
   invType: string = '';
   chartAnimatedCounter = 0;
 
+  public barChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: false,
+          text: 'Status'
+        }
+        
+      },
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: ''
+        },
+        ticks: {
+          stepSize: 5
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.parsed.y} tanks`
+        }
+      }
+    },
+     // Bar width configuration in v3+
+    datasets: {
+      bar: {
+        // Adjust these values to change bar width
+        categoryPercentage: 0.5,  // How much of available width each category should take
+        barPercentage: 0.6,       // How much of category width each bar should take
+        barThickness: 'flex',     // Can be 'flex', number (pixels), or 'auto'
+      }
+    }
+  };
+
+  public barChartType: ChartType = 'bar';
+
+  public barChartData: ChartData<'bar'> = {
+    labels: ['Cleaning', 'Steam', 'Storage', 'In-Service', 'Empty'],
+    datasets: [
+      {
+        data: [11, 19, 20, 14, 5],
+        backgroundColor: [
+          'rgba(255, 159, 64, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(201, 203, 207, 0.7)'
+        ],
+        borderColor: [
+          'rgb(255, 159, 64)',
+          'rgb(54, 162, 235)',
+          'rgb(75, 192, 192)',
+          'rgb(153, 102, 255)',
+          'rgb(201, 203, 207)'
+        ],
+        borderWidth: 1
+      }
+    ]
+  };
+
   constructor(
     public dialogRef: MatDialogRef<YardChartPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -388,6 +463,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       if (data.length) {
         this.chartAnimatedCounter = 0;
         this.purposeOptionCvList = data;
+        this.processBarValue(this.report_summary_status);
         this.processHorizontalBarValue(this.report_summary_status);
         this.processCustomerStatus(this.report_summary_status);
       }
@@ -757,6 +833,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -1092,6 +1169,56 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       }
     }
   }
+  processBarValue(repStatus: report_status[]) {
+    var singleValues: any = [
+    ];
+    this.purposeOptionCvList.map(p => {
+
+      singleValues.push({ name: p.description, value: 0 });
+    });
+    repStatus.map(r => {
+      r.yards?.map(y => {
+        this.purposeOptionCvList.map(p => {
+          var s = singleValues.find((g: { name: string }) => (g.name === p.description));
+          if (s) {
+            switch (p.code_val) {
+              case "STEAM":
+                s.value += y.noTank_steam;
+                break;
+              case "CLEANING":
+                s.value += y.noTank_clean;
+                break;
+              case "OFFHIRE":
+              case "REPAIR":
+                s.value += y.noTank_repair;
+                break;
+              case "STORAGE":
+                s.value += y.noTank_storage;
+                break;
+              case "IN_SURVEY":
+                s.value += y.noTank_in_survey;
+                break;
+            }
+          }
+        });
+
+      });
+      //let s = singleValues.find(s=>s.name===r.)
+    });
+
+    var sig =singleValues.find((s: { name: string }) => s.name === "Offhire");
+    sig.name="Repair";
+
+    const lbls = singleValues.map((item:{ name: string }) => item.name);
+    const data= singleValues.map((item:{ value: number }) => item.value);
+
+    this.barChartData.labels=lbls;
+    this.barChartData.datasets[0].data=data;
+    this.chart?.chart?.update();
+    //this.updateYAxisTitle(`${this.translatedLangText.NO_OF_TANKS}`);
+    setTimeout(()=>{
+      this.onChartRendered();},1000);
+  }
 
   processHorizontalBarValue(repStatus: report_status[]) {
     var singleValues: any = [
@@ -1129,12 +1256,14 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       });
       //let s = singleValues.find(s=>s.name===r.)
     });
+    var sig =singleValues.find((s: { name: string }) => s.name === "Offhire");
+    sig.name="Repair";
 
-    this.horizontalBarOptions.single = singleValues.filter((s: { name: string }) => s.name != "Offhire");
+    this.horizontalBarOptions.single = singleValues;
     this.chartAnimatedCounter++;
     console.log(`horizontalBarOptions rendered chartAnimatedCounter: `, this.chartAnimatedCounter)
-    setTimeout(()=>{
-    this.onChartRendered();},1000);
+    // setTimeout(()=>{
+    // this.onChartRendered();},1000);
   }
 
   InitialDefaultData() {
@@ -1292,11 +1421,11 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
         formatter: function (seriesName: string, opts?: any) {
           return seriesName; // Return the series name as is
         },
-        fontSize: '12px', // Adjust font size
+        fontSize: '10px', // Adjust font size
         width: 800, // Set a fixed width for the legend container
         height: 70,
         itemMargin: {
-          horizontal: 20, // Reduce horizontal spacing between legend items
+          horizontal: 10, // Reduce horizontal spacing between legend items
           vertical: 0,
         },
       },
@@ -1339,5 +1468,35 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       // }, timeout);
     }
   }
+
+  getYAxisLabel()
+ {
+    return `${this.translatedLangText.NO_OF_TANKS}`;
+ }
+ // Safe method to update the y-axis title
+// 3. Type-safe method to update the y-axis title
+updateYAxisTitle(newTitle: string) {
+  if (!this.chart?.chart) return;
+  
+  // Create a new scales object with proper typing
+  const newScales = {
+    ...this.barChartOptions?.scales,
+    y: {
+      ...this.barChartOptions?.scales?.['y'],
+      title: {
+        display: true,
+        text: newTitle
+      }
+    } as LinearScaleOptions
+  };
+  
+  // Update the options
+  this.barChartOptions = {
+    ...this.barChartOptions,
+    scales: newScales
+  };
+  
+  this.chart.chart.update();
+}
 
 }
