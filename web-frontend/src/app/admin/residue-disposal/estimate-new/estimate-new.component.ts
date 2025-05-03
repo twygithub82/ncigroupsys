@@ -1521,7 +1521,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
   getFooterBackgroundColor(): string {
-    return 'light-green';
+    return '' //'light-green';
   }
 
   handleRollbackSuccess(count: any) {

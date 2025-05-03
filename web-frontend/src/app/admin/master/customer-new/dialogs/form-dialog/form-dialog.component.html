@@ -1,5 +1,5 @@
 <div class="addContainer">
-  <div class="modalHeader">
+  <div class="modalHeader ps-0">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h3>{{dialogTitle}}</h3>
@@ -103,7 +103,11 @@
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
         <button mat-flat-button color="primary" [disabled]="this.contactPersonForm?.invalid"
-          (click)="submit()">{{data.translatedLangText.ADD}}</button>
+          (click)="submit()">
+          <mat-icon>
+            save
+          </mat-icon>
+          {{data.translatedLangText.ADD}}</button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>

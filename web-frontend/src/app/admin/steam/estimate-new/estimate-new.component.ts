@@ -1473,7 +1473,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
 
   getFooterBackgroundColor(): string {
-    return 'light-green';
+    return '' //'light-green';
   }
 
   handleRollbackSuccess(count: any) {

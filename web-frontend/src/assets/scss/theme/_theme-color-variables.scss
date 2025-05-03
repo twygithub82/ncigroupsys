@@ -160,7 +160,7 @@ $theme-gold-purple-disabled-menu: darken(#c8c8c8, 15%);
 $blue-base: #b3cbff;
 $blue-primary: #5579f5;
 $blue-accent: #FFAA5B;
-$blue-complement: #8fe5c6;
+$blue-complement: #79BAEC; //#6495ED; //#8fe5c6;
 
 // Theme Derived Variables
 $theme-blue: $blue-primary;
@@ -183,4 +183,4 @@ $theme-blue-active-color: darken($blue-primary, 10%);
 $theme-blue-disabled-text: darken(#717171, 15%);
 $theme-blue-disabled-menu: darken(#c8c8c8, 15%);
 
-$theme-blue-complement-bar: darken($blue-complement, 25%);
+$theme-blue-complement-bar: darken($blue-complement, 15%);

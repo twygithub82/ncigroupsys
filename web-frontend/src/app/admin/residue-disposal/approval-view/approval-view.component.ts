@@ -1355,7 +1355,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
   }
 
   getFooterBackgroundColor(): string {
-    return 'light-green';
+    return '' //'light-green';
   }
 
   selectAllText(event: FocusEvent): void {

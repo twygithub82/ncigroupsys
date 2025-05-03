@@ -1441,7 +1441,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   getFooterBackgroundColor(): string {
-    return 'light-green';
+    return '' //'light-green';
   }
 
   handleRollbackSuccess(count: any) {

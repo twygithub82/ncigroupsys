@@ -10,12 +10,12 @@
         <form class="ms-0" [formGroup]="soForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
           <div class="card">
             <div class="header">
-              <h2>
+              <!-- <h2>
                 {{translatedLangText.HEADER}}
                 @if (this.so_guid) {
                 ({{ soForm?.get('so_no')?.value}})
                 }
-              </h2>
+              </h2> -->
             </div>
             <div class="body">
               @if (soDS.loadingSubject | async) {

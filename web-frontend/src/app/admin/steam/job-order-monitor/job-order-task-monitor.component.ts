@@ -1019,7 +1019,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   }
 
   getFooterBackgroundColor(): string {
-    return 'light-green';
+    return '' //'light-green';
   }
 
   IsApprovePart(rep: SteamPartItem) {

@@ -1577,7 +1577,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   getFooterBackgroundColor(): string {
-    return 'light-green';
+    return ''; // 'light-blue';
   }
 
   handleRollbackSuccess(count: any) {

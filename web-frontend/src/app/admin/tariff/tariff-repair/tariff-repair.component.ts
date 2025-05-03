@@ -81,11 +81,12 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   displayedColumns = [
     'select',
     'fName',
-    'email',
+    'gname',
     'subgroup',
-    'gender',
+    'hour',
     'bDate',
-    'mobile',
+    'last_date',
+    //'handle',
     'actions',
   ];
 

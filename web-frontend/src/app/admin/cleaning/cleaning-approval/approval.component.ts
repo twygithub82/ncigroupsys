@@ -556,7 +556,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
 
-      width: '1000px',
+      width: '50vw', //'1000px',
+      //height:'75vh',
       data: {
         action: action,
         langText: this.langText,

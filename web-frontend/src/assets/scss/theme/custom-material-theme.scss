@@ -184,8 +184,8 @@ button.primary-light {
 }
 
 button.accent-light {
-  background-color: mat.get-color-from-palette($custom-accent, 400) !important;
-  color: mat.get-color-from-palette($custom-accent, 400-contrast) !important;
+  background-color: mat.get-color-from-palette($custom-accent, 500) !important;
+  color: mat.get-color-from-palette($custom-accent, 500-contrast) !important;
 }
 
 button.accent-darker {

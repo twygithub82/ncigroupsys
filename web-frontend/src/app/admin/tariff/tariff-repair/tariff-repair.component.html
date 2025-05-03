@@ -191,7 +191,7 @@
                     <span class="mobile-label">{{this.translatedLangText.LENGTH }}:</span>{{row.tariff_repair?.length ||
                     "-"}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="email">
+                <ng-container matColumnDef="gname">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
                     mat-sort-header>{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
@@ -207,7 +207,7 @@
                     <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
                     {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair?.subgroup_name_cv)}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="gender">
+                <ng-container matColumnDef="hour">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
                     mat-sort-header>{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
@@ -222,18 +222,19 @@
                     (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST$}}:</span>
                     <div class="cost-label">
-                      <span></span><span>{{row.tariff_repair?.material_cost?.toFixed(2)}}</span>
+                      <span>{{row.tariff_repair?.material_cost?.toFixed(2)}}</span>
                     </div>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="mobile">
+                <ng-container matColumnDef="last_date">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
                     mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
                     (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row.tariff_repair)}}</mat-cell>
-                </ng-container>
+                </ng-container> 
+                
                 <!-- actions -->
                 <ng-container matColumnDef="actions">
                   <mat-header-cell class="pr-0" *matHeaderCellDef></mat-header-cell>

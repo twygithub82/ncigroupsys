@@ -178,7 +178,7 @@ export class OverwriteCleaningApprovalFormDialogComponent {
   }
 
   getFooterBackgroundColor(): string {
-    return 'light-green';
+    return '' //'light-green';
   }
 
   parse2Decimal(input: number | string | undefined) {

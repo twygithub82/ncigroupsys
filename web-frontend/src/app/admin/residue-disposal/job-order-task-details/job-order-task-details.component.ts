@@ -1025,7 +1025,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
   }
 
   getFooterBackgroundColor(): string {
-    return 'light-green';
+    return '' //'light-green';
   }
 
   IsApprovePart(rep: ResiduePartItem) {

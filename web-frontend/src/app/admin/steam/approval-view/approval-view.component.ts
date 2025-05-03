@@ -1342,7 +1342,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
   // }
 
   getFooterBackgroundColor(): string {
-    return 'light-green';
+    return '' //'light-green';
   }
 
   getTotalLabourHours(): string {
