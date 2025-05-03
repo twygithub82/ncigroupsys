@@ -34,7 +34,7 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { JobOrderDS } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderRequest, JobOrderItem } from 'app/data-sources/job-order';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RepairDS, RepairGO, RepairItem, RepairRequest, RepairStatusRequest } from 'app/data-sources/repair';
@@ -48,6 +48,8 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { debounceTime, startWith, tap } from 'rxjs';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
 
 @Component({
   selector: 'app-approval-view',
@@ -227,6 +229,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   unitTypeCvList: CodeValuesItem[] = []
   processStatusCvList: CodeValuesItem[] = []
 
+  oldJobOrderList?: (JobOrderItem | undefined)[] = [];
   customer_companyList?: CustomerCompanyItem[];
 
   customerCodeControl = new UntypedFormControl();
@@ -242,6 +245,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   prDS: PackageRepairDS;
   userDS: UserDS;
   joDS: JobOrderDS;
+  teamDS: TeamDS;
   isOwner = false;
   canApproveFlag = false;
 
@@ -253,7 +257,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -269,6 +274,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -453,6 +459,27 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
           });
           this.populateRepair(this.repairItem);
         }
+
+        if (this.modulePackageService.isStarterPackage()) {
+          this.subs.sink = this.teamDS.getTeamListByDepartment(["REPAIR"]).subscribe(data => {
+            if (data?.length) {
+              this.autoAssignTeam(data);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  autoAssignTeam(teamList?: TeamItem[]) {
+    if (this.repList?.length && (this.repairItem?.status_cv === 'PENDING' || this.repairItem?.status_cv === 'APPROVED')) {
+      const selectedTeam = teamList![0];
+      console.log('Auto Assigned')
+      this.repList.forEach(rep => {
+        rep.job_order = new JobOrderItem({
+          team_guid: selectedTeam?.guid,
+          team: selectedTeam
+        });
       });
     }
   }
@@ -717,7 +744,11 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       this.repairDS.approveRepair(re).subscribe(result => {
         console.log(result)
         if ((result?.data?.approveRepair ?? 0) > 0) {
-          this.handleSaveSuccess(result?.data?.approveRepair);
+          if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
+            this.handleSaveSuccess(result?.data?.approveRepair);
+          } else {
+            this.submitAssignJobOrder();
+          }
         }
       });
     } else {
@@ -725,6 +756,89 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       bill_to?.markAsTouched();
       bill_to?.updateValueAndValidity();
     }
+  }
+
+  submitAssignJobOrder() {
+    const distinctJobOrders = this.repList
+      .filter((item, index, self) => {
+        const jobOrder = item.job_order;
+        const teamDescription = jobOrder?.team?.description;
+        if (!teamDescription) {
+          return false;
+        }
+        return index === self.findIndex(
+          (t) =>
+            t.job_order?.team?.description === teamDescription
+        );
+      })
+      .map(item => item.job_order);
+
+    const missingJobOrders = this.oldJobOrderList?.filter(
+      oldJob =>
+        !distinctJobOrders.some(
+          distinctJob =>
+            distinctJob?.guid === oldJob?.guid &&
+            distinctJob?.team?.description === oldJob?.team?.description
+        )
+    );
+    console.log(missingJobOrders);
+
+    const finalJobOrder: any[] = [];
+    distinctJobOrders?.forEach(jo => {
+      if (jo) {
+        const filteredParts = this.repList.filter(part =>
+        // ((part.job_order?.guid && part.job_order?.guid === jo?.guid) || !part.job_order?.guid) &&
+        (part.job_order?.team?.guid === jo?.team_guid ||
+          part.job_order?.team?.description === jo?.team?.description)
+        );
+        const partList = filteredParts.map(part => part.guid);
+        const totalApproveHours = filteredParts.reduce((total, part) => total + (part.approve_hour || 0), 0);
+
+        const joRequest = new JobOrderRequest();
+        joRequest.guid = jo.guid;
+        joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
+        joRequest.remarks = jo.remarks;
+        joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
+        joRequest.status_cv = jo.status_cv;
+        joRequest.team_guid = jo.team_guid;
+        joRequest.total_hour = jo.total_hour ?? totalApproveHours;
+        joRequest.working_hour = jo.working_hour ?? 0;
+        joRequest.process_guid = this.repairItem?.guid;
+        joRequest.part_guid = partList;
+        finalJobOrder.push(joRequest);
+      }
+    });
+    console.log(finalJobOrder);
+    const without4x = this.repList.filter(part =>
+      !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair) && this.repairPartDS.isApproved(part)
+    );
+    this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
+      console.log(result)
+      if ((result?.data?.assignJobOrder ?? 0) > 0 && missingJobOrders?.length) {
+        const jobOrderGuidToDelete = missingJobOrders.map(jo => jo?.guid!)
+        this.joDS.deleteJobOrder(jobOrderGuidToDelete).subscribe(result => {
+          console.log(`deleteJobOrder: ${JSON.stringify(jobOrderGuidToDelete)}, result: ${JSON.stringify(result)}`);
+        });
+      }
+
+      const action = without4x?.length ? "PARTIAL_ASSIGN" : "ASSIGN";
+      console.log(without4x?.length ? "some parts are not assigned" : "all parts are assigned");
+
+      const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+        guid: this.repairItem!.guid,
+        sot_guid: this.sotItem!.guid,
+        action
+      });
+
+      console.log(repairStatusReq);
+
+      this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+        console.log(result);
+        if (result.data.updateRepairStatus > 0) {
+          this.handleSaveSuccess(result.data.updateRepairStatus);
+        }
+      });
+    });
   }
 
   onOwnerToggle(event: MatCheckboxChange): void {
@@ -1112,7 +1226,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   isDisabled(repairPart: RepairPartItem): boolean {
-    return !this.repairDS.canApprove(this.repairItem) || (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true) || !(repairPart?.approve_part ?? true)
+    return (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) || (!this.repairDS.canApprove(this.repairItem) || (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true) || !(repairPart?.approve_part ?? true))
   }
 
   getLabourCost(): number | undefined {

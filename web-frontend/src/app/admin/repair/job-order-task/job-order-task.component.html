@@ -47,6 +47,7 @@
         </mat-select>
       </mat-form-field>
     </div>
+    @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>{{translatedLangText.TEAM}}</mat-label>
@@ -59,6 +60,7 @@
         </mat-select>
       </mat-form-field>
     </div>
+    }
     <div class="col-xl col-lg col-md-12 col-sm-12 col-xs-12 mb-2 d-flex align-items-center ms-auto justify-content-end">
       <button mat-mini-fab color="primary" (click)="onFilterJobOrder()" matTooltip={{translatedLangText.SEARCH}}>
         <mat-icon>search</mat-icon>
@@ -78,22 +80,18 @@
       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
     </ng-container>
     <ng-container matColumnDef="tank_no">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
         {{translatedLangText.TANK_NO}}
       </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+      <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
         <span class="mobile-tab-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="customer">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
         {{translatedLangText.CUSTOMER}}
       </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+      <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
         <span
           class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
       </mat-cell>

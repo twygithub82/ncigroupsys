@@ -43,6 +43,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-approval',
@@ -205,7 +206,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

@@ -40,6 +40,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { Observable, Subscription } from 'rxjs';
@@ -175,7 +176,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -240,9 +242,32 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       this.processStatusCvList = data;
     });
 
-    this.teamDS.getTeamListByDepartment(['REPAIR']).subscribe(data => {
-      this.teamList = data
-    });
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
+      this.teamDS.getTeamListByDepartment(['REPAIR']).subscribe(data => {
+        this.teamList = data
+      });
+
+      this.displayedColumnsJobOrder = [
+        'tank_no',
+        'customer',
+        'estimate_no',
+        'allocate_dt',
+        'status_cv',
+        'team',
+        'actions'
+      ];
+    }
+    if (this.modulePackageService.isStarterPackage()) {
+
+      this.displayedColumnsJobOrder = [
+        'tank_no',
+        'customer',
+        'estimate_no',
+        'allocate_dt',
+        'status_cv',
+        'actions'
+      ];
+    }
   }
 
   showNotification(
@@ -267,10 +292,14 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
       const tankNo = this.filterJobOrderForm!.get('filterJobOrder')?.value;
       where.or = [
-        { storing_order_tank: { or: [
-          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-        ] } },
+        {
+          storing_order_tank: {
+            or: [
+              { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+              { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+            ]
+          }
+        },
         // { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
       ];
     }
@@ -357,7 +386,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.onFilterJobOrder();
+    this.onFilterJobOrder();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
@@ -470,7 +499,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
-          searchCriteria = value?.code||'';
+          searchCriteria = value?.code || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data

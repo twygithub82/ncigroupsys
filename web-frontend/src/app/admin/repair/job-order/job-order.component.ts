@@ -48,6 +48,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { JobOrderQCComponent } from "../../repair/job-order-qc/job-order-qc.component";
 import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-task.component";
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-job-order',
@@ -199,6 +200,30 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   jobOrderStartedCount = 0;
   private jobOrderSubscriptions: Subscription[] = [];
 
+  tabConfig = [
+    {
+      label: this.translatedLangText.REPAIR_EST_TAB_TITLE,
+      component: 'app-job-allocation',
+      modulePackage: ['growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.JOB_ORDER_TAB_TITLE,
+      component: 'app-job-task',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.QC,
+      component: 'app-job-qc',
+      modulePackage: ['starter', 'growth', 'customized']
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
+  }
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -208,7 +233,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -673,26 +699,26 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.jobOrderStartedCount = count;
   }
 
-   onTabFocused() {
-      this.resetForm();
-      this.onFilterRepair();
+  onTabFocused() {
+    this.resetForm();
+    this.onFilterRepair();
+  }
+
+  @ViewChild('repairJobOrderTask') repairJobOrderTask!: JobOrderTaskComponent;
+  @ViewChild('repairJobOrderQC') repairJobOrderQC!: JobOrderQCComponent;
+
+
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+
+      case 0:
+        this.onTabFocused(); break;
+      case 1:
+        this.repairJobOrderTask?.onTabFocused(); break;
+      case 2:
+        this.repairJobOrderQC?.onTabFocused(); break;
+
     }
-  
-       @ViewChild('repairJobOrderTask') repairJobOrderTask!: JobOrderTaskComponent;
-       @ViewChild('repairJobOrderQC') repairJobOrderQC!: JobOrderQCComponent;
-       
-             
-        onTabSelected(event: MatTabChangeEvent): void {
-          console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-          switch (event.index) {
-           
-           case 0:
-              this.onTabFocused(); break;
-           case 1:
-               this.repairJobOrderTask?.onTabFocused(); break;
-           case 2:
-                this.repairJobOrderQC?.onTabFocused(); break;
-         
-          }
-        }
+  }
 }
