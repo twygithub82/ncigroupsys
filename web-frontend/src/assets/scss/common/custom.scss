@@ -1937,6 +1937,7 @@ $grid-breakpoints: (
 }
 
 .tlx-mdc-tab-group .mat-mdc-tab {
+
   :hover,
   :focus {
     background-color: $theme-blue-legal-bg;
@@ -1962,9 +1963,13 @@ $grid-breakpoints: (
 }
 
 .tlx-mdc-tab-group .mat-mdc-tab.mdc-tab--active {
-  &:hover, &:focus, :hover, :focus {
+
+  &:hover,
+  &:focus,
+  :hover,
+  :focus {
     background-color: $theme-blue-complement-bar;
-  
+
     .mdc-tab__text-label {
       transition: none;
       color: white;
@@ -2081,4 +2086,8 @@ $grid-breakpoints: (
     align-items: center;
     justify-content: center;
   }
+}
+
+.card .header {
+  border-bottom: 1px solid;
 }
