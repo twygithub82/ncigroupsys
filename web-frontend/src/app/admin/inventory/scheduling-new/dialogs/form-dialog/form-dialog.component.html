@@ -10,7 +10,7 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <form class="register-form" [formGroup]="schedulingForm" #formDirective="ngForm">
+    <form class="register-form" [formGroup]="schedulingForm!" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
           <h5>{{data.translatedLangText.SCHEDULING_DETAILS}}</h5>
@@ -30,19 +30,18 @@
                   {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
                 } -->
-                @if (schedulingForm.get('book_type_cv')?.hasError('existed')) {
+                @if (schedulingForm?.get('book_type_cv')?.hasError('existed')) {
                 <mat-error>
                   {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
                 </mat-error>
                 }
               </mat-form-field>
             </div>
-            @if (getSchedulingArray().controls.length > 1) {
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.SCHEDULING_DATE}}</mat-label>
                 <input matInput formControlName="scheduling_dt" [matDatepicker]="scheduling_dt_picker"
-                  [min]="startDateToday">
+                  [min]="startDateToday" required>
                 <mat-datepicker-toggle matSuffix [for]="scheduling_dt_picker"></mat-datepicker-toggle>
                 <mat-datepicker #scheduling_dt_picker></mat-datepicker>
                 <!-- @if (schedulingForm.get('scheduling_dt')?.hasError('required')) {
@@ -52,9 +51,124 @@
                 } -->
               </mat-form-field>
             </div>
-            }
           </div>
-          <div formArrayName="schedulingSot">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+              <div class="booking-tbl responsive_table">
+                <table mat-table [dataSource]="this.dataSource" formArrayName="schedulingSot" matSort
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                  <ng-container matColumnDef="tank_no">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
+                      {{data.translatedLangText.TANK_NO}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.TANK_NO}}:</span>{{row.get('tank_no')?.value}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="customer_code">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      {{data.translatedLangText.CUSTOMER}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" class="">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.CUSTOMER}}:</span>{{row.get('customer_company')?.value}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="eir_no">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl'">
+                      {{data.translatedLangText.EIR_NO}}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                      <span class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{row.get('eir_no')?.value}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="eir_dt">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                      {{data.translatedLangText.EIR_DATE}}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{displayDate(row.get('eir_dt')?.value)}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="capacity">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                      {{data.translatedLangText.CAPACITY}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{row.get('capacity')?.value}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="tare_weight">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                      {{data.translatedLangText.TARE_WEIGHT}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{row.get('tare_weight')?.value}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="tank_status">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                      {{data.translatedLangText.STATUS}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.get('tank_status_cv')?.value)}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="yard">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
+                      {{data.translatedLangText.YARD}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(row.get('yard_cv')?.value)}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="reference">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      {{data.translatedLangText.REFERENCE}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row; let i = index" [ngClass]="''" [formGroupName]="i">
+                      <span class="mobile-label">{{data.translatedLangText.REFERENCE}}:</span>
+                      <tlx-form-field customClass="mat-table-form-txt-40px">
+                        <mat-form-field>
+                          <input tlxFormInput matInput formControlName="reference">
+                        </mat-form-field>
+                      </tlx-form-field>
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="action">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row; let i=index;"
+                      [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl'">
+                      <button mat-icon-button color="warn" (click)="removeSot($event, i)"
+                        [disabled]="dataSource.length <= 1" [matTooltip]="data.translatedLangText.CANCEL"
+                        class="tbl-action-btn">
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" [formGroupName]="i"
+                    [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+              <!-- No result -->
+              @if (!dataSource.length) {
+              <mat-divider></mat-divider>
+              <div class="no-results m-l-20 pt-3" [style.display]="dataSource.length === 0 ? '' : 'none'">
+                <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
+              </div>
+              }
+            </div>
+          </div>
+          <!-- <div formArrayName="schedulingSot">
             @for(row of getSchedulingArray().controls; track row; let index = $index) {
             <mat-card [formGroupName]="index" [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
               <mat-card-content [ngClass]="">
@@ -76,11 +190,6 @@
                         [min]="getStartDate(row.get('scheduling_dt')?.value)" required>
                       <mat-datepicker-toggle matSuffix [for]="scheduling_dt_picker"></mat-datepicker-toggle>
                       <mat-datepicker #scheduling_dt_picker></mat-datepicker>
-                      <!-- @if (row.get('scheduling_dt')?.hasError('required')) {
-                      <mat-error>
-                        {{data.translatedLangText.SCHEDULING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
-                      </mat-error>
-                      } -->
                       @if (row.get('scheduling_dt')?.hasError('existed')) {
                       <mat-error>
                         {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
@@ -105,7 +214,7 @@
               </mat-card-content>
             </mat-card>
             }
-          </div>
+          </div> -->
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">

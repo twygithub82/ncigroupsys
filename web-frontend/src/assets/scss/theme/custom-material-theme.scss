@@ -169,23 +169,28 @@ $custom-theme: mat.define-light-theme((color: (primary: $custom-primary,
     ));
 
 button.success {
-  background-color: mat.get-color-from-palette($custom-success);
-  color: mat.get-color-from-palette($custom-success, default-contrast);
+  background-color: mat.get-color-from-palette($custom-success) !important;
+  color: mat.get-color-from-palette($custom-success, default-contrast) !important;
 }
 
 button.secondary {
-  background-color: mat.get-color-from-palette($custom-secondary);
-  color: mat.get-color-from-palette($custom-secondary, default-contrast);
+  background-color: mat.get-color-from-palette($custom-secondary) !important;
+  color: mat.get-color-from-palette($custom-secondary, default-contrast) !important;
 }
 
 button.primary-light {
-  background-color: mat.get-color-from-palette($custom-primary, 300);
-  color: mat.get-color-from-palette($custom-primary, 300-contrast);
+  background-color: mat.get-color-from-palette($custom-primary, 300) !important;
+  color: mat.get-color-from-palette($custom-primary, 300-contrast) !important;
 }
 
 button.accent-light {
-  background-color: mat.get-color-from-palette($custom-accent, 400);
-  color: mat.get-color-from-palette($custom-accent, 400-contrast);
+  background-color: mat.get-color-from-palette($custom-accent, 400) !important;
+  color: mat.get-color-from-palette($custom-accent, 400-contrast) !important;
+}
+
+button.accent-darker {
+  background-color: mat.get-color-from-palette($custom-accent, 700) !important;
+  color: mat.get-color-from-palette($custom-accent, 700-contrast) !important;
 }
 
 // Include the theme styles

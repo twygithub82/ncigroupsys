@@ -137,6 +137,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private showRefreshDialog() {
+    // this.userActivitySubscription?.unsubscribe();
+    // this.userActivitySubscription = null;
     const dialogRef = this.dialog.open(RefreshTokenDialogComponent, {
       width: '800px',
       disableClose: true
@@ -147,6 +149,8 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log('User selected renew');
         this.authService.refreshToken().subscribe({
           next: () => {
+            // this.resetAutoLogoutTimer();  // ⏱ restart timers
+            // this.detectUserActivity();    // ✅ resume user activity detection
           },
           error: () => {
             console.error('Token refresh failed - Logging out user');

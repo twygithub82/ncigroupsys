@@ -18,10 +18,12 @@
                   <mat-icon>refresh</mat-icon>
                 </button>
               </div>
+              @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
               <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                   (click)="$event.stopPropagation()" />
               </div>
+              }
             </mat-panel-description>
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -89,18 +91,10 @@
                     </mat-option>
                     }
                   </mat-select>
-                  <!-- <input matInput formControlName="category" [formControl]="categoryControl"
-                    [matAutocomplete]="category">
-                  <mat-autocomplete #category="matAutocomplete" [displayWith]="displayCategoryFn">
-                    @for (cCat of cCategoryList; track cCat) {
-                    <mat-option [value]="cCat">
-                      {{cCat.name}}
-                    </mat-option>
-                    }
-                  </mat-autocomplete> -->
+
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
+              <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CARGO_BAN_TYPE}}</mat-label>
                   <input matInput formControlName="ban_type" [formControl]="banTypeControl"
@@ -113,13 +107,27 @@
                     }
                   </mat-autocomplete>
                 </mat-form-field>
+              </div> -->
+
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.CARGO_BAN_TYPE}}</mat-label>
+                  <mat-select formControlName="ban_type">
+                    @for (cn of banTypeCvList; track cn) {
+                    <mat-option [value]="cn.code_val">
+                      {{cn.description}}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
               </div>
               <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto d-flex justify-content-end pe-4">
                 <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                   <mat-icon>search</mat-icon>
                 </button>
-                <button mat-mini-fab class="m-l-5" color="accent" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                <button mat-mini-fab class="m-l-5" color="accent" (click)="resetDialog($event)"
+                  matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
@@ -237,8 +245,8 @@
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_cleaning)" [style.cursor]="'pointer'"
-              matRipple>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_cleaning)"
+              [style.cursor]="'pointer'" matRipple>
               <!-- [routerLink]="['/admin/tariff/tariff-cleaning/edit', row.guid]" [style.cursor]="'pointer'" matRipple> -->
             </mat-row>
           </table>

@@ -34,7 +34,7 @@ export class DeleteDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
     // Set the defaults
-    this.rep = data.item;
+    //this.rep = data.item;
     this.index = data.index;
   }
   onNoClick(): void {

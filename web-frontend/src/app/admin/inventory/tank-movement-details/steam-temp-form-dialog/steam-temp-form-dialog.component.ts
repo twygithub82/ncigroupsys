@@ -74,7 +74,6 @@ export class SteamTempFormDialogComponent {
     public dialogRef: MatDialogRef<SteamTempFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
-
   ) {
     // Set the defaults
     this.action = data.action!;

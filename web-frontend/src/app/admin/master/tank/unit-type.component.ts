@@ -86,6 +86,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     'lifton',
     'liftoff',
     'preinspect',
+    'flatRate',
     'isoformat',
     'lastUpdate',
     'actions'
@@ -207,6 +208,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    FLAT_RATE_ONLY:'COMMON-FORM.FLAT-RATE-ONLY',
   }
 
   minMaterialCost: number = -20;
@@ -330,7 +332,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '50vw',
+      width: '600px',
       data: {
         action: 'new',
         langText: this.langText,
@@ -377,8 +379,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
-
-      width: '50vw',
+      width: '600px',
       data: {
         action: 'update',
         langText: this.langText,

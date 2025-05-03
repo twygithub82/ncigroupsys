@@ -38,6 +38,7 @@ import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -174,7 +175,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
   yesnoCvList: CodeValuesItem[] = [];
   depotCvList: CodeValuesItem[] = [];
 
-
+  pageStateType = 'OtherSurvey'
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
   pageIndex = 0;
@@ -191,7 +192,8 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService
   ) {
     super();
     this.translateLangText();
@@ -271,7 +273,31 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
       this.depotCvList = addDefaultSelectOption(data, 'All');
     });
 
-    this.search();
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   showNotification(
@@ -379,7 +405,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
-  search() {
+  constructSearchCriteria() {
     const where: any = {
       and: [
         { status_cv: { eq: "ACCEPTED" } },
@@ -491,12 +517,25 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();
     });
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
     this.sotDS.searchStoringOrderTanksForSurvey(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
@@ -696,7 +735,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,

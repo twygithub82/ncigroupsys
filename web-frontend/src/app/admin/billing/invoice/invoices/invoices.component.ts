@@ -129,7 +129,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CONFIRM_REMOVE_INVOICES: 'COMMON-FORM.CONFIRM-REMOVE-INVOICES',
     BILLING_CURRENCY: 'COMMON-FORM.BILLING-CURRENCY',
-    IS_REQUIRED:'COMMON-FORM.IS-REQUIRED',
+    IS_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     EDIT: 'COMMON-FORM.EDIT',
     DELETE: 'COMMON-FORM.DELETE',
     EXPORT: 'COMMON-FORM.EXPORT'
@@ -233,7 +233,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       invoice_no: [''],
       depot_status_cv: [''],
       currency: [''],
-
+      invoice_type_cv: ['']
     });
   }
 
@@ -291,7 +291,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
-      { alias: 'invoiceTypeCv', codeValType: 'INVOICE_TYPE'}
+      { alias: 'invoiceTypeCv', codeValType: 'INVOICE_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -316,7 +316,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
       this.currencyList = data;
     });
-   // this.search();
+    // this.search();
   }
   showNotification(
     colorName: string,
@@ -366,7 +366,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     const where: any = {};
     this.selectedEstimateItem = undefined;
 
-    if(this.searchForm?.invalid) return;
+    if (this.searchForm?.invalid) return;
     // this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};
@@ -378,8 +378,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     itm.or.push({ repair_owner: { any: true } });
     itm.or.push({ residue: { any: true } });
     itm.or.push({ steaming: { any: true } });
-    itm.or.push({ gateio_billing_sot: { any: true } });
-    itm.or.push({ lolo_billing_sot: { any: true } });
+    itm.or.push({ gin_billing_sot: { any: true } });
+    itm.or.push({ gout_billing_sot: { any: true } });
+    itm.or.push({ lon_billing_sot: { any: true } });
+    itm.or.push({ loff_billing_sot: { any: true } });
     itm.or.push({ preinsp_billing_sot: { any: true } });
     itm.or.push({ storage_billing_sot: { any: true } });
     where.and.push(itm);
@@ -394,8 +396,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       itm.or.push({ repair_owner: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
       itm.or.push({ residue: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
       itm.or.push({ steaming: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
-      itm.or.push({ gateio_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
-      itm.or.push({ lolo_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ gin_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ gout_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ lon_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
+      itm.or.push({ loff_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
       itm.or.push({ preinsp_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
       itm.or.push({ storage_billing_sot: { some: { storing_order_tank: { tank_no: { contains: this.searchForm!.get('tank_no')?.value } } } } });
       where.and.push(itm);
@@ -416,13 +420,13 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       itm.or.push({ repair_owner: { some: { storing_order_tank: cond } } });
       itm.or.push({ residue: { some: { storing_order_tank: cond } } });
       itm.or.push({ steaming: { some: { storing_order_tank: cond } } });
-      itm.or.push({ gateio_billing_sot: { some: { storing_order_tank: cond } } });
-      itm.or.push({ lolo_billing_sot: { some: { storing_order_tank: cond } } });
+      itm.or.push({ gin_billing_sot: { some: { storing_order_tank: cond } } });
+      itm.or.push({ gout_billing_sot: { some: { storing_order_tank: cond } } });
+      itm.or.push({ lon_billing_sot: { some: { storing_order_tank: cond } } });
+      itm.or.push({ loff_billing_sot: { some: { storing_order_tank: cond } } });
       itm.or.push({ preinsp_billing_sot: { some: { storing_order_tank: cond } } });
       itm.or.push({ storage_billing_sot: { some: { storing_order_tank: cond } } });
       where.and.push(itm);
-
-
     }
 
     if (this.searchForm!.get('invoice_no')?.value) {
@@ -438,8 +442,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       itm.or.push({ repair_owner: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
       itm.or.push({ residue: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
       itm.or.push({ steaming: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
-      itm.or.push({ gateio_billing_sot: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
-      itm.or.push({ lolo_billing_sot: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
+      itm.or.push({ gin_billing_sot: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
+      itm.or.push({ gout_billing_sot: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
+      itm.or.push({ lon_billing_sot: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
+      itm.or.push({ loff_billing_sot: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
       itm.or.push({ preinsp_billing_sot: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
       itm.or.push({ storage_billing_sot: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
       where.and.push(itm);
@@ -458,8 +464,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       itm.or.push({ repair_owner: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       itm.or.push({ residue: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       itm.or.push({ steaming: { some: { sbill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ gateio_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ lolo_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      itm.or.push({ gin_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      itm.or.push({ gout_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      itm.or.push({ lon_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      itm.or.push({ loff_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       itm.or.push({ preinsp_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       itm.or.push({ storage_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       where.and.push(itm);
@@ -543,7 +551,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         }
       });
       itm.or.push({
-        gateio_billing_sot: {
+        gin_billing_sot: {
           some: {
             storing_order_tank: {
               in_gate: {
@@ -557,7 +565,35 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         }
       });
       itm.or.push({
-        lolo_billing_sot: {
+        gout_billing_sot: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        lon_billing_sot: {
+          some: {
+            storing_order_tank: {
+              in_gate: {
+                some: {
+                  and: [{ eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+                  { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        loff_billing_sot: {
           some: {
             storing_order_tank: {
               in_gate: {
@@ -612,8 +648,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       itm.or.push({ repair_owner: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
       itm.or.push({ residue: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
       itm.or.push({ steaming: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
-      itm.or.push({ gateio_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
-      itm.or.push({ lolo_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ gin_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ gout_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ lon_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
+      itm.or.push({ loff_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
       itm.or.push({ preinsp_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
       itm.or.push({ storage_billing_sot: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
 
@@ -721,7 +759,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         }
       });
       itm.or.push({
-        gateio_billing_sot: {
+        gin_billing_sot: {
           some: {
             storing_order_tank: {
               out_gate: {
@@ -737,7 +775,39 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         }
       });
       itm.or.push({
-        lolo_billing_sot: {
+        gout_billing_sot: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        lon_billing_sot: {
+          some: {
+            storing_order_tank: {
+              out_gate: {
+                some: {
+                  out_gate_survey: {
+                    and: [{ create_dt: { lte: Utility.convertDate(this.searchForm!.value['release_dt'], true) } },
+                    { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      itm.or.push({
+        loff_billing_sot: {
           some: {
             storing_order_tank: {
               out_gate: {
@@ -801,8 +871,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       itm.or.push({ repair_owner: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
       itm.or.push({ residue: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
       itm.or.push({ steaming: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
-      itm.or.push({ gateio_billing_sot: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
-      itm.or.push({ lolo_billing_sot: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
+      itm.or.push({ gin_billing_sot: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
+      itm.or.push({ gout_billing_sot: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
+      itm.or.push({ lon_billing_sot: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
+      itm.or.push({ loff_billing_sot: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
       itm.or.push({ preinsp_billing_sot: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
       itm.or.push({ storage_billing_sot: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
 
@@ -903,7 +975,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
@@ -1085,12 +1157,20 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         var est = this.GetEstimateItem(i.cleaning, "CUSTOMER", "CLEANING");
         estimateItems = [...estimateItems, ...est];
       }
-      if (i.gateio_billing_sot.length) {
-        var est = this.GetEstimateItem(i.gateio_billing_sot, "CUSTOMER", "GATE");
+      if (i.gin_billing_sot.length) {
+        var est = this.GetEstimateItem(i.gin_billing_sot, "CUSTOMER", "GATE");
         estimateItems = [...estimateItems, ...est];
       }
-      if (i.lolo_billing_sot.length) {
-        var est = this.GetEstimateItem(i.lolo_billing_sot, "CUSTOMER", "LOLO");
+      if (i.gout_billing_sot.length) {
+        var est = this.GetEstimateItem(i.gout_billing_sot, "CUSTOMER", "GATE");
+        estimateItems = [...estimateItems, ...est];
+      }
+      if (i.lon_billing_sot.length) {
+        var est = this.GetEstimateItem(i.lon_billing_sot, "CUSTOMER", "LOLO");
+        estimateItems = [...estimateItems, ...est];
+      }
+      if (i.loff_billing_sot.length) {
+        var est = this.GetEstimateItem(i.loff_billing_sot, "CUSTOMER", "LOLO");
         estimateItems = [...estimateItems, ...est];
       }
       if (i.repair_customer.length) {
@@ -1113,8 +1193,6 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         var est = this.GetEstimateItem(i.steaming, "CUSTOMER", "STEAMING");
         estimateItems = [...estimateItems, ...est];
       }
-
-
     });
 
     if (estimateItems.length) {
@@ -1164,7 +1242,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   export_report() {
 
-   // if (!this.billList.length) this.search();
+    // if (!this.billList.length) this.search();
 
     if (!this.billList.length) return;
 
@@ -1214,10 +1292,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
     var sot_guids: string[] = [];
     if (b.cleaning?.length! > 0) this.calculateCleaningCost(b.cleaning!, repBillItems);
-    //if (b.gateio_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gateio_billing_sot!, repBillItems);
     if (b.gin_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gin_billing_sot!, repBillItems);
     if (b.gout_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gout_billing_sot!, repBillItems);
-    //if (b.lolo_billing_sot?.length! > 0) this.calculateLOLOCost(b.lolo_billing_sot!, repBillItems);
     if (b.lon_billing_sot?.length! > 0) this.calculateLOLOCost(b.lon_billing_sot!, repBillItems);
     if (b.loff_billing_sot?.length! > 0) this.calculateLOLOCost(b.loff_billing_sot!, repBillItems);
     if (b.preinsp_billing_sot?.length! > 0) this.calculatePreInspectionCost(b.preinsp_billing_sot!, repBillItems);
@@ -1331,7 +1407,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
             rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
             rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
           }
-          
+
           if (c.storing_order_tank?.tank_no) { rep_bill_item.tank_no = c.storing_order_tank?.tank_no; }
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
@@ -1407,8 +1483,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
           let daysDifference: number = Number(this.pdDS.getStorageDays(c.storing_order_tank!, packDepotItm));
 
 
-          
-         // var out_gates = c.storing_order_tank?.out_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+
+          // var out_gates = c.storing_order_tank?.out_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
           rep_bill_item.days = String(daysDifference);
           rep_bill_item.storage_est_no += 1;
           rep_bill_item.storage_cost = Number((c.storage_cost || 0) * daysDifference).toFixed(2);

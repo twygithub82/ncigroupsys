@@ -276,7 +276,11 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   constructSearchCriteria() {
-    const where: any = {};
+    const where: any = {
+      eir_status_cv: {
+        in: ['PENDING', 'YET_TO_SURVEY']
+      }
+    };
 
     if (this.searchForm!.get('eir_no')?.value) {
       where.eir_no = { contains: this.searchForm!.value['eir_no'] };
@@ -476,7 +480,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     this.customerCodeControl.reset('');
   }
 
-  
+
   onTabFocused() {
     this.resetForm();
     this.search();

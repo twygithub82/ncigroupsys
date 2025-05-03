@@ -30,7 +30,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
@@ -41,6 +41,8 @@ import { Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tariff-cleaning',
@@ -175,7 +177,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -209,7 +212,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       method: [''],
       category: this.categoryControl,
       hazard_level: this.hazardLevelControl,
-      ban_type: this.banTypeControl,
+      ban_type: [''],
       flash_point: [''],
       un_no: [''],
     });
@@ -269,7 +272,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.classNoCvList = data;
     });
     this.cvDS.connectAlias('banTypeCv').subscribe(data => {
-      this.banTypeCvList = data;
+      this.banTypeCvList = addDefaultSelectOption(data, 'All');
     });
 
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
@@ -413,7 +416,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.searchForm!.value['ban_type']) {
       const banType: CodeValuesItem = this.searchForm!.value['ban_type'];
       //tariff_cleaning.ban_type = { contains: 'Half_Ban' };
-      tariff_cleaning.ban_type_cv = { contains: banType.code_val };
+      tariff_cleaning.ban_type_cv = { contains: banType };
     }
 
     if (this.searchForm!.value['method']) {
@@ -555,12 +558,12 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       method: '',
       category: '',
       hazard_level: '',
-      ban_type: '',
+      //ban_type: '',
       un_no: '',
     });
     this.categoryControl.reset();
     this.hazardLevelControl.reset();
-    this.banTypeControl.reset();
+    this.banTypeControl.reset('');
   }
 
   editCall(row: TariffCleaningItem) {
@@ -619,7 +622,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '15vw',
+      //width: '15vw',
       data: {
         headerText: this.translatedLangText.ARE_U_SURE_DELETE,
         act: "warn"

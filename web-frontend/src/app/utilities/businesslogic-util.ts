@@ -1,4 +1,5 @@
 import { CodeValuesItem } from "app/data-sources/code-values";
+import { modulePackage } from "environments/environment";
 
 export class BusinessLogicUtil {
     static isOthers(value: string): boolean {
@@ -19,5 +20,21 @@ export class BusinessLogicUtil {
 
     static isAutoApproveSteaming(row: any) {
         return row?.estimate_no?.startsWith('SE');
+    }
+
+    static isStarterPackage() {
+        return modulePackage === "starter"
+    }
+
+    static isGrowthPackage() {
+        return modulePackage === "growth"
+    }
+
+    static isCustomizedPackage() {
+        return modulePackage === "customized"
+    }
+
+    static getModulePackage() {
+        return modulePackage;
     }
 }

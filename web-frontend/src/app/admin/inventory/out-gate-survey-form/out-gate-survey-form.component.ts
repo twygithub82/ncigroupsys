@@ -1589,7 +1589,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       console.log('publishOutGateSurvey: ', this.out_gate.guid)
       this.ogDS.publishOutGateSurvey(this.out_gate.guid!).subscribe(result => {
         console.log(result)
-        this.handleSaveSuccess(result.data?.publishIngateSurvey)
+        this.handleSaveSuccess(result.data?.publishOutGateSurvey)
         this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
       });
     }

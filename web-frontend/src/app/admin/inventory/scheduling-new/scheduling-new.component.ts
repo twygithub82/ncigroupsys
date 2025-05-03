@@ -628,13 +628,15 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
+      width: '90vw',
       data: {
         item: selectedItems,
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking
+          bookingTypeCvList: this.bookingTypeCvListNewBooking,
+          tankStatusCvList: this.tankStatusCvList,
+          yardCvList: this.yardCvList
         }
       },
       direction: tempDirection,
@@ -658,14 +660,16 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
+      width: '90vw',
       data: {
         item: [row],
         scheduling_guid: scheduling_guid,
         action: 'edit',
         translatedLangText: this.translatedLangText,
         populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking
+          bookingTypeCvList: this.bookingTypeCvListNewBooking,
+          tankStatusCvList: this.tankStatusCvList,
+          yardCvList: this.yardCvList
         }
       },
       direction: tempDirection

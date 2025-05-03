@@ -585,7 +585,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
 
-  section = "tank_details";
+  accordionSections = {
+    tank_details: "tank_details",
+    gate_details: "gate_details",
+    purpose_details: "purpose_details",
+    depot_cost_details: "depot_cost_details",
+    booking_details: "booking_details",
+    survey_details: "survey_details",
+    transfer_details: "transfer_details"
+  }
+  section = [this.accordionSections.tank_details];
 
   private _formBuilder = inject(FormBuilder);
 
@@ -1088,6 +1097,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.updateTankPurpose);
+          if (this.sot_guid) {
+            this.loadDataHandling_sot(this.sot_guid);
+            if (type == 'steaming') {
+              this.loadDataHandling_steam(this.sot_guid);
+            } else if (type == 'cleaning') {
+              this.loadDataHandling_residue(this.sot_guid);
+              this.loadDataHandling_cleaning(this.sot_guid);
+            } else if (type == 'repair') {
+              this.loadDataHandling_repair(this.sot_guid);
+            }
+          }
         });
       }
     });
@@ -1775,23 +1795,35 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   verifySection(expectedSection: string) {
-    return this.section === expectedSection || this.section === 'all';
+    return this.section.includes(expectedSection);
   }
 
   setSection(section: string) {
-    this.section = section;
+    const index = this.section.indexOf(section);
+    if (index > -1) {
+      this.section.splice(index, 1);
+    } else {
+      this.section.push(section);
+    }
+    console.log(this.section)
   }
 
   expandAll(event: MouseEvent, currentSection: string): void {
-    const isExpanded = this.verifySection(currentSection);
+    // const isExpanded = this.verifySection(currentSection);
 
-    // Stop propagation ONLY if panel is currently expanded to prevent it from collapsing
-    if (isExpanded) {
-      event.stopPropagation();
-    }
+    // // Stop propagation ONLY if panel is currently expanded to prevent it from collapsing
+    // if (isExpanded) {
+    //   event.stopPropagation();
+    // }
+    event.stopPropagation();
 
     // Delay section update so that Angular finishes handling expansion toggle first
-    setTimeout(() => this.setSection('all'), 0);
+    const allSections = Object.values(this.accordionSections);
+    allSections.forEach(x => {
+      if (!this.verifySection(x)) {
+        this.section.push(x);
+      }
+    })
   }
 
   private subscribeToPurposeChangeEvent(
@@ -2290,7 +2322,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(`sot: `, data)
         this.sot = data[0];
         this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
-        this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
+        // this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
         // this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
         //   console.log(`packageDepot: `, data)
         //   this.pdItem = data[0];

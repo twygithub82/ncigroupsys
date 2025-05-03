@@ -1,6 +1,7 @@
 <div class="container">
-    <h3 mat-dialog-title>{{headerText | translate}}</h3>
-    <div mat-dialog-content>
+    <h3 mat-dialog-title class="ps-0 pb-1 align-left ">{{headerText | translate}}</h3>
+    <mat-divider class="pb-1"></mat-divider>
+    <!-- <div mat-dialog-content>
         @if (data.messageText?.length) {
         <ul class="clearfix">
             @for (msg of data.messageText; track msg) {
@@ -14,13 +15,13 @@
             }
         </ul>
         }
-    </div>
-    <div mat-dialog-actions class="mb-1 d-flex justify-content-center">
+    </div> -->
+    <div mat-dialog-actions class="ps-0 mb-1 d-flex justify-content-center">
         <button mat-flat-button color="warn"  [mat-dialog-close]="1" (click)="confirm()">
-            {{langText.CONFIRM | translate}}
+            {{langText.DELETE | translate}}
         </button>
         <button mat-flat-button (click)="onNoClick()" tabindex="-1" [hidden]="hideCancel()">
-            {{langText.CANCEL | translate}}
+            {{langText.CLOSE | translate}}
         </button>
     </div>
 </div>
