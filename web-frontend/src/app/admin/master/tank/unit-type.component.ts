@@ -332,7 +332,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '40vw',
+      width: '600px',
       data: {
         action: 'new',
         langText: this.langText,
@@ -379,8 +379,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
-
-      width: '50vw',
+      width: '600px',
       data: {
         action: 'update',
         langText: this.langText,
