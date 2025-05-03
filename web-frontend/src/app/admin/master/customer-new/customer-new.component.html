@@ -213,20 +213,20 @@
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                  <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
                     (click)="addBillingBranch($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
+                    <mat-icon class="">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
                   </button>
                 </div>
               </div>
               <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex justify-content-end ms-auto">
-                  <button mat-flat-button color="accent col-white" type="button" [ngClass]="'m-r-10'"
+                  <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
                     (click)="addContactPerson($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}
+                    <mat-icon class="">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}
                   </button>
-                  <button mat-flat-button class="m-l-10 bg-light-gold col-white" (click)="resetDialog($event)">
-                    <mat-icon class="col-white">
+                  <button mat-flat-button color="" class="m-l-10 accent-darker" (click)="resetDialog($event)">
+                    <mat-icon class="">
                       close
                     </mat-icon>
                     {{translatedLangText.CLEAR_ALL}}

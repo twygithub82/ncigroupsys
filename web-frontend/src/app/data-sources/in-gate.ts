@@ -1,14 +1,11 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
-import { AnyObject } from 'chart.js/dist/types/basic';
 import { InGateSurveyItem } from './in-gate-survey';
+import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 
 export class InGate {
   public guid?: string = '';

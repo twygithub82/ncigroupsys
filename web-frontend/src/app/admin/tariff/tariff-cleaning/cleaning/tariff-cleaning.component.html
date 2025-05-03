@@ -18,10 +18,12 @@
                   <mat-icon>refresh</mat-icon>
                 </button>
               </div>
+              @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
               <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                   (click)="$event.stopPropagation()" />
               </div>
+              }
             </mat-panel-description>
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -124,7 +126,8 @@
                 <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                   <mat-icon>search</mat-icon>
                 </button>
-                <button mat-mini-fab class="m-l-5" color="accent" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                <button mat-mini-fab class="m-l-5" color="accent" (click)="resetDialog($event)"
+                  matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
@@ -242,8 +245,8 @@
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_cleaning)" [style.cursor]="'pointer'"
-              matRipple>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_cleaning)"
+              [style.cursor]="'pointer'" matRipple>
               <!-- [routerLink]="['/admin/tariff/tariff-cleaning/edit', row.guid]" [style.cursor]="'pointer'" matRipple> -->
             </mat-row>
           </table>

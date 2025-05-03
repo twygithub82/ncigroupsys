@@ -8,17 +8,40 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <div class="body overflow-auto">
+            @if (allowedTabs.length > 1) {
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
+              @for (tab of allowedTabs; track tab.label) {
+              @if (tab.component == 'app-tariff-cleaning') {
               <mat-tab [label]="translatedLangText.TARIFF_CLEANING">
                 <app-tariff-cleaning #tariffClean></app-tariff-cleaning>
               </mat-tab>
+              }
+              @if (tab.component == 'app-tariff-buffer') {
               <mat-tab [label]="translatedLangText.TARIFF_BUFFER">
                 <app-tariff-buffer #tariffBuffer></app-tariff-buffer>
               </mat-tab>
+              }
+              @if (tab.component == 'app-tariff-residue') {
               <mat-tab [label]="translatedLangText.TARIFF_RESIDUE">
                 <app-tariff-residue #tariffResidue></app-tariff-residue>
               </mat-tab>
+              }
+              }
             </mat-tab-group>
+            }
+            @else {
+            @for (tab of allowedTabs; track tab.label) {
+            @if (tab.component == 'app-tariff-cleaning') {
+            <app-tariff-cleaning #tariffClean></app-tariff-cleaning>
+            }
+            @if (tab.component == 'app-tariff-buffer') {
+            <app-tariff-buffer #tariffBuffer></app-tariff-buffer>
+            }
+            @if (tab.component == 'app-tariff-residue') {
+            <app-tariff-residue #tariffResidue></app-tariff-residue>
+            }
+            }
+            }
           </div>
         </div>
       </div>

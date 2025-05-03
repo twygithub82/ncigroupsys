@@ -41,6 +41,8 @@ import { Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tariff-cleaning',
@@ -175,7 +177,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

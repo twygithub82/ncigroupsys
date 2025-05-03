@@ -1097,6 +1097,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.updateTankPurpose);
+          if (this.sot_guid) {
+            this.loadDataHandling_sot(this.sot_guid);
+            if (type == 'steaming') {
+              this.loadDataHandling_steam(this.sot_guid);
+            } else if (type == 'cleaning') {
+              this.loadDataHandling_residue(this.sot_guid);
+              this.loadDataHandling_cleaning(this.sot_guid);
+            } else if (type == 'repair') {
+              this.loadDataHandling_repair(this.sot_guid);
+            }
+          }
         });
       }
     });
@@ -2311,7 +2322,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(`sot: `, data)
         this.sot = data[0];
         this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
-        this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
+        // this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
         // this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
         //   console.log(`packageDepot: `, data)
         //   this.pdItem = data[0];

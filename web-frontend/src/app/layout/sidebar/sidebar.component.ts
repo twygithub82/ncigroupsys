@@ -19,7 +19,7 @@ import { NgScrollbar } from 'ngx-scrollbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Utility } from 'app/utilities/utility';
-import { environment } from 'environments/environment';
+import { environment, modulePackage } from 'environments/environment';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Direction } from '@angular/cdk/bidi';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -122,7 +122,7 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
       this.userFullName = this.authService.currentUserValue.name;
       this.userImg = this.authService.currentUserValue.img;
       this.userType = 'Admin';
-      this.sidebarItems = ROUTES.filter((sidebarItem) => sidebarItem);
+      this.sidebarItems = this.filterMenuByPackage(ROUTES, modulePackage);
     }
 
     // this.sidebarItems = ROUTES.filter((sidebarItem) => sidebarItem);
@@ -238,5 +238,25 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+  filterMenuByPackage(menu: RouteInfo[], modulePackage: string): RouteInfo[] {
+    return menu
+      .map(item => {
+        const filteredSubmenu = item.submenu
+          ? this.filterMenuByPackage(item.submenu, modulePackage)
+          : [];
+
+        const isVisible =
+          (!item.modulePackage || item.modulePackage.length === 0 || item.modulePackage.includes(modulePackage)) ||
+          filteredSubmenu.length > 0;
+
+        if (!isVisible) return null;
+
+        return {
+          ...item,
+          submenu: filteredSubmenu
+        };
+      })
+      .filter((item): item is RouteInfo => item !== null);
   }
 }

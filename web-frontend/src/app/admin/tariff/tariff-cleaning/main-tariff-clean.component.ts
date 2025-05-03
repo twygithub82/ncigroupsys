@@ -41,6 +41,8 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffBufferComponent } from './buffer/tariff-buffer.component';
 import { TariffCleaningComponent } from './cleaning/tariff-cleaning.component';
 import { TariffResidueComponent } from './residue/tariff-residue.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-tariff-main-clean',
   standalone: true,
@@ -72,7 +74,6 @@ import { TariffResidueComponent } from './residue/tariff-residue.component';
     TariffCleaningComponent,
     TariffBufferComponent,
     TariffResidueComponent
-  
   ]
 })
 export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -184,48 +185,41 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  pageIndexClean = 0;
-  pageSizeClean = 10;
-  lastSearchCriteriaClean: any;
-  lastOrderByClean: any = { create_dt: "ASC" };
-  endCursorClean: string | undefined = undefined;
-  startCursorClean: string | undefined = undefined;
-  hasNextPageClean = false;
-  hasPreviousPageClean = false;
-  previous_endCursorClean: string | undefined = undefined;
+  tabConfig = [
+    {
+      label: this.translatedLangText.TARIFF_CLEANING,
+      component: 'app-tariff-cleaning',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.TARIFF_BUFFER,
+      component: 'app-tariff-buffer',
+      modulePackage: ['growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.TARIFF_RESIDUE,
+      component: 'app-tariff-residue',
+      modulePackage: ['growth', 'customized']
+    }
+  ];
 
-  pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
-  lastSearchCriteriaJobOrder: any;
-  lastOrderByJobOrder: any = { job_order_no: "DESC" };
-  endCursorJobOrder: string | undefined = undefined;
-  startCursorJobOrder: string | undefined = undefined;
-  hasNextPageJobOrder = false;
-  hasPreviousPageJobOrder = false;
-  previous_endCursorJobOrder: string | undefined = undefined;
-  showBayOverview = true;
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
+  }
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
-    // this.initSearchForm();
-    // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
-    // this.soDS = new StoringOrderDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.cvDS = new CodeValuesDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.tcDS = new TariffCleaningDS(this.apollo);
-    // this.igDS = new InGateDS(this.apollo);
-    // this.cleanDS = new InGateCleaningDS(this.apollo);
-    // this.ttDS= new TimeTableDS(this.apollo);
-    // this.joDS = new JobOrderDS(this.apollo);
-    // this.cmDS=new CleaningMethodDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -238,727 +232,10 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     // this.loadData();
   }
 
-  refresh() {
-    this.refreshTable();
-  }
-
-  initSearchForm() {
-    this.filterCleanForm = this.fb.group({
-      filterClean: [''],
-      cleanMethod: [''],
-      status_cv: [['APPROVED', 'ASSIGNED']],
-      customer: [''],
-    });
-    this.filterJobOrderForm = this.fb.group({
-      filterJobOrder: [''],
-    });
-  }
-
-  cancelItem(row: StoringOrderItem) {
-    // this.id = row.id;
-    this.cancelSelectedRows([row])
-  }
-
-  private refreshTable() {
-    this.paginator._changePageSize(this.paginator.pageSize);
-  }
-
-  cancelSelectedRows(row: StoringOrderItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     item: [...row],
-    //     langText: this.langText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-    //     this.soDS.cancelStoringOrder(so).subscribe(result => {
-    //       if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-    //         let successMsg = this.langText.CANCELED_SUCCESS;
-    //         this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-    //           successMsg = res;
-    //           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-    //           this.refreshTable();
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
-  }
-
-  public loadData() {
-    // this.onFilterCleaning();
-    //  this.onFilterJobOrder();
-
-    // const queries = [
-    //   { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
-    //   { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
-    //   { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //   { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
-    // ];
-    // this.cvDS.getCodeValuesByType(queries);
-    // this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-    //   this.soStatusCvList = addDefaultSelectOption(data, 'All');
-    // });
-    // this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-    //   this.purposeOptionCvList = data;
-    // });
-    // this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-    //   this.tankStatusCvList = data;
-    // });
-    // this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-    //   this.processStatusCvList = data;
-    // });
-  }
-
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
-  }
-
-  // export table data in excel file
-  exportExcel() {
-    // key name with space add in brackets
-    // const exportData: Partial<TableElement>[] =
-    //   this.dataSource.filteredData.map((x) => ({
-    //     'First Name': x.fName,
-    //     'Last Name': x.lName,
-    //     Email: x.email,
-    //     Gender: x.gender,
-    //     'Birth Date': formatDate(new Date(x.bDate), 'yyyy-MM-dd', 'en') || '',
-    //     Mobile: x.mobile,
-    //     Address: x.address,
-    //     Country: x.country,
-    //   }));
-
-    // TableExportUtil.exportToExcel(exportData, 'excel');
-  }
-
-  // context menu
-  onContextMenu(event: MouseEvent, item: StoringOrderItem) {
-    event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-      this.contextMenu.menuData = { item: item };
-      this.contextMenu.menu.focusFirstItem('mouse');
-      this.contextMenu.openMenu();
-    }
-  }
-
-  onFilterCleaning() {
-
-
-    // const where: any = {
-    //   and:[
-    //     //{storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
-    //     {storing_order_tank:{tank_status_cv:{in:["CLEANING"]}}}
-    //   ]
-    // };
-
-
-    // // or: [
-    // //   { storing_order_tank: { tank_no: { contains: "" } } },
-    // //   { estimate_no: { contains: "" } }
-    // // ]
-    // if (this.filterCleanForm!.get('cleanMethod')?.value) {
-    //   where.and.push({
-    //     storing_order_tank: { tariff_cleaning:{cleaning_method:{ name: { eq: (this.filterCleanForm!.get('cleanMethod')?.value).name } }}}
-    //   });
-    // }
-    // if (this.filterCleanForm!.get('filterClean')?.value) {
-    //   where.and.push({
-    //     storing_order_tank: { tank_no: { contains: this.filterCleanForm!.get('filterClean')?.value } }
-    //   });
-    // }
-
-    // if (this.filterCleanForm!.get('customer')?.value) {
-    //   where.and.push({
-    //     customer_company: { code: { eq: (this.filterCleanForm!.get('customer')?.value).code } }
-    //   });
-    // }
-
-    // if (this.filterCleanForm?.get('status_cv')?.value.length>0) {
-    //   where.and.push({
-    //     status_cv: { in: this.filterCleanForm!.get('status_cv')?.value} 
-    //   });
-    // }
-
-    // this.lastSearchCriteriaClean = this.cleanDS.addDeleteDtCriteria(where);
-    // this.performSearchClean(this.pageSizeClean, this.pageIndexClean, this.pageSizeClean, undefined, undefined, undefined, () => { });
-  }
-
-  onFilterJobOrder() {
-    const where: any = {
-      job_type_cv: { eq: "REPAIR" }
-    };
-
-    // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
-    //   where.so_no = { contains: this.filterRepairForm!.get('filterJobOrder')?.value };
-    // }
-
-    // TODO:: Get login user team
-    // if (false) {
-    //   where.team_guid = { eq: "" }
-    // }
-
-    // this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    // this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
-  }
-
-  performSearchClean(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    // this.subs.sink = this.cleanDS.search(this.lastSearchCriteriaClean, this.lastOrderByClean, first, after, last, before)
-    //   .subscribe(data => {
-    //     this.clnEstList = data;
-    //     this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
-    //     this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
-    //     this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
-    //     this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
-    //     this.pageIndexClean=pageIndex;
-    //     this.paginator.pageIndex=this.pageIndexClean;
-    //     //this.selection.clear();
-    //     if(!this.hasPreviousPageClean)
-    //       this.previous_endCursorClean=undefined;
-    //     // this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
-    //     // this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
-    //     // this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
-    //     // this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
-    //   });
-
-    // this.pageSizeClean = pageSize;
-    // this.pageIndexClean = pageIndex;
-  }
-
-  performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    // this.subs.sink = this.joDS.searchJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
-    //   .subscribe(data => {
-    //     this.jobOrderList = data;
-    //     this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
-    //     this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
-    //     this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
-    //     this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
-    //     this.pageIndexJobOrder=pageIndex;
-    //     this.paginator.pageIndex=this.pageIndexJobOrder;
-    //     //this.selection.clear();
-    //     if(!this.hasPreviousPageJobOrder)
-    //       this.previous_endCursorJobOrder=undefined;
-    //     // this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
-    //     // this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
-    //     // this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
-    //     // this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
-    //   });
-
-    // this.pageSizeJobOrder = pageSize;
-    // this.pageIndexJobOrder = pageIndex;
-  }
-
-
-  onPageEventClean(event: PageEvent) {
-    const { pageIndex, pageSize, previousPageIndex } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-    // let order:any|undefined=this.lastOrderBy;
-    // Check if the page size has changed
-    if (this.pageSizeClean !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexClean = 0;
-      this.pageSizeClean = pageSize;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      //if (pageIndex > this.pageIndex && this.hasNextPage) {
-      if (pageIndex > this.pageIndexClean) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorClean;
-      } else if (pageIndex < this.pageIndexClean && this.hasPreviousPageClean) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorClean;
-      }
-      else if (pageIndex == this.pageIndexClean) {
-
-        first = pageSize;
-        after = this.previous_endCursorClean;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
-      }
-    }
-
-    this.performSearchClean(pageSize, pageIndex, first, after, last, before, () => { });
-  }
-
-  onPageEventClean1(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-
-    // Check if the page size has changed
-    if (this.pageSizeClean !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexClean = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndexClean && this.hasNextPageClean) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorClean;
-      } else if (pageIndex < this.pageIndexClean && this.hasPreviousPageClean) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorClean;
-      }
-    }
-
-    this.performSearchClean(pageSize, pageIndex, first, after, last, before, () => { });
-  }
-
-  onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize, previousPageIndex } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-    // let order:any|undefined=this.lastOrderBy;
-    // Check if the page size has changed
-    if (this.pageSizeClean !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexClean = 0;
-      this.pageSizeClean = pageSize;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      //if (pageIndex > this.pageIndex && this.hasNextPage) {
-      if (pageIndex > this.pageIndexJobOrder) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorJobOrder;
-      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorJobOrder;
-      }
-      else if (pageIndex == this.pageIndexJobOrder) {
-
-        first = pageSize;
-        after = this.previous_endCursorJobOrder;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
-      }
-    }
-
-    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
-  }
-
-  onPageEventJobOrder1(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-
-    // Check if the page size has changed
-    if (this.pageSizeJobOrder !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexJobOrder = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorJobOrder;
-      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorJobOrder;
-      }
-    }
-
-    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
-  }
-
-  // mergeCriteria(criteria: any) {
-  //   return {
-  //     and: [
-  //       { delete_dt: { eq: null } },
-  //       criteria
-  //     ]
-  //   };
-  // }
-
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-  }
-
-  displayCleanMethodFn(cm: CleaningMethodItem): string {
-    return cm ? `${cm.description} ` : '';
-  }
-  initializeFilterCustomerCompany() {
-    // this.filterCleanForm!.get('customer')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     var searchCriteria = '';
-    //     if (typeof value === 'string') {
-    //       searchCriteria = value;
-    //     } else {
-    //       searchCriteria = value.code;
-    //     }
-    //     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-    //       this.customer_companyList = data
-    //     });
-    //   })
-    // ).subscribe();
-
-
-    // this.filterCleanForm!.get('cleanMethod')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     var searchCriteria = '';
-    //     if (typeof value === 'string') {
-    //       searchCriteria = value;
-    //     } else {
-    //       searchCriteria = value.description;
-    //     }
-    //     this.subs.sink = this.cmDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { description: { contains: searchCriteria } }] }, { name: 'ASC' }).subscribe(data => {
-    //       this.cleanMethodList = data;
-    //       this.sortList(this.cleanMethodList);
-    //     });
-    //   })
-    // ).subscribe();
-  }
-
-
-
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
-  }
-
-  // getTankStatusDescription(codeValType: string | undefined): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
-  // }
-
-  calculateNetCost(repair: RepairItem): any {
-    // const total = this.repairDS.getTotal(repair?.repair_part)
-    // const labourDiscount = repair.labour_cost_discount;
-    // const matDiscount = repair.material_cost_discount;
-
-    // const total_hour = total.hour;
-    // const total_labour_cost = this.repairDS.getTotalLabourCost(total_hour, repair?.labour_cost);
-    // const total_mat_cost = total.total_mat_cost;
-    // const total_cost = repair?.total_cost;
-    // const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
-    // const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
-    // const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
-    // return net_cost.toFixed(2);
-    return undefined;
-  }
-
-  displayLastCargoFn(tc: TariffCleaningItem): string {
-    return tc && tc.cargo ? `${tc.cargo}` : '';
-  }
-
-  updateValidators(validOptions: any[]) {
-    this.lastCargoControl.setValidators([
-      Validators.required,
-      AutocompleteSelectionValidator(validOptions)
-    ]);
-  }
-
-  displayDate(input: number | undefined): string | undefined {
-    return Utility.convertEpochToDateStr(input);
-  }
-
-  resetDialog(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
-  }
-
-  resetForm() {
-    this.filterCleanForm?.patchValue({
-      filterRepair: '',
-      cleanMethod: ''
-    });
-  }
-
-  filterDeleted(resultList: any[] | undefined): any {
-    return (resultList || []).filter((row: any) => !row.delete_dt);
-  }
-
-  stopEventTrigger(event: Event) {
-    this.preventDefault(event);
-    this.stopPropagation(event);
-  }
-
-  stopPropagation(event: Event) {
-    event.stopPropagation(); // Stops event propagation
-  }
-
-  preventDefault(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-  }
-
-  displayTankStatus(status: string): string {
-    var retval: string = "-";
-
-    retval = this.processStatusCvList!
-      .filter(item => item.code_val === status)
-      .map(item => item.description)[0]!; // Returns the description of the first match
-
-    if (retval === "") retval = "-"
-    return retval;
-  }
-
-  popupDialogForm(row: InGateCleaningItem, action: string) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-
-    // if(row.status_cv==='QC_COMPLETED') action='view';
-    // var rows :InGateCleaningItem[] =[] ;
-    // rows.push(row);
-
-
-    // const dialogRef = this.dialog.open(FormDialogComponent,{
-
-    //   width: '1000px',
-    //   data: {
-    //     action: action,
-    //     langText: this.langText,
-    //     selectedItems:rows
-    //   },
-    //   position: {
-    //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-    //   }
-
-    // });
-
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //      if (result) {
-    //       if(result>0)
-    //         {
-
-    //           this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
-    //         }
-    //   }
-    //   });
-
-  }
-
-  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-    //  this.stopPropagation(event);  // Prevents the form submission
-    //  if (!isStarted) {
-    //    const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-    //    console.log(param)
-    //    const firstValidRepairPart = jobOrderItem.cleaning?.find(
-    //      (cleaning) => cleaning?.guid !== null
-    //    );
-    //    this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
-    //      if (result.data.startJobTimer > 0) {
-    //        var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-    //        this.UpdateCleaningStatusInProgress(item.guid!);
-    //      }
-    //    });
-    //  } else {
-    //    const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-    //    if (found?.length) {
-    //      const newParam = new TimeTableItem(found[0]);
-    //      newParam.stop_time = Utility.convertDate(new Date()) as number;
-    //      newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-    //      const param = [newParam];
-    //      console.log(param)
-    //      this.ttDS.stopJobTimer(param).subscribe(result => {
-    //       if(result.data.stopJobTimer)
-    //       {
-    //         this.completeJob( jobOrderItem) 
-    //       }
-
-    //      });
-    //    }
-    //  }
-  }
-
-  completeJob(jobOrderItem: JobOrderItem) {
-
-    //  const newParam = new UpdateJobOrderRequest({
-    //    guid: jobOrderItem?.guid,
-    //    remarks: jobOrderItem?.remarks,
-    //    start_dt: jobOrderItem?.start_dt,
-    //    complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-    //  });
-    //  const param = [newParam];
-    //  console.log(param)
-    //  this.joDS.completeJobOrder(param).subscribe(result => {
-    //    console.log(result)
-    //    if (result?.data?.completeJobOrder! > 0) {
-    //      var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-    //      this.UpdateCleaningStatusCompleted(item.guid!);
-    //    }
-    //  });
-  }
-
-  UpdateCleaningStatusInProgress(clean_guid: string) {
-
-
-    // const where: any = {
-    //   and: []
-    // };
-
-
-    // where.and.push({
-    //   guid: { eq: clean_guid }
-    // });
-
-
-    // this.subs.sink = this.cleanDS.search(where)
-    //   .subscribe(data => {
-    //     if (data.length > 0) {
-    //       var cln = data[0];
-    //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-    //       rep.action = 'IN_PROGRESS';
-    //       delete rep.storing_order_tank;
-    //       delete rep.job_order;
-    //       delete rep.customer_company;
-    //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-
-    //         console.log(result);
-
-    //       });
-    //       //  this.clnDS.
-    //     }
-    //   });
-  }
-
-  UpdateCleaningStatusCompleted(clean_guid: string) {
-
-
-    // const where: any = {
-    //   and: []
-    // };
-
-    // where.and.push({
-    //   job_order: { status_cv: { eq: 'COMPLETED' } }
-    // });
-
-    // where.and.push({
-    //   guid: { eq: clean_guid }
-    // });
-
-
-    // this.subs.sink = this.cleanDS.search(where)
-    //   .subscribe(data => {
-    //     if (data.length > 0) {
-    //       var cln = data[0];
-    //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-    //       rep.action = 'COMPLETE';
-    //       delete rep.storing_order_tank;
-    //       delete rep.job_order;
-    //       delete rep.customer_company;
-    //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-    //         console.log(result); 
-    //         if(result.data.updateCleaning>0)
-    //         {
-    //            this.onFilterCleaning();
-    //         }
-
-
-    //       });
-    //       //  this.clnDS.
-    //     }
-    //   });
-  }
-
-  // isStarted(jobOrderItem: JobOrderItem | undefined) {
-  //   return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-  // }
-
-  isStarted(cleanItem: InGateCleaningItem | undefined) {
-
-    if (cleanItem?.job_order) {
-      let jobOrderItem = cleanItem?.job_order;
-      return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-    }
-    return false;
-
-
-  }
-
-  canStartJob(cleanItem: InGateCleaningItem | undefined) {
-    // if(cleanItem?.job_order)
-    // {
-    //   return this.joDS.canStartJob(cleanItem?.job_order);
-    // }
-    return false;
-
-  }
-
-  canCompleteJob(jobOrderItem: JobOrderItem | undefined, isStarted: boolean | undefined): boolean {
-    return false; //this.joDS.canCompleteJob(jobOrderItem) && !isStarted;
-  }
-
-  canShowAction(cleanItem: InGateCleaningItem) {
-    return cleanItem.status_cv == 'JOB_IN_PROGRESS';
-
-
   }
 
   sortList(itemList: any[]) {
@@ -969,34 +246,18 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     });
   }
 
-  refreshBayOverview(): void {
-    this.showBayOverview = false;
-    setTimeout(() => {
-      this.showBayOverview = true;
-    }, 0);
+  @ViewChild('tariffBuffer') tariffBuffer!: TariffBufferComponent;
+  @ViewChild('tariffClean') tariffClean!: TariffCleaningComponent;
+  @ViewChild('tariffResidue') tariffResidue!: TariffResidueComponent;
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+      case 0:
+        this.tariffClean?.onTabFocused(); break;
+      case 1:
+        this.tariffBuffer?.onTabFocused(); break;
+      case 2:
+        this.tariffResidue?.onTabFocused(); break;
+    }
   }
-
-  onRefreshMainTab() {
-    // Logic to refresh the content of the main tab
-    console.log('Refreshing main tab content...');
-    this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
-  }
-
-   @ViewChild('tariffBuffer') tariffBuffer!: TariffBufferComponent;
-     @ViewChild('tariffClean') tariffClean!: TariffCleaningComponent;
-     @ViewChild('tariffResidue') tariffResidue!: TariffResidueComponent;
-   
- 
-   onTabSelected(event: MatTabChangeEvent): void {
-     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-     switch (event.index) {
-       
-       case 0:
-         this.tariffClean?.onTabFocused(); break;
-       case 1:
-          this.tariffBuffer?.onTabFocused(); break;
-       case 2:
-         this.tariffResidue?.onTabFocused(); break;
-     }
-   }
 }

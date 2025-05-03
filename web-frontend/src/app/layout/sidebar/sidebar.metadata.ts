@@ -10,4 +10,5 @@ export interface RouteInfo {
   badgeClass: string;
   submenu: RouteInfo[];
   queryParams?: Record<string, string | number | boolean>;
+  modulePackage: string[];
 }
