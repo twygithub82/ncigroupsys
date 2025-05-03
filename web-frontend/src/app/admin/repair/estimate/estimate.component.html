@@ -29,10 +29,12 @@
                       <mat-icon class="col-white">cancel</mat-icon>
                     </button>
                   </div> -->
+                  @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                   <div class="export-button m-l-" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
                   </div>
+                  }
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">

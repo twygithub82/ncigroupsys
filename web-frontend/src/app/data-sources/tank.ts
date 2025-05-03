@@ -5,6 +5,7 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
 import { ApolloError } from '@apollo/client/core';
+import { StoringOrderTank } from './storing-order-tank';
 
 export class TankItem {
   public guid?: string;
@@ -22,6 +23,7 @@ export class TankItem {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+  public sot?:StoringOrderTank;
 
   constructor(item: Partial<TankItem> = {}) {
     this.guid = item.guid;
@@ -83,6 +85,10 @@ export const GET_TANK_Where_r1 = gql`
         unit_type
         update_by
         update_dt
+        sot{
+          guid
+          tank_no
+        }
       }
       pageInfo {
         endCursor

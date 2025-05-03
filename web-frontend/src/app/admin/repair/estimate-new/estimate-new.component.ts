@@ -52,6 +52,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-estimate-new',
@@ -258,6 +259,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     private router: Router,
     private translate: TranslateService,
     private fileManagerService: FileManagerService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -343,102 +345,64 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   initializeValueChanges() {
-    this.repairForm?.get('est_template')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          console.log(value);
-          if (this.getCustomer()?.def_template_guid) {
-            this.repairForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
-          }
-          // estimate
-          this.repairForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
-          this.repairForm?.get('material_cost_discount')?.setValue(value.material_cost_discount);
-          this.repairForm?.get('remarks')?.setValue(value.remarks);
-
-          const existingList: any[] = [];
-          const data: any[] = [...this.repList];
-          data.forEach(rep => {
-            if (rep.guid) {
-              rep.delete_dt = Utility.getDeleteDtEpoch();
-              rep.action = 'cancel'
-              existingList.push(rep);
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
+      this.repairForm?.get('est_template')?.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        tap(value => {
+          if (value) {
+            console.log(value);
+            if (this.getCustomer()?.def_template_guid) {
+              this.repairForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
             }
-          });
+            // estimate
+            this.repairForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
+            this.repairForm?.get('material_cost_discount')?.setValue(value.material_cost_discount);
+            this.repairForm?.get('remarks')?.setValue(value.remarks);
 
-          const repList: RepairPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
-            const package_repair = tep.tariff_repair?.package_repair;
-            let material_cost = 0;
-            if (package_repair?.length) {
-              material_cost = package_repair[0].material_cost
-            }
-            const tep_damage_repair = this.filterDeleted(tep.tep_damage_repair).map((item: any) => {
-              return new RPDamageRepairItem({
-                code_cv: item.code_cv,
-                code_type: item.code_type,
-                action: 'new'
-              });
-            })
-            return new RepairPartItem({
-              repair_guid: this.repair_guid || undefined,
-              description: tep.description,
-              hour: !this.repairPartDS.is4X(tep_damage_repair) ? tep.hour : 0,
-              location_cv: tep.location_cv,
-              comment: tep.comment,
-              quantity: !this.repairPartDS.is4X(tep_damage_repair) ? tep.quantity : 0,
-              remarks: tep.remarks,
-              material_cost: material_cost,
-              tariff_repair_guid: tep.tariff_repair_guid,
-              tariff_repair: tep.tariff_repair,
-              rp_damage_repair: tep_damage_repair,
-              action: "new"
+            const existingList: any[] = [];
+            const data: any[] = [...this.repList];
+            data.forEach(rep => {
+              if (rep.guid) {
+                rep.delete_dt = Utility.getDeleteDtEpoch();
+                rep.action = 'cancel'
+                existingList.push(rep);
+              }
             });
-          });
-          this.updateData([...existingList, ...repList]);
 
-          // estimate part
-          // const tariff_repair_guid = value.template_est_part.map((tep: any) => tep.tariff_repair_guid);
-          // this.getCustomerCost(this.sotItem?.storing_order?.customer_company_guid, tariff_repair_guid).pipe(
-          //   switchMap(data => {
-          //     let material_cost = 0;
-          //     if (data && data.length) {
-          //       material_cost = data[0].material_cost;
-          //       console.log('Customer Package Cost Data:', data);
-          //     }
-
-          //     const repList: RepairPartItem[] = value.template_est_part.map((tep: any) => {
-          //       const tep_damage_repair = tep.tep_damage_repair.map((item: any) => {
-          //         return new RPDamageRepairItem({
-          //           guid: item.guid,
-          //           rp_guid: item.rp_guid,
-          //           code_cv: item.code_cv,
-          //           code_type: item.code_type,
-          //           action: 'new'
-          //         });
-          //       })
-
-          //       return new RepairPartItem({
-          //         description: tep.description,
-          //         hour: tep.hour,
-          //         location_cv: tep.location_cv,
-          //         quantity: tep.quantity,
-          //         remarks: tep.remarks,
-          //         material_cost: material_cost,
-          //         tariff_repair_guid: tep.tariff_repair_guid,
-          //         tariff_repair: tep.tariff_repair,
-          //         rp_damage_repair: tep_damage_repair,
-          //         action: 'new',
-          //       });
-          //     });
-          //     console.log(repList);
-          //     this.updateData(repList);
-          //     return of(repList);
-          //   })
-          // ).subscribe();
-        }
-      })
-    ).subscribe();
+            const repList: RepairPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
+              const package_repair = tep.tariff_repair?.package_repair;
+              let material_cost = 0;
+              if (package_repair?.length) {
+                material_cost = package_repair[0].material_cost
+              }
+              const tep_damage_repair = this.filterDeleted(tep.tep_damage_repair).map((item: any) => {
+                return new RPDamageRepairItem({
+                  code_cv: item.code_cv,
+                  code_type: item.code_type,
+                  action: 'new'
+                });
+              })
+              return new RepairPartItem({
+                repair_guid: this.repair_guid || undefined,
+                description: tep.description,
+                hour: !this.repairPartDS.is4X(tep_damage_repair) ? tep.hour : 0,
+                location_cv: tep.location_cv,
+                comment: tep.comment,
+                quantity: !this.repairPartDS.is4X(tep_damage_repair) ? tep.quantity : 0,
+                remarks: tep.remarks,
+                material_cost: material_cost,
+                tariff_repair_guid: tep.tariff_repair_guid,
+                tariff_repair: tep.tariff_repair,
+                rp_damage_repair: tep_damage_repair,
+                action: "new"
+              });
+            });
+            this.updateData([...existingList, ...repList]);
+          }
+        })
+      ).subscribe();
+    }
 
     this.repairForm?.get('labour_cost_discount')?.valueChanges.pipe(
       startWith(''),
@@ -541,7 +505,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
             this.sotItem = data[0];
             this.populateRepair(this.sotItem.repair, this.isDuplicate);
             this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
-            this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
+            if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
+              this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
+            }
           }
         });
       }
@@ -1014,11 +980,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         re.job_no = re.job_no ?? this.sotItem?.job_no;
 
         let cc: any = undefined;
-        if (this.repairForm?.get('is_default_template')?.value && this.repairForm.get('est_template')?.value?.guid) {
-          cc = this.getCustomer();
-          cc!.def_template_guid = this.repairForm.get('est_template')?.value?.guid;
-          cc = new CustomerCompanyGO({ ...cc });
-          console.log(cc);
+        if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
+          if (this.repairForm?.get('is_default_template')?.value && this.repairForm.get('est_template')?.value?.guid) {
+            cc = this.getCustomer();
+            cc!.def_template_guid = this.repairForm.get('est_template')?.value?.guid;
+            cc = new CustomerCompanyGO({ ...cc });
+            console.log(cc);
+          }
         }
 
         // remove the object

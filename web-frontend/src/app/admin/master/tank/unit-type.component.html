@@ -15,7 +15,7 @@
                 <mat-panel-description>
                   <div class="m-l-" [matTooltip]="translatedLangText.ADD">
                     <button mat-mini-fab color="primary" (click)="addNew()" (click)="$event.stopPropagation()"
-                      matTooltip={{translatedLangText.ADD}}>
+                      matTooltip={{translatedLangText.ADD}} [disabled]="DisableAddTankButton()">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
@@ -178,7 +178,7 @@
                     *matHeaderCellDef></mat-header-cell>
                   <mat-cell *matCellDef="let row; let i=index;"
                     [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    @if(!row.tariff_depot_guid)
+                    @if(!row.tariff_depot_guid && row.sot?.length===0)
                     {
                     <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
                       [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">

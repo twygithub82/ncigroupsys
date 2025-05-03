@@ -41,6 +41,9 @@ import { SearchCriteriaService, SearchStateService } from 'app/services/search-c
 import { ComponentUtil } from 'app/utilities/component-util';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { TreeMapModule } from '@swimlane/ngx-charts';
+import { maxTankCount } from 'environments/environment';
 
 @Component({
   selector: 'app-package-repair',
@@ -265,7 +268,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    private modulePackageService :ModulePackageService
   ) {
     super();
     this.initPcForm();
@@ -701,6 +705,21 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
         }
       })
     }
+  }
+
+  DisableAddTankButton()
+  {
+    var retval:boolean=false;
+
+    if(this.modulePackageService.isStarterPackage())
+    {
+      if(this.unitTypeItems.length>maxTankCount)
+      {
+        return true;
+      }
+    
+    }
+    return retval;
   }
 
 }
