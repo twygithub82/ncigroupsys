@@ -37,3 +37,5 @@ export const reportPreviewWindowDimension = {
 export const refreshTokenWithin: number = 1200000;
 
 export const modulePackage: string = "customized";
+
+export const maxTankCount: number =5;
