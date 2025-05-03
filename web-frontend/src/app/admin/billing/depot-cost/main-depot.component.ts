@@ -48,7 +48,7 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 //import { CleanBillingComponent } from './clean/clean-billing.component';
 import { GateBillingComponent } from './gate/gate-billing.component';
-import { LOLOBillingComponent } from './LOLO/lolo-billing.component';
+import { LOLOBillingComponent } from './lolo/lolo-billing.component';
 import { PreinspectionBillingComponent } from './pre-inspection/preinspection-billing.component';
 import { StorageBillingComponent } from './storage/storage-billing.component';
 @Component({

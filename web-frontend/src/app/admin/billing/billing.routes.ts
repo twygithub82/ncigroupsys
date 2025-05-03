@@ -1,7 +1,7 @@
 import { Routes } from "@angular/router";
 import { BilledTankComponent } from "./billed-tank/billed-tank.component";
 import { MainCleaningComponent } from "./cleaning/main-clean.component";
-import { LOLOBillingComponent } from "./depot-cost/LOLO/lolo-billing.component";
+import { LOLOBillingComponent } from "./depot-cost/lolo/lolo-billing.component";
 import { MainDepotComponent } from "./depot-cost/main-depot.component";
 import { PreinspectionBillingComponent } from "./depot-cost/pre-inspection/preinspection-billing.component";
 import { StorageBillingComponent } from "./depot-cost/storage/storage-billing.component";
