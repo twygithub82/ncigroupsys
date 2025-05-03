@@ -1539,111 +1539,6 @@
                         </div>
                       </div>
                       <div class="row">
-                        <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                          <table class="table table-striped table-hover m-b-0">
-                            <thead>
-                              <tr>
-                                <th class="table-col-1">{{translatedLangText.NO_DOT}}</th>
-                                <th class="table-col-4">{{translatedLangText.DESCRIPTION}}</th>
-                                <th class="table-col-3">{{translatedLangText.JOB_NO}}</th>
-                                <th class="table-col-2">{{translatedLangText.INVOICE}}</th>
-                                <th class="table-col-2">{{translatedLangText.COST}}</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td class="table-col-1">1.</td>
-                                <td class="table-col-4">{{translatedLangText.PRE_INSPECTION}}</td>
-                                <td class="table-col-3">{{sot?.preinspect_job_no || "-"}}</td>
-                                <td class="table-col-2 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.preinsp_billing_guid) {
-                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                  }
-                                  @else {
-                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                  }
-                                </td>
-                                <td class="table-col-2">
-                                  <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.preinspection_cost!)}}</span>
-                                  </span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="table-col-1">2.</td>
-                                <td class="table-col-4">{{translatedLangText.LIFT_OFF}}</td>
-                                <td class="table-col-3">{{sot?.liftoff_job_no || "-"}}</td>
-                                <td class="table-col-2 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.loff_billing_guid) {
-                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                  }
-                                  @else {
-                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                  }
-                                </td>
-                                <td class="table-col-2">
-                                  <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.lift_off_cost!)}}</span>
-                                  </span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="table-col-1">3.</td>
-                                <td class="table-col-4">{{translatedLangText.LIFT_ON}}</td>
-                                <td class="table-col-3">{{sot?.lifton_job_no || "-"}}</td>
-                                <td class="table-col-2 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.lon_billing_guid){
-                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                  }
-                                  @else {
-                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                  }
-                                </td>
-                                <td class="table-col-2">
-                                  <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.lift_on_cost!)}}</span>
-                                  </span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="table-col-1">4.</td>
-                                <td class="table-col-4">{{translatedLangText.TAKE_IN_REFERENCE}}</td>
-                                <td class="table-col-3">{{sot?.job_no || "-"}}</td>
-                                <td class="table-col-2 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.gin_billing_guid) {
-                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                  }
-                                  @else {
-                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                  }
-                                </td>
-                                <td class="table-col-2">
-                                  <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.gate_in_cost!)}}</span>
-                                  </span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="table-col-1">5.</td>
-                                <td class="table-col-4">{{translatedLangText.RELEASE_REFERENCE}}</td>
-                                <td class="table-col-3">{{sot?.release_job_no || "-"}}</td>
-                                <td class="table-col-2 p-t-0 p-b-0">
-                                  @if (sot?.billing_sot?.gout_billing_guid) {
-                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                  }
-                                  @else {
-                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                  }
-                                </td>
-                                <td class="table-col-2 text-justify">
-                                  <span class="cost-label">
-                                    <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.gate_out_cost!)}}</span>
-                                  </span>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
                         <div
                           class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 mt-xl-0 mt-lg-4 mt-md-4 mt-sm-4 mt-xs-4 m-b-0">
                           <table class="table table-striped table-hover">
@@ -1681,6 +1576,118 @@
                           </table>
 
                         </div>
+
+                        <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                          <table class="table table-striped table-hover m-b-0">
+                            <thead>
+                              <tr>
+                                <th class="table-col-1">{{translatedLangText.NO_DOT}}</th>
+                                <th class="table-col-4">{{translatedLangText.DESCRIPTION}}</th>
+                                <th class="table-col-3">{{translatedLangText.JOB_NO}}</th>
+                                <th class="table-col-2">{{translatedLangText.INVOICE}}</th>
+                                <th class="table-col-2">{{translatedLangText.COST}}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="table-col-1">1.</td>
+                                <td class="table-col-4">{{translatedLangText.PRE_INSPECTION}}</td>
+                                <td class="table-col-3">{{sot?.preinspect_job_no || "-"}}</td>
+                                <td class="table-col-2 p-t-0 p-b-0">
+                                  @if (sot?.billing_sot?.preinsp_billing_guid) {
+                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
+                                  }
+                                  @else {
+                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                  }
+                                </td>
+                                <td class="table-col-2">
+                                  <span class="cost-label">
+                                    <!-- <span>$</span><span>{{parse2Decimal(sot?.billing_sot?.preinspection_cost!)}}</span> -->
+                                    <span>{{parse2Decimal(sot?.billing_sot?.preinspection_cost!)}}</span>
+                                  </span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="table-col-1">2.</td>
+                                <td class="table-col-4">{{translatedLangText.LIFT_OFF}}</td>
+                                <td class="table-col-3">{{sot?.liftoff_job_no || "-"}}</td>
+                                <td class="table-col-2 p-t-0 p-b-0">
+                                  @if (sot?.billing_sot?.loff_billing_guid) {
+                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
+                                  }
+                                  @else {
+                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                  }
+                                </td>
+                                <td class="table-col-2">
+                                  <span class="cost-label">
+                                    <!-- <span>$</span> -->
+                                    <span>{{parse2Decimal(sot?.billing_sot?.lift_off_cost!)}}</span>
+                                  </span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="table-col-1">3.</td>
+                                <td class="table-col-4">{{translatedLangText.LIFT_ON}}</td>
+                                <td class="table-col-3">{{sot?.lifton_job_no || "-"}}</td>
+                                <td class="table-col-2 p-t-0 p-b-0">
+                                  @if (sot?.billing_sot?.lon_billing_guid){
+                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
+                                  }
+                                  @else {
+                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                  }
+                                </td>
+                                <td class="table-col-2">
+                                  <span class="cost-label">
+                                    <!-- <span>$</span> -->
+                                    <span>{{parse2Decimal(sot?.billing_sot?.lift_on_cost!)}}</span>
+                                  </span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="table-col-1">4.</td>
+                                <td class="table-col-4">{{translatedLangText.TAKE_IN_REFERENCE}}</td>
+                                <td class="table-col-3">{{sot?.job_no || "-"}}</td>
+                                <td class="table-col-2 p-t-0 p-b-0">
+                                  @if (sot?.billing_sot?.gin_billing_guid) {
+                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
+                                  }
+                                  @else {
+                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                  }
+                                </td>
+                                <td class="table-col-2">
+                                  <span class="cost-label">
+                                    <!-- <span>$</span> -->
+                                    <span>{{parse2Decimal(sot?.billing_sot?.gate_in_cost!)}}</span>
+                                  </span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="table-col-1">5.</td>
+                                <td class="table-col-4">{{translatedLangText.RELEASE_REFERENCE}}</td>
+                                <td class="table-col-3">{{sot?.release_job_no || "-"}}</td>
+                                <td class="table-col-2 p-t-0 p-b-0">
+                                  @if (sot?.billing_sot?.gout_billing_guid) {
+                                  <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
+                                  }
+                                  @else {
+                                  <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                  }
+                                </td>
+                                <td class="table-col-2 text-justify">
+                                  <span class="cost-label">
+                                    <!-- <span>$</span> -->
+                                    <span>{{parse2Decimal(sot?.billing_sot?.gate_out_cost!)}}</span>
+                                  </span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
                       </div>
                     </mat-card-content>
                     }

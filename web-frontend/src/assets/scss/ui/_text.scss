@@ -28,8 +28,16 @@
 }
 
 // Custom danger color (softer than default red)
+.text-alert-strike {
+  //color: #f04b4b !important; // Crimson 
+  color: #ffffff !important; // Crimson
+  font-size: 2.05rem;
+  font-weight: 580;
+}
+
+// Custom danger color (softer than default red)
 .text-custom-danger {
-  color: #f04b4b !important; // Crimson
+  color: #f04b4b !important; // Crimson 
 }
 
 // Muted text with spacing

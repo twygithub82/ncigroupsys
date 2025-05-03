@@ -33,7 +33,7 @@ export class ConfirmationDialogComponent {
   langText: any = {
     CANCEL: 'COMMON-FORM.CANCEL',
     CONFIRM: 'COMMON-FORM.CONFIRM',
-    ARE_YOU_SURE: 'COMMON-FORM.ARE-YOU-SURE',
+    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
   }
@@ -43,7 +43,7 @@ export class ConfirmationDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
     // Set the defaults
-    this.headerText = data.headerText || this.langText.ARE_YOU_SURE
+    this.headerText = data.headerText || this.langText.ARE_YOU_SURE_DELETE
     this.index = data.index;
     this.act = data.action;
   }

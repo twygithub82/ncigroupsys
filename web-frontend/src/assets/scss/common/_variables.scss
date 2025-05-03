@@ -28,15 +28,15 @@ $colors: (
   ) !default;
 
 $linear-colors: (
-  "green": linear-gradient(45deg, #9ce89d, #cdfa7e),
+  "green": linear-gradient(45deg, #5aec5c, #cdfa7e),
   "orange": linear-gradient(135deg, #ffc480, #ff763b),
   "cyan": linear-gradient(45deg, #72c2ff, #86f0ff),
   "red": linear-gradient(316deg, #fc5286, #fbaaa2),
-  "purple": linear-gradient(230deg, #759bff, #843cf6),
-  "purple-dark": linear-gradient(45deg, #a52dd8, #e29bf1),
+  "purple": linear-gradient(45deg, #759bff, #843cf6),
+  "purple-dark": linear-gradient(45deg, #ae48da, #e29bf1),
   "yellow": linear-gradient(45deg, #ffe97f, #ffd700),
   "dark-gray": linear-gradient(45deg, #636363, #2e2e2e),
-  "black": linear-gradient(45deg, #1a1a1a, #000000),
+  "black": linear-gradient(45deg, #b4b4b4, #1a1a1a),
   "card1": linear-gradient(to left, #3a7bd5, #3a6073),
   "card2": linear-gradient(to right, #c33764, #1d2671),
   "card3": linear-gradient(to left, #134e5e, #71b280),
