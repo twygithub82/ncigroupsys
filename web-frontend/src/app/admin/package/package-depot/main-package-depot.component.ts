@@ -44,6 +44,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { PackageDepotComponent } from './depot/package-depot.component';
 import { PackageLabourComponent } from './labour/package-labour.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-package-main-depot',
   standalone: true,
@@ -221,7 +222,8 @@ export class MainPackageDepotComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

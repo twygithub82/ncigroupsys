@@ -41,6 +41,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-package-labour',
@@ -225,7 +226,8 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
 
   ) {
     super();

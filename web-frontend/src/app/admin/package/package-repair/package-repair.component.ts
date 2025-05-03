@@ -47,6 +47,7 @@ import { easeQuad } from 'd3';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-package-repair',
@@ -86,15 +87,16 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    'select',
-    //'custCode',
-    'custCompanyName',
-    'PartName',
-    'group',
-    'subgroup',
-    'labour_hour',
-    'material_cost',
-    'mobile',
+    // 'select',
+    // //'custCode',
+    // 'custCompanyName',
+    // 'PartName',
+    // 'group',
+    // 'subgroup',
+    // 'labour_hour',
+    // 'material_cost',
+    // 'mobile',
+    ''
   ];
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR'
@@ -273,7 +275,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
 
   ) {
     super();
@@ -294,6 +297,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.initializeValueChange();
     this.initializeFilterCustomerCompany();
     this.loadData();
+    this.displayColumnChanged();
     this.translateLangText();
     //this.search();
   }
@@ -308,6 +312,38 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       material_cost: [''],
       handled_item_cv: ['']
     });
+  }
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+        'select',
+        'custCompanyName',
+        'PartName',
+        'group',
+        'subgroup',
+        'labour_hour',
+        'material_cost',
+        'last_update',
+      ];
+    } else {
+      this.displayedColumns = [
+        'custCompanyName',
+        'PartName',
+        'group',
+        'subgroup',
+        'labour_hour',
+        'material_cost',
+        'last_update',
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+      return true;
+    else
+      return false;
   }
 
   initializeFilterCustomerCompany() {

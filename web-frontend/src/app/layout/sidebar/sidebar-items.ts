@@ -397,7 +397,8 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        // modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
         submenu: [],
       },
       {
@@ -637,7 +638,7 @@ export const ROUTES: RouteInfo[] = [
     badge: "",
     badgeClass: "",
     visible: true,
-    modulePackage: ['starter', 'growth', 'customized'],
+    modulePackage: ['growth', 'customized'],
     submenu: [
       {
         path: "admin/steam/estimate-approval",
@@ -649,7 +650,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
         submenu: []
       },
       {
@@ -663,7 +664,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: false,
-        modulePackage: [],
+        modulePackage:  ['growth', 'customized'],
       },
       {
         path: "admin/steam/approval",
@@ -676,7 +677,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: false,
-        modulePackage: [],
+        modulePackage:  ['growth', 'customized'],
       },
       {
         path: "admin/steam/job-order",
@@ -688,7 +689,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
         submenu: [],
       }
     ].filter(item => item.visible !== false),
@@ -743,7 +744,7 @@ export const ROUTES: RouteInfo[] = [
     badge: "",
     badgeClass: "",
     visible: true,
-    modulePackage: ['starter', 'growth', 'customized'],
+    modulePackage: ['growth', 'customized'],
     submenu: [
       {
         path: "admin/residue-disposal/estimate-approval",
@@ -755,7 +756,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
         submenu: [],
       },
       {
@@ -794,7 +795,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
         submenu: [],
       }
     ].filter(item => item.visible !== false),
@@ -861,7 +862,7 @@ export const ROUTES: RouteInfo[] = [
     groupTitle: false,
     badge: "",
     badgeClass: "",
-    modulePackage: ['starter', 'growth', 'customized'],
+    modulePackage: ['growth', 'customized'],
     submenu: [
       {
         path: "admin/management/reports/yearly",
@@ -874,7 +875,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/management/reports/monthly",
@@ -887,7 +888,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/management/reports/performance",
@@ -900,7 +901,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/management/reports/order-track",
@@ -913,7 +914,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/management/user",
@@ -1092,7 +1093,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: false,
-        modulePackage: [],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/billing/steam",
@@ -1105,7 +1106,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: false,
-        modulePackage: [],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/billing/clean",
@@ -1157,7 +1158,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
         submenu: [],
       },
       {

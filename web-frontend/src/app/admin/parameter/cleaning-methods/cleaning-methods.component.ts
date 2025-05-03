@@ -38,6 +38,7 @@ import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-cleaning-methods',
@@ -162,6 +163,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
+    public modulePackageService: ModulePackageService,
     // private graphqlNotificationService: GraphqlNotificationService
   ) {
     super();

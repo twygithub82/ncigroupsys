@@ -42,6 +42,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tariff-repair',
@@ -79,16 +80,17 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
 export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    'select',
-    'fName',
-    'gname',
-    'subgroup',
-    'hour',
-    'bDate',
-    'last_date',
-    //'handle',
-    'actions',
+    // 'select',
+    // 'fName',
+    // 'gname',
+    // 'subgroup',
+    // 'hour',
+    // 'bDate',
+    // 'last_date',
+    // 'actions',
+    ''
   ];
+  
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-REPAIR'
   breadcrumsMiddleList = [
@@ -232,7 +234,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
 
   ) {
     super();
@@ -252,6 +255,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    this.displayColumnChanged();
   }
 
   translateLangText() {
@@ -275,6 +279,39 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       max_cost: [''],
       handled_item_cv: ['']
     });
+  }
+
+  
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+        'select',
+        'fName',
+        'gname',
+        'subgroup',
+        'hour',
+        'bDate',
+        'last_date',
+        'actions',
+      ];
+    } else {
+      this.displayedColumns = [
+        'fName',
+        'gname',
+        'subgroup',
+        'hour',
+        'bDate',
+        'last_date',
+        'actions',
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+      return true;
+    else
+      return false;
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {

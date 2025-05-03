@@ -42,6 +42,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-package-residue',
@@ -80,13 +81,14 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    'select',
-    //'cutomer_code',
-    'customer_name',
-    'residue_type',
-    'customer_cost',
-    'tariff_cost',
-    'last_update_dt',
+    // 'select',
+    // //'cutomer_code',
+    // 'customer_name',
+    // 'residue_type',
+    // 'customer_cost',
+    // 'tariff_cost',
+    // 'last_update_dt',
+    ''
   ];
 
   customerCodeControl = new UntypedFormControl();
@@ -236,7 +238,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
 
   ) {
     super();
@@ -257,6 +260,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
+    this.displayColumnChanged();
     this.translateLangText();
     this.search();
   }
@@ -268,6 +272,34 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
       residue_disposal: [''],
       customer_cost: ['']
     });
+  }
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+        'select',
+        'customer_name',
+        'residue_type',
+        'customer_cost',
+        'tariff_cost',
+        'last_update_dt',
+      ];
+    } else {
+      this.displayedColumns = [
+        'customer_name',
+        'residue_type',
+        'customer_cost',
+        'tariff_cost',
+        'last_update_dt',
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+      return true;
+    else
+      return false;
   }
 
 

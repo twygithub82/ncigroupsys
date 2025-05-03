@@ -18,17 +18,21 @@
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
-                    <button mat-mini-fab class="primary-light" color="" (click)="editCallSelection()"  matTooltip={{translatedLangText.EDIT}}
-                      (click)="$event.stopPropagation()">
-                      <mat-icon class="">edit</mat-icon>
-                    </button>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.EDIT + ' ' + translatedLangText.MATERIAL_COST"  matTooltip={{translatedLangText.SEARCH}}>
-                    <button mat-mini-fab color="accent" (click)="adjustCost()" (click)="$event.stopPropagation()">
-                      <mat-icon class="col-white">percent</mat-icon>
-                    </button>
-                  </div>
+                  @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                    <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
+                      <button mat-mini-fab class="primary-light" color="" (click)="editCallSelection()"  matTooltip={{translatedLangText.EDIT}}
+                        (click)="$event.stopPropagation()">
+                        <mat-icon class="">edit</mat-icon>
+                      </button>
+                    </div>
+                  }
+                  @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                    <div class="m-l-10" [matTooltip]="translatedLangText.EDIT + ' ' + translatedLangText.MATERIAL_COST"  matTooltip={{translatedLangText.SEARCH}}>
+                      <button mat-mini-fab color="accent" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                        <mat-icon class="col-white">percent</mat-icon>
+                      </button>
+                    </div>
+                  }
                   <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
@@ -151,20 +155,23 @@
               <table mat-table [dataSource]="trfRepairItems" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- Checkbox Column -->
-                <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
-                    <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                    <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-cell>
-                </ng-container>
+                @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                  <ng-container matColumnDef="select">
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
+                      <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
+                      <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-cell>
+                  </ng-container>
+                }
+
                 <ng-container matColumnDef="fName">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2_75-xl'" mat-sort-header>
                     {{this.translatedLangText.PART_NAME

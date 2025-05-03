@@ -986,10 +986,9 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
 
   canShowAction(cleanItem: InGateCleaningItem) {
     return cleanItem.status_cv == 'JOB_IN_PROGRESS';
-
-
   }
 
+  
   sortList(itemList: any[]) {
     itemList.sort((a: any, b: any) => {
       const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters

@@ -44,6 +44,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ExclusiveSteamComponent } from './exclusive-steam/exclusive-steam.component';
 import { PackageSteamComponent } from './steam/package-steam.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 
 @Component({
@@ -237,7 +238,8 @@ export class MainPackageSteamComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

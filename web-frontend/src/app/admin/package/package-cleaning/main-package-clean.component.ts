@@ -44,6 +44,7 @@ import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { PackageBufferComponent } from './buffer/package-buffer.component';
 import { PackageCleaningComponent } from './cleaning/package-cleaning.component';
 import { PackageResidueComponent } from './residue/package-residue.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-package-main-clean',
@@ -236,7 +237,8 @@ export class MainPackageCleaningComponent extends UnsubscribeOnDestroyAdapter im
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -695,6 +697,29 @@ export class MainPackageCleaningComponent extends UnsubscribeOnDestroyAdapter im
     // ).subscribe();
   }
 
+  tabConfig = [
+    {
+      label: this.translatedLangText.TARIFF_CLEANING,
+      component: 'app-package-cleaning',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.TARIFF_BUFFER,
+      component: 'app-package-buffer',
+      modulePackage: ['growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.TARIFF_RESIDUE,
+      component: 'app-package-residue',
+      modulePackage: ['growth', 'customized']
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
+  }
 
 
   translateLangText() {

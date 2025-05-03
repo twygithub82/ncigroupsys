@@ -43,6 +43,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-package-buffer',
@@ -81,12 +82,13 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    'select',
-    'customer_name',
-    'buffer_type',
-    'customer_cost',
-    'tariff_cost',
-    'last_update_dt',
+    ''
+    // 'select',
+    // 'customer_name',
+    // 'buffer_type',
+    // 'customer_cost',
+    // 'tariff_cost',
+    // 'last_update_dt',
   ];
 
   customerCodeControl = new UntypedFormControl();
@@ -236,7 +238,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.initPcForm();
@@ -255,6 +258,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
+    this.displayColumnChanged();
     this.translateLangText();
     this.search();
   }
@@ -266,6 +270,34 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       profile_name: [''],
       customer_cost: ['']
     });
+  }
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+        'select',
+        'customer_name',
+        'buffer_type',
+        'customer_cost',
+        'tariff_cost',
+        'last_update_dt',
+      ];
+    } else {
+      this.displayedColumns = [
+        'customer_name',
+        'buffer_type',
+        'customer_cost',
+        'tariff_cost',
+        'last_update_dt',
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+      return true;
+    else
+      return false;
   }
 
   initializeFilterCustomerCompany() {

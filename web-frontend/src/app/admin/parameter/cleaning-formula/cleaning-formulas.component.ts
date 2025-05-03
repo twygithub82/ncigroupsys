@@ -38,6 +38,7 @@ import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleanin
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-cleaning-formulas',
@@ -159,6 +160,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
+    public modulePackageService: ModulePackageService,
   ) {
     super();
     this.translateLangText();

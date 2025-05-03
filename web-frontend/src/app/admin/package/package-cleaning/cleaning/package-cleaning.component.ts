@@ -41,6 +41,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-package-cleaning',
@@ -79,13 +80,14 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    'select',
-    //'fName',
-    'lName',
-    'email',
-    'customer_cost',
-    'tariff_cost',
-    'updateddt',
+    // 'select',
+    // //'fName',
+    // 'lName',
+    // 'email',
+    // 'customer_cost',
+    // 'tariff_cost',
+    // 'updateddt',
+    ''
   ];
 
   PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
@@ -248,7 +250,8 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
 
   ) {
     super();
@@ -267,6 +270,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
+    this.displayColumnChanged();
     this.translateLangText();
     this.search();
   }
@@ -289,6 +293,34 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       class_no: this.classNoControl,
       un_no: [''],
     });
+  }
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+      'select',
+      'lName',
+      'email',
+      'customer_cost',
+      'tariff_cost',
+      'updateddt',
+      ];
+    } else {
+      this.displayedColumns = [
+        'lName',
+        'email',
+        'customer_cost',
+        'tariff_cost',
+        'updateddt',
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+      return true;
+    else
+      return false;
   }
 
   initializeFilterCustomerCompany() {

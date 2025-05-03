@@ -45,6 +45,7 @@ import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CleanBillingComponent } from './clean/clean-billing.component';
 import { ResidueBillingComponent } from './residue/residue-billing.component';
 import { SteamBillingComponent } from './steam/steam-billing.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-main-clean',
   standalone: true,
@@ -234,7 +235,8 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -701,6 +703,31 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
   // getTankStatusDescription(codeValType: string | undefined): string | undefined {
   //   return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   // }
+
+  tabConfig = [
+    {
+      label: this.translatedLangText.CLEANING_BILLING,
+      component: 'app-clean-billing',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.STEAM_BILLING,
+      component: 'app-steam-billing',
+      modulePackage: ['growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.RESIDUE_BILLING,
+      component: 'app-residue-billing',
+      modulePackage: ['growth', 'customized']
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
+  }
+
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';

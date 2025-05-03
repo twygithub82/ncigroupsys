@@ -37,6 +37,7 @@ import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-cleaning-category',
@@ -147,7 +148,9 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-  ) {
+    public modulePackageService: ModulePackageService,
+  ) 
+  {
     super();
     this.translateLangText();
     this.initSearchForm();
