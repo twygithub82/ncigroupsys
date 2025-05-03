@@ -30,7 +30,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { TankDS,TankItem } from 'app/data-sources/tank';
+import { TankDS, TankItem } from 'app/data-sources/tank';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { firstValueFrom } from 'rxjs';
 
@@ -96,7 +96,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   //packageDepotDS?:PackageDepotDS;
   packRepairDS?: PackageRepairDS;
   packRepairItem?: PackageRepairItem[] = [];
-  tankDS?:TankDS;
+  tankDS?: TankDS;
   CodeValuesDS?: CodeValuesDS;
 
   storageCalCvList: CodeValuesItem[] = [];
@@ -199,14 +199,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     DIMENSION: "COMMON-FORM.DIMENSION",
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
-    PREINSPECT:'COMMON-FORM.PREINSPECTION',
-    LIFT_ON:'COMMON-FORM.LIFT-ON',
-    LIFT_OFF:'COMMON-FORM.LIFT-OFF',
-    GATE_IN:'COMMON-FORM.GATE-IN',
-    GATE_OUT:'COMMON-FORM.GATE-OUT',
-    ISO_FORMAT:'COMMON-FORM.CHECK-DIGIT',
-    SAVE:'COMMON-FORM.SAVE',
-    FLAT_RATE_ONLY:'COMMON-FORM.FLAT-RATE-ONLY',
+    PREINSPECT: 'COMMON-FORM.PREINSPECTION',
+    LIFT_ON: 'COMMON-FORM.LIFT-ON',
+    LIFT_OFF: 'COMMON-FORM.LIFT-OFF',
+    GATE_IN: 'COMMON-FORM.GATE-IN',
+    GATE_OUT: 'COMMON-FORM.GATE-OUT',
+    ISO_FORMAT: 'COMMON-FORM.CHECK-DIGIT',
+    SAVE: 'COMMON-FORM.SAVE',
+    FLAT_RATE_ONLY: 'COMMON-FORM.FLAT-RATE-ONLY',
   };
 
 
@@ -226,7 +226,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     super();
     this.selectedItem = data.selectedItem;
     this.pcForm = this.createTankItem();
-    this.tankDS= new TankDS(this.apollo);
+    this.tankDS = new TankDS(this.apollo);
     this.packRepairDS = new PackageRepairDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
@@ -238,14 +238,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   createTankItem(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: this.selectedItem,
-        unit_type: [''],
-        lift_on: [false],
-        lift_off: [false],
-        gate_in: [false],
-        gate_out: [false],
-        preinspect: [false],
-        iso_format: [false],
-
+      unit_type: [''],
+      lift_on: [false],
+      lift_off: [false],
+      gate_in: [false],
+      gate_out: [false],
+      preinspect: [false],
+      iso_format: [false],
+      flat_rate: [false]
     });
   }
 
@@ -290,6 +290,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         gate_out: tnkItm.gate_out,
         preinspect: tnkItm.preinspect,
         iso_format: tnkItm.iso_format,
+        // flat_rate: tnkItm.flat_rate,
         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
       });
 
@@ -301,7 +302,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
-  
+
   selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
     if (this.storageCalCvList.length > 0) {
@@ -342,22 +343,22 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   async save() {
 
     if (!this.pcForm?.valid) return;
-    const dup:boolean = await this.checkDuplication();
-    if(dup)
-    {
+    const dup: boolean = await this.checkDuplication();
+    if (dup) {
       this.pcForm?.get("unit_type")?.setErrors({ duplicated: true });
       return;
     }
 
-   if(this.selectedItem) {
+    if (this.selectedItem) {
       var tnkItm = new TankItem(this.selectedItem);
       tnkItm.unit_type = `${this.pcForm.get("unit_type")?.value}`;
-      tnkItm.gate_in=this.pcForm.get("gate_in")?.value;
-      tnkItm.gate_out=this.pcForm.get("gate_out")?.value;
-      tnkItm.lift_on=this.pcForm.get("lift_on")?.value;
-      tnkItm.lift_off=this.pcForm.get("lift_off")?.value;
-      tnkItm.preinspect=this.pcForm.get("preinspect")?.value;
-      tnkItm.iso_format=this.pcForm.get("iso_format")?.value;
+      tnkItm.gate_in = this.pcForm.get("gate_in")?.value;
+      tnkItm.gate_out = this.pcForm.get("gate_out")?.value;
+      tnkItm.lift_on = this.pcForm.get("lift_on")?.value;
+      tnkItm.lift_off = this.pcForm.get("lift_off")?.value;
+      tnkItm.preinspect = this.pcForm.get("preinspect")?.value;
+      tnkItm.iso_format = this.pcForm.get("iso_format")?.value;
+      // tnkItm.flat_rate = this.pcForm.get("flat_rate")?.value;
       this.tankDS?.updateTank(tnkItm).subscribe(result => {
         if (result.data.updateTank > 0) {
 
@@ -367,16 +368,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         }
       });
     }
-    else
-    {
+    else {
       var tnkItm = new TankItem();
       tnkItm.unit_type = `${this.pcForm.get("unit_type")?.value}`;
-      tnkItm.gate_in=this.pcForm.get("gate_in")?.value;
-      tnkItm.gate_out=this.pcForm.get("gate_out")?.value;
-      tnkItm.lift_on=this.pcForm.get("lift_on")?.value;
-      tnkItm.lift_off=this.pcForm.get("lift_off")?.value;
-      tnkItm.preinspect=this.pcForm.get("preinspect")?.value;
-      tnkItm.iso_format=this.pcForm.get("iso_format")?.value;
+      tnkItm.gate_in = this.pcForm.get("gate_in")?.value;
+      tnkItm.gate_out = this.pcForm.get("gate_out")?.value;
+      tnkItm.lift_on = this.pcForm.get("lift_on")?.value;
+      tnkItm.lift_off = this.pcForm.get("lift_off")?.value;
+      tnkItm.preinspect = this.pcForm.get("preinspect")?.value;
+      tnkItm.iso_format = this.pcForm.get("iso_format")?.value;
+      // tnkItm.flat_rate = this.pcForm.get("flat_rate")?.value;
       this.tankDS?.addNewTank(tnkItm).subscribe(result => {
         if (result.data.addTank > 0) {
 
@@ -388,32 +389,28 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
 
 
-   
+
 
   }
 
-  async checkDuplication():Promise<boolean>{
-    var retval:boolean = false;
+  async checkDuplication(): Promise<boolean> {
+    var retval: boolean = false;
     var tnkItm = new TankItem();
-    
-    if(this.selectedItem)
-    {
-      tnkItm=new TankItem(this.selectedItem);
+
+    if (this.selectedItem) {
+      tnkItm = new TankItem(this.selectedItem);
     }
-    tnkItm.unit_type =`${this.pcForm?.get("unit_type")?.value}`;
-    const where:any={};
-    where.unit_type={eq:`${ tnkItm.unit_type}`}
+    tnkItm.unit_type = `${this.pcForm?.get("unit_type")?.value}`;
+    const where: any = {};
+    where.unit_type = { eq: `${tnkItm.unit_type}` }
     const data = await firstValueFrom(this.tankDS!.search_r1(where));
-    if(data.length>0)
-    {
-      if(tnkItm.guid)
-      {
+    if (data.length > 0) {
+      if (tnkItm.guid) {
         var existItm = data[0];
-        retval= tnkItm.guid!=existItm.guid;
+        retval = tnkItm.guid != existItm.guid;
       }
-      else
-      {
-        retval=true;
+      else {
+        retval = true;
       }
     }
     return retval;
@@ -432,23 +429,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
 
-  GetAction():string{
+  GetAction(): string {
 
-    var action:string=this.translatedLangText.NEW;
-    if(this.action==='update')
-    {
-      action= this.translatedLangText.UPDATE;
+    var action: string = this.translatedLangText.NEW;
+    if (this.action === 'update') {
+      action = this.translatedLangText.UPDATE;
     }
 
     return action;
   }
 
-  GetActionButton():string{
+  GetActionButton(): string {
 
-    var action:string=this.translatedLangText.SAVE;
-    if(this.action==='update')
-    {
-      action= this.translatedLangText.UPDATE;
+    var action: string = this.translatedLangText.SAVE;
+    if (this.action === 'update') {
+      action = this.translatedLangText.UPDATE;
     }
 
     return action;
