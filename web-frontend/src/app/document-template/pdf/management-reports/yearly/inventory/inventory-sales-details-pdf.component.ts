@@ -48,6 +48,9 @@ import {
   NgApexchartsModule,
 } from 'ng-apexcharts';
 
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
+
 export interface DialogData {
   repData: ManagementReportYearlyInventory,
   date:string,
@@ -74,7 +77,8 @@ interface SeriesItem {
     MatProgressSpinnerModule,
     MatCardModule,
     MatProgressBarModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    BaseChartDirective
   ],
 })
 export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -281,7 +285,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     PREINSPECTION:'COMMON-FORM.PREINSPECTION',
     ON_DEPOT:'COMMON-FORM.ON-DEPOT',
     OUT_GATE:'COMMON-FORM.OUT-GATE',
-    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL'
+    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
+    TEMPERATURE:'COMMON-FORM.TEMPERATURE'
     
   }
 
@@ -340,6 +345,87 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   invTypes?:string[];
   // date:string='';
   // invType:string='';
+
+
+   lineChartData: ChartConfiguration['data'] = {
+        datasets: [
+          {
+            label: 'Foods',
+            data: [0, 30, 10, 120, 50, 63, 10],
+            backgroundColor: 'transparent',
+            borderColor: '#9f78ff',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.5,
+            pointStyle: 'circle',
+            pointRadius: 3,
+            pointBorderColor: 'transparent',
+            pointBackgroundColor: '#222222',
+          },
+          {
+            label: 'Electronics',
+            data: [0, 50, 40, 80, 40, 79, 120],
+            backgroundColor: 'transparent',
+            borderColor: '#f96332',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.5,
+            pointStyle: 'circle',
+            pointRadius: 3,
+            pointBorderColor: 'transparent',
+            pointBackgroundColor: '#f96332',
+          },
+        ],
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      };
+    
+      lineChartOpts: ChartConfiguration['options'] = {
+        responsive: true,
+        animation: false, // 👈 disables all animations
+        elements: {
+          line: {
+            tension: 0.5,
+          },
+        },
+        scales: {
+          y: {
+            title: {
+              display: true,
+              text: '', // <- your label here
+              color: '#9aa0ac',
+              font: {
+                size: 14,
+              },
+            },
+            position: 'left',
+            ticks: {
+              color: '#9aa0ac', // Font Color
+            },
+          },
+          x: {
+            ticks: {
+              color: '#9aa0ac', // Font Color
+            },
+          },
+        },
+    
+        plugins: {
+          legend: {
+            display: true,
+            // 👇 Customize legend appearance
+            // labels: {
+            //   font: {
+            //     size: 10, // Font size (default: 10)
+            //     family: "'Helvetica Neue', 'Arial', sans-serif", // Optional
+            //   },
+            //   padding: 10, // Space between legend items (default: 10)
+            //   boxWidth: 12, // Width of the color box (default: 12)
+            //   boxHeight: 12, // Height of the color box (default: 12)
+              // usePointStyle: true, // Uses pointStyle from dataset (e.g., circles)
+            // },
+          },
+        },
+      };
 
 
 
@@ -635,7 +721,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-
+@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
  
   async exportToPDF_r1(fileName: string = 'document.pdf') {
@@ -986,22 +1072,118 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
     });
 
+    var catgries= grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[];
     // var x
     this.lineChartOptions.xaxis={
-      categories: grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[],
+      categories: catgries,
     };
 
 
     this.lineChartOptions.series=series;
 
-    if(!showGateSurcharge) 
-      {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["In Gate","Out Gate"].includes(s.name));}
-    if(!showSteamSurcharge) 
-      {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steaming"].includes(s.name));}
-    if(!showCleanSurcharge) 
-      {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
-    if(!showRepairSurcharge) 
-      {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
+    
+
+    var colors =  [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
+      "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
+
+    this.lineChartData.datasets=[];
+    this.lineChartData.labels=[];
+    var ds=[];
+    var cats=[];
+    var indx=0;
+  
+
+   
+    if(showGateSurcharge){
+      var lbls =["In Gate","Out Gate"];
+      
+      lbls.forEach(lbl=>{
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+    });
+  }
+    if(showSteamSurcharge){
+      var lbl="Steam";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+      }
+   
+      
+      if(showCleanSurcharge){
+        var lbl="Cleaning";
+        var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+        ds.push({
+          label:lbl,
+          data:s[0].data,
+          backgroundColor: 'transparent',
+          borderColor: colors[indx],
+          borderWidth: 2,
+          fill: false,
+          tension: 0.5,
+          pointStyle: 'circle',
+          pointRadius: 3,
+          pointBorderColor: 'transparent',
+          pointBackgroundColor: colors[indx++],
+        });
+        
+        }
+        if(showRepairSurcharge){
+          var lbl="Repair";
+          var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+          ds.push({
+            label:lbl,
+            data:s[0].data,
+            backgroundColor: 'transparent',
+            borderColor: colors[indx],
+            borderWidth: 2,
+            fill: false,
+            tension: 0.5,
+            pointStyle: 'circle',
+            pointRadius: 3,
+            pointBorderColor: 'transparent',
+            pointBackgroundColor: colors[indx++],
+          });
+          
+          }
+      this.lineChartData.datasets=ds;
+      this.lineChartData.labels=catgries;
+      this.chart?.data!=this.lineChartData;
+      this.chart?.update();
+
+    // if(!showGateSurcharge) 
+    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["In Gate","Out Gate"].includes(s.name));}
+    // if(!showSteamSurcharge) 
+    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steaming"].includes(s.name));}
+    // if(!showCleanSurcharge) 
+    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
+    // if(!showRepairSurcharge) 
+    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
     
     this.pieChartOptions.labels=prcss;
     this.pieChartOptions.series2=prcsValues;
@@ -1083,7 +1265,11 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
    // this.dialogRef.close();
   }
 
- 
+  getYAxisLabel()
+ {
+    return `${this.translatedLangText.QTY}`;
+    //return '';
+ }
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);

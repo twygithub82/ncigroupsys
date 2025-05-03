@@ -224,3 +224,27 @@ tr.th {
     text-align: right;
 
 }
+
+.chart-wrapper {
+    display: flex;
+    align-items: center;
+   
+  }
+  .y-axis-label {
+    transform: rotate(-90deg);
+    color: #9aa0ac;
+    font-size: 10px;
+   top:30px;
+    margin-right: 3px; /* Reduced from 10px */
+    white-space: nowrap; /* Prevents text wrapping */
+    width: 20px; /* Fixed width for the rotated label */
+    text-align: center; /* Centers the text in the fixed width */
+    transform-origin: left center; /* Rotates around the left center point */
+    position: relative;
+    left: 10px; /* Adjust as needed */
+  }
+  
+  canvas {
+    flex: 1;
+    min-width: 0; /* Allows canvas to shrink properly */
+  }

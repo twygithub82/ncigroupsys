@@ -47,6 +47,8 @@ import {
   ApexResponsive,
   NgApexchartsModule,
 } from 'ng-apexcharts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 
 
 export interface DialogData {
@@ -75,7 +77,8 @@ interface SeriesItem {
     MatProgressSpinnerModule,
     MatCardModule,
     MatProgressBarModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    BaseChartDirective
   ],
 })
 export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -347,7 +350,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   repType?:string;
   customer?:string;
   index: number = 0;
-  lineChartOptions?:any; 
+  //lineChartOptions?:any; 
   pieChartOptions?:any;
   invTypes?:string[];
   colors?: [
@@ -358,7 +361,72 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   // date:string='';
   // invType:string='';
 
+  lineChartData: ChartConfiguration['data'] = {
+    datasets: [
+      {
+        label: 'Foods',
+        data: [0, 30, 10, 120, 50, 63, 10],
+        backgroundColor: 'transparent',
+        borderColor: '#9f78ff',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: '#222222',
+      },
+      {
+        label: 'Electronics',
+        data: [0, 50, 40, 80, 40, 79, 120],
+        backgroundColor: 'transparent',
+        borderColor: '#f96332',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: '#f96332',
+      },
+    ],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  };
 
+  lineChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    animation: false, // 👈 disables all animations
+    elements: {
+      line: {
+        tension: 0.5,
+      },
+    },
+    scales: {
+      y: {
+        title: {
+          display: true,
+          text: '', // <- your label here
+          color: '#9aa0ac',
+          font: {
+            size: 14,
+          },
+        },
+        position: 'left',
+        ticks: {
+          color: '#9aa0ac', // Font Color
+        },
+      },
+      x: {
+        ticks: {
+          color: '#9aa0ac', // Font Color
+        },
+      },
+    },
+
+    plugins: {
+      legend: { display: true },
+    },
+  };
 
   constructor(
     public dialogRef: MatDialogRef<InventoryMonthlySalesReportDetailsPdfComponent>,
@@ -413,7 +481,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
   }
 
- 
+  
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -652,7 +720,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
  
   async exportToPDF_r1(fileName: string = 'document.pdf') {
@@ -1090,42 +1158,106 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
 
     var catgries= Object.keys(grpData) as string[];
-    // var x
-    this.lineChartOptions.xaxis={
-      categories: catgries,
-      labels:labelStyle
-    };
+  
+  
 
-    this.lineChartOptions.yaxis={
-      title: {
-        text: `${this.translatedLangText.COMPLETED_COUNT}/${this.translatedLangText.COMPLETED_HOUR}`, // 👈 This is your label
+    
+      {
+
+     
+    
+
+     var colors =  [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
+          "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
+    
+    this.lineChartData.datasets=[];
+    this.lineChartData.labels=[];
+    var ds=[];
+    var cats=[];
+   var indx=0;
+    if(showGateSurcharge){
+      var lbls =["Gate In","Gate Out","Lift On","Lift Off"];
+      
+      lbls.forEach(lbl=>{
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+    });
+     
+    }
+    if(showSteamSurcharge){
+      var lbl="Steam";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+    }
+    
+    if(showCleanSurcharge){
+      var lbl="Cleaning";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
       }
-    }
-
-    //this.lineChartOptions.colors=this.colors?.slice(0,catgries.length);
-
-    this.lineChartOptions.series=series;
-    this.lineChartOptions.colors=[ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
-      "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
-
-   // if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
-   // if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
-   // if(!showStorageSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Storage"].includes(s.name));}
-    if(!showGateSurcharge){
-      this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate In"].includes(s.name));
-      this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate Out"].includes(s.name));
-      this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Lift On"].includes(s.name));
-      this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Lift Off"].includes(s.name));
-    }
-    if(!showSteamSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steam"].includes(s.name));}
-    
-    if(!showCleanSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
-    if(!showRepairSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
-
-    
-    // this.pieChartOptions.labels=prcss;
-    // this.pieChartOptions.series2=prcsValues;
-    //this.pieChartOptions.colors=this.colors;
+    if(showRepairSurcharge){
+      var lbl="Repair";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+      }
+      this.lineChartData.datasets=ds;
+      this.lineChartData.labels=catgries;
+      this.chart?.data!=this.lineChartData;
+      this.chart?.update();
+  }
+   
 
 
  setTimeout(async()=>{
@@ -1134,34 +1266,16 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   let chartContentWidth = pageWidth - leftMargin - rightMargin;
   const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
   for (var i = 0; i < cardElements.length; i++) {
-    if (i > 0) {
+    
       pdf.addPage();
       Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
       pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
       startY=topMargin+20;
-    }
+    
     const card1 = cardElements[i];
     const canvas1 = await html2canvas(card1, { scale: scale });
     Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
-    // const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
-
-    // // Calculate aspect ratio
-    // const aspectRatio = canvas1.,width / canvas1.height;
-
-    // // Calculate scaled height based on available width
-    // let imgHeight1 = chartContentWidth / aspectRatio;
-
-    // // Check if the scaled height exceeds the available page height
-    // const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-    // if (imgHeight1 > maxPageHeight) {
-    //   // Adjust height to fit within the page
-    //   imgHeight1 = maxPageHeight;
-    //   // Recalculate width to maintain aspect ratio
-    //   chartContentWidth = imgHeight1 * aspectRatio;
-    // }
-
-    // // Add the image to the PDF
-    // pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+   
   }
 
     const totalPages = pdf.getNumberOfPages();
@@ -1177,11 +1291,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
-
-  //  this.generatingPdfProgress = 100;
-    //pdf.save(fileName);
-  //  this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
+   this.generatingPdfLoadingSubject.next(false);
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
 
@@ -1190,7 +1300,10 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
    // this.dialogRef.close();
   }
 
- 
+ getYAxisLabel()
+ {
+    return `${this.translatedLangText.COMPLETED_COUNT}/${this.translatedLangText.COMPLETED_HOUR}`;
+ }
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -1369,97 +1482,100 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     
     // };
 
-    this.lineChartOptions = {
-      colors:this.colors,
-      chart: {
-        height: 350,
-        type: 'line',
-        toolbar: {
-          show: false,
-        },
-        animations: {
-          enabled: false, // <-- disables all animations
-        },
-        foreColor: '#9aa0ac',
-      },
-      dataLabels: {
-        enabled: true,
-      },
-      stroke: {
-        curve: 'smooth',
-      },
-      series: [
-        {
-          name: 'High - 2013',
-          data: [28, 29, 33, 36, 32, 32, 33],
-        },
-        {
-          name: 'Low - 2013',
-          data: [12, 11, 14, 18, 17, 13, 13],
-        },
-      ],
-      title: {
-      },
-      grid: {
-        show: true,
-        borderColor: '#9aa0ac',
-        strokeDashArray: 1,
-      },
-      markers: {
-        size: 6,
-      },
-      xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        labels: {
-          style: {
-            fontSize: '16px',     // Adjust font size here (e.g., '12px', '14px')
-            fontWeight: 600,      // Boldness (400 = normal, 700 = bold)
-            colors: '#FF0000',    // Single color for all labels (or array for per-label colors)
-            fontFamily: 'Arial'   // Optional: Change font type
-          }
-        }
-      },
-      yaxis: {
-        title: {
-          text: 'Temperature',
-        },
-        labels: {
-          style: {
-            colors: ['#9aa0ac'],
-          },
-        },
-        min: 5,
-        max: 40,
-      },
-      legend:{
-        fontSize:'14px',
-        position: "bottom",
-        horizontalAlign: "center",
-        itemMargin: { horizontal: 10, vertical: 5 }, // Adjusts spacing between items
-        labels: {
-          colors: "#333", // Set label text color
-          useSeriesColors: false, // Use the color of the series for labels
-      //    padding: 10, // Adjust space between marker and label
-        },
+    
+    // this.lineChartOptions = {
+    //   colors:this.colors,
+    //   chart: {
+    //     height: 350,
+    //     type: 'line',
+    //     toolbar: {
+    //       show: false,
+    //     },
+    //     animations: {
+    //       enabled: false, // <-- disables all animations
+    //     },
+    //     foreColor: '#9aa0ac',
+    //   },
+    //   dataLabels: {
+    //     enabled: true,
+    //   },
+    //   stroke: {
+    //     curve: 'smooth',
+    //     width:1
+    //   },
+    //   series: [
+    //     {
+    //       name: 'High - 2013',
+    //       data: [28, 29, 33, 36, 32, 32, 33],
+    //     },
+    //     {
+    //       name: 'Low - 2013',
+    //       data: [12, 11, 14, 18, 17, 13, 13],
+    //     },
+    //   ],
+    //   title: {
+    //   },
+    //   grid: {
+    //     show: true,
+    //     borderColor: '#9aa0ac',
+    //     strokeDashArray: 1,
+    //   },
+    //   markers: {
+    //     size: 6,
+        
+    //   },
+    //   xaxis: {
+    //     categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    //     labels: {
+    //       style: {
+    //         fontSize: '16px',     // Adjust font size here (e.g., '12px', '14px')
+    //         fontWeight: 600,      // Boldness (400 = normal, 700 = bold)
+    //         colors: '#FF0000',    // Single color for all labels (or array for per-label colors)
+    //         fontFamily: 'Arial'   // Optional: Change font type
+    //       }
+    //     }
+    //   },
+    //   yaxis: {
+    //     title: {
+    //       text: 'Temperature',
+    //     },
+    //     labels: {
+    //       style: {
+    //         colors: ['#9aa0ac'],
+    //       },
+    //     },
+    //     min: 5,
+    //     max: 40,
+    //   },
+    //   legend:{
+    //     fontSize:'14px',
+    //     position: "bottom",
+    //     horizontalAlign: "center",
+    //     itemMargin: { horizontal: 10, vertical: 5 }, // Adjusts spacing between items
+    //     labels: {
+    //       colors: "#333", // Set label text color
+    //       useSeriesColors: false, // Use the color of the series for labels
+    //   //    padding: 10, // Adjust space between marker and label
+    //     },
       
-      },
-      // legend: {
-      //   position: 'top',
-      //   horizontalAlign: 'right',
-      //   floating: true,
-      //   offsetY: -25,
-      //   offsetX: -5,
-      // },
-      tooltip: {
-        theme: 'dark',
-        marker: {
-          show: true,
-        },
-        x: {
-          show: true,
-        },
-      },
-    };
+    //   },
+    //   // legend: {
+    //   //   position: 'top',
+    //   //   horizontalAlign: 'right',
+    //   //   floating: true,
+    //   //   offsetY: -25,
+    //   //   offsetX: -5,
+    //   // },
+    //   tooltip: {
+    //     theme: 'dark',
+    //     marker: {
+    //       show: true,
+    //     },
+    //     x: {
+    //       show: true,
+    //     },
+    //   },
+    // };
   }
  
 }
