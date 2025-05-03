@@ -3,6 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatDividerModule } from '@angular/material/divider';
 
 export interface DialogData {
   action: string;
@@ -23,6 +24,7 @@ export interface DialogData {
     MatDialogActions,
     MatButtonModule,
     MatDialogClose,
+    MatDividerModule,
     TranslateModule,
   ],
 })

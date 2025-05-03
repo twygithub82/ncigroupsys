@@ -54,7 +54,7 @@
                     </div>
                     <div class="row">
 
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.OPEN_AT_GATE | translate}}</mat-label>
                           <mat-select formControlName="open_gate" required>
@@ -72,7 +72,7 @@
                           } -->
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{langText.CARGO_METHOD | translate}}</mat-label>
                           <mat-select formControlName="method" required>
@@ -90,8 +90,7 @@
 
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.CARGO_CATEGORY | translate}}</mat-label>
                           <mat-select formControlName="category" required>
@@ -101,17 +100,35 @@
                             </mat-option>
                             }
                           </mat-select>
-                          <!-- @if (tcForm?.get('category')?.hasError('required')) {
-                          <mat-error>
-                            {{langText.CARGO_CATEGORY | translate}} {{langText.CARGO_REQUIRED | translate}}
-                          </mat-error>
-                          } -->
                         </mat-form-field>
-
-
                       </div>
-                    </div>
 
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{langText.CARGO_BAN_TYPE | translate}}</mat-label>
+                          <mat-select formControlName="ban_type" required>
+                            @for (cn of banTypeCvList; track cn) {
+                            <mat-option [value]="cn.code_val">
+                              {{cn.description}}
+                            </mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+
+                      <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{langText.CARGO_CATEGORY | translate}}</mat-label>
+                          <mat-select formControlName="category" required>
+                            @for (cCat of cCategoryList; track cCat) {
+                            <mat-option [value]="cCat.guid">
+                              {{cCat.name}}
+                            </mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      </div> -->
+                    </div>
                     <div class="row ">
                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width">

@@ -337,7 +337,7 @@
                               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                             </button>
                           </div>
-                          <div class="col-xl-6 col-lg-8 col-md-12 col-sm-12 align-right">
+                          <div class="col-xl-6 col-lg-8 col-md-12 col-sm-12 align-right pt-2">
                             <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
                               [disabled]="(igDS.actionLoading$| async)">
                               <mat-icon>
@@ -349,7 +349,10 @@
                               </mat-icon>
                               {{translatedLangText.ACCEPT}}
                             </button>
-                            <button mat-flat-button class="bg-light-gold m-r-10" (click)="resetDialog($event)">
+                            <button mat-flat-button class="bg-light-gold m-r-10 col-white" (click)="resetDialog($event)">
+                              <mat-icon class="col-white">
+                                close
+                              </mat-icon>
                               {{translatedLangText.CLEAR_ALL}}
                             </button>
                             <!-- <button mat-flat-button color="primary">

@@ -89,18 +89,10 @@
                     </mat-option>
                     }
                   </mat-select>
-                  <!-- <input matInput formControlName="category" [formControl]="categoryControl"
-                    [matAutocomplete]="category">
-                  <mat-autocomplete #category="matAutocomplete" [displayWith]="displayCategoryFn">
-                    @for (cCat of cCategoryList; track cCat) {
-                    <mat-option [value]="cCat">
-                      {{cCat.name}}
-                    </mat-option>
-                    }
-                  </mat-autocomplete> -->
+
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
+              <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CARGO_BAN_TYPE}}</mat-label>
                   <input matInput formControlName="ban_type" [formControl]="banTypeControl"
@@ -112,6 +104,19 @@
                     </mat-option>
                     }
                   </mat-autocomplete>
+                </mat-form-field>
+              </div> -->
+
+              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.CARGO_BAN_TYPE}}</mat-label>
+                  <mat-select formControlName="ban_type">
+                    @for (cn of banTypeCvList; track cn) {
+                    <mat-option [value]="cn.code_val">
+                      {{cn.description}}
+                    </mat-option>
+                    }
+                  </mat-select>
                 </mat-form-field>
               </div>
               <div

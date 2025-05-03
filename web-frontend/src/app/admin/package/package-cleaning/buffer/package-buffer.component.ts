@@ -324,8 +324,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '70vw',
-      height: '80vh',
+      width: '55vw',
+      //height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -352,8 +352,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '70vw',
-      maxHeight: '80vh',
+      width: '55vw',
+      //maxHeight: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -640,7 +640,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,

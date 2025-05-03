@@ -741,7 +741,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '50vw',
+      width: '40vw',
       data: {
         action: "cancel",
         sot: sot,
