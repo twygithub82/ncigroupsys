@@ -540,7 +540,7 @@
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
-                                <input matInput formControlName="driver_name" required>
+                                <input matInput formControlName="driver_name" class="text-uppercase" required>
                                 <!-- @if (surveyForm?.get('in_gate_details.driver_name')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
@@ -551,7 +551,7 @@
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.HAULIER}}</mat-label>
-                                <input matInput formControlName="haulier" required>
+                                <input matInput formControlName="haulier" class="text-uppercase" required>
                                 <!-- @if (surveyForm?.get('in_gate_details.haulier')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}

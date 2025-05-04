@@ -242,7 +242,17 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
         },
         {
           or: [
-            { release_order_sot: { some: { release_order: { ro_no: { contains: searchField } } } } },
+            {
+              release_order_sot: {
+                some: {
+                  release_order: {
+                    ro_no: { contains: searchField },
+                    status_cv: { nin: ['CANCELED'] }
+                  },
+                  status_cv: { in: ['WAITING'] }
+                }
+              }
+            },
             // { storing_order: { so_no: { contains: searchField } } },
             { tank_no: { contains: Utility.formatContainerNumber(searchField) } },
             { tank_no: { contains: Utility.formatTankNumberForSearch(searchField) } },

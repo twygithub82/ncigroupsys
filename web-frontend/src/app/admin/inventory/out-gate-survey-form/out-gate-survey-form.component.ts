@@ -56,6 +56,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ReleaseOrderSotItem } from 'app/data-sources/release-order-sot';
 
 @Component({
   selector: 'app-out-gate-survey-form',
@@ -1239,7 +1240,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       out_gate_details: {
         vehicle_no: og.vehicle_no,
         driver_name: og.driver_name,
-        haulier: og.haulier,
+        haulier: og?.tank?.release_order_sot?.[0].release_order?.haulier,
         in_gate_remarks: og.remarks,
       },
       frame_type: {
@@ -1475,8 +1476,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       let og: any = new OutGateGO(this.out_gate!);
       og.out_gate_survey = undefined;
       og.vehicle_no = this.surveyForm.get('out_gate_details.vehicle_no')?.value?.toUpperCase();
-      og.driver_name = this.surveyForm.get('out_gate_details.driver_name')?.value;
-      og.haulier = this.surveyForm.get('out_gate_details.haulier')?.value;
+      og.driver_name = this.surveyForm.get('out_gate_details.driver_name')?.value?.toUpperCase();
+      og.haulier = this.surveyForm.get('out_gate_details.haulier')?.value?.toUpperCase();
       og.remarks = this.surveyForm.get('out_gate_details.in_gate_remarks')?.value;
       og.tank = sot;
       og.release_order = new ReleaseOrderGO(this.out_gate?.tank?.release_order_sot?.[0]?.release_order);
@@ -1586,8 +1587,11 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   onPublish() {
     if (this.out_gate) {
-      console.log('publishOutGateSurvey: ', this.out_gate.guid)
-      this.ogDS.publishOutGateSurvey(this.out_gate.guid!).subscribe(result => {
+      const outGateRequest: any = new OutGate(this.out_gate);
+      outGateRequest.tank = new StoringOrderTank(this.out_gate?.tank)
+      outGateRequest.out_gate_survey = new OutGateSurveyGO(this.out_gate?.out_gate_survey)
+      console.log('publishOutGateSurvey: ', outGateRequest)
+      this.ogDS.publishOutGateSurvey(outGateRequest).subscribe(result => {
         console.log(result)
         this.handleSaveSuccess(result.data?.publishOutGateSurvey)
         this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
@@ -2151,16 +2155,16 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   onAlphaOnly(event: Event): void {
-    Utility.onAlphaOnly(event, this.surveyForm?.get("foot_valve_oth")! || 
-                               this.surveyForm?.get("btm_dis_valve_oth")! || 
-                               this.surveyForm?.get("btm_dis_valve_spec_oth") || 
-                               this.surveyForm?.get("top_dis_valve_oth") || 
-                               this.surveyForm?.get("top_dis_valve_spec_oth") || 
-                               this.surveyForm?.get("airline_valve_oth") || 
-                               this.surveyForm?.get("airline_valve_conn_oth") ||
-                               this.surveyForm?.get("airline_valve_conn_spec_oth") ||
-                               this.surveyForm?.get("manlid_cover_oth")||
-                               this.surveyForm?.get("airline_valve_conn_oth")||
-                               this.surveyForm?.get("airline_valve_conn_oth"));
+    Utility.onAlphaOnly(event, this.surveyForm?.get("foot_valve_oth")! ||
+      this.surveyForm?.get("btm_dis_valve_oth")! ||
+      this.surveyForm?.get("btm_dis_valve_spec_oth") ||
+      this.surveyForm?.get("top_dis_valve_oth") ||
+      this.surveyForm?.get("top_dis_valve_spec_oth") ||
+      this.surveyForm?.get("airline_valve_oth") ||
+      this.surveyForm?.get("airline_valve_conn_oth") ||
+      this.surveyForm?.get("airline_valve_conn_spec_oth") ||
+      this.surveyForm?.get("manlid_cover_oth") ||
+      this.surveyForm?.get("airline_valve_conn_oth") ||
+      this.surveyForm?.get("airline_valve_conn_oth"));
   }
 }

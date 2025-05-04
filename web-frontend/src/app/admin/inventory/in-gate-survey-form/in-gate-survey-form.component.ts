@@ -1451,8 +1451,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
       let ig: InGateGO = new InGateGO(this.in_gate!);
       ig.vehicle_no = this.surveyForm.get('in_gate_details.vehicle_no')?.value?.toUpperCase();
-      ig.driver_name = this.surveyForm.get('in_gate_details.driver_name')?.value;
-      ig.haulier = this.surveyForm.get('in_gate_details.haulier')?.value;
+      ig.driver_name = this.surveyForm.get('in_gate_details.driver_name')?.value?.toUpperCase();
+      ig.haulier = this.surveyForm.get('in_gate_details.haulier')?.value?.toUpperCase();
       ig.remarks = this.surveyForm.get('in_gate_details.in_gate_remarks')?.value;
       ig.in_gate_survey = undefined;
       ig.tank = sot;
