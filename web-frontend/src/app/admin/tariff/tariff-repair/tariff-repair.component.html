@@ -14,24 +14,26 @@
                 </mat-panel-title>
                 <mat-panel-description>
                   <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                    <button mat-mini-fab color="primary" (click)="addCall()" (click)="$event.stopPropagation()"  matTooltip={{translatedLangText.ADD}}>
+                    <button mat-mini-fab color="primary" (click)="addCall()" (click)="$event.stopPropagation()"
+                      matTooltip={{translatedLangText.ADD}}>
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
                   @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                    <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
-                      <button mat-mini-fab class="primary-light" color="" (click)="editCallSelection()"  matTooltip={{translatedLangText.EDIT}}
-                        (click)="$event.stopPropagation()">
-                        <mat-icon class="">edit</mat-icon>
-                      </button>
-                    </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
+                    <button mat-mini-fab class="primary-light" color="" (click)="editCallSelection()"
+                      matTooltip={{translatedLangText.EDIT}} (click)="$event.stopPropagation()">
+                      <mat-icon class="">edit</mat-icon>
+                    </button>
+                  </div>
                   }
                   @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                    <div class="m-l-10" [matTooltip]="translatedLangText.EDIT + ' ' + translatedLangText.MATERIAL_COST"  matTooltip={{translatedLangText.SEARCH}}>
-                      <button mat-mini-fab color="accent" (click)="adjustCost()" (click)="$event.stopPropagation()">
-                        <mat-icon class="col-white">percent</mat-icon>
-                      </button>
-                    </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.EDIT + ' ' + translatedLangText.MATERIAL_COST"
+                    matTooltip={{translatedLangText.SEARCH}}>
+                    <button mat-mini-fab color="accent" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                      <mat-icon class="col-white">percent</mat-icon>
+                    </button>
+                  </div>
                   }
                   <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
@@ -141,7 +143,8 @@
                       <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                         <mat-icon>search</mat-icon>
                       </button>
-                      <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                      <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                        matTooltip={{translatedLangText.CLEAR_ALL}}>
                         <mat-icon>clear_all</mat-icon>
                       </button>
                     </div>
@@ -153,36 +156,33 @@
           <div class="body overflow-auto">
             <div class="responsive_table">
               <table mat-table [dataSource]="trfRepairItems" matSort
-                class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                class="mat-cell advance-table striped-rows hover-highlight dark-header small-font-tbl">
                 <!-- Checkbox Column -->
                 @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                  <ng-container matColumnDef="select">
-                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
-                      <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                      </mat-checkbox>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                      <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
-                      </mat-checkbox>
-                    </mat-cell>
-                  </ng-container>
+                <ng-container matColumnDef="select">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
+                    <mat-checkbox (change)="$event ? masterToggle() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                    </mat-checkbox>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
+                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                    </mat-checkbox>
+                  </mat-cell>
+                </ng-container>
                 }
-
                 <ng-container matColumnDef="fName">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2_75-xl'" mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2_25-xl'">
                     {{this.translatedLangText.PART_NAME
                     }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_75-xl'"
-                    (contextmenu)="onContextMenu($event, row.tariff_repair)">
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_25-xl'">
                     <span class="mobile-label">{{this.translatedLangText.PART_NAME
                       }}:</span>{{getTariffRepairAlias(row.tariff_repair)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="dimension">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef
                     [ngClass]="''">{{this.translatedLangText.DIMENSION}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
                     <span
@@ -190,8 +190,7 @@
                     || "-"}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
-                    [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.LENGTH
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.LENGTH
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_repair)"
                     [ngClass]="'tbl-col-width-per-1'">
@@ -199,49 +198,56 @@
                     "-"}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="gname">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    mat-sort-header>{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    (contextmenu)="onContextMenu($event, row.tariff_repair)">
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
                     <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span>
                     {{this.displayGroupNameCodeValue_Description(row.tariff_repair?.group_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subgroup">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75-xl'"
-                    mat-sort-header>{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_75-xl'">{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl'"
                     (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
                     {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair?.subgroup_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="hour">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    mat-sort-header>{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'"
                     (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span>
                     {{row.tariff_repair?.labour_hour || "-"}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="bDate">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    mat-sort-header>{{this.translatedLangText.MATERIAL_COST$}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.MATERIAL$}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'"
                     (contextmenu)="onContextMenu($event, row.tariff_repair)">
-                    <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST$}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.MATERIAL$}}:</span>
                     <div class="cost-label">
                       <span>{{row.tariff_repair?.material_cost?.toFixed(2)}}</span>
                     </div>
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_date">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    (contextmenu)="onContextMenu($event, row.tariff_repair)">
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
-                    {{this.displayLastUpdated(row.tariff_repair)}}</mat-cell>
-                </ng-container> 
-                
+                    {{this.displayLastUpdated(row.tariff_repair)}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="handled_item">
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.HANDLED_ITEM}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
+                    <span class="mobile-label">{{this.translatedLangText.HANDLED_ITEM}}:</span>
+                    {{getHandledItemDescription(row.tank_count > 0 ? 'HANDLED' : 'NON_HANDLE')}}
+                  </mat-cell>
+                </ng-container>
+
                 <!-- actions -->
                 <ng-container matColumnDef="actions">
                   <mat-header-cell class="pr-0" *matHeaderCellDef></mat-header-cell>

@@ -92,8 +92,8 @@ export class AuthService {
   }
 
   refreshToken(): Observable<UserToken | null> {
-    const refreshToken = this.getRefreshToken();
-    if (!refreshToken) {
+    const currentRefreshToken = this.getRefreshToken();
+    if (!currentRefreshToken) {
       this.logout();
       return of(null);;
     }
@@ -101,7 +101,8 @@ export class AuthService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const endpoint = this.currentUserIsStaff ? api_full_endpoints.staff_refresh_token : api_full_endpoints.user_refresh_token;
     const url = `${endpoint}`
-    const body = { refreshToken: refreshToken };
+    const body = { refreshToken: currentRefreshToken };
+    console.log('refreshToken body: ', body)
     return this.http.post<any>(url, body, { headers })
       .pipe(
         map(response => {
