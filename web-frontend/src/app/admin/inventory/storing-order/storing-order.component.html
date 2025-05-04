@@ -169,12 +169,12 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_code">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
-                    [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                     
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                  <mat-cell *matCellDef="let row">
+                    
                     <span
                       class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
                   </mat-cell>
