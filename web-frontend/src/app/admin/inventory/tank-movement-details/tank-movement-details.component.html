@@ -377,7 +377,127 @@
                     @if (!(igDS.loading$ | async) && !(ogDS.loading$ | async)) {
                     <mat-card-content>
                       <div class="row justify-content-center">
-                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                        <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                          <div class="row justify-content-center">
+                            <span>{{translatedLangText.IN_GATE}}:</span>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.UNIT_TYPE}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <div class="contact-detail-info font-bold">{{sot?.tank?.unit_type}}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.CLADDING}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <div class="contact-detail-info font-bold">{{getCladdingDescription(igs?.cladding_cv) ||
+                                "-"}}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.TARE_WEIGHT}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <div class="contact-detail-info font-bold">{{igs?.tare_weight || "-"}}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.BOTTOM_DIS_TYPE}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <div class="contact-detail-info font-bold">{{getDisCompDescription(igs?.btm_dis_comp_cv)
+                                || "-"}}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5 align-right">
+                              <span>{{translatedLangText.NOTES}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
+                              <div class="contact-detail-info font-bold d-flex align-items-center">
+                                <span class="me-2">{{sot?.tank_note || "-"}}</span>
+                                <mat-icon color="primary" class="cursor-pointer"
+                                  (click)="editTankNotes($event)">mode_edit</mat-icon>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.RELEASE_NOTES}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
+                              <div class="contact-detail-info font-bold d-flex align-items-center">
+                                <span class="me-2">{{sot?.release_note || "-"}}</span>
+                                <mat-icon color="primary" class="cursor-pointer"
+                                  (click)="editTankNotes($event)">mode_edit</mat-icon>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                          <div class="row justify-content-center">
+                            <span>{{translatedLangText.OUT_GATE}}:</span>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.MANUFACTURER_DOM}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <div class="contact-detail-info font-bold">{{igs?.manufacturer_cv || "-"}}
+                                {{displayDate(igs?.dom_dt)}}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.CAPACITY}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <div class="contact-detail-info font-bold">{{igs?.capacity || "-"}}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.MAX_GROSS_WEIGHT}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <div class="contact-detail-info font-bold">{{igs?.max_weight_cv || "-"}}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.COMPARTMENT_TYPE}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <div class="contact-detail-info font-bold">{{igs?.tariff_buffer?.buffer_type || "-"}}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                              <span>{{translatedLangText.WALKWAY}}:</span>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <div class="contact-detail-info font-bold">{{getWalkwayDescription(igs?.walkway_cv) ||
+                                "-"}}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+
                           <table class="table table-striped table-hover m-b-0">
                             <thead>
                               <tr>
@@ -436,14 +556,9 @@
                                 <td>{{displayDateTime(igs?.create_dt) || "-"}}</td>
                                 <td>{{displayDateTime(ogs?.create_dt) || "-"}}</td>
                               </tr>
-                              <!-- <tr>
-                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.UPDATE_DATE}}</th>
-                                <td>{{displayDateTime(igs?.update_dt) || displayDateTime(igs?.create_dt) || "-"}}</td>
-                                <td>{{displayDateTime(ogs?.update_dt) || displayDateTime(ogs?.create_dt) || "-"}}</td>
-                              </tr> -->
                             </tbody>
-                          </table>
-                        </div>
+                          </table> 
+                        </div>-->
                       </div>
                     </mat-card-content>
                     }
