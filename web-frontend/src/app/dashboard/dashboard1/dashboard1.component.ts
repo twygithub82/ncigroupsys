@@ -1,5 +1,26 @@
+import { CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDropList } from '@angular/cdk/drag-drop';
+import { CommonModule, NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ApexAxisChartSeries, ApexChart, ApexXAxis, ApexDataLabels, ApexTooltip, ApexYAxis, ApexPlotOptions, ApexStroke, ApexLegend, ApexFill, ApexMarkers, ApexGrid, ApexTitleSubtitle, ApexResponsive, NgApexchartsModule } from 'ng-apexcharts';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { Apollo } from 'apollo-angular';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { Utility } from 'app/utilities/utility';
+import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid, ApexLegend, ApexMarkers, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, NgApexchartsModule } from 'ng-apexcharts';
+import { NgScrollbar } from 'ngx-scrollbar';
+import { Subscription } from 'rxjs';
+import { GraphqlNotificationService } from '../../services/global-notification.service';
+import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { FeatherIconsComponent } from '../../shared/components/feather-icons/feather-icons.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -19,26 +40,6 @@ export type ChartOptions = {
   grid: ApexGrid;
   title: ApexTitleSubtitle;
 };
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { NgClass, CommonModule } from '@angular/common';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { RouterLink } from '@angular/router';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { FeatherIconsComponent } from '../../shared/components/feather-icons/feather-icons.component';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
-import { Subscription } from 'rxjs';
-import { Apollo } from 'apollo-angular';
-import { GraphqlNotificationService } from '../../services/global-notification.service'
-import { InGateDS } from 'app/data-sources/in-gate';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Utility } from 'app/utilities/utility';
-import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-dashboard1',
   templateUrl: './dashboard1.component.html',
@@ -88,7 +89,8 @@ export class Dashboard1Component implements OnInit {
   sotDS: StoringOrderTankDS;
   constructor(
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
     this.igDS = new InGateDS(this.apollo);

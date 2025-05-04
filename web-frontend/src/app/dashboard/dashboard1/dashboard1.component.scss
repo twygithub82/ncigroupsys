@@ -1,0 +1,11 @@
+.dashboard-logo {
+    height: calc(100vh - 120px);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dashboard-content {
+    width: 90vw;
+}

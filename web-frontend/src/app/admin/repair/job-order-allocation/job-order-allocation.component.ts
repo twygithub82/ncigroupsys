@@ -592,14 +592,6 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   onFormSubmit() {
-    // const distinctJobOrders = this.repList
-    //   .filter((item, index, self) =>
-    //     index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
-    //       (t.job_order?.team?.guid === item?.job_order?.team_guid ||
-    //         t.job_order?.team?.description === item?.job_order?.team?.description))
-    //   )
-    //   .filter(item => item.job_order !== null && item.job_order !== undefined)
-    //   .map(item => item.job_order);
     const distinctJobOrders = this.repList
       .filter((item, index, self) => {
         const jobOrder = item.job_order;
