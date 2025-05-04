@@ -21,84 +21,148 @@
       </div>
     </form>
     <div class="body overflow-auto">
+      <!-- <div class="responsive_table">
+        <table mat-table [dataSource]="schedulingFilteredList" matSort
+          class="mat-cell advance-table striped-rows hover-highlight dark-header small-font-tbl">
+          <ng-container matColumnDef="tank_no">
+            <mat-header-cell mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.TANK_NO}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span class="mobile-label">{{data.translatedLangText.TANK_NO}}:</span>
+              <span [class]="{'text-danger': addedSot(row)}">{{row.storing_order_tank!.tank_no}}</span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="eir_no">
+            <mat-header-cell mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.EIR_NO}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span
+                class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_no}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="eir_dt">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{data.translatedLangText.EIR_DATE}}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span
+                class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_dt)}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="yard">
+            <mat-header-cell mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.YARD}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span
+                class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="scheduling_dt">
+            <mat-header-cell mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.SCHEDULING_DATE}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span
+                class="mobile-label">{{data.translatedLangText.SCHEDULING_DATE}}:</span>{{displayDate(row.scheduling_dt)}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="status_cv">
+            <mat-header-cell mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.STATUS}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span
+                class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" [ngClass]="''"
+            (click)="toggleRow(row!)" matRipple>
+          </mat-row>
+        </table>
+      </div> -->
       @for (s of schedulingFilteredList; track s) {
-      <mat-card [ngClass]="{'card-content p-2 m-b-10 bg-light-grey-opacity-30': true}"
-        matRipple>
+      <mat-card [ngClass]="{'card-content p-2 m-b-10 bg-light-grey-opacity-30': true}" matRipple>
         @for(row of s.scheduling_sot; track row) {
-          <mat-card 
-            [ngClass]="{
+        <mat-card [ngClass]="{
               'bg-light-grey': checkDisable(row!), 
               'card-content p-0 m-b-10 cursor-pointer': true
-            }" 
-            (click)="toggleRow(row!)"
-            matRipple
-          >
-            <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
-              <mat-card-title class="pt-1">
-                <mat-checkbox 
-                  (change)="$event ? toggleRow(row!) : null"
-                  [checked]="schedulingSotSelection.isSelected(row!)" 
-                  class="card-checkbox"
-                  (click)="$event.stopPropagation()" 
-                  [disabled]="checkDisable(row!)"
-                >
-                </mat-checkbox>
-                <span [class]="{'text-danger': addedSot(row)}">
-                  {{row.storing_order_tank!.tank_no}}
-                </span>
-              </mat-card-title>
-            </mat-card-header>
-            
-            <mat-card-content>
-              <div class="row">
-                <!-- First Column -->
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-2">
-                  <div class="card-detail-item">
-                    <span class="font-bold">{{data.translatedLangText.EIR_NO}}:</span>
-                    <span class="card-detail-value">
-                      {{igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_no}}
-                    </span>
-                  </div>
-                  
-                  <div class="card-detail-item">
-                    <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
-                    <span class="card-detail-value">
-                      {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
-                    </span>
-                  </div>
+            }" (click)="toggleRow(row!)" matRipple>
+          <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
+            <mat-card-title class="pt-1">
+              <mat-checkbox (change)="$event ? toggleRow(row!) : null"
+                [checked]="schedulingSotSelection.isSelected(row!)" class="card-checkbox"
+                (click)="$event.stopPropagation()" [disabled]="checkDisable(row!)">
+              </mat-checkbox>
+              <span [class]="{'text-danger': addedSot(row)}">
+                {{row.storing_order_tank!.tank_no}}
+              </span>
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="row">
+              <!-- First Column -->
+              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-2">
+                <div class="card-detail-item">
+                  <span class="font-bold">{{data.translatedLangText.EIR_NO}}:</span>
+                  <span class="card-detail-value">
+                    {{igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_no}}
+                  </span>
                 </div>
-                
-                <!-- Second Column -->
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-2">
-                  <div class="card-detail-item">
-                    <span class="font-bold">{{data.translatedLangText.EIR_DATE}}:</span>
-                    <span class="card-detail-value">
-                      {{displayDate(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_dt)}}
-                    </span>
-                  </div>
-                  
-                  <div class="card-detail-item">
-                    <span class="font-bold">{{data.translatedLangText.SCHEDULING_DATE}}:</span>
-                    <span [class]="{'text-danger': over3Days(row)}" class="card-detail-value">
-                      {{displayDate(row.scheduling_dt)}}
-                    </span>
-                  </div>
-                </div>
-                
-                <!-- Third Column -->
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-2">
-                  <div class="card-detail-item">
-                    <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>
-                    <span [class]="{'text-danger': notStorage(row)}" class="card-detail-value">
-                      {{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
-                    </span>
-                  </div>
+
+                <div class="card-detail-item">
+                  <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
+                  <span class="card-detail-value">
+                    {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
+                  </span>
                 </div>
               </div>
-            </mat-card-content>
-            
-            <mat-card-actions class="empty-card-actions"></mat-card-actions>
-          </mat-card>
+
+              <!-- Second Column -->
+              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-2">
+                <div class="card-detail-item">
+                  <span class="font-bold">{{data.translatedLangText.EIR_DATE}}:</span>
+                  <span class="card-detail-value">
+                    {{displayDate(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_dt)}}
+                  </span>
+                </div>
+
+                <div class="card-detail-item">
+                  <span class="font-bold">{{data.translatedLangText.SCHEDULING_DATE}}:</span>
+                  <span [class]="{'text-danger': over3Days(row)}" class="card-detail-value">
+                    {{displayDate(row.scheduling_dt)}}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Third Column -->
+              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-2">
+                <div class="card-detail-item">
+                  <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>
+                  <span [class]="{'text-danger': notStorage(row)}" class="card-detail-value">
+                    {{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions class="empty-card-actions"></mat-card-actions>
+        </mat-card>
         <!-- <mat-card [ngClass]="{'bg-light-grey': checkDisable(row!), 'card-content p-0 m-b-10 cursor-pointer': true}" (click)="toggleRow(row!)"
           matRipple>
           <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center"
