@@ -18,6 +18,7 @@ export class TankItem {
   public gate_in?: boolean;
   public gate_out?: boolean;
   public iso_format?: boolean;
+  public flat_rate?: boolean;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -36,6 +37,7 @@ export class TankItem {
     this.gate_in = item.gate_in;
     this.gate_out = item.gate_out;
     this.iso_format = item.iso_format;
+    this.flat_rate=item.flat_rate;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -62,6 +64,7 @@ export const GET_TANK_Where = gql`
       gate_in
       gate_out
       iso_format
+      flat_rate
     }
   }
 `;
@@ -85,6 +88,7 @@ export const GET_TANK_Where_r1 = gql`
         unit_type
         update_by
         update_dt
+        flat_rate
         sot{
           guid
           tank_no
@@ -114,6 +118,7 @@ export const GET_TANK = gql`
         gate_in
         gate_out
         iso_format
+        flat_rate
       }
       totalCount
     }
