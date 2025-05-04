@@ -1978,8 +1978,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return true;
   }
 
-  allowPerformAction(){
-    if(this.modulePackageService.isCustomizedPackage() || this.modulePackageService.isGrowthPackage())
+  allowPerformAction() {
+    if (this.modulePackageService.isCustomizedPackage() || this.modulePackageService.isGrowthPackage())
       return true;
     else
       return false;

@@ -44,6 +44,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -193,7 +194,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -652,7 +654,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   editSchedulingDetails(row: StoringOrderTankItem, scheduling_guid: string | undefined, event: Event) {
     this.preventDefault(event);
     if (this.checkDisable(row)) return;
-    
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -822,7 +824,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
