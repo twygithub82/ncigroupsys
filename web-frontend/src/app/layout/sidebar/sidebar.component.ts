@@ -216,7 +216,7 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_LOGOUT,
+        headerText: this.translatedLangText.LOGOUT + "?",
         action: 'new',
       },
       direction: tempDirection
