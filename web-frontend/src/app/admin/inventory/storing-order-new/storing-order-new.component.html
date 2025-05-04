@@ -12,7 +12,7 @@
             <div class="header">
               <h3>
                 @if (this.so_guid) {
-                  {{translatedLangText.STORING_ORDER}}: {{ soForm?.get('so_no')?.value}}
+                {{translatedLangText.STORING_ORDER}}: {{ soForm?.get('so_no')?.value}}
                 }
               </h3>
             </div>
@@ -88,11 +88,11 @@
                       </ng-container>
                       <ng-container matColumnDef="tank_no">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.TANK_NO}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">
                             {{translatedLangText.TANK_NO}}:
                           </span>
@@ -161,20 +161,16 @@
                           {{translatedLangText.STORAGE}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.STORAGE}}:</span>
                           @if (row.purpose_storage) {
                           <div>
-                            <span class="badge badge-solid-green">
-                              <mat-icon>done</mat-icon>
-                            </span>
+                            <mat-icon class="text-success">done</mat-icon>
                           </div>
                           }
                           @if (!row.purpose_storage) {
                           <div>
-                            <span class="badge badge-solid-purple">
-                              <mat-icon>clear</mat-icon>
-                            </span>
+                            <mat-icon class="text-danger">clear</mat-icon>
                           </div>
                           }
                         </mat-cell>
@@ -186,20 +182,16 @@
                           {{translatedLangText.CLEANING}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.CLEANING}}:</span>
                           @if (row.purpose_cleaning) {
                           <div>
-                            <span class="badge badge-solid-green">
-                              <mat-icon>done</mat-icon>
-                            </span>
+                            <mat-icon class="text-success">done</mat-icon>
                           </div>
                           }
                           @if (!row.purpose_cleaning) {
                           <div>
-                            <span class="badge badge-solid-purple">
-                              <mat-icon>clear</mat-icon>
-                            </span>
+                            <mat-icon class="text-danger">clear</mat-icon>
                           </div>
                           }
                         </mat-cell>
@@ -211,20 +203,16 @@
                           {{translatedLangText.STEAM}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.STEAM}}:</span>
                           @if (row.purpose_steam) {
                           <div>
-                            <span class="badge badge-solid-green">
-                              <mat-icon>done</mat-icon>
-                            </span>
+                            <mat-icon class="text-success">done</mat-icon>
                           </div>
                           }
                           @if (!row.purpose_steam) {
                           <div>
-                            <span class="badge badge-solid-purple">
-                              <mat-icon>clear</mat-icon>
-                            </span>
+                            <mat-icon class="text-danger">clear</mat-icon>
                           </div>
                           }
                         </mat-cell>
@@ -243,12 +231,12 @@
                       </ng-container>
                       <ng-container matColumnDef="status_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.PROCESS}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.PROCESS}}:</span>
                           <span
                             [matTooltip]="row.remarks ? ('Remarks: ' + row.remarks) : ''">{{getSoStatusDescription(row.status_cv)}}</span>

@@ -476,16 +476,13 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if (this.pcForm!.value["min_labour"]) {
-
       const minLabour: number = Number(this.pcForm!.value["min_labour"]);
       where.and.push({ package_steaming: { labour: { gte: minLabour } } })
     }
 
     if (this.pcForm!.value["max_labour"]) {
-
       const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
       where.and.push({ package_steaming: { labour: { ngte: maxLabour } } })
-
     }
 
     if (this.pcForm!.value["min_cost"]) {
@@ -495,11 +492,10 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if (this.pcForm!.value["max_cost"]) {
-
       const maxCost: number = Number(this.pcForm!.value["max_cost"]);
       where.and.push({ package_steaming: { cost: { ngte: maxCost } } })
-
     }
+    
     this.lastSearchCriteria = where;
     this.subs.sink = this.packSteamExclDS.SearchExclusiveSteam(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.packageSteamItems = data;
