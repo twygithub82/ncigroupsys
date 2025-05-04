@@ -70,7 +70,7 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
     MatAutocompleteModule,
     MatDividerModule,
     MatChipsModule,
-    
+
   ]
 })
 export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
@@ -124,10 +124,10 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
-  
-selectedCustomers: any[] = [];
 
-separatorKeysCodes: number[] = [ENTER, COMMA];
+  selectedCustomers: any[] = [];
+
+  separatorKeysCodes: number[] = [ENTER, COMMA];
 
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -278,7 +278,7 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
       flat_rate: '',
       hourly_rate: ''
     });
-    this.selectedCustomers=[];
+    this.selectedCustomers = [];
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -460,14 +460,19 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
 
   search() {
     const where: any = {
-      and: []
+      and: [
+        {
+          package_steaming: {
+            customer_company: { delete_dt: { eq: null } }
+          }
+        }
+      ]
     };
 
-   // if (this.pcForm!.get('customer_code')?.value) 
-   if(this.selectedCustomers.length > 0)
-   {
+    // if (this.pcForm!.get('customer_code')?.value) 
+    if (this.selectedCustomers.length > 0) {
       var custCodes = this.selectedCustomers.map(c => c.code);
-      where.and.push({ package_steaming: { customer_company: { code: { in:custCodes } } } });
+      where.and.push({ package_steaming: { customer_company: { code: { in: custCodes } } } });
     }
 
     if (this.pcForm!.value["min_labour"]) {
@@ -639,7 +644,7 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        var valchanges=value||'';
+        var valchanges = value || '';
         if (typeof valchanges === 'string') {
           searchCriteria = valchanges;
         } else {
@@ -648,7 +653,7 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
         this.searchCustomerCompanyList(searchCriteria);
         // this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
         //   this.customer_companyList = data;
-          
+
         // });
       })
     ).subscribe();
@@ -770,20 +775,20 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      
+
     }
 
     if (this.custInput) {
       this.searchCustomerCompanyList('');
       this.custInput.nativeElement.value = '';
-      
+
     }
-   // this.updateFormControl();
+    // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
   }
-  
-  
+
+
   add(event: MatChipInputEvent): void {
     const input = event.input;
     const value = event.value;
@@ -799,28 +804,26 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
   }
 
   remove(cust: any): void {
-    const index = this.selectedCustomers.findIndex(c=>c.code===cust.code);
+    const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
     if (index >= 0) {
       this.selectedCustomers.splice(index, 1);
-      
+
     }
   }
-  
+
   // displayCustomerCompanyFn(customer: any): string {
   //   if (!customer) return '';
   //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
   // }
-  
+
   private updateFormControl(): void {
     this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
   }
 
-  searchCustomerCompanyList(searchCriteria : string)
-  {
+  searchCustomerCompanyList(searchCriteria: string) {
     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-      if(this.custInput?.nativeElement.value===searchCriteria)
-      {
-         this.customer_companyList = data;
+      if (this.custInput?.nativeElement.value === searchCriteria) {
+        this.customer_companyList = data;
       }
     });
   }

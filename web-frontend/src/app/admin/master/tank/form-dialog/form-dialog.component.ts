@@ -290,6 +290,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         gate_out: tnkItm.gate_out,
         preinspect: tnkItm.preinspect,
         iso_format: tnkItm.iso_format,
+        flat_rate:tnkItm.flat_rate
         // flat_rate: tnkItm.flat_rate,
         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
       });
@@ -358,7 +359,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tnkItm.lift_off = this.pcForm.get("lift_off")?.value;
       tnkItm.preinspect = this.pcForm.get("preinspect")?.value;
       tnkItm.iso_format = this.pcForm.get("iso_format")?.value;
-      // tnkItm.flat_rate = this.pcForm.get("flat_rate")?.value;
+      tnkItm.flat_rate = this.pcForm.get("flat_rate")?.value;
       this.tankDS?.updateTank(tnkItm).subscribe(result => {
         if (result.data.updateTank > 0) {
 
@@ -377,7 +378,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tnkItm.lift_off = this.pcForm.get("lift_off")?.value;
       tnkItm.preinspect = this.pcForm.get("preinspect")?.value;
       tnkItm.iso_format = this.pcForm.get("iso_format")?.value;
-      // tnkItm.flat_rate = this.pcForm.get("flat_rate")?.value;
+      tnkItm.flat_rate = this.pcForm.get("flat_rate")?.value;
       this.tankDS?.addNewTank(tnkItm).subscribe(result => {
         if (result.data.addTank > 0) {
 

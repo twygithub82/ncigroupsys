@@ -1,48 +1,38 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-import { CleaningCategoryItem } from './cleaning-category';
-import { CleaningMethodItem } from './cleaning-method';
-import { TankItem } from './tank';
-import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
-import { PageInfo } from '@core/models/pageInfo';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { CustomerCompanyItem } from './customer-company';
-import { TariffSteamingItem } from './tariff-steam';
 import { PackageSteamingItem } from './package-steam';
 import { SteamPartItem } from './steam-part';
 import { TariffCleaningItem } from './tariff-cleaning';
 export class ExclusiveSteamingGo {
   public guid?: string;
-  public tariff_cleaning_guid?:string;
-  //public description?: string;
+  public tariff_cleaning_guid?: string;
   public temp_max?: number;
   public temp_min?: number;
   public cost?: number;
-  public remarks?:string;
-  public labour?:number;
+  public remarks?: string;
+  public labour?: number;
 
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  
+
   constructor(item: Partial<ExclusiveSteamingGo> = {}) {
     this.guid = item.guid;
     if (!this.guid) this.guid = '';
-    
-    this.labour=item.labour;
-    this.temp_max=item.temp_max;
-    this.temp_min=item.temp_min;
-    this.tariff_cleaning_guid= item.tariff_cleaning_guid;
+
+    this.labour = item.labour;
+    this.temp_max = item.temp_max;
+    this.temp_min = item.temp_min;
+    this.tariff_cleaning_guid = item.tariff_cleaning_guid;
 
     this.cost = item.cost;
-    this.remarks=item.remarks;
+    this.remarks = item.remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -53,17 +43,13 @@ export class ExclusiveSteamingGo {
 
 export class ExclusiveSteamingItem extends ExclusiveSteamingGo {
   public package_steaming?: PackageSteamingItem;
-  public steaming_part?:SteamPartItem[];
-  public tariff_cleaning?:TariffCleaningItem;
-
- 
-  
+  public steaming_part?: SteamPartItem[];
+  public tariff_cleaning?: TariffCleaningItem;
   constructor(item: Partial<ExclusiveSteamingItem> = {}) {
-    
     super(item);
-    this.package_steaming=item.package_steaming;
-    this.steaming_part=item.steaming_part;
-    this.tariff_cleaning=item.tariff_cleaning;
+    this.package_steaming = item.package_steaming;
+    this.steaming_part = item.steaming_part;
+    this.tariff_cleaning = item.tariff_cleaning;
   }
 }
 
@@ -71,9 +57,6 @@ export interface PackageSteamResult {
   items: PackageSteamingItem[];
   totalCount: number;
 }
-
-
-
 
 export const GET_EXCLUSIVE_STEAM_QUERY = gql`
   query querySteamingExclusive($where: steaming_exclusiveFilterInput, $order:[steaming_exclusiveSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
@@ -174,7 +157,7 @@ export class PackageSteamingExclusiveDS extends BaseDataSource<PackageSteamingIt
   constructor(private apollo: Apollo) {
     super();
   }
-  
+
   SearchExclusiveSteam(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ExclusiveSteamingItem[]> {
     this.loadingSubject.next(true);
     if (!last)
@@ -216,7 +199,7 @@ export class PackageSteamingExclusiveDS extends BaseDataSource<PackageSteamingIt
       }),
     );
   }
- 
+
   // AddExclusiveSteam(newSteamingExclusive: any): Observable<any> {
   //   return this.apollo.mutate({
   //     mutation: ADD_EXCLUSIVE_STEAMING,
@@ -231,31 +214,31 @@ export class PackageSteamingExclusiveDS extends BaseDataSource<PackageSteamingIt
   //   );
   // }
 
-    updateExclusiveSteam(updateSteamingExclusive: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_EXCLUSIVE_STEAMING,
-        variables: {
-          updateSteamingExclusive
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  updateExclusiveSteam(updateSteamingExclusive: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_EXCLUSIVE_STEAMING,
+      variables: {
+        updateSteamingExclusive
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
-    deleteExclusiveSteam(deleteSteamExclusive_guids: String[]): Observable<any> {
-      return this.apollo.mutate({
-        mutation: DELETE_EXCLUSIVE_STEAMING,
-        variables: {
-          deleteSteamExclusive_guids
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  deleteExclusiveSteam(deleteSteamExclusive_guids: String[]): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_EXCLUSIVE_STEAMING,
+      variables: {
+        deleteSteamExclusive_guids
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 }

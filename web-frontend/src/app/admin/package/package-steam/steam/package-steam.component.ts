@@ -110,7 +110,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   selection = new SelectionModel<PackageSteamingItem>(true, []);
 
   selectedCustomers: any[] = [];
-    
+
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
   id?: number;
@@ -261,7 +261,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       max_labour: ['']
 
     });
-    this.selectedCustomers=[];
+    this.selectedCustomers = [];
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -427,16 +427,20 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
   search() {
     const where: any = {
-      and: []
+      and: [
+        {
+          customer_company: { delete_dt: { eq: null } }
+        }
+      ]
     };
 
     where.and.push({ steaming_exclusive_guid: { eq: null } });
 
-    
-    if (this.selectedCustomers.length>0) {
+
+    if (this.selectedCustomers.length > 0) {
       var custCodes = this.selectedCustomers.map(c => c.code);
       where.and.push({ customer_company: { code: { in: custCodes } } });
-      
+
     }
 
     // if (this.pcForm!.get('customer_code')?.value) {
@@ -675,7 +679,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
@@ -700,68 +704,66 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
   selected(event: MatAutocompleteSelectedEvent): void {
-            const customer = event.option.value;
-            const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
-            if (!(index >= 0)) {
-              this.selectedCustomers.push(customer);
-              
-            }
-        
-            if (this.custInput) {
-              this.searchCustomerCompanyList('');
-              this.custInput.nativeElement.value = '';
-              
-            }
-           // this.updateFormControl();
-            //this.customerCodeControl.setValue(null);
-            //this.pcForm?.patchValue({ customer_code: null });
-          }
-          
-        add(event: MatChipInputEvent): void {
-          const input = event.input;
-          const value = event.value;
-          // Add our fruit
-          if ((value || '').trim()) {
-            //this.fruits.push(value.trim());
-          }
-          // Reset the input value
-          if (input) {
-            input.value = '';
-          }
-          this.customerCodeControl.setValue(null);
-        }
-      
-        remove(cust: any): void {
-          const index = this.selectedCustomers.findIndex(c=>c.code===cust.code);
-          if (index >= 0) {
-            this.selectedCustomers.splice(index, 1);
-            
-          }
-        }
-        
-        // displayCustomerCompanyFn(customer: any): string {
-        //   if (!customer) return '';
-        //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
-        // }
-        
-        private updateFormControl(): void {
-         // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
-        }
-      
-        searchCustomerCompanyList(searchCriteria : string)
-        {
-          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-            if(this.custInput?.nativeElement.value===searchCriteria)
-            {
-               this.customer_companyList = data;
-            }
-          });
-        }
+    const customer = event.option.value;
+    const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
+    if (!(index >= 0)) {
+      this.selectedCustomers.push(customer);
 
-        onTabFocused() {
-          this.resetForm();
-          this.search();
-        }
-    
+    }
+
+    if (this.custInput) {
+      this.searchCustomerCompanyList('');
+      this.custInput.nativeElement.value = '';
+
+    }
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    this.customerCodeControl.setValue(null);
+  }
+
+  remove(cust: any): void {
+    const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
+    if (index >= 0) {
+      this.selectedCustomers.splice(index, 1);
+
+    }
+  }
+
+  // displayCustomerCompanyFn(customer: any): string {
+  //   if (!customer) return '';
+  //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
+  // }
+
+  private updateFormControl(): void {
+    // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
+  }
+
+  searchCustomerCompanyList(searchCriteria: string) {
+    this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+      if (this.custInput?.nativeElement.value === searchCriteria) {
+        this.customer_companyList = data;
+      }
+    });
+  }
+
+  onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
+
 }
 

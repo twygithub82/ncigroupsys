@@ -21,6 +21,8 @@ import { GraphqlNotificationService } from '../../services/global-notification.s
 import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { FeatherIconsComponent } from '../../shared/components/feather-icons/feather-icons.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { AuthService } from '@core/service/auth.service';
+import { debounceTime, take } from 'rxjs/operators';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -90,7 +92,7 @@ export class Dashboard1Component implements OnInit {
   constructor(
     private apollo: Apollo,
     private translate: TranslateService,
-    public modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService,
   ) {
     this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
     this.igDS = new InGateDS(this.apollo);
