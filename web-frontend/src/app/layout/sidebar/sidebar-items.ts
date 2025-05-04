@@ -538,7 +538,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
         submenu: [],
       },
       // {
@@ -623,7 +623,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
         submenu: [],
       },
     ]

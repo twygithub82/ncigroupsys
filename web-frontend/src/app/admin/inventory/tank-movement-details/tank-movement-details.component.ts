@@ -77,6 +77,7 @@ import { OverwriteDepotCostFormDialogComponent } from './overwrite-depot-cost-fo
 import { OverwriteCleaningApprovalFormDialogComponent } from './overwrite-clean-appr-form-dialog/overwrite-clean-appr-form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ConfirmationRemarksFormDialogComponent } from './confirmation-remarks-form-dialog/confirmation-remarks-form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -619,7 +620,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     private router: Router,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
-    private fileManagerService: FileManagerService
+    private fileManagerService: FileManagerService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -1145,7 +1147,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
-      width: '794px',
+      // width: '794px',
+      // height: '80vh',
+      width: '75vw',
       height: '80vh',
       data: {
         type: this.sot?.purpose_repair_cv,
@@ -1972,6 +1976,32 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canOverwriteDepotCost() {
     return true;
+  }
+
+  allowPerformAction(){
+    if(this.modulePackageService.isCustomizedPackage() || this.modulePackageService.isGrowthPackage())
+      return true;
+    else
+      return false;
+  }
+
+  tabConfig = [
+    {
+      label: this.translatedLangText.BOOKING,
+      component: 'booking',
+      modulePackage: ['growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.SCHEDULING,
+      component: 'scheduling',
+      modulePackage: ['starter', 'growth', 'customized']
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
   }
 
   canOverwriteLastCargo() {
