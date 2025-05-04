@@ -45,6 +45,7 @@ import { CustomerMonthlyAdminReportComponent } from './customer-monthly/customer
 import { RepairMonthlyAdminReportComponent } from './repair-monthly/repair-monthly.component';
 import { ResidueMonthlyAdminReportComponent } from './residue-monthly/residue-monthly.component';
 import { SteamMonthlyAdminReportComponent } from './steam-monthly/steam-monthly.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-main-monthly',
@@ -194,7 +195,9 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
+
   ) {
     super();
     this.translateLangText();
@@ -808,6 +811,42 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
     console.log('Refreshing main tab content...');
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
+
+  tabConfig = [
+    {
+      label: this.translatedLangText.CLEAN_REPORT,
+      component: 'app-clean-monthly',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.REPAIR_REPORT,
+      component: 'app-repair-monthly',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.STEAM_REPORT,
+      component: 'app-steam-monthly',
+      modulePackage: ['growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.RESIDUE_REPORT,
+      component: 'app-residue-monthly',
+      modulePackage: ['growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.CUSTOMER_REPORT,
+      component: 'app-customer-monthly',
+      modulePackage: ['starter', 'growth', 'customized']
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
+  }
+
+
 
  @ViewChild('steamAdminReport') steamAdminReport!: SteamMonthlyAdminReportComponent;
  @ViewChild('residueAdminReport') residueAdminReport!: ResidueMonthlyAdminReportComponent;

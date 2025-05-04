@@ -27,19 +27,13 @@
                    </mat-tab>
                   }
                 }
-                <!-- <mat-tab>
-                  <ng-template mat-tab-label>
-                    <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
-                  </ng-template>
-                  <app-job-order-qc></app-job-order-qc>
-                </mat-tab> -->
               </mat-tab-group>
             }
             @else 
             {
               @for (tab of allowedTabs; track tab.label) 
               {
-                @if (tab.component == 'clean') {
+                @if (tab.component == 'app-clean-billing') {
                 <app-clean-billing #cleanBilling></app-clean-billing>
                 }
                 @if (tab.component == 'app-steam-billing') {

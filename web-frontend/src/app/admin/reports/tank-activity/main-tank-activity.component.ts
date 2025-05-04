@@ -46,6 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { TankActivitiyCustomerReportComponent } from './customer/customer-report.component';
 import { TankActivitiyYardReportComponent } from './yard/yard-report.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 // import { CleanBillingComponent } from './clean/clean-billing.component';
 // import { ResidueBillingComponent } from './residue/residue-billing.component';
 // import { SteamBillingComponent } from './steam/steam-billing.component';
@@ -230,7 +231,8 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -790,10 +792,6 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
     //   });
   }
 
-  // isStarted(jobOrderItem: JobOrderItem | undefined) {
-  //   return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-  // }
-
   isStarted(cleanItem: InGateCleaningItem | undefined) {
 
     if (cleanItem?.job_order) {
@@ -843,6 +841,25 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
     // Logic to refresh the content of the main tab
     console.log('Refreshing main tab content...');
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
+  }
+
+  tabConfig = [
+    {
+      label: this.translatedLangText.CUSTOMER_REPORT,
+      component: 'app-customer-report',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.YARD_REPORT,
+      component: 'app-yard-report',
+      modulePackage: ['growth', 'customized']
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
   }
 
   @ViewChild('tankActCustomerReport') tankActCustomerReport!: TankActivitiyCustomerReportComponent;

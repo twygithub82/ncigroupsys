@@ -8,14 +8,35 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <div class="body overflow-auto">
-            <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
-              <mat-tab [label]="translatedLangText.CUSTOMER_REPORT">
-                <app-customer-report #tankActCustomerReport></app-customer-report>
-              </mat-tab>
-              <mat-tab [label]="translatedLangText.YARD_REPORT">
-                <app-yard-report #tankActYardReport></app-yard-report>
-              </mat-tab>
-            </mat-tab-group>
+            @if (allowedTabs.length > 1) {
+              <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
+                @for (tab of allowedTabs; track tab.label) {
+                  @if (tab.component == 'app-customer-report') {
+                    <mat-tab [label]="translatedLangText.CUSTOMER_REPORT">
+                      <app-customer-report #tankActCustomerReport></app-customer-report>
+                    </mat-tab>
+                  }
+                  @if (tab.component == 'app-customer-report') {
+                    <mat-tab [label]="translatedLangText.YARD_REPORT">
+                      <app-yard-report #tankActYardReport></app-yard-report>
+                    </mat-tab>
+                  }
+                }
+              </mat-tab-group>
+            }
+            @else 
+            {
+              @for (tab of allowedTabs; track tab.label) 
+              {
+                @if (tab.component == 'app-customer-report') {
+                  <app-customer-report #tankActCustomerReportg></app-customer-report>
+                  }
+                @if (tab.component == 'app-yard-report') {
+                  <app-yard-report #tankActYardReportg></app-yard-report>
+                  }
+              }
+            }
+           
           </div>
         </div>
       </div>

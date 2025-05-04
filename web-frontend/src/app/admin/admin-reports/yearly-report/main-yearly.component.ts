@@ -44,6 +44,7 @@ import { SteamYearlyAdminReportComponent } from './steam-yearly/steam-yearly.com
 import { ResidueYearlyAdminReportComponent } from './residue-yearly/residue-yearly.component';
 import { RepairYearlyAdminReportComponent } from './repair-yearly/repair-yearly.component';
 import { CleanYearlyAdminReportComponent } from './clean-yearly/clean-yearly.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-main-yearly',
@@ -192,7 +193,8 @@ export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements 
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -752,10 +754,6 @@ export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements 
     //   });
   }
 
-  // isStarted(jobOrderItem: JobOrderItem | undefined) {
-  //   return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-  // }
-
   isStarted(cleanItem: InGateCleaningItem | undefined) {
 
     if (cleanItem?.job_order) {
@@ -782,8 +780,40 @@ export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements 
 
   canShowAction(cleanItem: InGateCleaningItem) {
     return cleanItem.status_cv == 'JOB_IN_PROGRESS';
+  }
 
+  tabConfig = [
+    {
+      label: this.translatedLangText.CLEAN_REPORT,
+      component: 'app-clean-yearly',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.REPAIR_REPORT,
+      component: 'app-repair-yearly',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.STEAM_REPORT,
+      component: 'app-steam-yearly',
+      modulePackage: ['growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.RESIDUE_REPORT,
+      component: 'app-residue-yearly',
+      modulePackage: ['growth', 'customized']
+    },
+    // {
+    //   label: this.translatedLangText.CUSTOMER_REPORT,
+    //   component: 'app-customer-yaerly',
+    //   modulePackage: ['starter', 'growth', 'customized']
+    // }
+  ];
 
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
   }
 
   sortList(itemList: any[]) {

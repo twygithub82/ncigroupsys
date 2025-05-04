@@ -1251,7 +1251,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/reports/inventory",
@@ -1290,7 +1290,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/reports/tank-survey",
@@ -1382,7 +1382,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/admin-reports/main-performance-report",
@@ -1395,7 +1395,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
       },
       {
         path: "admin/admin-reports/main-zero-approval-cost-report",
@@ -1408,7 +1408,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
         visible: true,
-        modulePackage: ['starter', 'growth', 'customized'],
+        modulePackage: ['growth', 'customized'],
       }
     ].filter(item => item.visible !== false),
   },
