@@ -33,6 +33,7 @@ import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstPartItem } from 'app/data-sources/master-template';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -194,7 +195,8 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private searchStateService: SearchStateService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.initMtForm();

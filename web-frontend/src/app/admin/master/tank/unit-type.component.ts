@@ -269,7 +269,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private translate: TranslateService,
     private searchStateService: SearchStateService,
-    private modulePackageService :ModulePackageService
+    public modulePackageService :ModulePackageService,
   ) {
     super();
     this.initPcForm();

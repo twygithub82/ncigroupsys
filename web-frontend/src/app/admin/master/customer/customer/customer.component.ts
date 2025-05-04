@@ -42,6 +42,7 @@ import { Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -231,7 +232,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private searchStateService: SearchStateService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.initPcForm();

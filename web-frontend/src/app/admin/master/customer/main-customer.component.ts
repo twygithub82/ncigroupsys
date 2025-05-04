@@ -31,6 +31,7 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Utility } from 'app/utilities/utility';
 import { BillingBranchComponent } from './billing-branch/billing-branch.component';
 import { CustomerComponent } from './customer/customer.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-customer-main',
@@ -88,7 +89,8 @@ export class MainCustomerComponent extends UnsubscribeOnDestroyAdapter implement
     private fb: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -147,6 +149,25 @@ export class MainCustomerComponent extends UnsubscribeOnDestroyAdapter implement
 
   onTabChange(index: number) {
     this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
+  }
+
+  tabConfig = [
+    {
+      label: this.translatedLangText.CUSTOMER,
+      component: 'app-customer',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.BILLING_BRANCH,
+      component: 'app-billing-branch',
+      modulePackage: ['growth', 'customized']
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
   }
 
    @ViewChild('customer') customer!: CustomerComponent;

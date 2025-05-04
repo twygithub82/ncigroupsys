@@ -8,14 +8,32 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <div class="body overflow-auto">
-            <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)" (selectedTabChange)="onTabSelected($event)">
-              <mat-tab [label]="translatedLangText.CUSTOMER">
-                <app-customer #customer></app-customer>
-              </mat-tab>
-              <mat-tab [label]="translatedLangText.BILLING_BRANCH">
-                <app-billing-branch #billBranch></app-billing-branch>
-              </mat-tab>
-            </mat-tab-group>
+            @if (allowedTabs.length > 1) {
+              <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)" (selectedTabChange)="onTabSelected($event)">
+                @for (tab of allowedTabs; track tab.label) {
+                  @if (tab.component == 'app-customer') {
+                    <mat-tab [label]="translatedLangText.CUSTOMER">
+                      <app-customer #customer></app-customer>
+                    </mat-tab>
+                  }
+                  @if (tab.component == 'app-billing-branch') {
+                    <mat-tab [label]="translatedLangText.BILLING_BRANCH">
+                      <app-billing-branch #billBranch></app-billing-branch>
+                    </mat-tab>
+                  }
+                }
+              </mat-tab-group>
+            }
+            @else{
+              @for (tab of allowedTabs; track tab.label) {
+                @if (tab.component == 'app-customer') {
+                  <app-customer #customer></app-customer>
+                }
+                @if (tab.component == 'app-billing-branch') {
+                  <app-billing-branch #billBranch></app-billing-branch>
+                }
+              }
+            }      
           </div>
         </div>
       </div>
