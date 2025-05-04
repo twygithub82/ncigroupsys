@@ -31,7 +31,14 @@ namespace IDMS.Master.Application
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddPooledDbContextFactory<ApplicationMasterDBContext>(o =>
             {
-                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+                // o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                       mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(10),
+                        errorNumbersToAdd: null)
+                    ).LogTo(Console.WriteLine);
+
                 o.EnableSensitiveDataLogging(false);
             });
 
