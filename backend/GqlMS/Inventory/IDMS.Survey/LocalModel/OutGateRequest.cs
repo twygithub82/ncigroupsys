@@ -3,12 +3,15 @@ using IDMS.Models;
 using IDMS.Models.Inventory;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace IDMS.Survey.GqlTypes.LocalModel
 {
+    [NotMapped]
     public class OutGateRequest: Dates
     {
         public string? guid { get; set; }
@@ -19,12 +22,19 @@ namespace IDMS.Survey.GqlTypes.LocalModel
         public string? vehicle_no { get; set; }
         public string? yard_cv { get; set; }
         public string? driver_name { get; set; }
-        public string? lolo_cv { get; set; }
-        public string? preinspection_cv { get; set; }
+        //public string? lolo_cv { get; set; }
+        //public string? preinspection_cv { get; set; }
         public long? eir_dt { get; set; }
         public string? remarks { get; set; }
         public storing_order_tank? tank { get; set; }
         public out_gate_survey? out_gate_survey { get; set; }
         public release_order? release_order { get; set; }
+    }
+
+    public class TankDetail
+    {
+        public string tank_no { get; set; }
+        public string owner_guid { get; set; }
+        public string unit_type_guid { get; set; }
     }
 }

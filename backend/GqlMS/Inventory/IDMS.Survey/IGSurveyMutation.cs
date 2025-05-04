@@ -132,7 +132,7 @@ namespace IDMS.Survey.GqlTypes
                 in_gate_survey? ingateSurvey = await context.in_gate_survey.Where(i => i.guid == inGateSurveyRequest.guid &&
                                                                                  (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
                 if (ingateSurvey == null)
-                    throw new GraphQLException(new Error("Ingate survey not found.", "NOT_FOUND"));
+                    throw new GraphQLException(new Error("Ingate survey object cannot be null or empty.", "ERROR"));
 
                 if (ingateSurvey.in_gate_guid == null)
                     throw new GraphQLException(new Error("Ingate guid cant be null.", "Error"));
