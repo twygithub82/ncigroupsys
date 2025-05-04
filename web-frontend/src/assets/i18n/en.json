@@ -624,6 +624,7 @@
     "LENGTH": "Length",
     "MATERIAL-COST": "Material Cost",
     "MATERIAL-COST$": "Material Cost $",
+    "MATERIAL$": "Material $",
     "LABOUR-HOUR": "Labour Hour",
     "SCHEDULING-DATE": "Scheduling Date",
     "DIMENSION": "Dimension",

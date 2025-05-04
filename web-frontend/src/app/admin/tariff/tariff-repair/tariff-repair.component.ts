@@ -90,7 +90,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     // 'actions',
     ''
   ];
-  
+
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-REPAIR'
   breadcrumsMiddleList = [
@@ -222,6 +222,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     DIMENSION: "COMMON-FORM.DIMENSION",
     MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
+    MATERIAL$: "COMMON-FORM.MATERIAL$",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     SEARCH: 'COMMON-FORM.SEARCH',
     ADD: 'COMMON-FORM.ADD',
@@ -281,7 +282,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  
   displayColumnChanged() {
     if (this.getPackages()) {
       this.displayedColumns = [
@@ -292,6 +292,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         'hour',
         'bDate',
         'last_date',
+        'handled_item',
         'actions',
       ];
     } else {
@@ -308,7 +309,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   };
 
   getPackages(): boolean {
-    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage())
       return true;
     else
       return false;
@@ -895,6 +896,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   getUnitTypeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.unitTypeCvList);
+  }
+
+  getHandledItemDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.handledItemCvList);
   }
 
   showNotification(
