@@ -102,6 +102,7 @@ export class AuthService {
     const endpoint = this.currentUserIsStaff ? api_full_endpoints.staff_refresh_token : api_full_endpoints.user_refresh_token;
     const url = `${endpoint}`
     const body = { refreshToken: currentRefreshToken };
+    console.log('refreshToken body: ', body)
     return this.http.post<any>(url, body, { headers })
       .pipe(
         map(response => {
