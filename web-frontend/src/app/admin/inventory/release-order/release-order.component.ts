@@ -75,16 +75,17 @@ import { ModulePackageService } from 'app/services/module-package.service';
 })
 export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'select',
-    'ro_no',
-    'customer_code',
-    'ro_dt',
-    'status',
-    'no_of_tanks',
-    // 'waiting_status',
-    // 'accept_status',
-    // 'cancel_status',
-    'actions'
+    // 'select',
+    // 'ro_no',
+    // 'customer_code',
+    // 'ro_dt',
+    // 'status',
+    // 'no_of_tanks',
+    // // 'waiting_status',
+    // // 'accept_status',
+    // // 'cancel_status',
+    // 'actions'
+    ''
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER'
@@ -195,6 +196,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.loadData();
+    this.displayColumnChanged();
   }
 
   refresh() {
@@ -219,6 +221,36 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   cancelItem(row: StoringOrderItem) {
     // this.id = row.id;
     this.cancelSelectedRows([row])
+  }
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+        'select',
+        'ro_no',
+        'customer_code',
+        'ro_dt',
+        'status',
+        'no_of_tanks',
+        'actions'
+      ];
+    } else {
+      this.displayedColumns = [
+        'ro_no',
+        'customer_code',
+        'ro_dt',
+        'status',
+        'no_of_tanks',
+        'actions'
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+      return true;
+    else
+      return false;
   }
 
   private refreshTable() {

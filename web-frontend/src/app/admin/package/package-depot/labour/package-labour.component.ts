@@ -80,11 +80,12 @@ import { ModulePackageService } from 'app/services/module-package.service';
 export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    'select',
-    //'fName',
-    'lName',
-    'customerCost',
-    'gender',
+    // 'select',
+    // //'fName',
+    // 'lName',
+    // 'customerCost',
+    // 'gender',
+    ''
   ];
 
   CLEANING_LAST_UPDATED_DT = 'COMMON-FORM.LAST-UPDATED'
@@ -246,6 +247,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
+    this.displayColumnChanged();
     this.translateLangText();
     this.search();
   }
@@ -283,10 +285,32 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
         // });
       })
     ).subscribe();
-
-
   }
 
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+        'select',
+        'lName',
+        'customerCost',
+        'gender',
+      ];
+    } else {
+      this.displayedColumns = [
+        'lName',
+        'customerCost',
+        'gender',
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+      return true;
+    else
+      return false;
+  }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';

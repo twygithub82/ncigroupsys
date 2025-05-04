@@ -75,16 +75,17 @@ import { ModulePackageService } from 'app/services/module-package.service';
 })
 export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'select',
-    'so_no',
-    'customer_code',
-    'no_of_tanks',
-    'status',
-    'waiting_status',
-    'accept_status',
-    'cancel_status',
-    'so_notes',
-    'actions'
+    // 'select',
+    // 'so_no',
+    // 'customer_code',
+    // 'no_of_tanks',
+    // 'status',
+    // 'waiting_status',
+    // 'accept_status',
+    // 'cancel_status',
+    // 'so_notes',
+    // 'actions'
+    ''
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
@@ -185,6 +186,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.loadData();
+    this.displayColumnChanged();
   }
 
   refresh() {
@@ -203,6 +205,42 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       eta_dt_start: [''],
       eta_dt_end: [''],
     });
+  }
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+        'select',
+        'so_no',
+        'customer_code',
+        'no_of_tanks',
+        'status',
+        'waiting_status',
+        'accept_status',
+        'cancel_status',
+        'so_notes',
+        'actions'
+      ];
+    } else {
+      this.displayedColumns = [
+        'so_no',
+        'customer_code',
+        'no_of_tanks',
+        'status',
+        'waiting_status',
+        'accept_status',
+        'cancel_status',
+        'so_notes',
+        'actions'
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+      return true;
+    else
+      return false;
   }
 
   cancelItem(row: StoringOrderItem) {
