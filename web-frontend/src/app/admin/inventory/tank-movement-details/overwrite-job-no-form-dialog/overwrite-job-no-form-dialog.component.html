@@ -40,7 +40,7 @@
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.translatedLangText.TAKE_IN_REFERENCE}}</mat-label>
+                <mat-label>{{data.translatedLangText.GATE_IN}}</mat-label>
                 <input matInput formControlName="job_no">
               </mat-form-field>
             </div>
@@ -48,7 +48,7 @@
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.translatedLangText.RELEASE_REFERENCE}}</mat-label>
+                <mat-label>{{data.translatedLangText.GATE_OUT}}</mat-label>
                 <input matInput formControlName="release_job_no">
               </mat-form-field>
             </div>
@@ -57,7 +57,7 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
-                <textarea matInput formControlName="job_no_remarks" required></textarea>
+                <textarea matInput formControlName="job_no_remarks"></textarea>
               </mat-form-field>
             </div>
           </div>
@@ -65,6 +65,9 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
+          <!-- <mat-slide-toggle class="scaled-toggle me-2" color="primary" formControlName="apply_all"
+              labelPosition="before">{{data.translatedLangText.APPLY_ALL}}
+          </mat-slide-toggle> -->
         <button mat-flat-button color="primary" (click)="submit()">
           <mat-icon>
             save

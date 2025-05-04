@@ -197,7 +197,7 @@
         "OUT-GATE-SURVEY": "Out Gate Survey",
         "OUT-GATE-SURVEY-FORM": "Out Gate Survey Form",
         "TRANSFER": "Transfer",
-        "TRANSFER-DETAILS": "Transfer Details"
+        "RELOCATION": "Relocation"
       }
     },
     "REPAIR": {
@@ -566,6 +566,7 @@
     "BOOKINGS": "Bookings",
     "SCHEDULINGS": "Schedulings",
     "SELECT-ALL": "Select All",
+    "APPLY-ALL": "Apply All",
     "ACTION-DATE": "Action Date",
     "BOOKING-DETAILS": "Booking Details",
     "REFERENCE": "Reference",
@@ -857,8 +858,10 @@
     "BOOKING": "Booking",
     "SCHEDULING": "Scheduling",
     "SURVEY-DETAILS": "Survey Details",
+    "EXTERNAL-SURVEY-DETAILS": "External Survey Details",
     "UPDATE-TANK-NOTES": "Update Tank Notes",
     "TRANSFER-DETAILS": "Transfer Details",
+    "RELOCATION-DETAILS": "Relocation Details",
     "RESIDUE-COMPLETE-DATE": "Residue Complete Date",
     "RESIDUE-BEGIN-DATE": "Residue Begin Date",
     "YET-START": "Yet Start",
@@ -1042,6 +1045,8 @@
     "NOTES": "Notes",
     "FROM_YARD": "From Yard",
     "TO_YARD": "To Yard",
+    "FROM":"From",
+    "TO":"To",
     "OPENING-BALANCE": "Opening Balance",
     "CLOSING-BALANCE": "Closing Balance",
     "DUE-TYPE": "Due Type",

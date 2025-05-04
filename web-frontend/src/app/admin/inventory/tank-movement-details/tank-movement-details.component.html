@@ -1990,12 +1990,12 @@
                                 </div>
                                 <div class="row">
                                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{translatedLangText.TAKE_IN_REFERENCE}}:</span>
+                                    <span>{{translatedLangText.GATE_IN}}:</span>
                                   </div>
                                 </div>
                                 <div class="row">
                                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{translatedLangText.RELEASE_REFERENCE}}:</span>
+                                    <span>{{translatedLangText.GATE_OUT}}:</span>
                                   </div>
                                 </div>
                               </div>
@@ -2618,7 +2618,7 @@
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
                           <h2>
-                            {{translatedLangText.SURVEY_DETAILS}}
+                            {{translatedLangText.EXTERNAL_SURVEY_DETAILS}}
                           </h2>
                         </div>
                         <button mat-icon-button (click)="expandAll($event, accordionSections.survey_details)"
@@ -2702,11 +2702,11 @@
                               <ng-container matColumnDef="remarks">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
                                   [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.REMARKS}}
+                                  {{translatedLangText.REFERENCE}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span class="mobile-tab-label">{{translatedLangText.REMARKS}}:</span>
+                                  <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
                                   <span>{{row.remarks ?? "-"}}</span>
                                 </mat-cell>
                               </ng-container>
@@ -2755,7 +2755,7 @@
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
                           <h2>
-                            {{translatedLangText.TRANSFER_DETAILS}}
+                            {{translatedLangText.RELOCATION_DETAILS}}
                           </h2>
                         </div>
                         <button mat-icon-button (click)="expandAll($event, accordionSections.transfer_details)"
@@ -2786,22 +2786,22 @@
                               <ng-container matColumnDef="transfer_out_dt">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.TRANSFER_SINCE}}
+                                  {{translatedLangText.FROM}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.TRANSFER_SINCE}}:</span>{{displayDate(row.transfer_out_dt)}}
+                                    class="mobile-tab-label">{{translatedLangText.FROM}}:</span>{{displayDate(row.transfer_out_dt)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="transfer_in_dt">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.TRANSFER_UNTIL}}
+                                  {{translatedLangText.TO}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span class="mobile-tab-label">{{translatedLangText.TRANSFER_UNTIL}}:</span>
+                                  <span class="mobile-tab-label">{{translatedLangText.TO}}:</span>
                                   <span>{{displayDate(row.transfer_in_dt) ?? "-"}}</span>
                                 </mat-cell>
                               </ng-container>
@@ -2857,7 +2857,7 @@
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{displayDate(row?.update_dt
+                                    class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{displayDateTime(row?.update_dt
                                   || row?.create_dt)}}
                                 </mat-cell>
                               </ng-container>

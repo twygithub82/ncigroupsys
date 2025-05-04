@@ -152,8 +152,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'book_type_cv',
     'booking_dt',
     'reference',
-    'surveyor',
     'status_cv',
+    'surveyor',
   ];
 
   displayedColumnsScheduling = [
@@ -167,8 +167,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'survey_type',
     'survey_dt',
     'surveyor',
-    'status_cv',
     'remarks',
+    'status_cv',
   ];
 
   displayedColumnsTransfer = [
@@ -226,6 +226,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TEST_TYPE: "COMMON-FORM.TEST-TYPE",
     DATE: "COMMON-FORM.DATE",
     CLASS: "COMMON-FORM.CLASS",
+    GATE_IN: "COMMON-FORM.GATE-IN",
+    GATE_OUT: "COMMON-FORM.GATE-OUT",
     IN_GATE_DETAILS: "COMMON-FORM.IN-GATE-DETAILS",
     IN_GATE_REMARKS: "COMMON-FORM.IN-GATE-REMARKS",
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -381,8 +383,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SCHEDULING: 'COMMON-FORM.SCHEDULING',
     SCHEDULING_DATE: 'COMMON-FORM.SCHEDULING-DATE',
     SURVEY_DETAILS: 'COMMON-FORM.SURVEY-DETAILS',
+    EXTERNAL_SURVEY_DETAILS: 'COMMON-FORM.EXTERNAL-SURVEY-DETAILS',
     UPDATE_TANK_NOTE: 'COMMON-FORM.UPDATE-TANK-NOTE',
     TRANSFER_DETAILS: 'COMMON-FORM.TRANSFER-DETAILS',
+    RELOCATION_DETAILS: 'COMMON-FORM.RELOCATION-DETAILS',
     RESIDUE_COMPLETE_DATE: 'COMMON-FORM.RESIDUE-COMPLETE-DATE',
     RESIDUE_BEGIN_DATE: 'COMMON-FORM.RESIDUE-BEGIN-DATE',
     ADD: 'COMMON-FORM.ADD',
@@ -404,6 +408,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     DAYS: 'COMMON-FORM.DAYS',
     TO_YARD: 'COMMON-FORM.TO-YARD',
     FROM_YARD: 'COMMON-FORM.FROM-YARD',
+    FROM: 'COMMON-FORM.FROM',
+    TO: 'COMMON-FORM.TO',
     YARD: 'COMMON-FORM.YARD',
     OVERWRITE_JOB_NO: 'COMMON-FORM.OVERWRITE-JOB-NO',
     OVERWRITE_DEPOT_COST: 'COMMON-FORM.OVERWRITE-DEPOT-COST',
@@ -416,8 +422,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     STORAGE_COST: 'COMMON-FORM.STORAGE-COST',
-    GATE_IN: 'COMMON-FORM.GATE-IN',
-    GATE_OUT: 'COMMON-FORM.GATE-OUT',
     OVERWRITE_APPROVAL: 'COMMON-FORM.OVERWRITE-APPROVAL',
     CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
     APPROVED_COST: 'COMMON-FORM.APPROVED-COST',
@@ -438,7 +442,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     CONFIRM: 'COMMON-FORM.CONFIRM',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
-    SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE'
+    SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
+    APPLY_ALL: 'COMMON-FORM.APPLY-ALL'
   }
 
   sot_guid: string | null | undefined;
