@@ -10,7 +10,7 @@ namespace IDMS.User.Authentication.Service.Services
     public interface IEmailService
     {
         void SendMail(Message message);
-
+        void SendEmailAsync(string toEmail, string subject, string htmlBody);
 
     }
 }

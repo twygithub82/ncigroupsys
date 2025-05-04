@@ -1,8 +1,10 @@
 ﻿using IDMS.Models;
 using IDMS.Models.Inventory;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.Survey.GqlTypes.LocalModel
 {
+    [NotMapped]
     public class OutGateSurveyRequest: Dates
     {
         public string? guid { get; set; }

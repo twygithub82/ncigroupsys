@@ -40,6 +40,7 @@ import { ReleaseOrderSotDS, ReleaseOrderSotGO, ReleaseOrderSotItem } from 'app/d
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -195,6 +196,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     private translate: TranslateService,
     private route: ActivatedRoute,
     private router: Router,
+    public modulePackage: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -251,9 +253,9 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
       // });
       this.subs.sink = this.roSotDS.getReleaseOrderSotForOutGate(this.sot_guid).subscribe(data => {
         if (data.length > 0) {
-          this.roSotItem = data[0]
+          this.roSotItem = data.find(x => x.status_cv === 'WAITING');
           console.log(this.roSotItem);
-          this.storingOrderTankItem = this.roSotItem.storing_order_tank;
+          this.storingOrderTankItem = this.roSotItem?.storing_order_tank;
           this.populateOutGateForm(this.storingOrderTankItem, this.roSotItem);
           this.ccDS.getCustomerBranch(this.roSotItem!.release_order!.customer_company!.guid!).subscribe(cc => {
             if (cc.length > 0) {
@@ -395,7 +397,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.outGateForm?.valid) {
       console.log('Valid outGateForm', this.outGateForm?.value);
       let ro: any = new ReleaseOrderGO(this.roSotItem?.release_order);
-      ro.haulier = this.outGateForm.get('haulier')?.value;
+      ro.haulier = this.outGateForm.get('haulier')?.value?.toUpperCase();
       ro.release_order_sot = [new ReleaseOrderSotGO(this.roSotItem)];
 
       const sot = new StoringOrderTankGO(this.storingOrderTankItem);
@@ -404,7 +406,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
       const og = new OutGateItem({
         ...this.ogDS.getOutGateItem(this.storingOrderTankItem?.out_gate),
         eir_dt: Utility.convertDate(this.outGateForm.get('eir_dt')?.value) as number,
-        driver_name: this.outGateForm.get('driver_name')?.value,
+        driver_name: this.outGateForm.get('driver_name')?.value?.toUpperCase(),
         vehicle_no: this.outGateForm.get('vehicle_no')?.value?.toUpperCase(),
         remarks: this.outGateForm.get('remarks')?.value,
         so_tank_guid: sot.guid,
@@ -412,15 +414,17 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
         yard_cv: this.outGateForm.get('yard_cv')?.value,
         tank: sot
       })
-      console.log(og);
-      console.log(ro);
+      console.log('OutGate', og);
+      console.log('ReleaseOrder', ro);
       if (og.guid) {
         this.ogDS.updateOutGate(og, ro).subscribe(result => {
           console.log(result?.data)
           this.handleSaveSuccess(result?.data?.updateOutGate);
         });
       } else {
-        this.ogDS.addOutGate(og, ro).subscribe(result => {
+        const publishOutGateSurvey = !this.modulePackage.isGrowthPackage() && !this.modulePackage.isCustomizedPackage();
+        console.log('hasOutSurvey', publishOutGateSurvey)
+        this.ogDS.addOutGate(og, ro, publishOutGateSurvey).subscribe(result => {
           console.log(result?.data)
           this.handleSaveSuccess(result?.data?.addOutGate?.affected);
         });

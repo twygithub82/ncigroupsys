@@ -858,7 +858,7 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
-                var tf = await context.tank_info.Where(t => t.tank_no == tankInfo.tank_no).FirstOrDefaultAsync();
+                var tf = await context.tank_info.Where(t => t.tank_no == tankInfo.tank_no && t.delete_dt == null).FirstOrDefaultAsync();
                 if (tf == null)
                 {
                     tf = tankInfo;

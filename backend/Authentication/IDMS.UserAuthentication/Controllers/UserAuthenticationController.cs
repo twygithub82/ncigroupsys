@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -256,9 +257,19 @@ namespace IDMS.UserAuthentication.Controllers
             if (user != null)
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var resetPasswordLink = Url.Action(nameof(ResetPassword), "UserAuthentication", new { token, email = user.Email }, Request.Scheme);
-                var message = new Message(new string[] { user.Email! }, "Reset Password link", resetPasswordLink);
-                _emailService.SendMail(message);
+                //var resetPasswordLink = Url.Action(nameof(ResetPassword), "UserAuthentication", new { token, email = user.Email }, Request.Scheme);
+                //var message = new Message(new string[] { user.Email! }, "Reset Password link", resetPasswordLink);
+                //_emailService.SendMail(message);
+
+                var encodedToken = WebUtility.UrlEncode(token); // or Uri.EscapeDataString(token)
+
+                var resetPasswordLink = $"https://yourfrontend.com/reset-password?token={encodedToken}&email={user.Email}";
+
+                var message = new Message(new string[] { user.Email! }, "Reset Password Link", resetPasswordLink);
+
+
+
+                _emailService.SendEmailAsync("weishun.dev@gmail.com", "Reset Password", resetPasswordLink);
                 return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = new string[] { $"Password reset request is sent on Email {user.Email}" } });
             }
             return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "The email is not yet registered" } });

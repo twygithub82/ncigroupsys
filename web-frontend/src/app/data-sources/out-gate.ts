@@ -235,7 +235,7 @@ export const GET_OUT_GATE_BY_ID = gql`
               guid
             }
           }
-          release_order_sot(where: { guid: { eq: $roSotGuid } }) {
+          release_order_sot(where: { guid: { eq: $roSotGuid }, status_cv: { eq: "ACCEPTED" } }) {
             create_by
             create_dt
             delete_dt
@@ -431,8 +431,8 @@ export const GET_OUT_GATE_BY_ID_FOR_MOVEMENT = gql`
 `;
 
 export const ADD_OUT_GATE = gql`
-  mutation AddOutGate($outGate: out_gateInput!, $releaseOrder: release_orderInput!) {
-    addOutGate(outGate: $outGate, releaseOrder: $releaseOrder) {
+  mutation AddOutGate($outGate: out_gateInput!, $releaseOrder: release_orderInput!, $hasOutSurvey: Boolean!) {
+    addOutGate(outGate: $outGate, releaseOrder: $releaseOrder, hasOutSurvey: $hasOutSurvey) {
       affected
       guid
     }
@@ -446,8 +446,8 @@ export const UPDATE_OUT_GATE = gql`
 `;
 
 export const PUBLISH_OUT_GATE = gql`
-  mutation publishOutgateSurvey($outGate_guid: String!) {
-    publishOutgateSurvey(outGate_guid: $outGate_guid)
+  mutation publishOutgateSurvey($outGateRequest: OutGateRequestInput!) {
+    publishOutgateSurvey(outGateRequest: $outGateRequest)
   }
 `;
 
@@ -540,13 +540,14 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
       );
   }
 
-  addOutGate(outGate: any, releaseOrder: any): Observable<any> {
+  addOutGate(outGate: any, releaseOrder: any, hasOutSurvey: any): Observable<any> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_OUT_GATE,
       variables: {
         outGate,
-        releaseOrder
+        releaseOrder,
+        hasOutSurvey
       }
     }).pipe(
       finalize(() => {
@@ -594,12 +595,12 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
   //     );
   // }
 
-  publishOutGateSurvey(outGate_guid: any): Observable<any> {
+  publishOutGateSurvey(outGateRequest: any): Observable<any> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: PUBLISH_OUT_GATE,
       variables: {
-        outGate_guid
+        outGateRequest
       }
     }).pipe(
       finalize(() => {

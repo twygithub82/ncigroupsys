@@ -6,13 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MimeKit;
-using MimeKit.Text;
+using MailKit.Security;
+using MailKit.Net.Smtp;
 
 namespace IDMS.User.Authentication.Service.Services
 {
     public class EmailService:IEmailService
     {
+        private readonly string _fromEmail = "weaiyep2002@gmail.com";
+        private readonly string _appPassword = "appq mofh skmp pkqn"; // from Google App Passwords
 
         private readonly EmailConfiguration _emailConfig;
 
@@ -34,7 +36,7 @@ namespace IDMS.User.Authentication.Service.Services
             return emailMessage;
         }
 
-        private void Send(MimeMessage message)
+        private void Send(MimeMessage message)  
         {
             var client = new MailKit.Net.Smtp.SmtpClient();
             try
@@ -53,6 +55,27 @@ namespace IDMS.User.Authentication.Service.Services
             {
                 client.Dispose();
             }
+        }
+
+        public async void SendEmailAsync(string toEmail, string subject, string htmlBody)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(_fromEmail));
+            email.To.Add(MailboxAddress.Parse(toEmail));
+            email.Subject = subject;
+
+            var builder = new BodyBuilder
+            {
+                HtmlBody = htmlBody
+            };
+
+            email.Body = builder.ToMessageBody();
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(_fromEmail, _appPassword);
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
         }
     }
 }

@@ -244,8 +244,8 @@ namespace IDMS.StoringOrder.GqlTypes
 
                 foreach (StoringOrderRequest soRequest in so)
                 {
-                    var storingOrder = context.storing_order.Where(s => s.guid == soRequest.guid && (s.delete_dt == null || s.delete_dt == 0))
-                                                 .Include(s => s.storing_order_tank).FirstOrDefault();
+                    var storingOrder = await context.storing_order.Where(s => s.guid == soRequest.guid && (s.delete_dt == null || s.delete_dt == 0))
+                                                 .Include(s => s.storing_order_tank).FirstOrDefaultAsync();
 
                     if (storingOrder != null)
                     {
@@ -258,19 +258,19 @@ namespace IDMS.StoringOrder.GqlTypes
                         int tnkAlreadyAcceptedCount = 0;
                         string finalSOStatus = SOStatus.CANCELED;
 
-                        var tanks = storingOrder.storing_order_tank?.Where(t => t.so_guid == storingOrder.guid);
+                        var tanks = storingOrder.storing_order_tank?.Where(t => t.so_guid == storingOrder.guid).ToList();
                         if (tanks != null && tanks.Any())
                         {
                             foreach (var tnk in tanks)
                             {
-                                if (string.IsNullOrEmpty(tnk.status_cv) || SOTankStatus.WAITING.EqualsIgnore(tnk.status_cv))
+                                if (string.IsNullOrEmpty(tnk.status_cv) || SOTankStatus.WAITING.EqualsIgnore(tnk.status_cv) 
+                                    || SOTankStatus.PREORDER.EqualsIgnore(tnk.status_cv))
                                 {
                                     tnk.status_cv = SOTankStatus.CANCELED;
                                     tnk.update_dt = currentDateTime;
                                     tnk.update_by = user;
-
-                                    ResolvekAnyPreOrdrTank(context, tnk.tank_no, user, currentDateTime);
                                 }
+                                //ResolvekAnyPreOrdrTank(context, tnk.tank_no, user, currentDateTime);
 
                                 if (SOTankStatus.ACCEPTED.EqualsIgnore(tnk.status_cv))
                                     tnkAlreadyAcceptedCount++;
