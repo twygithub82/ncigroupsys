@@ -82,16 +82,17 @@ import { ModulePackageService } from 'app/services/module-package.service';
 export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    'select',
-    //'customer_code',
-    'customer',
-    'profile',
-    'preinspection_cost',
-    'lolo_cost',
-    'gate_surcharge',
-    'storage_cost',
-    'free_days',
-    'last_update',
+    // 'select',
+    // //'customer_code',
+    // 'customer',
+    // 'profile',
+    // 'preinspection_cost',
+    // 'lolo_cost',
+    // 'gate_surcharge',
+    // 'storage_cost',
+    // 'free_days',
+    // 'last_update',
+    ''
   ];
 
   customerCodeControl = new UntypedFormControl();
@@ -264,6 +265,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
+    this.displayColumnChanged();
     this.translateLangText();
     this.search();
   }
@@ -306,6 +308,40 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       customer_code: this.customerCodeControl,
       profile_name: this.profileNameControl,
     });
+  }
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+        'select',
+        'customer',
+        'profile',
+        'preinspection_cost',
+        'lolo_cost',
+        'gate_surcharge',
+        'storage_cost',
+        'free_days',
+        'last_update',
+      ];
+    } else {
+      this.displayedColumns = [
+        'customer',
+        'profile',
+        'preinspection_cost',
+        'lolo_cost',
+        'gate_surcharge',
+        'storage_cost',
+        'free_days',
+        'last_update',
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+      return true;
+    else
+      return false;
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {

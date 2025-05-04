@@ -15,7 +15,7 @@
                 <mat-panel-description>
                   <div class="m-l-" [matTooltip]="translatedLangText.ADD">
                     <button mat-mini-fab color="primary" (click)="addNew()" (click)="$event.stopPropagation()"
-                      matTooltip={{translatedLangText.ADD}} [disabled]="DisableAddTankButton()">
+                      matTooltip={{translatedLangText.ADD}} [hidden]="DisableAddTankButton()">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
