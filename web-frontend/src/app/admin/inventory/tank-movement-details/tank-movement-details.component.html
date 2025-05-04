@@ -1105,7 +1105,7 @@
                                 </button>
 
                                 <mat-menu #menu="matMenu">
-                                  @if (canOverwriteCleaningApproval()) {
+                                  @if (canOverwriteCleaningApproval() && allowPerformAction()) {
                                   <button mat-menu-item
                                     (click)="overwriteCleaningApprovalDialog($event)">{{translatedLangText.OVERWRITE_APPROVAL}}</button>
                                   }
@@ -1424,7 +1424,7 @@
                                               <mat-icon>more_vert</mat-icon>
                                             </button>
                                             <mat-menu #menu="matMenu">
-                                              @if (canRollbackRepairQC(row)) {
+                                              @if (canRollbackRepairQC(row) && allowPerformAction()) {
                                               <button mat-menu-item (click)="onOverwriteQC($event, row)">
                                                 <mat-icon>undo</mat-icon>
                                                 <span>{{translatedLangText.OVERWRITE_QC}}</span>
