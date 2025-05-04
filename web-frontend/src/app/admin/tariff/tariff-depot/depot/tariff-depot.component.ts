@@ -38,6 +38,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { FormDialogComponent_View } from './form-dialog-view/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tariff-depot',
@@ -217,7 +218,8 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private searchStateService: SearchStateService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.initTdForm();

@@ -1,9 +1,11 @@
 <div class="breadcrumb-main">
   <div class="row">
     <div class="col-6">
-      <!-- <div class="breadcrumb-title">
-        <h4 class="page-title">{{title | translate}}</h4>
-      </div> -->
+      <div class="collapse-menu-button">
+        <button mat-mini-fab (click)="mobileMenuSidebarOpen($event,'overlay-open')" class="sidemenu-collapse">
+          <app-feather-icons [icon]="'menu'" [class]="'header-icon'"></app-feather-icons>
+        </button>
+      </div>
     </div>
     <div class="col-6">
       <ul class="breadcrumb-list">

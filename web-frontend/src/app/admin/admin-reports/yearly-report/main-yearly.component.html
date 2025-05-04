@@ -36,17 +36,17 @@
             }
             @else{
               @for (tab of allowedTabs; track tab.label) {
-                @if (tab.component == 'app-steam-yearly') {
-                  <app-steam-yearly #steamYearlyAdminRep></app-steam-yearly>
-                }
-                @if (tab.component == 'app-residue-yearly') {
-                  <app-residue-yearly #residueYearlyAdminRep></app-residue-yearly>
-                }
-                @if (tab.component == 'app-repair-yearly') {
-                  <app-repair-yearly #repairYearlyAdminRep></app-repair-yearly>
-                }
                 @if (tab.component == 'app-clean-yearly') {
                   <app-clean-yearly #cleanYearlyAdminRep></app-clean-yearly>
+                }
+                @else if (tab.component == 'app-repair-yearly') {
+                  <app-repair-yearly #repairYearlyAdminRep></app-repair-yearly>
+                }
+                @else if (tab.component == 'app-steam-yearly') {
+                  <app-steam-yearly #steamYearlyAdminRep></app-steam-yearly>
+                }
+                @else if (tab.component == 'app-residue-yearly') {
+                  <app-residue-yearly #residueYearlyAdminRep></app-residue-yearly>
                 }
               }
             }

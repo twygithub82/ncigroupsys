@@ -28,6 +28,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { Utility } from 'app/utilities/utility';
 import { OutGateSurveyComponent } from './out-gate-survey/out-gate-survey.component';
 import { OutGateComponent } from './out-gate/out-gate.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-in-gate-main',
@@ -100,7 +101,8 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -130,15 +132,35 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-   onTabSelected(event: MatTabChangeEvent): void {
-        console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-        switch (event.index) {
-         
-         case 0:
-            this.outGateComp?.onTabFocused(); break;
-         case 1:
-             this.outGateSurveyComp?.onTabFocused(); break;
+  onTabSelected(event: MatTabChangeEvent): void {
+      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+      switch (event.index) {
         
-        }
+        case 0:
+          this.outGateComp?.onTabFocused(); break;
+        case 1:
+            this.outGateSurveyComp?.onTabFocused(); break;
+      
       }
+    }
+
+    tabConfig = [
+      {
+        label: this.translatedLangText.OUT_GATE,
+        component: 'app-out-gate',
+        modulePackage: ['starter', 'growth', 'customized']
+      },
+      {
+        label: this.translatedLangText.OUT_GATE_SURVEY,
+        component: 'app-out-gate-survey',
+        modulePackage: ['growth', 'customized']
+      }
+    ];
+  
+    get allowedTabs() {
+      return this.tabConfig.filter(tab =>
+        tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+      );
+    }
+    
 }

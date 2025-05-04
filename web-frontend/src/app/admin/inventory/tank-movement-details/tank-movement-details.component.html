@@ -35,25 +35,26 @@
             @if (!(igDS.loading$ | async)) {
             <mat-card-content>
               <div class="position-relative">
-                <div class="relative-menu">
-                  @if (!(cvDS.loading$ | async) && (canOverwriteLastCargo() || canOverwriteCleanStatus())) {
-                  <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
-                    [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-
-                  <mat-menu #menu="matMenu">
-                    @if (canOverwriteLastCargo()) {
-                    <button mat-menu-item
-                      (click)="overwriteLastCargoDialog($event)">{{translatedLangText.OVERWRITE_LAST_CARGO}}</button>
+                @if(allowPerformAction()){
+                  <div class="relative-menu">
+                    @if (!(cvDS.loading$ | async) && (canOverwriteLastCargo() || canOverwriteCleanStatus())) {
+                    <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
+                      [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                      @if (canOverwriteLastCargo()) {
+                      <button mat-menu-item
+                        (click)="overwriteLastCargoDialog($event)">{{translatedLangText.OVERWRITE_LAST_CARGO}}</button>
+                      }
+                      @if (canOverwriteCleanStatus()) {
+                      <button mat-menu-item
+                        (click)="overwriteCleanStatusDialog($event)">{{translatedLangText.OVERWRITE_CONDITION}}</button>
+                      }
+                    </mat-menu>
                     }
-                    @if (canOverwriteCleanStatus()) {
-                    <button mat-menu-item
-                      (click)="overwriteCleanStatusDialog($event)">{{translatedLangText.OVERWRITE_CONDITION}}</button>
-                    }
-                  </mat-menu>
-                  }
-                </div>
+                  </div>
+                }
                 <div class="row justify-content-center">
                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                     <div class="row">
@@ -469,70 +470,402 @@
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                           <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight>
-                            <mat-tab>
-                              <ng-template mat-tab-label>
-                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
-                                  <mat-icon class="m-r-5">storage</mat-icon>{{ translatedLangText.STORAGE }}
-                                </span>
-                              </ng-template>
-                              @if ((pdDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
-                              async)) {
-                              <div class="tbl-spinner">
-                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                </mat-progress-spinner>
-                              </div>
-                              }
-                              @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$ |
-                              async)) {
-                              @if (sot?.purpose_storage) {
-                              <div class="position-relative">
-                                <!-- @if (!isNoPurpose(sot!, 'cleaning') && !isNoPurpose(sot!, 'repair') && !isNoPurpose(sot!, 'storage'))
-                                {
-                                <button color="warn" [matTooltip]="translatedLangText.REMOVE_STORAGE_PURPOSE"
-                                  (click)="updatePurposeDialog($event, 'storage', 'remove')"
-                                  class="link-button text-danger position-absolute top-0 end-0 p-0">
-                                  <mat-icon>cancel</mat-icon>
-                                </button>
-                                } -->
-                                <div class="row m-t-10">
+                              <mat-tab>
+                                <ng-template mat-tab-label>
+                                  <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                    <mat-icon class="m-r-5">storage</mat-icon>{{ translatedLangText.STORAGE }}
+                                  </span>
+                                </ng-template>
+                                @if ((pdDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
+                                async)) {
+                                <div class="tbl-spinner">
+                                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                  </mat-progress-spinner>
+                                </div>
+                                }
+                                @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$ |
+                                async)) {
+                                @if (sot?.purpose_storage) {
+                                <div class="position-relative">
+                                  <div class="row m-t-10">
+                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                                      <div class="row">
+                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                          <span>{{translatedLangText.STORAGE_BEGIN_DATE}}:</span>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                          <div class="contact-detail-info font-bold">
+                                            {{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="row">
+                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                          <span>{{translatedLangText.STORAGE_DAYS}}:</span>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                          <div class="contact-detail-info font-bold">{{pdDS.getStorageDays(sot!, pdItem!)
+                                            ||
+                                            "-"}}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="row">
+                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                          <span>{{translatedLangText.AVAILABLE_DATE}}:</span>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                          <div class="contact-detail-info font-bold">{{getAvailableDate(sot!) || "-"}}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <!-- <div class="row">
+                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                          <span>{{translatedLangText.ETR_DATE}}:</span>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                          <div class="contact-detail-info font-bold">{{convertDisplayDate(sot?.etr_dt) ||
+                                            "-"}}
+                                          </div>
+                                        </div>
+                                      </div> -->
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                                      <div class="row">
+                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                          <span>{{translatedLangText.RELEASE_DATE}}:</span>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                          <div class="contact-detail-info font-bold">
+                                            {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="row">
+                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                          <span>{{translatedLangText.FREE_STORAGE_DAYS}}:</span>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                          <div class="contact-detail-info font-bold">{{pdItem?.free_storage || "-"}}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="row">
+                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                          <span>{{translatedLangText.STORAGE_CALCULATE_BY}}:</span>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                          <div class="contact-detail-info font-bold">
+                                            {{getStorageCalDescription(pdItem?.storage_cal_cv) ?? "-"}}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                }
+                                @else {
+                                <div class="empty-purpose">
+                                  <mat-icon class="icon-large">error_outline</mat-icon>
+                                  <span class="mb-3">{{translatedLangText.NO_STORAGE_PURPOSE}}</span>
+                                  @if (canAddPurpose('storage')) {
+                                  <button mat-flat-button color="primary"
+                                    (click)="updatePurposeDialog($event, 'storage', 'add')">
+                                    <mat-icon>
+                                      add
+                                    </mat-icon>
+                                    {{translatedLangText.ADD_STORAGE_PURPOSE}}
+                                  </button>
+                                  }
+                                </div>
+                                }
+                                }
+                              </mat-tab>
+                            @if(allowPerformAction()){
+                              <mat-tab>
+                                <ng-template mat-tab-label>
+                                  <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                    <!-- <i class="fas fa-thermometer-half fa-icon m-r-5"></i>{{ translatedLangText.STEAM }} -->
+                                    <mat-icon class="m-r-5">whatshot</mat-icon>{{ translatedLangText.STEAM }}
+                                  </span>
+                                </ng-template>
+                                @if ((pdDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
+                                async)) {
+                                <div class="tbl-spinner">
+                                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                  </mat-progress-spinner>
+                                </div>
+                                }
+                                @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$ |
+                                async)) {
+                                @if (sot?.purpose_steam) {
+                                <div class="position-relative">
+                                  @if (!isNoPurpose(sot!, 'steaming') && canRemovePurpose('steaming')) {
+                                  <button color="warn" [matTooltip]="translatedLangText.REMOVE_STEAM_PURPOSE"
+                                    (click)="updatePurposeDialog($event, 'steaming', 'remove')"
+                                    class="link-button text-danger position-absolute top-0 end-0 p-0">
+                                    <mat-icon>cancel</mat-icon>
+                                  </button>
+                                  }
+                                  <div class="row m-t-10">
+                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                                      <div class="row">
+                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                          <span>{{translatedLangText.STEAM_BEGIN_DATE}}:</span>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                          <div class="contact-detail-info font-bold">
+                                            {{displayDateTime(steamDS.getSteamBeginDate(steamItem)) || "-"}}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                                      <div class="row">
+                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                          <span>{{translatedLangText.STEAM_COMPLETE_DATE}}:</span>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                          <div class="contact-detail-info font-bold">
+                                            {{displayDateTime(steamDS.getSteamCompleteDate(steamItem)) || "-"}}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <div class="responsive_table">
+                                        <table mat-table [dataSource]="steamItem" matSort
+                                          class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                          <ng-container matColumnDef="id">
+                                            <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                                            <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                                          </ng-container>
+                                          <ng-container matColumnDef="estimate_no">
+                                            <mat-header-cell mat-header-cell *matHeaderCellDef
+                                              [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              {{translatedLangText.ESTIMATE_NO}}
+                                            </mat-header-cell>
+                                            <mat-cell mat-cell *matCellDef="let row"
+                                              [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>
+                                              <span class="me-1">{{row.estimate_no}}</span>
+                                              @if (isAutoApproveSteaming(row)) {
+                                              <mat-icon>whatshot</mat-icon>
+                                              }
+                                              @else {
+                                              <mat-icon>build</mat-icon>
+                                              }
+                                            </mat-cell>
+                                          </ng-container>
+                                          <ng-container matColumnDef="degree_celsius">
+                                            <mat-header-cell mat-header-cell *matHeaderCellDef
+                                              [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
+                                            </mat-header-cell>
+                                            <mat-cell mat-cell *matCellDef="let row"
+                                              [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              <span
+                                                class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>{{steamDS.getSteamHighestTemp(row)}}
+                                            </mat-cell>
+                                          </ng-container>
+                                          <ng-container matColumnDef="estimate_date">
+                                            <mat-header-cell mat-header-cell *matHeaderCellDef
+                                              [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              {{translatedLangText.ESTIMATE_DATE}}
+                                            </mat-header-cell>
+                                            <mat-cell mat-cell *matCellDef="let row"
+                                              [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_DATE}}:</span>
+                                              <span>{{displayDate(row.create_dt) ?? "-"}}</span>
+                                            </mat-cell>
+                                          </ng-container>
+                                          <ng-container matColumnDef="approve_dt">
+                                            <mat-header-cell mat-header-cell *matHeaderCellDef
+                                              [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              {{translatedLangText.APPROVED_NO_ACTION}}
+                                            </mat-header-cell>
+                                            <mat-cell mat-cell *matCellDef="let row"
+                                              [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              <span
+                                                class="mobile-tab-label">{{translatedLangText.APPROVED_NO_ACTION}}:</span>
+                                              <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
+                                            </mat-cell>
+                                          </ng-container>
+                                          <ng-container matColumnDef="begin_dt">
+                                            <mat-header-cell mat-header-cell *matHeaderCellDef
+                                              [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              {{translatedLangText.BEGIN_DATE}}
+                                            </mat-header-cell>
+                                            <mat-cell mat-cell *matCellDef="let row"
+                                              [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              <span class="mobile-tab-label">{{translatedLangText.BEGIN_DATE}}:</span>
+                                              <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
+                                            </mat-cell>
+                                          </ng-container>
+                                          <ng-container matColumnDef="complete_dt">
+                                            <mat-header-cell mat-header-cell *matHeaderCellDef
+                                              [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              {{translatedLangText.COMPLETE_DATE}}
+                                            </mat-header-cell>
+                                            <mat-cell mat-cell *matCellDef="let row"
+                                              [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              <span class="mobile-tab-label">{{translatedLangText.COMPLETE_DATE}}:</span>
+                                              <span>{{displayDate(row.complete_dt) ?? "-"}}</span>
+                                            </mat-cell>
+                                          </ng-container>
+                                          <ng-container matColumnDef="status_cv">
+                                            <mat-header-cell mat-header-cell *matHeaderCellDef
+                                              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              {{translatedLangText.STATUS}}
+                                            </mat-header-cell>
+                                            <mat-cell mat-cell *matCellDef="let row"
+                                              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              <span
+                                                class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
+                                            </mat-cell>
+                                          </ng-container>
+                                          <ng-container matColumnDef="bill">
+                                            <mat-header-cell mat-header-cell *matHeaderCellDef
+                                              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              {{translatedLangText.BILL}}
+                                            </mat-header-cell>
+                                            <mat-cell mat-cell *matCellDef="let row"
+                                              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                              <span class="mobile-tab-label">{{translatedLangText.BILL}}:</span>
+                                              @if (row?.customer_billing_guid) {
+                                              <mat-icon
+                                                class="material-icons-two-tone col-green font-bold m-l-0">checked</mat-icon>
+                                              }
+                                              @else {
+                                              <mat-icon
+                                                class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
+                                              }
+                                            </mat-cell>
+                                          </ng-container>
+                                          <ng-container matColumnDef="actions">
+                                            <mat-header-cell
+                                              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                                              *matHeaderCellDef>
+                                            </mat-header-cell>
+                                            <mat-cell *matCellDef="let row; let i=index;"
+                                              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
+                                              @if (canRollbackSteamingCompleted(row)) {
+                                              <button mat-icon-button [matMenuTriggerFor]="menu"
+                                                (click)="stopEventTrigger($event)">
+                                                <mat-icon>more_vert</mat-icon>
+                                              </button>
+                                              <mat-menu #menu="matMenu">
+                                                @if (canRollbackSteamingCompleted(row)) {
+                                                <button mat-menu-item (click)="onRollbackSteamingJobs($event, row)">
+                                                  <mat-icon>undo</mat-icon>
+                                                  <span>{{translatedLangText.REINSTATE}}</span>
+                                                </button>
+                                                }
+                                              </mat-menu>
+                                              }
+                                            </mat-cell>
+                                          </ng-container>
+                                          <mat-header-row *matHeaderRowDef="displayedColumnsSteaming"></mat-header-row>
+                                          <mat-row *matRowDef="let row; columns: displayedColumnsSteaming;"
+                                            (click)="steamHeatingLogDialog($event, row)" [style.cursor]="'pointer'"
+                                            matRipple>
+                                          </mat-row>
+                                        </table>
+                                      </div>
+                                      <!-- No result -->
+                                      @if (!(steamDS.loading$ | async) && !steamItem.length) {
+                                      <mat-divider></mat-divider>
+                                      <div class="no-results m-l-20 pt-3">
+                                        <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                                      </div>
+                                      }
+                                      <!-- Loading spinner -->
+                                      @if (steamDS.loading$ | async) {
+                                      <div class="tbl-spinner">
+                                        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                        </mat-progress-spinner>
+                                      </div>
+                                      }
+                                    </div>
+                                  </div>
+                                </div>
+                                }
+                                @else{
+                                <div class="empty-purpose">
+                                  <mat-icon class="icon-large">error_outline</mat-icon>
+                                  <span class="mb-3">{{translatedLangText.NO_STEAM_PURPOSE}}</span>
+                                  @if (canAddPurpose('steaming')) {
+                                  <button mat-flat-button color="primary"
+                                    (click)="updatePurposeDialog($event, 'steaming', 'add')">
+                                    <mat-icon>
+                                      add
+                                    </mat-icon>
+                                    {{translatedLangText.ADD_STEAM_PURPOSE}}
+                                  </button>
+                                  }
+                                </div>
+                                }
+                                }
+                              </mat-tab>
+
+                              <mat-tab>
+                                <ng-template mat-tab-label>
+                                  <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                    <!-- <i class="fas fa-trash fa-icon m-r-5"></i>{{ translatedLangText.RESIDUE }} -->
+                                    <mat-icon class="m-r-5">delete</mat-icon>{{ translatedLangText.RESIDUE }}
+                                  </span>
+                                </ng-template>
+                                @if ((residueDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
+                                async)) {
+                                <div class="tbl-spinner">
+                                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                  </mat-progress-spinner>
+                                </div>
+                                }
+                                @if (!(residueDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$
+                                | async)) {
+                                @if (sot?.purpose_cleaning) {
+                                <div class="row m-t-10 contact-details-field">
                                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.STORAGE_BEGIN_DATE}}:</span>
+                                        <span>{{translatedLangText.RESIDUE_BEGIN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
-                                          {{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.STORAGE_DAYS}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">{{pdDS.getStorageDays(sot!, pdItem!)
-                                          ||
-                                          "-"}}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.AVAILABLE_DATE}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">{{getAvailableDate(sot!) || "-"}}
+                                          {{displayDateTime(residueDS.getResidueBeginDate(residueItem)) || "-"}}
                                         </div>
                                       </div>
                                     </div>
                                     <!-- <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.ETR_DATE}}:</span>
+                                        <span>{{translatedLangText.COMPLETED_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">{{convertDisplayDate(sot?.etr_dt) ||
-                                          "-"}}
+                                        <div class="contact-detail-info font-bold">
+                                          {{displayDate(cleaningItem[0].job_order?.start_dt) || "-"}}
+                                        </div>
+                                      </div>
+                                    </div> -->
+                                    <!-- <div class="row">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                        <span>{{translatedLangText.DEPOT_REFERENCE}}:</span>
+                                      </div>
+                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                        <div class="contact-detail-info font-bold">
+                                          {{cleaningItem[0].job_no || "-"}}
+                                        </div>
+                                      </div>
+                                    </div> -->
+                                    <!-- <div class="row">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                        <span>{{translatedLangText.JOB_STATUS}}:</span>
+                                      </div>
+                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                        <div class="contact-detail-info font-bold">
+                                          {{getProcessStatusDescription(cleaningItem[0].status_cv) || "-"}}
                                         </div>
                                       </div>
                                     </div> -->
@@ -540,109 +873,77 @@
                                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.RELEASE_DATE}}:</span>
+                                        <span>{{translatedLangText.RESIDUE_COMPLETE_DATE}}:</span>
+                                      </div>
+                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                        <div class="contact-detail-info font-bold">
+                                          {{displayDateTime(residueDS.getResidueCompleteDate(residueItem)) || "-"}}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                        <span>{{translatedLangText.PROCESSING_DAYS}}:</span>
+                                      </div>
+                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                        <div class="contact-detail-info font-bold">
+                                          {{residueDS.getResidueProcessingDays(repairItem) || "-"}}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <!-- <div class="row">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                        <span>{{translatedLangText.APPROVED_DATE}}:</span>
+                                      </div>
+                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                        <div class="contact-detail-info font-bold">
+                                          {{displayDate(cleaningItem[0].approve_dt) || "-"}}
+                                        </div>
+                                      </div>
+                                    </div> -->
+                                    <!-- <div class="row">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                        <span>{{translatedLangText.RESIDUE_QUANTITY}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
                                           {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
                                         </div>
                                       </div>
-                                    </div>
-                                    <div class="row">
+                                    </div> -->
+                                    <!-- <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.FREE_STORAGE_DAYS}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">{{pdItem?.free_storage || "-"}}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.STORAGE_CALCULATE_BY}}:</span>
+                                        <span>{{translatedLangText.CUSTOMER_REFERENCE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
-                                          {{getStorageCalDescription(pdItem?.storage_cal_cv) ?? "-"}}
+                                          {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
                                         </div>
                                       </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              }
-                              @else {
-                              <div class="empty-purpose">
-                                <mat-icon class="icon-large">error_outline</mat-icon>
-                                <span class="mb-3">{{translatedLangText.NO_STORAGE_PURPOSE}}</span>
-                                @if (canAddPurpose('storage')) {
-                                <button mat-flat-button color="primary"
-                                  (click)="updatePurposeDialog($event, 'storage', 'add')">
-                                  <mat-icon>
-                                    add
-                                  </mat-icon>
-                                  {{translatedLangText.ADD_STORAGE_PURPOSE}}
-                                </button>
-                                }
-                              </div>
-                              }
-                              }
-                            </mat-tab>
-                            <mat-tab>
-                              <ng-template mat-tab-label>
-                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
-                                  <!-- <i class="fas fa-thermometer-half fa-icon m-r-5"></i>{{ translatedLangText.STEAM }} -->
-                                  <mat-icon class="m-r-5">whatshot</mat-icon>{{ translatedLangText.STEAM }}
-                                </span>
-                              </ng-template>
-                              @if ((pdDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
-                              async)) {
-                              <div class="tbl-spinner">
-                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                </mat-progress-spinner>
-                              </div>
-                              }
-                              @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$ |
-                              async)) {
-                              @if (sot?.purpose_steam) {
-                              <div class="position-relative">
-                                @if (!isNoPurpose(sot!, 'steaming') && canRemovePurpose('steaming')) {
-                                <button color="warn" [matTooltip]="translatedLangText.REMOVE_STEAM_PURPOSE"
-                                  (click)="updatePurposeDialog($event, 'steaming', 'remove')"
-                                  class="link-button text-danger position-absolute top-0 end-0 p-0">
-                                  <mat-icon>cancel</mat-icon>
-                                </button>
-                                }
-                                <div class="row m-t-10">
-                                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <div class="row">
+                                    </div> -->
+                                    <!-- <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.STEAM_BEGIN_DATE}}:</span>
+                                        <span>{{translatedLangText.BILL}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{displayDateTime(steamDS.getSteamBeginDate(steamItem)) || "-"}}
+                                        <div class="contact-detail-info font-bold d-flex align-items-center">
+                                          @if (false) {
+                                          <mat-icon
+                                            class="material-icons-two-tone col-green font-bold m-l-0">check</mat-icon>
+                                          }
+                                          @else {
+                                          <mat-icon
+                                            class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
+                                          }
                                         </div>
                                       </div>
-                                    </div>
-                                  </div>
-                                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.STEAM_COMPLETE_DATE}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{displayDateTime(steamDS.getSteamCompleteDate(steamItem)) || "-"}}
-                                        </div>
-                                      </div>
-                                    </div>
+                                    </div> -->
                                   </div>
                                 </div>
                                 <div class="row">
                                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <div class="responsive_table">
-                                      <table mat-table [dataSource]="steamItem" matSort
+                                      <table mat-table [dataSource]="residueItem" matSort
                                         class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
                                         <ng-container matColumnDef="id">
                                           <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -650,30 +951,13 @@
                                         </ng-container>
                                         <ng-container matColumnDef="estimate_no">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.ESTIMATE_NO}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>
-                                            <span class="me-1">{{row.estimate_no}}</span>
-                                            @if (isAutoApproveSteaming(row)) {
-                                            <mat-icon>whatshot</mat-icon>
-                                            }
-                                            @else {
-                                            <mat-icon>build</mat-icon>
-                                            }
-                                          </mat-cell>
-                                        </ng-container>
-                                        <ng-container matColumnDef="degree_celsius">
-                                          <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
-                                          </mat-header-cell>
-                                          <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span
-                                              class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>{{steamDS.getSteamHighestTemp(row)}}
+                                              class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
                                           </mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="estimate_date">
@@ -689,35 +973,35 @@
                                         </ng-container>
                                         <ng-container matColumnDef="approve_dt">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.APPROVED_NO_ACTION}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span
                                               class="mobile-tab-label">{{translatedLangText.APPROVED_NO_ACTION}}:</span>
                                             <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
                                           </mat-cell>
                                         </ng-container>
-                                        <ng-container matColumnDef="begin_dt">
+                                        <ng-container matColumnDef="allocation_dt">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            {{translatedLangText.BEGIN_DATE}}
+                                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            {{translatedLangText.ALLOCATION_DATE}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            <span class="mobile-tab-label">{{translatedLangText.BEGIN_DATE}}:</span>
-                                            <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
+                                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            <span class="mobile-tab-label">{{translatedLangText.ALLOCATION_DATE}}:</span>
+                                            <span>{{displayDate(row.allocate_dt) ?? "-"}}</span>
                                           </mat-cell>
                                         </ng-container>
-                                        <ng-container matColumnDef="complete_dt">
+                                        <ng-container matColumnDef="qc_dt">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
                                             [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            {{translatedLangText.COMPLETE_DATE}}
+                                            {{translatedLangText.COMPLETED_DATE}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            <span class="mobile-tab-label">{{translatedLangText.COMPLETE_DATE}}:</span>
+                                            <span class="mobile-tab-label">{{translatedLangText.COMPLETED_DATE}}:</span>
                                             <span>{{displayDate(row.complete_dt) ?? "-"}}</span>
                                           </mat-cell>
                                         </ng-container>
@@ -732,39 +1016,21 @@
                                               class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
                                           </mat-cell>
                                         </ng-container>
-                                        <ng-container matColumnDef="bill">
-                                          <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            {{translatedLangText.BILL}}
-                                          </mat-header-cell>
-                                          <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                            <span class="mobile-tab-label">{{translatedLangText.BILL}}:</span>
-                                            @if (row?.customer_billing_guid) {
-                                            <mat-icon
-                                              class="material-icons-two-tone col-green font-bold m-l-0">checked</mat-icon>
-                                            }
-                                            @else {
-                                            <mat-icon
-                                              class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
-                                            }
-                                          </mat-cell>
-                                        </ng-container>
                                         <ng-container matColumnDef="actions">
                                           <mat-header-cell
-                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                                             *matHeaderCellDef>
                                           </mat-header-cell>
                                           <mat-cell *matCellDef="let row; let i=index;"
-                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
-                                            @if (canRollbackSteamingCompleted(row)) {
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
+                                            @if (canRollbackResidueCompleted(row)) {
                                             <button mat-icon-button [matMenuTriggerFor]="menu"
                                               (click)="stopEventTrigger($event)">
                                               <mat-icon>more_vert</mat-icon>
                                             </button>
                                             <mat-menu #menu="matMenu">
-                                              @if (canRollbackSteamingCompleted(row)) {
-                                              <button mat-menu-item (click)="onRollbackSteamingJobs($event, row)">
+                                              @if (canRollbackResidueCompleted(row)) {
+                                              <button mat-menu-item (click)="onRollbackResidueJobs($event, row)">
                                                 <mat-icon>undo</mat-icon>
                                                 <span>{{translatedLangText.REINSTATE}}</span>
                                               </button>
@@ -773,22 +1039,21 @@
                                             }
                                           </mat-cell>
                                         </ng-container>
-                                        <mat-header-row *matHeaderRowDef="displayedColumnsSteaming"></mat-header-row>
-                                        <mat-row *matRowDef="let row; columns: displayedColumnsSteaming;"
-                                          (click)="steamHeatingLogDialog($event, row)" [style.cursor]="'pointer'"
-                                          matRipple>
+                                        <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
+                                        <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
+                                          [style.cursor]="'pointer'" matRipple>
                                         </mat-row>
                                       </table>
                                     </div>
                                     <!-- No result -->
-                                    @if (!(steamDS.loading$ | async) && !steamItem.length) {
+                                    @if (!(residueDS.loading$ | async) && !residueItem.length) {
                                     <mat-divider></mat-divider>
                                     <div class="no-results m-l-20 pt-3">
                                       <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                                     </div>
                                     }
                                     <!-- Loading spinner -->
-                                    @if (steamDS.loading$ | async) {
+                                    @if (residueDS.loading$ | async) {
                                     <div class="tbl-spinner">
                                       <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                                       </mat-progress-spinner>
@@ -796,285 +1061,16 @@
                                     }
                                   </div>
                                 </div>
-                              </div>
-                              }
-                              @else{
-                              <div class="empty-purpose">
-                                <mat-icon class="icon-large">error_outline</mat-icon>
-                                <span class="mb-3">{{translatedLangText.NO_STEAM_PURPOSE}}</span>
-                                @if (canAddPurpose('steaming')) {
-                                <button mat-flat-button color="primary"
-                                  (click)="updatePurposeDialog($event, 'steaming', 'add')">
-                                  <mat-icon>
-                                    add
-                                  </mat-icon>
-                                  {{translatedLangText.ADD_STEAM_PURPOSE}}
-                                </button>
                                 }
-                              </div>
-                              }
-                              }
-                            </mat-tab>
-                            <mat-tab>
-                              <ng-template mat-tab-label>
-                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
-                                  <!-- <i class="fas fa-trash fa-icon m-r-5"></i>{{ translatedLangText.RESIDUE }} -->
-                                  <mat-icon class="m-r-5">delete</mat-icon>{{ translatedLangText.RESIDUE }}
-                                </span>
-                              </ng-template>
-                              @if ((residueDS.loading$ | async) || (sotDS.loading$ | async) || (sotDS.actionLoading$ |
-                              async)) {
-                              <div class="tbl-spinner">
-                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                </mat-progress-spinner>
-                              </div>
-                              }
-                              @if (!(residueDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$
-                              | async)) {
-                              @if (sot?.purpose_cleaning) {
-                              <div class="row m-t-10 contact-details-field">
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                  <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.RESIDUE_BEGIN_DATE}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
-                                        {{displayDateTime(residueDS.getResidueBeginDate(residueItem)) || "-"}}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <!-- <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.COMPLETED_DATE}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
-                                        {{displayDate(cleaningItem[0].job_order?.start_dt) || "-"}}
-                                      </div>
-                                    </div>
-                                  </div> -->
-                                  <!-- <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.DEPOT_REFERENCE}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
-                                        {{cleaningItem[0].job_no || "-"}}
-                                      </div>
-                                    </div>
-                                  </div> -->
-                                  <!-- <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.JOB_STATUS}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
-                                        {{getProcessStatusDescription(cleaningItem[0].status_cv) || "-"}}
-                                      </div>
-                                    </div>
-                                  </div> -->
+                                @else {
+                                <div class="empty-purpose">
+                                  <mat-icon class="icon-large">error_outline</mat-icon>
+                                  <span class="mb-3">{{translatedLangText.NO_RESIDUE}}</span>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                  <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.RESIDUE_COMPLETE_DATE}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
-                                        {{displayDateTime(residueDS.getResidueCompleteDate(residueItem)) || "-"}}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.PROCESSING_DAYS}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
-                                        {{residueDS.getResidueProcessingDays(repairItem) || "-"}}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <!-- <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.APPROVED_DATE}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
-                                        {{displayDate(cleaningItem[0].approve_dt) || "-"}}
-                                      </div>
-                                    </div>
-                                  </div> -->
-                                  <!-- <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.RESIDUE_QUANTITY}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
-                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
-                                      </div>
-                                    </div>
-                                  </div> -->
-                                  <!-- <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.CUSTOMER_REFERENCE}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
-                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
-                                      </div>
-                                    </div>
-                                  </div> -->
-                                  <!-- <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.BILL}}:</span>
-                                    </div>
-                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold d-flex align-items-center">
-                                        @if (false) {
-                                        <mat-icon
-                                          class="material-icons-two-tone col-green font-bold m-l-0">check</mat-icon>
-                                        }
-                                        @else {
-                                        <mat-icon
-                                          class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
-                                        }
-                                      </div>
-                                    </div>
-                                  </div> -->
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <div class="responsive_table">
-                                    <table mat-table [dataSource]="residueItem" matSort
-                                      class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
-                                      <ng-container matColumnDef="id">
-                                        <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-                                        <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                                      </ng-container>
-                                      <ng-container matColumnDef="estimate_no">
-                                        <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          {{translatedLangText.ESTIMATE_NO}}
-                                        </mat-header-cell>
-                                        <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          <span
-                                            class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
-                                        </mat-cell>
-                                      </ng-container>
-                                      <ng-container matColumnDef="estimate_date">
-                                        <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          {{translatedLangText.ESTIMATE_DATE}}
-                                        </mat-header-cell>
-                                        <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_DATE}}:</span>
-                                          <span>{{displayDate(row.create_dt) ?? "-"}}</span>
-                                        </mat-cell>
-                                      </ng-container>
-                                      <ng-container matColumnDef="approve_dt">
-                                        <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          {{translatedLangText.APPROVED_NO_ACTION}}
-                                        </mat-header-cell>
-                                        <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          <span
-                                            class="mobile-tab-label">{{translatedLangText.APPROVED_NO_ACTION}}:</span>
-                                          <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
-                                        </mat-cell>
-                                      </ng-container>
-                                      <ng-container matColumnDef="allocation_dt">
-                                        <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          {{translatedLangText.ALLOCATION_DATE}}
-                                        </mat-header-cell>
-                                        <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          <span class="mobile-tab-label">{{translatedLangText.ALLOCATION_DATE}}:</span>
-                                          <span>{{displayDate(row.allocate_dt) ?? "-"}}</span>
-                                        </mat-cell>
-                                      </ng-container>
-                                      <ng-container matColumnDef="qc_dt">
-                                        <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          {{translatedLangText.COMPLETED_DATE}}
-                                        </mat-header-cell>
-                                        <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          <span class="mobile-tab-label">{{translatedLangText.COMPLETED_DATE}}:</span>
-                                          <span>{{displayDate(row.complete_dt) ?? "-"}}</span>
-                                        </mat-cell>
-                                      </ng-container>
-                                      <ng-container matColumnDef="status_cv">
-                                        <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          {{translatedLangText.STATUS}}
-                                        </mat-header-cell>
-                                        <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                          <span
-                                            class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
-                                        </mat-cell>
-                                      </ng-container>
-                                      <ng-container matColumnDef="actions">
-                                        <mat-header-cell
-                                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                                          *matHeaderCellDef>
-                                        </mat-header-cell>
-                                        <mat-cell *matCellDef="let row; let i=index;"
-                                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
-                                          @if (canRollbackResidueCompleted(row)) {
-                                          <button mat-icon-button [matMenuTriggerFor]="menu"
-                                            (click)="stopEventTrigger($event)">
-                                            <mat-icon>more_vert</mat-icon>
-                                          </button>
-                                          <mat-menu #menu="matMenu">
-                                            @if (canRollbackResidueCompleted(row)) {
-                                            <button mat-menu-item (click)="onRollbackResidueJobs($event, row)">
-                                              <mat-icon>undo</mat-icon>
-                                              <span>{{translatedLangText.REINSTATE}}</span>
-                                            </button>
-                                            }
-                                          </mat-menu>
-                                          }
-                                        </mat-cell>
-                                      </ng-container>
-                                      <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
-                                      <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
-                                        [style.cursor]="'pointer'" matRipple>
-                                      </mat-row>
-                                    </table>
-                                  </div>
-                                  <!-- No result -->
-                                  @if (!(residueDS.loading$ | async) && !residueItem.length) {
-                                  <mat-divider></mat-divider>
-                                  <div class="no-results m-l-20 pt-3">
-                                    <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-                                  </div>
-                                  }
-                                  <!-- Loading spinner -->
-                                  @if (residueDS.loading$ | async) {
-                                  <div class="tbl-spinner">
-                                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                    </mat-progress-spinner>
-                                  </div>
-                                  }
-                                </div>
-                              </div>
-                              }
-                              @else {
-                              <div class="empty-purpose">
-                                <mat-icon class="icon-large">error_outline</mat-icon>
-                                <span class="mb-3">{{translatedLangText.NO_RESIDUE}}</span>
-                              </div>
-                              }
-                              }
-                            </mat-tab>
+                                }
+                                }
+                              </mat-tab>
+                            }
                             <mat-tab>
                               <ng-template mat-tab-label>
                                 <span [ngClass]="'m-r-10 d-flex align-items-center'">
@@ -1109,7 +1105,7 @@
                                 </button>
 
                                 <mat-menu #menu="matMenu">
-                                  @if (canOverwriteCleaningApproval()) {
+                                  @if (canOverwriteCleaningApproval() && allowPerformAction()) {
                                   <button mat-menu-item
                                     (click)="overwriteCleaningApprovalDialog($event)">{{translatedLangText.OVERWRITE_APPROVAL}}</button>
                                   }
@@ -1428,7 +1424,7 @@
                                               <mat-icon>more_vert</mat-icon>
                                             </button>
                                             <mat-menu #menu="matMenu">
-                                              @if (canRollbackRepairQC(row)) {
+                                              @if (canRollbackRepairQC(row) && allowPerformAction()) {
                                               <button mat-menu-item (click)="onOverwriteQC($event, row)">
                                                 <mat-icon>undo</mat-icon>
                                                 <span>{{translatedLangText.OVERWRITE_QC}}</span>
@@ -1516,28 +1512,30 @@
                     }
                     @if (!(pdDS.loading$ | async)) {
                     <mat-card-content>
-                      <div class="row">
-                        <div
-                          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 d-flex justify-content-end ms-auto">
-                          @if (canOverwriteJobNo() && canOverwriteDepotCost()) {
-                          <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
-                            [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
-                            <mat-icon>edit</mat-icon>
-                          </button>
-
-                          <mat-menu #menu="matMenu">
-                            @if (canOverwriteJobNo()) {
-                            <button mat-menu-item
-                              (click)="overwriteJobNoDialog($event)">{{translatedLangText.OVERWRITE_JOB_NO}}</button>
+                      @if(allowPerformAction()){
+                        <div class="row">
+                          <div
+                            class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 d-flex justify-content-end ms-auto">
+                            @if (canOverwriteJobNo() && canOverwriteDepotCost()) {
+                            <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
+                              [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
+                              <mat-icon>edit</mat-icon>
+                            </button>
+  
+                            <mat-menu #menu="matMenu">
+                              @if (canOverwriteJobNo()) {
+                              <button mat-menu-item
+                                (click)="overwriteJobNoDialog($event)">{{translatedLangText.OVERWRITE_JOB_NO}}</button>
+                              }
+                              @if (canOverwriteDepotCost()) {
+                              <button mat-menu-item
+                                (click)="overwriteDepotCostDialog($event)">{{translatedLangText.OVERWRITE_DEPOT_COST}}</button>
+                              }
+                            </mat-menu>
                             }
-                            @if (canOverwriteDepotCost()) {
-                            <button mat-menu-item
-                              (click)="overwriteDepotCostDialog($event)">{{translatedLangText.OVERWRITE_DEPOT_COST}}</button>
-                            }
-                          </mat-menu>
-                          }
+                          </div>
                         </div>
-                      </div>
+                      }
                       <div class="row">
                         <div
                           class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 mt-xl-0 mt-lg-4 mt-md-4 mt-sm-4 mt-xs-4 m-b-0">
@@ -2030,144 +2028,147 @@
                     }
                   </div>
                 </mat-expansion-panel>
-                <mat-expansion-panel [expanded]="verifySection(accordionSections.transfer_details)">
-                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.transfer_details)">
-                    <mat-panel-title>
-                      <div class="d-flex justify-content-between align-items-center w-100">
-                        <div class="header">
-                          <h2>
-                            {{translatedLangText.TRANSFER_DETAILS}}
-                          </h2>
+              
+                @if(allowPerformAction()){
+                  <mat-expansion-panel [expanded]="verifySection(accordionSections.transfer_details)">
+                    <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.transfer_details)">
+                      <mat-panel-title>
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                          <div class="header">
+                            <h2>
+                              {{translatedLangText.TRANSFER_DETAILS}}
+                            </h2>
+                          </div>
+                          <button mat-icon-button (click)="expandAll($event, accordionSections.transfer_details)"
+                            matTooltip="Expand All Sections">
+                            <mat-icon>unfold_more</mat-icon>
+                          </button>
                         </div>
-                        <button mat-icon-button (click)="expandAll($event, accordionSections.transfer_details)"
-                          matTooltip="Expand All Sections">
-                          <mat-icon>unfold_more</mat-icon>
-                        </button>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="body p-l-0 p-r-0">
+                      @if ((bkDS.loading$ | async) || (schedulingDS.loading$ | async)) {
+                      <div class="tbl-spinner">
+                        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                        </mat-progress-spinner>
                       </div>
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
-                  <div class="body p-l-0 p-r-0">
-                    @if ((bkDS.loading$ | async) || (schedulingDS.loading$ | async)) {
-                    <div class="tbl-spinner">
-                      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                      </mat-progress-spinner>
+                      }
+                      @if (!(bkDS.loading$ | async) && !(schedulingDS.loading$ | async)) {
+                      <mat-card-content>
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                            <div class="responsive_table">
+                              <table mat-table [dataSource]="transferList" matSort
+                                class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                <ng-container matColumnDef="id">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                                  <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="transfer_out_dt">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    {{translatedLangText.TRANSFER_SINCE}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row"
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    <span
+                                      class="mobile-tab-label">{{translatedLangText.TRANSFER_SINCE}}:</span>{{displayDate(row.transfer_out_dt)}}
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="transfer_in_dt">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    {{translatedLangText.TRANSFER_UNTIL}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row"
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    <span class="mobile-tab-label">{{translatedLangText.TRANSFER_UNTIL}}:</span>
+                                    <span>{{displayDate(row.transfer_in_dt) ?? "-"}}</span>
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="days">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    {{translatedLangText.DAYS}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row"
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    <span class="mobile-tab-label">{{translatedLangText.DAYS}}:</span>
+                                    <span>{{transferDS.getDays(row) || "-"}}</span>
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="location_from_cv">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    {{translatedLangText.FROM_YARD}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row"
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    <span
+                                      class="mobile-tab-label">{{translatedLangText.FROM_YARD}}:</span>{{getYardDescription(row?.location_from_cv)}}
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="location_to_cv">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    {{translatedLangText.TO_YARD}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row"
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    <span
+                                      class="mobile-tab-label">{{translatedLangText.TO_YARD}}:</span>{{getYardDescription(row?.location_to_cv)}}
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="update_by">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    {{translatedLangText.UPDATE_BY}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row"
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    <span
+                                      class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by}}
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="update_dt">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    {{translatedLangText.UPDATE_DATE}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row"
+                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    <span
+                                      class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{displayDate(row?.update_dt
+                                    || row?.create_dt)}}
+                                  </mat-cell>
+                                </ng-container>
+                                <mat-header-row *matHeaderRowDef="displayedColumnsTransfer"></mat-header-row>
+                                <mat-row *matRowDef="let row; columns: displayedColumnsTransfer;"
+                                  [style.cursor]="'pointer'" matRipple>
+                                </mat-row>
+                              </table>
+                            </div>
+                            <!-- No result -->
+                            @if (!(transferDS.loading$ | async) && !transferList.length) {
+                            <mat-divider></mat-divider>
+                            <div class="no-results m-l-20 pt-3">
+                              <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                            </div>
+                            }
+                            <!-- Loading spinner -->
+                            @if (transferDS.loading$ | async) {
+                            <div class="tbl-spinner">
+                              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                              </mat-progress-spinner>
+                            </div>
+                            }
+                          </div>
+                        </div>
+                      </mat-card-content>
+                      }
                     </div>
-                    }
-                    @if (!(bkDS.loading$ | async) && !(schedulingDS.loading$ | async)) {
-                    <mat-card-content>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                          <div class="responsive_table">
-                            <table mat-table [dataSource]="transferList" matSort
-                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
-                              <ng-container matColumnDef="id">
-                                <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-                                <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                              </ng-container>
-                              <ng-container matColumnDef="transfer_out_dt">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.TRANSFER_SINCE}}
-                                </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span
-                                    class="mobile-tab-label">{{translatedLangText.TRANSFER_SINCE}}:</span>{{displayDate(row.transfer_out_dt)}}
-                                </mat-cell>
-                              </ng-container>
-                              <ng-container matColumnDef="transfer_in_dt">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.TRANSFER_UNTIL}}
-                                </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span class="mobile-tab-label">{{translatedLangText.TRANSFER_UNTIL}}:</span>
-                                  <span>{{displayDate(row.transfer_in_dt) ?? "-"}}</span>
-                                </mat-cell>
-                              </ng-container>
-                              <ng-container matColumnDef="days">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.DAYS}}
-                                </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span class="mobile-tab-label">{{translatedLangText.DAYS}}:</span>
-                                  <span>{{transferDS.getDays(row) || "-"}}</span>
-                                </mat-cell>
-                              </ng-container>
-                              <ng-container matColumnDef="location_from_cv">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.FROM_YARD}}
-                                </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span
-                                    class="mobile-tab-label">{{translatedLangText.FROM_YARD}}:</span>{{getYardDescription(row?.location_from_cv)}}
-                                </mat-cell>
-                              </ng-container>
-                              <ng-container matColumnDef="location_to_cv">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.TO_YARD}}
-                                </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span
-                                    class="mobile-tab-label">{{translatedLangText.TO_YARD}}:</span>{{getYardDescription(row?.location_to_cv)}}
-                                </mat-cell>
-                              </ng-container>
-                              <ng-container matColumnDef="update_by">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.UPDATE_BY}}
-                                </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span
-                                    class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by}}
-                                </mat-cell>
-                              </ng-container>
-                              <ng-container matColumnDef="update_dt">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.UPDATE_DATE}}
-                                </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  <span
-                                    class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{displayDate(row?.update_dt
-                                  || row?.create_dt)}}
-                                </mat-cell>
-                              </ng-container>
-                              <mat-header-row *matHeaderRowDef="displayedColumnsTransfer"></mat-header-row>
-                              <mat-row *matRowDef="let row; columns: displayedColumnsTransfer;"
-                                [style.cursor]="'pointer'" matRipple>
-                              </mat-row>
-                            </table>
-                          </div>
-                          <!-- No result -->
-                          @if (!(transferDS.loading$ | async) && !transferList.length) {
-                          <mat-divider></mat-divider>
-                          <div class="no-results m-l-20 pt-3">
-                            <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-                          </div>
-                          }
-                          <!-- Loading spinner -->
-                          @if (transferDS.loading$ | async) {
-                          <div class="tbl-spinner">
-                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                            </mat-progress-spinner>
-                          </div>
-                          }
-                        </div>
-                      </div>
-                    </mat-card-content>
-                    }
-                  </div>
-                </mat-expansion-panel>
+                  </mat-expansion-panel>
+                }
                 <!-- <mat-expansion-panel [expanded]="section === 'tank_overview'" (click)="setSection('tank_overview')">
                   <mat-expansion-panel-header class="ps-0">
                     <mat-panel-title>
