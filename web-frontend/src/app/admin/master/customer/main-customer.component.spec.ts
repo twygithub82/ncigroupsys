@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MainPackageSteamComponent } from './main-package-steam.component';
+import { MainCustomerComponent } from './main-customer.component';
 
-describe('MainPackageSteamComponent', () => {
-  let component: MainPackageSteamComponent;
-  let fixture: ComponentFixture<MainPackageSteamComponent>;
+describe('MainCustomerComponent', () => {
+  let component: MainCustomerComponent;
+  let fixture: ComponentFixture<MainCustomerComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MainPackageSteamComponent]
+      imports: [MainCustomerComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(MainPackageSteamComponent);
+    fixture = TestBed.createComponent(MainCustomerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
