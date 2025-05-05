@@ -302,10 +302,10 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.unit_type;
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, [{ unit_type: 'ASC' }]).subscribe(data => {
           this.tankItemList = data;

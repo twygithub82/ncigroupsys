@@ -391,8 +391,8 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
       this.startCursor = this.tariffLabourDS.pageInfo?.startCursor;
       this.hasNextPage = this.tariffLabourDS.pageInfo?.hasNextPage ?? false;
       this.hasPreviousPage = this.tariffLabourDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = 0;
+      // this.pageIndex = 0;
+      // this.paginator.pageIndex = 0;
       this.selection.clear();
       if (!this.hasPreviousPage)
         this.previous_endCursor = undefined;
