@@ -1231,13 +1231,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
+    event.stopPropagation();
     this.resetForm();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
