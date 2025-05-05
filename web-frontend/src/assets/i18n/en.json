@@ -1226,6 +1226,7 @@
     "RESET-PASSWORD": "Reset Password",
     "LET-US-HELP-YOU": "Let Us Help You",
     "ENTER-EMAIL": "Enter Email",
+    "INVALID-EMAIL": "Invalid Email",
     "SUBMIT": "Submit",
     "LOGIN": "Login"
   },

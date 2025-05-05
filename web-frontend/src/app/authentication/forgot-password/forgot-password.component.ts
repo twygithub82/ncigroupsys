@@ -68,7 +68,7 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.authForm.invalid) {
       return;
     } else {
-      this.router.navigate(['/dashboard/main']);
+      
     }
   }
 }
