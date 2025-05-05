@@ -675,7 +675,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
 
   DeleteCustomerCompany(customerGuids: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: CAN_DELETE_COMPANY,
+      mutation: DELETE_CUSTOMER_COMPANY,
       variables: {
         customerGuids
       }
