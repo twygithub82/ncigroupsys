@@ -192,7 +192,7 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                                   <input matInput formControlName="haulier" class="text-uppercase" required
-                                    (input)="onAlphaNumericOnly($event, 'haulier')">
+                                    (input)="onAlphaOnly($event, 'haulier')">
                                   <!-- @if (inGateForm?.get('haulier')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
@@ -238,7 +238,7 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
                                   <input matInput formControlName="driver_name" class="text-uppercase" required
-                                    (input)="onAlphaOnly($event)">
+                                    (input)="onAlphaOnly($event, 'driver_name')">
                                   <!-- @if (inGateForm?.get('driver_name')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
@@ -349,7 +349,8 @@
                               </mat-icon>
                               {{translatedLangText.ACCEPT}}
                             </button>
-                            <button mat-flat-button class="bg-light-gold m-r-10 accent-light" (click)="resetDialog($event)">
+                            <button mat-flat-button class="bg-light-gold m-r-10 accent-light"
+                              (click)="resetDialog($event)">
                               <mat-icon>
                                 close
                               </mat-icon>

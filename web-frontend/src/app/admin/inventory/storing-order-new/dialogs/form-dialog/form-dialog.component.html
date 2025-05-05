@@ -76,13 +76,16 @@
                     {{data.translatedLangText.CLEANING}}
                   </mat-checkbox>
                 </div>
+                @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                   <mat-checkbox formControlName="purpose_steam" class="m-r-5" color="primary">
                     {{data.translatedLangText.STEAM}}
                   </mat-checkbox>
                 </div>
+                }
               </div>
             </div>
+            @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.REQUIRED_TEMP}}</mat-label>
@@ -105,6 +108,7 @@
                 }
               </mat-form-field>
             </div>
+            }
           </div>
           <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">

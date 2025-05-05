@@ -1045,8 +1045,8 @@
     "NOTES": "Notes",
     "FROM_YARD": "From Yard",
     "TO_YARD": "To Yard",
-    "FROM":"From",
-    "TO":"To",
+    "FROM": "From",
+    "TO": "To",
     "OPENING-BALANCE": "Opening Balance",
     "CLOSING-BALANCE": "Closing Balance",
     "DUE-TYPE": "Due Type",
@@ -1222,7 +1222,13 @@
     "HOURLY-RATE": "Hourly Rate $",
     "FLAT-RATE-ONLY": "Flat Rate",
     "REPAIR-ESITMATE-DETAILS": "Repair Estimate Details",
-    "ACCOUNT": "Account"
+    "ACCOUNT": "Account",
+    "RESET-PASSWORD": "Reset Password",
+    "LET-US-HELP-YOU": "Let Us Help You",
+    "ENTER-EMAIL": "Enter Email",
+    "INVALID-EMAIL": "Invalid Email",
+    "SUBMIT": "Submit",
+    "LOGIN": "Login"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

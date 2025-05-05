@@ -446,10 +446,10 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.MATERIAL_COST}}
                         </div>
+                        @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.TOTAL_COST}}
                         </div>
-                        @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.LABOUR_DISCOUNT}} (%)
                         </div>
@@ -478,10 +478,10 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label"></div>
                         </div>
+                        @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label"></div>
                         </div>
-                        @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
                           <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
@@ -631,15 +631,12 @@
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label"></div>
                                 </div>
-                                @if (modulePackageService.isGrowthPackage() ||
-                                modulePackageService.isCustomizedPackage()) {
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                                   <div class="table-label"></div>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                                   <div class="table-label"></div>
                                 </div>
-                                }
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label"></div>
@@ -725,12 +722,12 @@
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label"></div>
                                 </div>
+                                @if (modulePackageService.isGrowthPackage() ||
+                                modulePackageService.isCustomizedPackage()) {
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label"></div>
                                 </div>
-                                @if (modulePackageService.isGrowthPackage() ||
-                                modulePackageService.isCustomizedPackage()) {
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                                   <div class="table-label"></div>
                                 </div>
@@ -762,14 +759,14 @@
                                     <span>$</span><span>{{repairForm?.get('total_mat_cost_est')?.value}}</span>
                                   </div>
                                 </div>
+                                @if (modulePackageService.isGrowthPackage() ||
+                                modulePackageService.isCustomizedPackage()) {
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
                                     <span>$</span><span>{{repairForm?.get('total_cost_est')?.value}}</span>
                                   </div>
                                 </div>
-                                @if (modulePackageService.isGrowthPackage() ||
-                                modulePackageService.isCustomizedPackage()) {
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
@@ -813,6 +810,8 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2">
+                  @if (modulePackageService.isGrowthPackage() ||
+                  modulePackageService.isCustomizedPackage()) {
                   @if (canExport()) {
                   <button mat-flat-button color="accent"
                     [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async)" class="m-r-5"
@@ -826,6 +825,7 @@
                     }
                     {{translatedLangText.EXPORT}}
                   </button>
+                  }
                   }
                   @if (repairDS.canAmend(repairItem)) {
                   <button mat-flat-button color="primary" [disabled]="(repairDS.actionLoading$ | async)">

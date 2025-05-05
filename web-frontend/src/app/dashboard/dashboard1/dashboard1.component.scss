@@ -7,8 +7,9 @@
 }
 
 .dashboard-content {
-    width: 90vw;
-    display: flex;
-    justify-content: center;
-    align-items: center; /* vertical centering if needed */
+
+    // width: 90vw;
+    img {
+        max-width: 600px;
+    }
 }

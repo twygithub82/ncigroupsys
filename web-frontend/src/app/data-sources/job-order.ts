@@ -625,6 +625,7 @@ const GET_JOB_ORDER_BY_ID_FOR_REPAIR = gql`
           repair {
             guid
             estimate_no
+            status_cv
           }
           approve_cost
           approve_hour

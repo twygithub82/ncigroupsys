@@ -461,7 +461,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         yard_cv: this.inGateForm.get('yard_cv')?.value,
         preinspection_cv: 'YES',
         lolo_cv: 'BOTH',
-        haulier: this.inGateForm.get('haulier')?.value
+        haulier: this.inGateForm.get('haulier')?.value?.toUpperCase()
       })
       console.log(ig);
       if (ig.guid) {
@@ -583,8 +583,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     ]);
   }
 
-  onAlphaOnly(event: Event): void {
-    Utility.onAlphaOnly(event, this.inGateForm?.get("driver_name")!);
+  onAlphaOnly(event: Event, controlName: string): void {
+    Utility.onAlphaOnly(event, this.inGateForm?.get(controlName)!);
   }
 
   onAlphaNumericOnly(event: Event, controlName: string): void {
