@@ -38,7 +38,7 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderDS } from 'app/data-sources/storing-order';
 import { ClassNoItem, TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { BehaviorSubject,startWith, debounceTime, firstValueFrom, tap } from 'rxjs';
+import { BehaviorSubject, startWith, debounceTime, firstValueFrom, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { MessageDialogComponent } from '@shared/components/message-dialog/message-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
@@ -268,32 +268,32 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   }
 
-   initializeValueChanges() {
-      this.tcForm!.get('method')!.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        tap(value => {
-          var searchCriteria = '';
-          if (typeof value === 'string') {
-            searchCriteria = value;
-          } else {
-            searchCriteria = value.description;
-          }
-          if(searchCriteria==='') return;
-          var mth =  this.cMethodList.find(m=>m.guid===searchCriteria);
+  initializeValueChanges() {
+    this.tcForm!.get('method')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.description;
+        }
+        if (searchCriteria === '') return;
+        var mth = this.cMethodList.find(m => m.guid === searchCriteria);
 
-          this.tcForm?.patchValue({
-            category:mth?.category_guid
-          });
-          // this.fmlDS.search({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
-          //   this.cleanFormulaList = data
-          //   this.updateValidators(this.cleanFormulaControl, this.cleanFormulaList);
-          // });
-        })
-      ).subscribe();
-  
-    }
-  
+        this.tcForm?.patchValue({
+          category: mth?.category_guid
+        });
+        // this.fmlDS.search({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
+        //   this.cleanFormulaList = data
+        //   this.updateValidators(this.cleanFormulaControl, this.cleanFormulaList);
+        // });
+      })
+    ).subscribe();
+
+  }
+
 
   initTcForm() {
     this.tcForm = this.fb.group({
@@ -373,7 +373,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
     });
 
-    this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' },100).subscribe(data => {
+    this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }, 100).subscribe(data => {
       if (this.cMethodDS.totalCount > 0) {
         this.cMethodList = data;
       }
@@ -438,8 +438,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
       }
     }
-    else
-    {
+    else {
       this.initializeValueChanges();
     }
 
@@ -740,7 +739,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
 
   async downloadFiles(urls: any[]): Promise<File[]> {
-
     const filePromises = urls.map(async (data) => {
 
       let url: String = data.url;
@@ -784,7 +782,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       // Additional logic can be added here
     }
 
-
     this.tcUNDS.SearchClassNoByUnNumber(UnNumber).subscribe(result => {
       this.newUNNo = true;
       if (result.length > 0) {
@@ -805,7 +802,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
   async QueryAllFilesInGroup(groupguid: string) {
     this.sdsFileLoading = true;
-   // this.selectedFileLoading.next(this.sdsFileLoading); // Set loading to true
+    // this.selectedFileLoading.next(this.sdsFileLoading); // Set loading to true
     let GroupGuid: string = groupguid;
     this.selectedFileLoading.subscribe(value => {
       if (value != this.sdsFileLoading) this.selectedFileLoading.next(this.sdsFileLoading);
@@ -961,8 +958,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
-  isLoadingSdsFile():Boolean
-  {
+  isLoadingSdsFile(): Boolean {
     return this.sdsFileLoading;
   }
 }

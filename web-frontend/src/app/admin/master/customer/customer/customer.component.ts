@@ -286,9 +286,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }, { delete_dt: { eq: null } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyFilterList = data
-          
         });
       })
     ).subscribe();
@@ -735,6 +734,24 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
 
   cancelItem(row: CustomerCompanyItem) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.deleteCustomerAndBillingBranch(row.guid!);
+      }
+    });
     // this.id = row.id;
 
     // var CanDeleteCustomer: boolean = await this.CanDeleteCustomer(row.guid!);
@@ -760,7 +777,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     // else {
     //   this.deleteCustomerAndBillingBranch(row.guid!);
     // }
-    this.deleteCustomerAndBillingBranch(row.guid!);
 
   }
 

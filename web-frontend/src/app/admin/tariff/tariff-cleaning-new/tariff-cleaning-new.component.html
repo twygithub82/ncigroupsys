@@ -64,7 +64,7 @@
                             </mat-option>
                             }
                           </mat-select>
-                        <!-- 
+                          <!-- 
                           @if (tcForm?.get('open_gate')?.hasError('required')) {
                           <mat-error>
                             {{langText.OPEN_AT_GATE | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -234,7 +234,6 @@
                             [matAutocomplete]="classNo">
                           <mat-autocomplete #classNo="matAutocomplete" [displayWith]="displayClassNoFn">
                             @for (itm of existingClassNos; track itm) {
-
                             <mat-option [value]="itm.class">
                               {{itm.class}}
                             </mat-option>
@@ -251,21 +250,19 @@
                     <div class="row">
                       <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                         <mat-label>{{translatedLangText.SDS_FILE }}</mat-label>
-                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button" class="m-l-5"
-                          [disabled]="!isFileSelectable">
+                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button"
+                          class="m-l-5" [disabled]="!isFileSelectable">
                           <i class="material-icons">attach_file</i>
                         </button>
                         <input type="file" #fileInput class="defaultd-none" (change)="onFileSelected($event)"
                           style="display: none;"
                           accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
-
                       </div>
-
-                      <!-- @if (tcForm?.get('file_size')?.hasError('required')) {
+                      @if (tcForm?.get('file_size')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.SDS_FILE }} {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
-                      } -->
+                      }
                       @if (tcForm?.get('file_size')?.hasError('error')) {
                       <mat-error>
                         {{translatedLangText.ATTACHMENT_TOO_BIG }}
@@ -283,7 +280,7 @@
                         <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                         </mat-progress-spinner>
                       </div>
-                      
+
                       <!-- } -->
 
 
