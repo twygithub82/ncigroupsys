@@ -391,8 +391,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       and: [
         {
           storing_order_tank: {
-            tank_status_cv: { in: ["CLEANING"] },
-            purpose_cleaning: { eq: true }
+            tank_status_cv: { in: ["CLEANING"] }
+            ,purpose_cleaning: { eq: true }
           }
         }
       ]

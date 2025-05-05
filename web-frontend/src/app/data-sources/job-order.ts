@@ -412,6 +412,7 @@ const GET_STARTED_JOB_ORDER = gql`
         cleaning {
           guid
           job_no
+          status_cv
         }
         team {
           description

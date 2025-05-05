@@ -641,7 +641,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         data.forEach(d => {
           this.teamList?.forEach(team => {
             if (team.guid === d.team?.guid && d.job_type_cv === 'CLEANING') {
-              const foundIncomplete = d.storing_order_tank?.residue?.filter(x => ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED', 'ASSIGNED', ''].includes(x.status_cv || ''));
+              const foundIncomplete = d.storing_order_tank?.cleaning?.filter(x => ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED', 'ASSIGNED', ''].includes(x.status_cv || ''));
               team.jobOrderItem = d;
               team.isOccupied = true;
               team.isEditable = false;
