@@ -288,6 +288,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         }
         this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }, { delete_dt: { eq: null } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyFilterList = data
+          
         });
       })
     ).subscribe();
@@ -786,7 +787,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     try {
       // Use firstValueFrom to convert Observable to Promise
       const result = await firstValueFrom(this.ccDS.CanDeleteCustomerCompany(guid));
-      retval = (result.data.value);
+      retval = (result);
     } catch (error) {
       console.error("Error fetching Customer guid:", error);
     }
