@@ -46,10 +46,13 @@
                     <mat-label>{{translatedLangText.CUSTOMER_TYPE }}</mat-label>
                     <mat-select formControlName="customer_type" required>
                       @for (cc of customerTypeCvList; track cc) {
+                      @if ((modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) ||
+                      !starterPackageNotAllowCustomerType.includes(cc.code_val || '')) {
                       @if (cc.code_val !== "SURVEYOR") {
                       <mat-option [value]="cc">
                         {{ cc.description }}
                       </mat-option>
+                      }
                       }
                       }
                     </mat-select>
@@ -199,27 +202,26 @@
                     <input matInput formControlName="remarks">
                   </mat-form-field>
                 </div>
-
                 @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
-                      <input matInput formControlName="billing_branches" [matAutocomplete]="customerCode">
-                      <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                        @for (cc of customer_companyList; track cc) {
-                        <mat-option [value]="cc">
-                          {{ccDS.displayName(cc)}}
-                        </mat-option>
-                        }
-                      </mat-autocomplete>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
-                    <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
-                      (click)="addBillingBranch($event)">
-                      <mat-icon class="">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
-                    </button>
-                  </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
+                    <input matInput formControlName="billing_branches" [matAutocomplete]="customerCode">
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                      @for (cc of customer_companyList; track cc) {
+                      <mat-option [value]="cc">
+                        {{ccDS.displayName(cc)}}
+                      </mat-option>
+                      }
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
+                  <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
+                    (click)="addBillingBranch($event)">
+                    <mat-icon class="">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
+                  </button>
+                </div>
                 }
               </div>
               <div class="row">

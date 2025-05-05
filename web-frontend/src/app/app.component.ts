@@ -75,8 +75,10 @@ export class AppComponent implements OnInit, OnDestroy {
         const tokenExpiration = this.authService.getTokenExpiration();
         const now = Date.now();
         const timeLeft = tokenExpiration ? tokenExpiration - now : 0;
+        const refreshTokenWithin2 = 10 * 60 * 1000;
 
         const timeLeftCompare = refreshTokenWithin;
+        // const timeLeftCompare = (tokenExpiration || refreshTokenWithin2) - refreshTokenWithin2;
         if (timeLeft > timeLeftCompare) {
           console.log('No need to refresh token - time left:', timeLeft);
           return;
