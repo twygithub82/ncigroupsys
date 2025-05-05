@@ -108,21 +108,22 @@ export class AuthService {
         map(response => {
           const expTime = new Date(response.expiration).getTime();
           const now = Date.now();
-        
+
+          console.log('refreshToken body: ', body)
           // Reject if new token is about to expire in < 5 min
-          if (expTime - now < 5 * 60 * 1000) {
-            throw new Error('Received a near-expired token, aborting');
-          }
-        
+          // if (expTime - now < 5 * 60 * 1000) {
+          //   throw new Error('Received a near-expired token, aborting');
+          // }
+
           const userToken = new UserToken();
           userToken.token = response.token;
           userToken.expiration = response.expiration;
           userToken.refreshToken = response.refreshToken;
-        
+
           localStorage.setItem('userToken', JSON.stringify(userToken));
           this.tokenRefreshed.next();
           console.log('token is refreshed: ', userToken);
-        
+
           return userToken;
         }),
         catchError(error => {

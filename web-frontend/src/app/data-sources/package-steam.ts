@@ -1,43 +1,36 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-import { CleaningCategoryItem } from './cleaning-category';
-import { CleaningMethodItem } from './cleaning-method';
-import { TankItem } from './tank';
-import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
-import { PageInfo } from '@core/models/pageInfo';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { CustomerCompanyItem } from './customer-company';
 import { TariffSteamingItem } from './tariff-steam';
 export class PackageSteamingGo {
   public guid?: string;
-  public tariff_steaming_guid?:string;
-  public customer_company_guid?:string;
+  public tariff_steaming_guid?: string;
+  public customer_company_guid?: string;
 
   //public description?: string;
   public cost?: number;
-  public remarks?:string;
-  public labour?:number;
+  public remarks?: string;
+  public labour?: number;
 
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  
+
   constructor(item: Partial<PackageSteamingGo> = {}) {
     this.guid = item.guid;
     if (!this.guid) this.guid = '';
     //this.description = item.description;
-    this.tariff_steaming_guid=item.tariff_steaming_guid;
-    this.labour=item.labour;
+    this.tariff_steaming_guid = item.tariff_steaming_guid;
+    this.labour = item.labour;
 
     this.cost = item.cost;
-    this.remarks=item.remarks;
+    this.remarks = item.remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -48,15 +41,15 @@ export class PackageSteamingGo {
 
 export class PackageSteamingItem extends PackageSteamingGo {
   public customer_company?: CustomerCompanyItem;
-  public tariff_steaming?:TariffSteamingItem;
+  public tariff_steaming?: TariffSteamingItem;
 
- 
-  
+
+
   constructor(item: Partial<PackageSteamingItem> = {}) {
-    
+
     super(item);
-    this.customer_company=item.customer_company;
-    this.tariff_steaming=item.tariff_steaming;
+    this.customer_company = item.customer_company;
+    this.tariff_steaming = item.tariff_steaming;
   }
 }
 
@@ -133,7 +126,7 @@ export class PackageSteamingDS extends BaseDataSource<PackageSteamingItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  
+
   SearchPackageSteam(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<PackageSteamingItem[]> {
     this.loadingSubject.next(true);
     if (!last)
@@ -163,36 +156,36 @@ export class PackageSteamingDS extends BaseDataSource<PackageSteamingItem> {
   }
 
 
- 
 
-    updatePackageSteam(ps: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_PACKAGE_STEAMING,
-        variables: {
-          ps
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
 
-    updatePackageSteams(guids: string[],cost:number,labour:number,remarks:string): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_PACKAGE_STEAMINGS,
-        variables: {
-          guids,
-          cost,
-          labour,
-          remarks
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  updatePackageSteam(ps: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_PACKAGE_STEAMING,
+      variables: {
+        ps
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  updatePackageSteams(guids: string[], cost: number, labour: number, remarks: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_PACKAGE_STEAMINGS,
+      variables: {
+        guids,
+        cost,
+        labour,
+        remarks
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 }

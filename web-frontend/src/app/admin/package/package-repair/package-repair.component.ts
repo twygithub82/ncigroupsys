@@ -134,7 +134,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   packRepairDS: PackageRepairDS;
   ccDS: CustomerCompanyDS;
   custCompDS: CustomerCompanyDS;
-  
+
 
   packRepairItems: PackageRepairItem[] = [];
 
@@ -155,9 +155,9 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   searchField: string = "";
   selection = new SelectionModel<PackageDepotItem>(true, []);
 
-   selectedCustomers: any[] = [];
-  
-    separatorKeysCodes: number[] = [ENTER, COMMA];
+  selectedCustomers: any[] = [];
+
+  separatorKeysCodes: number[] = [ENTER, COMMA];
 
   id?: number;
   pcForm?: UntypedFormGroup;
@@ -340,7 +340,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   };
 
   getPackages(): boolean {
-    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage())
       return true;
     else
       return false;
@@ -515,29 +515,31 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-    const where: any = {};
-   
-    if (this.selectedCustomers.length>0) {
+    const where: any = {
+      customer_company: { delete_dt: { eq: null } }
+    };
+
+    if (this.selectedCustomers.length > 0) {
       var custGuids = this.selectedCustomers.map(c => c.guid);
-      where.customer_company_guid = { in:custGuids };
+      where.customer_company_guid = { in: custGuids };
     }
 
     if (this.groupNameControl.value?.code_val) {
-      
-        const cdValues: CodeValuesItem[] = [this.groupNameControl.value];
-        var codes = cdValues.map(cc => cc.code_val);
-        where.tariff_repair = where.tariff_repair || {};
-        where.tariff_repair.group_name_cv = { in: codes };
-      
+
+      const cdValues: CodeValuesItem[] = [this.groupNameControl.value];
+      var codes = cdValues.map(cc => cc.code_val);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.group_name_cv = { in: codes };
+
     }
 
     if (this.subGroupNameControl.value?.code_val) {
-      
-        const cdValues: CodeValuesItem[] = [this.subGroupNameControl.value];
-        var codes = cdValues.map(cc => cc.code_val);
-        where.tariff_repair = where.tariff_repair || {};
-        where.tariff_repair.subgroup_name_cv = { in: codes };
-      
+
+      const cdValues: CodeValuesItem[] = [this.subGroupNameControl.value];
+      var codes = cdValues.map(cc => cc.code_val);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.subgroup_name_cv = { in: codes };
+
     }
 
     if (this.pcForm!.value["part_name"]) {
@@ -821,8 +823,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       if (subqueries.length > 0) {
         this.CodeValuesDS?.getCodeValuesByType(subqueries)
         subqueries.map(s => {
-          this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => 
-          {
+          this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
             data = this.sortByDescription(data)
             this.allSubGroupNameCvList.push(...data);
           });
@@ -971,7 +972,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm?.get('labour_hour')?.reset('');
     this.pcForm?.get('material_cost')?.reset('');
     this.pcForm?.get('handled_item_cv')?.reset('');
-    this.selectedCustomers=[];
+    this.selectedCustomers = [];
   }
 
   initializeValueChange() {
@@ -991,7 +992,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       tap(value => {
         const subgroupName = this.pcForm?.get('sub_group_name_cv');
         if (value) {
-        
+
           if (value.child_code) {
             this.subGroupNameCvList = this.allSubGroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
             if ((this.subGroupNameCvList?.length ?? 0) > 1) {
@@ -1010,7 +1011,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       })
     ).subscribe();
 
-   
+
 
     this.pcForm?.get('sub_group_name_cv')!.valueChanges.pipe(
       startWith(''),
@@ -1028,64 +1029,62 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     ).subscribe();
   }
 
-    selected(event: MatAutocompleteSelectedEvent): void {
-          const customer = event.option.value;
-          const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
-          if (!(index >= 0)) {
-            this.selectedCustomers.push(customer);
-            
-          }
-      
-          if (this.custInput) {
-            this.searchCustomerCompanyList('');
-            this.custInput.nativeElement.value = '';
-            
-          }
-         // this.updateFormControl();
-          //this.customerCodeControl.setValue(null);
-          //this.pcForm?.patchValue({ customer_code: null });
-        }
-        
-      add(event: MatChipInputEvent): void {
-        const input = event.input;
-        const value = event.value;
-        // Add our fruit
-        if ((value || '').trim()) {
-          //this.fruits.push(value.trim());
-        }
-        // Reset the input value
-        if (input) {
-          input.value = '';
-        }
-        this.customerCodeControl.setValue(null);
+  selected(event: MatAutocompleteSelectedEvent): void {
+    const customer = event.option.value;
+    const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
+    if (!(index >= 0)) {
+      this.selectedCustomers.push(customer);
+
+    }
+
+    if (this.custInput) {
+      this.searchCustomerCompanyList('');
+      this.custInput.nativeElement.value = '';
+
+    }
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    this.customerCodeControl.setValue(null);
+  }
+
+  remove(cust: any): void {
+    const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
+    if (index >= 0) {
+      this.selectedCustomers.splice(index, 1);
+
+    }
+  }
+
+  // displayCustomerCompanyFn(customer: any): string {
+  //   if (!customer) return '';
+  //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
+  // }
+
+  private updateFormControl(): void {
+    // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
+  }
+
+  searchCustomerCompanyList(searchCriteria: string) {
+    this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+      if (this.custInput?.nativeElement.value === searchCriteria) {
+        this.customer_companyList = data;
       }
-    
-      remove(cust: any): void {
-        const index = this.selectedCustomers.findIndex(c=>c.code===cust.code);
-        if (index >= 0) {
-          this.selectedCustomers.splice(index, 1);
-          
-        }
-      }
-      
-      // displayCustomerCompanyFn(customer: any): string {
-      //   if (!customer) return '';
-      //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
-      // }
-      
-      private updateFormControl(): void {
-       // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
-      }
-    
-      searchCustomerCompanyList(searchCriteria : string)
-      {
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          if(this.custInput?.nativeElement.value===searchCriteria)
-          {
-             this.customer_companyList = data;
-          }
-        });
-      }
+    });
+  }
 }
 // export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
 //   // Check if the list already contains the default value

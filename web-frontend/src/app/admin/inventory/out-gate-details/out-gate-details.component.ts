@@ -440,15 +440,8 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-  cleanStatusColor(clean_status_cv?: string): string {
-    if (clean_status_cv === 'DIRTY') {
-      return "label bg-red";
-    }
-
-    if (clean_status_cv === 'CLEAN') {
-      return "label bg-green";
-    }
-    return "";
+  getCleaningConditionBadgeClass(status: string | undefined): string {
+    return Utility.getCleaningConditionBadgeClass(status);
   }
 
   handleSaveSuccess(count: any) {

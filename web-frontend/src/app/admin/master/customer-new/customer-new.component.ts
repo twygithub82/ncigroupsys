@@ -236,6 +236,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   countryCodes: any = [];
   countryCodesFiltered: any = [];
 
+  starterPackageNotAllowCustomerType = [
+    "BRANCH"
+  ]
+
   @ViewChild('countrySelect') countrySelect!: MatSelect;
 
   constructor(

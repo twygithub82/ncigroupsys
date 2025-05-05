@@ -1226,7 +1226,12 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   isDisabled(repairPart: RepairPartItem): boolean {
-    return (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) || (!this.repairDS.canApprove(this.repairItem) || (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true) || !(repairPart?.approve_part ?? true))
+    const packageCheck = (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage());
+    const repairCheck = !this.repairDS.canApprove(this.repairItem);
+    const repairPartCheck = (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true) || !(repairPart?.approve_part ?? true);
+    // const isBilled = (!this.repairItem?.customer_billing_guid && !this.repairItem?.customer_billing_guid);
+    // return (packageCheck) || (repairCheck || repairPartCheck || isBilled)
+    return (packageCheck) || (repairCheck || repairPartCheck)
   }
 
   getLabourCost(): number | undefined {
@@ -1252,7 +1257,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   canApprove() {
-    return this.canApproveFlag && this.repairDS.canApprove(this.repairItem)
+    const packageCheck = (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage());
+    return this.canApproveFlag && (this.repairDS.canApprove(this.repairItem))
   }
 
   displayApproveQty(rep: RepairPartItem) {
