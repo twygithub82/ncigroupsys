@@ -422,7 +422,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
           this.handleSaveSuccess(result?.data?.updateOutGate);
         });
       } else {
-        const publishOutGateSurvey = !this.modulePackage.isGrowthPackage() && !this.modulePackage.isCustomizedPackage();
+        const publishOutGateSurvey = this.modulePackage.isGrowthPackage() || this.modulePackage.isCustomizedPackage();
         console.log('hasOutSurvey', publishOutGateSurvey)
         this.ogDS.addOutGate(og, ro, publishOutGateSurvey).subscribe(result => {
           console.log(result?.data)
@@ -484,5 +484,13 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
       Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  onAlphaOnly(event: Event, controlName: string): void {
+    Utility.onAlphaOnly(event, this.outGateForm?.get(controlName)!);
+  }
+
+  onAlphaNumericOnly(event: Event, controlName: string): void {
+    Utility.onAlphaNumericOnly(event, this.outGateForm?.get(controlName)!);
   }
 }

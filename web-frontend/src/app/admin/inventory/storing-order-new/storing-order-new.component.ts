@@ -40,6 +40,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-storing-order-new',
@@ -187,7 +188,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -197,6 +199,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
+    this.detectColumnChange();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -741,5 +744,34 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       row.actions.includes('cancel') ||
       row.actions.includes('rollback')
     );
+  }
+
+  detectColumnChange() {
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
+      this.displayedColumns = [
+        'tank_no',
+        'last_cargo',
+        'job_no',
+        'purpose_storage',
+        'purpose_cleaning',
+        'purpose_steam',
+        'purpose_repair_cv',
+        'status_cv',
+        'certificate_cv',
+        'actions'
+      ];
+    } else {
+      this.displayedColumns = [
+        'tank_no',
+        'last_cargo',
+        'job_no',
+        'purpose_storage',
+        'purpose_cleaning',
+        'purpose_repair_cv',
+        'status_cv',
+        'certificate_cv',
+        'actions'
+      ];
+    }
   }
 }
