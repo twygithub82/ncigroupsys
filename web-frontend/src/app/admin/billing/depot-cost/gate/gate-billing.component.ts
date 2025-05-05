@@ -135,7 +135,9 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     DELETE: 'COMMON-FORM.DELETE',
     GATE_IN: 'COMMON-FORM.GATE-IN',
     GATE_OUT: 'COMMON-FORM.GATE-OUT',
-    INVOICE_TYPE: 'COMMON-FORM.INVOICE-TYPE'
+    INVOICE_TYPE: 'COMMON-FORM.INVOICE-TYPE',
+    CLEAR: 'COMMON-FORM.CLEAR',
+    SAVE: 'COMMON-FORM.SAVE',
   }
 
   invForm?: UntypedFormGroup;

@@ -40,6 +40,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-storing-order-new',
@@ -77,16 +78,17 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 })
 export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'tank_no',
-    'last_cargo',
-    'job_no',
-    'purpose_storage',
-    'purpose_cleaning',
-    'purpose_steam',
-    'purpose_repair_cv',
-    'status_cv',
-    'certificate_cv',
-    'actions'
+    // 'tank_no',
+    // 'last_cargo',
+    // 'job_no',
+    // 'purpose_storage',
+    // 'purpose_cleaning',
+    // 'purpose_steam',
+    // 'purpose_repair_cv',
+    // 'status_cv',
+    // 'certificate_cv',
+    // 'actions'
+    ''
   ];
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-NEW'
   pageTitleEdit = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-EDIT'
@@ -187,7 +189,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -207,6 +210,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   ngOnInit() {
     this.initializeFilter();
     this.loadData();
+    this.displayColumnChanged();
   }
 
   initSOForm() {
@@ -219,6 +223,43 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       haulier: [''],
       sotList: ['']
     });
+  }
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+      'tank_no',
+      'last_cargo',
+      'job_no',
+      'purpose_storage',
+      'purpose_cleaning',
+      'purpose_steam',
+      'purpose_repair_cv',
+      'status_cv',
+      'certificate_cv',
+      'actions'
+      ];
+    } else {
+      this.displayedColumns = [
+        'tank_no',
+        'last_cargo',
+        'job_no',
+        'purpose_storage',
+        'purpose_cleaning',
+        //'purpose_steam',
+        'purpose_repair_cv',
+        'status_cv',
+        'certificate_cv',
+        'actions'
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage())
+      return true;
+    else
+      return false;
   }
 
   initializeFilter() {
