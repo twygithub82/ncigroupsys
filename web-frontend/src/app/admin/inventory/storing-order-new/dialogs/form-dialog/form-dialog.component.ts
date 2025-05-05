@@ -17,6 +17,7 @@ import { Apollo } from 'apollo-angular';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
@@ -81,7 +82,7 @@ export class FormDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-
+    public modulePackageService: ModulePackageService
   ) {
     // Set the defaults
 
@@ -441,7 +442,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return !this.sotDS.canRollbackStatus(this.storingOrderTank) && ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback');
+    return !this.storingOrderTank.actions?.length || (!this.sotDS.canRollbackStatus(this.storingOrderTank) && ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback'));
   }
 
   updateValidators(validOptions: any[]) {

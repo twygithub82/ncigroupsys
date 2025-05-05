@@ -608,7 +608,7 @@ export class Utility {
 
   static onAlphaOnly(event: Event, form: any): void {
     const input = event.target as HTMLInputElement;
-    input.value = input.value.replace(/[^a-zA-Z]/g, '');
+    input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
     form?.setValue(input.value, { emitEvent: false });
   }
 

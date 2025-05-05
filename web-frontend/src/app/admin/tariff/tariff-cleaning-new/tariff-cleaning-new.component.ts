@@ -291,7 +291,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         // });
       })
     ).subscribe();
-
   }
 
 
@@ -760,16 +759,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   async DeleteExistingSDSFiles() {
-
-
-
     if (this.existingSDSFilesUrls) {
       const urls: string[] = this.existingSDSFilesUrls.map(item => item.url);
       await firstValueFrom(this.fileManagerService.deleteFile(urls));
     }
 
   }
-
 
   async QueryClassNo() {
     let UnNumber: string = '';
