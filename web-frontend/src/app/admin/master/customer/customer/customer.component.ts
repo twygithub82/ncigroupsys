@@ -286,9 +286,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         } else {
           searchCriteria = value.code;
         }
-        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }, { delete_dt: { eq: null } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyFilterList = data
-          
         });
       })
     ).subscribe();
