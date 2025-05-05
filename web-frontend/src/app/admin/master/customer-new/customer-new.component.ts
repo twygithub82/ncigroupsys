@@ -272,7 +272,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
-    
+
     this.countryCodes = Utility.getCountryCodes();
   }
 
@@ -466,7 +466,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       }
     });
 
-    this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
+    this.tDS.search({}, { unit_type: 'ASC' }, 100).subscribe(data => {
       this.tankItemList = data;
       if (this.historyState.customerCompany) {
         var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
@@ -1231,13 +1231,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
+    event.stopPropagation();
     this.resetForm();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
