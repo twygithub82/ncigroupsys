@@ -40,6 +40,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-in-gate',
@@ -181,7 +182,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    public modulePackageService:ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -635,7 +637,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   canExport(row: any): boolean {
-    return true;
+    return !this.modulePackageService.isStarterPackage();
   }
 
   onExport(event: Event, row: any) {
