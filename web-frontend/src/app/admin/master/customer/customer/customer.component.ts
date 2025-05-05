@@ -288,6 +288,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         }
         this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }, { delete_dt: { eq: null } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyFilterList = data
+          
         });
       })
     ).subscribe();
@@ -712,7 +713,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
@@ -733,60 +734,74 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
 
-  async cancelItem(row: CustomerCompanyItem) {
+  cancelItem(row: CustomerCompanyItem) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.deleteCustomerAndBillingBranch(row.guid!);
+      }
+    });
     // this.id = row.id;
 
-    var CanDeleteCustomer: boolean = await this.CanDeleteCustomer(row.guid!);
-    if (!CanDeleteCustomer) {
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-      const dialogRef = this.dialog.open(MessageDialogComponent, {
-        width: '500px',
-        data: {
-          headerText: this.translatedLangText.WARNING,
-          messageText: [this.translatedLangText.CUSTOMER_ASSIGNED],
-          act: "warn"
-        },
-        direction: tempDirection
-      });
-      dialogRef.afterClosed().subscribe(result => {
-      });
-    }
-    else {
-      this.deleteCustomerAndBillingBranch(row.guid!);
-    }
+    // var CanDeleteCustomer: boolean = await this.CanDeleteCustomer(row.guid!);
+    // if (!CanDeleteCustomer) {
+    //   let tempDirection: Direction;
+    //   if (localStorage.getItem('isRtl') === 'true') {
+    //     tempDirection = 'rtl';
+    //   } else {
+    //     tempDirection = 'ltr';
+    //   }
+    //   const dialogRef = this.dialog.open(MessageDialogComponent, {
+    //     width: '500px',
+    //     data: {
+    //       headerText: this.translatedLangText.WARNING,
+    //       messageText: [this.translatedLangText.CUSTOMER_ASSIGNED],
+    //       act: "warn"
+    //     },
+    //     direction: tempDirection
+    //   });
+    //   dialogRef.afterClosed().subscribe(result => {
+    //   });
+    // }
+    // else {
+    //   this.deleteCustomerAndBillingBranch(row.guid!);
+    // }
 
   }
 
   deleteCustomerAndBillingBranch(customerGuid: string) {
-
     this.ccDS.DeleteCustomerCompany([customerGuid]).subscribe(d => {
       let count = d.data.deleteCustomerCompany;
       if (count > 0) {
         this.handleSaveSuccess(count);
-        if (this.ccDS.totalCount > 0) {
-          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        }
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
     });
   }
 
-  isShowDeleteIcon(row:any):boolean
-  {
-    
+  isShowDeleteIcon(row: any): boolean {
     return (!row.so_count && !row.sot_count && !row.tank_info_count);
   }
+
   async CanDeleteCustomer(guid: string): Promise<boolean> {
     let retval: boolean = false;
 
     try {
       // Use firstValueFrom to convert Observable to Promise
       const result = await firstValueFrom(this.ccDS.CanDeleteCustomerCompany(guid));
-      retval = (result.data.value);
+      retval = (result);
     } catch (error) {
       console.error("Error fetching Customer guid:", error);
     }

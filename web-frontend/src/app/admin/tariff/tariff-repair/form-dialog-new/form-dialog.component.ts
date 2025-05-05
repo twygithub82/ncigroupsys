@@ -267,9 +267,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         width_diameter_unit_cv: this.widthDiameterUnitControl,
         thickness: this.selectedItem.width_diameter,
         thickness_unit_cv: this.thicknessUnitControl,
-        length: [''],
-        labour_hour: [''],
-        material_cost: [''],
+        length: '',
+        labour_hour: '',
+        material_cost: '',
       });
     }
 

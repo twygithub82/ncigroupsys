@@ -272,7 +272,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
-    
+
     this.countryCodes = Utility.getCountryCodes();
   }
 
@@ -466,7 +466,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       }
     });
 
-    this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
+    this.tDS.search({}, { unit_type: 'ASC' }, 100).subscribe(data => {
       this.tankItemList = data;
       if (this.historyState.customerCompany) {
         var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;

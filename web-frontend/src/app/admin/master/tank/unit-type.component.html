@@ -20,7 +20,7 @@
                     </button>
                   </div>
                   @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
+                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
                     matTooltip={{translatedLangText.EXPORT}}>
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
@@ -180,7 +180,7 @@
                     *matHeaderCellDef></mat-header-cell>
                   <mat-cell *matCellDef="let row; let i=index;"
                     [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    @if(!row.tariff_depot_guid && row.sot?.length===0)
+                    @if (!row.tariff_depot_guid && !row.sot?.length)
                     {
                     <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
                       [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
