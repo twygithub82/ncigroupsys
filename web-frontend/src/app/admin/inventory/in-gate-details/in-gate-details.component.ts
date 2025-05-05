@@ -461,7 +461,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         yard_cv: this.inGateForm.get('yard_cv')?.value,
         preinspection_cv: 'YES',
         lolo_cv: 'BOTH',
-        haulier: this.inGateForm.get('haulier')?.value
+        haulier: this.inGateForm.get('haulier')?.value?.toUpperCase()
       })
       console.log(ig);
       if (ig.guid) {
