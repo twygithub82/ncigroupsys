@@ -1952,6 +1952,10 @@ $grid-breakpoints: (
     //   @include apply-disabled-style($theme-gold-purple-menu-list-submenu, $theme-gold-purple-disabled-text);
     // }
   }
+
+  .mdc-tab-indicator__content--underline {
+    border-color: $theme-blue-complement-bar;
+  }
 }
 
 .tlx-mdc-tab-group .mat-mdc-tab.mdc-tab--active {
