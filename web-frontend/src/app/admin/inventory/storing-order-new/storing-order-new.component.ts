@@ -200,6 +200,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
+    this.detectColumnChange();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -782,5 +783,34 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       row.actions.includes('cancel') ||
       row.actions.includes('rollback')
     );
+  }
+
+  detectColumnChange() {
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
+      this.displayedColumns = [
+        'tank_no',
+        'last_cargo',
+        'job_no',
+        'purpose_storage',
+        'purpose_cleaning',
+        'purpose_steam',
+        'purpose_repair_cv',
+        'status_cv',
+        'certificate_cv',
+        'actions'
+      ];
+    } else {
+      this.displayedColumns = [
+        'tank_no',
+        'last_cargo',
+        'job_no',
+        'purpose_storage',
+        'purpose_cleaning',
+        'purpose_repair_cv',
+        'status_cv',
+        'certificate_cv',
+        'actions'
+      ];
+    }
   }
 }

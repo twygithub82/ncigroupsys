@@ -130,12 +130,12 @@
                       </ng-container>
                       <ng-container matColumnDef="last_cargo">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="''"
                           mat-sort-header>
                           {{translatedLangText.LAST_CARGO}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="''">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>
                             {{row.tariff_cleaning?.cargo}}
