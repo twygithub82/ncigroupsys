@@ -696,6 +696,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           const url = URL.createObjectURL(blob);
           // Open the Blob URL in a new window or tab
           window.open(url, '_blank');
+          // const newWindow = window.open('', '_blank');
+          // if (newWindow) {
+          //   newWindow.document.title = 'hello'//this.selectedFile?.name || 'File Viewer';
+          //   newWindow.document.body.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>`;
+          // }
         }
       };
       reader.readAsArrayBuffer(this.selectedFile); // Use readAsArrayBuffer for binary data
