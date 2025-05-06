@@ -1707,7 +1707,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       const successMsg = this.translatedLangText.SAVE_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
     }
   }
 
@@ -1719,7 +1719,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   handleDeleteSuccess(count: any) {
     if ((count ?? 0) > 0) {
       const successMsg = this.translatedLangText.DELETE_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
     }
   }
 

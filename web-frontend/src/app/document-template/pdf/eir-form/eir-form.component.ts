@@ -1603,7 +1603,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
           //       this.eirDetails.in_gate.eir_status_cv = 'PUBLISHED'; // to avoid republish with PENDING status (first time publish then click republish)
           //       this.publishedEir.emit({ type: 'published' });
           //       let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
-          //       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+          //       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
           //     }
           //   });
           // }

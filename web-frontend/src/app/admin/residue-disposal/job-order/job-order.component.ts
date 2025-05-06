@@ -294,7 +294,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     //         let successMsg = this.langText.CANCELED_SUCCESS;
     //         this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
     //           successMsg = res;
-    //           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    //           ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
     //           this.refreshTable();
     //         });
     //       }
@@ -691,7 +691,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   handleRollbackSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.refreshTable();
     }
   }

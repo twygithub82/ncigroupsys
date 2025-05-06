@@ -335,7 +335,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
             let successMsg = this.langText.CANCELED_SUCCESS;
             this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
               successMsg = res;
-              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+              ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
               this.refreshTable();
             });
           }
