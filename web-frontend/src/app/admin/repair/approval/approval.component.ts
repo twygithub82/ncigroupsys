@@ -346,7 +346,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
             let successMsg = this.langText.CANCELED_SUCCESS;
             this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
               successMsg = res;
-              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+              ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
               this.refreshTable();
             });
           }

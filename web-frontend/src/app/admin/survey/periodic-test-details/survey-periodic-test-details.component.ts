@@ -504,14 +504,14 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
     }
   }
 
   handleDeleteSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.DELETE_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
     }
   }
 

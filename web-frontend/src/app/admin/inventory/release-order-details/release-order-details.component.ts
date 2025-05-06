@@ -550,7 +550,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     //     // this.sotDS.rollbackStoringOrderTank(sot).subscribe(result => {
     //     //   if ((result?.data?.rollbackStoringOrderTank ?? 0) > 0) {
     //     //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-    //     //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    //     //     ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
     //     //     this.reloadSOT();
     //     //   }
     //     // });
@@ -734,7 +734,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
         this.router.navigate(['/admin/inventory/release-order']);
       });
     }

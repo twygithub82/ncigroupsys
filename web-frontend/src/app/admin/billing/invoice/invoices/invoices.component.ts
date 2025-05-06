@@ -1147,7 +1147,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       this.translate.get(this.translatedLangText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
 
       });
     }

@@ -914,7 +914,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/repair/approval']);
     }
   }
@@ -922,7 +922,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   handleCancelSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/repair/approval']);
     }
   }
@@ -930,7 +930,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   handleRollbackSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/repair/approval']);
     }
   }

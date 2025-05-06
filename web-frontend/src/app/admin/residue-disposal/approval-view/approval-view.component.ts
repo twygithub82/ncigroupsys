@@ -640,7 +640,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
         //this.router.navigate(['/admin/master/estimate-template']);
 
         // Navigate to the route and pass the JSON object
@@ -1104,7 +1104,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
   handleCancelSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/residue-disposal/approval'], {
         state: this.historyState
 
@@ -1116,7 +1116,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
   handleRollbackSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/residue-disposal/approval'], {
         state: this.historyState
 
