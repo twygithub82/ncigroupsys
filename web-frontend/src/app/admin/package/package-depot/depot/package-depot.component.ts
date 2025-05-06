@@ -838,5 +838,19 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
+  itemSelected(row: CustomerCompanyItem):boolean{
+    var retval:boolean=false;
+    const index = this.selectedCustomers.findIndex(c => c.code === row.code);
+    retval = (index >= 0);
+    return retval;
+  }
+
+  itemProfileSelected(row: TariffDepotItem):boolean{
+    var retval:boolean=false;
+    const index = this.selectedProfiles.findIndex(c => c.guid === row.guid);
+    retval = (index >= 0);
+    return retval;
+  }
+
 }
 

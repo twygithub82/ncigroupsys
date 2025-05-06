@@ -32,8 +32,8 @@
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <mat-chip-grid #chipGrid>
                       @for (cust of selectedCustomers; track cust) {
-                        <mat-chip-row (removed)="remove(cust)">
-                          {{cust.code}}
+                        <mat-chip-row color="primary" (removed)="remove(cust)">
+                          <span> {{cust.code}}</span>
                           <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ cust.code">
                             <mat-icon>cancel</mat-icon>
                           </button>
@@ -45,6 +45,7 @@
                     <mat-autocomplete #customerCode="matAutocomplete"  (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
+                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemSelected(cc) ?? false"></mat-checkbox>
                         {{ccDS.displayName(cc)}}
                       </mat-option>
                       }
@@ -57,7 +58,7 @@
                     <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
                     <mat-chip-grid #chipProfile>
                       @for (pro of selectedProfiles; track pro) {
-                        <mat-chip-row (removed)="removeSelectedProfile(pro)">
+                        <mat-chip-row color="primary" (removed)="removeSelectedProfile(pro)">
                           {{pro.profile_name}}
                           <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ pro.profile_name">
                             <mat-icon>cancel</mat-icon>
@@ -70,6 +71,7 @@
                     <mat-autocomplete #profileName="matAutocomplete"  (optionSelected)="selectedProfile($event)">
                       @for (p of profile_nameList; track p) {
                       <mat-option [value]="p">
+                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemProfileSelected(p) ?? false"></mat-checkbox>
                         {{p.profile_name}}
                       </mat-option>
                       }
@@ -139,7 +141,7 @@
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="customer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
+              <mat-header-cell *matHeaderCellDef mat-sort-header >{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER

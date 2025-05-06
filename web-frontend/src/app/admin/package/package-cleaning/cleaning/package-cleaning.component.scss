@@ -9,3 +9,17 @@ input[type='number']::-webkit-inner-spin-button {
 input[type='number'] {
     -moz-appearance: textfield;
 }
+
+.card .body {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  mat-chip-row[color="primary"] {
+    background-color: #b3cbde !important
+  }
+  
+  /* Optional: Ensure the remove button icon is also white */
+  mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
+    color: red !important;
+  }

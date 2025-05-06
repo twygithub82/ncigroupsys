@@ -18,3 +18,12 @@
     max-height: none; /* Ensures there's no max-height limiting the container */
     overflow: auto;   /* Ensures scrollbars appear if content exceeds container size */
   }
+
+  mat-chip-row[color="primary"] {
+    background-color: #b3cbde !important
+  }
+  
+  /* Optional: Ensure the remove button icon is also white */
+  mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
+    color: red !important;
+  }

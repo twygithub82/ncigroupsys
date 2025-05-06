@@ -830,5 +830,12 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
+  itemSelected(row: CustomerCompanyItem):boolean{
+    var retval:boolean=false;
+    const index = this.selectedCustomers.findIndex(c => c.code === row.code);
+    retval = (index >= 0);
+    return retval;
+  }
+  
 }
 

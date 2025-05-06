@@ -11,3 +11,20 @@ td div {
     position: relative;
     top: 8px; /* Move the button down by 20px */
   }
+
+  mat-chip {
+    margin: 2px 4px;
+  }
+  
+  .example-full-width {
+    width: 100%;
+  }
+
+  mat-chip-row[color="primary"] {
+    background-color: #b3cbde !important
+  }
+  
+  /* Optional: Ensure the remove button icon is also white */
+  mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
+    color: red !important;
+  }
