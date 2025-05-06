@@ -27,7 +27,7 @@ export class ComponentUtil {
     ) {
         snackBar.openFromComponent(CustomSnackbarComponent, {
             data: { icon, message },
-            duration: 200000,
+            duration: 2000,
             verticalPosition: placementFrom,
             horizontalPosition: placementAlign,
             panelClass: colorName
