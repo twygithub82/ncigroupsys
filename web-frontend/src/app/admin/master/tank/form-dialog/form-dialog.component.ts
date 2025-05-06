@@ -33,6 +33,8 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { firstValueFrom } from 'rxjs';
+import { ModulePackageService } from 'app/services/module-package.service';
+
 
 export interface DialogData {
   action?: string;
@@ -221,6 +223,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    public modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     super();

@@ -177,7 +177,8 @@ export class FormDialogComponent {
     CATEGORY_NAME: "COMMON-FORM.CATEGORY-NAME",
     CATEGORY_DESCRIPTION: "COMMON-FORM.CATEGORY-DESCRIPTION",
     CATEGORY_COST: "COMMON-FORM.CARGO-COST",
-    CLEANING_CATEGORY: "COMMON-FORM.CLEANING-CATEGORY"
+    CLEANING_CATEGORY: "COMMON-FORM.CLEANING-CATEGORY",
+    CATEGORY: "COMMON-FORM.CATEGORY"
   };
 
 
@@ -242,10 +243,10 @@ export class FormDialogComponent {
   }
   GetTitle() {
     if (this.selectedItem.name !== undefined) {
-      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_CATEGORY;
+      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CATEGORY;
     }
     else {
-      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_CATEGORY;
+      return this.translatedLangText.NEW + " " + this.translatedLangText.CATEGORY;
     }
   }
 

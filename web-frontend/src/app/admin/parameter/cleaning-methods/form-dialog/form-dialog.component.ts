@@ -204,6 +204,7 @@ export class FormDialogComponent {
     CLEANING_STEPS: "COMMON-FORM.CLEANING-STEPS",
     NO_CLEANING_STEPS: "COMMON-FORM.NO-CLEANING-STEPS",
     PROCESS_NAME: "COMMON-FORM.PROCESS-NAME",
+    PROCESS: "COMMON-FORM.PROCESS",
     CATEGORY:"COMMON-FORM.CATEGORY"
   };
 
@@ -299,10 +300,10 @@ export class FormDialogComponent {
   }
   GetTitle() {
     if (this.selectedItem.name !== undefined) {
-      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_METHOD;
+      return this.translatedLangText.UPDATE + " " + this.translatedLangText.PROCESS;
     }
     else {
-      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_METHOD;
+      return this.translatedLangText.NEW + " " + this.translatedLangText.PROCESS;
     }
   }
 

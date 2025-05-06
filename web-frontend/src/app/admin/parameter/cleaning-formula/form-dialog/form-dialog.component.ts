@@ -121,6 +121,7 @@ export class FormDialogComponent {
     MIN_DURATION: "COMMON-FORM.MIN-DURATION",
     MAX_DURATION: "COMMON-FORM.MAX-DURATION",
     CLEANING_FORMULA: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
+    FORMULA: "COMMON-FORM.FORMULA",
     DURATION: "COMMON-FORM.DURATION-MIN"
   };
 
@@ -161,10 +162,10 @@ export class FormDialogComponent {
 
   GetTitle() {
     if (this.selectedItem.description !== undefined) {
-      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_FORMULA;
+      return this.translatedLangText.UPDATE + " " + this.translatedLangText.FORMULA;
     }
     else {
-      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_FORMULA;
+      return this.translatedLangText.NEW + " " + this.translatedLangText.FORMULA;
     }
   }
 
