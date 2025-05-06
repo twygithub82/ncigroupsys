@@ -410,12 +410,14 @@ EnableValidator(path: string) {
   }
 
   getMaterialCostLabel(){
-    var lbl = this.translatedLangText.UPDATE + ' ' + this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'(%)':'');
+    //var lbl = this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'($)':'');
+    var lbl = this.translatedLangText.MATERIAL_COST + ' $';
     return lbl;
   }
 
   getLabourHourLabel(){
-    var lbl = this.translatedLangText.UPDATE + ' ' + this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
+    //var lbl = this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
+    var lbl = this.translatedLangText.LABOUR_HOUR;
     return lbl;
   }
 

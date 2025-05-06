@@ -1,8 +1,8 @@
 <div class="addContainer">
-  <div class="modalHeader_r2">
+  <div class="modalHeader_r3">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h3>{{this.translatedLangText.EDIT}} {{this.translatedLangText.PACKAGE_REPAIR}} </h3>
+        <h4>{{this.translatedLangText.EDIT}} {{this.translatedLangText.PACKAGE_REPAIR}} </h4>
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -30,12 +30,12 @@
                       } -->
                       @if((this.selectedItems.length>1)&&pcForm.get('material_cost')?.hasError('min')){
                       <mat-error>
-                        {{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
+                        {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                       </mat-error>
                     }
                     @if((this.selectedItems.length>1)&&pcForm.get('material_cost')?.hasError('max')){
                       <mat-error>
-                        {{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
+                        {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
                       </mat-error>
                     }
                     </mat-form-field>
