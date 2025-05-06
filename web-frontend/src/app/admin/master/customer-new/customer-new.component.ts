@@ -337,7 +337,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       customer_name: [''],
       customer_type: [''],
       billing_branches: [''],
-      country_code: [DEFAULT_COUNTRY_CODE],
+      country_code: [''],//[DEFAULT_COUNTRY_CODE],
       phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['', [Validators.required, Validators.email]],
       web: [''],
