@@ -45,7 +45,7 @@
                     <mat-autocomplete #customerCode="matAutocomplete"  (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
-                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemSelected(cc) ?? false"></mat-checkbox>
+                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemSelected(cc) || false"></mat-checkbox>
                         {{ccDS.displayName(cc)}}
                       </mat-option>
                       }
@@ -71,7 +71,7 @@
                     <mat-autocomplete #profileName="matAutocomplete"  (optionSelected)="selectedProfile($event)">
                       @for (p of profile_nameList; track p) {
                       <mat-option [value]="p">
-                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemProfileSelected(p) ?? false"></mat-checkbox>
+                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemProfileSelected(p) || false"></mat-checkbox>
                         {{p.profile_name}}
                       </mat-option>
                       }
