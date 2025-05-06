@@ -120,7 +120,7 @@
                 </div>
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.CONVERSION_CURRENCY }}</mat-label>
+                    <mat-label>{{translatedLangText.CURRENCY }}</mat-label>
                     <mat-select formControlName="currency" required>
                       <mat-option *ngFor="let cc of this.currencyList" [value]="cc">
                         <ng-container *ngIf="cc !== null">
