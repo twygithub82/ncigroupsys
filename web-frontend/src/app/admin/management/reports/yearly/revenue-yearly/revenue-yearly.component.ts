@@ -160,7 +160,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     GENERATE_REPORT: 'COMMON-FORM.GENERATE-REPORT',
     REPORT_TYPE: 'COMMON-FORM.REPORT-TYPE',
     GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE'
-    
+
   }
 
   invForm?: UntypedFormGroup;
@@ -176,8 +176,8 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
 
- 
-  reportDS:ManagementReportDS;
+
+  reportDS: ManagementReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -212,10 +212,10 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport =false;
+  isGeneratingReport = false;
   yearList: string[] = [];
   monthList: string[] = [];
-  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "GATE", "REPAIR", "LOLO","PREINSPECTION","STORAGE","RESIDUE"];
+  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "GATE", "REPAIR", "LOLO", "PREINSPECTION", "STORAGE", "RESIDUE"];
   repTypes: string[] = ["MONTH_WISE", "CUSTOMER_WISE"];
   repData: any;
 
@@ -235,9 +235,9 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
-    
+
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.reportDS=new ManagementReportDS(this.apollo);
+    this.reportDS = new ManagementReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -249,13 +249,13 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.initializeValueChanges();
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
-    
+
   }
 
- 
+
   initSearchForm() {
     var thisYear = new Date().getFullYear();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
       year: [`${thisYear}`],
@@ -281,7 +281,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
         }
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
-         // this.updateValidators(this.customerCodeControl, this.customer_companyList);
+          // this.updateValidators(this.customerCodeControl, this.customer_companyList);
           // if (!this.customerCodeControl.invalid) {
           //   if (this.customerCodeControl.value?.guid) {
           //     let mainCustomerGuid = this.customerCodeControl.value.guid;
@@ -322,7 +322,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
         new Date(2000, i, 1).toLocaleString("en-US", { month: "long" })
       );
     });
-   
+
   }
   showNotification(
     colorName: string,
@@ -367,9 +367,9 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.search(3);
   }
 
- 
-   search(report_type: number) {
-     if (this.searchForm?.invalid) return;
+
+  search(report_type: number) {
+    if (this.searchForm?.invalid) return;
     this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
@@ -380,11 +380,11 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
 
     var customerName: string = "";
-    var invTypes=this.invTypes.filter(v => v !== "ALL");
+    var invTypes = this.invTypes.filter(v => v !== "ALL");
     where.revenue_type = invTypes;
     if (this.searchForm?.get('inventory_type')?.value != "ALL") {
       where.revenue_type = this.searchForm?.get('inventory_type')?.value;
-      invTypes= [this.searchForm?.get('inventory_type')?.value];
+      invTypes = [this.searchForm?.get('inventory_type')?.value];
     }
 
     // if(invTypes.includes("IN_OUT"))
@@ -432,92 +432,90 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
 
     this.lastSearchCriteria = where;
-    this.performSearch(report_type, date, customerName, reportType,invTypes);
+    this.performSearch(report_type, date, customerName, reportType, invTypes);
   }
 
 
 
 
-  performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string,invTypes?:string[]) {
+  performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string, invTypes?: string[]) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchManagementReportRevenueYearlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!,invTypes!);
+        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!);
       });
 
-      
+
   }
 
-   ZeroTransaction(data:ManagementReportYearlyRevenueItem):boolean
-    {
-       var retval:boolean = true;
-       if(data)
-       {
-        retval = (data.cleaning_yearly_revenue?.average_count==0)||
-                 (data.gate_yearly_revenue?.average_count==0)||
-                 (data.lolo_yearly_revenue?.average_count==0)||
-                 (data.preinspection_yearly_revenue?.average_count==0)||
-                 (data.repair_yearly_revenue?.average_count==0)||
-                 (data.residue_yearly_revenue?.average_count==0)||
-                 (data.steam_yearly_revenue?.average_count==0)||
-                 (data.storage_yearly_revenue?.average_count==0)
-       }
-       return retval;
+  ZeroTransaction(data: ManagementReportYearlyRevenueItem): boolean {
+    var retval: boolean = true;
+    if (data) {
+      retval = (data.cleaning_yearly_revenue?.average_count == 0) ||
+        (data.gate_yearly_revenue?.average_count == 0) ||
+        (data.lolo_yearly_revenue?.average_count == 0) ||
+        (data.preinspection_yearly_revenue?.average_count == 0) ||
+        (data.repair_yearly_revenue?.average_count == 0) ||
+        (data.residue_yearly_revenue?.average_count == 0) ||
+        (data.steam_yearly_revenue?.average_count == 0) ||
+        (data.storage_yearly_revenue?.average_count == 0)
     }
+    return retval;
+  }
 
- 
-   onPageEvent(event: PageEvent) {
-    
-   }
- 
-   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-   }
- 
-   
-   displayTankPurpose(sot: StoringOrderTankItem) {
-     return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
-   }
- 
-   getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-   }
- 
-   getTankStatusDescription(codeValType: string | undefined): string | undefined {
-     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
-   }
- 
-   displayDate(input: number | undefined): string | undefined {
-     if (input === null) return "-";
-     return Utility.convertEpochToDateStr(input);
-   }
- 
-   translateLangText() {
-     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
-       this.translatedLangText = translations;
-     });
-   }
- 
-   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
-     untypedFormControl.setValidators([
-       AutocompleteSelectionValidator(validOptions)
-     ]);
-   }
- 
-   resetDialog(event: Event) {
-     event.preventDefault(); // Prevents the form submission
- 
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
-     this.resetForm();
-  
+
+  onPageEvent(event: PageEvent) {
+
+  }
+
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+
+
+  displayTankPurpose(sot: StoringOrderTankItem) {
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
+  }
+
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
+  }
+
+  displayDate(input: number | undefined): string | undefined {
+    if (input === null) return "-";
+    return Utility.convertEpochToDateStr(input);
+  }
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
+  }
+
+  updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
+    untypedFormControl.setValidators([
+      AutocompleteSelectionValidator(validOptions)
+    ]);
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.resetForm();
+
     //  const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //    data: {
     //      headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
@@ -530,107 +528,107 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     //      this.resetForm();
     //    }
     //  });
-   }
- 
-   resetForm() {
-     var thisYear = new Date().getFullYear().toString();
-     var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
-     this.searchForm?.patchValue({
-       year: thisYear,
-       month_start: thisMonth,
-       month_end: thisMonth,
-       inventory_type: 'ALL',
-       report_type: this.reportTypeCvList.find(f => f.code_val == 'MONTH_WISE'),
-     });
-     this.customerCodeControl.reset('');
-    
-     this.noCond = false;
-   }
- 
-   isAllSelected() {
-     // this.calculateTotalCost();
-     const numSelected = this.selection.selected.length;
-     const numRows = this.stmEstList.length;
-     return numSelected === numRows;
-   }
- 
-  
-   AllowToSave(): boolean {
-     let retval: boolean = false;
-     if (this.selection.selected.length > 0) {
-       if (this.invoiceDateControl.valid && this.invoiceNoControl.valid) {
-         return true;
-       }
-     }
- 
-     return retval;
-   }
- 
-   ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number)
-   { if (this.dailySumList.length === 0) return;
- 
-   }
- 
-   ProcessYearlyReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string,invTypes:string[]) {
-   
-   
-   
-       if (!this.ZeroTransaction(repData)) {
-   
-         this.onExportChart_r1(repData, date, customerName, report_type,invTypes);
-   
-   
-       }
-       else {
-         this.repData = [];
-         this.isGeneratingReport = false;
-       }
-   
-   
-     }
- 
-   
- 
-   onExportSummary(repData: AdminReportMonthlyReport, date: string,customerName:string) {
-     //this.preventDefault(event);
-     let cut_off_dt = new Date();
- 
- 
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
- 
-     const dialogRef = this.dialog.open(YearlyReportDetailsPdfComponent, {
-       width: reportPreviewWindowDimension.portrait_width_rate,
-       maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-      maxHeight: reportPreviewWindowDimension.report_maxHeight,
-       data: {
-         repData: repData,
-         date: date,
-         repType:this.processType,
-         customer:customerName
-       
-       },
- 
-       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-       direction: tempDirection
-     });
- 
-     dialogRef.updatePosition({
-       top: '-9999px',  // Move far above the screen
-       left: '-9999px'  // Move far to the left of the screen
-     });
- 
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-       this.isGeneratingReport=false;
-     });
-   }
- 
+  }
 
-  onExportChart_r1(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string,invTypes:string[]) {
+  resetForm() {
+    var thisYear = new Date().getFullYear().toString();
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
+    this.searchForm?.patchValue({
+      year: thisYear,
+      month_start: thisMonth,
+      month_end: thisMonth,
+      inventory_type: 'ALL',
+      report_type: this.reportTypeCvList.find(f => f.code_val == 'MONTH_WISE'),
+    });
+    this.customerCodeControl.reset('');
+
+    this.noCond = false;
+  }
+
+  isAllSelected() {
+    // this.calculateTotalCost();
+    const numSelected = this.selection.selected.length;
+    const numRows = this.stmEstList.length;
+    return numSelected === numRows;
+  }
+
+
+  AllowToSave(): boolean {
+    let retval: boolean = false;
+    if (this.selection.selected.length > 0) {
+      if (this.invoiceDateControl.valid && this.invoiceNoControl.valid) {
+        return true;
+      }
+    }
+
+    return retval;
+  }
+
+  ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number) {
+    if (this.dailySumList.length === 0) return;
+
+  }
+
+  ProcessYearlyReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string, invTypes: string[]) {
+
+
+
+    if (!this.ZeroTransaction(repData)) {
+
+      this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
+
+
+    }
+    else {
+      this.repData = [];
+      this.isGeneratingReport = false;
+    }
+
+
+  }
+
+
+
+  onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(YearlyReportDetailsPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+
+  onExportChart_r1(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string, invTypes: string[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -651,7 +649,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
         date: date,
         repType: report_type,
         customer: customerName,
-        inventory_type:invTypes
+        inventory_type: invTypes
 
 
       },
@@ -669,44 +667,41 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
       this.isGeneratingReport = false;
     });
   }
- 
-   AllowToSearch():boolean
-   {
-      var bAllow:boolean =true;
- 
-      
-      if (this.searchForm?.get('month_start')?.value) {
-       var month_start=this.searchForm?.get('month_start')?.value;
-       const monthStartIndex = this.monthList.findIndex(m => month_start === m);
-       month_start = (monthStartIndex+1);
-     
-       if (this.searchForm?.get('month_end')?.value) {
- 
-             var month_end=this.searchForm?.get('month_end')?.value;
-             const monthEndIndex = this.monthList.findIndex(m => month_end === m);
-             month_end = (monthEndIndex+1);
- 
-           if (this.searchForm?.get('year')?.value) {
-           var year = Number(this.searchForm?.get('year')?.value); 
-           bAllow=!Utility.isSelectedDateGreaterThanToday(month_start,year);
-            if(bAllow)
-            {
-             bAllow=!Utility.isSelectedDateGreaterThanToday(month_end,year);
-              if(bAllow)
-              {
-                bAllow = month_start<=month_end;
-              }
-            }
-           }
-       }
-     }
-    
-      return bAllow;
- 
-   }
 
-   onTabFocused() {
+  AllowToSearch(): boolean {
+    var bAllow: boolean = true;
+
+
+    if (this.searchForm?.get('month_start')?.value) {
+      var month_start = this.searchForm?.get('month_start')?.value;
+      const monthStartIndex = this.monthList.findIndex(m => month_start === m);
+      month_start = (monthStartIndex + 1);
+
+      if (this.searchForm?.get('month_end')?.value) {
+
+        var month_end = this.searchForm?.get('month_end')?.value;
+        const monthEndIndex = this.monthList.findIndex(m => month_end === m);
+        month_end = (monthEndIndex + 1);
+
+        if (this.searchForm?.get('year')?.value) {
+          var year = Number(this.searchForm?.get('year')?.value);
+          bAllow = !Utility.isSelectedDateGreaterThanToday(month_start, year);
+          if (bAllow) {
+            bAllow = !Utility.isSelectedDateGreaterThanToday(month_end, year);
+            if (bAllow) {
+              bAllow = month_start <= month_end;
+            }
+          }
+        }
+      }
+    }
+
+    return bAllow;
+
+  }
+
+  onTabFocused() {
     this.resetForm();
-    
+
   }
 }

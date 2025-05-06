@@ -13,20 +13,17 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <!-- <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                    <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/storing-order/new']">
-                      <mat-icon class="col-white">add</mat-icon>
+                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                      <mat-icon>search</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
-                    <button mat-mini-fab color="primary" (click)="refresh()" (click)="$event.stopPropagation()">
-                      <mat-icon class="col-white">refresh</mat-icon>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
                     </button>
                   </div>
-                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                      (click)="$event.stopPropagation()" />
-                  </div> -->
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -90,15 +87,16 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div
+                  <!-- <div
                     class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                     <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
-                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                      matTooltip={{translatedLangText.CLEAR_ALL}}>
                       <mat-icon>clear_all</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                 </div>
               </form>
             </mat-expansion-panel>
@@ -113,10 +111,12 @@
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="tank_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.TANK_NO}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no ?
                     row.storing_order_tank.tank_no : '-'}}
                   </mat-cell>
@@ -131,19 +131,23 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.EIR_NO}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span
                       class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.storing_order_tank?.in_gate[0].eir_no?row.storing_order_tank?.in_gate[0].eir_no:'-'}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_dt">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.EIR_DATE}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span
                       class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.storing_order_tank?.in_gate[0].eir_dt)}}
                   </mat-cell>
@@ -159,35 +163,44 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="method">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.METHOD}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span
                       class="mobile-label">{{translatedLangText.METHOD}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description:'-'}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="purpose">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.PURPOSE}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span
                       class="mobile-label">{{translatedLangText.PURPOSE}}:</span>{{displayTankPurpose(row.storing_order_tank)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="tank_status_cv">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{displayTankStatus(row.status_cv)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="actions">
-                  <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matHeaderCellDef>
+                  <mat-header-cell
+                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                    *matHeaderCellDef>
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row;" [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                  <mat-cell *matCellDef="let row;"
+                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                     <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)"
                       [hidden]="MenuButtonHidden(row)">
                       <mat-icon>more_vert</mat-icon>

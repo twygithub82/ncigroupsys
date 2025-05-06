@@ -7,6 +7,17 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
+              <div class="m-l-" [matTooltip]="translatedLangText.DETAIL_REPORT">
+                <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
+                  [disabled]="(isGeneratingReport)">
+                  <mat-icon>assignment</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -64,7 +75,8 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{ translatedLangText.APPROVED_DATE }}</mat-label>
-                  <input matInput [matDatepicker]="approved_picker" formControlName="app_dt" placeholder="Select date" [required]="isDateRequired('APPROVED')">
+                  <input matInput [matDatepicker]="approved_picker" formControlName="app_dt" placeholder="Select date"
+                    [required]="isDateRequired('APPROVED')">
                   <mat-datepicker-toggle matSuffix [for]="approved_picker"></mat-datepicker-toggle>
                   <mat-datepicker #approved_picker></mat-datepicker>
                 </mat-form-field>
@@ -108,7 +120,8 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{ translatedLangText.QC_DATE }}</mat-label>
-                  <input matInput [matDatepicker]="qc_picker" formControlName="qc_dt" placeholder="Select date" [required]="isDateRequired('QC')">
+                  <input matInput [matDatepicker]="qc_picker" formControlName="qc_dt" placeholder="Select date"
+                    [required]="isDateRequired('QC')">
                   <mat-datepicker-toggle matSuffix [for]="qc_picker"></mat-datepicker-toggle>
                   <mat-datepicker #qc_picker></mat-datepicker>
                 </mat-form-field>
@@ -143,26 +156,26 @@
               </div>
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <div class="radio-group" (change)="onReportTypeChange($event)">
-                  <input type="radio" id="option-one"  name="report_type" formControlName="report_type" value="1" checked><label for="option-one">{{translatedLangText.REVENUE}}</label>
-                  <input type="radio" id="option-two"  name="report_type" formControlName="report_type" value="2"><label for="option-two">{{translatedLangText.APPROVAL}}</label>
-                  <input type="radio" id="option-three"  name="report_type" formControlName="report_type" value="3"><label for="option-three">{{translatedLangText.QC_DETAIL}}</label>
+                  <input type="radio" id="option-one" name="report_type" formControlName="report_type" value="1"
+                    checked><label for="option-one">{{translatedLangText.REVENUE}}</label>
+                  <input type="radio" id="option-two" name="report_type" formControlName="report_type" value="2"><label
+                    for="option-two">{{translatedLangText.APPROVAL}}</label>
+                  <input type="radio" id="option-three" name="report_type" formControlName="report_type"
+                    value="3"><label for="option-three">{{translatedLangText.QC_DETAIL}}</label>
                 </div>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+              <!-- <div
+                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"
-                  [disabled]="(isGeneratingReport)"
-                  matTooltip={{translatedLangText.DETAIL_REPORT}}>
+                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.DETAIL_REPORT}}>
                   <mat-icon>assignment</mat-icon>
                 </button>
-                <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                  <mat-icon>cached</mat-icon>
-                </button> -->
                 <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)"
-                  [disabled]="((sotDS.loading$ | async)||isGeneratingReport)"
+                  [disabled]="((sotDS.loading$ | async) || isGeneratingReport)"
                   matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
-              </div>
+              </div> -->
             </div>
           </form>
         </mat-expansion-panel>

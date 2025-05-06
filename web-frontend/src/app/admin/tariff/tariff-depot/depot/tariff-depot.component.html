@@ -5,21 +5,33 @@
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
             <mat-panel-description>
-              <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                <button mat-mini-fab color="primary" (click)="addCall()" (click)="$event.stopPropagation()" matTooltip={{translatedLangText.ADD}}>
+              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
+                <button mat-mini-fab class="primary-light" color="" (click)="addCall()"
+                  (click)="$event.stopPropagation()" matTooltip={{translatedLangText.ADD}}>
                   <mat-icon class="col-white">add</mat-icon>
                 </button>
               </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
+              <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                 <button mat-mini-fab class="primary-light" color="" (click)="refresh()" (click)="$event.stopPropagation()" matTooltip={{translatedLangText.REFRESH}}>
                   <mat-icon>refresh</mat-icon>
                 </button>
-              </div>
+              </div> -->
               @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
-                <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT" matTooltip={{translatedLangText.EXPORT}}>
-                  <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                    (click)="$event.stopPropagation()" />
-                </div>
+              <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
+                matTooltip={{translatedLangText.EXPORT}}>
+                <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                  (click)="$event.stopPropagation()" />
+              </div>
               }
             </mat-panel-description>
           </mat-expansion-panel-header>
@@ -60,14 +72,16 @@
                   </mat-select>
                 </mat-form-field>
               </div> -->
-              <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
+              <!-- <div
+                class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
                 <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                   <mat-icon>search</mat-icon>
                 </button>
-                <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"  matTooltip={{translatedLangText.CLEAR_ALL}}>
+                <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                  matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
-              </div>
+              </div> -->
             </div>
           </form>
         </mat-expansion-panel>
@@ -112,8 +126,8 @@
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_depot)" [style.cursor]="'pointer'"
-              matRipple>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_depot)"
+              [style.cursor]="'pointer'" matRipple>
             </mat-row>
           </table>
         </div>

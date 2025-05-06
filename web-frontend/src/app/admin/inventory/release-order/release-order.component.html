@@ -13,7 +13,18 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
                     <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/release-order/new']">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
@@ -30,10 +41,10 @@
                     </button>
                   </div> -->
                   @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
-                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                        (click)="$event.stopPropagation()" />
-                    </div>
+                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                      (click)="$event.stopPropagation()" />
+                  </div>
                   }
                 </mat-panel-description>
               </mat-expansion-panel-header>
@@ -129,18 +140,16 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div
+                  <!-- <div
                     class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
                     <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
-                    <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                      <mat-icon>cached</mat-icon>
-                    </button> -->
-                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                      matTooltip={{translatedLangText.CLEAR_ALL}}>
                       <mat-icon>clear_all</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                 </div>
               </form>
             </mat-expansion-panel>

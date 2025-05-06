@@ -7,16 +7,25 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
+              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
               @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                <div class="m-l-" [matTooltip]="translatedLangText.EDIT">
-                  <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
-                    <mat-icon class="col-white">edit</mat-icon>
-                  </button>
-                </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
+                <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                  <mat-icon class="col-white">edit</mat-icon>
+                </button>
+              </div>
               }
-
               @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
+              <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
                 matTooltip={{translatedLangText.EXPORT}}>
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                   (click)="$event.stopPropagation()" />
@@ -32,46 +41,49 @@
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <mat-chip-grid #chipGrid>
                       @for (cust of selectedCustomers; track cust) {
-                        <mat-chip-row color="primary" (removed)="remove(cust)">
-                          <span> {{cust.code}}</span>
-                          <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ cust.code">
-                            <mat-icon>cancel</mat-icon>
-                          </button>
-                        </mat-chip-row>
+                      <mat-chip-row color="primary" (removed)="remove(cust)">
+                        <span> {{cust.code}}</span>
+                        <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ cust.code">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
                       }
                     </mat-chip-grid>
                     <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
-                     [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
-                    <mat-autocomplete #customerCode="matAutocomplete"  (optionSelected)="selected($event)">
+                      [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                      (matChipInputTokenEnd)="add($event)">
+                    <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
-                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemSelected(cc) || false"></mat-checkbox>
+                        <mat-checkbox color="primary" style="padding: 0 12px;"
+                          [checked]="itemSelected(cc) || false"></mat-checkbox>
                         {{ccDS.displayName(cc)}}
                       </mat-option>
                       }
                     </mat-autocomplete>
                   </mat-form-field>
                 </div>
-              
+
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
                     <mat-chip-grid #chipProfile>
                       @for (pro of selectedProfiles; track pro) {
-                        <mat-chip-row color="primary" (removed)="removeSelectedProfile(pro)">
-                          {{pro.profile_name}}
-                          <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ pro.profile_name">
-                            <mat-icon>cancel</mat-icon>
-                          </button>
-                        </mat-chip-row>
+                      <mat-chip-row (removed)="removeSelectedProfile(pro)">
+                        {{pro.profile_name}}
+                        <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ pro.profile_name">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
                       }
                     </mat-chip-grid>
                     <input #profileInput [formControl]="profileNameControl" [matAutocomplete]="profileName"
-                     [matChipInputFor]="chipProfile" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" >
-                    <mat-autocomplete #profileName="matAutocomplete"  (optionSelected)="selectedProfile($event)">
+                      [matChipInputFor]="chipProfile" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                    <mat-autocomplete #profileName="matAutocomplete" (optionSelected)="selectedProfile($event)">
                       @for (p of profile_nameList; track p) {
                       <mat-option [value]="p">
-                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemProfileSelected(p) || false"></mat-checkbox>
+                        <mat-checkbox color="primary" style="padding: 0 12px;"
+                          [checked]="itemProfileSelected(p) || false"></mat-checkbox>
                         {{p.profile_name}}
                       </mat-option>
                       }
@@ -88,7 +100,7 @@
                     </mat-select>
                   </mat-form-field>
                 </div> -->
-                <div
+                <!-- <div
                   class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
                   <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                     <mat-icon>search</mat-icon>
@@ -97,7 +109,7 @@
                     matTooltip={{translatedLangText.CLEAR_ALL}}>
                     <mat-icon>clear_all</mat-icon>
                   </button>
-                </div>
+                </div> -->
               </div>
 
             </form>
@@ -120,7 +132,7 @@
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <mat-checkbox (click)="$event.stopPropagation()" (change)="toggleEstimate(row)"
-                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'"  [hidden]="HideCheckBox(row)">
+                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="HideCheckBox(row)">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -141,7 +153,7 @@
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="customer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header >{{this.translatedLangText.CUSTOMER
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER

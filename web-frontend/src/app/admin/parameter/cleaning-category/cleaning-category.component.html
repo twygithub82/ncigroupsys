@@ -13,23 +13,33 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
                     <button mat-mini-fab color="primary" (click)="addCall()" (click)="$event.stopPropagation()">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
-                    <button mat-mini-fab class="primary-light" color="" (click)="refresh()" (click)="$event.stopPropagation()">
+                  <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
+                    <button mat-mini-fab class="primary-light" color="" (click)="refresh()"
+                      (click)="$event.stopPropagation()">
                       <mat-icon>refresh</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                   @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                        (click)="$event.stopPropagation()" />
-                    </div>
+                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                      (click)="$event.stopPropagation()" />
+                  </div>
                   }
-
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -58,15 +68,15 @@
                       <input matInput formControlName="max_cost" type="number">
                     </mat-form-field>
                   </div> -->
-                  <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto justify-content-end pe-4 pt-3">
+                  <!-- <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto justify-content-end pe-4 pt-3">
                     <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
-                    <button  mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
-                    matTooltip={{translatedLangText.CLEAR_ALL}}>
+                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                      matTooltip={{translatedLangText.CLEAR_ALL}}>
                       <mat-icon>clear_all</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                 </div>
               </form>
             </mat-expansion-panel>

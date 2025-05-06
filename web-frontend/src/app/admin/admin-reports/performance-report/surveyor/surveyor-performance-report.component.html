@@ -8,6 +8,17 @@
               {{this.translatedLangText.SUMMARY_REPORT}}
             </mat-panel-title>
             <mat-panel-description>
+              <div class="m-l-" [matTooltip]="translatedLangText.GENERATE_REPORT">
+                <button mat-mini-fab color="primary" (click)="search_summary()" (click)="$event.stopPropagation()"
+                  [disabled]="(isGeneratingReport) || !AllowToSearch()">
+                  <mat-icon>assignment</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event, 1)" (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchFormSummary!" #formDirective="ngForm">
@@ -75,15 +86,14 @@
               <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.SURVEYOR_NAME}}</mat-label>
-                  <input matInput formControlName="surveyor"
-                  [matAutocomplete]="surveyorName">
-                  <mat-autocomplete #surveyorName="matAutocomplete" >
+                  <input matInput formControlName="surveyor" [matAutocomplete]="surveyorName">
+                  <mat-autocomplete #surveyorName="matAutocomplete">
                     @for (svy of surveyorList; track svy) {
                     <mat-option [value]="svy">
                       {{svy}}
                     </mat-option>
                     }
-                </mat-autocomplete>
+                  </mat-autocomplete>
                 </mat-form-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -103,18 +113,19 @@
                 </mat-error>
               } -->
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+              <!-- <div
+                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_summary()"
-                  [disabled]="(isGeneratingReport)||!AllowToSearch()"
+                  [disabled]="(isGeneratingReport) || !AllowToSearch()"
                   matTooltip={{translatedLangText.GENERATE_REPORT}}>
                   <mat-icon>assignment</mat-icon>
                 </button>
-                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event,1)"
+                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event, 1)"
                   [disabled]="((sotDS.loading$ | async)||isGeneratingReport)"
                   matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
-              </div>
+              </div> -->
             </div>
           </form>
         </mat-expansion-panel>
@@ -190,15 +201,14 @@
               <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.SURVEYOR_NAME}}</mat-label>
-                  <input matInput formControlName="surveyor"
-                  [matAutocomplete]="surveyorName">
-                  <mat-autocomplete #surveyorName="matAutocomplete" >
+                  <input matInput formControlName="surveyor" [matAutocomplete]="surveyorName">
+                  <mat-autocomplete #surveyorName="matAutocomplete">
                     @for (svy of surveyorList; track svy) {
                     <mat-option [value]="svy">
                       {{svy}}
                     </mat-option>
                     }
-                </mat-autocomplete>
+                  </mat-autocomplete>
                 </mat-form-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -213,18 +223,17 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+              <div
+                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"
-                  [disabled]="(isGeneratingReport)"
-                  matTooltip={{translatedLangText.GENERATE_REPORT}}>
+                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.GENERATE_REPORT}}>
                   <mat-icon>assignment</mat-icon>
                 </button>
                 <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
                   <mat-icon>cached</mat-icon>
                 </button> -->
                 <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event,2)"
-                  [disabled]="(isGeneratingReport)"
-                  matTooltip={{translatedLangText.CLEAR_ALL}}>
+                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
@@ -234,7 +243,7 @@
       </mat-accordion>
     </div>
     <div class="body overflow-auto">
-        
+
       <!-- No result -->
       @if (!(isGeneratingReport) && (repData.length==0)){
       <mat-divider></mat-divider>

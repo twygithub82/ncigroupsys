@@ -13,6 +13,30 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
+                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.ADD_NEW_SCHEDULING">
+                    <button mat-mini-fab color="primary" (click)="addSchedulingDetails($event)"
+                      (click)="$event.stopPropagation()" [disabled]="!sotSelection.hasValue()">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <mat-checkbox class="card-checkbox ms-1" (change)="masterToggle()"
+                      (click)="$event.stopPropagation()" [checked]="sotSelection.hasValue() && isAllSelected()"
+                      [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
+                      {{translatedLangText.SELECT_ALL}}
+                    </mat-checkbox>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
+                  </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -139,7 +163,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div
+                  <!-- <div
                     class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                     <button mat-mini-fab class="" color="primary" (click)="search()"
                       [matTooltip]="translatedLangText.SEARCH">
@@ -158,7 +182,7 @@
                       matTooltip={{translatedLangText.CLEAR_ALL}}>
                       <mat-icon>clear_all</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                 </div>
               </form>
             </mat-expansion-panel>

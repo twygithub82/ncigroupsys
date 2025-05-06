@@ -13,7 +13,17 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
                     <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/storing-order/new']">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
@@ -24,19 +34,17 @@
                     </button>
                   </div> -->
                   @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
-                    <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
-                      <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
-                        [disabled]="canCancelSelectedRows()">
-                        <mat-icon class="col-white">cancel</mat-icon>
-                      </button>
-                    </div>
-
-                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                        (click)="$event.stopPropagation()" />
-                    </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
+                    <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
+                      [disabled]="canCancelSelectedRows()">
+                      <mat-icon class="col-white">cancel</mat-icon>
+                    </button>
+                  </div>
+                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                      (click)="$event.stopPropagation()" />
+                  </div>
                   }
-
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -121,15 +129,16 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div
+                  <!-- <div
                     class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
                     <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
-                    <button mat-mini-fab class="m-l-5 bg-dark-gold"  (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                      matTooltip={{translatedLangText.CLEAR_ALL}}>
                       <mat-icon>clear_all</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                 </div>
               </form>
             </mat-expansion-panel>
@@ -171,11 +180,11 @@
                 </ng-container>
                 <ng-container matColumnDef="customer_code">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
-                     
+
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    
+
                     <span
                       class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
                   </mat-cell>
