@@ -84,16 +84,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     //'select',
-    'unittype',
-    'gatein',
-    'gateout',
-    'lifton',
-    'liftoff',
-    'preinspect',
-    'flatRate',
-    'isoformat',
-    'lastUpdate',
-    'actions'
+   
+    ''
   ];
 
   pageTitle = 'MENUITEMS.MASTER.LIST.UNIT-TYPE'
@@ -291,6 +283,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
+    this.displayColumnChanged();
     this.translateLangText();
     // this.search();
   }
@@ -318,6 +311,42 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm = this.fb.group({
       unit_type: [''],
     });
+  }
+
+  displayColumnChanged() {
+    if (this.getPackages()) {
+      this.displayedColumns = [
+        'unittype',
+        'gatein',
+        'gateout',
+        'lifton',
+        'liftoff',
+        'preinspect',
+        'flatRate',
+        'isoformat',
+        'lastUpdate',
+        'actions'
+      ];
+    } else {
+      this.displayedColumns = [
+        'unittype',
+        'gatein',
+        'gateout',
+        'lifton',
+        'liftoff',
+        'preinspect',
+        'isoformat',
+        'lastUpdate',
+        'actions'
+      ];
+    }
+  };
+
+  getPackages(): boolean {
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage())
+      return true;
+    else
+      return false;
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
