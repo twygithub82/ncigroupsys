@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -26,19 +26,21 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
-import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-cleaning-formulas',
@@ -69,13 +71,17 @@ import { ModulePackageService } from 'app/services/module-package.service';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'category_description',
     'category_duration',
-    'update_date'
+    'update_date',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA'
@@ -374,7 +380,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       }
     });
   }
-  
+
   editCall(row: CleaningMethodItem) {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -431,7 +437,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
   }
 
   resetForm() {
@@ -443,5 +449,53 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     // this.banTypeControl.reset();
   }
 
+  handleDelete(event: Event, row: any, ): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.deleteItem(row);
+  }
+
+  deleteItem(row: CleaningFormulaItem) {
+     
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+          action: 'new',
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'confirmed') {
+         this.RmoveCleaningFormula(row.guid!);
+        }
+      });
+    }
+  
+  CanDelete(row: CleaningFormulaItem):boolean{
+    var bRetval:boolean =false;
+
+      if(!bRetval)
+      {
+        bRetval = (row?.cleaning_method_formula?.length||0)===0;
+      }
+    return bRetval;
+  }
+
+  RmoveCleaningFormula( guids: string) {
+  
+      this.fmlDS.deleteCleaningFormula([guids]).subscribe(result => {
+        if (result.data.deleteCleaningFormula) {
+          this.handleSaveSuccess(result.data.deleteCleaningFormula);
+          this.search();
+        }
+      })
+  
+    }
 
 }

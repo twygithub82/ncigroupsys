@@ -17,7 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -28,7 +28,6 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -44,6 +43,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
 
 // import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { ResidueItem } from 'app/data-sources/residue';
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
@@ -78,6 +78,9 @@ import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

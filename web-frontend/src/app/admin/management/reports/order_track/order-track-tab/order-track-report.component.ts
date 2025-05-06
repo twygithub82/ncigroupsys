@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,7 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS } from 'app/data-sources/billing';
@@ -33,14 +33,13 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_customer_tank_activity } from 'app/data-sources/reports';
-import { ManagementReportDS,OrderTrackingItem } from 'app/data-sources/reports-management';
+import { ManagementReportDS, OrderTrackingItem } from 'app/data-sources/reports-management';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { OrderTrackingDetailPdfComponent } from 'app/document-template/pdf/management-reports/order-track/order-track-detail-pdf.component';
-import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
+import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -74,6 +73,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatAutocompleteModule,
     MatDividerModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -146,32 +148,32 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
-    ORDER_TRACK:'COMMON-FORM.ORDER-TRACK',
-    RELEASE_ORDER:'COMMON-FORM.RELEASE-ORDER',
-    STORING_ORDER:'COMMON-FORM.STORING-ORDER',
-    STORING_ORDER_NO:'COMMON-FORM.STORING-ORDER-NO',
-    ORDER_NO_LABEL:'COMMON-FORM.STORING-ORDER-NO',
-    RELEASE_ORDER_NO:'COMMON-FORM.RELEASE-ORDER-NO',
-    DATE:"COMMON-FORM.DATE"
+    ORDER_TRACK: 'COMMON-FORM.ORDER-TRACK',
+    RELEASE_ORDER: 'COMMON-FORM.RELEASE-ORDER',
+    STORING_ORDER: 'COMMON-FORM.STORING-ORDER',
+    STORING_ORDER_NO: 'COMMON-FORM.STORING-ORDER-NO',
+    ORDER_NO_LABEL: 'COMMON-FORM.STORING-ORDER-NO',
+    RELEASE_ORDER_NO: 'COMMON-FORM.RELEASE-ORDER-NO',
+    DATE: "COMMON-FORM.DATE"
   }
 
-  availablePurpose: string[] = 
-  [
-    '',
-    'CLEANING',
-    'REPAIR',
-    'STORAGE',
-    'STEAM'
-  ]
+  availablePurpose: string[] =
+    [
+      '',
+      'CLEANING',
+      'REPAIR',
+      'STORAGE',
+      'STEAM'
+    ]
 
-  availableStatus:string[]=
-  [
-    '',
-    'WAITING',
-    'ACCEPTED',
-    'PREORDER',
-    'CANCELED'
-  ]
+  availableStatus: string[] =
+    [
+      '',
+      'WAITING',
+      'ACCEPTED',
+      'PREORDER',
+      'CANCELED'
+    ]
 
   invForm?: UntypedFormGroup;
   searchForm?: UntypedFormGroup;
@@ -189,7 +191,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   stmDS: SteamDS;
   plDS: PackageLabourDS;
   billDS: BillingDS;
-  repDS:ManagementReportDS;
+  repDS: ManagementReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -205,7 +207,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   depotStatusCvList: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
-  statusCvList:CodeValuesItem[]=[];
+  statusCvList: CodeValuesItem[] = [];
 
   processType: string = "STEAMING";
   billingParty: string = "CUSTOMER";
@@ -213,7 +215,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   pageIndex = 0;
   pageSize = 1000;
   lastSearchCriteria: any;
-  lastOrderBy: any = { };
+  lastOrderBy: any = {};
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -225,7 +227,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
   isGeneratingReport = false;
-  repData:any;
+  repData: any;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -246,7 +248,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.stmDS = new SteamDS(this.apollo);
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
-    this.repDS= new ManagementReportDS(this.apollo);
+    this.repDS = new ManagementReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -269,13 +271,13 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   initSearchForm() {
 
     this.searchForm = this.fb.group({
-      
+
       customer_code: this.customerCodeControl,
       last_cargo: this.lastCargoControl,
       eir_no: [''],
       ro_no: [''],
       so_no: [''],
-      order_no:[''],
+      order_no: [''],
       dt_start: [''],
       dt_end: [''],
       tank_no: [''],
@@ -436,7 +438,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       cond_counter++;
     }
 
-    if (this.searchForm!.get('status_cv')?.value!='') {
+    if (this.searchForm!.get('status_cv')?.value != '') {
       // if(!where.storing_order_tank) where.storing_order_tank={};
       // report_type = "RELEASED";
       // var cond: any = { in: TANK_STATUS_POST_IN_YARD };
@@ -448,45 +450,43 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       where.tank_status_cv = [this.searchForm!.get('status_cv')?.value];
       cond_counter++;
     }
-    else
-    {
-      where.status= this.availableStatus.filter(s=>{s!=''});
+    else {
+      where.status = this.availableStatus.filter(s => { s != '' });
     }
 
 
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code =`${this.searchForm!.get('customer_code')?.value.code}`;
+      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
       cond_counter++;
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
 
-    
-      where.eir_no=`${this.searchForm!.get('eir_no')?.value}`;
+
+      where.eir_no = `${this.searchForm!.get('eir_no')?.value}`;
       //where.out_gate.some=cond;
       cond_counter++;
     }
 
     if (this.searchForm!.get('job_no')?.value) {
-     
+
       where.job_no = `${this.searchForm!.get('job_no')?.value}`;
       cond_counter++;
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {
 
-     
-      where.last_cargo=`${this.searchForm!.get('job_no')?.value.cargo}`;
+
+      where.last_cargo = `${this.searchForm!.get('job_no')?.value.cargo}`;
       cond_counter++;
     }
 
-    report_type="so";
-    if(this.searchForm!.get('order_type')?.value!=='1')
-    {
-      report_type="ro";
+    report_type = "so";
+    if (this.searchForm!.get('order_type')?.value !== '1') {
+      report_type = "ro";
     }
-    where.order_type=report_type;
+    where.order_type = report_type;
 
     var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
     if (this.searchForm!.get('dt_start')?.value && this.searchForm!.get('dt_end')?.value) {
@@ -495,9 +495,9 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       var enddt = new Date(this.searchForm!.value['dt_end']);
       var start_dt: any = Utility.convertDate(startdt) || Utility.convertDate(new Date());
       var end_dt: any = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
-     
+
       where.start_date = start_dt;
-      where.end_date=end_dt;
+      where.end_date = end_dt;
       cond_counter++;
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
@@ -515,16 +515,16 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string) {
-    
-   this.subs.sink = this.repDS.searchManagementReportOrderTrackingReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+
+    this.subs.sink = this.repDS.searchManagementReportOrderTrackingReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.repData = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-       // report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
-        this.ProcessReport(this.repData,report_type!);
+        // report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
+        this.ProcessReport(this.repData, report_type!);
         // this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
@@ -591,7 +591,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     return retval;
   }
 
- 
+
 
   getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
@@ -654,7 +654,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       purpose: '',
       status_cv: '',
       order_type: '1',
-      order_no:''
+      order_no: ''
     });
 
     this.customerCodeControl.reset('');
@@ -687,17 +687,17 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-  ProcessReport(repData:OrderTrackingItem[],report_type:string)
-  {
-      if(repData.length<=0){ 
-        this.isGeneratingReport=false;
-        return;}
+  ProcessReport(repData: OrderTrackingItem[], report_type: string) {
+    if (repData.length <= 0) {
+      this.isGeneratingReport = false;
+      return;
+    }
 
-      this.onExportDetail(repData,report_type);
+    this.onExportDetail(repData, report_type);
   }
-  
 
-  onExportDetail(repData: OrderTrackingItem[],report_type:string) {
+
+  onExportDetail(repData: OrderTrackingItem[], report_type: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -715,8 +715,8 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
-        repType:report_type
-        
+        repType: report_type
+
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

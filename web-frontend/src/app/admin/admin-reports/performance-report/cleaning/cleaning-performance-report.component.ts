@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,33 +25,28 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS } from 'app/data-sources/billing';
+import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import {  CleanerPerformance, ReportDS } from 'app/data-sources/reports';
+import { CleanerPerformance, ReportDS } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { UserDS } from 'app/data-sources/user';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { CleanerPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/cleaner/cleaner-detail-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
-import {PendingEstimateReportPdfComponent} from 'app/document-template/pdf/pending-estimate-report-pdf/pending-estimate-report-pdf.component'
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { reportPreviewWindowDimension } from 'environments/environment';
-import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { DailyRevenuePdfComponent } from 'app/document-template/pdf/admin-reports/daily/revenue/daily-revenue-pdf.component';
-import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-reports/daily/qc-detail/daily-qc-detail-pdf.component';
-import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { UserDS } from 'app/data-sources/user';
-import { CleanerPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/cleaner/cleaner-detail-pdf.component';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-cleaning-performance-report',
@@ -81,8 +76,10 @@ import { CleanerPerformanceDetailPdfComponent } from 'app/document-template/pdf/
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatSlideToggleModule,
-    PreventNonNumericDirective
+    MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -157,23 +154,23 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    OUTSTANDING_DAYS:'COMMON-FORM.OUTSTANDING-DAYS',
-    MAX_DAYS:'COMMON-FORM.MAX-DAYS',
-    MIN_DAYS:'COMMON-FORM.MIN-DAYS',
-    WARNING_OUTSTANDING_DAYS:'COMMON-FORM.WARNING-OUTSTANDING-DAYS',
-    TEAM:'COMMON-FORM.TEAM',
-    ALLOCATION_DATE:"COMMON-FORM.ALLOCATION-DATE",
-    APPROVED_DATE:"COMMON-FORM.APPROVED-DATE",
-    ESTIMATE_DATE:"COMMON-FORM.ESTIMATE-DATE",
-    QC_DATE:"COMMON-FORM.QC-DATE",
-    REVENUE:'COMMON-FORM.REVENUE',
-    APPROVAL:'COMMON-FORM.APPROVAL',
-    QC_DETAIL:'COMMON-FORM.QC-DETAIL',
-    CLEANING_PROCESS:'COMMON-FORM.CLEANING-PROCESS',
-    CARGO:"COMMON-FORM.CARGO",
-    CLEANER:"COMMON-FORM.CLEANER",
-    CLEANING_BAY:"COMMON-FORM.CLEANING-BAY"
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    OUTSTANDING_DAYS: 'COMMON-FORM.OUTSTANDING-DAYS',
+    MAX_DAYS: 'COMMON-FORM.MAX-DAYS',
+    MIN_DAYS: 'COMMON-FORM.MIN-DAYS',
+    WARNING_OUTSTANDING_DAYS: 'COMMON-FORM.WARNING-OUTSTANDING-DAYS',
+    TEAM: 'COMMON-FORM.TEAM',
+    ALLOCATION_DATE: "COMMON-FORM.ALLOCATION-DATE",
+    APPROVED_DATE: "COMMON-FORM.APPROVED-DATE",
+    ESTIMATE_DATE: "COMMON-FORM.ESTIMATE-DATE",
+    QC_DATE: "COMMON-FORM.QC-DATE",
+    REVENUE: 'COMMON-FORM.REVENUE',
+    APPROVAL: 'COMMON-FORM.APPROVAL',
+    QC_DETAIL: 'COMMON-FORM.QC-DETAIL',
+    CLEANING_PROCESS: 'COMMON-FORM.CLEANING-PROCESS',
+    CARGO: "COMMON-FORM.CARGO",
+    CLEANER: "COMMON-FORM.CLEANER",
+    CLEANING_BAY: "COMMON-FORM.CLEANING-BAY"
   }
 
   invForm?: UntypedFormGroup;
@@ -189,18 +186,18 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
 
-  clnPrcsDS:CleaningMethodDS;
+  clnPrcsDS: CleaningMethodDS;
   stmDS: SteamDS;
   plDS: PackageLabourDS;
   billDS: BillingDS;
-  teamDS:TeamDS;
-  reportDS:ReportDS;
-  userDS:UserDS;
+  teamDS: TeamDS;
+  reportDS: ReportDS;
+  userDS: UserDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
   selectedEstimateLabourCost?: number;
-  cleanTeamList:TeamItem[]=[];
+  cleanTeamList: TeamItem[] = [];
   stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
@@ -212,9 +209,9 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   repairTypeCvList: CodeValuesItem[] = [];
 
-  cleanProcessList:CleaningMethodItem[]=[];
-  cargoList:TariffCleaningItem[]=[];
-  cleanerList:string[]=[];
+  cleanProcessList: CleaningMethodItem[] = [];
+  cargoList: TariffCleaningItem[] = [];
+  cleanerList: string[] = [];
 
   processType: string = "STEAMING";
   billingParty: string = "CUSTOMER";
@@ -233,8 +230,8 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport=false;
-  repData:any[]=[];
+  isGeneratingReport = false;
+  repData: any[] = [];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -256,10 +253,10 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.teamDS= new TeamDS(this.apollo);
-    this.reportDS=new ReportDS(this.apollo);
-    this.clnPrcsDS=new CleaningMethodDS(this.apollo);
-    this.userDS=new UserDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
+    this.reportDS = new ReportDS(this.apollo);
+    this.clnPrcsDS = new CleaningMethodDS(this.apollo);
+    this.userDS = new UserDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -288,35 +285,35 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         customer_code: this.customerCodeControl,
         eir_no: [''],
         tank_no: [''],
-        clean_process:[''],
-        cargo:[''],
+        clean_process: [''],
+        cargo: [''],
         cln_dt_start: [''],
         cln_dt_end: [''],
         cleaner: [''],
         clean_bay: [''],
-        team:''
+        team: ''
       },
     );
   }
 
-   // Custom validator to check if min <= max
-   minMaxDaysValidator(form:UntypedFormGroup) {
-    
-      const minControl = form.get('min_days');
-      const maxControl = form.get('max_days');
+  // Custom validator to check if min <= max
+  minMaxDaysValidator(form: UntypedFormGroup) {
 
-      const min = minControl?.value;
-      const max = maxControl?.value;
+    const minControl = form.get('min_days');
+    const maxControl = form.get('max_days');
 
-      if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
-        minControl?.setErrors({ invalidRange: true });
-        maxControl?.setErrors({ invalidRange: true });
-        return { invalidRange: true }; // Form-level error
-      } else {
-        minControl?.setErrors(null);
-        maxControl?.setErrors(null);
-        return null; // No error
-      }
+    const min = minControl?.value;
+    const max = maxControl?.value;
+
+    if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
+      minControl?.setErrors({ invalidRange: true });
+      maxControl?.setErrors({ invalidRange: true });
+      return { invalidRange: true }; // Form-level error
+    } else {
+      minControl?.setErrors(null);
+      maxControl?.setErrors(null);
+      return null; // No error
+    }
   }
 
   initializeValueChanges() {
@@ -364,15 +361,15 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         var searchCriteria = '';
         if (typeof value === 'string') {
           searchCriteria = value;
-        } 
+        }
 
-        this.subs.sink = this.userDS.searchUser({and:[ { userName: { contains: searchCriteria }},{aspnetuserroles: { some: { aspnetroles: {Role: {eq: 'Operation' }}}}}]},
-           { userName: 'ASC' }).subscribe(data => {
-          this.cleanerList = data
-          .map(u => u.userName)
-          .filter((name): name is string => name !== undefined);
-          
-        });
+        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { aspnetuserroles: { some: { aspnetroles: { Role: { eq: 'Operation' } } } } }] },
+          { userName: 'ASC' }).subscribe(data => {
+            this.cleanerList = data
+              .map(u => u.userName)
+              .filter((name): name is string => name !== undefined);
+
+          });
       })
     ).subscribe();
   }
@@ -390,34 +387,35 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     });
 
 
-    const where : any ={
-      and:[
-          {
-            department_cv:{eq:'CLEANING'}
-          },
-           { or:[
-               {delete_dt:{eq:null}},
-               {delete_dt:{eq:0}}
-             ]
-           }
+    const where: any = {
+      and: [
+        {
+          department_cv: { eq: 'CLEANING' }
+        },
+        {
+          or: [
+            { delete_dt: { eq: null } },
+            { delete_dt: { eq: 0 } }
+          ]
+        }
       ]
     };
-    
-    this.teamDS.loadItems(where,{description:"ASC"},100).subscribe(data=>{
-        this.cleanTeamList=data;
+
+    this.teamDS.loadItems(where, { description: "ASC" }, 100).subscribe(data => {
+      this.cleanTeamList = data;
     });
 
-    const whereCln:any={
-      or:[
-        {delete_dt:{eq:null}},
-        {delete_dt:{eq:0}}
+    const whereCln: any = {
+      or: [
+        { delete_dt: { eq: null } },
+        { delete_dt: { eq: 0 } }
       ]
     };
 
-    this.clnPrcsDS.loadItems(whereCln,{sequence:"DESC"},100).subscribe(data=>{
-      this.cleanProcessList=data;
+    this.clnPrcsDS.loadItems(whereCln, { sequence: "DESC" }, 100).subscribe(data => {
+      this.cleanProcessList = data;
     })
-   
+
   }
   showNotification(
     colorName: string,
@@ -456,12 +454,12 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
   search_detail() {
-    var repType:number = Number(this.searchForm?.get("report_type")?.value);
+    var repType: number = Number(this.searchForm?.get("report_type")?.value);
     this.search(repType);
   }
 
   search(report_type: number) {
-    
+
     var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
@@ -469,111 +467,104 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.selectedEstimateLabourCost = 0;
     this.stmEstList = [];
     this.selection.clear();
-    var date:string='';
-    var team:string='';
-    this.repData=[];
+    var date: string = '';
+    var team: string = '';
+    this.repData = [];
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
-    
+
     // where.repair={some:{status_cv :{in:["JOB_IN_PROGRESS","ASSIGNED"]}},any:true};
     // if (this.searchForm!.get('tank_no')?.value) {
     //   where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     //   cond_counter++;
     // }
-    if(this.searchForm?.invalid)
-      {
-        if(!(this.searchForm!.get('cln_dt_start')?.value)||!(this.searchForm!.get('cln_dt_end')?.value))
-          {
-            const startDateControl = this.searchForm!.get('cln_dt_start');
-            if (startDateControl) {
-                startDateControl.setErrors({ required: true });
-                startDateControl.markAsTouched();
-            }
-          }
-        
-         
-        return;
-      } 
-    this.isGeneratingReport=true;
+    if (this.searchForm?.invalid) {
+      if (!(this.searchForm!.get('cln_dt_start')?.value) || !(this.searchForm!.get('cln_dt_end')?.value)) {
+        const startDateControl = this.searchForm!.get('cln_dt_start');
+        if (startDateControl) {
+          startDateControl.setErrors({ required: true });
+          startDateControl.markAsTouched();
+        }
+      }
+
+
+      return;
+    }
+    this.isGeneratingReport = true;
     if (this.searchForm!.get('tank_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.tank_no = `${this.searchForm!.get('tank_no')?.value }`;
+      where.tank_no = `${this.searchForm!.get('tank_no')?.value}`;
       cond_counter++;
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code }`;
+      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
       cond_counter++;
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.eir_no = `${this.searchForm!.get('eir_no')?.value }`;
+      where.eir_no = `${this.searchForm!.get('eir_no')?.value}`;
       cond_counter++;
     }
 
-    if((this.searchForm!.get('cln_dt_start')?.value) && (this.searchForm!.get('cln_dt_end')?.value))
-    {
-        var start_dt=new Date(this.searchForm!.value['cln_dt_start']);
-        var end_dt=new Date(this.searchForm!.value['cln_dt_end']);
-        where.start_date=Utility.convertDate(start_dt);
-        where.end_date=Utility.convertDate(end_dt,true);
-        date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`;
-        cond_counter++;
+    if ((this.searchForm!.get('cln_dt_start')?.value) && (this.searchForm!.get('cln_dt_end')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['cln_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['cln_dt_end']);
+      where.start_date = Utility.convertDate(start_dt);
+      where.end_date = Utility.convertDate(end_dt, true);
+      date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`;
+      cond_counter++;
     }
 
 
-      if((this.searchForm!.get('cargo')?.value))
-        {
-            where.last_cargo= `${this.searchForm!.get('cargo')?.value.cargo||''}`
-            cond_counter++;
-        }
+    if ((this.searchForm!.get('cargo')?.value)) {
+      where.last_cargo = `${this.searchForm!.get('cargo')?.value.cargo || ''}`
+      cond_counter++;
+    }
 
-    if((this.searchForm!.get('clean_process')?.value))
-        {
-          
-            where.method_name=`${this.searchForm!.get('clean_process')?.value.name||''}`
-            
-            cond_counter++;
-        }
-      
-       
+    if ((this.searchForm!.get('clean_process')?.value)) {
+
+      where.method_name = `${this.searchForm!.get('clean_process')?.value.name || ''}`
+
+      cond_counter++;
+    }
+
+
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
-     this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
       return;
     }
 
     this.lastSearchCriteria = where;
-  
-      this.performSearchDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType,date,team);
-   
+
+    this.performSearchDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
+
   }
 
   performSearchDetail(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
-     before?: string, report_type?: number, queryType?: number,date?:string,team?:string) {
+    before?: string, report_type?: number, queryType?: number, date?: string, team?: string) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchAdminReportCleanerPerformance(this.lastSearchCriteria)
       .subscribe(data => {
-        if(data.length>0)
-        {
-            this.repData =data;
-            this.onExportAdminReportCleanerPerformanceDetailReport(this.repData,date!,team!);
+        if (data.length > 0) {
+          this.repData = data;
+          this.onExportAdminReportCleanerPerformanceDetailReport(this.repData, date!, team!);
         }
-        else
-        {
-          this.isGeneratingReport=false
+        else {
+          this.isGeneratingReport = false
         }
-     
+
       });
 
 
   }
 
- 
+
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
     let first: number | undefined = undefined;
@@ -601,7 +592,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       }
     }
 
-   // this.performSearch(pageSize, pageIndex, first, after, last, before);
+    // this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -690,12 +681,12 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       eir_no: '',
       tank_no: '',
       clean_process: '',
-      cln_dt_start:'',
-      cln_dt_end:'',
+      cln_dt_start: '',
+      cln_dt_end: '',
       cln_bay: '',
       cargo: '',
       cleaner: '',
-      team:'',
+      team: '',
     });
     this.customerCodeControl.reset('');
     this.noCond = false;
@@ -721,15 +712,15 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
 
-  onExportAdminReportCleanerPerformanceDetailReport(repData: CleanerPerformance[],date:string,team:string) {
+  onExportAdminReportCleanerPerformanceDetailReport(repData: CleanerPerformance[], date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(repData?.length<=0){
-      this.isGeneratingReport=false;
+    if (repData?.length <= 0) {
+      this.isGeneratingReport = false;
       return;
 
-    } 
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -739,45 +730,41 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
     const dialogRef = this.dialog.open(CleanerPerformanceDetailPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
-        date:date,
-        team:team
+        date: date,
+        team: team
 
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
-  isDateRequired(date_type:string):boolean
-  {
-    var retval:boolean = true;
-    var repType:number = Number(this.searchForm?.get("report_type")?.value);
-    if(date_type=="APPROVED")
-    {
+  isDateRequired(date_type: string): boolean {
+    var retval: boolean = true;
+    var repType: number = Number(this.searchForm?.get("report_type")?.value);
+    if (date_type == "APPROVED") {
       return [2].includes(repType);
     }
-    else if(date_type=="QC")
-    {
-    
-      return [1,3].includes(repType);
+    else if (date_type == "QC") {
+
+      return [1, 3].includes(repType);
     }
-    
+
     return retval;
 
   }
 
- 
 
-  displayCargoFn(row:TariffCleaningItem)
-  {
-    return `${row.cargo||''}`;
+
+  displayCargoFn(row: TariffCleaningItem) {
+    return `${row.cargo || ''}`;
   }
 
   onTabFocused() {

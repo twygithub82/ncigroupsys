@@ -16,7 +16,7 @@ import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
@@ -29,7 +29,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -42,13 +41,14 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { DEFAULT_COUNTRY_CODE, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-customer-new',
@@ -76,7 +76,6 @@ import { ModulePackageService } from 'app/services/module-package.service';
     CommonModule,
     MatLabel,
     MatTableModule,
-    MatPaginatorModule,
     MatProgressSpinnerModule,
     MatRadioModule,
     MatDividerModule,
@@ -629,17 +628,17 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   deleteItem(row: StoringOrderTankItem, index: number) {
+    
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        item: row,
-        langText: this.langText,
-        index: index
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
       },
       direction: tempDirection
     });
@@ -1045,7 +1044,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   handleDelete(event: Event, row: any, index: number): void {
+    event.preventDefault(); // Prevents the form submission
+    event.stopPropagation();
     this.deleteItem(row, index);
+
   }
 
   cancelItem(event: Event, row: RepairPartItem) {

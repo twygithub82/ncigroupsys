@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -26,6 +26,7 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { BillingSOTItem, report_billing_customer, report_billing_item } from 'app/data-sources/billing';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -78,6 +79,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class PendingContentComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -162,7 +166,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  isGeneratingReport=false;
+  isGeneratingReport = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -326,7 +330,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   search(reportType: number) {
-    this.isGeneratingReport=true;
+    this.isGeneratingReport = true;
     const where: any = {};
 
     where.and = [];
@@ -401,10 +405,10 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       sot.steaming = sot.steaming?.filter(c => c.approve_dt != null);
       const billingSot = sot.billing_sot;
       if (billingSot &&
-        ((billingSot.gin_billing_guid == null) ||(billingSot.gout_billing_guid == null))||
-          ((billingSot?.lon_billing_guid!== null&& billingSot?.lift_on) || (billingSot?.loff_billing_guid== null&&billingSot?.lift_off) ) ||
-          (billingSot?.preinsp_billing_guid == null && billingSot?.preinspection) ||
-          (billingSot?.storage_billing_guid == null)) {
+        ((billingSot.gin_billing_guid == null) || (billingSot.gout_billing_guid == null)) ||
+        ((billingSot?.lon_billing_guid !== null && billingSot?.lift_on) || (billingSot?.loff_billing_guid == null && billingSot?.lift_off)) ||
+        (billingSot?.preinsp_billing_guid == null && billingSot?.preinspection) ||
+        (billingSot?.storage_billing_guid == null)) {
         sot.billing_sot = billingSot;
       } else {
         sot.billing_sot = undefined; // If conditions are not met, set it to null
@@ -524,9 +528,9 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
       rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
     }
-    if(out_gates?.length) {
-      rep_bill_item.out_date=Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
-      rep_bill_item.eir_no=out_gates?.[0]?.eir_no;
+    if (out_gates?.length) {
+      rep_bill_item.out_date = Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
+      rep_bill_item.eir_no = out_gates?.[0]?.eir_no;
     }
 
     return rep_bill_item;
@@ -574,7 +578,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const item: BillingSOTItem = sot.billing_sot!;
 
-    if (item && (item.delete_dt === null || item.delete_dt === 0) && (item.gout_billing_guid == null&&item.gin_billing_guid == null)) {
+    if (item && (item.delete_dt === null || item.delete_dt === 0) && (item.gout_billing_guid == null && item.gin_billing_guid == null)) {
       item.storing_order_tank = sot;
 
       let newItem = false;
@@ -588,7 +592,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       }
 
       // Calculate gate I/O cost and update rep_bill_item
-      const gateIOCost = (item.gate_in?(item.gate_in_cost || 0):0) + (item.gate_out?(item.gate_out_cost || 0):0);
+      const gateIOCost = (item.gate_in ? (item.gate_in_cost || 0) : 0) + (item.gate_out ? (item.gate_out_cost || 0) : 0);
 
       if (gateIOCost > 0) {
         rep_bill_item.gateio_est_no += 1; // Increment gate I/O estimation number
@@ -633,7 +637,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const item = sot.billing_sot; // Single object instead of an array
 
-    if (item && (item.delete_dt === null || item.delete_dt === 0) && (item.lon_billing_guid == null &&item.loff_billing_guid == null )) {
+    if (item && (item.delete_dt === null || item.delete_dt === 0) && (item.lon_billing_guid == null && item.loff_billing_guid == null)) {
       item.storing_order_tank = sot;
 
       let newItem = false;
@@ -918,11 +922,10 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   export_report(reportType: number) {
-    if (!this.sotList.length) 
-      { 
-        this.isGeneratingReport=false;
-        return;
-      }
+    if (!this.sotList.length) {
+      this.isGeneratingReport = false;
+      return;
+    }
 
     this.getAllClientLabourCost().then(() => {
       var repCustomers: report_billing_customer[] = []
@@ -1063,7 +1066,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const dialogRef = this.dialog.open(PendingInvoiceCostDetailPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         billing_customers: repCustomers,
@@ -1073,7 +1076,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
@@ -1094,7 +1097,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const dialogRef = this.dialog.open(PendingSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         billing_customers: repCustomers,
@@ -1104,7 +1107,7 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 }

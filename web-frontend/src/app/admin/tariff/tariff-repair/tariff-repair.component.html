@@ -174,10 +174,10 @@
                 </ng-container>
                 }
                 <ng-container matColumnDef="fName">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2_25-xl'">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3_75-xl'">
                     {{this.translatedLangText.PART_NAME
                     }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_25-xl'">
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_75-xl'">
                     <span class="mobile-label">{{this.translatedLangText.PART_NAME
                       }}:</span>{{getTariffRepairAlias(row.tariff_repair)}}</mat-cell>
                 </ng-container>

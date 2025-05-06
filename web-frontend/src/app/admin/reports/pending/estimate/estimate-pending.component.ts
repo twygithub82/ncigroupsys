@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,7 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS } from 'app/data-sources/billing';
@@ -38,13 +38,13 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { PendingEstimateReportPdfComponent } from 'app/document-template/pdf/pending-estimate-report-pdf/pending-estimate-report-pdf.component';
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
-import {PendingEstimateReportPdfComponent} from 'app/document-template/pdf/pending-estimate-report-pdf/pending-estimate-report-pdf.component'
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { reportPreviewWindowDimension } from 'environments/environment';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-estimate-pending',
@@ -76,6 +76,9 @@ import { reportPreviewWindowDimension } from 'environments/environment';
     MatDividerModule,
     MatSlideToggleModule,
     PreventNonNumericDirective
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -150,11 +153,11 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    OUTSTANDING_DAYS:'COMMON-FORM.OUTSTANDING-DAYS',
-    MAX_DAYS:'COMMON-FORM.MAX-DAYS',
-    MIN_DAYS:'COMMON-FORM.MIN-DAYS',
-    WARNING_OUTSTANDING_DAYS:'COMMON-FORM.WARNING-OUTSTANDING-DAYS'
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    OUTSTANDING_DAYS: 'COMMON-FORM.OUTSTANDING-DAYS',
+    MAX_DAYS: 'COMMON-FORM.MAX-DAYS',
+    MIN_DAYS: 'COMMON-FORM.MIN-DAYS',
+    WARNING_OUTSTANDING_DAYS: 'COMMON-FORM.WARNING-OUTSTANDING-DAYS'
   }
 
   invForm?: UntypedFormGroup;
@@ -205,7 +208,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport=false;
+  isGeneratingReport = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -239,8 +242,8 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
 
-    var autoSearch:boolean=true;
-    if(autoSearch) this.search_detail();
+    var autoSearch: boolean = true;
+    if (autoSearch) this.search_detail();
   }
 
   initInvoiceForm() {
@@ -267,24 +270,24 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     );
   }
 
-   // Custom validator to check if min <= max
-   minMaxDaysValidator(form:UntypedFormGroup) {
-    
-      const minControl = form.get('min_days');
-      const maxControl = form.get('max_days');
+  // Custom validator to check if min <= max
+  minMaxDaysValidator(form: UntypedFormGroup) {
 
-      const min = minControl?.value;
-      const max = maxControl?.value;
+    const minControl = form.get('min_days');
+    const maxControl = form.get('max_days');
 
-      if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
-        minControl?.setErrors({ invalidRange: true });
-        maxControl?.setErrors({ invalidRange: true });
-        return { invalidRange: true }; // Form-level error
-      } else {
-        minControl?.setErrors(null);
-        maxControl?.setErrors(null);
-        return null; // No error
-      }
+    const min = minControl?.value;
+    const max = maxControl?.value;
+
+    if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
+      minControl?.setErrors({ invalidRange: true });
+      maxControl?.setErrors({ invalidRange: true });
+      return { invalidRange: true }; // Form-level error
+    } else {
+      minControl?.setErrors(null);
+      maxControl?.setErrors(null);
+      return null; // No error
+    }
   }
 
   initializeValueChanges() {
@@ -382,7 +385,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   search(report_type: number) {
-    this.isGeneratingReport=true;
+    this.isGeneratingReport = true;
     var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
@@ -392,8 +395,8 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     this.selection.clear();
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
-    
-    where.repair={some:{status_cv :{in:["JOB_IN_PROGRESS","ASSIGNED"]}},any:true};
+
+    where.repair = { some: { status_cv: { in: ["JOB_IN_PROGRESS", "ASSIGNED"] } }, any: true };
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       cond_counter++;
@@ -405,9 +408,9 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       cond_counter++;
     }
 
-    
-    if( (this.searchForm!.get('min_days')?.value) && (this.searchForm!.get('max_days')?.value)) {
-      if(!where.repair)where.repair={};
+
+    if ((this.searchForm!.get('min_days')?.value) && (this.searchForm!.get('max_days')?.value)) {
+      if (!where.repair) where.repair = {};
 
       const today = new Date(); // Today's date
       const minDate = new Date(today);
@@ -424,18 +427,17 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       //   lte: minEpoch, // Greater than or equal to minEpoch
       //   gte: maxEpoch, // Less than or equal to maxEpoch
       //  }}
-       where.repair.some = {
+      where.repair.some = {
         ...where.repair.some,
-        allocate_dt:{
+        allocate_dt: {
           lte: minEpoch, // Greater than or equal to minEpoch
           gte: maxEpoch, // Less than or equal to maxEpoch
-         }
+        }
       };
-       cond_counter++;
+      cond_counter++;
     }
-    else if (this.searchForm!.get('min_days')?.value)
-    {
-      if(!where.repair)where.repair={};
+    else if (this.searchForm!.get('min_days')?.value) {
+      if (!where.repair) where.repair = {};
       const today = new Date(); // Today's date
       const minDate = new Date(today);
 
@@ -445,19 +447,18 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
       where.repair.some = {
         ...where.repair.some,
-       allocate_dt:{
+        allocate_dt: {
           lte: minEpoch, // Greater than or equal to minEpoch
-         }
+        }
       };
       // where.repair.some={allocate_dt:{
       //   gte: minEpoch, // Greater than or equal to minEpoch
       //  }}
-       cond_counter++;
+      cond_counter++;
 
     }
-    else if(this.searchForm!.get('max_days')?.value)
-    {
-      if(!where.repair)where.repair={};
+    else if (this.searchForm!.get('max_days')?.value) {
+      if (!where.repair) where.repair = {};
       const today = new Date(); // Today's date
       const maxDate = new Date(today);
 
@@ -467,58 +468,58 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
       where.repair.some = {
         ...where.repair.some,
-        allocate_dt:{
+        allocate_dt: {
           gte: maxEpoch, // Less than or equal to maxEpoch
-         }
+        }
       };
-     
-       cond_counter++;
+
+      cond_counter++;
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
 
       var cond: any = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
 
-     
-        where.in_gate = cond;
-     
+
+      where.in_gate = cond;
+
       cond_counter++;
     }
 
     //var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
     if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      var start_dt=new Date(this.searchForm!.value['eir_dt_start']);
-      var end_dt=new Date(this.searchForm!.value['eir_dt_start']);
+      var start_dt = new Date(this.searchForm!.value['eir_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['eir_dt_start']);
       var cond: any = { some: { eir_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } } };
-    //  date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
-      
-        where.in_gate = {};
-        where.in_gate = cond;
-      
+      //  date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
+
+      where.in_gate = {};
+      where.in_gate = cond;
+
       cond_counter++;
-      
+
     }
 
     if (this.searchForm!.get('cln_dt_start')?.value && this.searchForm!.get('cln_dt_end')?.value) {
-      var start_dt=new Date(this.searchForm!.value['cln_dt_start']);
-      var end_dt=new Date(this.searchForm!.value['cln_dt_end']);
+      var start_dt = new Date(this.searchForm!.value['cln_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['cln_dt_end']);
       var cond: any = { some: { complete_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } } };
-    //  date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
-      
-        where.cleaning = {};
-        where.cleaning = cond;
-      
+      //  date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
+
+      where.cleaning = {};
+      where.cleaning = cond;
+
       cond_counter++;
-      
+
     }
 
     if (this.searchForm!.get('rep_type')?.value) {
-     
-        
-        where.purpose_repair_cv ={in:this.searchForm!.get('rep_type')?.value};
-      
+
+
+      where.purpose_repair_cv = { in: this.searchForm!.get('rep_type')?.value };
+
       cond_counter++;
-      
+
     }
 
 
@@ -528,7 +529,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     // }
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
-     this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
       return;
     }
 
@@ -540,7 +541,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairOutstandingReport(this.lastSearchCriteria,{},first)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairOutstandingReport(this.lastSearchCriteria, {}, first)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
@@ -680,8 +681,8 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       cln_dt_start: '',
       cln_dt_end: '',
       rep_type: '',
-      min_days:'',
-      max_days:''
+      min_days: '',
+      max_days: ''
     });
     this.customerCodeControl.reset('');
     this.noCond = false;
@@ -708,17 +709,17 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
 
 
-  
+
 
   onExportDetail(sot: StoringOrderTankItem[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(sot?.length<=0){
-      this.isGeneratingReport=false;
+    if (sot?.length <= 0) {
+      this.isGeneratingReport = false;
       return;
 
-    } 
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -728,8 +729,8 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
     const dialogRef = this.dialog.open(PendingEstimateReportPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         sot: sot
       },
@@ -737,7 +738,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
@@ -755,8 +756,8 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
     const dialogRef = this.dialog.open(YardSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_customer_tank_activity: repCustomerTankActivity,
         type: invType,
@@ -767,7 +768,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 

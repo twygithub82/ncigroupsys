@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,7 +25,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -43,6 +42,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-inventory-yearly',
@@ -73,6 +73,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatAutocompleteModule,
     MatDividerModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -372,16 +375,15 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
 
     var customerName: string = "";
-    var invTypes=this.invTypes.filter(v => v !== "ALL");
+    var invTypes = this.invTypes.filter(v => v !== "ALL");
     where.inventory_type = invTypes;
     if (this.searchForm?.get('inventory_type')?.value != "ALL") {
       where.inventory_type = this.searchForm?.get('inventory_type')?.value;
-      invTypes= [this.searchForm?.get('inventory_type')?.value];
+      invTypes = [this.searchForm?.get('inventory_type')?.value];
     }
 
-    if(invTypes.includes("IN_OUT"))
-    {
-      where.inventory_type= invTypes;
+    if (invTypes.includes("IN_OUT")) {
+      where.inventory_type = invTypes;
       where.inventory_type.push("DEPOT");
     }
 
@@ -424,26 +426,24 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
 
     this.lastSearchCriteria = where;
-    this.performSearch(report_type, date, customerName, reportType,invTypes);
+    this.performSearch(report_type, date, customerName, reportType, invTypes);
   }
 
 
-  ZeroTransaction(data:ManagementReportYearlyInventory):boolean
-  {
-     var retval:boolean = true;
-     if(data)
-     {
-      retval = (data.cleaning_yearly_inventory?.average_count==0)||
-               (data.depot_yearly_inventory?.average_count==0)||
-               (data.gate_in_inventory?.average_count==0)||
-               (data.gate_out_inventory?.average_count==0)||
-               (data.repair_yearly_inventory?.average_count==0)||
-               (data.steaming_yearly_inventory?.average_count==0)
-     }
-     return retval;
+  ZeroTransaction(data: ManagementReportYearlyInventory): boolean {
+    var retval: boolean = true;
+    if (data) {
+      retval = (data.cleaning_yearly_inventory?.average_count == 0) ||
+        (data.depot_yearly_inventory?.average_count == 0) ||
+        (data.gate_in_inventory?.average_count == 0) ||
+        (data.gate_out_inventory?.average_count == 0) ||
+        (data.repair_yearly_inventory?.average_count == 0) ||
+        (data.steaming_yearly_inventory?.average_count == 0)
+    }
+    return retval;
   }
 
-  performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string,invTypes?:string[]) {
+  performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string, invTypes?: string[]) {
 
     // if(queryType==1)
     // {
@@ -451,9 +451,9 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
       .subscribe(data => {
 
         this.repData = data;
-     
-           this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!,invTypes!);
-        
+
+        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!);
+
       });
 
   }
@@ -559,13 +559,13 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   }
 
-  ProcessYearlyReport(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string,invTypes:string[]) {
+  ProcessYearlyReport(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[]) {
 
 
 
-    if(!this.ZeroTransaction(this.repData)){
+    if (!this.ZeroTransaction(this.repData)) {
 
-      this.onExportChart_r1(repData, date, customerName, report_type,invTypes);
+      this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
 
 
     }
@@ -581,7 +581,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
 
 
-  onExportChart_r1(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string,invTypes:string[]) {
+  onExportChart_r1(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -602,7 +602,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
         date: date,
         repType: report_type,
         customer: customerName,
-        inventory_type:invTypes
+        inventory_type: invTypes
 
       },
 
@@ -654,6 +654,6 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   onTabFocused() {
     this.resetForm();
-    
+
   }
 }

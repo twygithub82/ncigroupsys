@@ -1868,7 +1868,20 @@ textarea,
 }
 
 .nav-item.nav-toggle a {
-  margin-left: 18px !important;
+  margin-left: 0px !important;
+}
+
+.navbar-header .logo img {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: fill;
+}
+
+.nav>li>a {
+  position: relative;
+  display: block;
+  padding: 3px 0px;
 }
 
 .w-40 {
@@ -1926,13 +1939,16 @@ $grid-breakpoints: (
 }
 
 .tlx-mdc-tab-group .mat-mdc-tab {
-  background-color: $theme-blue-legal-bg;
+  // background-color: $theme-blue-legal-bg;
   margin: 0 1px;
   border-radius: 6px 6px 0 0;
   // color: $theme-gold-purple-nav-anchor;
   // font-weight: 600;
   transition: none;
 
+  .mat-ripple.mat-mdc-tab-ripple {
+    border-radius: 8px;
+  }
   // &[aria-disabled='true'] {
   //   @include apply-disabled-style($theme-gold-purple-menu-list-submenu, $theme-gold-purple-disabled-text);
   // }
@@ -1942,7 +1958,7 @@ $grid-breakpoints: (
 
   :hover,
   :focus {
-    background-color: $theme-blue-legal-bg;
+    // background-color: $theme-blue-legal-bg;
     border-radius: 8px 8px 0 0;
     // color: $theme-gold-purple-nav-anchor;
     // font-weight: 600;
@@ -1954,16 +1970,16 @@ $grid-breakpoints: (
   }
 
   .mdc-tab-indicator__content--underline {
-    border-color: $theme-blue-complement-bar;
+    // border-color: $theme-blue-complement-bar;
   }
 }
 
 .tlx-mdc-tab-group .mat-mdc-tab.mdc-tab--active {
-  background-color: $theme-blue-complement-bar;
-  border-radius: 8px 8px 0 0;
+  // background-color: $theme-blue-complement-bar;
+  border-radius: 8px;
 
   .mdc-tab__text-label {
-    color: white;
+    // color: white;
     transition: none;
   }
 }
@@ -1974,11 +1990,11 @@ $grid-breakpoints: (
   &:focus,
   :hover,
   :focus {
-    background-color: $theme-blue-complement-bar;
+    // background-color: $theme-blue-complement-bar;
 
     .mdc-tab__text-label {
       transition: none;
-      color: white;
+      // color: white;
     }
   }
 }

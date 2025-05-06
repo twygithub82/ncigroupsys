@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,30 +25,24 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
-import { BillingDS } from 'app/data-sources/billing';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { AdminReportMonthlyReport, daily_inventory_summary, report_customer_inventory, report_inventory_yard, ReportDS } from 'app/data-sources/reports';
-import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { AdminReportMonthlyReport, daily_inventory_summary, ReportDS } from 'app/data-sources/reports';
+import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { DailyDetailInventoryPdfComponent } from 'app/document-template/pdf/inventory/daily-detail-pdf/daily-detail-pdf.component';
-import { DailyOverviewSummaryPdfComponent } from 'app/document-template/pdf/inventory/daily-overview-summary-pdf/daily-overview-summary-pdf.component';
 
-import { MonthlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/details/monthly-details-pdf.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
+import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/overview/yearly-chart-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { reportPreviewWindowDimension } from 'environments/environment';
-import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
-import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/overview/yearly-chart-pdf.component';
-import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-residue-yearly',
@@ -79,6 +73,9 @@ import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin
     MatAutocompleteModule,
     MatDividerModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -153,16 +150,16 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    OVERVIEW_SUMMARY:'COMMON-FORM.OVERVIEW-SUMMARY',
-    DETAIL_SUMMARY:'COMMON-FORM.DETAIL-SUMMARY',
-    LOCATION:'COMMON-FORM.LOCATION',
-    YEAR:'COMMON-FORM.YEAR',
-    MONTH:'COMMON-FORM.MONTH',
-    MONTH_START:'COMMON-FORM.MONTH-START',
-    MONTH_END:'COMMON-FORM.MONTH-END',
+    OVERVIEW_SUMMARY: 'COMMON-FORM.OVERVIEW-SUMMARY',
+    DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
+    LOCATION: 'COMMON-FORM.LOCATION',
+    YEAR: 'COMMON-FORM.YEAR',
+    MONTH: 'COMMON-FORM.MONTH',
+    MONTH_START: 'COMMON-FORM.MONTH-START',
+    MONTH_END: 'COMMON-FORM.MONTH-END',
 
 
-    
+
   }
 
   invForm?: UntypedFormGroup;
@@ -178,8 +175,8 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
 
- 
-  reportDS:ReportDS;
+
+  reportDS: ReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -213,10 +210,10 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport =false;
-  yearList:string[]=[];
-  monthList:string[]=[];
-  repData:any;
+  isGeneratingReport = false;
+  yearList: string[] = [];
+  monthList: string[] = [];
+  repData: any;
 
   constructor(
     public httpClient: HttpClient,
@@ -234,9 +231,9 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
-    
+
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.reportDS=new ReportDS(this.apollo);
+    this.reportDS = new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -248,13 +245,13 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.initializeValueChanges();
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
-    
+
   }
 
- 
+
   initSearchForm() {
     var thisYear = new Date().getFullYear();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
       year: [`${thisYear}`],
@@ -296,15 +293,14 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   public loadData() {
     var thisYear = new Date().getFullYear();
-    var startYear = thisYear-5;
-    for(var i=startYear ; i<=thisYear;i++)
-    {
+    var startYear = thisYear - 5;
+    for (var i = startYear; i <= thisYear; i++) {
       this.yearList.push(i.toString());
     }
-    this.monthList=Array.from({ length: 12 }, (_, i) =>
+    this.monthList = Array.from({ length: 12 }, (_, i) =>
       new Date(2000, i, 1).toLocaleString("en-US", { month: "long" })
     );
-   
+
   }
   showNotification(
     colorName: string,
@@ -350,74 +346,74 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   }
 
   search(report_type: number) {
-    if(this.searchForm?.invalid) return;
-    this.isGeneratingReport=true;
+    if (this.searchForm?.invalid) return;
+    this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
     //let processType=this.processType;
 
-   
 
-      var customerName:string="";
-      where.report_type=this.processType;
-      if (this.searchForm?.get('customer_code')?.value) {
-        // if(!where.storing_order_tank) where.storing_order_tank={};
-        where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
-        customerName= `${this.searchForm!.get('customer_code')?.value.name}`;
-        cond_counter++;
-      }
-      
-      var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
-    // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if (this.searchForm?.get('month_start')?.value) {
-        var month=this.searchForm?.get('month_start')?.value;
-        const monthIndex = this.monthList.findIndex(m => month === m);
-        where.start_month = (monthIndex+1);
-      }
 
-      if (this.searchForm?.get('month_end')?.value) {
-        var month=this.searchForm?.get('month_end')?.value;
-        const monthIndex = this.monthList.findIndex(m => month === m);
-        where.end_month = (monthIndex+1);
-      }
-
-      if (this.searchForm?.get('year')?.value) {
-        where.year = Number(this.searchForm?.get('year')?.value); 
-      }
-     
-        cond_counter++;
-        //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    
-
-      this.lastSearchCriteria = where;
-      this.performSearch(report_type,date,customerName);
+    var customerName: string = "";
+    where.report_type = this.processType;
+    if (this.searchForm?.get('customer_code')?.value) {
+      // if(!where.storing_order_tank) where.storing_order_tank={};
+      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
+      customerName = `${this.searchForm!.get('customer_code')?.value.name}`;
+      cond_counter++;
     }
-   
-   
-  
 
-    performSearch(reportType?: number,date?:string,customerName?:string) {
+    var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
+    // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+    if (this.searchForm?.get('month_start')?.value) {
+      var month = this.searchForm?.get('month_start')?.value;
+      const monthIndex = this.monthList.findIndex(m => month === m);
+      where.start_month = (monthIndex + 1);
+    }
+
+    if (this.searchForm?.get('month_end')?.value) {
+      var month = this.searchForm?.get('month_end')?.value;
+      const monthIndex = this.monthList.findIndex(m => month === m);
+      where.end_month = (monthIndex + 1);
+    }
+
+    if (this.searchForm?.get('year')?.value) {
+      where.year = Number(this.searchForm?.get('year')?.value);
+    }
+
+    cond_counter++;
+    //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+
+
+    this.lastSearchCriteria = where;
+    this.performSearch(report_type, date, customerName);
+  }
+
+
+
+
+  performSearch(reportType?: number, date?: string, customerName?: string) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchAdminReportYearlyProcess(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessYearlyReport(this.repData,date!,reportType!,customerName!);
-     });
-    
+        this.ProcessYearlyReport(this.repData, date!, reportType!, customerName!);
+      });
+
   }
 
   onPageEvent(event: PageEvent) {
-   
+
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  
+
   displayTankPurpose(sot: StoringOrderTankItem) {
     return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
   }
@@ -473,14 +469,14 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   resetForm() {
     var thisYear = new Date().getFullYear().toString();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchForm?.patchValue({
       year: thisYear,
       month_start: thisMonth,
       month_end: thisMonth,
     });
     this.customerCodeControl.reset('');
-   
+
     this.noCond = false;
   }
 
@@ -491,7 +487,7 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     return numSelected === numRows;
   }
 
- 
+
   AllowToSave(): boolean {
     let retval: boolean = false;
     if (this.selection.selected.length > 0) {
@@ -503,37 +499,35 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     return retval;
   }
 
-  ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number)
-  { if (this.dailySumList.length === 0) return;
+  ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number) {
+    if (this.dailySumList.length === 0) return;
 
   }
 
-  ProcessYearlyReport(repData: AdminReportMonthlyReport, date: string,report_type:number,customerName:string) {
-    
-   
+  ProcessYearlyReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string) {
 
-    if(repData)
-    {
+
+
+    if (repData) {
       if (report_type == 1) {
-        this.onExportChart_r1(repData, date,customerName);
+        this.onExportChart_r1(repData, date, customerName);
       }
       else if (report_type == 2) {
-        this.onExportSummary(repData, date,customerName);
+        this.onExportSummary(repData, date, customerName);
       }
-      
-   }
-   else
-   {
-    this.sotList=[];
-    this.isGeneratingReport=false;
-   }
+
+    }
+    else {
+      this.sotList = [];
+      this.isGeneratingReport = false;
+    }
 
 
   }
 
-  
 
-  onExportSummary(repData: AdminReportMonthlyReport, date: string,customerName:string) {
+
+  onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -547,14 +541,14 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
     const dialogRef = this.dialog.open(YearlyReportDetailsPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
         date: date,
-        repType:this.processType,
-        customer:customerName
-      
+        repType: this.processType,
+        customer: customerName
+
       },
 
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
@@ -567,33 +561,32 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
-  onExportChart_r1(repData: AdminReportMonthlyReport, date: string,customerName:string)
-  {
-     //this.preventDefault(event);
-     let cut_off_dt = new Date();
+  onExportChart_r1(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
 
 
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
- 
-     const dialogRef = this.dialog.open(YearlyChartPdfComponent, {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(YearlyChartPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
         date: date,
-        repType:this.processType,
-        customer:customerName
-      
+        repType: this.processType,
+        customer: customerName
+
       },
 
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
@@ -606,42 +599,39 @@ export class ResidueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
-  AllowToSearch():boolean
-  {
-     var bAllow:boolean =true;
+  AllowToSearch(): boolean {
+    var bAllow: boolean = true;
 
-     
-     if (this.searchForm?.get('month_start')?.value) {
-      var month_start=this.searchForm?.get('month_start')?.value;
+
+    if (this.searchForm?.get('month_start')?.value) {
+      var month_start = this.searchForm?.get('month_start')?.value;
       const monthStartIndex = this.monthList.findIndex(m => month_start === m);
-      month_start = (monthStartIndex+1);
-    
+      month_start = (monthStartIndex + 1);
+
       if (this.searchForm?.get('month_end')?.value) {
 
-            var month_end=this.searchForm?.get('month_end')?.value;
-            const monthEndIndex = this.monthList.findIndex(m => month_end === m);
-            month_end = (monthEndIndex+1);
+        var month_end = this.searchForm?.get('month_end')?.value;
+        const monthEndIndex = this.monthList.findIndex(m => month_end === m);
+        month_end = (monthEndIndex + 1);
 
-          if (this.searchForm?.get('year')?.value) {
-          var year = Number(this.searchForm?.get('year')?.value); 
-          bAllow=!Utility.isSelectedDateGreaterThanToday(month_start,year);
-           if(bAllow)
-           {
-            bAllow=!Utility.isSelectedDateGreaterThanToday(month_end,year);
-             if(bAllow)
-             {
-               bAllow = month_start<=month_end;
-             }
-           }
+        if (this.searchForm?.get('year')?.value) {
+          var year = Number(this.searchForm?.get('year')?.value);
+          bAllow = !Utility.isSelectedDateGreaterThanToday(month_start, year);
+          if (bAllow) {
+            bAllow = !Utility.isSelectedDateGreaterThanToday(month_end, year);
+            if (bAllow) {
+              bAllow = month_start <= month_end;
+            }
           }
+        }
       }
     }
-   
-     return bAllow;
+
+    return bAllow;
 
   }
 

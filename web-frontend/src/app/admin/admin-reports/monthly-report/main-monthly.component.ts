@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -39,13 +39,14 @@ import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { CleanMonthlyAdminReportComponent } from './clean-monthly/clean-monthly.component';
 import { CustomerMonthlyAdminReportComponent } from './customer-monthly/customer-monthly.component';
 import { RepairMonthlyAdminReportComponent } from './repair-monthly/repair-monthly.component';
 import { ResidueMonthlyAdminReportComponent } from './residue-monthly/residue-monthly.component';
 import { SteamMonthlyAdminReportComponent } from './steam-monthly/steam-monthly.component';
-import { ModulePackageService } from 'app/services/module-package.service';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-main-monthly',
@@ -82,7 +83,9 @@ import { ModulePackageService } from 'app/services/module-package.service';
     RepairMonthlyAdminReportComponent,
     CleanMonthlyAdminReportComponent,
     CustomerMonthlyAdminReportComponent
-
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -848,26 +851,26 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
 
 
 
- @ViewChild('steamAdminReport') steamAdminReport!: SteamMonthlyAdminReportComponent;
- @ViewChild('residueAdminReport') residueAdminReport!: ResidueMonthlyAdminReportComponent;
- @ViewChild('repairAdminReport') repairAdminReport!: RepairMonthlyAdminReportComponent;
- @ViewChild('customerAdminReport') customerAdminReport!: CustomerMonthlyAdminReportComponent;
- @ViewChild('cleanAdminReport') cleanAdminReport!: CleanMonthlyAdminReportComponent;
-     
-   onTabSelected(event: MatTabChangeEvent): void {
-     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-     switch (event.index) {
-       case 0:
-         this.steamAdminReport?.onTabFocused(); break;
-       case 1:
-         this.residueAdminReport?.onTabFocused(); break;
-       case 2:
-          this.repairAdminReport?.onTabFocused(); break;
+  @ViewChild('steamAdminReport') steamAdminReport!: SteamMonthlyAdminReportComponent;
+  @ViewChild('residueAdminReport') residueAdminReport!: ResidueMonthlyAdminReportComponent;
+  @ViewChild('repairAdminReport') repairAdminReport!: RepairMonthlyAdminReportComponent;
+  @ViewChild('customerAdminReport') customerAdminReport!: CustomerMonthlyAdminReportComponent;
+  @ViewChild('cleanAdminReport') cleanAdminReport!: CleanMonthlyAdminReportComponent;
+
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+      case 0:
+        this.steamAdminReport?.onTabFocused(); break;
+      case 1:
+        this.residueAdminReport?.onTabFocused(); break;
+      case 2:
+        this.repairAdminReport?.onTabFocused(); break;
       case 3:
-          this.cleanAdminReport?.onTabFocused(); break;
+        this.cleanAdminReport?.onTabFocused(); break;
       case 4:
-          this.customerAdminReport?.onTabFocused(); break;
-      
-     }
-   }
+        this.customerAdminReport?.onTabFocused(); break;
+
+    }
+  }
 }

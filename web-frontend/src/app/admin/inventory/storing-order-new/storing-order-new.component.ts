@@ -15,7 +15,7 @@ import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
@@ -28,19 +28,20 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-storing-order-new',
@@ -74,6 +75,9 @@ import { ModulePackageService } from 'app/services/module-package.service';
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -229,16 +233,16 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   displayColumnChanged() {
     if (this.getPackages()) {
       this.displayedColumns = [
-      'tank_no',
-      'last_cargo',
-      'job_no',
-      'purpose_storage',
-      'purpose_cleaning',
-      'purpose_steam',
-      'purpose_repair_cv',
-      'status_cv',
-      'certificate_cv',
-      'actions'
+        'tank_no',
+        'last_cargo',
+        'job_no',
+        'purpose_storage',
+        'purpose_cleaning',
+        'purpose_steam',
+        'purpose_repair_cv',
+        'status_cv',
+        'certificate_cv',
+        'actions'
       ];
     } else {
       this.displayedColumns = [

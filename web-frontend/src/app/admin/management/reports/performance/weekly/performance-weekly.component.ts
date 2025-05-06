@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -50,9 +50,10 @@ import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-report
 import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/overview/yearly-chart-pdf.component';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
 import { ManagementReportDS, WeeklyPerformmanceItem } from 'app/data-sources/reports-management';
-import {InventoryMonthlySalesReportDetailsPdfComponent} from 'app/document-template/pdf/management-reports/monthly/inventory/inventory-sales-details-pdf.component';
+import { InventoryMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/monthly/inventory/inventory-sales-details-pdf.component';
 import { RevenueMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/monthly/revenue/revenue-sales-details-pdf.component';
 import { WeeklyPerformanceReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/performance/weekly/performance-weekly-details-pdf.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-performance-weekly',
@@ -83,6 +84,9 @@ import { WeeklyPerformanceReportDetailsPdfComponent } from 'app/document-templat
     MatAutocompleteModule,
     MatDividerModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -157,16 +161,16 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    OVERVIEW_SUMMARY:'COMMON-FORM.OVERVIEW-SUMMARY',
-    DETAIL_SUMMARY:'COMMON-FORM.DETAIL-SUMMARY',
-    LOCATION:'COMMON-FORM.LOCATION',
-    YEAR:'COMMON-FORM.YEAR',
-    MONTH:'COMMON-FORM.MONTH',
-    MONTH_START:'COMMON-FORM.MONTH-START',
-    MONTH_END:'COMMON-FORM.MONTH-END',
+    OVERVIEW_SUMMARY: 'COMMON-FORM.OVERVIEW-SUMMARY',
+    DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
+    LOCATION: 'COMMON-FORM.LOCATION',
+    YEAR: 'COMMON-FORM.YEAR',
+    MONTH: 'COMMON-FORM.MONTH',
+    MONTH_START: 'COMMON-FORM.MONTH-START',
+    MONTH_END: 'COMMON-FORM.MONTH-END',
 
 
-    
+
   }
 
   invForm?: UntypedFormGroup;
@@ -182,8 +186,8 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
 
- 
-  reportDS:ManagementReportDS;
+
+  reportDS: ManagementReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -217,11 +221,11 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport =false;
-  yearList:string[]=[];
-  monthList:string[]=[];
-  repData:any;
-  invTypes:string[]=["ALL","STEAMING","CLEANING","IN_OUT","REPAIR","LOLO","STORAGE","RESIDUE","PREINSPECTION"];
+  isGeneratingReport = false;
+  yearList: string[] = [];
+  monthList: string[] = [];
+  repData: any;
+  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -238,9 +242,9 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
-    
+
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.reportDS=new ManagementReportDS(this.apollo);
+    this.reportDS = new ManagementReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -252,18 +256,18 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
     this.initializeValueChanges();
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
-    
+
   }
 
- 
+
   initSearchForm() {
     var thisYear = new Date().getFullYear();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchForm = this.fb.group({
       customer_code: this.customerCodeControl,
       year: [`${thisYear}`],
       month: [`${thisMonth}`],
-      inventory_type:['ALL'],
+      inventory_type: ['ALL'],
     });
   }
 
@@ -307,18 +311,17 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
-      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All',"ALL");;
+      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', "ALL");;
     });
     var thisYear = new Date().getFullYear();
-    var startYear = thisYear-5;
-    for(var i=startYear ; i<=thisYear;i++)
-    {
+    var startYear = thisYear - 5;
+    for (var i = startYear; i <= thisYear; i++) {
       this.yearList.push(i.toString());
     }
-    this.monthList=Array.from({ length: 12 }, (_, i) =>
+    this.monthList = Array.from({ length: 12 }, (_, i) =>
       new Date(2000, i, 1).toLocaleString("en-US", { month: "long" })
     );
-   
+
   }
   showNotification(
     colorName: string,
@@ -363,119 +366,119 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
     this.search(3);
   }
 
- 
-   search(report_type: number) {
-    if(this.searchForm?.invalid) return;
-    this.isGeneratingReport=true;
+
+  search(report_type: number) {
+    if (this.searchForm?.invalid) return;
+    this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
     //let processType=this.processType;
 
-   
 
-      var customerName:string="";
-       var invTypes=this.invTypes.filter(v => v !== "ALL");
-      // where.revenue_type = invTypes;
-      // if (this.searchForm?.get('inventory_type')?.value != "ALL") {
-      //   where.revenue_type = this.searchForm?.get('inventory_type')?.value;
-      //   invTypes= [this.searchForm?.get('inventory_type')?.value];
-      // }
-      
-      if (this.searchForm?.get('customer_code')?.value) {
-        // if(!where.storing_order_tank) where.storing_order_tank={};
-        where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
-        customerName= `${this.searchForm!.get('customer_code')?.value.name}`;
-        cond_counter++;
-      }
-      
-      var date: string = `${this.searchForm?.get('month')?.value} ${this.searchForm?.get('year')?.value}`;
-    // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      if (this.searchForm?.get('month')?.value) {
-        var month=this.searchForm?.get('month')?.value;
-        const monthIndex = this.monthList.findIndex(m => month === m);
-        where.month = (monthIndex+1);
-      }
 
-      // if (this.searchForm?.get('inventory_type')?.value) {
-      //   where.inventory_type = this.searchForm?.get('inventory_type')?.value;
-      // }
+    var customerName: string = "";
+    var invTypes = this.invTypes.filter(v => v !== "ALL");
+    // where.revenue_type = invTypes;
+    // if (this.searchForm?.get('inventory_type')?.value != "ALL") {
+    //   where.revenue_type = this.searchForm?.get('inventory_type')?.value;
+    //   invTypes= [this.searchForm?.get('inventory_type')?.value];
+    // }
 
-      if (this.searchForm?.get('year')?.value) {
-        where.year = Number(this.searchForm?.get('year')?.value); 
-      }
-     
-        cond_counter++;
-        //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    
-
-      this.lastSearchCriteria = where;
-      this.performSearch(report_type,date,customerName,invTypes);
-     }
-    
-    
-   
- 
-     performSearch(reportType?: number,date?:string,customerName?:string,invTypes?:string[]) {
-
-      // if(queryType==1)
-      // {
-      this.subs.sink = this.reportDS.searchManagementReportPerformanceWeeklyReport(this.lastSearchCriteria)
-        .subscribe(data => {
-          this.repData = data;
-          this.ProcessReport(this.repData,date!,reportType!,customerName!,invTypes!);
-       });
-      
+    if (this.searchForm?.get('customer_code')?.value) {
+      // if(!where.storing_order_tank) where.storing_order_tank={};
+      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
+      customerName = `${this.searchForm!.get('customer_code')?.value.name}`;
+      cond_counter++;
     }
- 
-   onPageEvent(event: PageEvent) {
-    
-   }
- 
-   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-   }
- 
-   
-   displayTankPurpose(sot: StoringOrderTankItem) {
-     return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
-   }
- 
-   getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-   }
- 
-   getTankStatusDescription(codeValType: string | undefined): string | undefined {
-     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
-   }
- 
-   displayDate(input: number | undefined): string | undefined {
-     if (input === null) return "-";
-     return Utility.convertEpochToDateStr(input);
-   }
- 
-   translateLangText() {
-     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
-       this.translatedLangText = translations;
-     });
-   }
- 
-   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
-     untypedFormControl.setValidators([
-       AutocompleteSelectionValidator(validOptions)
-     ]);
-   }
- 
-   resetDialog(event: Event) {
-     event.preventDefault(); // Prevents the form submission
- 
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
-     this.resetForm();
+
+    var date: string = `${this.searchForm?.get('month')?.value} ${this.searchForm?.get('year')?.value}`;
+    // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+    if (this.searchForm?.get('month')?.value) {
+      var month = this.searchForm?.get('month')?.value;
+      const monthIndex = this.monthList.findIndex(m => month === m);
+      where.month = (monthIndex + 1);
+    }
+
+    // if (this.searchForm?.get('inventory_type')?.value) {
+    //   where.inventory_type = this.searchForm?.get('inventory_type')?.value;
+    // }
+
+    if (this.searchForm?.get('year')?.value) {
+      where.year = Number(this.searchForm?.get('year')?.value);
+    }
+
+    cond_counter++;
+    //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+
+
+    this.lastSearchCriteria = where;
+    this.performSearch(report_type, date, customerName, invTypes);
+  }
+
+
+
+
+  performSearch(reportType?: number, date?: string, customerName?: string, invTypes?: string[]) {
+
+    // if(queryType==1)
+    // {
+    this.subs.sink = this.reportDS.searchManagementReportPerformanceWeeklyReport(this.lastSearchCriteria)
+      .subscribe(data => {
+        this.repData = data;
+        this.ProcessReport(this.repData, date!, reportType!, customerName!, invTypes!);
+      });
+
+  }
+
+  onPageEvent(event: PageEvent) {
+
+  }
+
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+
+
+  displayTankPurpose(sot: StoringOrderTankItem) {
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
+  }
+
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
+  }
+
+  displayDate(input: number | undefined): string | undefined {
+    if (input === null) return "-";
+    return Utility.convertEpochToDateStr(input);
+  }
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
+  }
+
+  updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
+    untypedFormControl.setValidators([
+      AutocompleteSelectionValidator(validOptions)
+    ]);
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.resetForm();
     //  const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //    data: {
     //      headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
@@ -488,176 +491,170 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
     //      this.resetForm();
     //    }
     //  });
-   }
- 
-   resetForm() {
+  }
+
+  resetForm() {
     var thisYear = new Date().getFullYear().toString();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchForm?.patchValue({
       year: thisYear,
       month: thisMonth,
-      inventory_type:'ALL',
+      inventory_type: 'ALL',
     });
     this.customerCodeControl.reset('');
-   
-    this.noCond = false;
-   }
- 
-   isAllSelected() {
-     // this.calculateTotalCost();
-     const numSelected = this.selection.selected.length;
-     const numRows = this.stmEstList.length;
-     return numSelected === numRows;
-   }
- 
-  
-   AllowToSave(): boolean {
-     let retval: boolean = false;
-     if (this.selection.selected.length > 0) {
-       if (this.invoiceDateControl.valid && this.invoiceNoControl.valid) {
-         return true;
-       }
-     }
- 
-     return retval;
-   }
- 
-   ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number)
-   { if (this.dailySumList.length === 0) return;
- 
-   }
- 
-   ProcessReport(repData:WeeklyPerformmanceItem[] , date: string,report_type:number,customerName:string,invTypes:string[]) {
-    
-   
 
-    if(repData?.length>0)
-    {
+    this.noCond = false;
+  }
+
+  isAllSelected() {
+    // this.calculateTotalCost();
+    const numSelected = this.selection.selected.length;
+    const numRows = this.stmEstList.length;
+    return numSelected === numRows;
+  }
+
+
+  AllowToSave(): boolean {
+    let retval: boolean = false;
+    if (this.selection.selected.length > 0) {
+      if (this.invoiceDateControl.valid && this.invoiceNoControl.valid) {
+        return true;
+      }
+    }
+
+    return retval;
+  }
+
+  ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number) {
+    if (this.dailySumList.length === 0) return;
+
+  }
+
+  ProcessReport(repData: WeeklyPerformmanceItem[], date: string, report_type: number, customerName: string, invTypes: string[]) {
+
+
+
+    if (repData?.length > 0) {
       //if (report_type == 1) {
-        this.onExportChart_r1(repData, date,customerName,invTypes);
+      this.onExportChart_r1(repData, date, customerName, invTypes);
       //}
-   }
-   else
-   {
-    this.repData=[];
-    this.isGeneratingReport=false;
-   }
+    }
+    else {
+      this.repData = [];
+      this.isGeneratingReport = false;
+    }
 
 
   }
- 
-   
- 
-   onExportSummary(repData: AdminReportMonthlyReport, date: string,customerName:string) {
-     //this.preventDefault(event);
-     let cut_off_dt = new Date();
- 
- 
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
- 
-     const dialogRef = this.dialog.open(YearlyReportDetailsPdfComponent, {
-       width: reportPreviewWindowDimension.portrait_width_rate,
-       maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-      maxHeight: reportPreviewWindowDimension.report_maxHeight,
-       data: {
-         repData: repData,
-         date: date,
-         repType:this.processType,
-         customer:customerName
-       
-       },
- 
-       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-       direction: tempDirection
-     });
- 
-     dialogRef.updatePosition({
-       top: '-9999px',  // Move far above the screen
-       left: '-9999px'  // Move far to the left of the screen
-     });
- 
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-       this.isGeneratingReport=false;
-     });
-   }
- 
-   onExportChart_r1(repData: WeeklyPerformmanceItem[], date: string,customerName:string, invTypes:string[])
-    {
-       //this.preventDefault(event);
-       let cut_off_dt = new Date();
-  
-  
-       let tempDirection: Direction;
-       if (localStorage.getItem('isRtl') === 'true') {
-         tempDirection = 'rtl';
-       } else {
-         tempDirection = 'ltr';
-       }
-   
-       const dialogRef = this.dialog.open(WeeklyPerformanceReportDetailsPdfComponent, {
-        width: reportPreviewWindowDimension.portrait_width_rate,
-        maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-       maxHeight: reportPreviewWindowDimension.report_maxHeight,
-        data: {
-          repData: repData,
-          date: date,
-          repType:this.processType,
-          customer:customerName,
-          inventory_type:invTypes
-        },
-  
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-  
-      dialogRef.updatePosition({
-        top: '-9999px',  // Move far above the screen
-        left: '-9999px'  // Move far to the left of the screen
-      });
-  
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport=false;
-      });
+
+
+
+  onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
- 
-   AllowToSearch():boolean
-   {
-      var bAllow:boolean =true;
- 
-      
-      if (this.searchForm?.get('month_start')?.value) {
-       var month_start=this.searchForm?.get('month_start')?.value;
-       const monthStartIndex = this.monthList.findIndex(m => month_start === m);
-       month_start = (monthStartIndex+1);
-     
-       if (this.searchForm?.get('month_end')?.value) {
- 
-             var month_end=this.searchForm?.get('month_end')?.value;
-             const monthEndIndex = this.monthList.findIndex(m => month_end === m);
-             month_end = (monthEndIndex+1);
- 
-           if (this.searchForm?.get('year')?.value) {
-           var year = Number(this.searchForm?.get('year')?.value); 
-           bAllow=!Utility.isSelectedDateGreaterThanToday(month_start,year);
-            if(bAllow)
-            {
-             bAllow=!Utility.isSelectedDateGreaterThanToday(month_end,year);
-              if(bAllow)
-              {
-                bAllow = month_start<=month_end;
-              }
+
+    const dialogRef = this.dialog.open(YearlyReportDetailsPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  onExportChart_r1(repData: WeeklyPerformmanceItem[], date: string, customerName: string, invTypes: string[]) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(WeeklyPerformanceReportDetailsPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName,
+        inventory_type: invTypes
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  AllowToSearch(): boolean {
+    var bAllow: boolean = true;
+
+
+    if (this.searchForm?.get('month_start')?.value) {
+      var month_start = this.searchForm?.get('month_start')?.value;
+      const monthStartIndex = this.monthList.findIndex(m => month_start === m);
+      month_start = (monthStartIndex + 1);
+
+      if (this.searchForm?.get('month_end')?.value) {
+
+        var month_end = this.searchForm?.get('month_end')?.value;
+        const monthEndIndex = this.monthList.findIndex(m => month_end === m);
+        month_end = (monthEndIndex + 1);
+
+        if (this.searchForm?.get('year')?.value) {
+          var year = Number(this.searchForm?.get('year')?.value);
+          bAllow = !Utility.isSelectedDateGreaterThanToday(month_start, year);
+          if (bAllow) {
+            bAllow = !Utility.isSelectedDateGreaterThanToday(month_end, year);
+            if (bAllow) {
+              bAllow = month_start <= month_end;
             }
-           }
-       }
-     }
-    
-      return bAllow;
- 
-   }
+          }
+        }
+      }
+    }
+
+    return bAllow;
+
+  }
 
 }

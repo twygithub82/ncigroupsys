@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -41,10 +41,10 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 //import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { PackageBufferComponent } from './buffer/package-buffer.component';
 import { PackageCleaningComponent } from './cleaning/package-cleaning.component';
 import { PackageResidueComponent } from './residue/package-residue.component';
-import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-package-main-clean',
@@ -62,7 +62,6 @@ import { ModulePackageService } from 'app/services/module-package.service';
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatPaginatorModule,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,

@@ -18,7 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
@@ -44,7 +44,9 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TankInfoDS } from 'app/data-sources/tank-info';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { testTypeMapping } from 'environments/environment';
@@ -52,10 +54,8 @@ import * as moment from 'moment';
 import { Moment } from 'moment';
 import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-in-gate',
@@ -75,7 +75,6 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatPaginatorModule,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -2264,16 +2263,16 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onAlphaOnly(event: Event): void {
-    Utility.onAlphaOnly(event, this.surveyForm?.get("foot_valve_oth")! || 
-                               this.surveyForm?.get("btm_dis_valve_oth")! || 
-                               this.surveyForm?.get("btm_dis_valve_spec_oth") || 
-                               this.surveyForm?.get("top_dis_valve_oth") || 
-                               this.surveyForm?.get("top_dis_valve_spec_oth") || 
-                               this.surveyForm?.get("airline_valve_oth") || 
-                               this.surveyForm?.get("airline_valve_conn_oth") ||
-                               this.surveyForm?.get("airline_valve_conn_spec_oth") ||
-                               this.surveyForm?.get("manlid_cover_oth")||
-                               this.surveyForm?.get("airline_valve_conn_oth")||
-                               this.surveyForm?.get("airline_valve_conn_oth"));
+    Utility.onAlphaOnly(event, this.surveyForm?.get("foot_valve_oth")! ||
+      this.surveyForm?.get("btm_dis_valve_oth")! ||
+      this.surveyForm?.get("btm_dis_valve_spec_oth") ||
+      this.surveyForm?.get("top_dis_valve_oth") ||
+      this.surveyForm?.get("top_dis_valve_spec_oth") ||
+      this.surveyForm?.get("airline_valve_oth") ||
+      this.surveyForm?.get("airline_valve_conn_oth") ||
+      this.surveyForm?.get("airline_valve_conn_spec_oth") ||
+      this.surveyForm?.get("manlid_cover_oth") ||
+      this.surveyForm?.get("airline_valve_conn_oth") ||
+      this.surveyForm?.get("airline_valve_conn_oth"));
   }
 }

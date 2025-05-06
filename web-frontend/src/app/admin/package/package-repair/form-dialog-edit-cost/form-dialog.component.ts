@@ -1,3 +1,4 @@
+import { Direction } from '@angular/cdk/bidi';
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
@@ -10,7 +11,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@ang
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,23 +19,21 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TankItem } from 'app/data-sources/tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
-import { Direction } from '@angular/cdk/bidi';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
-import { TankItem } from 'app/data-sources/tank';
-import { TariffDepotItem } from 'app/data-sources/tariff-depot';
-import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ConfirmDialogComponent } from './confirm/confirm.component';
 
 export interface DialogData {
@@ -75,7 +74,6 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
     PreventNonNumericDirective
   ],
 })

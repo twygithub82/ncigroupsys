@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -34,17 +34,18 @@ import { Utility } from 'app/utilities/utility';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { SteamYearlyAdminReportComponent } from './steam-yearly/steam-yearly.component';
-import { ResidueYearlyAdminReportComponent } from './residue-yearly/residue-yearly.component';
-import { RepairYearlyAdminReportComponent } from './repair-yearly/repair-yearly.component';
-import { CleanYearlyAdminReportComponent } from './clean-yearly/clean-yearly.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { CleanYearlyAdminReportComponent } from './clean-yearly/clean-yearly.component';
+import { RepairYearlyAdminReportComponent } from './repair-yearly/repair-yearly.component';
+import { ResidueYearlyAdminReportComponent } from './residue-yearly/residue-yearly.component';
+import { SteamYearlyAdminReportComponent } from './steam-yearly/steam-yearly.component';
 
 @Component({
   selector: 'app-main-yearly',
@@ -80,7 +81,9 @@ import { ModulePackageService } from 'app/services/module-package.service';
     ResidueYearlyAdminReportComponent,
     RepairYearlyAdminReportComponent,
     CleanYearlyAdminReportComponent
-    
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -120,7 +123,7 @@ export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements 
 
   translatedLangText: any = {};
   langText = {
-   
+
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
@@ -133,10 +136,10 @@ export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements 
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     CLEANING: "COMMON-FORM.CLEANING",
     CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
-    STEAM_REPORT:'COMMON-FORM.STEAM-REPORT',
-    RESIDUE_REPORT:'COMMON-FORM.RESIDUE-REPORT',
-    REPAIR_REPORT:'COMMON-FORM.REPAIR-REPORT',
-    CLEAN_REPORT:'COMMON-FORM.CLEAN-REPORT',
+    STEAM_REPORT: 'COMMON-FORM.STEAM-REPORT',
+    RESIDUE_REPORT: 'COMMON-FORM.RESIDUE-REPORT',
+    REPAIR_REPORT: 'COMMON-FORM.REPAIR-REPORT',
+    CLEAN_REPORT: 'COMMON-FORM.CLEAN-REPORT',
 
   }
 
@@ -837,24 +840,24 @@ export class MainYearlyComponent extends UnsubscribeOnDestroyAdapter implements 
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-    @ViewChild('cleanYearlyAdminRep') cleanYearlyAdminRep!: CleanYearlyAdminReportComponent;
-     @ViewChild('steamYearlyAdminRep') steamYearlyAdminRep!: SteamYearlyAdminReportComponent;
-     @ViewChild('repairYearlyAdminRep') repairYearlyAdminRep!: RepairYearlyAdminReportComponent;
-     @ViewChild('residueYearlyAdminRep') residueYearlyAdminRep!: ResidueYearlyAdminReportComponent;
-     
-   onTabSelected(event: MatTabChangeEvent): void {
-     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-     switch (event.index) {
-      
+  @ViewChild('cleanYearlyAdminRep') cleanYearlyAdminRep!: CleanYearlyAdminReportComponent;
+  @ViewChild('steamYearlyAdminRep') steamYearlyAdminRep!: SteamYearlyAdminReportComponent;
+  @ViewChild('repairYearlyAdminRep') repairYearlyAdminRep!: RepairYearlyAdminReportComponent;
+  @ViewChild('residueYearlyAdminRep') residueYearlyAdminRep!: ResidueYearlyAdminReportComponent;
+
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+
       case 0:
-         this.steamYearlyAdminRep?.onTabFocused(); break;
+        this.steamYearlyAdminRep?.onTabFocused(); break;
       case 1:
-          this.residueYearlyAdminRep?.onTabFocused(); break;
+        this.residueYearlyAdminRep?.onTabFocused(); break;
       case 2:
-           this.repairYearlyAdminRep?.onTabFocused(); break;
-      
+        this.repairYearlyAdminRep?.onTabFocused(); break;
+
       case 3:
-            this.cleanYearlyAdminRep?.onTabFocused(); break;
-     }
-   }
+        this.cleanYearlyAdminRep?.onTabFocused(); break;
+    }
+  }
 }

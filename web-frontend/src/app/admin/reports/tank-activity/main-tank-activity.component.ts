@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -30,7 +30,6 @@ import { CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { Utility } from 'app/utilities/utility';
-//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -39,17 +38,10 @@ import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-//import { FormDialogComponent } from './form-dialog/form-dialog.component';
-// import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.component";
-// import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
-//import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { TankActivitiyCustomerReportComponent } from './customer/customer-report.component';
 import { TankActivitiyYardReportComponent } from './yard/yard-report.component';
-import { ModulePackageService } from 'app/services/module-package.service';
-// import { CleanBillingComponent } from './clean/clean-billing.component';
-// import { ResidueBillingComponent } from './residue/residue-billing.component';
-// import { SteamBillingComponent } from './steam/steam-billing.component';
 @Component({
   selector: 'app-main-tank-activity',
   standalone: true,
@@ -66,7 +58,6 @@ import { ModulePackageService } from 'app/services/module-package.service';
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatPaginatorModule,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -82,7 +73,6 @@ import { ModulePackageService } from 'app/services/module-package.service';
     MatTabsModule,
     TankActivitiyCustomerReportComponent,
     TankActivitiyYardReportComponent
-
   ]
 })
 export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

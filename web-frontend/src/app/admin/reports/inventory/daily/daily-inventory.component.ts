@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,7 +25,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS } from 'app/data-sources/billing';
@@ -41,11 +40,12 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { DailyDetailInventoryPdfComponent } from 'app/document-template/pdf/inventory/daily-detail-pdf/daily-detail-pdf.component';
 import { DailyOverviewSummaryPdfComponent } from 'app/document-template/pdf/inventory/daily-overview-summary-pdf/daily-overview-summary-pdf.component';
 
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { DailyDetailSummaryPdfComponent } from 'app/document-template/pdf/inventory/daily-details-summary-pdf/daily-summary-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { reportPreviewWindowDimension } from 'environments/environment';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-daily-inventory',
@@ -76,6 +76,9 @@ import { reportPreviewWindowDimension } from 'environments/environment';
     MatAutocompleteModule,
     MatDividerModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -150,11 +153,11 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    OVERVIEW_SUMMARY:'COMMON-FORM.OVERVIEW-SUMMARY',
-    DETAIL_SUMMARY:'COMMON-FORM.DETAIL-SUMMARY',
-    LOCATION:'COMMON-FORM.LOCATION'
+    OVERVIEW_SUMMARY: 'COMMON-FORM.OVERVIEW-SUMMARY',
+    DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
+    LOCATION: 'COMMON-FORM.LOCATION'
 
-    
+
   }
 
   invForm?: UntypedFormGroup;
@@ -173,7 +176,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   stmDS: SteamDS;
   plDS: PackageLabourDS;
   billDS: BillingDS;
-  reportDS:ReportDS;
+  reportDS: ReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -207,8 +210,8 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport =false;
-  invTypes:string[]=["","MASTER_IN","MASTER_OUT"]
+  isGeneratingReport = false;
+  invTypes: string[] = ["", "MASTER_IN", "MASTER_OUT"]
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -230,7 +233,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.reportDS=new ReportDS(this.apollo);
+    this.reportDS = new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -259,7 +262,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       tank_no: [''],
       inv_dt_start: [''],
       inv_dt_end: [''],
-      inv_dt:[''],
+      inv_dt: [''],
       inv_type: ['']
 
     });
@@ -324,7 +327,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
       this.inventoryTypeCvList = addDefaultSelectOption(data, 'All');;
     });
-   
+
   }
   showNotification(
     colorName: string,
@@ -370,34 +373,31 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
   }
 
   search(report_type: number) {
-    if(this.searchForm?.invalid) return;
-    this.isGeneratingReport=true;
+    if (this.searchForm?.invalid) return;
+    this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
     this.selectedEstimateItem = undefined;
     this.selectedEstimateLabourCost = 0;
     this.stmEstList = [];
-    this.sotList=[];
-    this.dailySumList=[];
+    this.sotList = [];
+    this.dailySumList = [];
     this.selection.clear();
 
     var invType: string = this.inventoryTypeCvList.find(i => i.code_val == (this.searchForm!.get('inv_type')?.value))?.description || '';
-    var tnxType:string="Master In";
-    
-    if(this.searchForm!.get('inv_type')?.value=='')
-    {
-      queryType=3;
-      tnxType="All";
+    var tnxType: string = "Master In";
+
+    if (this.searchForm!.get('inv_type')?.value == '') {
+      queryType = 3;
+      tnxType = "All";
     }
-    else if (this.searchForm!.get('inv_type')?.value=='MASTER_OUT')
-    {
-      queryType=2;
-      tnxType="Master Out";
+    else if (this.searchForm!.get('inv_type')?.value == 'MASTER_OUT') {
+      queryType = 2;
+      tnxType = "Master Out";
     }
 
-    if ([3].includes(report_type)) 
-    {
+    if ([3].includes(report_type)) {
       if (this.searchForm!.get('customer_code')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
         where.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
@@ -405,36 +405,36 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       }
 
       var date: string = `${Utility.convertDateToStr(new Date())}`;
-    // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+      // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
       if (this.searchForm!.get('inv_dt')?.value) {
         // date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt_end')?.value))}`;
         // var start_dt:any=Utility.convertDate(this.searchForm!.value['inv_dt_start'])||Utility.convertDate(new Date());
         // var end_dt:any=Utility.convertDate(this.searchForm!.value['inv_dt_end'], true)||Utility.convertDate(new Date(),true);
 
         date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt')?.value))}`;
-        var startdt=new Date( this.searchForm!.value['inv_dt']);
-      var enddt=new Date( this.searchForm!.value['inv_dt']);
-        var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date());
-        var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
-        var cond: any = { some: { eir_dt: { gte:start_dt, lte: end_dt } } };
-        
-        if (queryType == 1 || queryType==3) {
-          if(!where.or)where.or=[];
+        var startdt = new Date(this.searchForm!.value['inv_dt']);
+        var enddt = new Date(this.searchForm!.value['inv_dt']);
+        var start_dt: any = Utility.convertDate(startdt) || Utility.convertDate(new Date());
+        var end_dt: any = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
+        var cond: any = { some: { eir_dt: { gte: start_dt, lte: end_dt } } };
+
+        if (queryType == 1 || queryType == 3) {
+          if (!where.or) where.or = [];
           //where.in_gate = {};
-          where.or.push({and:[{in_gate:cond},{in_gate:{any:true}}]}); //in Gate
-          
+          where.or.push({ and: [{ in_gate: cond }, { in_gate: { any: true } }] }); //in Gate
+
         }
-        
-        if(queryType==2 || queryType==3){
-          if(!where.or)where.or=[];
+
+        if (queryType == 2 || queryType == 3) {
+          if (!where.or) where.or = [];
           //where.in_gate = {};
-          where.or.push({and:[{out_gate:cond},{out_gate:{any:true}}]}); //out Gate
-        
+          where.or.push({ and: [{ out_gate: cond }, { out_gate: { any: true } }] }); //out Gate
+
         }
-      // if(!where.or)where.or=[];
-      // where.or.push({and:[{create_dt:{lte:end_dt}},{or:[{in_gate:{some:{eir_dt:{gte:end_dt}}}},{in_gate:{any:false}}]}]}); //pending
-      //where.or.push({and:[{create_dt:{lte:end_dt}}]}); //pending and opening balance
-      //where.or.push({and:[{in_gate:{some:{eir_dt:{lte:end_dt}}}},{or:[{out_gate:{some:{eir_dt:{lte:end_dt}}}},{out_gate:{any:false}}]}]}); //In Yard
+        // if(!where.or)where.or=[];
+        // where.or.push({and:[{create_dt:{lte:end_dt}},{or:[{in_gate:{some:{eir_dt:{gte:end_dt}}}},{in_gate:{any:false}}]}]}); //pending
+        //where.or.push({and:[{create_dt:{lte:end_dt}}]}); //pending and opening balance
+        //where.or.push({and:[{in_gate:{some:{eir_dt:{lte:end_dt}}}},{or:[{out_gate:{some:{eir_dt:{lte:end_dt}}}},{out_gate:{any:false}}]}]}); //In Yard
 
 
         cond_counter++;
@@ -447,39 +447,35 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       // }
       this.noCond = (cond_counter === 0);
       if (this.noCond) {
-        this.isGeneratingReport=false;
+        this.isGeneratingReport = false;
         return;
       }
 
       this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-      this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date,tnxType);
+      this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date, tnxType);
     }
-    else
-    {
-      this.performSearchSummaryDetail(queryType,invType,report_type);
+    else {
+      this.performSearchSummaryDetail(queryType, invType, report_type);
 
     }
   }
 
 
-  performSearchSummaryDetail(queryType?: number, invType?: string,report_type?:number,tnxType?:string)
-  {
+  performSearchSummaryDetail(queryType?: number, invType?: string, report_type?: number, tnxType?: string) {
 
     var cond_counter = 0;
     var date: string = `${Utility.convertDateToStr(new Date())}`;
-    var dailyInvReq:any={};
-    dailyInvReq.inventory_type='in';
-    if(queryType==2)
-    {
-      dailyInvReq.inventory_type='out';
+    var dailyInvReq: any = {};
+    dailyInvReq.inventory_type = 'in';
+    if (queryType == 2) {
+      dailyInvReq.inventory_type = 'out';
     }
-    else if(queryType==3)
-    {
-      dailyInvReq.inventory_type='all';
+    else if (queryType == 3) {
+      dailyInvReq.inventory_type = 'all';
     }
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      dailyInvReq.customer_code = this.searchForm!.get('customer_code')?.value.code ;
+      dailyInvReq.customer_code = this.searchForm!.get('customer_code')?.value.code;
       cond_counter++;
     }
 
@@ -489,49 +485,43 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       // var end_dt:any=Utility.convertDate(this.searchForm!.value['inv_dt_end'], true)||Utility.convertDate(new Date(),true);
 
       date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('inv_dt')?.value))}`;
-      var startdt=new Date( this.searchForm!.value['inv_dt']);
-    var enddt=new Date( this.searchForm!.value['inv_dt']);
-      dailyInvReq.start_date=Utility.convertDate(startdt)||Utility.convertDate(new Date());
-      dailyInvReq.end_date=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
+      var startdt = new Date(this.searchForm!.value['inv_dt']);
+      var enddt = new Date(this.searchForm!.value['inv_dt']);
+      dailyInvReq.start_date = Utility.convertDate(startdt) || Utility.convertDate(new Date());
+      dailyInvReq.end_date = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
       cond_counter++;
     }
-    else
-    {
-      var startdt=new Date(2000,1,1,0,0,0,0);
-      var enddt=new Date();
-        dailyInvReq.start_date=Utility.convertDate(startdt)||Utility.convertDate(new Date());
-        dailyInvReq.end_date=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
-       // cond_counter++;
+    else {
+      var startdt = new Date(2000, 1, 1, 0, 0, 0, 0);
+      var enddt = new Date();
+      dailyInvReq.start_date = Utility.convertDate(startdt) || Utility.convertDate(new Date());
+      dailyInvReq.end_date = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
+      // cond_counter++;
     }
 
     this.noCond = (cond_counter === 0);
-    if (this.noCond) 
-      {
-        this.isGeneratingReport=false;
-        return;
-      }
+    if (this.noCond) {
+      this.isGeneratingReport = false;
+      return;
+    }
     this.subs.sink = this.reportDS.searchDailyInventorySummaryReport(dailyInvReq)
-    .subscribe(data => {
-      if(data.length>0)
-      {
-        this.dailySumList = data;
-        if(report_type==1)
-        {
-        this.onExportChart_r1(this.dailySumList, invType!, date!, queryType!);
+      .subscribe(data => {
+        if (data.length > 0) {
+          this.dailySumList = data;
+          if (report_type == 1) {
+            this.onExportChart_r1(this.dailySumList, invType!, date!, queryType!);
+          }
+          else {
+            this.onExportSummary(this.dailySumList, invType!, date!, queryType!, tnxType!);
+          }
         }
-        else
-        {
-           this.onExportSummary(this.dailySumList, invType!, date!, queryType!,tnxType!);
+        else {
+          this.isGeneratingReport = false;
         }
-      }
-      else
-      {
-        this.isGeneratingReport=false;
-      }
-   });
+      });
 
   }
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number, invType?: string, date?: string,tnxType?:string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number, invType?: string, date?: string, tnxType?: string) {
 
     // if(queryType==1)
     // {
@@ -542,8 +532,8 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.ProcessReportCustomerInventory(invType!, date!, report_type!, queryType!,tnxType!);
-     });
+        this.ProcessReportCustomerInventory(invType!, date!, report_type!, queryType!, tnxType!);
+      });
     this.pageSize = pageSize;
     this.pageIndex = pageIndex;
   }
@@ -680,7 +670,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     return numSelected === numRows;
   }
 
- 
+
   AllowToSave(): boolean {
     let retval: boolean = false;
     if (this.selection.selected.length > 0) {
@@ -692,37 +682,35 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     return retval;
   }
 
-  ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number)
-  { if (this.dailySumList.length === 0) return;
+  ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number) {
+    if (this.dailySumList.length === 0) return;
 
   }
 
-  ProcessReportCustomerInventory(invType: string, date: string, report_type: number, queryType: number,tnxType:string) {
-    if (this.sotList.length === 0) 
-      {
-        this.isGeneratingReport=false;
-        return;
-      }
+  ProcessReportCustomerInventory(invType: string, date: string, report_type: number, queryType: number, tnxType: string) {
+    if (this.sotList.length === 0) {
+      this.isGeneratingReport = false;
+      return;
+    }
 
     var report_customer_tank_inventory: report_customer_inventory[] = [];
-    var report_yard_inventory:report_inventory_yard[]=[];
+    var report_yard_inventory: report_inventory_yard[] = [];
 
-    var startdt=new Date( this.searchForm!.value['inv_dt']);
-    var enddt=new Date( this.searchForm!.value['inv_dt']);
-    if(!this.searchForm!.value['inv_dt'])
-    {
-      startdt=new Date(2020,1,1,0,0,0);
-      enddt=new Date();
+    var startdt = new Date(this.searchForm!.value['inv_dt']);
+    var enddt = new Date(this.searchForm!.value['inv_dt']);
+    if (!this.searchForm!.value['inv_dt']) {
+      startdt = new Date(2020, 1, 1, 0, 0, 0);
+      enddt = new Date();
     }
-     var start_dt:any=Utility.convertDate(startdt)||Utility.convertDate(new Date(2000,1,1,0,0,0,0));
-    var end_dt:any=Utility.convertDate(enddt, true)||Utility.convertDate(new Date(),true);
-    var openBal:number =0;
+    var start_dt: any = Utility.convertDate(startdt) || Utility.convertDate(new Date(2000, 1, 1, 0, 0, 0, 0));
+    var end_dt: any = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
+    var openBal: number = 0;
     this.sotList.map(s => {
 
       if (s) {
-        s.repair=s.repair?.filter(r=>!["NO_ACTION","CANCEL"].includes(r.status_cv!));
+        s.repair = s.repair?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!));
         var repCust: report_customer_inventory = report_customer_tank_inventory.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_inventory();
-       
+
         //var repYard: report_inventory_yard= report_yard_inventory.find(y=>y.code===s.storing_order?.)
         let newCust = false;
         if (!repCust.code) {
@@ -730,93 +718,88 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
           repCust.customer = s.storing_order?.customer_company?.name;
           newCust = true;
         }
-        if(["Master In","All"].includes(tnxType))
-        {
-          if(s.in_gate?.[0]?.eir_dt!>=start_dt && s.in_gate?.[0]?.eir_dt!<=end_dt)// in gate
+        if (["Master In", "All"].includes(tnxType)) {
+          if (s.in_gate?.[0]?.eir_dt! >= start_dt && s.in_gate?.[0]?.eir_dt! <= end_dt)// in gate
           {
-            repCust.tank_no_in_gate!+=1;
-            repCust.tank_no_total!+=1;
-            if(!repCust.in_gate_storing_order_tank)repCust.in_gate_storing_order_tank=[];
+            repCust.tank_no_in_gate! += 1;
+            repCust.tank_no_total! += 1;
+            if (!repCust.in_gate_storing_order_tank) repCust.in_gate_storing_order_tank = [];
             repCust.in_gate_storing_order_tank?.push(s);
           }
         }
-      
-        if(["Master Out","All"].includes(tnxType))
-        {
-        if(s.out_gate?.[0]?.eir_dt!>=start_dt && s.out_gate?.[0]?.eir_dt!<=end_dt) // out gate
+
+        if (["Master Out", "All"].includes(tnxType)) {
+          if (s.out_gate?.[0]?.eir_dt! >= start_dt && s.out_gate?.[0]?.eir_dt! <= end_dt) // out gate
           {
-            repCust.tank_no_out_gate!+=1;
-            repCust.tank_no_total!+=1;
-            if(!repCust.released_storing_order_tank)repCust.released_storing_order_tank=[];
+            repCust.tank_no_out_gate! += 1;
+            repCust.tank_no_total! += 1;
+            if (!repCust.released_storing_order_tank) repCust.released_storing_order_tank = [];
             repCust.released_storing_order_tank?.push(s);
           }
         }
-        
-       if(["Master In","All"].includes(tnxType))
-        {
-          if(s.in_gate?.[0]?.eir_dt!>=start_dt && (s.out_gate?.length==0||s.out_gate?.[0]?.eir_dt!>end_dt)) //in yard
+
+        if (["Master In", "All"].includes(tnxType)) {
+          if (s.in_gate?.[0]?.eir_dt! >= start_dt && (s.out_gate?.length == 0 || s.out_gate?.[0]?.eir_dt! > end_dt)) //in yard
           {
-            repCust.tank_no_in_yard!+=1;
-          // repCust.tank_no_total!+=1;
-            if(!repCust.in_yard_storing_order_tank)repCust.in_yard_storing_order_tank=[];
+            repCust.tank_no_in_yard! += 1;
+            // repCust.tank_no_total!+=1;
+            if (!repCust.in_yard_storing_order_tank) repCust.in_yard_storing_order_tank = [];
             repCust.in_yard_storing_order_tank?.push(s);
           }
         }
 
-        if( s.create_dt!<start_dt && (s.in_gate?.length==0||s.in_gate?.[0]?.eir_dt!>end_dt)) //pending
+        if (s.create_dt! < start_dt && (s.in_gate?.length == 0 || s.in_gate?.[0]?.eir_dt! > end_dt)) //pending
         {
-          repCust.tank_no_pending!+=1;
-         // repCust.tank_no_total!+=1;
+          repCust.tank_no_pending! += 1;
+          // repCust.tank_no_total!+=1;
         }
 
 
-        if(s.create_dt!<start_dt && s.in_gate?.[0]?.eir_dt!<start_dt && (s.out_gate?.length==0 || s.out_gate?.[0]?.eir_dt!>end_dt)) //opening balance
+        if (s.create_dt! < start_dt && s.in_gate?.[0]?.eir_dt! < start_dt && (s.out_gate?.length == 0 || s.out_gate?.[0]?.eir_dt! > end_dt)) //opening balance
         {
           openBal++;
 
         }
 
-        if(s.release_order_sot?.[0]?.release_order?.release_dt!>=start_dt &&
-          s.release_order_sot?.[0]?.release_order?.release_dt!<=end_dt) //with RO
-          {
-            repCust.tank_no_ro!+=1;
-            //repCust.tank_no_total!+=1;
-          }
+        if (s.release_order_sot?.[0]?.release_order?.release_dt! >= start_dt &&
+          s.release_order_sot?.[0]?.release_order?.release_dt! <= end_dt) //with RO
+        {
+          repCust.tank_no_ro! += 1;
+          //repCust.tank_no_total!+=1;
+        }
 
         // repCust.number_tank ??= 0;
         // repCust.number_tank += 1;
         // if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
-       //  repCust.storing_order_tank?.push(s);
-         if (newCust) report_customer_tank_inventory.push(repCust);
+        //  repCust.storing_order_tank?.push(s);
+        if (newCust) report_customer_tank_inventory.push(repCust);
 
 
 
       }
     });
-    report_customer_tank_inventory =report_customer_tank_inventory.filter(r=>r.tank_no_total!>0);
+    report_customer_tank_inventory = report_customer_tank_inventory.filter(r => r.tank_no_total! > 0);
 
-    if(report_customer_tank_inventory.length>0)
-    {
+    if (report_customer_tank_inventory.length > 0) {
       if (report_type == 1) {
         this.onExportChart(report_customer_tank_inventory, invType, date, queryType);
       }
       else if (report_type == 2) {
-        this.onExportSummary(report_customer_tank_inventory, invType, date, queryType,tnxType);
+        this.onExportSummary(report_customer_tank_inventory, invType, date, queryType, tnxType);
       }
-      else if (report_type ==3) {
-        this.onExportDetail(report_customer_tank_inventory, invType, date, queryType,tnxType);
+      else if (report_type == 3) {
+        this.onExportDetail(report_customer_tank_inventory, invType, date, queryType, tnxType);
       }
-   }
-   else
-   {
-    this.sotList=[];
-    this.isGeneratingReport=false;
-   }
+    }
+    else {
+      this.sotList = [];
+      this.isGeneratingReport = false;
+    }
 
 
   }
 
-  onExportDetail(repCustomerInv: report_customer_inventory[], invType: string, date: string, queryType: number,tnxType:string) {
+  onExportDetail(repCustomerInv: report_customer_inventory[], invType: string, date: string, queryType: number, tnxType: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -830,23 +813,23 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
 
     const dialogRef = this.dialog.open(DailyDetailInventoryPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_inventory: repCustomerInv,
         date: date,
         queryType: queryType,
-        tnxType:tnxType
+        tnxType: tnxType
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
-  onExportSummary(repDailyDetailSummary: daily_inventory_summary[], invType: string, date: string, queryType: number,tnxType:string) {
+  onExportSummary(repDailyDetailSummary: daily_inventory_summary[], invType: string, date: string, queryType: number, tnxType: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -860,14 +843,14 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
 
     const dialogRef = this.dialog.open(DailyDetailSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_daily_inventory_summary: repDailyDetailSummary,
         type: invType,
         date: date,
         queryType: queryType,
-        tnxType:tnxType
+        tnxType: tnxType
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -877,78 +860,75 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
       left: '-9999px'  // Move far to the left of the screen
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
-  onExportChart_r1(repDailInventory: daily_inventory_summary[], invType: string, date: string, queryType: number)
-  {
-     //this.preventDefault(event);
-     let cut_off_dt = new Date();
+  onExportChart_r1(repDailInventory: daily_inventory_summary[], invType: string, date: string, queryType: number) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
 
 
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
- 
-     const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight:reportPreviewWindowDimension.report_maxHeight,
-       data: {
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
         report_inventory: repDailInventory,
-         date: date,
-         queryType: queryType
+        date: date,
+        queryType: queryType
 
-       },
-   
-     });
-     dialogRef.updatePosition({
+      },
+
+    });
+    dialogRef.updatePosition({
       top: '-9999px',  // Move far above the screen
       left: '-9999px'  // Move far to the left of the screen
     });
-    
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
-     });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
-  onExportChart(repCustomerInventory: report_customer_inventory[], invType: string, date: string, queryType: number)
-  {
-     //this.preventDefault(event);
-     let cut_off_dt = new Date();
+  onExportChart(repCustomerInventory: report_customer_inventory[], invType: string, date: string, queryType: number) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
 
 
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
- 
-     const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyOverviewSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:'10px',
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
-       data: {
+      maxWidth: '10px',
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
         report_inventory: repCustomerInventory,
-         date: date,
-         queryType: queryType
+        date: date,
+        queryType: queryType
 
-       },
-       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-       direction: tempDirection
-     });
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
-     });
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
-  onTabFocused()
-  {
+  onTabFocused() {
     this.resetForm();
   }
 

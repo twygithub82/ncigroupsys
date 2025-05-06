@@ -1,5 +1,5 @@
 <div class="container">
-    <h3 mat-dialog-title class="ps-0 pb-1 align-left ">{{headerText | translate}}</h3>
+    <h3 mat-dialog-title class="ps-0 pb-1 align-center ">{{headerText | translate}}</h3>
     <mat-divider class="pb-1"></mat-divider>
     <!-- <div mat-dialog-content>
         @if (data.messageText?.length) {
@@ -20,8 +20,8 @@
         <button mat-flat-button color="warn"  [mat-dialog-close]="1" (click)="confirm()">
             {{langText.CONFIRM | translate}}
         </button>
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1" [hidden]="hideCancel()">
-            {{langText.CLOSE | translate}}
+        <button mat-stroked-button (click)="onNoClick()"  tabindex="-1" [hidden]="hideCancel()">
+            {{getCloseButtonContent()}}
         </button>
     </div>
 </div>

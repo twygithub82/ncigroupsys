@@ -272,11 +272,11 @@
                       <!-- ID Column -->
                       <ng-container matColumnDef="group_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.CONTACT_PERSON}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.CONTACT_PERSON}}:</span>
                           {{row.name}}
                         </mat-cell>
@@ -333,12 +333,12 @@
                       </ng-container>
                       <ng-container matColumnDef="quantity">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.CONTACT_NO}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.CONTACT_NO}}:</span>
                           {{row.phone}}
                         </mat-cell>
@@ -348,15 +348,20 @@
                         <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
-                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                          <!-- <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
+                          </button> -->
+                          <!-- <mat-menu #menu="matMenu"> -->
+
+                            <button mat-icon-button  (click)="handleDelete($event, row, i)"
+                            [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                            <mat-icon>delete_forever</mat-icon>
                           </button>
-                          <mat-menu #menu="matMenu">
-                            <button mat-menu-item (click)="handleDelete($event, row, i)">
-                              <mat-icon>delete_forever</mat-icon>
+                            <!-- <button  (click)="handleDelete($event, row, i)">
+                              <mat-icon >delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
-                            </button>
-                          </mat-menu>
+                            </button> -->
+                          <!-- </mat-menu> -->
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
